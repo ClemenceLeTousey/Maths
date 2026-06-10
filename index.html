@@ -2,10 +2,206 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Mon premier site GitHub !</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Cours de Mathématiques</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #2980b9;
+            --bg: #f8f9fa;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.2em;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: -40px auto 40px auto;
+            padding: 0 20px;
+        }
+
+        .grid-classes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .class-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--accent);
+        }
+
+        .class-card h2 {
+            color: var(--primary);
+            margin-top: 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .subcategory {
+            margin-top: 20px;
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .subcategory h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            color: var(--secondary);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        li:last-child {
+            margin-bottom: 0;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
 </head>
 <body>
-    <h1>Bravo, le site est en ligne ! 🎉</h1>
-    <p>Ce site est hébergé gratuitement sur GitHub Pages.</p>
+
+    <header>
+        <h1>Mathématiques</h1>
+        <p>Espace de téléchargement des cours et ressources</p>
+    </header>
+
+    <main class="container">
+        <div class="grid-classes">
+
+            <!-- SECONDE -->
+            <div class="class-card">
+                <h2>Seconde</h2>
+                <p>Retrouvez ici les chapitres et les exercices de l'année.</p>
+                <ul>
+                    <li>📄 <a href="cours/seconde/chapitre1-ensembles.pdf">Chapitre 1 : Ensembles de nombres</a></li>
+                    <li>📄 <a href="#">Chapitre 2 : Fonctions généralités</a></li>
+                    <li>📝 <a href="#">Feuille d'exercices : Fonctions</a></li>
+                </ul>
+            </div>
+
+            <!-- PREMIÈRE -->
+            <div class="class-card">
+                <h2>Première</h2>
+                
+                <div class="subcategory">
+                    <h3>Tronc Commun</h3>
+                    <ul>
+                        <li>📄 <a href="#">Chapitre 1 : Automatismes</a></li>
+                        <li>📄 <a href="#">Chapitre 2 : Statistiques</a></li>
+                    </ul>
+                </div>
+
+                <div class="subcategory">
+                    <h3>Spécialité (Spé)</h3>
+                    <ul>
+                        <li>📄 <a href="#">Chapitre 1 : Le Second Degré</a></li>
+                        <li>📄 <a href="#">Chapitre 2 : Dérivation</a></li>
+                    </ul>
+                </div>
+
+                <div class="subcategory">
+                    <h3>Techno</h3>
+                    <ul>
+                        <li>📄 <a href="#">Chapitre 1 : Suites numériques</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- TERMINALE -->
+            <div class="class-card">
+                <h2>Terminale</h2>
+
+                <div class="subcategory">
+                    <h3>Techno</h3>
+                    <ul>
+                        <li>📄 <a href="#">Chapitre 1 : Logarithme</a></li>
+                    </ul>
+                </div>
+                
+                <div class="subcategory">
+                    <h3>Spécialité (Spé)</h3>
+                    <ul>
+                        <li>📄 <a href="#">Chapitre 1 : Limites de suites</a></li>
+                    </ul>
+                </div>
+
+                <div class="subcategory">
+                    <h3>Maths Complémentaires</h3>
+                    <ul>
+                        <li>📄 <a href="#">Chapitre 1 : Fonctions convexes</a></li>
+                    </ul>
+                </div>
+
+                <div class="subcategory">
+                    <h3>Maths Expertes</h3>
+                    <ul>
+                        <li>📄 <a href="#">Chapitre 1 : Nombres complexes</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 - Cours de Mathématiques. Hébergé avec GitHub Pages.</p>
+    </footer>
+
 </body>
 </html>
