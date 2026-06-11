@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculatrice NumWorks - Mathématiques</title>
     <link rel="stylesheet" href="style.css">
+    
+    <script src="https://www.numworks.com/fr/simulateur/embed.js"></script>
 </head>
 <body>
 
@@ -55,14 +57,7 @@
         <div class="calc-container">
             <h2>Émulateur Officiel NumWorks</h2>
             
-            <div class="calc-wrapper">
-                <iframe src="https://www.numworks.com/fr/simulateur/embed/" 
-                        width="100%" 
-                        height="720" 
-                        frameborder="0" 
-                        allowfullscreen>
-                </iframe>
-            </div>
+            <div id="simulator"></div>
             
         </div>
     </main>
@@ -70,6 +65,13 @@
     <footer>
         <p>&copy; 2026 - Cours de Mathématiques. Hébergé avec GitHub Pages.</p>
     </footer>
+
+    <script>
+        var simulator = new NumworksSimulator({
+            element: document.getElementById('simulator'),
+            language: 'fr'
+        });
+    </script>
 
 </body>
 </html>
