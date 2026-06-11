@@ -8,6 +8,8 @@
     
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.12.0/brython.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.12.0/brython_stdlib.min.js"></script>
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
 </head>
 <body onload="brython()">
 
@@ -45,28 +47,33 @@
 
     <header>
         <h1 style="color: #f1c40f; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);">Console Python</h1>
-        <p>Exécutez vos scripts directement dans votre navigateur, sans aucune restriction.</p>
+        <p>Un espace de programmation fluide et moderne pour vos algorithmes</p>
     </header>
 
     <main class="container">
         <div class="console-container">
-            <h2>Éditeur & Console Interne</h2>
+            <h2>Éditeur Professionnel & Console</h2>
             
             <div class="python-workspace">
                 <div class="editor-zone">
-                    <label for="code">Votre code Python :</label>
-                    <textarea id="code" rows="15" autocomplete="off" autofocus># Exemple : Calcul du carré d'un nombre
-def carre(n):
-    return n * n
+                    <div class="zone-header">📝 Script.py</div>
+                    <div id="editor"># Exemple : Recherche de seuil (Suites)
+def seuil(limite):
+    n = 0
+    u = 5
+    while u < limite:
+        u = 2 * u + 3
+        n = n + 1
+    return n
 
-print("Le carré de 5 est :", carre(5))
-</textarea>
+print("Le seuil est atteint à n =", seuil(100))
+</div>
                     <button id="run-btn">▶ Exécuter le code</button>
                 </div>
                 
                 <div class="console-zone">
-                    <label>Console d'affichage :</label>
-                    <pre id="output"></pre>
+                    <div class="zone-header">💻 Console de sortie</div>
+                    <pre id="output">Cliquez sur exécuter pour voir le résultat...</pre>
                     <button id="clear-btn">Effacer la console</button>
                 </div>
             </div>
@@ -77,17 +84,28 @@ print("Le carré de 5 est :", carre(5))
         <p>&copy; 2026 - Cours de Mathématiques. Hébergé avec GitHub Pages.</p>
     </footer>
 
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/textmate"); // Thème clair et propre
+        editor.session.setMode("ace/mode/python"); // Active la coloration Python
+        editor.setOptions({
+            fontSize: "14px",
+            enableBasicAutocompletion: true,
+            showPrintMargin: false,
+            tabSize: 4,
+            useSoftTabs: true
+        });
+    </script>
+
     <script type="text/python">
         from browser import document, window
 
         def run_code(ev):
-            # Réinitialiser la console à chaque clic
             document['output'].text = ""
             
-            # Récupérer le code écrit par l'utilisateur
-            user_code = document['code'].value
+            # Récupérer le code depuis l'éditeur Ace (via l'API JavaScript)
+            user_code = window.editor.getValue()
             
-            # Capturer les "print" pour les rediriger vers notre balise <pre>
             import sys
             class StyleOutput:
                 def write(self, data):
@@ -99,15 +117,13 @@ print("Le carré de 5 est :", carre(5))
             sys.stderr = StyleOutput()
             
             try:
-                # Exécuter le code Python
                 exec(user_code)
             except Exception as e:
-                document['output'].text += f"\n❌ Erreur : {e}"
+                document['output'].text += f"\n❌ Erreur de syntaxe :\n{e}"
 
         def clear_console(ev):
             document['output'].text = ""
 
-        # Attacher les fonctions aux boutons HTML
         document['run-btn'].bind('click', run_code)
         document['clear-btn'].bind('click', clear_console)
     </script>
