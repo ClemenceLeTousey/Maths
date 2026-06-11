@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Console Python - Mathématiques</title>
     <link rel="stylesheet" href="style.css">
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.12.0/brython.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.12.0/brython_stdlib.min.js"></script>
 </head>
-<body>
+<body onload="brython()">
 
     <nav class="navbar">
         <ul class="nav-links">
@@ -28,13 +31,6 @@
                 </ul>
             </li>
             <li class="dropdown">
-                <a href="#" class="dropdown-trigger">Python ▾</a>
-                <ul class="dropdown-menu">
-                    <li><a href="pythonconsole.html">Console en ligne</a></li>
-                    <li><a href="algo-coursTD.html">Cours et TD</a></li>
-                </ul>
-            </li>
-            <li class="dropdown">
                 <a href="#" class="dropdown-trigger">Les vidéos ▾</a>
                 <ul class="dropdown-menu">
                     <li><a href="videos-seconde.html">Seconde</a></li>
@@ -43,32 +39,78 @@
                 </ul>
             </li>
             <li><a href="infos.html">Infos</a></li>
-            <li><a href="index.html">Accueil</a></li>
+            <li><a href="python.html" style="background-color: var(--accent); border-radius: 4px;">Console Python</a></li>
         </ul>
     </nav>
 
     <header>
         <h1 style="color: #f1c40f; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);">Console Python</h1>
-        <p>Exécutez vos scripts de géométrie, d'arithmétique ou de probabilités en ligne</p>
+        <p>Exécutez vos scripts directement dans votre navigateur, sans aucune restriction.</p>
     </header>
 
     <main class="container">
         <div class="console-container">
-            <h2>Éditeur & Console Interactive</h2>
-              <iframe src="https://trinket.io/embed/python3/6057c31d1d?runOption=run" 
-                width="100%" 
-                height="500" 
-                frameborder="0" 
-                marginwidth="0" 
-                marginheight="0" 
-                allowfullscreen>
-            </iframe>
+            <h2>Éditeur & Console Interne</h2>
+            
+            <div class="python-workspace">
+                <div class="editor-zone">
+                    <label for="code">Votre code Python :</label>
+                    <textarea id="code" rows="15" autocomplete="off" autofocus># Exemple : Calcul du carré d'un nombre
+def carre(n):
+    return n * n
+
+print("Le carré de 5 est :", carre(5))
+</textarea>
+                    <button id="run-btn">▶ Exécuter le code</button>
+                </div>
+                
+                <div class="console-zone">
+                    <label>Console d'affichage :</label>
+                    <pre id="output"></pre>
+                    <button id="clear-btn">Effacer la console</button>
+                </div>
+            </div>
         </div>
     </main>
 
     <footer>
         <p>&copy; 2026 - Cours de Mathématiques. Hébergé avec GitHub Pages.</p>
     </footer>
+
+    <script type="text/python">
+        from browser import document, window
+
+        def run_code(ev):
+            # Réinitialiser la console à chaque clic
+            document['output'].text = ""
+            
+            # Récupérer le code écrit par l'utilisateur
+            user_code = document['code'].value
+            
+            # Capturer les "print" pour les rediriger vers notre balise <pre>
+            import sys
+            class StyleOutput:
+                def write(self, data):
+                    document['output'].text += str(data)
+                def flush(self):
+                    pass
+            
+            sys.stdout = StyleOutput()
+            sys.stderr = StyleOutput()
+            
+            try:
+                # Exécuter le code Python
+                exec(user_code)
+            except Exception as e:
+                document['output'].text += f"\n❌ Erreur : {e}"
+
+        def clear_console(ev):
+            document['output'].text = ""
+
+        # Attacher les fonctions aux boutons HTML
+        document['run-btn'].bind('click', run_code)
+        document['clear-btn'].bind('click', clear_console)
+    </script>
 
 </body>
 </html>
