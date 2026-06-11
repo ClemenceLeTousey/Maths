@@ -219,3 +219,36 @@ li:last-child {
     border-radius: 6px;
     border: 1px solid #eee;
 }
+
+/* ==========================================================================
+   6. ÉMULATEUR NUMWORKS
+   ========================================================================== */
+.calc-container {
+    max-width: 800px; /* On réduit un peu la largeur pour que la calculatrice ne soit pas trop géante */
+    margin: 40px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    border-top: 5px solid #ff6f26; /* Couleur orange officielle de NumWorks */
+    text-align: center;
+}
+
+.calc-container h2 {
+    color: var(--primary);
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.calc-wrapper {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    background-color: #fafafa;
+}
+
+.calc-wrapper iframe {
+    display: block;
+    margin: 0 auto;
+}
