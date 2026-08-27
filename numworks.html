@@ -6,7 +6,7 @@
     <title>Calculatrice NumWorks - Mathématiques</title>
     <link rel="stylesheet" href="style.css">
     
-    <script src="https://www.numworks.com/fr/simulateur/embed.js"></script>
+    <script src="https://www.numworks.com/simulator/embed.js"></script>
 </head>
 <body> 
 
@@ -57,21 +57,14 @@
         <div class="calc-container">
             <h2>Émulateur Officiel NumWorks</h2>
             
-            <div id="simulator"></div>
-            
+            <iframe id="simulator" src="https://www.numworks.com/simulator/embed/" frameborder="0" allowfullscreen></iframe>
+
         </div>
     </main>
 
     <footer>
         <p>&copy; 2026 - Cours de Mathématiques. Hébergé avec GitHub Pages.</p>
     </footer>
-
-    <script>
-        var simulator = new NumworksSimulator({
-            element: document.getElementById('simulator'),
-            language: 'fr'
-        });
-    </script>
 
 </body>
 </html>
