@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semaine 3 — Sommaire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --paper:        #f2f3ee;
+    --surface:      #ffffff;
+    --ink:          #20232b;
+    --ink-soft:     #565a66;
+    --muted:        #8b8f99;
+    --accent:       #2455b8;
+    --accent-soft:  #e4ecfb;
+    --orange:       #b5511f;
+    --orange-soft:  #f7e6dc;
+    --aqua:         #12805c;
+    --aqua-soft:    #dcf1e9;
+    --red:          #b8342b;
+    --line:         #dce1ea;
+    --rule-strong:  #b9c2d1;
+    --shadow:       rgba(32, 35, 43, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper:#121319; --surface:#1b1e26; --ink:#f1f2f6; --ink-soft:#c3c7d1; --muted:#8b909c;
+      --accent:#7ea3ee; --accent-soft:#223252; --orange:#e08a5c; --orange-soft:#3a2a1e;
+      --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70;
+      --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper:#121319; --surface:#1b1e26; --ink:#f1f2f6; --ink-soft:#c3c7d1; --muted:#8b909c;
+    --accent:#7ea3ee; --accent-soft:#223252; --orange:#e08a5c; --orange-soft:#3a2a1e;
+    --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70;
+    --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 32px 32px; background-position: -1px -1px;
+    color: var(--ink); font-family: "Public Sans", system-ui, sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    padding: 40px 16px 60px;
+  }
+  h1 { font-family: "Fraunces", Georgia, serif; text-wrap: balance; }
+
+  .wrap { width: 100%; max-width: 720px; }
+
+  header { margin-bottom: 28px; }
+  header h1 { margin: 0 0 6px; font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.4rem); font-weight: 600; }
+  header p { margin: 0; color: var(--ink-soft); font-size: 1rem; }
+
+  .themes { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .theme-pill {
+    font-family: "Space Mono", monospace; font-size: 0.74rem; letter-spacing: .02em;
+    padding: 5px 11px; border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+  }
+  .theme-pill.geo { background: var(--aqua-soft); color: var(--aqua); }
+  .theme-pill.complement { background: var(--orange-soft); color: var(--orange); }
+
+  .days { display: grid; gap: 14px; }
+  .day-card {
+    display: block; text-decoration: none; color: inherit;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 22px; box-shadow: 0 1px 3px var(--shadow);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .day-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px var(--shadow); }
+  .day-card .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .day-card .jour {
+    font-family: "Space Mono", monospace; font-weight: 700; font-size: 0.85rem;
+    color: var(--accent); text-transform: uppercase; letter-spacing: .04em;
+  }
+  .day-card .go { font-size: 0.85rem; color: var(--muted); }
+  .day-card h2 { margin: 4px 0 6px; font-size: 1.15rem; font-weight: 600; font-family: "Public Sans", sans-serif; }
+  .day-card p { margin: 0; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.5; }
+
+  .note {
+    margin-top: 28px; padding: 14px 18px; border: 1.5px dashed var(--rule-strong);
+    border-radius: 10px; color: var(--ink-soft); font-size: 0.88rem;
+  }
+  .note strong { color: var(--ink); }
+  .note + .note { margin-top: 14px; }
+
+  .prev-link {
+    margin-top: 10px; display: inline-block; font-size: 0.85rem; color: var(--accent);
+  }
+
+  footer { margin-top: 30px; font-size: 0.78rem; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Semaine 3 — Automatismes</h1>
+    <p>Feuille de route de la semaine</p>
+    <div class="themes">
+      <span class="theme-pill geo">Vecteurs · Égalité, somme</span>
+      <span class="theme-pill">Calcul littéral · Distributivité</span>
+      <span class="theme-pill complement">Algo · Expressions littérales</span>
+      <span class="theme-pill">A1, A2, A3, A22 (révision)</span>
+    </div>
+    <a class="prev-link" href="../Semaine 02/S02-sommaire.html">&larr; Semaine 2</a>
+  </header>
+
+  <div class="days">
+    <a class="day-card" href="S03-J1-projection.html">
+      <div class="row"><span class="jour">Jour 1</span><span class="go">Ouvrir →</span></div>
+      <h2>Égalité de vecteurs, distributivité simple</h2>
+      <p>QCM conditions d'égalité de deux vecteurs et développement simple k(a+b) · retour (sans les choix) sur la comparaison à numérateur égal, parallélogramme et vecteurs égaux · comparaison de fractions et double distributivité.</p>
+    </a>
+
+    <a class="day-card" href="S03-J2-projection.html">
+      <div class="row"><span class="jour">Jour 2</span><span class="go">Ouvrir →</span></div>
+      <h2>Vecteur opposé, premier programme d'expression</h2>
+      <p>QCM sur un vecteur et son opposé, et lecture d'une fonction Python (2x+3) · réciproque du parallélogramme, développement de (x+3)(x+2) · première somme de vecteurs bout à bout, aire d'un rectangle en fonction de x.</p>
+    </a>
+
+    <a class="day-card" href="S03-J3-projection.html">
+      <div class="row"><span class="jour">Jour 3</span><span class="go">Ouvrir →</span></div>
+      <h2>Norme d'un vecteur, distributivité avec facteur négatif</h2>
+      <p>QCM norme d'un vecteur et développement -2(x-4) · retour sur Pythagore (racine non entière), factorisation avec facteur commun · retour sur la comparaison de fractions, somme de deux vecteurs différents.</p>
+    </a>
+
+    <a class="day-card" href="S03-J4-projection.html">
+      <div class="row"><span class="jour">Jour 4</span><span class="go">Ouvrir →</span></div>
+      <h2>Révision de la semaine + programmes d'expressions</h2>
+      <p>QCM condition nécessaire de l'égalité de vecteurs et lecture de fonction x²-1 · développement à trois termes, fonction périmètre · retour sur les puissances de 10, fonction reliant algo et distributivité 3(x+2).</p>
+    </a>
+  </div>
+
+  <div class="note">
+    <strong>Choix de la semaine :</strong> le vocabulaire vectoriel (mis de côté volontairement en semaine 2) entre en jeu maintenant que la séquence vecteurs démarre. Le fil « Translations » de S1/S2 laisse place au fil « Vecteurs » : les mêmes idées de grille/déplacement reviennent, mais avec le nom et la notation corrects (vecteur AB, égalité, somme bout à bout). Le fil « Algo » évolue vers la lecture de fonctions qui évaluent une expression littérale, en écho direct au calcul littéral travaillé en cours.
+  </div>
+  <div class="note">
+    <strong>Calculs numériques :</strong> six automatismes du programme précédent reviennent cette semaine à leur palier suivant (A1, A2, A3, A22 — voir banque-roulement.md), pour couvrir « calculs numériques tout » sans reprendre l'intégralité de la banque en attente. Les items encore dus sur A4 (Écritures d'un nombre) et sur Algo/Translations restent en réserve pour une semaine où ces thèmes redeviennent centraux.
+  </div>
+
+  <footer>Automatismes Hebdo · 2nde 2026-2027</footer>
+</div>
+</body>
+</html>

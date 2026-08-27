@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semaine 3 · Jour 2 — Automatismes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+<style>
+  :root {
+    color-scheme: light;
+    --paper:        #f2f3ee;
+    --surface:      #ffffff;
+    --ink:          #20232b;
+    --ink-soft:     #565a66;
+    --muted:        #8b8f99;
+    --accent:       #2455b8;
+    --accent-soft:  #e4ecfb;
+    --orange:       #b5511f;
+    --orange-soft:  #f7e6dc;
+    --aqua:         #12805c;
+    --aqua-soft:    #dcf1e9;
+    --red:          #b8342b;
+    --red-soft:     #fbeae8;
+    --line:         #dce1ea;
+    --rule-strong:  #b9c2d1;
+    --shadow:       rgba(32, 35, 43, 0.10);
+    /* couleurs de "palier" (QCM / question simple / automatisme final) */
+    --qcm:      #2455b8;
+    --question: #b5511f;
+    --final:    #9c2b3e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper:#121319; --surface:#1b1e26; --ink:#f1f2f6; --ink-soft:#c3c7d1; --muted:#8b909c;
+      --accent:#7ea3ee; --accent-soft:#223252; --orange:#e08a5c; --orange-soft:#3a2a1e;
+      --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70; --red-soft:#3a2222;
+      --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
+      --qcm:#7ea3ee; --question:#e08a5c; --final:#e17a70;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper:#121319; --surface:#1b1e26; --ink:#f1f2f6; --ink-soft:#c3c7d1; --muted:#8b909c;
+    --accent:#7ea3ee; --accent-soft:#223252; --orange:#e08a5c; --orange-soft:#3a2a1e;
+    --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70; --red-soft:#3a2222;
+    --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
+    --qcm:#7ea3ee; --question:#e08a5c; --final:#e17a70;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 120px;
+  }
+
+  h1, .display { font-family: "Fraunces", Georgia, serif; text-wrap: balance; }
+
+  .site-header { width: 100%; max-width: 820px; margin-bottom: 22px; }
+  .brand-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .brand-row h1 { margin: 0 0 4px; font-size: clamp(1.5rem, 1.15rem + 1.4vw, 2.1rem); font-weight: 600; color: var(--ink); }
+  .brand-row .subtitle { margin: 0; color: var(--ink-soft); font-size: 0.98rem; }
+
+  .back-link {
+    align-self: center;
+    font-family: "Public Sans", sans-serif; font-size: 0.85rem; font-weight: 600;
+    color: var(--ink); text-decoration: none;
+    border: 1.5px solid var(--rule-strong); border-radius: 999px;
+    padding: 7px 16px; white-space: nowrap;
+  }
+  .back-link:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+  .pages { width: 100%; max-width: 820px; }
+
+  .page {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: 0 1px 3px var(--shadow), 0 10px 30px -18px var(--shadow);
+    padding: 34px 40px 34px 56px;
+    min-height: 560px;
+    display: flex;
+    flex-direction: column;
+  }
+  .page::before {
+    content: ""; position: absolute; top: 0; bottom: 0; left: 34px; width: 1px;
+    background: var(--red); opacity: 0.55;
+  }
+
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 0.76rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase;
+    padding: 6px 11px; border-radius: 999px;
+  }
+  .badge .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .badge.obj-nombres { background: var(--accent-soft); color: var(--accent); }
+  .badge.obj-nombres .dot { background: var(--accent); }
+  .badge.obj-geometrie { background: var(--aqua-soft); color: var(--aqua); }
+  .badge.obj-geometrie .dot { background: var(--aqua); }
+  .badge.obj-complement { background: var(--orange-soft); color: var(--orange); }
+  .badge.obj-complement .dot { background: var(--orange); }
+
+  .page-meta { text-align: right; font-family: "Space Mono", monospace; color: var(--muted); }
+  .page-meta .count { font-size: 1.05rem; color: var(--ink-soft); }
+  .page-meta .jour { font-size: 0.72rem; margin-top: 4px; }
+
+  .aim {
+    margin: 16px 0 22px;
+    padding: 10px 14px;
+    border-left: 3px solid var(--rule-strong);
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    font-style: italic;
+    background: color-mix(in srgb, var(--surface) 60%, var(--paper));
+  }
+  .aim strong { font-style: normal; color: var(--ink); font-weight: 600; }
+
+  .question {
+    font-size: clamp(1.25rem, 1.05rem + 0.7vw, 1.55rem);
+    font-weight: 500; line-height: 1.4; margin: 0 0 22px; color: var(--ink);
+  }
+
+  .diagram { display: flex; justify-content: center; margin: 0 0 22px; }
+  .diagram:empty { display: none; }
+  .diagram svg { max-width: 100%; height: auto; }
+  .code-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; width: 100%; }
+  .code-col { flex: 1 1 220px; max-width: 320px; }
+  .code {
+    font-family: "Space Mono", monospace; font-size: 0.9rem; line-height: 1.6;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px 15px; white-space: pre; color: var(--ink); overflow-x: auto;
+  }
+  .opt .code { background: transparent; border: none; padding: 0; font-size: 0.85rem; }
+  .diagram-point circle { fill: var(--surface); stroke: var(--ink); stroke-width: 2.5; }
+  .diagram-point.correct circle { stroke: var(--aqua); fill: var(--aqua-soft); }
+  .diagram-point text { font-family: "Space Mono", monospace; font-weight: 700; font-size: 13px; fill: var(--ink); text-anchor: middle; }
+  .diagram-grid line { stroke: var(--line); stroke-width: 1; }
+  .diagram-vector line { stroke: var(--accent); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 6 5; }
+  .diagram-vector.solved { stroke-dasharray: none; }
+  .diagram-vector polygon { fill: var(--accent); }
+  .diagram-label { font-family: "Public Sans", sans-serif; font-size: 12px; fill: var(--ink-soft); }
+
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+  .opt {
+    border: 1.5px solid var(--rule-strong); border-radius: 8px; padding: 13px 16px;
+    font-size: 1.1rem; cursor: pointer; background: var(--surface);
+    transition: background .15s, border-color .15s;
+  }
+  .opt:hover { border-color: var(--accent); }
+  .opt .letter {
+    display: inline-block; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--ink); color: var(--surface); text-align: center; line-height: 24px;
+    font-family: "Space Mono", monospace; font-size: .82rem; margin-right: 9px; font-weight: 700;
+  }
+  .opt.correct { border-color: var(--aqua); background: var(--aqua-soft); }
+  .opt.wrong { border-color: var(--red); background: var(--red-soft); opacity: .7; }
+
+  .answer-zone { margin-top: auto; padding-top: 14px; }
+  .answer-zone .label {
+    font-family: "Space Mono", monospace; font-size: 0.78rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
+  }
+  .answer-line { height: 1px; background: var(--rule-strong); margin-bottom: 18px; }
+
+  .answer-box {
+    display: none; margin-top: 4px; padding: 14px 18px; border-radius: 8px;
+    background: var(--orange-soft); border-left: 4px solid var(--orange);
+  }
+  .answer-box.shown { display: block; }
+  .answer-box .content { font-size: 1.1rem; color: var(--ink); }
+
+  .reveal-btn {
+    align-self: flex-start; margin-top: 14px;
+    font-family: "Public Sans", sans-serif; font-size: 0.85rem; font-weight: 600;
+    border-radius: 999px; padding: 9px 18px; cursor: pointer;
+    border: 1.5px solid var(--rule-strong); background: var(--surface); color: var(--ink);
+  }
+  .reveal-btn:hover { box-shadow: 0 2px 8px var(--shadow); }
+
+  .worksheet-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: center;
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--paper) 60%, transparent);
+    pointer-events: none;
+  }
+  .worksheet-nav .inner {
+    pointer-events: auto; display: flex; align-items: center; gap: 14px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 10px 8px 16px; box-shadow: 0 6px 20px var(--shadow);
+  }
+  .nav-dots { display: flex; gap: 6px; }
+  .nav-dots button { width: 8px; height: 8px; border-radius: 50%; border: none; padding: 0; cursor: pointer; background: var(--line); }
+  .nav-dots button.current { background: var(--accent); width: 18px; border-radius: 5px; }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px; border: none; background: none; cursor: pointer;
+    font-family: "Public Sans", sans-serif; font-weight: 600; font-size: 0.85rem;
+    color: var(--ink); padding: 7px 10px; border-radius: 999px;
+  }
+  .nav-btn:hover { background: var(--accent-soft); color: var(--accent); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; background: none; color: var(--ink); }
+  .nav-pos { font-family: "Space Mono", monospace; font-size: 0.78rem; color: var(--muted); min-width: 40px; text-align: center; }
+
+  @media (max-width: 560px) {
+    .page { padding: 26px 22px 26px 42px; }
+    .page::before { left: 22px; }
+    .options { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="brand-row">
+    <div>
+      <h1>Automatismes — Semaine 3</h1>
+      <p class="subtitle">Jour 2 · projection en classe</p>
+    </div>
+    <a class="back-link" href="S03-sommaire.html">&larr; Sommaire</a>
+  </div>
+</div>
+
+<div class="pages">
+  <section class="page" id="page">
+    <div class="page-head">
+      <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
+      <div class="page-meta">
+        <span class="count" id="qnum-display">1 / 6</span>
+        <div class="jour">Semaine 3 · Jour 2</div>
+      </div>
+    </div>
+    <div class="aim"><strong>Objectif visé :</strong> <span id="aim-text"></span></div>
+    <p class="question" id="qtext"></p>
+    <div class="diagram" id="diagram"></div>
+    <div class="options" id="options"></div>
+    <div class="answer-zone">
+      <div class="answer-box" id="answer-box">
+        <div class="content" id="answer-content"></div>
+      </div>
+      <button class="reveal-btn" id="reveal-btn">Voir la réponse</button>
+    </div>
+  </section>
+</div>
+
+<div class="worksheet-nav">
+  <div class="inner">
+    <button class="nav-btn" id="btn-prev">← Précédent</button>
+    <div class="nav-dots" id="nav-dots"></div>
+    <span class="nav-pos" id="nav-pos">1 / 6</span>
+    <button class="nav-btn" id="btn-next">Suivant →</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    theme: "obj-geometrie",
+    objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
+    aim: "Comprendre la relation entre un vecteur et son oppos\u00e9.",
+    question: "$\\vec{AB}$ et $\\vec{BA}$ ont :",
+    options: [
+      { letter:"A", text:"M\u00eame direction, m\u00eame sens", correct:false },
+      { letter:"B", text:"M\u00eame direction, sens contraire", correct:true },
+      { letter:"C", text:"Des directions diff\u00e9rentes", correct:false },
+      { letter:"D", text:"Rien en commun", correct:false }
+    ],
+    explanation: "$\\vec{AB}$ et $\\vec{BA}$ parcourent le m\u00eame segment $[AB]$, donc la m\u00eame direction et la m\u00eame longueur, mais dans des sens oppos\u00e9s : $\\vec{BA}$ est l'oppos\u00e9 de $\\vec{AB}$."
+  },
+  {
+    theme: "obj-complement",
+    objectif: "Algo \u00b7 Expressions litt\u00e9rales",
+    aim: "Lire une fonction Python qui \u00e9value une expression litt\u00e9rale et calculer l'image d'un nombre.",
+    question: "Que va afficher ce programme ?",
+    diagram: `<div class="code-row" style="max-width:320px;"><div class="code-col"><pre class="code">def f(x):
+    return 2 * x + 3
+
+print(f(5))</pre></div></div>`,
+    options: [
+      { letter:"A", text:"$13$", correct:true },
+      { letter:"B", text:"$10$", correct:false },
+      { letter:"C", text:"$8$", correct:false },
+      { letter:"D", text:"$16$", correct:false }
+    ],
+    explanation: "La fonction calcule $2x+3$. Avec $x=5$ : $2\\times5+3=13$."
+  },
+  {
+    theme: "obj-geometrie",
+    objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
+    aim: "Utiliser la r\u00e9ciproque de la propri\u00e9t\u00e9 du parall\u00e9logramme.",
+    question: "On donne $\\vec{AB}=\\vec{CD}$. Que peut-on dire du quadrilat\u00e8re $ABDC$ ?",
+    explanation: "Si $\\vec{AB}=\\vec{CD}$, alors $[AB]$ et $[CD]$ sont parall\u00e8les, de m\u00eame longueur et parcourus dans le m\u00eame sens : $ABDC$ est un parall\u00e9logramme."
+  },
+  {
+    objectif: "Calcul litt\u00e9ral \u00b7 Distributivit\u00e9",
+    aim: "D\u00e9velopper un produit de deux sommes et r\u00e9duire le r\u00e9sultat.",
+    question: "D\u00e9velopper $(x+3)(x+2)$.",
+    explanation: "$(x+3)(x+2)=x\\times x+x\\times2+3\\times x+3\\times2=x^2+2x+3x+6=x^2+5x+6$."
+  },
+  {
+    theme: "obj-geometrie",
+    objectif: "Vecteurs \u00b7 Somme",
+    aim: "Additionner deux vecteurs identiques plac\u00e9s bout \u00e0 bout (introduction de la relation de Chasles).",
+    question: "$\\vec{AB}$ correspond \u00e0 un d\u00e9placement de 3 carreaux vers la droite et 1 carreau vers le haut. $\\vec{BC}$ correspond au m\u00eame d\u00e9placement. Quel d\u00e9placement repr\u00e9sente $\\vec{AB}+\\vec{BC}$, c'est-\u00e0-dire $\\vec{AC}$ ?",
+    explanation: "En mettant les deux vecteurs bout \u00e0 bout, les d\u00e9placements s'additionnent : $3+3=6$ carreaux vers la droite et $1+1=2$ carreaux vers le haut."
+  },
+  {
+    objectif: "Calcul litt\u00e9ral \u00b7 Distributivit\u00e9",
+    aim: "Utiliser la distributivit\u00e9 pour exprimer une aire en fonction d'une longueur variable (distributivit\u00e9 en contexte).",
+    question: "Un rectangle a pour largeur $x$ et pour longueur $x+3$. Exprimer son aire en fonction de $x$, sous forme d\u00e9velopp\u00e9e.",
+    explanation: "Aire $=$ largeur $\\times$ longueur $=x(x+3)=x^2+3x$."
+  }
+];
+let current = 0;
+let revealed = false;
+
+const objectifBadge = document.getElementById("objectif-badge");
+const objectifText = document.getElementById("objectif-text");
+const aimText = document.getElementById("aim-text");
+const qtext = document.getElementById("qtext");
+const diagramEl = document.getElementById("diagram");
+const optionsEl = document.getElementById("options");
+const answerBox = document.getElementById("answer-box");
+const answerContent = document.getElementById("answer-content");
+const revealBtn = document.getElementById("reveal-btn");
+const qnumDisplay = document.getElementById("qnum-display");
+const navPos = document.getElementById("nav-pos");
+const dotsWrap = document.getElementById("nav-dots");
+const btnPrev = document.getElementById("btn-prev");
+const btnNext = document.getElementById("btn-next");
+
+QUESTIONS.forEach((_, i) => {
+  const b = document.createElement("button");
+  b.setAttribute("aria-label", "Aller à la question " + (i + 1));
+  b.addEventListener("click", () => { current = i; render(); });
+  dotsWrap.appendChild(b);
+});
+
+function render(){
+  revealed = false;
+  const q = QUESTIONS[current];
+
+  objectifText.textContent = q.objectif;
+  objectifBadge.className = "badge " + (q.theme || "obj-nombres");
+  aimText.textContent = q.aim;
+  qtext.innerHTML = q.question;
+  diagramEl.innerHTML = q.diagram || "";
+
+  optionsEl.innerHTML = "";
+  if (q.options){
+    q.options.forEach(opt => {
+      const div = document.createElement("div");
+      div.className = "opt";
+      div.innerHTML = "<span class='letter'>" + opt.letter + "</span>" + opt.text;
+      div.dataset.correct = opt.correct;
+      div.addEventListener("click", reveal);
+      optionsEl.appendChild(div);
+    });
+  }
+
+  answerBox.classList.remove("shown");
+  answerContent.innerHTML = q.explanation;
+  revealBtn.style.display = "inline-block";
+  revealBtn.textContent = "Voir la réponse";
+
+  qnumDisplay.textContent = (current + 1) + " / " + QUESTIONS.length;
+  navPos.textContent = (current + 1) + " / " + QUESTIONS.length;
+  Array.prototype.slice.call(dotsWrap.children).forEach((d, i) => d.classList.toggle("current", i === current));
+  btnPrev.disabled = current === 0;
+  btnNext.disabled = current === QUESTIONS.length - 1;
+
+  renderMath();
+}
+
+function reveal(){
+  if (revealed) return;
+  revealed = true;
+  answerBox.classList.add("shown");
+  const opts = optionsEl.querySelectorAll(".opt");
+  opts.forEach(o => {
+    if (o.dataset.correct === "true") o.classList.add("correct");
+    else if (opts.length) o.classList.add("wrong");
+  });
+}
+
+function renderMath(){
+  renderMathInElement(document.getElementById("page"), {
+    delimiters: [
+      {left:"$$", right:"$$", display:true},
+      {left:"$", right:"$", display:false}
+    ]
+  });
+}
+
+function goTo(i){
+  current = Math.max(0, Math.min(QUESTIONS.length - 1, i));
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+revealBtn.addEventListener("click", reveal);
+btnPrev.addEventListener("click", () => goTo(current - 1));
+btnNext.addEventListener("click", () => goTo(current + 1));
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") goTo(current + 1);
+  else if (e.key === "ArrowLeft") goTo(current - 1);
+  else if (e.key === " " || e.key === "Enter") { e.preventDefault(); reveal(); }
+});
+
+render();
+</script>
+
+</body>
+</html>

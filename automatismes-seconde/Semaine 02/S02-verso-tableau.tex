@@ -1,0 +1,167 @@
+% Équivalent LaTeX de S02-verso-tableau.html (feuille élève, verso — tableau
+% de consignation des réponses J1 à J4). Document autonome, distinct du
+% livret LaTeX complet (voir README.md du dossier "Automatismes Hebdo") :
+% se compile seul, sans dépendre de CLT2627.sty ni du pipeline
+% AutomatismesSeconde2627.tex. Compiler avec pdflatex ou lualatex.
+\documentclass[10pt]{article}
+\usepackage[a4paper,landscape,margin=10mm]{geometry}
+\usepackage[french]{babel}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{pifont}
+\usepackage[most]{tcolorbox}
+\usepackage{ragged2e}
+\usepackage{amssymb}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Palette (reprise des tokens CSS de S02-verso-tableau.html) -----------
+\definecolor{inkC}{HTML}{20232B}
+\definecolor{inksoftC}{HTML}{565A66}
+\definecolor{mutedC}{HTML}{8B8F99}
+\definecolor{rulestrongC}{HTML}{B9C2D1}
+\definecolor{qcmC}{HTML}{2455B8}
+\definecolor{questionC}{HTML}{12805C}
+\definecolor{finalC}{HTML}{B5511F}
+\definecolor{bonusC}{HTML}{B8298F}
+\definecolor{bonussoftC}{HTML}{FBE6F3}
+\definecolor{emptyC}{HTML}{E7E9EE}
+
+\newcommand{\starQ}{\textcolor{questionC}{$\bigstar$}}
+\newcommand{\starF}{\textcolor{finalC}{$\bigstar$}}
+\newcommand{\okmark}{\ding{51}}
+\newcommand{\nomark}{\ding{55}}
+% Case à cocher vierge (l'élève y trace lui-même un crochet ou une croix).
+\newcommand{\corrbox}{\fboxsep=0pt\fbox{\rule{0pt}{8pt}\rule{8pt}{0pt}}}
+
+% Case active : numéro de question tout en haut, espace blanc pour l'écriture
+% manuscrite, puis ligne de réponse + case à cocher vierge à sa droite.
+% (boîte autonome : évite toute interférence entre le \\ interne et la
+% syntaxe de ligne/colonne du tableau englobant)
+\newcommand{\qcase}[1]{%
+  \begin{minipage}[t]{2.6cm}\centering
+    {\tiny\textcolor{mutedC}{#1}}\\[6pt]
+    \rule{1.6cm}{0.4pt}\hspace{4pt}\corrbox
+  \end{minipage}%
+}
+% Case grisée : aucune question ce jour-là pour cet automatisme.
+\newcommand{\qempty}{\cellcolor{emptyC}}
+
+\newcolumntype{J}{>{\RaggedRight\arraybackslash}m{2.5cm}}
+\newcolumntype{N}{>{\RaggedRight\arraybackslash}m{2.1cm}}
+\newcolumntype{O}{>{\centering\arraybackslash}m{2.9cm}}
+
+\begin{document}
+
+\begin{center}
+  {\large\bfseries Automatismes --- Semaine 2}\\[1pt]
+  {\small\color{inksoftC} Feuille élève $\cdot$ verso --- tableau de consignation des réponses (J1 à J4)}
+\end{center}
+
+\vspace{4pt}
+\noindent
+Nom~: \hrulefill{} \hspace{14pt} Prénom~: \hrulefill{} \hspace{14pt} Classe~: \hrulefill
+
+\vspace{4pt}
+\begin{tcolorbox}[
+  boxrule=0pt, sharp corners, colback=white,
+  borderline west={2pt}{0pt}{rulestrongC},
+  left=10pt, right=8pt, top=3pt, bottom=3pt,
+  fontupper=\footnotesize\color{inksoftC}
+]
+\textbf{\color{inkC}Comment remplir ce tableau~:} chaque jour, complète uniquement les cases
+actives de la colonne correspondant à l'automatisme travaillé (les cases grisées ne
+correspondent à aucune question ce jour-là). Après la correction collective, trace
+\okmark{} ou \nomark{} dans la case à droite de ta réponse selon qu'elle était juste ou fausse.
+\end{tcolorbox}
+
+\vspace{3pt}
+\footnotesize
+\textcolor{qcmC}{\textbf{QCM}} \hspace{16pt}
+\starQ{} Question \hspace{16pt}
+\starF{} Automatisme final \hspace{16pt}
+\colorbox{emptyC}{\rule{0pt}{5pt}\hspace{10pt}} pas de question ce jour \hspace{16pt}
+\corrbox{} = \okmark{} ou \nomark{} à tracer par l'élève
+
+\vspace{3pt}
+\renewcommand{\arraystretch}{0.95}
+\setlength{\tabcolsep}{2.5pt}
+\begin{center}
+\begin{tabular}{|J|N||*{7}{O|}}
+\hline
+\multicolumn{2}{|c||}{} &
+\shortstack{\textcolor{qcmC}{A1}\\{\tiny Comparer deux nombres}} &
+\shortstack{\textcolor{qcmC}{A2}\\{\tiny Fractions}} &
+\shortstack{\textcolor{qcmC}{A3}\\{\tiny Puissances}} &
+\shortstack{\textcolor{qcmC}{A4}\\{\tiny Écritures d'un nombre}} &
+\shortstack{\textcolor{questionC}{A22}\\{\tiny Pythagore, Thalès}} &
+\shortstack{\textcolor{finalC}{Algo}\\{\tiny Lire un programme}} &
+\shortstack{\textcolor{finalC}{Translations}\\{\tiny (non numéroté)}} \\
+\hline\hline
+
+\multirow{3}{2.4cm}{\textbf{Jour 1}\\[2pt] Date~: \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qcase{1} & \qcase{2} & \qempty & \qempty & \qempty & \qempty & \qempty \\
+\cline{2-9}
+  & \starQ{} Question
+  & \qempty & \qcase{3} & \qcase{4} & \qempty & \qempty & \qempty & \qempty \\
+\cline{2-9}
+  & \starF{} Autom. final
+  & \qempty & \qcase{5} & \qcase{6} & \qempty & \qempty & \qempty & \qempty \\
+\hline
+
+\multirow{3}{2.4cm}{\textbf{Jour 2}\\[2pt] Date~: \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qempty & \qcase{1} & \qcase{2} & \qempty & \qempty \\
+\cline{2-9}
+  & \starQ{} Question
+  & \qcase{3} & \qempty & \qempty & \qcase{4} & \qempty & \qempty & \qempty \\
+\cline{2-9}
+  & \starF{} Autom. final
+  & \qcase{5} & \qempty & \qempty & \qempty & \qcase{6} & \qempty & \qempty \\
+\hline
+
+\multirow{3}{2.4cm}{\textbf{Jour 3}\\[2pt] Date~: \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qempty & \qempty & \qempty & \qcase{1} & \qcase{2} \\
+\cline{2-9}
+  & \starQ{} Question
+  & \qempty & \qempty & \qempty & \qempty & \qempty & \qcase{3} & \qcase{4} \\
+\cline{2-9}
+  & \starF{} Autom. final
+  & \qcase{5} & \qcase{6} & \qempty & \qempty & \qempty & \qempty & \qempty \\
+\hline
+
+\multirow{3}{2.4cm}{\textbf{Jour 4}\\[2pt] Date~: \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qempty & \qcase{1} & \qempty & \qcase{2} & \qempty \\
+\cline{2-9}
+  & \starQ{} Question
+  & \qcase{3} & \qempty & \qcase{4} & \qempty & \qempty & \qempty & \qempty \\
+\cline{2-9}
+  & \starF{} Autom. final
+  & \qempty & \qempty & \qcase{5} & \qempty & \qcase{6} & \qempty & \qempty \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{4pt}
+\begin{tcolorbox}[
+  boxrule=1.2pt, colframe=bonusC, colback=bonussoftC, arc=3pt,
+  left=10pt, right=10pt, top=3pt, bottom=3pt
+]
+\textcolor{bonusC}{\textbf{\footnotesize Q7 $\cdot$ BONUS $\cdot$ JOUR 4}} \hspace{10pt}
+{\footnotesize\color{inksoftC} A1 --- Comparer $a=6^{53}\times7^{55}$ et $b=42^{54}$ (question de
+dépassement, hors des 6 questions du jour)} \hfill
+\rule{2.6cm}{0.4pt}\hspace{6pt}\corrbox
+\end{tcolorbox}
+
+\vspace{3pt}
+\begin{center}
+  {\footnotesize\color{mutedC} Automatismes Hebdo $\cdot$ 2nde 2026-2027 $\cdot$ Semaine 2}
+\end{center}
+
+\end{document}

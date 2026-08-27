@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semaine 2 · Verso — Tableau des réponses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    color-scheme: light;
+    --paper:        #f2f3ee;
+    --surface:      #ffffff;
+    --ink:          #20232b;
+    --ink-soft:     #565a66;
+    --muted:        #8b8f99;
+    --accent:       #2455b8;
+    --accent-soft:  #e4ecfb;
+    --orange:       #b5511f;
+    --orange-soft:  #f7e6dc;
+    --aqua:         #12805c;
+    --aqua-soft:    #dcf1e9;
+    --red:          #b8342b;
+    --red-soft:     #fbeae8;
+    --line:         #dce1ea;
+    --rule-strong:  #b9c2d1;
+    --shadow:       rgba(32, 35, 43, 0.10);
+    --qcm:      #2455b8;
+    --question: #b5511f;
+    --final:    #9c2b3e;
+    --bonus:      #b8298f;
+    --bonus-soft: #fbe6f3;
+    --empty-stripe: repeating-linear-gradient(135deg, var(--line), var(--line) 3px, transparent 3px, transparent 9px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper:#121319; --surface:#1b1e26; --ink:#f1f2f6; --ink-soft:#c3c7d1; --muted:#8b909c;
+      --accent:#7ea3ee; --accent-soft:#223252; --orange:#e08a5c; --orange-soft:#3a2a1e;
+      --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70; --red-soft:#3a2222;
+      --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
+      --qcm:#7ea3ee; --question:#e08a5c; --final:#e17a70;
+      --bonus:#e88fc9; --bonus-soft:#3a2233;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper:#121319; --surface:#1b1e26; --ink:#f1f2f6; --ink-soft:#c3c7d1; --muted:#8b909c;
+    --accent:#7ea3ee; --accent-soft:#223252; --orange:#e08a5c; --orange-soft:#3a2a1e;
+    --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70; --red-soft:#3a2222;
+    --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
+    --qcm:#7ea3ee; --question:#e08a5c; --final:#e17a70;
+    --bonus:#e88fc9; --bonus-soft:#3a2233;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 60px;
+  }
+
+  h1 { font-family: "Fraunces", Georgia, serif; text-wrap: balance; }
+
+  .site-header { width: 100%; max-width: 980px; margin-bottom: 18px; }
+  .brand-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .brand-row h1 { margin: 0 0 4px; font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem); font-weight: 600; color: var(--ink); }
+  .brand-row .subtitle { margin: 0; color: var(--ink-soft); font-size: 0.96rem; }
+
+  .back-link {
+    align-self: center;
+    font-family: "Public Sans", sans-serif; font-size: 0.85rem; font-weight: 600;
+    color: var(--ink); text-decoration: none;
+    border: 1.5px solid var(--rule-strong); border-radius: 999px;
+    padding: 7px 16px; white-space: nowrap;
+  }
+  .back-link:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+  .sheet {
+    width: 100%; max-width: 980px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: 0 1px 3px var(--shadow), 0 10px 30px -18px var(--shadow);
+    padding: 28px 30px 32px;
+  }
+
+  .identity {
+    display: flex; gap: 28px; flex-wrap: wrap;
+    padding-bottom: 16px; margin-bottom: 18px; border-bottom: 1.5px solid var(--rule-strong);
+    font-family: "Space Mono", monospace; font-size: 0.85rem; color: var(--ink-soft);
+  }
+  .identity .field { display: flex; align-items: baseline; gap: 8px; }
+  .identity .field .line { display: inline-block; width: 190px; border-bottom: 1px solid var(--rule-strong); height: 1.1em; }
+
+  .instructions {
+    margin: 0 0 18px; padding: 10px 14px;
+    border-left: 3px solid var(--rule-strong);
+    color: var(--ink-soft); font-size: 0.88rem; line-height: 1.55;
+    background: color-mix(in srgb, var(--surface) 60%, var(--paper));
+  }
+  .instructions strong { color: var(--ink); font-weight: 600; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-bottom: 18px; font-size: 0.8rem; color: var(--ink-soft); }
+  .legend .item { display: flex; align-items: center; gap: 6px; }
+  .legend .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .legend .dot.qcm { background: var(--qcm); }
+  .legend .star { font-size: 0.85rem; line-height: 1; }
+  .legend .star.star-green { color: var(--aqua); }
+  .legend .star.star-orange { color: var(--orange); }
+  .legend .swatch-empty {
+    width: 16px; height: 12px; border-radius: 3px; border: 1px solid var(--rule-strong);
+    background-image: var(--empty-stripe);
+  }
+  .legend .marks { font-family: "Space Mono", monospace; }
+  .legend .ok { color: var(--aqua); font-weight: 700; }
+  .legend .no { color: var(--red); font-weight: 700; }
+
+  .table-scroll { overflow-x: auto; margin-bottom: 22px; }
+
+  table.answers {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 760px;
+    font-size: 0.86rem;
+  }
+  table.answers th, table.answers td {
+    border: 1px solid var(--line);
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+  }
+  thead th {
+    font-family: "Space Mono", monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 8px 4px;
+    background: var(--paper);
+    color: var(--ink-soft);
+  }
+  thead th.obj-nombres { color: var(--accent); }
+  thead th.obj-geometrie { color: var(--aqua); }
+  thead th.obj-complement { color: var(--orange); }
+  thead th .full { display: block; font-family: "Public Sans", sans-serif; font-weight: 500; font-size: 0.62rem; letter-spacing: 0; margin-top: 2px; color: var(--muted); }
+  thead th.corner { background: var(--surface); border: none; }
+
+  td.jour-cell {
+    font-family: "Space Mono", monospace; font-weight: 700; font-size: 0.78rem;
+    color: var(--ink); background: var(--paper);
+    padding: 10px 10px; white-space: nowrap; text-align: left; vertical-align: middle;
+  }
+  td.jour-cell .jour-inner { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
+  td.jour-cell .jour-date {
+    font-family: "Public Sans", sans-serif; font-weight: 500; font-size: 0.72rem; color: var(--ink-soft);
+    display: flex; align-items: baseline; gap: 5px; white-space: nowrap;
+  }
+  td.jour-cell .jour-date .line { display: inline-block; width: 66px; border-bottom: 1px solid var(--rule-strong); height: 1em; }
+  td.niveau-cell {
+    font-family: "Public Sans", sans-serif; font-size: 0.74rem; font-weight: 600;
+    padding: 6px 8px; text-align: left; white-space: nowrap; color: var(--ink-soft);
+    border-left: 3px solid var(--rule-strong);
+  }
+  td.niveau-cell.qcm { border-left-color: var(--qcm); }
+  td.niveau-cell.q { border-left-color: var(--aqua); }
+  td.niveau-cell.f { border-left-color: var(--orange); }
+  td.niveau-cell .star { font-size: 1rem; line-height: 1; }
+  td.niveau-cell .star.star-green { color: var(--aqua); }
+  td.niveau-cell .star.star-orange { color: var(--orange); }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  td.cell { min-width: 78px; height: 46px; padding: 3px; position: relative; }
+  td.cell.empty { background-image: var(--empty-stripe); }
+
+  .qnum {
+    position: absolute; top: 3px; left: 5px;
+    font-family: "Space Mono", monospace; font-size: 0.62rem; font-weight: 700;
+    color: var(--muted);
+  }
+
+  .cell-inner { display: flex; align-items: center; justify-content: center; gap: 5px; height: 100%; }
+  .ans-input {
+    width: 44px; border: none; border-bottom: 1.3px solid var(--rule-strong);
+    background: transparent; text-align: center;
+    font-family: "Space Mono", monospace; font-size: 0.86rem; color: var(--ink);
+    padding: 2px 0;
+  }
+  .ans-input:focus { outline: none; border-bottom-color: var(--accent); }
+
+  .marks-toggle { display: flex; flex-direction: column; gap: 2px; }
+  .mark-btn {
+    width: 15px; height: 15px; border-radius: 50%; border: 1.3px solid var(--rule-strong);
+    background: var(--surface); color: transparent; font-size: 0.62rem; line-height: 1;
+    cursor: pointer; font-family: "Space Mono", monospace; padding: 0;
+  }
+  .mark-btn.ok.active { background: var(--aqua-soft); border-color: var(--aqua); color: var(--aqua); }
+  .mark-btn.no.active { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+
+  .bonus-box {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    margin-top: 4px; padding: 14px 18px;
+    border: 1.5px dashed var(--bonus); border-radius: 10px;
+    background: var(--bonus-soft);
+  }
+  .bonus-box .label {
+    font-family: "Space Mono", monospace; font-size: 0.74rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.03em; color: var(--bonus);
+  }
+  .bonus-box .desc { flex: 1; min-width: 200px; font-size: 0.85rem; color: var(--ink-soft); }
+  .bonus-box .desc sup { font-size: 0.75em; }
+  .bonus-box .cell-inner { justify-content: flex-start; }
+
+  footer.page-footer { margin-top: 22px; font-size: 0.78rem; color: var(--muted); text-align: center; }
+
+  @media print {
+    @page { size: A4 landscape; margin: 10mm; }
+    body { padding: 0; background: #fff; background-image: none; }
+    .back-link { display: none; }
+    .sheet { box-shadow: none; border: none; max-width: none; padding: 0; }
+    .site-header { max-width: none; }
+  }
+
+  @media (max-width: 620px) {
+    .sheet { padding: 20px 16px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="brand-row">
+    <div>
+      <h1>Automatismes — Semaine 2</h1>
+      <p class="subtitle">Feuille élève · verso — tableau de consignation des réponses (J1 à J4)</p>
+    </div>
+    <a class="back-link" href="S02-sommaire.html">&larr; Sommaire</a>
+  </div>
+</div>
+
+<div class="sheet">
+  <div class="identity">
+    <div class="field">Nom : <span class="line"></span></div>
+    <div class="field">Prénom : <span class="line"></span></div>
+    <div class="field">Classe : <span class="line"></span></div>
+  </div>
+
+  <p class="instructions">
+    <strong>Comment remplir ce tableau :</strong> chaque jour, complète uniquement les cases actives de la
+    colonne correspondant à l'automatisme travaillé (les cases grisées/hachurées ne correspondent à aucune
+    question ce jour-là). Après la correction collective, entoure ou coche <span class="marks">✓</span> si ta
+    réponse était juste, <span class="marks">✗</span> si elle était fausse.
+  </p>
+
+  <div class="legend">
+    <span class="item"><span class="dot qcm"></span> QCM</span>
+    <span class="item"><span class="star star-green">★</span> Question</span>
+    <span class="item"><span class="star star-orange">★</span> Automatisme final</span>
+    <span class="item"><span class="swatch-empty"></span> pas de question ce jour</span>
+    <span class="item marks"><span class="ok">✓</span> juste · <span class="no">✗</span> faux</span>
+  </div>
+
+  <div class="table-scroll">
+    <table class="answers" id="answers-table">
+      <thead>
+        <tr id="header-row">
+          <th class="corner" colspan="2"></th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+
+  <div class="bonus-box">
+    <span class="label">Q7 · Bonus · Jour 4</span>
+    <span class="desc">A1 — Comparer a&nbsp;=&nbsp;6<sup>53</sup>&nbsp;×&nbsp;7<sup>55</sup> et b&nbsp;=&nbsp;42<sup>54</sup> (question de dépassement, hors des 6 questions du jour)</span>
+    <div class="cell-inner">
+      <input type="text" class="ans-input" maxlength="12" aria-label="Réponse bonus">
+      <div class="marks-toggle">
+        <button type="button" class="mark-btn ok" data-mark="ok">✓</button>
+        <button type="button" class="mark-btn no" data-mark="no">✗</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="page-footer">Automatismes Hebdo · 2nde 2026-2027 · Semaine 2</footer>
+
+<script>
+const OBJECTIFS = [
+  { code: "A1",  label: "Comparer deux nombres",   theme: "obj-nombres" },
+  { code: "A2",  label: "Fractions",                theme: "obj-nombres" },
+  { code: "A3",  label: "Puissances",                theme: "obj-nombres" },
+  { code: "A4",  label: "Écritures d'un nombre",     theme: "obj-nombres" },
+  { code: "A22", label: "Pythagore, Thalès",         theme: "obj-geometrie" },
+  { code: "Algo", label: "Lire un programme",        theme: "obj-complement" },
+  { code: "Translations", label: "Translations",     theme: "obj-complement" }
+];
+
+// L'ordre des codes dans "active" est l'ordre réel des questions projetées ce
+// jour-là (voir Semaine 01/S02-J*-projection-v2.html) : il fixe la numérotation
+// 1-6 affichée dans les cases.
+const DAYS = [
+  { day: "Jour 1", rows: [
+      { level: "qcm", label: "QCM",              active: ["A1", "A2"] },
+      { level: "q",   label: "Question",          active: ["A2", "A3"] },
+      { level: "f",   label: "Automatisme final",  active: ["A2", "A3"] }
+  ]},
+  { day: "Jour 2", rows: [
+      { level: "qcm", label: "QCM",              active: ["A4", "A22"] },
+      { level: "q",   label: "Question",          active: ["A1", "A4"] },
+      { level: "f",   label: "Automatisme final",  active: ["A1", "A22"] }
+  ]},
+  { day: "Jour 3", rows: [
+      { level: "qcm", label: "QCM",              active: ["Algo", "Translations"] },
+      { level: "q",   label: "Question",          active: ["Algo", "Translations"] },
+      { level: "f",   label: "Automatisme final",  active: ["A1", "A2"] }
+  ]},
+  { day: "Jour 4", rows: [
+      { level: "qcm", label: "QCM",              active: ["A4", "Algo"] },
+      { level: "q",   label: "Question",          active: ["A1", "A3"] },
+      { level: "f",   label: "Automatisme final",  active: ["A3", "A22"] }
+  ]}
+];
+
+const LEVEL_BASE = { qcm: 1, q: 3, f: 5 };
+const LEVEL_MARKUP = {
+  qcm: "QCM",
+  q:   "<span class='star star-green' aria-hidden='true'>&#9733;</span><span class='sr-only'>Question</span>",
+  f:   "<span class='star star-orange' aria-hidden='true'>&#9733;</span><span class='sr-only'>Automatisme final</span>"
+};
+
+const headerRow = document.getElementById("header-row");
+OBJECTIFS.forEach(obj => {
+  const th = document.createElement("th");
+  th.className = obj.theme;
+  th.innerHTML = obj.code + "<span class='full'>" + obj.label + "</span>";
+  headerRow.appendChild(th);
+});
+
+const tbody = document.getElementById("table-body");
+DAYS.forEach(dayBlock => {
+  dayBlock.rows.forEach((row, i) => {
+    const tr = document.createElement("tr");
+
+    if (i === 0) {
+      const tdJour = document.createElement("td");
+      tdJour.className = "jour-cell";
+      tdJour.rowSpan = dayBlock.rows.length;
+      tdJour.innerHTML =
+        "<div class='jour-inner'>" +
+          "<span>" + dayBlock.day + "</span>" +
+          "<span class='jour-date'>Date : <span class='line'></span></span>" +
+        "</div>";
+      tr.appendChild(tdJour);
+    }
+
+    const tdNiveau = document.createElement("td");
+    tdNiveau.className = "niveau-cell " + row.level;
+    tdNiveau.innerHTML = LEVEL_MARKUP[row.level];
+    tr.appendChild(tdNiveau);
+
+    OBJECTIFS.forEach(obj => {
+      const td = document.createElement("td");
+      const idx = row.active.indexOf(obj.code);
+      if (idx !== -1) {
+        td.className = "cell";
+        const qnum = document.createElement("span");
+        qnum.className = "qnum";
+        qnum.textContent = LEVEL_BASE[row.level] + idx;
+        td.appendChild(qnum);
+        const inner = document.createElement("div");
+        inner.className = "cell-inner";
+        const input = document.createElement("input");
+        input.type = "text";
+        input.maxLength = 12;
+        input.className = "ans-input";
+        input.setAttribute("aria-label", dayBlock.day + " " + row.label + " " + obj.code);
+        const marks = document.createElement("div");
+        marks.className = "marks-toggle";
+        marks.innerHTML =
+          "<button type='button' class='mark-btn ok' data-mark='ok'>&#10003;</button>" +
+          "<button type='button' class='mark-btn no' data-mark='no'>&#10007;</button>";
+        inner.appendChild(input);
+        inner.appendChild(marks);
+        td.appendChild(inner);
+      } else {
+        td.className = "cell empty";
+        td.setAttribute("aria-hidden", "true");
+      }
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+});
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".mark-btn");
+  if (!btn) return;
+  const group = btn.parentElement;
+  const wasActive = btn.classList.contains("active");
+  group.querySelectorAll(".mark-btn").forEach(b => b.classList.remove("active"));
+  if (!wasActive) btn.classList.add("active");
+});
+</script>
+
+</body>
+</html>
