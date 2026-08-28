@@ -240,22 +240,10 @@ li:last-child {
     margin-bottom: 20px;
 }
 
-/* NumWorks intègre un grand écran miroir à droite de la calculatrice (33%/66%
-   dans leur iframe) : on n'affiche que la portion "calculatrice" en recadrant
-   un iframe volontairement 3x plus large que le cadre visible. */
+/* Le script Numworks a besoin de ces dimensions exactes pour s'afficher */
 #simulator {
-    width: 123px;
+    width: 100%;
     height: 640px;
     margin: 0 auto;
-    overflow: hidden;
-    position: relative;
-}
-
-#simulator iframe {
-    width: 369px;
-    height: 640px;
     border: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
