@@ -13,6 +13,7 @@
 \usepackage[most]{tcolorbox}
 \usepackage{ragged2e}
 \usepackage{amssymb}
+\usepackage{tikz}
 
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
@@ -29,36 +30,39 @@
 \definecolor{bonusC}{HTML}{B8298F}
 \definecolor{bonussoftC}{HTML}{FBE6F3}
 \definecolor{emptyC}{HTML}{E7E9EE}
+\definecolor{redC}{HTML}{B8342B}
 
 \newcommand{\starQ}{\textcolor{questionC}{$\bigstar$}}
 \newcommand{\starF}{\textcolor{finalC}{$\bigstar$}}
+\newcommand{\starFF}{\textcolor{finalC}{$\bigstar\bigstar$}}
 \newcommand{\okmark}{\ding{51}}
 \newcommand{\nomark}{\ding{55}}
 % Case à cocher vierge (l'élève y trace lui-même un crochet ou une croix).
 \newcommand{\corrbox}{\fboxsep=0pt\fbox{\rule{0pt}{8pt}\rule{8pt}{0pt}}}
 
-% Case active : numéro de question tout en haut, espace blanc pour l'écriture
-% manuscrite, puis ligne de réponse + case à cocher vierge à sa droite.
-% (boîte autonome : évite toute interférence entre le \\ interne et la
-% syntaxe de ligne/colonne du tableau englobant)
+% Case active : numéro de question entouré en haut à gauche de la case,
+% le reste de la case restant vide pour l'écriture manuscrite. (Après
+% correction collective, l'élève entoure ou coche ce numéro pour indiquer
+% juste/faux -- voir légende.)
 \newcommand{\qcase}[1]{%
-  \begin{minipage}[t]{2.6cm}\centering
-    {\tiny\textcolor{mutedC}{#1}}\\[6pt]
-    \rule{1.6cm}{0.4pt}\hspace{4pt}\corrbox
-  \end{minipage}%
+  \begin{tikzpicture}[baseline=0pt]
+    \useasboundingbox (0,0) rectangle (2.95cm,1.0cm);
+    \node[anchor=north west, circle, draw=mutedC, line width=0.4pt,
+          inner sep=1pt, minimum size=1.1em, font=\tiny, text=mutedC]
+      at (0.08cm,0.92cm) {#1};
+  \end{tikzpicture}%
 }
 % Case grisée : aucune question ce jour-là pour cet automatisme.
 \newcommand{\qempty}{\cellcolor{emptyC}}
 
-\newcolumntype{J}{>{\RaggedRight\arraybackslash}m{2.5cm}}
-\newcolumntype{N}{>{\RaggedRight\arraybackslash}m{2.1cm}}
-\newcolumntype{O}{>{\centering\arraybackslash}m{2.9cm}}
+\newcolumntype{J}{>{\RaggedRight\arraybackslash}m{1.7cm}}
+\newcolumntype{N}{>{\centering\arraybackslash}m{1.05cm}}
+\newcolumntype{O}{>{\centering\arraybackslash}m{3.15cm}}
 
 \begin{document}
 
 \begin{center}
-  {\large\bfseries Automatismes --- Semaine 2}\\[1pt]
-  {\small\color{inksoftC} Feuille élève $\cdot$ verso --- tableau de consignation des réponses (J1 à J4)}
+  {\large\bfseries Automatismes --- Semaine 2}
 \end{center}
 
 \vspace{4pt}
@@ -66,25 +70,12 @@
 Nom~: \hrulefill{} \hspace{14pt} Prénom~: \hrulefill{} \hspace{14pt} Classe~: \hrulefill
 
 \vspace{4pt}
-\begin{tcolorbox}[
-  boxrule=0pt, sharp corners, colback=white,
-  borderline west={2pt}{0pt}{rulestrongC},
-  left=10pt, right=8pt, top=3pt, bottom=3pt,
-  fontupper=\footnotesize\color{inksoftC}
-]
-\textbf{\color{inkC}Comment remplir ce tableau~:} chaque jour, complète uniquement les cases
-actives de la colonne correspondant à l'automatisme travaillé (les cases grisées ne
-correspondent à aucune question ce jour-là). Après la correction collective, trace
-\okmark{} ou \nomark{} dans la case à droite de ta réponse selon qu'elle était juste ou fausse.
-\end{tcolorbox}
-
-\vspace{3pt}
 \footnotesize
 \textcolor{qcmC}{\textbf{QCM}} \hspace{16pt}
-\starQ{} Question \hspace{16pt}
-\starF{} Automatisme final \hspace{16pt}
+\starQ{} = Question \hspace{16pt}
+\starFF{} = Automatisme final \hspace{16pt}
 \colorbox{emptyC}{\rule{0pt}{5pt}\hspace{10pt}} pas de question ce jour \hspace{16pt}
-\corrbox{} = \okmark{} ou \nomark{} à tracer par l'élève
+\textcolor{questionC}{\okmark} juste \textperiodcentered{} \textcolor{redC}{\nomark} faux
 
 \vspace{3pt}
 \renewcommand{\arraystretch}{0.95}
@@ -102,47 +93,47 @@ correspondent à aucune question ce jour-là). Après la correction collective, 
 \shortstack{\textcolor{finalC}{Translations}\\{\tiny (non numéroté)}} \\
 \hline\hline
 
-\multirow{3}{2.4cm}{\textbf{Jour 1}\\[2pt] Date~: \hrulefill}
+\multirow{3}{1.6cm}{\textbf{Jour 1}\\[-1pt] Date~:\\[-1pt] \hrulefill}
   & \textcolor{qcmC}{\textbf{QCM}}
   & \qcase{1} & \qcase{2} & \qempty & \qempty & \qempty & \qempty & \qempty \\
 \cline{2-9}
-  & \starQ{} Question
+  & \starQ
   & \qempty & \qcase{3} & \qcase{4} & \qempty & \qempty & \qempty & \qempty \\
 \cline{2-9}
-  & \starF{} Autom. final
+  & \starFF
   & \qempty & \qcase{5} & \qcase{6} & \qempty & \qempty & \qempty & \qempty \\
 \hline
 
-\multirow{3}{2.4cm}{\textbf{Jour 2}\\[2pt] Date~: \hrulefill}
+\multirow{3}{1.6cm}{\textbf{Jour 2}\\[-1pt] Date~:\\[-1pt] \hrulefill}
   & \textcolor{qcmC}{\textbf{QCM}}
   & \qempty & \qempty & \qempty & \qcase{1} & \qcase{2} & \qempty & \qempty \\
 \cline{2-9}
-  & \starQ{} Question
+  & \starQ
   & \qcase{3} & \qempty & \qempty & \qcase{4} & \qempty & \qempty & \qempty \\
 \cline{2-9}
-  & \starF{} Autom. final
+  & \starFF
   & \qcase{5} & \qempty & \qempty & \qempty & \qcase{6} & \qempty & \qempty \\
 \hline
 
-\multirow{3}{2.4cm}{\textbf{Jour 3}\\[2pt] Date~: \hrulefill}
+\multirow{3}{1.6cm}{\textbf{Jour 3}\\[-1pt] Date~:\\[-1pt] \hrulefill}
   & \textcolor{qcmC}{\textbf{QCM}}
   & \qempty & \qempty & \qempty & \qempty & \qempty & \qcase{1} & \qcase{2} \\
 \cline{2-9}
-  & \starQ{} Question
+  & \starQ
   & \qempty & \qempty & \qempty & \qempty & \qempty & \qcase{3} & \qcase{4} \\
 \cline{2-9}
-  & \starF{} Autom. final
+  & \starFF
   & \qcase{5} & \qcase{6} & \qempty & \qempty & \qempty & \qempty & \qempty \\
 \hline
 
-\multirow{3}{2.4cm}{\textbf{Jour 4}\\[2pt] Date~: \hrulefill}
+\multirow{3}{1.6cm}{\textbf{Jour 4}\\[-1pt] Date~:\\[-1pt] \hrulefill}
   & \textcolor{qcmC}{\textbf{QCM}}
   & \qempty & \qempty & \qempty & \qcase{1} & \qempty & \qcase{2} & \qempty \\
 \cline{2-9}
-  & \starQ{} Question
+  & \starQ
   & \qcase{3} & \qempty & \qcase{4} & \qempty & \qempty & \qempty & \qempty \\
 \cline{2-9}
-  & \starF{} Autom. final
+  & \starFF
   & \qempty & \qempty & \qcase{5} & \qempty & \qcase{6} & \qempty & \qempty \\
 \hline
 \end{tabular}
@@ -158,10 +149,5 @@ correspondent à aucune question ce jour-là). Après la correction collective, 
 dépassement, hors des 6 questions du jour)} \hfill
 \rule{2.6cm}{0.4pt}\hspace{6pt}\corrbox
 \end{tcolorbox}
-
-\vspace{3pt}
-\begin{center}
-  {\footnotesize\color{mutedC} Automatismes Hebdo $\cdot$ 2nde 2026-2027 $\cdot$ Semaine 2}
-\end{center}
 
 \end{document}

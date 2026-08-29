@@ -5,10 +5,10 @@
   (function () {
     try {
       var t = localStorage.getItem("automatismes-theme");
-      if (t !== "light" && t !== "dark") t = "dark";
+      if (t !== "light" && t !== "dark") t = "light";
       document.documentElement.setAttribute("data-theme", t);
     } catch (e) {
-      document.documentElement.setAttribute("data-theme", "dark");
+      document.documentElement.setAttribute("data-theme", "light");
     }
   })();
 </script>
@@ -95,8 +95,7 @@
     color: var(--accent); text-transform: uppercase; letter-spacing: .04em;
   }
   .day-card .go { font-size: 0.85rem; color: var(--muted); }
-  .day-card h2 { margin: 4px 0 6px; font-size: 1.15rem; font-weight: 600; font-family: "Public Sans", sans-serif; }
-  .day-card p { margin: 0; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.5; }
+  .day-card .day-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
 
   .note {
     margin-top: 28px; padding: 14px 18px; border: 1.5px dashed var(--rule-strong);
@@ -128,7 +127,10 @@
         <h1>Semaine 3 — Automatismes</h1>
         <p>Feuille de route de la semaine</p>
       </div>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
+      <div style="display: flex; gap: 8px;">
+        <a class="theme-toggle" href="../../index.html" aria-label="Accueil du site" title="Accueil du site">🏠</a>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
+      </div>
     </div>
     <div class="themes">
       <span class="theme-pill geo">Vecteurs · Égalité, somme</span>
@@ -145,26 +147,42 @@
   <div class="days">
     <a class="day-card" href="S03-J1-projection.html">
       <div class="row"><span class="jour">Jour 1</span><span class="go">Ouvrir →</span></div>
-      <h2>Égalité de vecteurs, distributivité simple</h2>
-      <p>QCM conditions d'égalité de deux vecteurs et développement simple k(a+b) · retour (sans les choix) sur la comparaison à numérateur égal, parallélogramme et vecteurs égaux · comparaison de fractions et double distributivité.</p>
+      <div class="day-pills">
+        <span class="theme-pill geo">Vecteurs · Égalité</span>
+        <span class="theme-pill">Calcul littéral · Distributivité</span>
+        <span class="theme-pill">A1 · Comparer deux nombres</span>
+      </div>
     </a>
 
     <a class="day-card" href="S03-J2-projection.html">
       <div class="row"><span class="jour">Jour 2</span><span class="go">Ouvrir →</span></div>
-      <h2>Vecteur opposé, premier programme d'expression</h2>
-      <p>QCM sur un vecteur et son opposé, et lecture d'une fonction Python (2x+3) · réciproque du parallélogramme, développement de (x+3)(x+2) · première somme de vecteurs bout à bout, aire d'un rectangle en fonction de x.</p>
+      <div class="day-pills">
+        <span class="theme-pill geo">Vecteurs · Égalité</span>
+        <span class="theme-pill complement">Algo · Expressions littérales</span>
+        <span class="theme-pill">Calcul littéral · Distributivité</span>
+        <span class="theme-pill geo">Vecteurs · Somme</span>
+      </div>
     </a>
 
     <a class="day-card" href="S03-J3-projection.html">
       <div class="row"><span class="jour">Jour 3</span><span class="go">Ouvrir →</span></div>
-      <h2>Norme d'un vecteur, distributivité avec facteur négatif</h2>
-      <p>QCM norme d'un vecteur et développement -2(x-4) · retour sur Pythagore (racine non entière), factorisation avec facteur commun · retour sur la comparaison de fractions, somme de deux vecteurs différents.</p>
+      <div class="day-pills">
+        <span class="theme-pill geo">Vecteurs · Définition</span>
+        <span class="theme-pill">Calcul littéral · Distributivité</span>
+        <span class="theme-pill geo">A22 · Pythagore, Thalès</span>
+        <span class="theme-pill">A2 · Fractions</span>
+        <span class="theme-pill geo">Vecteurs · Somme</span>
+      </div>
     </a>
 
     <a class="day-card" href="S03-J4-projection.html">
       <div class="row"><span class="jour">Jour 4</span><span class="go">Ouvrir →</span></div>
-      <h2>Révision de la semaine + programmes d'expressions</h2>
-      <p>QCM condition nécessaire de l'égalité de vecteurs et lecture de fonction x²-1 · développement à trois termes, fonction périmètre · retour sur les puissances de 10, fonction reliant algo et distributivité 3(x+2).</p>
+      <div class="day-pills">
+        <span class="theme-pill geo">Vecteurs · Égalité</span>
+        <span class="theme-pill complement">Algo · Expressions littérales</span>
+        <span class="theme-pill">Calcul littéral · Distributivité</span>
+        <span class="theme-pill">A3 · Puissances</span>
+      </div>
     </a>
   </div>
 

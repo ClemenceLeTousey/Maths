@@ -5,10 +5,10 @@
   (function () {
     try {
       var t = localStorage.getItem("automatismes-theme");
-      if (t !== "light" && t !== "dark") t = "dark";
+      if (t !== "light" && t !== "dark") t = "light";
       document.documentElement.setAttribute("data-theme", t);
     } catch (e) {
-      document.documentElement.setAttribute("data-theme", "dark");
+      document.documentElement.setAttribute("data-theme", "light");
     }
   })();
 </script>
@@ -97,6 +97,7 @@
     color: var(--accent); text-transform: uppercase; letter-spacing: .04em;
   }
   .day-card .go { font-size: 0.85rem; color: var(--muted); }
+  .day-card .day-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
   .day-card h2 { margin: 4px 0 6px; font-size: 1.15rem; font-weight: 600; font-family: "Public Sans", sans-serif; }
   .day-card p { margin: 0; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.5; }
 
@@ -128,8 +129,12 @@
       <div>
         <h1>Semaine 2 — Automatismes</h1>
         <p>Feuille de route de la semaine</p>
+        <a class="prev-link" href="S02-verso-tableau.pdf" target="_blank" rel="noopener">✏️ Tableau élève (PDF)</a>
       </div>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
+      <div style="display: flex; gap: 8px;">
+        <a class="theme-toggle" href="../../index.html" aria-label="Accueil du site" title="Accueil du site">🏠</a>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
+      </div>
     </div>
     <div class="themes">
       <span class="theme-pill">A1 · Comparer deux nombres</span>
@@ -146,39 +151,42 @@
   <div class="days">
     <a class="day-card" href="S02-J1-projection-v2.html">
       <div class="row"><span class="jour">Jour 1</span><span class="go">Ouvrir →</span></div>
-      <h2>Fractions égales, réduction au même dénominateur, puissances de 10</h2>
-      <p>QCM égalité de fractions et comparaison à numérateur égal · réduire au même dénominateur, calcul de puissances · problème de fraction d'une quantité, encadrement par puissances de 10.</p>
+      <div class="day-pills">
+        <span class="theme-pill">A1 · Comparer deux nombres</span>
+        <span class="theme-pill">A2 · Fractions</span>
+        <span class="theme-pill">A3 · Puissances</span>
+      </div>
     </a>
 
     <a class="day-card" href="S02-J2-projection-v2.html">
       <div class="row"><span class="jour">Jour 2</span><span class="go">Ouvrir →</span></div>
-      <h2>Pythagore (racines non entières), écriture scientifique</h2>
-      <p>QCM Pythagore avec racine carrée non entière et écriture décimale d'une notation scientifique · comparaison de fractions par différence, notation scientifique · double Pythagore emboîté, comparaison par quotient.</p>
+      <div class="day-pills">
+        <span class="theme-pill">A4 · Écritures d'un nombre</span>
+        <span class="theme-pill geo">A22 · Pythagore, Thalès</span>
+        <span class="theme-pill">A1 · Comparer deux nombres</span>
+      </div>
     </a>
 
     <a class="day-card" href="S02-J3-projection-v2.html">
       <div class="row"><span class="jour">Jour 3</span><span class="go">Ouvrir →</span></div>
-      <h2>Lire un programme (Python/Scratch), translations</h2>
-      <p>QCM programme Python/Scratch et image d'un point par une translation de vecteur · variante du programme, translation appliquée à un autre point · comparaison de fractions (méthode libre).</p>
+      <div class="day-pills">
+        <span class="theme-pill complement">Algo · Lire un programme</span>
+        <span class="theme-pill complement">Translations</span>
+        <span class="theme-pill">A1 · Comparer deux nombres</span>
+        <span class="theme-pill">A2 · Fractions</span>
+      </div>
     </a>
 
     <a class="day-card" href="S02-J4-projection-v2.html">
       <div class="row"><span class="jour">Jour 4</span><span class="go">Ouvrir →</span></div>
-      <h2>Bloc Scratch personnalisé → Python, révision de la semaine</h2>
-      <p>QCM script Scratch complet à faire correspondre à une définition Python et écriture décimale d'une somme de fractions · révision : comparaison, puissances, Pythagore exact (+ question bonus de dépassement).</p>
+      <div class="day-pills">
+        <span class="theme-pill">A4 · Écritures d'un nombre</span>
+        <span class="theme-pill complement">Algo · Bloc et fonction</span>
+        <span class="theme-pill">A1 · Comparer deux nombres</span>
+        <span class="theme-pill">A3 · Puissances</span>
+        <span class="theme-pill geo">A22 · Pythagore, Thalès</span>
+      </div>
     </a>
-  </div>
-
-  <div class="days" style="margin-top: 14px;">
-    <a class="day-card" href="S02-verso-tableau.html">
-      <div class="row"><span class="jour">Feuille élève · verso</span><span class="go">Ouvrir →</span></div>
-      <h2>Tableau de consignation des réponses (J1–J4)</h2>
-      <p>Une ligne par jour et par niveau (QCM, question, automatisme final), une colonne par automatisme ; cases grisées quand l'automatisme n'est pas travaillé ce jour-là.</p>
-    </a>
-  </div>
-
-  <div class="pending">
-    <strong>À venir :</strong> feuille élève recto (liste des automatismes + exercice objectif) — pas encore créée pour cette semaine.
   </div>
 
   <footer>Automatismes Hebdo · 2nde 2026-2027</footer>

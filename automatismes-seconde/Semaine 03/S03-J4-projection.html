@@ -138,13 +138,10 @@
   .page-meta .jour { font-size: 0.72rem; margin-top: 4px; }
 
   .aim {
-    margin: 16px 0 22px;
-    padding: 10px 14px;
-    border-left: 3px solid var(--rule-strong);
+    margin: 0 0 14px;
     color: var(--ink-soft);
     font-size: 0.92rem;
     font-style: italic;
-    background: color-mix(in srgb, var(--surface) 60%, var(--paper));
   }
   .aim strong { font-style: normal; color: var(--ink); font-weight: 600; }
 
@@ -260,7 +257,7 @@
       <p class="subtitle">Jour 4 · projection en classe</p>
     </div>
     <div class="header-actions">
-    <a class="theme-toggle" href="S03-sommaire.html" aria-label="Sommaire" title="Sommaire">🏠</a>
+    <a class="theme-toggle" href="S03-sommaire.html" aria-label="Sommaire" title="Sommaire">📋</a>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
     <a class="back-link" href="S03-J3-projection.html">J-1</a>
     <span class="back-link" aria-hidden="true" style="visibility: hidden;">J+1</span>
@@ -277,12 +274,12 @@
         <div class="jour">Semaine 3 · Jour 4</div>
       </div>
     </div>
-    <div class="aim"><strong>Objectif visé :</strong> <span id="aim-text"></span></div>
     <p class="question" id="qtext"></p>
     <div class="diagram" id="diagram"></div>
     <div class="options" id="options"></div>
     <div class="answer-zone">
       <div class="answer-box" id="answer-box">
+        <div class="aim"><strong>Objectif visé :</strong> <span id="aim-text"></span></div>
         <div class="content" id="answer-content"></div>
       </div>
       <button class="reveal-btn" id="reveal-btn">Voir la réponse</button>
@@ -305,14 +302,14 @@ const QUESTIONS = [
     theme: "obj-geometrie",
     objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
     aim: "Distinguer une condition n\u00e9cessaire (mais non suffisante) de l'\u00e9galit\u00e9 de deux vecteurs.",
-    question: "Vrai ou faux : si $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{CD}}$, alors les longueurs $\\text{AB}$ et $\\text{CD}$ sont \u00e9gales.",
+    question: "Vrai ou faux : si $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{DC}}$, alors les longueurs $\\text{AB}$ et $\\text{DC}$ sont \u00e9gales.",
     options: [
       { letter:"A", text:"Vrai", correct:true },
       { letter:"B", text:"Faux", correct:false },
       { letter:"C", text:"\u00c7a d\u00e9pend des points", correct:false },
       { letter:"D", text:"Impossible \u00e0 savoir", correct:false }
     ],
-    explanation: "Deux vecteurs \u00e9gaux ont la m\u00eame longueur (entre autres conditions) : $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{CD}}$ entra\u00eene donc $\\text{AB}=\\text{CD}$. Attention, la r\u00e9ciproque est fausse : avoir la m\u00eame longueur ne suffit pas \u00e0 rendre deux vecteurs \u00e9gaux (il faut aussi la m\u00eame direction et le m\u00eame sens)."
+    explanation: "Deux vecteurs \u00e9gaux ont la m\u00eame longueur (entre autres conditions) : $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{DC}}$ entra\u00eene donc $\\text{AB}=\\text{DC}$. Attention, la r\u00e9ciproque est fausse : avoir la m\u00eame longueur ne suffit pas \u00e0 rendre deux vecteurs \u00e9gaux (il faut aussi la m\u00eame direction et le m\u00eame sens)."
   },
   {
     theme: "obj-complement",
