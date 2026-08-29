@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("automatismes-theme");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Semaine 2 · Jour 2 — Automatismes</title>
@@ -219,6 +227,17 @@
     .page::before { left: 22px; }
     .options { grid-template-columns: 1fr; }
   }
+  .header-actions { display: flex; align-items: center; gap: 10px; }
+  .theme-toggle {
+    flex: none; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface); color: var(--ink);
+    font-size: 1.05rem; cursor: pointer; line-height: 1; padding: 0; text-decoration: none;
+  }
+  .theme-toggle:hover { background: var(--accent-soft); border-color: var(--accent); }
+
+  .katex .mord:not(.mathnormal):not(.mathit):not(.mathbf):not(.mathcal):not(.mathtt) {
+    font-family: "Public Sans", system-ui, sans-serif;
+  }
 </style>
 </head>
 <body>
@@ -229,7 +248,12 @@
       <h1>Automatismes — Semaine 2</h1>
       <p class="subtitle">Jour 2 · projection en classe</p>
     </div>
-    <a class="back-link" href="S02-sommaire.html">&larr; Sommaire</a>
+    <div class="header-actions">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
+    <a class="theme-toggle" href="S02-sommaire.html" aria-label="Sommaire" title="Sommaire">🏠</a>
+    <a class="back-link" href="S02-J1-projection-v2.html">&larr; Jour précédent</a>
+    <a class="back-link" href="S02-J3-projection-v2.html">Jour suivant &rarr;</a>
+    </div>
   </div>
 </div>
 
@@ -282,14 +306,14 @@ const QUESTIONS = [
     theme: "obj-geometrie",
     objectif: "A22 · Pythagore, Thalès",
     aim: "Calculer une longueur inconnue dans un triangle rectangle à l'aide du théorème de Pythagore, y compris quand le résultat n'est pas un nombre entier.",
-    question: "Dans le triangle $ABC$ rectangle en $A$, on donne $BC=8$ cm et $AB=3$ cm. Quelle est la longueur du segment $[AC]$ ?",
+    question: "Dans le triangle ABC rectangle en A, on donne $\\text{BC}=8$ cm et $\\text{AB}=3$ cm. Quelle est la longueur du segment $[\\text{AC}]$ ?",
     options: [
       { letter:"A", text:"$\\sqrt{61}$ cm", correct:false },
       { letter:"B", text:"$\\sqrt{55}$ cm", correct:true },
       { letter:"C", text:"$5$ cm", correct:false },
       { letter:"D", text:"$\\sqrt{73}$ cm", correct:false }
     ],
-    explanation: "$AC^2=BC^2-AB^2=8^2-3^2=64-9=55$, donc $AC=\\sqrt{55}$ cm : $55$ n'est pas un carré parfait, on garde l'écriture avec radical."
+    explanation: "$\\text{AC}^2=\\text{BC}^2-\\text{AB}^2=8^2-3^2=64-9=55$, donc $\\text{AC}=\\sqrt{55}$ cm : $55$ n'est pas un carré parfait, on garde l'écriture avec radical."
   },
   {
     objectif: "A1 · Comparer deux nombres",
@@ -313,8 +337,8 @@ const QUESTIONS = [
     theme: "obj-geometrie",
     objectif: "A22 · Pythagore, Thalès",
     aim: "Enchaîner deux applications du théorème de Pythagore dans une figure formée de deux triangles rectangles emboîtés.",
-    question: "Le triangle $ABC$ est rectangle en $B$ et le triangle $AFC$ est rectangle en $F$, avec $AB=6$ cm, $BC=7$ cm et $AF=7$ cm. Calculer la longueur du segment $[FC]$.",
-    explanation: "Dans $ABC$ : $AC^2=AB^2+BC^2=36+49=85$. Dans $AFC$ : $AC^2=AF^2+FC^2$, donc $FC^2=85-49=36$ et $FC=\\sqrt{36}=6$ cm."
+    question: "Le triangle ABC est rectangle en B et le triangle AFC est rectangle en F, avec $\\text{AB}=6$ cm, $\\text{BC}=7$ cm et $\\text{AF}=7$ cm. Calculer la longueur du segment $[\\text{FC}]$.",
+    explanation: "Dans ABC : $\\text{AC}^2=\\text{AB}^2+\\text{BC}^2=36+49=85$. Dans AFC : $\\text{AC}^2=\\text{AF}^2+\\text{FC}^2$, donc $\\text{FC}^2=85-49=36$ et $\\text{FC}=\\sqrt{36}=6$ cm."
   }
 ];
 
@@ -418,5 +442,24 @@ document.addEventListener("keydown", (e) => {
 render();
 </script>
 
+<script>
+  (function () {
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+    function current() {
+      var attr = document.documentElement.getAttribute("data-theme");
+      if (attr === "light" || attr === "dark") return attr;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    function updateIcon() { btn.textContent = current() === "dark" ? "☀️" : "🌙"; }
+    updateIcon();
+    btn.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("automatismes-theme", next); } catch (e) {}
+      updateIcon();
+    });
+  })();
+</script>
 </body>
 </html>

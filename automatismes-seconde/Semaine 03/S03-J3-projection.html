@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("automatismes-theme");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Semaine 3 · Jour 3 — Automatismes</title>
@@ -227,6 +235,17 @@
     .page::before { left: 22px; }
     .options { grid-template-columns: 1fr; }
   }
+  .header-actions { display: flex; align-items: center; gap: 10px; }
+  .theme-toggle {
+    flex: none; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface); color: var(--ink);
+    font-size: 1.05rem; cursor: pointer; line-height: 1; padding: 0; text-decoration: none;
+  }
+  .theme-toggle:hover { background: var(--accent-soft); border-color: var(--accent); }
+
+  .katex .mord:not(.mathnormal):not(.mathit):not(.mathbf):not(.mathcal):not(.mathtt) {
+    font-family: "Public Sans", system-ui, sans-serif;
+  }
 </style>
 </head>
 <body>
@@ -237,7 +256,12 @@
       <h1>Automatismes — Semaine 3</h1>
       <p class="subtitle">Jour 3 · projection en classe</p>
     </div>
-    <a class="back-link" href="S03-sommaire.html">&larr; Sommaire</a>
+    <div class="header-actions">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
+    <a class="theme-toggle" href="S03-sommaire.html" aria-label="Sommaire" title="Sommaire">🏠</a>
+    <a class="back-link" href="S03-J2-projection.html">&larr; Jour précédent</a>
+    <a class="back-link" href="S03-J4-projection.html">Jour suivant &rarr;</a>
+    </div>
   </div>
 </div>
 
@@ -278,14 +302,14 @@ const QUESTIONS = [
     theme: "obj-geometrie",
     objectif: "Vecteurs \u00b7 D\u00e9finition",
     aim: "Savoir ce que repr\u00e9sente la longueur de la fl\u00e8che qui figure un vecteur.",
-    question: "La longueur d'une fl\u00e8che repr\u00e9sentant un vecteur correspond \u00e0 :",
+    question: "La longueur d'un vecteur s'appelle...",
     options: [
-      { letter:"A", text:"Sa norme", correct:true },
-      { letter:"B", text:"Sa direction", correct:false },
-      { letter:"C", text:"Son sens", correct:false },
-      { letter:"D", text:"Rien de particulier", correct:false }
+      { letter:"A", text:"sa norme", correct:true },
+      { letter:"B", text:"sa direction", correct:false },
+      { letter:"C", text:"son sens", correct:false },
+      { letter:"D", text:"rien de particulier", correct:false }
     ],
-    explanation: "La longueur de la fl\u00e8che est la <em>norme</em> du vecteur, not\u00e9e $\\|\\vec{u}\\|$ (ou $AB$ pour $\\vec{AB}$) \u2014 la direction et le sens sont donn\u00e9s par l'orientation de la fl\u00e8che, pas par sa longueur."
+    explanation: "La longueur de la fl\u00e8che est la <em>norme</em> du vecteur, not\u00e9e $\\|\\vec{u}\\|$ (ou $\\text{AB}$ pour $\\overrightarrow{\\text{AB}}$) \u2014 la direction et le sens sont donn\u00e9s par l'orientation de la fl\u00e8che, pas par sa longueur."
   },
   {
     objectif: "Calcul litt\u00e9ral \u00b7 Distributivit\u00e9",
@@ -302,8 +326,8 @@ const QUESTIONS = [
   {
     objectif: "A22 \u00b7 Pythagore, Thal\u00e8s",
     aim: "Calculer une longueur exacte avec le th\u00e9or\u00e8me de Pythagore \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
-    question: "Dans le triangle $ABC$ rectangle en $A$, on donne $BC=8$ cm et $AB=3$ cm. Calculer $AC$ (valeur exacte).",
-    explanation: "$AC^2=BC^2-AB^2=8^2-3^2=64-9=55$, donc $AC=\\sqrt{55}$ cm ($55$ n'est pas un carr\u00e9 parfait)."
+    question: "Dans le triangle ABC rectangle en A, on donne $\\text{BC}=8$ cm et $\\text{AB}=3$ cm.<br>Calculer $\\text{AC}$ (valeur exacte).",
+    explanation: "$\\text{AC}^2=\\text{BC}^2-\\text{AB}^2=8^2-3^2=64-9=55$,<br>donc $\\text{AC}=\\sqrt{55}$ cm ($55$ n'est pas un carr\u00e9 parfait).<div class=\"diagram\" style=\"margin-top:14px;\"><svg viewBox=\"0 0 260 150\" role=\"img\" aria-label=\"Triangle ABC rectangle en A, AB=3, BC=8, AC=racine de 55\">\n      <polygon points=\"30,35 30,110 230,35\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n      <path d=\"M30,47 L42,47 L42,35\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n      <g class=\"diagram-point\"><circle cx=\"30\" cy=\"35\" r=\"5\"/><text x=\"30\" y=\"19\">A</text></g>\n      <g class=\"diagram-point\"><circle cx=\"30\" cy=\"110\" r=\"5\"/><text x=\"30\" y=\"130\">B</text></g>\n      <g class=\"diagram-point\"><circle cx=\"230\" cy=\"35\" r=\"5\"/><text x=\"230\" y=\"19\">C</text></g>\n      <text class=\"diagram-label\" x=\"14\" y=\"76\" text-anchor=\"end\">3 cm</text>\n      <text class=\"diagram-label\" x=\"130\" y=\"23\" text-anchor=\"middle\">&#8730;55 cm</text>\n      <text class=\"diagram-label\" x=\"158\" y=\"50\" text-anchor=\"middle\">8 cm</text>\n    </svg></div>"
   },
   {
     objectif: "Calcul litt\u00e9ral \u00b7 Distributivit\u00e9",
@@ -321,8 +345,8 @@ const QUESTIONS = [
     theme: "obj-geometrie",
     objectif: "Vecteurs \u00b7 Somme",
     aim: "Additionner deux vecteurs diff\u00e9rents plac\u00e9s bout \u00e0 bout, en composant leurs d\u00e9placements composante par composante.",
-    question: "$\\vec{AB}$ correspond \u00e0 un d\u00e9placement de 2 carreaux vers la droite et 5 vers le haut. $\\vec{BC}$ correspond \u00e0 4 carreaux vers la droite et 1 vers le bas. Quel d\u00e9placement repr\u00e9sente $\\vec{AB}+\\vec{BC}$ ?",
-    explanation: "On additionne s\u00e9par\u00e9ment les d\u00e9placements horizontaux et verticaux : \u00e0 droite, $2+4=6$ carreaux. En vertical, $5$ vers le haut et $1$ vers le bas se compensent partiellement : $5-1=4$ carreaux vers le haut. $\\vec{AB}+\\vec{BC}$ correspond donc \u00e0 6 carreaux vers la droite et 4 vers le haut."
+    question: "$\\overrightarrow{\\text{AB}}$ correspond \u00e0 un d\u00e9placement de 2 carreaux vers la droite et 5 vers le haut. $\\overrightarrow{\\text{BC}}$ correspond \u00e0 4 carreaux vers la droite et 1 vers le bas. Quel d\u00e9placement repr\u00e9sente $\\overrightarrow{\\text{AB}}+\\overrightarrow{\\text{BC}}$ ?",
+    explanation: "On additionne s\u00e9par\u00e9ment les d\u00e9placements horizontaux et verticaux : \u00e0 droite, $2+4=6$ carreaux. En vertical, $5$ vers le haut et $1$ vers le bas se compensent partiellement : $5-1=4$ carreaux vers le haut. $\\overrightarrow{\\text{AB}}+\\overrightarrow{\\text{BC}}$ correspond donc \u00e0 6 carreaux vers la droite et 4 vers le haut."
   }
 ];
 let current = 0;
@@ -425,5 +449,24 @@ document.addEventListener("keydown", (e) => {
 render();
 </script>
 
+<script>
+  (function () {
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+    function current() {
+      var attr = document.documentElement.getAttribute("data-theme");
+      if (attr === "light" || attr === "dark") return attr;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    function updateIcon() { btn.textContent = current() === "dark" ? "☀️" : "🌙"; }
+    updateIcon();
+    btn.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("automatismes-theme", next); } catch (e) {}
+      updateIcon();
+    });
+  })();
+</script>
 </body>
 </html>

@@ -141,6 +141,12 @@ footer {
     gap: 30px;
 }
 
+.class-column {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
 .class-card {
     background: white;
     border-radius: 12px;
@@ -181,6 +187,16 @@ li {
 
 li:last-child {
     margin-bottom: 0;
+}
+
+.corrige-note {
+    font-style: italic;
+    font-size: 0.82em;
+    color: #7f8c8d;
+}
+
+.corrige-note a {
+    font-weight: 400;
 }
 
 /* Liens spécifiques aux listes de cours */

@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("automatismes-theme");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Semaine 3 · Jour 4 — Automatismes</title>
@@ -227,6 +235,17 @@
     .page::before { left: 22px; }
     .options { grid-template-columns: 1fr; }
   }
+  .header-actions { display: flex; align-items: center; gap: 10px; }
+  .theme-toggle {
+    flex: none; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface); color: var(--ink);
+    font-size: 1.05rem; cursor: pointer; line-height: 1; padding: 0; text-decoration: none;
+  }
+  .theme-toggle:hover { background: var(--accent-soft); border-color: var(--accent); }
+
+  .katex .mord:not(.mathnormal):not(.mathit):not(.mathbf):not(.mathcal):not(.mathtt) {
+    font-family: "Public Sans", system-ui, sans-serif;
+  }
 </style>
 </head>
 <body>
@@ -237,7 +256,11 @@
       <h1>Automatismes — Semaine 3</h1>
       <p class="subtitle">Jour 4 · projection en classe</p>
     </div>
-    <a class="back-link" href="S03-sommaire.html">&larr; Sommaire</a>
+    <div class="header-actions">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
+    <a class="theme-toggle" href="S03-sommaire.html" aria-label="Sommaire" title="Sommaire">🏠</a>
+    <a class="back-link" href="S03-J3-projection.html">&larr; Jour précédent</a>
+    </div>
   </div>
 </div>
 
@@ -278,14 +301,14 @@ const QUESTIONS = [
     theme: "obj-geometrie",
     objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
     aim: "Distinguer une condition n\u00e9cessaire (mais non suffisante) de l'\u00e9galit\u00e9 de deux vecteurs.",
-    question: "Vrai ou faux : si $\\vec{AB}=\\vec{CD}$, alors les longueurs $AB$ et $CD$ sont \u00e9gales.",
+    question: "Vrai ou faux : si $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{CD}}$, alors les longueurs $\\text{AB}$ et $\\text{CD}$ sont \u00e9gales.",
     options: [
       { letter:"A", text:"Vrai", correct:true },
       { letter:"B", text:"Faux", correct:false },
       { letter:"C", text:"\u00c7a d\u00e9pend des points", correct:false },
       { letter:"D", text:"Impossible \u00e0 savoir", correct:false }
     ],
-    explanation: "Deux vecteurs \u00e9gaux ont la m\u00eame longueur (entre autres conditions) : $\\vec{AB}=\\vec{CD}$ entra\u00eene donc $AB=CD$. Attention, la r\u00e9ciproque est fausse : avoir la m\u00eame longueur ne suffit pas \u00e0 rendre deux vecteurs \u00e9gaux (il faut aussi la m\u00eame direction et le m\u00eame sens)."
+    explanation: "Deux vecteurs \u00e9gaux ont la m\u00eame longueur (entre autres conditions) : $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{CD}}$ entra\u00eene donc $\\text{AB}=\\text{CD}$. Attention, la r\u00e9ciproque est fausse : avoir la m\u00eame longueur ne suffit pas \u00e0 rendre deux vecteurs \u00e9gaux (il faut aussi la m\u00eame direction et le m\u00eame sens)."
   },
   {
     theme: "obj-complement",
@@ -439,5 +462,24 @@ document.addEventListener("keydown", (e) => {
 render();
 </script>
 
+<script>
+  (function () {
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+    function current() {
+      var attr = document.documentElement.getAttribute("data-theme");
+      if (attr === "light" || attr === "dark") return attr;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    function updateIcon() { btn.textContent = current() === "dark" ? "☀️" : "🌙"; }
+    updateIcon();
+    btn.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("automatismes-theme", next); } catch (e) {}
+      updateIcon();
+    });
+  })();
+</script>
 </body>
 </html>

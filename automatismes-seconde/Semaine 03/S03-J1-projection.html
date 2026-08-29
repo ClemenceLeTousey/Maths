@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("automatismes-theme");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Semaine 3 · Jour 1 — Automatismes</title>
@@ -227,6 +235,17 @@
     .page::before { left: 22px; }
     .options { grid-template-columns: 1fr; }
   }
+  .header-actions { display: flex; align-items: center; gap: 10px; }
+  .theme-toggle {
+    flex: none; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface); color: var(--ink);
+    font-size: 1.05rem; cursor: pointer; line-height: 1; padding: 0; text-decoration: none;
+  }
+  .theme-toggle:hover { background: var(--accent-soft); border-color: var(--accent); }
+
+  .katex .mord:not(.mathnormal):not(.mathit):not(.mathbf):not(.mathcal):not(.mathtt) {
+    font-family: "Public Sans", system-ui, sans-serif;
+  }
 </style>
 </head>
 <body>
@@ -237,7 +256,12 @@
       <h1>Automatismes — Semaine 3</h1>
       <p class="subtitle">Jour 1 · projection en classe</p>
     </div>
-    <a class="back-link" href="S03-sommaire.html">&larr; Sommaire</a>
+    <div class="header-actions">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
+    <a class="theme-toggle" href="S03-sommaire.html" aria-label="Sommaire" title="Sommaire">🏠</a>
+    <a class="back-link" href="../Semaine 02/S02-J4-projection-v2.html">&larr; Jour précédent</a>
+    <a class="back-link" href="S03-J2-projection.html">Jour suivant &rarr;</a>
+    </div>
   </div>
 </div>
 
@@ -302,15 +326,15 @@ const QUESTIONS = [
   {
     objectif: "A1 \u00b7 Comparer deux nombres",
     aim: "Comparer deux fractions \u00e0 num\u00e9rateur \u00e9gal sans calcul \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
-    question: "$\\dfrac{3}{7}$ et $\\dfrac{3}{4}$ ont le m\u00eame num\u00e9rateur. Comparer ces deux fractions sans calcul.",
+    question: "Compare $\\dfrac{3}{7}$ et $\\dfrac{3}{4}$.",
     explanation: "\u00c0 num\u00e9rateur \u00e9gal (et positif), la fraction est d'autant plus petite que son d\u00e9nominateur est grand : $7>4$, donc $\\dfrac{3}{7}<\\dfrac{3}{4}$."
   },
   {
     theme: "obj-geometrie",
     objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
     aim: "Relier l'\u00e9galit\u00e9 de deux vecteurs \u00e0 la propri\u00e9t\u00e9 du parall\u00e9logramme.",
-    question: "$ABDC$ est un parall\u00e9logramme. Que peut-on dire des vecteurs $\\vec{AB}$ et $\\vec{CD}$ ?",
-    explanation: "Dans un parall\u00e9logramme $ABDC$, les c\u00f4t\u00e9s $[AB]$ et $[CD]$ sont parall\u00e8les et de m\u00eame longueur, parcourus dans le m\u00eame sens : $\\vec{AB}=\\vec{CD}$."
+    question: "ABDC est un parall\u00e9logramme.<br>Que peut-on dire des vecteurs $\\overrightarrow{\\text{AB}}$ et $\\overrightarrow{\\text{CD}}$ ?",
+    explanation: "Dans un parall\u00e9logramme ABDC, les c\u00f4t\u00e9s $[\\text{AB}]$ et $[\\text{CD}]$ sont parall\u00e8les et de m\u00eame longueur, parcourus dans le m\u00eame sens : $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{CD}}$."
   },
   {
     objectif: "A1 \u00b7 Comparer deux nombres",
@@ -425,5 +449,24 @@ document.addEventListener("keydown", (e) => {
 render();
 </script>
 
+<script>
+  (function () {
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+    function current() {
+      var attr = document.documentElement.getAttribute("data-theme");
+      if (attr === "light" || attr === "dark") return attr;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    function updateIcon() { btn.textContent = current() === "dark" ? "☀️" : "🌙"; }
+    updateIcon();
+    btn.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("automatismes-theme", next); } catch (e) {}
+      updateIcon();
+    });
+  })();
+</script>
 </body>
 </html>
