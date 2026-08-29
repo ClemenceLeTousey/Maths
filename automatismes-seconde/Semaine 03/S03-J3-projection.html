@@ -5,8 +5,11 @@
   (function () {
     try {
       var t = localStorage.getItem("automatismes-theme");
-      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
-    } catch (e) {}
+      if (t !== "light" && t !== "dark") t = "dark";
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
   })();
 </script>
 <meta charset="UTF-8">
@@ -90,10 +93,10 @@
 
   .back-link {
     align-self: center;
-    font-family: "Public Sans", sans-serif; font-size: 0.85rem; font-weight: 600;
+    font-family: "Public Sans", sans-serif; font-size: 0.78rem; font-weight: 600;
     color: var(--ink); text-decoration: none;
     border: 1.5px solid var(--rule-strong); border-radius: 999px;
-    padding: 7px 16px; white-space: nowrap;
+    padding: 7px 12px; white-space: nowrap;
   }
   .back-link:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
@@ -257,10 +260,10 @@
       <p class="subtitle">Jour 3 · projection en classe</p>
     </div>
     <div class="header-actions">
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
     <a class="theme-toggle" href="S03-sommaire.html" aria-label="Sommaire" title="Sommaire">🏠</a>
-    <a class="back-link" href="S03-J2-projection.html">&larr; Jour précédent</a>
-    <a class="back-link" href="S03-J4-projection.html">Jour suivant &rarr;</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
+    <a class="back-link" href="S03-J2-projection.html">J-1</a>
+    <a class="back-link" href="S03-J4-projection.html">J+1</a>
     </div>
   </div>
 </div>
@@ -301,7 +304,7 @@ const QUESTIONS = [
   {
     theme: "obj-geometrie",
     objectif: "Vecteurs \u00b7 D\u00e9finition",
-    aim: "Savoir ce que repr\u00e9sente la longueur de la fl\u00e8che qui figure un vecteur.",
+    aim: "Conna\u00eetre le vocabulaire",
     question: "La longueur d'un vecteur s'appelle...",
     options: [
       { letter:"A", text:"sa norme", correct:true },
