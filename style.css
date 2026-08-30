@@ -195,6 +195,16 @@ li:last-child {
     color: #7f8c8d;
 }
 
+/* Élément de liste pas encore disponible (lien à venir) : grisé, non cliquable */
+.pending-link {
+    color: #b0b7bd;
+}
+
+.pending-tag {
+    font-style: italic;
+    font-size: 0.85em;
+}
+
 .corrige-note a {
     font-weight: 400;
 }
