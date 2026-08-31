@@ -221,6 +221,68 @@ li:last-child {
     text-decoration: underline;
 }
 
+/* Séquences en accordéon : seul le titre est visible, le détail se déroule au clic */
+.sequence-details {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+}
+
+.sequence-details:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.sequence-summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.sequence-summary::-webkit-details-marker {
+    display: none;
+}
+
+.sequence-summary::after {
+    content: "▾";
+    color: var(--accent);
+    font-size: 0.9em;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.sequence-details[open] .sequence-summary::after {
+    transform: rotate(180deg);
+}
+
+.sequence-summary:hover .sequence-title {
+    color: var(--primary);
+}
+
+.sequence-title {
+    color: var(--primary);
+    font-size: 1.15em;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.sequence-subtitle {
+    display: block;
+    margin-top: 2px;
+    color: #ff6f26;
+    font-size: 0.65em;
+    font-weight: 500;
+}
+
+.sequence-details ul {
+    margin-top: 12px;
+}
+
 
 /* ==========================================================================
    5. CONSOLE PYTHON
