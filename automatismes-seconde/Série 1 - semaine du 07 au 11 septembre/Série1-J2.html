@@ -238,6 +238,13 @@
   .katex .mord:not(.mathnormal):not(.mathit):not(.mathbf):not(.mathcal):not(.mathtt):not(.vbox) {
     font-family: "Public Sans", system-ui, sans-serif;
   }
+  /* Le ":not(.vbox)" ci-dessus n'exclut que le conteneur externe : les
+     glyphes qu'il contient (ex. la barre oblique du "\neq", empilée via
+     un vbox) restent des .mord imbriqués et héritaient quand même de
+     Public Sans, ce qui cassait leur alignement. */
+  .katex .vbox .mord {
+    font-family: inherit !important;
+  }
 </style>
 </head>
 <body>
