@@ -336,27 +336,22 @@ const QUESTIONS = [
   {
     theme: "obj-geometrie",
     objectif: "A22 · Pythagore, Thalès",
-    aim: "Enchaîner deux applications du théorème de Pythagore dans une figure formée de deux triangles rectangles emboîtés.",
-    question: "Le triangle ABC est rectangle en B et le triangle AFC est rectangle en F, avec $\\text{AB}=6$ cm, $\\text{BC}=7$ cm et $\\text{AF}=7$ cm.<br>Calculer la longueur du segment $[\\text{FC}]$.",
-    diagram: `<svg viewBox="0 0 340 260" role="img" aria-label="Triangle ABC rectangle en B et triangle AFC rectangle en F, accolés le long du segment AC">
-      <line x1="170" y1="30" x2="170" y2="200" stroke="var(--rule-strong)" stroke-width="1.5" stroke-dasharray="5 4"/>
-      <line x1="170" y1="30" x2="60" y2="115" stroke="var(--ink)" stroke-width="2"/>
-      <line x1="60" y1="115" x2="170" y2="200" stroke="var(--ink)" stroke-width="2"/>
-      <line x1="170" y1="30" x2="280" y2="115" stroke="var(--ink)" stroke-width="2"/>
-      <line x1="280" y1="115" x2="170" y2="200" stroke="var(--ink)" stroke-width="2"/>
-      <polyline points="71.07,106.45 82.15,115 71.07,123.55" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
-      <polyline points="268.93,106.45 257.85,115 268.93,123.55" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
-      <g class="diagram-point"><circle cx="170" cy="30" r="5"/><text x="170" y="16">A</text></g>
-      <g class="diagram-point"><circle cx="60" cy="115" r="5"/><text x="40" y="119">B</text></g>
-      <g class="diagram-point"><circle cx="170" cy="200" r="5"/><text x="170" y="222">C</text></g>
-      <g class="diagram-point"><circle cx="280" cy="115" r="5"/><text x="300" y="119">F</text></g>
-      <text class="diagram-label" x="90" y="68" text-anchor="middle">AB = 6 cm</text>
-      <text class="diagram-label" x="90" y="168" text-anchor="middle">BC = 7 cm</text>
-      <text class="diagram-label" x="250" y="68" text-anchor="middle">AF = 7 cm</text>
-      <text class="diagram-label" x="250" y="168" text-anchor="middle">FC = ?</text>
-      <text class="diagram-label" x="170" y="248" text-anchor="middle" font-style="italic">(figure non à l'échelle)</text>
+    aim: "Calculer un côté de l'angle droit connaissant l'hypoténuse et l'autre côté, en soustrayant plutôt qu'en additionnant.",
+    question: "Dans le triangle DEF rectangle en E, on donne l'hypoténuse $\\text{DF}=13$ cm et $\\text{EF}=5$ cm.<br>Calculer la longueur du segment $[\\text{DE}]$.",
+    diagram: `<svg viewBox="0 0 340 250" role="img" aria-label="Triangle DEF rectangle en E">
+      <line x1="80" y1="30" x2="80" y2="200" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="80" y1="200" x2="280" y2="200" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="80" y1="30" x2="280" y2="200" stroke="var(--ink)" stroke-width="2"/>
+      <polyline points="80,186 94,186 94,200" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+      <g class="diagram-point"><circle cx="80" cy="30" r="5"/><text x="64" y="18">D</text></g>
+      <g class="diagram-point"><circle cx="80" cy="200" r="5"/><text x="60" y="214">E</text></g>
+      <g class="diagram-point"><circle cx="280" cy="200" r="5"/><text x="296" y="214">F</text></g>
+      <text class="diagram-label" x="52" y="119" text-anchor="end">DE = ?</text>
+      <text class="diagram-label" x="180" y="222" text-anchor="middle">EF = 5 cm</text>
+      <text class="diagram-label" x="210" y="105" text-anchor="start">DF = 13 cm</text>
+      <text class="diagram-label" x="170" y="242" text-anchor="middle" font-style="italic">(figure non à l'échelle)</text>
     </svg>`,
-    explanation: "Dans ABC : $\\text{AC}^2=\\text{AB}^2+\\text{BC}^2=36+49=85$. Dans AFC : $\\text{AC}^2=\\text{AF}^2+\\text{FC}^2$, donc $\\text{FC}^2=85-49=36$ et $\\text{FC}=\\sqrt{36}=6$ cm."
+    explanation: "$\\text{DE}^2=\\text{DF}^2-\\text{EF}^2=13^2-5^2=169-25=144$, donc $\\text{DE}=\\sqrt{144}=12$ cm : on soustrait, car $\\text{DE}$ est un côté de l'angle droit et non l'hypoténuse."
   }
 ];
 
