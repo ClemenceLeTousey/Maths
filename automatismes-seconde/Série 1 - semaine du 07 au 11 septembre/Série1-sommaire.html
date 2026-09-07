@@ -14,7 +14,7 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Semaine 3 — Sommaire</title>
+<title>Série 1 — Sommaire</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -73,7 +73,9 @@
   header h1 { margin: 0 0 6px; font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.4rem); font-weight: 600; }
   header p { margin: 0; color: var(--ink-soft); font-size: 1rem; }
 
-  .themes { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .themes {
+    margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;
+  }
   .theme-pill {
     font-family: "Space Mono", monospace; font-size: 0.74rem; letter-spacing: .02em;
     padding: 5px 11px; border-radius: 999px; background: var(--accent-soft); color: var(--accent);
@@ -96,13 +98,14 @@
   }
   .day-card .go { font-size: 0.85rem; color: var(--muted); }
   .day-card .day-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .day-card h2 { margin: 4px 0 6px; font-size: 1.15rem; font-weight: 600; font-family: "Public Sans", sans-serif; }
+  .day-card p { margin: 0; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.5; }
 
-  .note {
+  .pending {
     margin-top: 28px; padding: 14px 18px; border: 1.5px dashed var(--rule-strong);
     border-radius: 10px; color: var(--ink-soft); font-size: 0.88rem;
   }
-  .note strong { color: var(--ink); }
-  .note + .note { margin-top: 14px; }
+  .pending strong { color: var(--ink); }
 
   .prev-link {
     margin-top: 10px; display: inline-block; font-size: 0.85rem; color: var(--accent);
@@ -124,8 +127,9 @@
   <header>
     <div class="header-top">
       <div>
-        <h1>Semaine 3 — Automatismes</h1>
+        <h1>Série 1 — Automatismes</h1>
         <p>Feuille de route de la semaine</p>
+        <a class="prev-link" href="Feuille%20%C3%A9l%C3%A8ve%20-%20Semaine%202.pdf" target="_blank" rel="noopener">✏️ Tableau élève (PDF)</a>
       </div>
       <div style="display: flex; gap: 8px;">
         <a class="theme-toggle" href="../../index.html" aria-label="Accueil du site" title="Accueil du site">🏠</a>
@@ -133,64 +137,56 @@
       </div>
     </div>
     <div class="themes">
-      <span class="theme-pill geo">Vecteurs · Égalité, somme</span>
-      <span class="theme-pill">Calcul littéral · Distributivité</span>
-      <span class="theme-pill complement">Algo · Expressions littérales</span>
       <span class="theme-pill">A1 · Comparer deux nombres</span>
       <span class="theme-pill">A2 · Fractions</span>
       <span class="theme-pill">A3 · Puissances</span>
+      <span class="theme-pill">A4 · Écritures d'un nombre</span>
       <span class="theme-pill geo">A22 · Pythagore, Thalès</span>
+      <span class="theme-pill complement">Algo (non numéroté)</span>
+      <span class="theme-pill complement">Translations (non numéroté)</span>
     </div>
-    <a class="prev-link" href="../Semaine 02/S02-sommaire.html">&larr; Semaine 2</a>
+    <a class="prev-link" href="../Série 2 - semaine du 14 au 18 septembre/Série2-sommaire.html">Série 2 &rarr;</a>
   </header>
 
   <div class="days">
-    <a class="day-card" href="S03-J1-projection.html">
+    <a class="day-card" href="Série1-J1.html">
       <div class="row"><span class="jour">Jour 1</span><span class="go">Ouvrir →</span></div>
       <div class="day-pills">
-        <span class="theme-pill geo">Vecteurs · Égalité</span>
-        <span class="theme-pill">Calcul littéral · Distributivité</span>
+        <span class="theme-pill">A1 · Comparer deux nombres</span>
+        <span class="theme-pill">A2 · Fractions</span>
+        <span class="theme-pill">A3 · Puissances</span>
+      </div>
+    </a>
+
+    <a class="day-card" href="Série1-J2.html">
+      <div class="row"><span class="jour">Jour 2</span><span class="go">Ouvrir →</span></div>
+      <div class="day-pills">
+        <span class="theme-pill">A4 · Écritures d'un nombre</span>
+        <span class="theme-pill geo">A22 · Pythagore, Thalès</span>
         <span class="theme-pill">A1 · Comparer deux nombres</span>
       </div>
     </a>
 
-    <a class="day-card" href="S03-J2-projection.html">
-      <div class="row"><span class="jour">Jour 2</span><span class="go">Ouvrir →</span></div>
-      <div class="day-pills">
-        <span class="theme-pill geo">Vecteurs · Égalité</span>
-        <span class="theme-pill complement">Algo · Expressions littérales</span>
-        <span class="theme-pill">Calcul littéral · Distributivité</span>
-        <span class="theme-pill geo">Vecteurs · Somme</span>
-      </div>
-    </a>
-
-    <a class="day-card" href="S03-J3-projection.html">
+    <a class="day-card" href="Série1-J3.html">
       <div class="row"><span class="jour">Jour 3</span><span class="go">Ouvrir →</span></div>
       <div class="day-pills">
-        <span class="theme-pill geo">Vecteurs · Définition</span>
-        <span class="theme-pill">Calcul littéral · Distributivité</span>
-        <span class="theme-pill geo">A22 · Pythagore, Thalès</span>
+        <span class="theme-pill complement">Algo · Lire un programme</span>
+        <span class="theme-pill complement">Translations</span>
+        <span class="theme-pill">A1 · Comparer deux nombres</span>
         <span class="theme-pill">A2 · Fractions</span>
-        <span class="theme-pill geo">Vecteurs · Somme</span>
       </div>
     </a>
 
-    <a class="day-card" href="S03-J4-projection.html">
+    <a class="day-card" href="Série1-J4.html">
       <div class="row"><span class="jour">Jour 4</span><span class="go">Ouvrir →</span></div>
       <div class="day-pills">
-        <span class="theme-pill geo">Vecteurs · Égalité</span>
-        <span class="theme-pill complement">Algo · Expressions littérales</span>
-        <span class="theme-pill">Calcul littéral · Distributivité</span>
+        <span class="theme-pill">A4 · Écritures d'un nombre</span>
+        <span class="theme-pill complement">Algo · Bloc et fonction</span>
+        <span class="theme-pill">A1 · Comparer deux nombres</span>
         <span class="theme-pill">A3 · Puissances</span>
+        <span class="theme-pill geo">A22 · Pythagore, Thalès</span>
       </div>
     </a>
-  </div>
-
-  <div class="note">
-    <strong>Choix de la semaine :</strong> le vocabulaire vectoriel (mis de côté volontairement en semaine 2) entre en jeu maintenant que la séquence vecteurs démarre. Le fil « Translations » de S1/S2 laisse place au fil « Vecteurs » : les mêmes idées de grille/déplacement reviennent, mais avec le nom et la notation corrects (vecteur AB, égalité, somme bout à bout). Le fil « Algo » évolue vers la lecture de fonctions qui évaluent une expression littérale, en écho direct au calcul littéral travaillé en cours.
-  </div>
-  <div class="note">
-    <strong>Calculs numériques :</strong> six automatismes du programme précédent reviennent cette semaine à leur palier suivant (A1, A2, A3, A22 — voir banque-roulement.md), pour couvrir « calculs numériques tout » sans reprendre l'intégralité de la banque en attente. Les items encore dus sur A4 (Écritures d'un nombre) et sur Algo/Translations restent en réserve pour une semaine où ces thèmes redeviennent centraux.
   </div>
 
   <footer>Automatismes Hebdo · 2nde 2026-2027</footer>

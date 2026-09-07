@@ -1,0 +1,399 @@
+% Équivalent LaTeX de S02-verso-tableau.html (feuille élève, verso — tableau
+% de consignation des réponses J1 à J4). Document autonome, distinct du
+% livret LaTeX complet (voir README.md du dossier "Automatismes Hebdo") :
+% se compile seul, sans dépendre de CLT2627.sty ni du pipeline
+% AutomatismesSeconde2627.tex. Compiler avec pdflatex ou lualatex.
+\documentclass[10pt]{article}
+% Page 1 (recto) en portrait, page 2 (verso, le tableau) reste en paysage :
+% geometry pose le format par défaut (portrait) et pdflscape fournit
+% l'environnement landscape qui fait pivoter uniquement le verso (MediaBox
+% de cette page seule tournée à 90°, indépendamment du reste du document).
+\usepackage[a4paper,top=5mm,bottom=5mm,left=10mm,right=10mm]{geometry}
+\usepackage{pdflscape}
+\usepackage[french]{babel}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{pifont}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{raster}
+\usepackage{ragged2e}
+\usepackage{amssymb}
+\usepackage{fontawesome5}
+\usepackage{enumitem}
+\setlist[itemize]{topsep=1pt, itemsep=1pt, parsep=0pt, leftmargin=1.3em, label=$\star$}
+\usepackage{bbding}
+\usepackage{multicol}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Palette (reprise des tokens CSS de S02-verso-tableau.html) -----------
+\definecolor{inkC}{HTML}{20232B}
+\definecolor{inksoftC}{HTML}{565A66}
+\definecolor{mutedC}{HTML}{8B8F99}
+\definecolor{rulestrongC}{HTML}{B9C2D1}
+\definecolor{qcmC}{HTML}{2455B8}
+\definecolor{questionC}{HTML}{12805C}
+\definecolor{finalC}{HTML}{B5511F}
+\definecolor{bonusC}{HTML}{B8298F}
+\definecolor{bonussoftC}{HTML}{FBE6F3}
+\definecolor{emptyC}{HTML}{E7E9EE}
+\definecolor{redC}{HTML}{B8342B}
+% Couleurs des boîtes "À retenir"/"Exemple", reprises telles quelles de
+% \ARetenirBox/\ExempleBoxAuto dans CLT2627.sty (bleuPropriete, grisExemple)
+% pour rester visuellement fidèle au fichier original.
+\definecolor{bleuPropriete}{RGB}{41,121,204}
+\definecolor{grisExemple}{RGB}{85,85,95}
+
+\newcommand{\starQ}{\textcolor{questionC}{$\bigstar$}}
+\newcommand{\starF}{\textcolor{finalC}{$\bigstar$}}
+\newcommand{\starFF}{\textcolor{finalC}{$\bigstar\bigstar$}}
+\newcommand{\okmark}{\ding{51}}
+\newcommand{\nomark}{\ding{55}}
+% Case à cocher vierge (l'élève y trace lui-même un crochet ou une croix).
+\newcommand{\corrbox}{\fboxsep=0pt\fbox{\rule{0pt}{8pt}\rule{8pt}{0pt}}}
+
+% Case active : numéro de question entouré en haut à gauche de la case,
+% le reste de la case restant vide pour l'écriture manuscrite. (Après
+% correction collective, l'élève entoure ou coche ce numéro pour indiquer
+% juste/faux -- voir légende.)
+\newcommand{\qcase}[1]{%
+  \begin{tikzpicture}[baseline=0pt]
+    \useasboundingbox (0,0) rectangle (2.95cm,1.0cm);
+    \node[anchor=north west, circle, draw=mutedC, line width=0.4pt,
+          inner sep=1pt, minimum size=1.1em, font=\tiny, text=mutedC]
+      at (0.08cm,0.92cm) {#1};
+  \end{tikzpicture}%
+}
+% Case grisée : aucune question ce jour-là pour cet automatisme.
+\newcommand{\qempty}{\cellcolor{emptyC}}
+
+% Bandeau de titre du recto : petite étiquette en haut à gauche qui entaille
+% le cadre, grand titre centré en dessous. Repris du style \FeuilletTitre
+% utilisé dans les feuilles d'exercices des séquences (même famille visuelle),
+% reconstruit ici pour rester autonome (pas de dépendance à CLT2627.sty).
+\NewDocumentCommand{\RectoTitre}{m m}{%
+  \begin{center}
+  \begin{tcolorbox}[
+    enhanced,
+    width=0.8\linewidth,
+    colback=white,
+    colframe=inkC,
+    boxrule=0.8pt,
+    arc=8pt,
+    sharp corners=downhill,
+    left=10pt, right=10pt, top=4pt, bottom=3pt,
+    halign=center,
+    overlay={
+      \node[fill=white, anchor=west, font=\normalsize, inner xsep=4pt]
+        at ([xshift=14pt]frame.north west) {#1};
+    },
+  ]
+  {\huge\bfseries #2}
+  \end{tcolorbox}
+  \end{center}
+}
+
+% Carte "automatisme" du recto : petit engrenage (repris de \AutoItem dans
+% AutomatismesSeconde2627.tex, où \faCogs symbolise l'automatisme) + code
+% + intitulé, tout sur une seule ligne (\tcbox se dimensionne à son contenu,
+% pas de retour à la ligne forcé), même code couleur que l'en-tête du
+% tableau du verso (qcmC / questionC / finalC).
+\newcommand{\autoCardLine}[3]{%
+  \noindent\tcbox[
+    colback=white, colframe=#1, coltext=#1,
+    boxrule=1.2pt, arc=5pt, left=10pt, right=10pt, top=2pt, bottom=2pt,
+  ]{{\color{#1}\faCogs}~\textcolor{#1}{\Large\bfseries #2}~~{\normalsize\color{inksoftC} #3}}%
+  \par
+}
+
+% Boîte "À retenir" : même cadre que les boîtes "Propriété" du cours
+% (\Prp dans CLT2627.sty) -- pas de bordure pleine, seulement 4 coins en
+% équerre dessinés en overlay, fond bleuPropriete!6.
+\newcommand{\ARetenirBox}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bleuPropriete!6, colframe=bleuPropriete,
+    boxrule=0pt, arc=0pt, outer arc=0pt,
+    left=10pt, right=8pt, top=2pt, bottom=1pt,
+    overlay={
+      \draw[bleuPropriete, line width=1.2pt] (frame.north west) -- ++(7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.north west) -- ++(0pt,-7pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.north east) -- ++(-7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.north east) -- ++(0pt,-7pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south west) -- ++(7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south west) -- ++(0pt,7pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south east) -- ++(-7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south east) -- ++(0pt,7pt);
+    },
+  ]
+    \textbf{\textcolor{bleuPropriete}{À retenir}}\par\vspace{1pt}
+    #1
+  \end{tcolorbox}%
+}
+% Boîte "Exemple" : même liseré que \ExempleBoxAuto, plus le crayon
+% encerclé en overlay au coin supérieur gauche, repris à l'identique de
+% \Exemple dans CLT2627.sty (\PencilRightUp, police bbding).
+\newcommand{\ExempleBoxR}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=grisExemple!6, colframe=grisExemple,
+    boxrule=0pt, borderline west={2pt}{0pt}{grisExemple},
+    arc=0pt, outer arc=0pt,
+    left=16pt, right=8pt, top=3pt, bottom=1pt,
+    overlay={
+      \node[anchor=center, circle, fill=white, draw=grisExemple, line width=0.8pt, minimum size=18pt] at ([yshift=-10pt]frame.north west) {\textcolor{grisExemple}{\fontsize{11}{11}\selectfont\PencilRightUp}};
+    },
+  ]
+    \textbf{\textcolor{grisExemple}{Exemple}}\par\vspace{1pt}
+    #1
+  \end{tcolorbox}%
+}
+% Place une \ARetenirBox et une \ExempleBoxR côte à côte, chacune à sa
+% propre hauteur : pas de "raster equal height", pour que la boîte
+% "À retenir" ne s'étire pas inutilement jusqu'à la hauteur, souvent plus
+% grande, de la boîte "Exemple" en vis-à-vis.
+\newcommand{\RecapPair}[2]{%
+  \begin{tcbraster}[raster columns=2, raster column skip=8pt, raster force size=false, raster valign=top, before skip=0pt, after skip=0pt]
+    \ARetenirBox{\normalsize#1}
+    \ExempleBoxR{\footnotesize#2}
+  \end{tcbraster}%
+}
+
+\newcolumntype{J}{>{\RaggedRight\arraybackslash}m{1.7cm}}
+\newcolumntype{N}{>{\centering\arraybackslash}m{1.05cm}}
+\newcolumntype{O}{>{\centering\arraybackslash}m{3.15cm}}
+
+\begin{document}
+
+% ============================= RECTO (page 1) =============================
+\RectoTitre{ Semaine du 07 au 11 septembre}{Automatismes Série 1}
+
+%\vspace{0pt}
+%\begin{center}
+%{\large\bfseries\color{inkC}Cette semaine, 7 automatismes sont abordés en questions rituelles.}
+%\end{center}
+
+\vspace{0pt}
+
+\autoCardLine{qcmC}{A1}{Comparer deux nombres}
+\vspace{1pt}
+\RecapPair{%
+  Pour comparer des fractions, on peut~:
+  \begin{itemize}
+    \item les réduire au même dénominateur \textbf{positif} et comparer
+    leurs numérateurs~: les fractions sont dans le même ordre que leurs
+    numérateurs respectifs~;
+    \item les comparer à~$1$.
+  \end{itemize}
+}{%
+  Pour comparer les fractions $\dfrac56$ et $\dfrac34$, on cherche un
+  dénominateur commun à ces deux fractions. Le plus petit multiple commun
+  aux nombres $6$ et $4$ est $12$.
+  \[\dfrac56=\dfrac{5\times2}{6\times2}=\dfrac{10}{12} \quad\text{et}\quad
+  \dfrac34=\dfrac{3\times3}{4\times3}=\dfrac{9}{12}\]
+  On en déduit que $\dfrac{10}{12}>\dfrac{9}{12}$. Ainsi, $\dfrac56>\dfrac34$.
+}
+\vspace{1pt}
+\RecapPair{%
+  $\star$ Pour comparer deux nombres réels $A$ et $B$, on peut~:
+  \begin{itemize}
+    \item étudier le signe de leur différence. Par exemple, si $A-B>0$,
+    alors $A>B$~;
+    \item comparer leur quotient à~$1$, s'ils sont strictement positifs. Par
+    exemple, si $\dfrac{A}{B}<1$, alors $A<B$.
+  \end{itemize}
+}{%
+  $\star$ Pour comparer $A=\dfrac45$ et $B=\dfrac56$, on calcule la différence
+  $A-B$~:
+  \[A-B=\dfrac45-\dfrac56=\dfrac{4\times6}{5\times6}-\dfrac{5\times5}{6\times5}=\dfrac{24}{30}-\dfrac{25}{30}=-\dfrac1{30}\]
+  Comme $-\dfrac1{30}<0$, on a $A-B<0$. Par conséquent $A<B$.
+
+  \vspace{0pt}
+  Pour comparer $A=3^{60}\times2^{62}$ et $B=6^{61}$, on peut comparer le
+  quotient $\dfrac AB$ avec $1$ car les deux nombres sont strictement
+  positifs.
+  \[\dfrac AB=\dfrac{3^{60}\times2^{62}}{6^{61}}=\dfrac{3^{60}\times2^{62}}{(3\times2)^{61}}=\dfrac{3^{60}\times2^{62}}{3^{61}\times2^{61}}=2^{1}\times3^{-1}=\dfrac23\]
+  Comme $\dfrac AB<1$, on a~: $A<B$.
+}
+\vspace{0pt}
+
+\vspace*{0.12cm}
+
+\begin{multicols}{3}
+\autoCardLine{qcmC}{A2}{Fractions}
+\columnbreak
+\autoCardLine{qcmC}{A3}{Puissances}
+\columnbreak
+\textit{Voir Cartes Mentales et Cours Séquence~1.}
+\end{multicols}
+\vspace{0pt}
+
+\autoCardLine{qcmC}{A4}{Écritures d'un nombre}
+\vspace{1pt}
+\RecapPair{%
+  Tout nombre décimal peut s'écrire comme la somme de sa partie entière et
+  de fractions décimales (dixièmes~: $\frac1{10}$, centièmes~:
+  $\frac1{100}$, millièmes~: $\frac1{1\,000}$, etc.). \\
+  Il peut aussi
+  s'écrire sous la forme d'une seule fraction décimale.
+}{%
+  $4,5=4+\dfrac5{10}=\dfrac{45}{10}$
+
+  $34,52=34+\dfrac5{10}+\dfrac2{100}=\dfrac{3\,452}{100}$
+
+  $0,125=\dfrac1{10}+\dfrac2{100}+\dfrac5{1\,000}=\dfrac{125}{1\,000}$
+}
+\vspace{1pt}
+\RecapPair{%
+  La notation scientifique est l'écriture sous la forme $a\times10^n$, où
+  $a$ possède un seul chiffre non nul avant la virgule \\
+  ($1\leqslant a<10$)
+  et $n$ est un entier relatif.
+}{%
+  Grand nombre~: $5\,230=5,23\times1\,000=5,23\times10^3$
+
+  Petit nombre~: $0,007\,4=7,4\times0,001=7,4\times10^{-3}$
+}
+
+\vspace*{0.12cm}
+
+\autoCardLine{questionC}{A22}{Pythagore}
+\vspace{1pt}
+\RecapPair{%
+  Si $ABC$ est rectangle en $A$, alors $BC^2=AB^2+AC^2$ ($BC$ hypoténuse,
+  côté opposé à l'angle droit).
+}{%
+  \begin{minipage}[c]{0.36\linewidth}
+  \centering
+  \begin{tikzpicture}[scale=1, line width=0.6pt]
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (0,1);
+    \coordinate (C) at (2.2,0);
+    \draw (A) -- (B) -- (C) -- cycle;
+    \draw (0,0.2) -- (0.2,0.2) -- (0.2,0);
+    \node[left=2pt] at ($(A)!0.5!(B)$) {$4$};
+    \node[below=2pt] at ($(A)!0.5!(C)$) {$8$};
+    \node[above right=-2pt] at ($(B)!0.5!(C)$) {$?$};
+    \node[below left=1pt] at (A) {$A$};
+    \node[above left=1pt] at (B) {$B$};
+    \node[below right=1pt] at (C) {$C$};
+  \end{tikzpicture}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[c]{0.6\linewidth}
+  $ABC$ est rectangle en $A$, donc d'après le th\'eor\`eme de Pythagore~: \\
+  $BC^2=AB^2+AC^2$.\\[2pt]
+  Avec $AB=4$ et $AC=8$~: $BC^2=4^2+8^2=16+64=80$, \\
+  donc $BC=\sqrt{80}=4\sqrt5$.
+  \end{minipage}
+}
+\vspace{0pt}
+
+\begin{multicols}{3}
+\autoCardLine{finalC}{Algo}{Lire un programme}
+\columnbreak
+\autoCardLine{finalC}{Translations}{}
+\columnbreak
+\textit{Pas de rappels. \\
+{\small Les questions ne nécessitent pas de pré-requis.}}
+\end{multicols}
+
+\newpage
+% ============================= VERSO (page 2) ==============================
+\begin{landscape}
+\begin{center}
+  {\large\bfseries Automatismes --- Semaine 2}
+\end{center}
+
+\vspace{4pt}
+\noindent
+Nom~: \hrulefill{} \hspace{14pt} Prénom~: \hrulefill{} \hspace{14pt} Classe~: \hrulefill
+
+\vspace{4pt}
+\footnotesize
+\textcolor{qcmC}{\textbf{QCM}} \hspace{16pt}
+\starQ{} = Question \hspace{16pt}
+\starFF{} = Automatisme final \hspace{16pt}
+\colorbox{emptyC}{\rule{0pt}{5pt}\hspace{10pt}} pas de question ce jour \hspace{16pt}
+\textcolor{questionC}{\okmark} juste \textperiodcentered{} \textcolor{redC}{\nomark} faux
+
+\vspace{3pt}
+\renewcommand{\arraystretch}{0.95}
+\setlength{\tabcolsep}{2.5pt}
+\begin{center}
+\begin{tabular}{|J|N||*{7}{O|}}
+\hline
+\multicolumn{2}{|c||}{} &
+\shortstack{\textcolor{qcmC}{A1}\\{\tiny Comparer deux nombres}} &
+\shortstack{\textcolor{qcmC}{A2}\\{\tiny Fractions}} &
+\shortstack{\textcolor{qcmC}{A3}\\{\tiny Puissances}} &
+\shortstack{\textcolor{qcmC}{A4}\\{\tiny Écritures d'un nombre}} &
+\shortstack{\textcolor{questionC}{A22}\\{\tiny Pythagore, Thalès}} &
+\shortstack{\textcolor{finalC}{Algo}\\{\tiny Lire un programme}} &
+\shortstack{\textcolor{finalC}{Translations}\\{\tiny (non numéroté)}} \\
+\hline\hline
+
+\multirow{3}{1.6cm}{\textbf{Jour 1}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qcase{1} & \qcase{2} & \qempty & \qempty & \qempty & \qempty & \qempty \\
+\cline{2-9}
+  & \starQ
+  & \qempty & \qcase{3} & \qcase{4} & \qempty & \qempty & \qempty & \qempty \\
+\cline{2-9}
+  & \starFF
+  & \qempty & \qcase{5} & \qcase{6} & \qempty & \qempty & \qempty & \qempty \\
+\hline
+
+\multirow{3}{1.6cm}{\textbf{Jour 2}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qempty & \qcase{1} & \qcase{2} & \qempty & \qempty \\
+\cline{2-9}
+  & \starQ
+  & \qcase{3} & \qempty & \qempty & \qcase{4} & \qempty & \qempty & \qempty \\
+\cline{2-9}
+  & \starFF
+  & \qcase{5} & \qempty & \qempty & \qempty & \qcase{6} & \qempty & \qempty \\
+\hline
+
+\multirow{3}{1.6cm}{\textbf{Jour 3}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qempty & \qempty & \qempty & \qcase{1} & \qcase{2} \\
+\cline{2-9}
+  & \starQ
+  & \qempty & \qempty & \qempty & \qempty & \qempty & \qcase{3} & \qcase{4} \\
+\cline{2-9}
+  & \starFF
+  & \qcase{5} & \qcase{6} & \qempty & \qempty & \qempty & \qempty & \qempty \\
+\hline
+
+\multirow{3}{1.6cm}{\textbf{Jour 4}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qempty & \qcase{1} & \qempty & \qcase{2} & \qempty \\
+\cline{2-9}
+  & \starQ
+  & \qcase{3} & \qempty & \qcase{4} & \qempty & \qempty & \qempty & \qempty \\
+\cline{2-9}
+  & \starFF
+  & \qempty & \qempty & \qcase{5} & \qempty & \qcase{6} & \qempty & \qempty \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{4pt}
+\begin{tcolorbox}[
+  boxrule=1.2pt, colframe=bonusC, colback=bonussoftC, arc=3pt,
+  left=10pt, right=10pt, top=3pt, bottom=3pt
+]
+\textcolor{bonusC}{\textbf{\footnotesize Q7 $\cdot$ BONUS $\cdot$ JOUR 4}} \hspace{10pt}
+{\footnotesize\color{inksoftC} A1 --- Comparer $a=6^{53}\times7^{55}$ et $b=42^{54}$ (question de
+dépassement, hors des 6 questions du jour)} \hfill
+\rule{2.6cm}{0.4pt}\hspace{6pt}\corrbox
+\end{tcolorbox}
+\end{landscape}
+
+\end{document}

@@ -14,7 +14,7 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Semaine 2 · Jour 1 — Automatismes (v2)</title>
+<title>Série 1 · Jour 1 — Automatismes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -146,7 +146,7 @@
   .aim strong { font-style: normal; color: var(--ink); font-weight: 600; }
 
   .question {
-    font-size: clamp(1.25rem, 1.05rem + 0.7vw, 1.55rem);
+    font-size: clamp(1.55rem, 1.3rem + 0.9vw, 1.95rem);
     font-weight: 500; line-height: 1.4; margin: 0 0 22px; color: var(--ink);
   }
 
@@ -165,7 +165,7 @@
   .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
   .opt {
     border: 1.5px solid var(--rule-strong); border-radius: 8px; padding: 13px 16px;
-    font-size: 1.1rem; cursor: pointer; background: var(--surface);
+    font-size: 1.35rem; cursor: pointer; background: var(--surface);
     transition: background .15s, border-color .15s;
   }
   .opt:hover { border-color: var(--accent); }
@@ -235,7 +235,7 @@
   }
   .theme-toggle:hover { background: var(--accent-soft); border-color: var(--accent); }
 
-  .katex .mord:not(.mathnormal):not(.mathit):not(.mathbf):not(.mathcal):not(.mathtt) {
+  .katex .mord:not(.mathnormal):not(.mathit):not(.mathbf):not(.mathcal):not(.mathtt):not(.vbox) {
     font-family: "Public Sans", system-ui, sans-serif;
   }
 </style>
@@ -245,14 +245,14 @@
 <div class="site-header">
   <div class="brand-row">
     <div>
-      <h1>Automatismes — Semaine 2</h1>
+      <h1>Automatismes, série 1, semaine du 07 au 11 septembre</h1>
       <p class="subtitle">Jour 1 · projection en classe</p>
     </div>
     <div class="header-actions">
-    <a class="theme-toggle" href="S02-sommaire.html" aria-label="Sommaire" title="Sommaire">📋</a>
+    <a class="theme-toggle" href="Série1-sommaire.html" aria-label="Sommaire" title="Sommaire">📋</a>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
     <span class="back-link" aria-hidden="true" style="visibility: hidden;">J-1</span>
-    <a class="back-link" href="S02-J2-projection-v2.html">J+1</a>
+    <a class="back-link" href="Série1-J2.html">J+1</a>
     </div>
   </div>
 </div>
@@ -263,7 +263,7 @@
       <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
       <div class="page-meta">
         <span class="count" id="qnum-display">1 / 6</span>
-        <div class="jour">Semaine 2 · Jour 1</div>
+        <div class="jour">Série 1 · Jour 1</div>
       </div>
     </div>
     <p class="question" id="qtext"></p>
