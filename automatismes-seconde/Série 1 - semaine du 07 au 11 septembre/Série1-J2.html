@@ -306,7 +306,7 @@ const QUESTIONS = [
     theme: "obj-geometrie",
     objectif: "A22 · Pythagore, Thalès",
     aim: "Calculer une longueur inconnue dans un triangle rectangle à l'aide du théorème de Pythagore, y compris quand le résultat n'est pas un nombre entier.",
-    question: "Dans le triangle ABC rectangle en A, on donne $\\text{BC}=8$ cm et $\\text{AB}=3$ cm. Quelle est la longueur du segment $[\\text{AC}]$ ?",
+    question: "Dans le triangle ABC rectangle en A, on donne $\\text{BC}=8$ cm et $\\text{AB}=3$ cm.<br>Quelle est la longueur du segment $[\\text{AC}]$ ?",
     options: [
       { letter:"A", text:"$\\sqrt{61}$ cm", correct:false },
       { letter:"B", text:"$\\sqrt{55}$ cm", correct:true },
@@ -317,9 +317,9 @@ const QUESTIONS = [
   },
   {
     objectif: "A1 · Comparer deux nombres",
-    aim: "Conclure sur l'ordre de deux nombres à partir du signe connu de leur différence, sans refaire le calcul.",
-    question: "Comparer $A=\\dfrac{9}{5}$ et $B=\\dfrac{7}{4}$, sachant que $A-B=\\dfrac{1}{20}$.",
-    explanation: "$\\dfrac{1}{20}>0$, donc $A-B>0$, donc $A>B$."
+    aim: "Comparer deux fractions en étudiant le signe de leur différence.",
+    question: "Comparer $A=\\dfrac{9}{5}$ et $B=\\dfrac{7}{4}$.",
+    explanation: "$A-B=\\dfrac{9}{5}-\\dfrac{7}{4}=\\dfrac{36}{20}-\\dfrac{35}{20}=\\dfrac{1}{20}>0$, donc $A>B$."
   },
   {
     objectif: "A4 · Écritures d'un nombre",
@@ -337,7 +337,25 @@ const QUESTIONS = [
     theme: "obj-geometrie",
     objectif: "A22 · Pythagore, Thalès",
     aim: "Enchaîner deux applications du théorème de Pythagore dans une figure formée de deux triangles rectangles emboîtés.",
-    question: "Le triangle ABC est rectangle en B et le triangle AFC est rectangle en F, avec $\\text{AB}=6$ cm, $\\text{BC}=7$ cm et $\\text{AF}=7$ cm. Calculer la longueur du segment $[\\text{FC}]$.",
+    question: "Calculer $\\text{FC}$.",
+    diagram: `<svg viewBox="0 0 340 260" role="img" aria-label="Triangle ABC rectangle en B et triangle AFC rectangle en F, accolés le long du segment AC">
+      <line x1="170" y1="30" x2="170" y2="200" stroke="var(--rule-strong)" stroke-width="1.5" stroke-dasharray="5 4"/>
+      <line x1="170" y1="30" x2="60" y2="115" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="60" y1="115" x2="170" y2="200" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="170" y1="30" x2="280" y2="115" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="280" y1="115" x2="170" y2="200" stroke="var(--ink)" stroke-width="2"/>
+      <polyline points="71.07,106.45 82.15,115 71.07,123.55" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+      <polyline points="268.93,106.45 257.85,115 268.93,123.55" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+      <g class="diagram-point"><circle cx="170" cy="30" r="5"/><text x="170" y="16">A</text></g>
+      <g class="diagram-point"><circle cx="60" cy="115" r="5"/><text x="40" y="119">B</text></g>
+      <g class="diagram-point"><circle cx="170" cy="200" r="5"/><text x="170" y="222">C</text></g>
+      <g class="diagram-point"><circle cx="280" cy="115" r="5"/><text x="300" y="119">F</text></g>
+      <text class="diagram-label" x="90" y="68" text-anchor="middle">AB = 6 cm</text>
+      <text class="diagram-label" x="90" y="168" text-anchor="middle">BC = 7 cm</text>
+      <text class="diagram-label" x="250" y="68" text-anchor="middle">AF = 7 cm</text>
+      <text class="diagram-label" x="250" y="168" text-anchor="middle">FC = ?</text>
+      <text class="diagram-label" x="170" y="248" text-anchor="middle" font-style="italic">(figure non à l'échelle)</text>
+    </svg>`,
     explanation: "Dans ABC : $\\text{AC}^2=\\text{AB}^2+\\text{BC}^2=36+49=85$. Dans AFC : $\\text{AC}^2=\\text{AF}^2+\\text{FC}^2$, donc $\\text{FC}^2=85-49=36$ et $\\text{FC}=\\sqrt{36}=6$ cm."
   }
 ];
