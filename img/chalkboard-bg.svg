@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="board" cx="50%" cy="42%" r="75%">
+      <stop offset="0%" stop-color="#1c3327"/>
+      <stop offset="55%" stop-color="#152a20"/>
+      <stop offset="100%" stop-color="#0c1a14"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="1000" fill="url(#board)"/>
+
+  <!-- faint eraser smudges (plain low-opacity ellipses, no blur filter needed) -->
+  <g fill="#eef0e6" opacity="0.045">
+    <ellipse cx="260" cy="180" rx="170" ry="65" transform="rotate(-12 260 180)"/>
+    <ellipse cx="1180" cy="760" rx="210" ry="85" transform="rotate(8 1180 760)"/>
+    <ellipse cx="900" cy="110" rx="130" ry="55" transform="rotate(-6 900 110)"/>
+  </g>
+
+  <!-- ghost grid lines, like faded graph paper -->
+  <g stroke="#eef0e6" stroke-width="1" opacity="0.05">
+    <line x1="0" y1="250" x2="1600" y2="250"/>
+    <line x1="0" y1="500" x2="1600" y2="500"/>
+    <line x1="0" y1="750" x2="1600" y2="750"/>
+    <line x1="400" y1="0" x2="400" y2="1000"/>
+    <line x1="800" y1="0" x2="800" y2="1000"/>
+    <line x1="1200" y1="0" x2="1200" y2="1000"/>
+  </g>
+
+  <!-- scattered chalk math symbols -->
+
+  <!-- pi -->
+  <g transform="translate(150,120) rotate(-8)" opacity="0.22" stroke="#eef0e6" stroke-width="6" fill="none" stroke-linecap="round">
+    <line x1="-30" y1="-4" x2="34" y2="-4"/>
+    <line x1="-14" y1="-4" x2="-20" y2="38"/>
+    <line x1="18" y1="-4" x2="24" y2="38"/>
+  </g>
+
+  <!-- square root of 2 -->
+  <g transform="translate(1330,180) rotate(5)" opacity="0.22">
+    <path d="M -34 8 L -22 22 L -4 -30 L 60 -30" fill="none" stroke="#eef0e6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="8" y="8" font-family="Georgia, serif" font-style="italic" font-size="30" fill="#eef0e6">2</text>
+  </g>
+
+  <!-- sigma -->
+  <path d="M 1194 510 L 1246 510 L 1202 540 L 1246 570 L 1194 570" transform="rotate(-4 1220 540)"
+        fill="none" stroke="#eef0e6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.18"/>
+
+  <!-- integral -->
+  <text x="90" y="560" font-family="Georgia, serif" font-style="italic" font-size="120" fill="#eef0e6" opacity="0.16" transform="rotate(6 90 560)">&#8747;</text>
+
+  <!-- infinity -->
+  <text x="760" y="920" font-family="Georgia, serif" font-style="italic" font-size="70" fill="#eef0e6" opacity="0.18" transform="rotate(-4 760 920)">&#8734;</text>
+
+  <!-- pythagoras -->
+  <text x="1080" y="880" font-family="Georgia, serif" font-style="italic" font-size="42" fill="#eef0e6" opacity="0.2" transform="rotate(3 1080 880)">a&#178; + b&#178; = c&#178;</text>
+
+  <!-- sin theta -->
+  <text x="220" y="800" font-family="Georgia, serif" font-style="italic" font-size="46" fill="#eef0e6" opacity="0.19" transform="rotate(-5 220 800)">sin &#952;</text>
+
+  <!-- fraction 1/2 -->
+  <g transform="translate(1420,420)" opacity="0.2">
+    <text x="0" y="-4" font-family="Georgia, serif" font-style="italic" font-size="34" fill="#eef0e6" text-anchor="middle">1</text>
+    <line x1="-16" y1="4" x2="16" y2="4" stroke="#eef0e6" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="0" y="34" font-family="Georgia, serif" font-style="italic" font-size="34" fill="#eef0e6" text-anchor="middle">2</text>
+  </g>
+
+  <!-- plus minus -->
+  <text x="620" y="150" font-family="Georgia, serif" font-size="60" fill="#eef0e6" opacity="0.18" transform="rotate(-10 620 150)">&#177;</text>
+
+  <!-- multiplication -->
+  <text x="480" y="640" font-family="Georgia, serif" font-size="52" fill="#eef0e6" opacity="0.17" transform="rotate(14 480 640)">&#215;</text>
+
+  <!-- division -->
+  <text x="1000" y="260" font-family="Georgia, serif" font-size="50" fill="#eef0e6" opacity="0.17" transform="rotate(-8 1000 260)">&#247;</text>
+
+  <!-- approx equals -->
+  <text x="70" y="440" font-family="Georgia, serif" font-size="46" fill="#eef0e6" opacity="0.17" transform="rotate(4 70 440)">&#8776;</text>
+
+  <!-- x squared -->
+  <text x="1480" y="700" font-family="Georgia, serif" font-style="italic" font-size="52" fill="#eef0e6" opacity="0.19" transform="rotate(9 1480 700)">x&#178;</text>
+
+  <!-- delta -->
+  <text x="700" y="480" font-family="Georgia, serif" font-size="64" fill="#eef0e6" opacity="0.16" transform="rotate(-6 700 480)">&#916;</text>
+
+  <!-- simple right triangle -->
+  <path d="M 1300 890 L 1300 830 L 1400 890 Z" transform="rotate(-3 1350 860)"
+        fill="none" stroke="#eef0e6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.17"/>
+
+  <!-- circle with radius line -->
+  <g transform="translate(430,300) rotate(2)" opacity="0.16">
+    <circle cx="0" cy="0" r="44" fill="none" stroke="#eef0e6" stroke-width="4"/>
+    <line x1="0" y1="0" x2="31" y2="-31" stroke="#eef0e6" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- percent -->
+  <text x="960" y="60" font-family="Georgia, serif" font-size="40" fill="#eef0e6" opacity="0.17" transform="rotate(-9 960 60)">%</text>
+
+  <!-- number line with arrows -->
+  <g transform="translate(300,960) rotate(1)" opacity="0.16" stroke="#eef0e6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="-90" y1="0" x2="90" y2="0"/>
+    <path d="M 80 -8 L 90 0 L 80 8"/>
+    <path d="M -80 -8 L -90 0 L -80 8"/>
+    <line x1="-30" y1="-6" x2="-30" y2="6"/>
+    <line x1="30" y1="-6" x2="30" y2="6"/>
+  </g>
+
+</svg>
