@@ -139,6 +139,21 @@
   .page-meta .count { font-size: 1.05rem; color: var(--ink-soft); }
   .page-meta .jour { font-size: 0.72rem; margin-top: 4px; }
 
+  .timer-bar { display: flex; align-items: center; gap: 8px; margin: 14px 0 18px; }
+  .timer-display {
+    font-family: "Space Mono", monospace; font-size: 1.3rem; font-weight: 700;
+    color: var(--ink); min-width: 2.8em; text-align: center;
+  }
+  .timer-display.warning { color: var(--orange); }
+  .timer-display.done { color: var(--red); }
+  .timer-btn {
+    border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface);
+    color: var(--ink); font-family: "Space Mono", monospace; font-size: 0.85rem; font-weight: 700;
+    padding: 6px 12px; cursor: pointer; line-height: 1;
+  }
+  .timer-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .timer-btn.small { padding: 5px 9px; font-size: 0.72rem; }
+
   .aim {
     margin: 0 0 14px;
     color: var(--ink-soft);
@@ -328,6 +343,13 @@
         <div class="jour">Série 1 · Jour 3</div>
       </div>
     </div>
+    <div class="timer-bar">
+      <button class="timer-btn" id="timer-toggle" type="button" aria-label="Démarrer le minuteur">▶</button>
+      <span class="timer-display" id="timer-display">0:30</span>
+      <button class="timer-btn small" id="timer-minus" type="button" aria-label="Moins 5 secondes">−5</button>
+      <button class="timer-btn small" id="timer-plus" type="button" aria-label="Plus 5 secondes">+5</button>
+      <button class="timer-btn small" id="timer-reset" type="button" aria-label="Réinitialiser le minuteur">↺</button>
+    </div>
     <p class="question" id="qtext"></p>
     <div class="teacher-note" id="teacher-note"></div>
     <div class="diagram" id="diagram"></div>
@@ -354,6 +376,7 @@
 <script>
 const QUESTIONS = [
   {
+    tier: "qcm",
     theme: "obj-complement",
     objectif: "Algo · Lire un programme",
     aim: "Lire un petit programme (Python ou Scratch) et prévoir ce qu'il affiche, en suivant l'ordre des instructions.",
@@ -414,6 +437,7 @@ dire (a + b)</pre>
     explanation: "Le programme affiche la somme de $a$ et $b$ : $6+8=14$. $48$ serait le produit $a\\times b$ ; $68$ et $86$ correspondent à une confusion avec les chiffres de $a$ et $b$ accolés."
   },
   {
+    tier: "qcm",
     theme: "obj-complement",
     objectif: "Translations",
     aim: "Déterminer l'image d'un point par une translation de vecteur donné.",
@@ -449,6 +473,7 @@ dire (a + b)</pre>
     explanation: "Le vecteur $\\overrightarrow{\\text{MN}}$ correspond à un déplacement de 3 carreaux vers la droite et 1 carreau vers le haut. Seul A<sub>3</sub> combine exactement ce déplacement depuis A : les trois autres points ne correspondent ni à la même direction, ni à la même longueur que $\\overrightarrow{\\text{MN}}$."
   },
   {
+    tier: "question",
     theme: "obj-complement",
     objectif: "Algo · Lire un programme",
     aim: "Prévoir le résultat affiché par un programme utilisant une soustraction.",
@@ -475,6 +500,7 @@ print(a - b)</pre>
     explanation: "Le programme affiche $a-b=8-6=2$."
   },
   {
+    tier: "question",
     theme: "obj-complement",
     objectif: "Translations",
     aim: "Comprendre qu'une translation déplace tous les points de la même façon (même direction, même sens, même longueur).",
@@ -483,12 +509,14 @@ print(a - b)</pre>
     explanation: "Une translation déplace tous les points d'une figure de la même façon : C se déplace donc lui aussi de 3 carreaux vers la droite et 2 carreaux vers le haut, exactement comme A."
   },
   {
+    tier: "final",
     objectif: "A1 · Comparer deux nombres",
     aim: "Comparer deux fractions positives en étudiant le signe de leur différence, comme automatisme final de la semaine sur ce type de comparaison.",
     question: "Comparer $A=\\dfrac{4}{5}$ et $B=\\dfrac{9}{7}$ en étudiant le signe de leur différence.",
     explanation: "$A-B=\\dfrac{4}{5}-\\dfrac{9}{7}=\\dfrac{28}{35}-\\dfrac{45}{35}=-\\dfrac{17}{35}$. Comme $-\\dfrac{17}{35}<0$, on a $A<B$."
   },
   {
+    tier: "final",
     objectif: "A2 · Fractions",
     aim: "Comparer deux fractions en choisissant soi-même la méthode la plus efficace (comparaison à 1, réduction au même dénominateur, ou différence).",
     question: "Comparer $\\dfrac{6}{5}$ et $\\dfrac{5}{6}$.",
@@ -515,6 +543,56 @@ const dotsWrap = document.getElementById("nav-dots");
 const btnPrev = document.getElementById("btn-prev");
 const btnNext = document.getElementById("btn-next");
 
+// --- Minuteur ---------------------------------------------------------
+const TIER_DURATIONS = { qcm: 20, question: 40, final: 60 };
+const timerToggle = document.getElementById("timer-toggle");
+const timerDisplay = document.getElementById("timer-display");
+const timerMinus = document.getElementById("timer-minus");
+const timerPlus = document.getElementById("timer-plus");
+const timerReset = document.getElementById("timer-reset");
+let timerRemaining = 30;
+let timerInterval = null;
+let timerRunning = false;
+
+function formatTime(s){
+  const m = Math.floor(s / 60), sec = s % 60;
+  return m + ":" + String(sec).padStart(2, "0");
+}
+function updateTimerDisplay(){
+  timerDisplay.textContent = formatTime(Math.max(timerRemaining, 0));
+  timerDisplay.classList.toggle("warning", timerRemaining <= 10 && timerRemaining > 0);
+  timerDisplay.classList.toggle("done", timerRemaining <= 0);
+}
+function stopTimer(){
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerRunning = false;
+  timerToggle.textContent = "▶";
+  timerToggle.setAttribute("aria-label", "Démarrer le minuteur");
+}
+function tickTimer(){
+  timerRemaining--;
+  updateTimerDisplay();
+  if (timerRemaining <= 0) stopTimer();
+}
+function startTimer(){
+  if (timerRemaining <= 0) return;
+  timerRunning = true;
+  timerToggle.textContent = "⏸";
+  timerToggle.setAttribute("aria-label", "Mettre en pause");
+  timerInterval = setInterval(tickTimer, 1000);
+}
+function resetTimerToDefault(){
+  stopTimer();
+  const q = QUESTIONS[current];
+  timerRemaining = TIER_DURATIONS[q.tier] || 30;
+  updateTimerDisplay();
+}
+timerToggle.addEventListener("click", () => { timerRunning ? stopTimer() : startTimer(); });
+timerMinus.addEventListener("click", () => { timerRemaining = Math.max(0, timerRemaining - 5); updateTimerDisplay(); });
+timerPlus.addEventListener("click", () => { timerRemaining += 5; updateTimerDisplay(); });
+timerReset.addEventListener("click", resetTimerToDefault);
+
 QUESTIONS.forEach((_, i) => {
   const b = document.createElement("button");
   b.setAttribute("aria-label", "Aller à la question " + (i + 1));
@@ -525,6 +603,8 @@ QUESTIONS.forEach((_, i) => {
 function render(){
   revealed = false;
   const q = QUESTIONS[current];
+
+  resetTimerToDefault();
 
   objectifText.textContent = q.objectif;
   objectifBadge.className = "badge " + (q.theme || "obj-nombres");

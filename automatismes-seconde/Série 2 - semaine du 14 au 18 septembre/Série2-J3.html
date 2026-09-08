@@ -137,6 +137,21 @@
   .page-meta .count { font-size: 1.05rem; color: var(--ink-soft); }
   .page-meta .jour { font-size: 0.72rem; margin-top: 4px; }
 
+  .timer-bar { display: flex; align-items: center; gap: 8px; margin: 14px 0 18px; }
+  .timer-display {
+    font-family: "Space Mono", monospace; font-size: 1.3rem; font-weight: 700;
+    color: var(--ink); min-width: 2.8em; text-align: center;
+  }
+  .timer-display.warning { color: var(--orange); }
+  .timer-display.done { color: var(--red); }
+  .timer-btn {
+    border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface);
+    color: var(--ink); font-family: "Space Mono", monospace; font-size: 0.85rem; font-weight: 700;
+    padding: 6px 12px; cursor: pointer; line-height: 1;
+  }
+  .timer-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .timer-btn.small { padding: 5px 9px; font-size: 0.72rem; }
+
   .aim {
     margin: 0 0 14px;
     color: var(--ink-soft);
@@ -281,6 +296,13 @@
         <div class="jour">Série 2 · Jour 3</div>
       </div>
     </div>
+    <div class="timer-bar">
+      <button class="timer-btn" id="timer-toggle" type="button" aria-label="Démarrer le minuteur">▶</button>
+      <span class="timer-display" id="timer-display">0:30</span>
+      <button class="timer-btn small" id="timer-minus" type="button" aria-label="Moins 5 secondes">−5</button>
+      <button class="timer-btn small" id="timer-plus" type="button" aria-label="Plus 5 secondes">+5</button>
+      <button class="timer-btn small" id="timer-reset" type="button" aria-label="Réinitialiser le minuteur">↺</button>
+    </div>
     <p class="question" id="qtext"></p>
     <div class="diagram" id="diagram"></div>
     <div class="options" id="options"></div>
@@ -306,6 +328,7 @@
 <script>
 const QUESTIONS = [
   {
+    tier: "qcm",
     theme: "obj-geometrie",
     objectif: "Vecteurs \u00b7 D\u00e9finition",
     aim: "Conna\u00eetre le vocabulaire",
@@ -319,6 +342,7 @@ const QUESTIONS = [
     explanation: "La longueur de la fl\u00e8che est la <em>norme</em> du vecteur, not\u00e9e $\\|\\vec{u}\\|$ (ou $\\text{AB}$ pour $\\overrightarrow{\\text{AB}}$) \u2014 la direction et le sens sont donn\u00e9s par l'orientation de la fl\u00e8che, pas par sa longueur."
   },
   {
+    tier: "qcm",
     objectif: "Calcul litt\u00e9ral \u00b7 Distributivit\u00e9",
     aim: "Appliquer la distributivit\u00e9 avec un facteur n\u00e9gatif, sans erreur de signe.",
     question: "D\u00e9velopper $-2(x-4)$ :",
@@ -331,24 +355,28 @@ const QUESTIONS = [
     explanation: "$-2(x-4)=-2\\times x-2\\times(-4)=-2x+8$. Le signe $-$ du facteur se distribue sur les deux termes, y compris sur le $-4$ (deux signes $-$ donnent $+$)."
   },
   {
+    tier: "question",
     objectif: "A22 \u00b7 Pythagore, Thal\u00e8s",
     aim: "Calculer une longueur exacte avec le th\u00e9or\u00e8me de Pythagore \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
     question: "Dans le triangle ABC rectangle en A, on donne $\\text{BC}=8$ cm et $\\text{AB}=3$ cm.<br>Calculer $\\text{AC}$ (valeur exacte).",
     explanation: "$\\text{AC}^2=\\text{BC}^2-\\text{AB}^2=8^2-3^2=64-9=55$,<br>donc $\\text{AC}=\\sqrt{55}$ cm ($55$ n'est pas un carr\u00e9 parfait).<div class=\"diagram\" style=\"margin-top:14px;\"><svg viewBox=\"0 0 260 150\" role=\"img\" aria-label=\"Triangle ABC rectangle en A, AB=3, BC=8, AC=racine de 55\">\n      <polygon points=\"30,35 30,110 230,35\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n      <path d=\"M30,47 L42,47 L42,35\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n      <g class=\"diagram-point\"><circle cx=\"30\" cy=\"35\" r=\"5\"/><text x=\"30\" y=\"19\">A</text></g>\n      <g class=\"diagram-point\"><circle cx=\"30\" cy=\"110\" r=\"5\"/><text x=\"30\" y=\"130\">B</text></g>\n      <g class=\"diagram-point\"><circle cx=\"230\" cy=\"35\" r=\"5\"/><text x=\"230\" y=\"19\">C</text></g>\n      <text class=\"diagram-label\" x=\"14\" y=\"76\" text-anchor=\"end\">3 cm</text>\n      <text class=\"diagram-label\" x=\"130\" y=\"23\" text-anchor=\"middle\">&#8730;55 cm</text>\n      <text class=\"diagram-label\" x=\"158\" y=\"50\" text-anchor=\"middle\">8 cm</text>\n    </svg></div>"
   },
   {
+    tier: "question",
     objectif: "Calcul litt\u00e9ral \u00b7 Distributivit\u00e9",
     aim: "Reconna\u00eetre un facteur commun pour factoriser une somme.",
     question: "Factoriser $5x+5y$.",
     explanation: "$5$ est un facteur commun aux deux termes : $5x+5y=5(x+y)$."
   },
   {
+    tier: "final",
     objectif: "A2 \u00b7 Fractions",
     aim: "Réduire deux fractions au même dénominateur pour les comparer, comme automatisme final \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
     question: "R\u00e9duire au m\u00eame d\u00e9nominateur les fractions $\\dfrac{5}{6}$ et $\\dfrac{3}{4}$, puis les comparer.",
     explanation: "Le plus petit d\u00e9nominateur commun \u00e0 $6$ et $4$ est $12$ : $\\dfrac{5}{6}=\\dfrac{10}{12}$ et $\\dfrac{3}{4}=\\dfrac{9}{12}$. Comme $10>9$, on a $\\dfrac{5}{6}>\\dfrac{3}{4}$."
   },
   {
+    tier: "final",
     theme: "obj-geometrie",
     objectif: "Vecteurs \u00b7 Somme",
     aim: "Additionner deux vecteurs diff\u00e9rents plac\u00e9s bout \u00e0 bout, en composant leurs d\u00e9placements composante par composante.",
@@ -374,6 +402,56 @@ const dotsWrap = document.getElementById("nav-dots");
 const btnPrev = document.getElementById("btn-prev");
 const btnNext = document.getElementById("btn-next");
 
+// --- Minuteur ---------------------------------------------------------
+const TIER_DURATIONS = { qcm: 20, question: 40, final: 60 };
+const timerToggle = document.getElementById("timer-toggle");
+const timerDisplay = document.getElementById("timer-display");
+const timerMinus = document.getElementById("timer-minus");
+const timerPlus = document.getElementById("timer-plus");
+const timerReset = document.getElementById("timer-reset");
+let timerRemaining = 30;
+let timerInterval = null;
+let timerRunning = false;
+
+function formatTime(s){
+  const m = Math.floor(s / 60), sec = s % 60;
+  return m + ":" + String(sec).padStart(2, "0");
+}
+function updateTimerDisplay(){
+  timerDisplay.textContent = formatTime(Math.max(timerRemaining, 0));
+  timerDisplay.classList.toggle("warning", timerRemaining <= 10 && timerRemaining > 0);
+  timerDisplay.classList.toggle("done", timerRemaining <= 0);
+}
+function stopTimer(){
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerRunning = false;
+  timerToggle.textContent = "▶";
+  timerToggle.setAttribute("aria-label", "Démarrer le minuteur");
+}
+function tickTimer(){
+  timerRemaining--;
+  updateTimerDisplay();
+  if (timerRemaining <= 0) stopTimer();
+}
+function startTimer(){
+  if (timerRemaining <= 0) return;
+  timerRunning = true;
+  timerToggle.textContent = "⏸";
+  timerToggle.setAttribute("aria-label", "Mettre en pause");
+  timerInterval = setInterval(tickTimer, 1000);
+}
+function resetTimerToDefault(){
+  stopTimer();
+  const q = QUESTIONS[current];
+  timerRemaining = TIER_DURATIONS[q.tier] || 30;
+  updateTimerDisplay();
+}
+timerToggle.addEventListener("click", () => { timerRunning ? stopTimer() : startTimer(); });
+timerMinus.addEventListener("click", () => { timerRemaining = Math.max(0, timerRemaining - 5); updateTimerDisplay(); });
+timerPlus.addEventListener("click", () => { timerRemaining += 5; updateTimerDisplay(); });
+timerReset.addEventListener("click", resetTimerToDefault);
+
 QUESTIONS.forEach((_, i) => {
   const b = document.createElement("button");
   b.setAttribute("aria-label", "Aller à la question " + (i + 1));
@@ -384,6 +462,8 @@ QUESTIONS.forEach((_, i) => {
 function render(){
   revealed = false;
   const q = QUESTIONS[current];
+
+  resetTimerToDefault();
 
   objectifText.textContent = q.objectif;
   objectifBadge.className = "badge " + (q.theme || "obj-nombres");

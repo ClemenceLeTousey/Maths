@@ -137,6 +137,21 @@
   .page-meta .count { font-size: 1.05rem; color: var(--ink-soft); }
   .page-meta .jour { font-size: 0.72rem; margin-top: 4px; }
 
+  .timer-bar { display: flex; align-items: center; gap: 8px; margin: 14px 0 18px; }
+  .timer-display {
+    font-family: "Space Mono", monospace; font-size: 1.3rem; font-weight: 700;
+    color: var(--ink); min-width: 2.8em; text-align: center;
+  }
+  .timer-display.warning { color: var(--orange); }
+  .timer-display.done { color: var(--red); }
+  .timer-btn {
+    border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface);
+    color: var(--ink); font-family: "Space Mono", monospace; font-size: 0.85rem; font-weight: 700;
+    padding: 6px 12px; cursor: pointer; line-height: 1;
+  }
+  .timer-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .timer-btn.small { padding: 5px 9px; font-size: 0.72rem; }
+
   .aim {
     margin: 0 0 14px;
     color: var(--ink-soft);
@@ -281,6 +296,13 @@
         <div class="jour">Série 2 · Jour 4</div>
       </div>
     </div>
+    <div class="timer-bar">
+      <button class="timer-btn" id="timer-toggle" type="button" aria-label="Démarrer le minuteur">▶</button>
+      <span class="timer-display" id="timer-display">0:30</span>
+      <button class="timer-btn small" id="timer-minus" type="button" aria-label="Moins 5 secondes">−5</button>
+      <button class="timer-btn small" id="timer-plus" type="button" aria-label="Plus 5 secondes">+5</button>
+      <button class="timer-btn small" id="timer-reset" type="button" aria-label="Réinitialiser le minuteur">↺</button>
+    </div>
     <p class="question" id="qtext"></p>
     <div class="diagram" id="diagram"></div>
     <div class="options" id="options"></div>
@@ -306,6 +328,7 @@
 <script>
 const QUESTIONS = [
   {
+    tier: "qcm",
     theme: "obj-geometrie",
     objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
     aim: "Distinguer une condition n\u00e9cessaire (mais non suffisante) de l'\u00e9galit\u00e9 de deux vecteurs.",
@@ -319,6 +342,7 @@ const QUESTIONS = [
     explanation: "Deux vecteurs \u00e9gaux ont la m\u00eame longueur (entre autres conditions) : $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{DC}}$ entra\u00eene donc $\\text{AB}=\\text{DC}$. Attention, la r\u00e9ciproque est fausse : avoir la m\u00eame longueur ne suffit pas \u00e0 rendre deux vecteurs \u00e9gaux (il faut aussi la m\u00eame direction et le m\u00eame sens)."
   },
   {
+    tier: "qcm",
     theme: "obj-complement",
     objectif: "Algo \u00b7 Expressions litt\u00e9rales",
     aim: "Lire une fonction Python qui \u00e9value une expression litt\u00e9rale comportant un carr\u00e9.",
@@ -336,12 +360,14 @@ print(f(3))</pre></div></div>`,
     explanation: "La fonction calcule $x\\times x-1$. Avec $x=3$ : $3\\times3-1=9-1=8$."
   },
   {
+    tier: "question",
     objectif: "Calcul litt\u00e9ral \u00b7 Distributivit\u00e9",
     aim: "D\u00e9velopper et r\u00e9duire une expression combinant un produit distribu\u00e9 et un terme suppl\u00e9mentaire.",
     question: "D\u00e9velopper et r\u00e9duire $4(x+1)+3x$.",
     explanation: "$4(x+1)+3x=4x+4+3x=7x+4$."
   },
   {
+    tier: "question",
     theme: "obj-complement",
     objectif: "Algo \u00b7 Expressions litt\u00e9rales",
     aim: "Lire une fonction Python simple et calculer l'image d'un nombre par cette fonction.",
@@ -353,12 +379,14 @@ print(perimetre(7))</pre></div></div>`,
     explanation: "La fonction calcule $4x$. Avec $x=7$ : $4\\times7=28$."
   },
   {
+    tier: "final",
     objectif: "A3 \u00b7 Puissances",
     aim: "Calculer une somme de puissances de 10 puis exprimer le r\u00e9sultat en notation scientifique, comme automatisme final \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
     question: "Calculer $10^{3}+10^{0}+10^{-2}$, puis \u00e9crire le r\u00e9sultat en notation scientifique.",
     explanation: "$10^{3}+10^{0}+10^{-2}=1\\,000+1+0,01=1\\,001,01$, soit $1,00101\\times10^{3}$ en notation scientifique."
   },
   {
+    tier: "final",
     theme: "obj-complement",
     objectif: "Algo \u00b7 Expressions litt\u00e9rales",
     aim: "Lire une fonction Python dont l'expression combine une distributivit\u00e9, en lien avec le calcul litt\u00e9ral de la semaine.",
@@ -388,6 +416,56 @@ const dotsWrap = document.getElementById("nav-dots");
 const btnPrev = document.getElementById("btn-prev");
 const btnNext = document.getElementById("btn-next");
 
+// --- Minuteur ---------------------------------------------------------
+const TIER_DURATIONS = { qcm: 20, question: 40, final: 60 };
+const timerToggle = document.getElementById("timer-toggle");
+const timerDisplay = document.getElementById("timer-display");
+const timerMinus = document.getElementById("timer-minus");
+const timerPlus = document.getElementById("timer-plus");
+const timerReset = document.getElementById("timer-reset");
+let timerRemaining = 30;
+let timerInterval = null;
+let timerRunning = false;
+
+function formatTime(s){
+  const m = Math.floor(s / 60), sec = s % 60;
+  return m + ":" + String(sec).padStart(2, "0");
+}
+function updateTimerDisplay(){
+  timerDisplay.textContent = formatTime(Math.max(timerRemaining, 0));
+  timerDisplay.classList.toggle("warning", timerRemaining <= 10 && timerRemaining > 0);
+  timerDisplay.classList.toggle("done", timerRemaining <= 0);
+}
+function stopTimer(){
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerRunning = false;
+  timerToggle.textContent = "▶";
+  timerToggle.setAttribute("aria-label", "Démarrer le minuteur");
+}
+function tickTimer(){
+  timerRemaining--;
+  updateTimerDisplay();
+  if (timerRemaining <= 0) stopTimer();
+}
+function startTimer(){
+  if (timerRemaining <= 0) return;
+  timerRunning = true;
+  timerToggle.textContent = "⏸";
+  timerToggle.setAttribute("aria-label", "Mettre en pause");
+  timerInterval = setInterval(tickTimer, 1000);
+}
+function resetTimerToDefault(){
+  stopTimer();
+  const q = QUESTIONS[current];
+  timerRemaining = TIER_DURATIONS[q.tier] || 30;
+  updateTimerDisplay();
+}
+timerToggle.addEventListener("click", () => { timerRunning ? stopTimer() : startTimer(); });
+timerMinus.addEventListener("click", () => { timerRemaining = Math.max(0, timerRemaining - 5); updateTimerDisplay(); });
+timerPlus.addEventListener("click", () => { timerRemaining += 5; updateTimerDisplay(); });
+timerReset.addEventListener("click", resetTimerToDefault);
+
 QUESTIONS.forEach((_, i) => {
   const b = document.createElement("button");
   b.setAttribute("aria-label", "Aller à la question " + (i + 1));
@@ -398,6 +476,8 @@ QUESTIONS.forEach((_, i) => {
 function render(){
   revealed = false;
   const q = QUESTIONS[current];
+
+  resetTimerToDefault();
 
   objectifText.textContent = q.objectif;
   objectifBadge.className = "badge " + (q.theme || "obj-nombres");

@@ -139,6 +139,21 @@
   .page-meta .count { font-size: 1.05rem; color: var(--ink-soft); }
   .page-meta .jour { font-size: 0.72rem; margin-top: 4px; }
 
+  .timer-bar { display: flex; align-items: center; gap: 8px; margin: 14px 0 18px; }
+  .timer-display {
+    font-family: "Space Mono", monospace; font-size: 1.3rem; font-weight: 700;
+    color: var(--ink); min-width: 2.8em; text-align: center;
+  }
+  .timer-display.warning { color: var(--orange); }
+  .timer-display.done { color: var(--red); }
+  .timer-btn {
+    border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface);
+    color: var(--ink); font-family: "Space Mono", monospace; font-size: 0.85rem; font-weight: 700;
+    padding: 6px 12px; cursor: pointer; line-height: 1;
+  }
+  .timer-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .timer-btn.small { padding: 5px 9px; font-size: 0.72rem; }
+
   .aim {
     margin: 0 0 14px;
     color: var(--ink-soft);
@@ -305,6 +320,13 @@
         <div class="jour">Série 1 · Jour 4</div>
       </div>
     </div>
+    <div class="timer-bar">
+      <button class="timer-btn" id="timer-toggle" type="button" aria-label="Démarrer le minuteur">▶</button>
+      <span class="timer-display" id="timer-display">0:30</span>
+      <button class="timer-btn small" id="timer-minus" type="button" aria-label="Moins 5 secondes">−5</button>
+      <button class="timer-btn small" id="timer-plus" type="button" aria-label="Plus 5 secondes">+5</button>
+      <button class="timer-btn small" id="timer-reset" type="button" aria-label="Réinitialiser le minuteur">↺</button>
+    </div>
     <p class="question" id="qtext"></p>
     <div class="diagram" id="diagram"></div>
     <div class="options" id="options"></div>
@@ -330,6 +352,7 @@
 <script>
 const QUESTIONS = [
   {
+    tier: "qcm",
     objectif: "A4 · Écritures d'un nombre",
     aim: "Convertir une somme de fractions décimales en écriture décimale.",
     question: "On considère $A=\\dfrac{192}{100}+\\dfrac{14}{1\\,000}$. On a :",
@@ -352,6 +375,7 @@ const QUESTIONS = [
       </table>`
   },
   {
+    tier: "qcm",
     theme: "obj-complement",
     objectif: "Algo · Bloc et fonction",
     aim: "Faire correspondre un script Scratch complet (déclenchement, saisie, appel d'un bloc personnalisé) à la définition Python équivalente, en particulier reconnaître un nom de fonction et de paramètre cohérents.",
@@ -387,24 +411,28 @@ périmètre carré (côté)::custom</pre>
     explanation: "Le bloc personnalisé calcule <code>périmètre carré(côté) = 4 × côté</code>. Seule la proposition D reprend exactement ce nom de fonction et ce calcul.<br>En A, le nom de la fonction et celui du paramètre sont inversés (<code>cote(perimetre)</code> au lieu de <code>perimetre_carre(cote)</code>) : le calcul renvoie encore la bonne valeur, mais les noms ne veulent plus rien dire — ce n'est plus une transcription fidèle du bloc.<br>B calcule une aire, pas un périmètre. C reprend le bon nom mais calcule côté² au lieu de 4 × côté.<div class=\"console-panel\" style=\"margin-top:14px;\"><div class=\"prompt\">&gt;&gt;&gt; Script exécuté</div><div class=\"prompt\">&gt;&gt;&gt; perimetre_carre(6)</div><div class=\"result\">24</div></div>"
   },
   {
+    tier: "question",
     objectif: "A1 · Comparer deux nombres",
     aim: "Comparer deux fractions en choisissant soi-même la méthode la plus efficace (ici, la comparaison à 1 ne suffit pas : les deux fractions lui sont supérieures).",
     question: "Comparer $A=\\dfrac{4}{3}$ et $B=\\dfrac{3}{2}$.",
     explanation: "Deux méthodes possibles (la comparaison à $1$ ne permet pas de conclure ici : $A>1$ et $B>1$ tous les deux).<br>1. Même dénominateur : $A=\\dfrac{4}{3}=\\dfrac{8}{6}$ et $B=\\dfrac{3}{2}=\\dfrac{9}{6}$ ; comme $8<9$, on a $A<B$.<br>2. Différence : $A-B=\\dfrac{4}{3}-\\dfrac{3}{2}=\\dfrac{8}{6}-\\dfrac{9}{6}=-\\dfrac{1}{6}<0$, donc $A<B$."
   },
   {
+    tier: "question",
     objectif: "A3 · Puissances",
     aim: "Écrire un quotient de puissances de même base sous la forme d'une seule puissance, avec un exposant relatif.",
     question: "Écrire sous la forme $a^n$, où $a$ et $n$ sont des entiers relatifs,<br><span style=\"display:block;text-align:center\">$\\dfrac{6^{3}}{6^{7}}$.</span>",
     explanation: "$\\dfrac{6^{3}}{6^{7}}=6^{3-7}=6^{-4}$."
   },
   {
+    tier: "final",
     objectif: "A3 · Puissances",
     aim: "Simplifier une expression combinant une puissance de puissance et une division de puissances de même base.",
     question: "Écrire $\\dfrac{(5^{3})^{4}}{5^{15}}$ sous la forme d'une puissance de $5$.",
     explanation: "$\\dfrac{(5^{3})^{4}}{5^{15}}=\\dfrac{5^{12}}{5^{15}}=5^{12-15}=5^{-3}$."
   },
   {
+    tier: "final",
     theme: "obj-geometrie",
     objectif: "A22 · Pythagore, Thalès",
     aim: "Calculer la valeur exacte d'une longueur avec le théorème de Pythagore, en simplifiant une racine carrée non entière.",
@@ -412,6 +440,7 @@ périmètre carré (côté)::custom</pre>
     explanation: "$\\text{BC}^2=\\text{AB}^2+\\text{AC}^2=16+64=80$, donc $\\text{BC}=\\sqrt{80}=\\sqrt{16\\times5}=4\\sqrt5$."
   },
   {
+    tier: "final",
     objectif: "A1 · Comparer deux nombres",
     aim: "Question de dépassement (facultative) : comparer deux nombres composés de plusieurs puissances de bases différentes, en repérant soi-même le facteur commun à faire apparaître.",
     question: "Comparer $a=6^{53}\\times7^{55}$ et $b=42^{54}$ en calculant le quotient $\\dfrac{a}{b}$ et en le comparant à $1$.",
@@ -437,6 +466,56 @@ const dotsWrap = document.getElementById("nav-dots");
 const btnPrev = document.getElementById("btn-prev");
 const btnNext = document.getElementById("btn-next");
 
+// --- Minuteur ---------------------------------------------------------
+const TIER_DURATIONS = { qcm: 20, question: 40, final: 60 };
+const timerToggle = document.getElementById("timer-toggle");
+const timerDisplay = document.getElementById("timer-display");
+const timerMinus = document.getElementById("timer-minus");
+const timerPlus = document.getElementById("timer-plus");
+const timerReset = document.getElementById("timer-reset");
+let timerRemaining = 30;
+let timerInterval = null;
+let timerRunning = false;
+
+function formatTime(s){
+  const m = Math.floor(s / 60), sec = s % 60;
+  return m + ":" + String(sec).padStart(2, "0");
+}
+function updateTimerDisplay(){
+  timerDisplay.textContent = formatTime(Math.max(timerRemaining, 0));
+  timerDisplay.classList.toggle("warning", timerRemaining <= 10 && timerRemaining > 0);
+  timerDisplay.classList.toggle("done", timerRemaining <= 0);
+}
+function stopTimer(){
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerRunning = false;
+  timerToggle.textContent = "▶";
+  timerToggle.setAttribute("aria-label", "Démarrer le minuteur");
+}
+function tickTimer(){
+  timerRemaining--;
+  updateTimerDisplay();
+  if (timerRemaining <= 0) stopTimer();
+}
+function startTimer(){
+  if (timerRemaining <= 0) return;
+  timerRunning = true;
+  timerToggle.textContent = "⏸";
+  timerToggle.setAttribute("aria-label", "Mettre en pause");
+  timerInterval = setInterval(tickTimer, 1000);
+}
+function resetTimerToDefault(){
+  stopTimer();
+  const q = QUESTIONS[current];
+  timerRemaining = TIER_DURATIONS[q.tier] || 30;
+  updateTimerDisplay();
+}
+timerToggle.addEventListener("click", () => { timerRunning ? stopTimer() : startTimer(); });
+timerMinus.addEventListener("click", () => { timerRemaining = Math.max(0, timerRemaining - 5); updateTimerDisplay(); });
+timerPlus.addEventListener("click", () => { timerRemaining += 5; updateTimerDisplay(); });
+timerReset.addEventListener("click", resetTimerToDefault);
+
 QUESTIONS.forEach((_, i) => {
   const b = document.createElement("button");
   b.setAttribute("aria-label", "Aller à la question " + (i + 1));
@@ -447,6 +526,8 @@ QUESTIONS.forEach((_, i) => {
 function render(){
   revealed = false;
   const q = QUESTIONS[current];
+
+  resetTimerToDefault();
 
   objectifText.textContent = q.objectif;
   objectifBadge.className = "badge " + (q.theme || "obj-nombres");
