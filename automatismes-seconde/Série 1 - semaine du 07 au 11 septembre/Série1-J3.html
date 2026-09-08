@@ -442,19 +442,21 @@ dire (a + b)</pre>
     objectif: "Translations",
     aim: "Reconnaître si deux figures superposables sont liées par une translation (même orientation) ou par une rotation (orientation différente).",
     question: "Les cinq figures ci-dessous sont superposables.<br>Donner les figures qui se superposent à la figure 1 par translation.",
-    diagram: `<svg viewBox="19 -15 278 210" role="img" aria-label="Cinq figures superposables numérotées de 1 à 5, certaines liées par translation, d'autres par rotation">
-      <g transform="rotate(-10,150,85)">
-        <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(34,9)" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
-        <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(70,51) rotate(180,21,26)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
-        <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(44,122)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
-        <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(196,40) rotate(180,21,26)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
-        <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(238,74)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
+    diagram: `<svg viewBox="67 43 174 115" role="img" aria-label="Cinq figures superposables numérotées de 1 à 5, certaines liées par translation, d'autres par rotation">
+      <g transform="translate(158,90) scale(0.65) translate(-158,-90)">
+        <g transform="rotate(-10,150,85)">
+          <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(34,9)" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+          <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(70,51) rotate(180,21,26)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
+          <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(44,122)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
+          <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(196,40) rotate(180,21,26)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
+          <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(238,74)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
+        </g>
+        <g class="diagram-point"><circle cx="46" cy="41" r="8" fill="var(--aqua)" stroke="none"/><text x="46" y="44" fill="white">1</text></g>
+        <g class="diagram-point"><circle cx="92" cy="98" r="8" fill="var(--aqua)" stroke="none"/><text x="92" y="101" fill="white">2</text></g>
+        <g class="diagram-point"><circle cx="75" cy="151" r="8" fill="var(--aqua)" stroke="none"/><text x="75" y="154" fill="white">5</text></g>
+        <g class="diagram-point"><circle cx="215" cy="66" r="8" fill="var(--aqua)" stroke="none"/><text x="215" y="69" fill="white">3</text></g>
+        <g class="diagram-point"><circle cx="258" cy="70" r="8" fill="var(--aqua)" stroke="none"/><text x="258" y="73" fill="white">4</text></g>
       </g>
-      <g class="diagram-point"><circle cx="46" cy="41" r="8" fill="var(--aqua)" stroke="none"/><text x="46" y="44" fill="white">1</text></g>
-      <g class="diagram-point"><circle cx="92" cy="98" r="8" fill="var(--aqua)" stroke="none"/><text x="92" y="101" fill="white">2</text></g>
-      <g class="diagram-point"><circle cx="75" cy="151" r="8" fill="var(--aqua)" stroke="none"/><text x="75" y="154" fill="white">5</text></g>
-      <g class="diagram-point"><circle cx="215" cy="66" r="8" fill="var(--aqua)" stroke="none"/><text x="215" y="69" fill="white">3</text></g>
-      <g class="diagram-point"><circle cx="258" cy="70" r="8" fill="var(--aqua)" stroke="none"/><text x="258" y="73" fill="white">4</text></g>
     </svg>`,
     options: [
       { letter:"A", text:"Les figures 2 et 3", correct:false },
@@ -495,10 +497,41 @@ print(a - b)</pre>
     tier: "question",
     theme: "obj-complement",
     objectif: "Translations",
-    aim: "Comprendre qu'une translation déplace tous les points de la même façon (même direction, même sens, même longueur).",
-    question: "Une translation transforme le point A en point B : ce déplacement correspond à 3 carreaux vers la droite et 2 carreaux vers le haut. On applique cette même translation à un point C. Dans quelle direction et de combien de carreaux C se déplace-t-il ?",
-    teacherNote: "à retravailler : reformuler encore le vocabulaire si besoin, et envisager de faire tracer directement le schéma par les élèves sur le quadrillage prévu au verso (tableau de consignation des réponses), une fois celui-ci créé.",
-    explanation: "Une translation déplace tous les points d'une figure de la même façon : C se déplace donc lui aussi de 3 carreaux vers la droite et 2 carreaux vers le haut, exactement comme A."
+    aim: "Reconnaître, parmi plusieurs vecteurs de directions différentes, celui qui donne la translation demandée, et l'appliquer à une figure.",
+    question: "Par la translation qui transforme A en B, quelle est l'image de la figure originale ?",
+    diagram: `<svg viewBox="0 35 470 356" role="img" aria-label="Trois vecteurs AB à droite, DE en bas à gauche et FG au milieu, une figure originale en forme de voiture, et quatre figures candidates numérotées de 1 à 4">
+      <defs>
+        <marker id="arrowVectS1J3Q4" markerWidth="6" markerHeight="4" refX="4.5" refY="2" orient="auto">
+          <polygon points="0,0 6,2 0,4" fill="var(--accent)"/>
+        </marker>
+        <image id="carImgS1J3Q4" href="../assets/img/delorean.png" width="110" height="69"/>
+      </defs>
+      <g class="diagram-vector solved"><line x1="310" y1="300" x2="443.4" y2="209.5" marker-end="url(#arrowVectS1J3Q4)"/></g>
+      <g class="diagram-point"><line x1="306.5" y1="296.5" x2="313.5" y2="303.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="306.5" y1="303.5" x2="313.5" y2="296.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="310" y="290">A</text></g>
+      <g class="diagram-point"><line x1="446.5" y1="201.5" x2="453.5" y2="208.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="446.5" y1="208.5" x2="453.5" y2="201.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="450" y="195">B</text></g>
+      <g class="diagram-vector solved"><line x1="30" y1="300" x2="117.8" y2="341.6" marker-end="url(#arrowVectS1J3Q4)"/></g>
+      <g class="diagram-point"><line x1="26.5" y1="296.5" x2="33.5" y2="303.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="26.5" y1="303.5" x2="33.5" y2="296.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="30" y="290">D</text></g>
+      <g class="diagram-point"><line x1="121.5" y1="341.5" x2="128.5" y2="348.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="121.5" y1="348.5" x2="128.5" y2="341.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="125" y="335">E</text></g>
+      <g class="diagram-vector solved"><line x1="200" y1="240" x2="138.9" y2="132.0" marker-end="url(#arrowVectS1J3Q4)"/></g>
+      <g class="diagram-point"><line x1="196.5" y1="236.5" x2="203.5" y2="243.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="196.5" y1="243.5" x2="203.5" y2="236.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="200" y="230">F</text></g>
+      <g class="diagram-point"><line x1="131.5" y1="121.5" x2="138.5" y2="128.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="131.5" y1="128.5" x2="138.5" y2="121.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="135" y="115">G</text></g>
+
+      <g transform="translate(70,220)"><use href="#carImgS1J3Q4"/></g>
+      <text class="diagram-label" x="125" y="301" text-anchor="middle">Figure originale</text>
+
+      <g transform="translate(210,125)"><use href="#carImgS1J3Q4"/></g>
+      <text class="diagram-label" x="265" y="206" text-anchor="middle">Figure 4</text>
+
+      <g transform="translate(440,40) scale(-1,1)"><use href="#carImgS1J3Q4"/></g>
+      <text class="diagram-label" x="385" y="121" text-anchor="middle">Figure 2</text>
+
+      <g transform="translate(5,105)"><use href="#carImgS1J3Q4"/></g>
+      <text class="diagram-label" x="60" y="186" text-anchor="middle">Figure 3</text>
+
+      <g transform="translate(340,295) rotate(180,55,34.5)"><use href="#carImgS1J3Q4"/></g>
+      <text class="diagram-label" x="395" y="376" text-anchor="middle">Figure 1</text>
+    </svg>`,
+    explanation: "Le vecteur $\\overrightarrow{\\text{AB}}$ est celui qui va vers la droite et vers le haut : appliqué à la figure originale, il donne la <strong>Figure 4</strong>.<br>Figure 3 correspond au vecteur $\\overrightarrow{\\text{FG}}$ : c'est bien une translation, mais pas celle demandée (le vecteur $\\overrightarrow{\\text{DE}}$ n'a volontairement aucune figure correspondante). Figure 2 est une symétrie et Figure 1 une rotation : ce ne sont pas des translations, l'orientation de la figure y est inversée."
   },
   {
     tier: "final",
