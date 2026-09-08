@@ -204,7 +204,7 @@
     background: var(--orange-soft); border-left: 4px solid var(--orange);
   }
   .answer-box.shown { display: block; }
-  .answer-box .content { font-size: 1.1rem; color: var(--ink); }
+  .answer-box .content { font-size: 1.35rem; color: var(--ink); }
 
   .reveal-btn {
     align-self: flex-start; margin-top: 14px;
@@ -283,7 +283,7 @@
     <div class="page-head">
       <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
       <div class="page-meta">
-        <span class="count" id="qnum-display">1 / 4</span>
+        <span class="count" id="qnum-display">1 / 3</span>
         <div class="jour">Série 1 · Jour 1</div>
       </div>
     </div>
@@ -311,7 +311,7 @@
   <div class="inner">
     <button class="nav-btn" id="btn-prev">← Précédent</button>
     <div class="nav-dots" id="nav-dots"></div>
-    <span class="nav-pos" id="nav-pos">1 / 4</span>
+    <span class="nav-pos" id="nav-pos">1 / 3</span>
     <button class="nav-btn" id="btn-next">Suivant →</button>
   </div>
 </div>
@@ -338,13 +338,6 @@ const QUESTIONS = [
     aim: "Calculer un pourcentage en utilisant son écriture décimale.",
     question: "Calculer 12 % de 20.",
     explanation: "$\\dfrac{12}{100}\\times20=0,12\\times20=2,4$."
-  },
-  {
-    tier: "final",
-    objectif: "Proportions · Exprimer une proportion",
-    aim: "Exprimer une proportion en pourcentage à partir d'une fraction, en ramenant au dénominateur 100.",
-    question: "Sur un billet de 50 euros, j'ai dépensé 35 euros. Quelle proportion (en %) de mon billet de 50 euros ai-je dépensée ?",
-    explanation: "Dépenser 35 € sur un billet de 50 €, proportionnellement, c'est comme dépenser 70 € sur un billet de 100 €.<br>$\\dfrac{35}{50}\\times100=35\\times2=70$.<br>Ainsi, 35 € sur 50 € représentent $\\boxed{70\\,\\%}$ du billet."
   }
 ];
 

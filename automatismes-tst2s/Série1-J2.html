@@ -204,7 +204,7 @@
     background: var(--orange-soft); border-left: 4px solid var(--orange);
   }
   .answer-box.shown { display: block; }
-  .answer-box .content { font-size: 1.1rem; color: var(--ink); }
+  .answer-box .content { font-size: 1.35rem; color: var(--ink); }
 
   .reveal-btn {
     align-self: flex-start; margin-top: 14px;
@@ -283,7 +283,7 @@
     <div class="page-head">
       <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
       <div class="page-meta">
-        <span class="count" id="qnum-display">1 / 3</span>
+        <span class="count" id="qnum-display">1 / 4</span>
         <div class="jour">Série 1 · Jour 2</div>
       </div>
     </div>
@@ -311,7 +311,7 @@
   <div class="inner">
     <button class="nav-btn" id="btn-prev">← Précédent</button>
     <div class="nav-dots" id="nav-dots"></div>
-    <span class="nav-pos" id="nav-pos">1 / 3</span>
+    <span class="nav-pos" id="nav-pos">1 / 4</span>
     <button class="nav-btn" id="btn-next">Suivant →</button>
   </div>
 </div>
@@ -321,16 +321,16 @@ const QUESTIONS = [
   {
     tier: "question",
     objectif: "Proportions · Pourcentage simple",
-    aim: "Calculer 25 % d'un nombre, en choisissant la méthode la plus rapide (quart, fraction ou écriture décimale).",
-    question: "Calcule 25 % de 600.",
-    explanation: "<strong>Méthode 1 :</strong> on calcule le quart de $600$, soit $600\\div4=150$.<br><strong>Méthode 2 :</strong> $\\dfrac{25}{100}\\times600=150$.<br><strong>Méthode 3 :</strong> $0,25\\times600=150$."
+    aim: "Calculer 75 % d'un nombre, en choisissant la méthode la plus rapide (trois quarts, fraction ou écriture décimale).",
+    question: "Calcule 75 % de 600.",
+    explanation: "<strong>Méthode 1 :</strong> 75 % représente trois quarts. Le quart de $600$ vaut $600\\div4=150$, donc les trois quarts valent $150\\times3=450$.<br><strong>Méthode 2 :</strong> $\\dfrac{75}{100}\\times600=450$.<br><strong>Méthode 3 :</strong> $0,75\\times600=450$."
   },
   {
     tier: "question",
     objectif: "Proportions · Pourcentage simple",
     aim: "Décomposer un pourcentage à partir de 10 % pour calculer plus vite, sans calculatrice.",
-    question: "Calcule 60 % de 300.",
-    explanation: "<strong>Méthode 1 :</strong> on calcule $10\\,\\%$ de $300$, on obtient $30$ ; donc $60\\,\\%$ de $300$ vaut $30\\times6=180$.<br><strong>Méthode 2 :</strong> $\\dfrac{60}{100}\\times300=180$.<br><strong>Méthode 3 :</strong> $0,60\\times300=180$."
+    question: "Calcule 80 % de 300.",
+    explanation: "<strong>Méthode 1 :</strong> on calcule $10\\,\\%$ de $300$, on obtient $30$ ; donc $80\\,\\%$ de $300$ vaut $30\\times8=240$.<br><strong>Méthode 2 :</strong> $\\dfrac{80}{100}\\times300=240$.<br><strong>Méthode 3 :</strong> $0,80\\times300=240$."
   },
   {
     tier: "final",
@@ -338,6 +338,13 @@ const QUESTIONS = [
     aim: "Décomposer un pourcentage plus complexe en combinant 10 % et 1 % d'un nombre.",
     question: "Calcule 11 % de 30.",
     explanation: "<strong>Méthode 1 :</strong> $0,11\\times30=3,3$.<br><strong>Méthode 2 :</strong> $\\dfrac{11}{100}\\times30=3,3$.<br><strong>Méthode 3 :</strong> $10\\,\\%$ de $30$ vaut $3$ et $1\\,\\%$ de $30$ vaut $0,3$, donc $11\\,\\%$ de $30$ vaut $3+0,3=\\boxed{3,3}$."
+  },
+  {
+    tier: "final",
+    objectif: "Proportions · Exprimer une proportion",
+    aim: "Exprimer une proportion en pourcentage à partir d'une fraction, en ramenant au dénominateur 100.",
+    question: "Sur un billet de 50 euros, j'ai dépensé 35 euros. Quelle proportion (en %) de mon billet de 50 euros ai-je dépensée ?",
+    explanation: "Dépenser 35 € sur un billet de 50 €, proportionnellement, c'est comme dépenser 70 € sur un billet de 100 €.<br>$\\dfrac{35}{50}\\times100=35\\times2=70$.<br>Ainsi, 35 € sur 50 € représentent $\\boxed{70\\,\\%}$ du billet."
   }
 ];
 
