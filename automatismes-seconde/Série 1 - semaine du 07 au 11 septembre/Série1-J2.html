@@ -334,16 +334,17 @@ const QUESTIONS = [
   },
   {
     tier: "qcm",
-    objectif: "A4 · Écritures d'un nombre",
-    aim: "Écrire un nombre décimal inférieur à 1 sous sa forme d'écriture scientifique $a\\times10^n$, avec un exposant négatif.",
-    question: "Donner l'écriture scientifique du nombre $0,0056$.",
+    theme: "obj-geometrie",
+    objectif: "A22 · Pythagore, Thalès",
+    aim: "Calculer une longueur inconnue dans un triangle rectangle à l'aide du théorème de Pythagore, y compris quand le résultat n'est pas un nombre entier.",
+    question: "Dans le triangle ABC rectangle en A, on donne $\\text{AB}=3$ cm et $\\text{AC}=8$ cm.<br>Quelle est la longueur du segment $[\\text{BC}]$ ?",
     options: [
-      { letter:"A", text:"$5,6\\times10^{3}$", correct:false },
-      { letter:"B", text:"$5,6\\times10^{-3}$", correct:true },
-      { letter:"C", text:"$0,56\\times10^{-2}$", correct:false },
-      { letter:"D", text:"$56\\times10^{-4}$", correct:false }
+      { letter:"A", text:"$\\sqrt{55}$ cm", correct:false },
+      { letter:"B", text:"$\\sqrt{73}$ cm", correct:true },
+      { letter:"C", text:"$11$ cm", correct:false },
+      { letter:"D", text:"$8$ cm", correct:false }
     ],
-    explanation: "$0,0056=5,6\\times0,001=5,6\\times10^{-3}$."
+    explanation: "$\\text{BC}^2=\\text{AB}^2+\\text{AC}^2=3^2+8^2=9+64=73$, donc $\\text{BC}=\\sqrt{73}$ cm : $73$ n'est pas un carré parfait, on garde l'écriture avec radical."
   },
   {
     tier: "question",
@@ -355,9 +356,9 @@ const QUESTIONS = [
   {
     tier: "question",
     objectif: "A4 · Écritures d'un nombre",
-    aim: "Écrire un nombre entier sous sa forme d'écriture scientifique $a\\times10^n$.",
-    question: "Donner l'écriture scientifique du nombre $263$.",
-    explanation: "$263=2,63\\times100=2,63\\times10^{2}$."
+    aim: "Écrire un nombre décimal inférieur à 1 sous sa forme d'écriture scientifique $a\\times10^n$, avec un exposant négatif.",
+    question: "Donner l'écriture scientifique du nombre $0,0056$.",
+    explanation: "$0,0056=5,6\\times0,001=5,6\\times10^{-3}$."
   },
   {
     tier: "final",
