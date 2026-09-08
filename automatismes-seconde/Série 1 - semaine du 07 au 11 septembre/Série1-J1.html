@@ -137,6 +137,21 @@
   .page-meta .count { font-size: 1.05rem; color: var(--ink-soft); }
   .page-meta .jour { font-size: 0.72rem; margin-top: 4px; }
 
+  .timer-bar { display: flex; align-items: center; gap: 8px; margin: 14px 0 18px; }
+  .timer-display {
+    font-family: "Space Mono", monospace; font-size: 1.3rem; font-weight: 700;
+    color: var(--ink); min-width: 2.8em; text-align: center;
+  }
+  .timer-display.warning { color: var(--orange); }
+  .timer-display.done { color: var(--red); }
+  .timer-btn {
+    border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface);
+    color: var(--ink); font-family: "Space Mono", monospace; font-size: 0.85rem; font-weight: 700;
+    padding: 6px 12px; cursor: pointer; line-height: 1;
+  }
+  .timer-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .timer-btn.small { padding: 5px 9px; font-size: 0.72rem; }
+
   .aim {
     margin: 0 0 14px;
     color: var(--ink-soft);
@@ -273,6 +288,13 @@
         <div class="jour">Série 1 · Jour 1</div>
       </div>
     </div>
+    <div class="timer-bar">
+      <button class="timer-btn" id="timer-toggle" type="button" aria-label="Démarrer le minuteur">▶</button>
+      <span class="timer-display" id="timer-display">0:30</span>
+      <button class="timer-btn small" id="timer-minus" type="button" aria-label="Moins 5 secondes">−5</button>
+      <button class="timer-btn small" id="timer-plus" type="button" aria-label="Plus 5 secondes">+5</button>
+      <button class="timer-btn small" id="timer-reset" type="button" aria-label="Réinitialiser le minuteur">↺</button>
+    </div>
     <p class="question" id="qtext"></p>
     <div class="diagram" id="diagram"></div>
     <div class="options" id="options"></div>
@@ -298,6 +320,7 @@
 <script>
 const QUESTIONS = [
   {
+    tier: "qcm",
     objectif: "A1 · Comparer deux nombres",
     aim: "Comparer deux fractions positives sans calcul, à partir de leur numérateur ou de leur dénominateur commun.",
     question: "Que peut-on dire de $\\dfrac{3}{7}$ et $\\dfrac{3}{4}$ ?",
@@ -310,6 +333,7 @@ const QUESTIONS = [
     explanation: "À numérateur égal (et positif), la fraction est <em>d'autant plus petite que le dénominateur est grand</em> : $7>4$ donc $\\dfrac{3}{7}<\\dfrac{3}{4}$."
   },
   {
+    tier: "qcm",
     objectif: "A2 · Fractions",
     aim: "Reconnaître si deux écritures fractionnaires représentent le même nombre, en multipliant ou simplifiant numérateur et dénominateur.",
     question: "Une seule de ces égalités est <strong>fausse</strong>. Laquelle ?",
@@ -322,24 +346,28 @@ const QUESTIONS = [
     explanation: "$\\dfrac{7}{6}=\\dfrac{14}{12}\\neq\\dfrac{13}{12}$. Les trois autres égalités s'obtiennent en multipliant numérateur et dénominateur par le même nombre."
   },
   {
+    tier: "question",
     objectif: "A2 · Fractions",
     aim: "Réduire deux fractions au même dénominateur pour pouvoir les comparer ou les additionner.",
     question: "Réduire au même dénominateur les fractions $\\dfrac{5}{6}$ et $\\dfrac{3}{4}$.",
     explanation: "Le plus petit dénominateur commun à $6$ et $4$ est $12$.<br>$\\dfrac{5}{6}=\\dfrac{5\\times2}{6\\times2}=\\dfrac{10}{12}$ et $\\dfrac{3}{4}=\\dfrac{3\\times3}{4\\times3}=\\dfrac{9}{12}$."
   },
   {
+    tier: "question",
     objectif: "A3 · Puissances",
     aim: "Calculer une somme de puissances de 10, y compris d'exposants négatifs.",
     question: "Calculer $10^{3}+10^{0}+10^{-2}$.",
     explanation: "$10^{3}+10^{0}+10^{-2}=1\\,000+1+0,01=1\\,001,01$."
   },
   {
+    tier: "final",
     objectif: "A2 · Fractions",
     aim: "Utiliser une fraction pour retrouver une quantité totale à partir d'une partie connue.",
     question: "Dans deux tiers de gâteau, il y a trente grammes de sucre. Combien y a-t-il de grammes de sucre dans un gâteau entier ?",
     explanation: "$\\dfrac23$ de gâteau $\\to 30\\text{ g}$, donc $\\dfrac13$ de gâteau $\\to 15\\text{ g}$, et le gâteau entier ($\\dfrac33$) contient $3\\times15=45\\text{ g}$ de sucre."
   },
   {
+    tier: "final",
     objectif: "A3 · Puissances",
     aim: "Encadrer un nombre décimal entre deux puissances de 10 consécutives.",
     question: "On écrit $10^{a}<0,026<10^{b}$, où $a$ et $b$ sont deux entiers relatifs consécutifs. Quelle est la valeur de $b$ ?",
@@ -365,6 +393,56 @@ const dotsWrap = document.getElementById("nav-dots");
 const btnPrev = document.getElementById("btn-prev");
 const btnNext = document.getElementById("btn-next");
 
+// --- Minuteur ---------------------------------------------------------
+const TIER_DURATIONS = { qcm: 30, question: 40, final: 60 };
+const timerToggle = document.getElementById("timer-toggle");
+const timerDisplay = document.getElementById("timer-display");
+const timerMinus = document.getElementById("timer-minus");
+const timerPlus = document.getElementById("timer-plus");
+const timerReset = document.getElementById("timer-reset");
+let timerRemaining = 30;
+let timerInterval = null;
+let timerRunning = false;
+
+function formatTime(s){
+  const m = Math.floor(s / 60), sec = s % 60;
+  return m + ":" + String(sec).padStart(2, "0");
+}
+function updateTimerDisplay(){
+  timerDisplay.textContent = formatTime(Math.max(timerRemaining, 0));
+  timerDisplay.classList.toggle("warning", timerRemaining <= 10 && timerRemaining > 0);
+  timerDisplay.classList.toggle("done", timerRemaining <= 0);
+}
+function stopTimer(){
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerRunning = false;
+  timerToggle.textContent = "▶";
+  timerToggle.setAttribute("aria-label", "Démarrer le minuteur");
+}
+function tickTimer(){
+  timerRemaining--;
+  updateTimerDisplay();
+  if (timerRemaining <= 0) stopTimer();
+}
+function startTimer(){
+  if (timerRemaining <= 0) return;
+  timerRunning = true;
+  timerToggle.textContent = "⏸";
+  timerToggle.setAttribute("aria-label", "Mettre en pause");
+  timerInterval = setInterval(tickTimer, 1000);
+}
+function resetTimerToDefault(){
+  stopTimer();
+  const q = QUESTIONS[current];
+  timerRemaining = TIER_DURATIONS[q.tier] || 30;
+  updateTimerDisplay();
+}
+timerToggle.addEventListener("click", () => { timerRunning ? stopTimer() : startTimer(); });
+timerMinus.addEventListener("click", () => { timerRemaining = Math.max(0, timerRemaining - 5); updateTimerDisplay(); });
+timerPlus.addEventListener("click", () => { timerRemaining += 5; updateTimerDisplay(); });
+timerReset.addEventListener("click", resetTimerToDefault);
+
 QUESTIONS.forEach((_, i) => {
   const b = document.createElement("button");
   b.setAttribute("aria-label", "Aller à la question " + (i + 1));
@@ -375,6 +453,8 @@ QUESTIONS.forEach((_, i) => {
 function render(){
   revealed = false;
   const q = QUESTIONS[current];
+
+  resetTimerToDefault();
 
   objectifText.textContent = q.objectif;
   objectifBadge.className = "badge " + (q.theme || "obj-nombres");
