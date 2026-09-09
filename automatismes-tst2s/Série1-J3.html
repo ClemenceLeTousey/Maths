@@ -14,7 +14,7 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Série 1 · Jour 2 — Automatismes</title>
+<title>Série 1 · Jour 3 — Automatismes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -177,6 +177,22 @@
   .diagram-vector polygon { fill: var(--accent); }
   .diagram-label { font-family: "Public Sans", sans-serif; font-size: 12px; fill: var(--ink-soft); }
 
+  .dline { fill: none; stroke-width: 3; }
+  .dline-solid { stroke-dasharray: none; }
+  .dline-dashed { stroke-dasharray: 10 7; }
+  .dline-dotted { stroke-dasharray: 2 6; stroke-linecap: round; }
+  .dline-thin { stroke-width: 1.5; }
+  .dline-ink { stroke: var(--ink); }
+  .dline-soft { stroke: var(--ink-soft); }
+  .dline-muted { stroke: var(--muted); }
+  .dline-aqua { stroke: var(--aqua); }
+  .dline-orange { stroke: var(--orange); }
+  .dline-magenta { stroke: var(--red); }
+  .daxis { stroke: var(--ink); stroke-width: 2; }
+  .dgrid { stroke: var(--line); stroke-width: 1; }
+  .dstep { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+  .dlabel { font-family: "Space Mono", monospace; font-size: 13px; fill: var(--ink-soft); }
+
   .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
   .opt {
     border: 1.5px solid var(--rule-strong); border-radius: 8px; padding: 13px 16px;
@@ -268,12 +284,12 @@
   <div class="brand-row">
     <div>
       <h1>Automatismes — Série 1</h1>
-      <p class="subtitle">Jour 2 · Calculer une proportion · Sans calculatrice</p>
+      <p class="subtitle">Jour 3 · Lire une équation de droite · Sans calculatrice</p>
     </div>
     <div class="header-actions">
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
-    <a class="back-link" href="Série1-J1.html">J-1</a>
-    <a class="back-link" href="Série1-J3.html">J+1</a>
+    <a class="back-link" href="Série1-J2.html">J-1</a>
+    <span class="back-link" aria-hidden="true" style="visibility: hidden;">J+1</span>
     </div>
   </div>
 </div>
@@ -283,8 +299,8 @@
     <div class="page-head">
       <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
       <div class="page-meta">
-        <span class="count" id="qnum-display">1 / 4</span>
-        <div class="jour">Série 1 · Jour 2</div>
+        <span class="count" id="qnum-display">1 / 2</span>
+        <div class="jour">Série 1 · Jour 3</div>
       </div>
     </div>
     <div class="timer-bar">
@@ -311,7 +327,7 @@
   <div class="inner">
     <button class="nav-btn" id="btn-prev">← Précédent</button>
     <div class="nav-dots" id="nav-dots"></div>
-    <span class="nav-pos" id="nav-pos">1 / 4</span>
+    <span class="nav-pos" id="nav-pos">1 / 2</span>
     <button class="nav-btn" id="btn-next">Suivant →</button>
   </div>
 </div>
@@ -320,31 +336,21 @@
 const QUESTIONS = [
   {
     tier: "question",
-    objectif: "Proportions · Pourcentage simple",
-    aim: "Calculer 75 % d'un nombre, en choisissant la méthode la plus rapide (trois quarts, fraction ou écriture décimale).",
-    question: "Calcule 75 % de 600.",
-    explanation: "<strong>Méthode 1 :</strong> 75 % représente trois quarts. Le quart de $600$ vaut $600\\div4=150$, donc les trois quarts valent $150\\times3=450$.<br><strong>Méthode 2 :</strong> $\\dfrac{75}{100}\\times600=450$.<br><strong>Méthode 3 :</strong> $0,75\\times600=450$."
-  },
-  {
-    tier: "question",
-    objectif: "Proportions · Pourcentage simple",
-    aim: "Décomposer un pourcentage à partir de 10 % pour calculer plus vite, sans calculatrice.",
-    question: "Calcule 80 % de 300.",
-    explanation: "<strong>Méthode 1 :</strong> on calcule $10\\,\\%$ de $300$, on obtient $30$ ; donc $80\\,\\%$ de $300$ vaut $30\\times8=240$.<br><strong>Méthode 2 :</strong> $\\dfrac{80}{100}\\times300=240$.<br><strong>Méthode 3 :</strong> $0,80\\times300=240$."
+    theme: "obj-geometrie",
+    objectif: "Droites · Lecture graphique",
+    aim: "Reconnaître à l'œil le signe d'un coefficient directeur (croissante/décroissante), les droites remarquables (horizontale, verticale), et différencier deux droites parallèles par leur ordonnée à l'origine.",
+    question: "Associer chaque droite à son équation.<br>① $y=0{,}5x+1{,}8$ &nbsp; ② $y=-0{,}5x+1{,}8$ &nbsp; ③ $y=0{,}5$<br>④ $y=0{,}5x+0{,}9$ &nbsp; ⑤ $x=0{,}5$ &nbsp; ⑥ $y=-0{,}5x-1{,}8$",
+    diagram: "<svg viewBox=\"0 0 400 300\" xmlns=\"http://www.w3.org/2000/svg\"><line class=\"daxis\" x1=\"200\" y1=\"0\" x2=\"200\" y2=\"300\"/><line class=\"daxis\" x1=\"0\" y1=\"150\" x2=\"400\" y2=\"150\"/><line class=\"dline dline-thin dline-muted\" x1=\"0\" y1=\"125\" x2=\"400\" y2=\"125\"/><line class=\"dline dline-dashed dline-ink\" x1=\"225\" y1=\"0\" x2=\"225\" y2=\"300\"/><line class=\"dline dline-dashed dline-soft\" x1=\"0\" y1=\"205\" x2=\"400\" y2=\"5\"/><line class=\"dline dline-dashed dline-ink\" x1=\"0\" y1=\"160\" x2=\"320\" y2=\"0\"/><line class=\"dline dline-dotted dline-ink\" x1=\"80\" y1=\"0\" x2=\"400\" y2=\"160\"/><line class=\"dline dline-solid dline-ink\" x1=\"0\" y1=\"140\" x2=\"320\" y2=\"300\"/><text class=\"dlabel\" x=\"233\" y=\"16\">d3</text><text class=\"dlabel\" x=\"366\" y=\"30\">d1</text><text class=\"dlabel\" x=\"328\" y=\"14\">d4</text><text class=\"dlabel\" x=\"56\" y=\"16\">d5</text><text class=\"dlabel\" x=\"366\" y=\"114\">d6</text><text class=\"dlabel\" x=\"326\" y=\"288\">d2</text></svg>",
+    explanation: "$d_3$ est verticale $\\to$ ⑤ $x=0{,}5$. $d_6$ est horizontale $\\to$ ③ $y=0{,}5$.<br>$d_1$ et $d_4$ sont croissantes (coefficient directeur $0{,}5$) : $d_4$ coupe l'axe des ordonnées plus haut que $d_1$, donc $d_4\\to$① $y=0{,}5x+1{,}8$ et $d_1\\to$④ $y=0{,}5x+0{,}9$.<br>$d_2$ et $d_5$ sont décroissantes (coefficient directeur $-0{,}5$) : $d_5$ coupe l'axe des ordonnées au-dessus de l'axe, $d_2$ en dessous, donc $d_5\\to$② $y=-0{,}5x+1{,}8$ et $d_2\\to$⑥ $y=-0{,}5x-1{,}8$."
   },
   {
     tier: "final",
-    objectif: "Proportions · Pourcentage combiné",
-    aim: "Décomposer un pourcentage plus complexe en combinant 10 % et 1 % d'un nombre.",
-    question: "Calcule 11 % de 30.",
-    explanation: "<strong>Méthode 1 :</strong> $0,11\\times30=3,3$.<br><strong>Méthode 2 :</strong> $\\dfrac{11}{100}\\times30=3,3$.<br><strong>Méthode 3 :</strong> $10\\,\\%$ de $30$ vaut $3$ et $1\\,\\%$ de $30$ vaut $0,3$, donc $11\\,\\%$ de $30$ vaut $3+0,3=\\boxed{3,3}$."
-  },
-  {
-    tier: "final",
-    objectif: "Proportions · Exprimer une proportion",
-    aim: "Exprimer une proportion en pourcentage à partir d'une fraction, en ramenant au dénominateur 100.",
-    question: "Sur un billet de 50 euros, j'ai dépensé 35 euros. Quelle proportion (en %) de mon billet de 50 euros ai-je dépensée ?",
-    explanation: "Dépenser 35 € sur un billet de 50 €, proportionnellement, c'est comme dépenser 70 € sur un billet de 100 €.<br>$\\dfrac{35}{50}\\times100=35\\times2=70$.<br>Ainsi, 35 € sur 50 € représentent $\\boxed{70\\,\\%}$ du billet."
+    theme: "obj-geometrie",
+    objectif: "Droites · Équation réduite",
+    aim: "Déterminer l'équation réduite d'une droite à partir de son graphique, en lisant l'ordonnée à l'origine puis le coefficient directeur (on avance de 1 en abscisse et on lit la variation en ordonnée).",
+    question: "Donner l'équation de chacune des trois droites $(d_1)$, $(d_2)$ et $(d_3)$.",
+    diagram: "<svg viewBox=\"0 0 400 400\" xmlns=\"http://www.w3.org/2000/svg\"><line class=\"dgrid\" x1=\"0\" y1=\"50\" x2=\"350\" y2=\"50\"/><line class=\"dgrid\" x1=\"0\" y1=\"100\" x2=\"350\" y2=\"100\"/><line class=\"dgrid\" x1=\"0\" y1=\"150\" x2=\"350\" y2=\"150\"/><line class=\"dgrid\" x1=\"0\" y1=\"200\" x2=\"350\" y2=\"200\"/><line class=\"dgrid\" x1=\"0\" y1=\"250\" x2=\"350\" y2=\"250\"/><line class=\"dgrid\" x1=\"0\" y1=\"300\" x2=\"350\" y2=\"300\"/><line class=\"dgrid\" x1=\"50\" y1=\"50\" x2=\"50\" y2=\"400\"/><line class=\"dgrid\" x1=\"100\" y1=\"50\" x2=\"100\" y2=\"400\"/><line class=\"dgrid\" x1=\"150\" y1=\"50\" x2=\"150\" y2=\"400\"/><line class=\"dgrid\" x1=\"200\" y1=\"50\" x2=\"200\" y2=\"400\"/><line class=\"dgrid\" x1=\"250\" y1=\"50\" x2=\"250\" y2=\"400\"/><line class=\"dgrid\" x1=\"300\" y1=\"50\" x2=\"300\" y2=\"400\"/><line class=\"dgrid\" x1=\"350\" y1=\"50\" x2=\"350\" y2=\"400\"/><line class=\"daxis\" x1=\"0\" y1=\"350\" x2=\"380\" y2=\"350\"/><line class=\"daxis\" x1=\"50\" y1=\"400\" x2=\"50\" y2=\"30\"/><text class=\"dlabel\" x=\"40\" y=\"345\">0</text><text class=\"dlabel\" x=\"93\" y=\"368\">1</text><text class=\"dlabel\" x=\"293\" y=\"368\">5</text><text class=\"dlabel\" x=\"28\" y=\"304\">1</text><text class=\"dlabel\" x=\"28\" y=\"104\">5</text><line class=\"dline dline-solid dline-aqua\" x1=\"16.7\" y1=\"400\" x2=\"133.3\" y2=\"50\"/><line class=\"dline dline-solid dline-orange\" x1=\"0\" y1=\"50\" x2=\"350\" y2=\"400\"/><line class=\"dline dline-solid dline-magenta\" x1=\"50\" y1=\"350\" x2=\"350\" y2=\"125\"/><line class=\"dstep\" x1=\"50\" y1=\"300\" x2=\"100\" y2=\"300\"/><line class=\"dstep\" x1=\"100\" y1=\"300\" x2=\"100\" y2=\"150\"/><line class=\"dstep\" x1=\"150\" y1=\"200\" x2=\"200\" y2=\"200\"/><line class=\"dstep\" x1=\"200\" y1=\"200\" x2=\"200\" y2=\"250\"/><line class=\"dstep\" x1=\"250\" y1=\"200\" x2=\"300\" y2=\"200\"/><line class=\"dstep\" x1=\"300\" y1=\"200\" x2=\"300\" y2=\"162.5\"/><text class=\"dlabel\" x=\"138\" y=\"44\">(d3)</text><text class=\"dlabel\" x=\"288\" y=\"394\">(d2)</text><text class=\"dlabel\" x=\"356\" y=\"118\">(d1)</text></svg>",
+    explanation: "$(d_3)$ coupe l'axe des ordonnées en $1$. Quand $x$ augmente de $1$, $y$ augmente de $3$ (de $1$ à $4$) : coefficient directeur $3$. Donc $(d_3)$ : $y=3x+1$.<br>$(d_2)$ coupe l'axe des ordonnées en $5$. Quand $x$ augmente de $1$, $y$ diminue de $1$ : coefficient directeur $-1$. Donc $(d_2)$ : $y=-x+5$.<br>$(d_1)$ passe par l'origine (ordonnée à l'origine $0$). Quand $x$ augmente de $4$, $y$ augmente de $3$ : coefficient directeur $\\dfrac{3}{4}=0{,}75$. Donc $(d_1)$ : $y=0{,}75x$."
   }
 ];
 
