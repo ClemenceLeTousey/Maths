@@ -1,0 +1,369 @@
+% Équivalent LaTeX de S03-verso-tableau.html (feuille élève, verso — tableau
+% de consignation des réponses J1 à J4). Document autonome, distinct du
+% livret LaTeX complet (voir README.md du dossier "Automatismes Hebdo") :
+% se compile seul, sans dépendre de CLT2627.sty ni du pipeline
+% AutomatismesSeconde2627.tex. Compiler avec pdflatex ou lualatex.
+%
+% Depuis la Série 2, le format quotidien de projection est passé de 6 à 4
+% questions par jour (2 QCM + 1 question simple + 1 automatisme final) :
+% voir Série2-J1.html à J4.html. Le tableau du verso a été adapté en
+% conséquence (une seule case par jour sur les lignes « Question » et
+% « Automatisme final », au lieu de deux dans la Série 1).
+\documentclass[10pt]{article}
+% Page 1 (recto) en portrait, page 2 (verso, le tableau) reste en paysage :
+% geometry pose le format par défaut (portrait) et pdflscape fournit
+% l'environnement landscape qui fait pivoter uniquement le verso (MediaBox
+% de cette page seule tournée à 90°, indépendamment du reste du document).
+\usepackage[a4paper,top=5mm,bottom=5mm,left=10mm,right=10mm]{geometry}
+\usepackage{pdflscape}
+\usepackage[french]{babel}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{pifont}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{raster}
+\usepackage{ragged2e}
+\usepackage{amssymb}
+\usepackage{fontawesome5}
+\usepackage{enumitem}
+\setlist[itemize]{topsep=1pt, itemsep=1pt, parsep=0pt, leftmargin=1.3em, label=$\star$}
+\usepackage{bbding}
+\usepackage{multicol}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Palette (reprise à l'identique de la Série 1, pour rester cohérent
+% avec le premier volet du document imprimé) --------------------------------
+\definecolor{inkC}{HTML}{20232B}
+\definecolor{inksoftC}{HTML}{565A66}
+\definecolor{mutedC}{HTML}{8B8F99}
+\definecolor{rulestrongC}{HTML}{B9C2D1}
+\definecolor{qcmC}{HTML}{2455B8}
+\definecolor{questionC}{HTML}{12805C}
+\definecolor{finalC}{HTML}{B5511F}
+\definecolor{bonusC}{HTML}{B8298F}
+\definecolor{bonussoftC}{HTML}{FBE6F3}
+\definecolor{emptyC}{HTML}{E7E9EE}
+\definecolor{redC}{HTML}{B8342B}
+% Couleurs des boîtes "À retenir"/"Exemple", reprises telles quelles de
+% \ARetenirBox/\ExempleBoxAuto dans CLT2627.sty (bleuPropriete, grisExemple)
+% pour rester visuellement fidèle au fichier original.
+\definecolor{bleuPropriete}{RGB}{41,121,204}
+\definecolor{grisExemple}{RGB}{85,85,95}
+
+\newcommand{\starQ}{\textcolor{questionC}{$\bigstar$}}
+\newcommand{\starF}{\textcolor{finalC}{$\bigstar$}}
+\newcommand{\starFF}{\textcolor{finalC}{$\bigstar\bigstar$}}
+\newcommand{\okmark}{\ding{51}}
+\newcommand{\nomark}{\ding{55}}
+% Case à cocher vierge (l'élève y trace lui-même un crochet ou une croix).
+\newcommand{\corrbox}{\fboxsep=0pt\fbox{\rule{0pt}{8pt}\rule{8pt}{0pt}}}
+
+% Case active : numéro de question entouré en haut à gauche de la case,
+% le reste de la case restant vide pour l'écriture manuscrite. (Après
+% correction collective, l'élève entoure ou coche ce numéro pour indiquer
+% juste/faux -- voir légende.)
+\newcommand{\qcase}[1]{%
+  \begin{tikzpicture}[baseline=0pt]
+    \useasboundingbox (0,0) rectangle (2.95cm,1.05cm);
+    \node[anchor=north west, circle, draw=mutedC, line width=0.4pt,
+          inner sep=1pt, minimum size=1.1em, font=\tiny, text=mutedC]
+      at (0.08cm,1.12cm) {#1};
+  \end{tikzpicture}%
+}
+% Case grisée : aucune question ce jour-là pour cet automatisme.
+\newcommand{\qempty}{\cellcolor{emptyC}}
+
+% Bandeau de titre du recto : petite étiquette en haut à gauche qui entaille
+% le cadre, grand titre centré en dessous. Repris du style \FeuilletTitre
+% utilisé dans les feuilles d'exercices des séquences (même famille visuelle),
+% reconstruit ici pour rester autonome (pas de dépendance à CLT2627.sty).
+\NewDocumentCommand{\RectoTitre}{m m}{%
+  \begin{center}
+  \begin{tcolorbox}[
+    enhanced,
+    width=0.8\linewidth,
+    colback=white,
+    colframe=inkC,
+    boxrule=0.8pt,
+    arc=8pt,
+    sharp corners=downhill,
+    left=10pt, right=10pt, top=4pt, bottom=3pt,
+    halign=center,
+    overlay={
+      \node[fill=white, anchor=west, font=\normalsize, inner xsep=4pt]
+        at ([xshift=14pt]frame.north west) {#1};
+    },
+  ]
+  {\huge\bfseries #2}
+  \end{tcolorbox}
+  \end{center}
+}
+
+% Carte "automatisme" du recto : petit engrenage (repris de \AutoItem dans
+% AutomatismesSeconde2627.tex, où \faCogs symbolise l'automatisme) + code
+% + intitulé, tout sur une seule ligne (\tcbox se dimensionne à son contenu,
+% pas de retour à la ligne forcé), même code couleur que l'en-tête du
+% tableau du verso (qcmC / questionC / finalC).
+\newcommand{\autoCardLine}[3]{%
+  \noindent\tcbox[
+    colback=white, colframe=#1, coltext=#1,
+    boxrule=1.2pt, arc=5pt, left=10pt, right=10pt, top=2pt, bottom=2pt,
+  ]{{\color{#1}\faCogs}~\textcolor{#1}{\Large\bfseries #2}~~{\normalsize\color{inksoftC} #3}}%
+  \par
+}
+
+% Boîte "À retenir" : même cadre que les boîtes "Propriété" du cours
+% (\Prp dans CLT2627.sty) -- pas de bordure pleine, seulement 4 coins en
+% équerre dessinés en overlay, fond bleuPropriete!6.
+\newcommand{\ARetenirBox}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bleuPropriete!6, colframe=bleuPropriete,
+    boxrule=0pt, arc=0pt, outer arc=0pt,
+    left=10pt, right=8pt, top=2pt, bottom=1pt,
+    overlay={
+      \draw[bleuPropriete, line width=1.2pt] (frame.north west) -- ++(7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.north west) -- ++(0pt,-7pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.north east) -- ++(-7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.north east) -- ++(0pt,-7pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south west) -- ++(7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south west) -- ++(0pt,7pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south east) -- ++(-7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south east) -- ++(0pt,7pt);
+    },
+  ]
+    \textbf{\textcolor{bleuPropriete}{À retenir}}\par\vspace{1pt}
+    #1
+  \end{tcolorbox}%
+}
+% Boîte "Exemple" : même liseré que \ExempleBoxAuto, plus le crayon
+% encerclé en overlay au coin supérieur gauche, repris à l'identique de
+% \Exemple dans CLT2627.sty (\PencilRightUp, police bbding).
+\newcommand{\ExempleBoxR}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=grisExemple!6, colframe=grisExemple,
+    boxrule=0pt, borderline west={2pt}{0pt}{grisExemple},
+    arc=0pt, outer arc=0pt,
+    left=16pt, right=8pt, top=3pt, bottom=1pt,
+    overlay={
+      \node[anchor=center, circle, fill=white, draw=grisExemple, line width=0.8pt, minimum size=18pt] at ([yshift=-10pt]frame.north west) {\textcolor{grisExemple}{\fontsize{11}{11}\selectfont\PencilRightUp}};
+    },
+  ]
+    \textbf{\textcolor{grisExemple}{Exemple}}\par\vspace{1pt}
+    #1
+  \end{tcolorbox}%
+}
+% Place une \ARetenirBox et une \ExempleBoxR côte à côte, chacune à sa
+% propre hauteur : pas de "raster equal height", pour que la boîte
+% "À retenir" ne s'étire pas inutilement jusqu'à la hauteur, souvent plus
+% grande, de la boîte "Exemple" en vis-à-vis.
+\newcommand{\RecapPair}[2]{%
+  \begin{tcbraster}[raster columns=2, raster column skip=8pt, raster force size=false, raster valign=top, before skip=0pt, after skip=0pt]
+    \ARetenirBox{\normalsize#1}
+    \ExempleBoxR{\footnotesize#2}
+  \end{tcbraster}%
+}
+
+\newcolumntype{J}{>{\RaggedRight\arraybackslash}m{1.7cm}}
+\newcolumntype{N}{>{\centering\arraybackslash}m{1.05cm}}
+\newcolumntype{O}{>{\centering\arraybackslash}m{3.6cm}}
+% Colonne centrée de largeur fixe, pour le tableau de distributivité du
+% recto (repris de M{...} dans CLT2627.sty / CarteMentaleLittéral2.tex).
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\begin{document}
+
+% ============================= RECTO (page 1) =============================
+\RectoTitre{ Semaine du 14 au 18 septembre}{Automatismes Série 2}
+
+\vspace{0pt}
+
+\autoCardLine{qcmC}{A3}{Puissances}
+\vspace{1pt}
+\begin{center}
+{\small\textit{Mêmes rappels que la Série 1 -- voir Cartes Mentales et Cours Séquence~1.}}
+\end{center}
+\vspace{2pt}
+
+\autoCardLine{qcmC}{A4}{Écritures d'un nombre}
+\vspace{1pt}
+\begin{center}
+{\small\textit{Mêmes rappels que la Série 1 -- voir Cartes Mentales et Cours Séquence~1.}}
+\end{center}
+\vspace{2pt}
+
+\autoCardLine{qcmC}{Calcul littéral}{Distributivité}
+\vspace{1pt}
+\RecapPair{%
+  Pour tout nombre $k$ et tous nombres $a,b$~:
+  \[k(a+b)=k\times a+k\times b \quad\text{(distributivité simple).}\]
+}{%
+  \begin{minipage}[c]{0.55\linewidth}
+  $3(x+5)$
+  \\ $=3\times x+3\times5$
+  \\ $=3x+15$
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[c]{0.38\linewidth}
+  \centering
+  \setlength{\tabcolsep}{2pt}
+  {\renewcommand{\arraystretch}{1.1}
+  \begin{tabular}{|M{0.62cm}|M{0.62cm}|}
+  \hline
+  \cellcolor{redC!35} $\times$ & \cellcolor{black!10} $3$ \\
+  \hline
+  \cellcolor{black!10} $x$ & $3x$ \\
+  \hline
+  \cellcolor{black!10} $+5$ & $15$ \\
+  \hline
+  \end{tabular}}
+  \end{minipage}
+}
+\vspace{1pt}
+\RecapPair{%
+  Pour développer un produit de deux sommes~:
+  \[(a+b)(c+d)=ac+ad+bc+bd \quad\text{(double distributivité).}\]
+  On peut s'aider d'un \textbf{tableau de distributivité}~: on multiplie
+  chaque terme d'une ligne par chaque terme d'une colonne, puis on
+  additionne toutes les cases.
+}{%
+  \begin{minipage}[c]{0.5\linewidth}
+  $(2x-1)(x+4)$
+  \\ $=2x^2+8x-x-4$
+  \\ $=2x^2+7x-4$
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[c]{0.42\linewidth}
+  \centering
+  \setlength{\tabcolsep}{2pt}
+  {\renewcommand{\arraystretch}{1.1}
+  \begin{tabular}{|M{0.62cm}|M{0.62cm}|M{0.62cm}|}
+  \hline
+  \cellcolor{redC!35} $\times$ & \cellcolor{black!10} $x$ & \cellcolor{black!10} $+4$ \\
+  \hline
+  \cellcolor{black!10} $2x$ & $2x^2$ & $8x$ \\
+  \hline
+  \cellcolor{black!10} $-1$ & $-x$ & $-4$ \\
+  \hline
+  \end{tabular}}
+  \end{minipage}
+}
+
+\vspace*{0.1cm}
+
+\autoCardLine{questionC}{Vecteurs}{Translations, vocabulaire et égalité}
+\vspace{1pt}
+\RecapPair{%
+  Deux vecteurs sont \textbf{égaux} s'ils ont même direction, même sens et
+  même norme. Un vecteur n'a pas d'origine ni d'extrémité fixe~: il admet
+  une infinité de représentants.
+}{%
+  Si $\overrightarrow{\text{AB}}$ représente un déplacement de $3$
+  carreaux vers la droite et $1$ carreau vers le haut, alors
+  $\overrightarrow{\text{CD}}$ représente le même vecteur si et seulement
+  s'il correspond au même déplacement, quels que soient $C$ et $D$.
+}
+
+\vspace*{0.12cm}
+
+\begin{multicols}{2}
+\autoCardLine{finalC}{Algo}{Expressions littérales}
+\columnbreak
+\textit{Pas de rappels. \\
+{\small Les questions ne nécessitent pas de pré-requis.}}
+\end{multicols}
+
+\newpage
+% ============================= VERSO (page 2) ==============================
+\begin{landscape}
+\noindent
+Nom~: \hrulefill{} \hspace{14pt} Prénom~: \hrulefill{} \hspace{14pt} Classe~: \hrulefill
+
+\vspace{4pt}
+\footnotesize
+\textcolor{qcmC}{\textbf{QCM}} \hspace{16pt}
+\starQ{} = Question \hspace{16pt}
+\starFF{} = Automatisme final \hspace{16pt}
+\colorbox{emptyC}{\rule{0pt}{5pt}\hspace{10pt}} pas de question ce jour \hspace{16pt}
+\textcolor{questionC}{\okmark} juste \textperiodcentered{} \textcolor{redC}{\nomark} faux
+
+\vspace{3pt}
+\renewcommand{\arraystretch}{0.95}
+\setlength{\tabcolsep}{2.5pt}
+\begin{center}
+\begin{tabular}{|J|N||*{5}{O|}}
+\hline
+\multicolumn{2}{|c||}{} &
+\shortstack{\textcolor{qcmC}{A3}\\{\tiny Puissances}} &
+\shortstack{\textcolor{qcmC}{A4}\\{\tiny Écritures d'un nombre}} &
+\shortstack{\textcolor{questionC}{Vecteurs}\\{\tiny Égalité, somme, translations}} &
+\shortstack{\textcolor{qcmC}{Calcul littéral}\\{\tiny Distributivité}} &
+\shortstack{\textcolor{finalC}{Algo}\\{\tiny Expressions littérales}} \\
+\hline\hline
+
+\multirow{3}{1.6cm}{\textbf{Jour 1}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qcase{1} & \qcase{2} & \qempty \\
+\cline{2-7}
+  & \starQ
+  & \qempty & \qempty & \qcase{3} & \qempty & \qempty \\
+\cline{2-7}
+  & \starFF
+  & \qempty & \qempty & \qempty & \qcase{4} & \qempty \\
+\hline
+
+\multirow{3}{1.6cm}{\textbf{Jour 2}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qcase{1} & \qempty & \qcase{2} \\
+\cline{2-7}
+  & \starQ
+  & \qempty & \qcase{3} & \qempty & \qempty & \qempty \\
+\cline{2-7}
+  & \starFF
+  & \qempty & \qempty & \qcase{4} & \qempty & \qempty \\
+\hline
+
+\multirow{3}{1.6cm}{\textbf{Jour 3}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qcase{1} & \qcase{2} & \qempty \\
+\cline{2-7}
+  & \starQ
+  & \qempty & \qcase{3} & \qempty & \qempty & \qempty \\
+\cline{2-7}
+  & \starFF
+  & \qempty & \qempty & \qcase{4} & \qempty & \qempty \\
+\hline
+
+\multirow{3}{1.6cm}{\textbf{Jour 4}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qcase{1} & \qempty & \qcase{2} \\
+\cline{2-7}
+  & \starQ
+  & \qempty & \qempty & \qempty & \qcase{3} & \qempty \\
+\cline{2-7}
+  & \starFF
+  & \qcase{4} & \qempty & \qempty & \qempty & \qempty \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{4pt}
+\begin{tcolorbox}[
+  boxrule=1.2pt, colframe=bonusC, colback=bonussoftC, arc=3pt,
+  left=10pt, right=10pt, top=3pt, bottom=3pt
+]
+\textcolor{bonusC}{\textbf{\footnotesize Q5 $\cdot$ BONUS $\cdot$ JOUR 4}} \hspace{10pt}
+{\footnotesize\color{inksoftC} A1 --- Comparer $A=\dfrac43$ et $B=\dfrac32$ (méthode libre~: question de
+dépassement, hors des 4 questions du jour)} \hfill
+\rule{2.6cm}{0.4pt}\hspace{6pt}\corrbox
+\end{tcolorbox}
+\end{landscape}
+
+\end{document}

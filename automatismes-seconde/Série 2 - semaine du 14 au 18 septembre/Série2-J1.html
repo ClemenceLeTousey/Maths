@@ -292,7 +292,7 @@
     <div class="page-head">
       <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
       <div class="page-meta">
-        <span class="count" id="qnum-display">1 / 6</span>
+        <span class="count" id="qnum-display">1 / 4</span>
         <div class="jour">Série 2 · Jour 1</div>
       </div>
     </div>
@@ -320,7 +320,7 @@
   <div class="inner">
     <button class="nav-btn" id="btn-prev">← Précédent</button>
     <div class="nav-dots" id="nav-dots"></div>
-    <span class="nav-pos" id="nav-pos">1 / 6</span>
+    <span class="nav-pos" id="nav-pos">1 / 4</span>
     <button class="nav-btn" id="btn-next">Suivant →</button>
   </div>
 </div>
@@ -329,17 +329,29 @@
 const QUESTIONS = [
   {
     tier: "qcm",
-    theme: "obj-geometrie",
-    objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
-    aim: "Conna\u00eetre les trois conditions n\u00e9cessaires pour que deux vecteurs soient \u00e9gaux.",
-    question: "Trois conditions doivent \u00eatre r\u00e9unies pour que deux vecteurs soient \u00e9gaux. Lesquelles ?",
+    theme: "obj-complement",
+    objectif: "Translations",
+    aim: "Reconna\u00eetre si deux figures superposables sont li\u00e9es par une translation (m\u00eame orientation) ou par une rotation (orientation diff\u00e9rente).",
+    question: "Les cinq figures ci-dessous sont superposables.<br>Donner les figures qui se superposent \u00e0 la figure 1 par translation.",
+    diagram: `<svg viewBox="0 0 300 200" role="img" aria-label="Cinq figures superposables num\u00e9rot\u00e9es de 1 \u00e0 5, dispos\u00e9es en deux rang\u00e9es ; certaines li\u00e9es \u00e0 la figure 1 par translation, d'autres par rotation">
+      <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(20,20)" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+      <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(140,20)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
+      <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(240,20) rotate(180,21,26)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
+      <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(20,120) rotate(180,21,26)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
+      <polygon points="0,0 42,0 42,30 17,30 0,51" transform="translate(140,120)" fill="#fbe3ec" stroke="#c2185b" stroke-width="2"/>
+      <g class="diagram-point"><circle cx="14" cy="14" r="8" fill="var(--aqua)" stroke="none"/><text x="14" y="17" fill="white">1</text></g>
+      <g class="diagram-point"><circle cx="134" cy="14" r="8" fill="var(--aqua)" stroke="none"/><text x="134" y="17" fill="white">2</text></g>
+      <g class="diagram-point"><circle cx="234" cy="14" r="8" fill="var(--aqua)" stroke="none"/><text x="234" y="17" fill="white">3</text></g>
+      <g class="diagram-point"><circle cx="14" cy="114" r="8" fill="var(--aqua)" stroke="none"/><text x="14" y="117" fill="white">4</text></g>
+      <g class="diagram-point"><circle cx="134" cy="114" r="8" fill="var(--aqua)" stroke="none"/><text x="134" y="117" fill="white">5</text></g>
+    </svg>`,
     options: [
-      { letter:"A", text:"M\u00eame direction, m\u00eame sens, m\u00eame longueur", correct:true },
-      { letter:"B", text:"M\u00eame origine, m\u00eame direction, m\u00eame longueur", correct:false },
-      { letter:"C", text:"M\u00eame couleur, m\u00eame sens, m\u00eame longueur", correct:false },
-      { letter:"D", text:"M\u00eame direction seulement", correct:false }
+      { letter:"A", text:"Les figures 3 et 4", correct:false },
+      { letter:"B", text:"Les figures 2 et 5", correct:true },
+      { letter:"C", text:"Les figures 2 et 3", correct:false },
+      { letter:"D", text:"Les figures 4 et 5", correct:false }
     ],
-    explanation: "Deux vecteurs sont \u00e9gaux s'ils ont la m\u00eame direction, le m\u00eame sens et la m\u00eame longueur \u2014 peu importe leur position (leur origine peut \u00eatre diff\u00e9rente)."
+    explanation: "Les figures 3 et 4 sont des rotations d'un demi-tour de la figure 1 : leur orientation est invers\u00e9e. Les figures 2 et 5 conservent la m\u00eame orientation que la figure 1 : ce sont des translations. R\u00e9ponse : les figures 2 et 5."
   },
   {
     tier: "qcm",
@@ -356,25 +368,37 @@ const QUESTIONS = [
   },
   {
     tier: "question",
-    objectif: "A1 \u00b7 Comparer deux nombres",
-    aim: "Comparer deux fractions \u00e0 num\u00e9rateur \u00e9gal sans calcul \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
-    question: "Compare $\\dfrac{3}{7}$ et $\\dfrac{3}{4}$.",
-    explanation: "\u00c0 num\u00e9rateur \u00e9gal (et positif), la fraction est d'autant plus petite que son d\u00e9nominateur est grand : $7>4$, donc $\\dfrac{3}{7}<\\dfrac{3}{4}$."
-  },
-  {
-    tier: "question",
-    theme: "obj-geometrie",
-    objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
-    aim: "Relier l'\u00e9galit\u00e9 de deux vecteurs \u00e0 la propri\u00e9t\u00e9 du parall\u00e9logramme.",
-    question: "ABDC est un parall\u00e9logramme.<br>Que peut-on dire des vecteurs $\\overrightarrow{\\text{AB}}$ et $\\overrightarrow{\\text{CD}}$ ?",
-    explanation: "Dans un parall\u00e9logramme ABDC, les c\u00f4t\u00e9s $[\\text{AB}]$ et $[\\text{CD}]$ sont parall\u00e8les et de m\u00eame longueur, parcourus dans le m\u00eame sens : $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{CD}}$."
-  },
-  {
-    tier: "final",
-    objectif: "A1 \u00b7 Comparer deux nombres",
-    aim: "Comparer deux fractions en choisissant soi-m\u00eame la m\u00e9thode, comme automatisme final \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
-    question: "Comparer $A=\\dfrac{9}{5}$ et $B=\\dfrac{7}{4}$.",
-    explanation: "Par diff\u00e9rence : $A-B=\\dfrac{9}{5}-\\dfrac{7}{4}=\\dfrac{36}{20}-\\dfrac{35}{20}=\\dfrac{1}{20}$. Comme $\\dfrac{1}{20}>0$, on a $A>B$."
+    theme: "obj-complement",
+    objectif: "Translations",
+    aim: "Reconna\u00eetre, parmi plusieurs vecteurs de directions diff\u00e9rentes, celui qui donne la translation demand\u00e9e, et l'appliquer \u00e0 une figure.",
+    question: "Par la translation qui transforme A en B, quelle est l'image de la figure originale ?",
+    diagram: `<svg viewBox="0 0 340 300" role="img" aria-label="Deux vecteurs AB et CD, une figure originale (Tux), et trois figures candidates num\u00e9rot\u00e9es de 1 \u00e0 3">
+      <defs>
+        <marker id="arrowVectS2J1Q4" markerWidth="6" markerHeight="4" refX="4.5" refY="2" orient="auto">
+          <polygon points="0,0 6,2 0,4" fill="var(--accent)"/>
+        </marker>
+        <image id="tuxImgS2J1Q4" href="../assets/img/tux.png" width="62" height="64"/>
+      </defs>
+      <g class="diagram-vector solved"><line x1="130" y1="210" x2="216.5" y2="123.5" marker-end="url(#arrowVectS2J1Q4)"/></g>
+      <g class="diagram-point"><line x1="126.5" y1="206.5" x2="133.5" y2="213.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="126.5" y1="213.5" x2="133.5" y2="206.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="130" y="200">A</text></g>
+      <g class="diagram-point"><line x1="216.5" y1="116.5" x2="223.5" y2="123.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="216.5" y1="123.5" x2="223.5" y2="116.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="220" y="110">B</text></g>
+      <g class="diagram-vector solved"><line x1="130" y1="230" x2="296.5" y2="248.9" marker-end="url(#arrowVectS2J1Q4)"/></g>
+      <g class="diagram-point"><line x1="126.5" y1="226.5" x2="133.5" y2="233.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="126.5" y1="233.5" x2="133.5" y2="226.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="130" y="245">C</text></g>
+      <g class="diagram-point"><line x1="293" y1="245.4" x2="300" y2="252.4" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="293" y1="252.4" x2="300" y2="245.4" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="297" y="238">D</text></g>
+
+      <g transform="translate(20,160)"><use href="#tuxImgS2J1Q4"/></g>
+      <text class="diagram-label" x="51" y="240" text-anchor="middle">Figure originale</text>
+
+      <g transform="translate(260,60) rotate(180,31,32)"><use href="#tuxImgS2J1Q4"/></g>
+      <text class="diagram-label" x="291" y="140" text-anchor="middle">Figure 1</text>
+
+      <g transform="translate(190,180)"><use href="#tuxImgS2J1Q4"/></g>
+      <text class="diagram-label" x="221" y="260" text-anchor="middle">Figure 2</text>
+
+      <g transform="translate(110,70)"><use href="#tuxImgS2J1Q4"/></g>
+      <text class="diagram-label" x="141" y="150" text-anchor="middle">Figure 3</text>
+    </svg>`,
+    explanation: "Le vecteur $\\overrightarrow{\\text{AB}}$ est celui qui donne la translation demand\u00e9e : appliqu\u00e9 \u00e0 la figure originale, il donne la <strong>Figure 3</strong>.<br>La Figure 2 correspond aussi \u00e0 une translation, mais par le vecteur $\\overrightarrow{\\text{CD}}$, qui n'est pas celui demand\u00e9. La Figure 1 est une rotation d'un demi-tour de la figure originale : son orientation est invers\u00e9e, ce n'est pas une translation."
   },
   {
     tier: "final",

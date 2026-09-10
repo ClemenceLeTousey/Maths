@@ -292,7 +292,7 @@
     <div class="page-head">
       <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
       <div class="page-meta">
-        <span class="count" id="qnum-display">1 / 6</span>
+        <span class="count" id="qnum-display">1 / 4</span>
         <div class="jour">Série 2 · Jour 4</div>
       </div>
     </div>
@@ -320,7 +320,7 @@
   <div class="inner">
     <button class="nav-btn" id="btn-prev">← Précédent</button>
     <div class="nav-dots" id="nav-dots"></div>
-    <span class="nav-pos" id="nav-pos">1 / 6</span>
+    <span class="nav-pos" id="nav-pos">1 / 4</span>
     <button class="nav-btn" id="btn-next">Suivant →</button>
   </div>
 </div>
@@ -367,35 +367,11 @@ print(f(3))</pre></div></div>`,
     explanation: "$4(x+1)+3x=4x+4+3x=7x+4$."
   },
   {
-    tier: "question",
-    theme: "obj-complement",
-    objectif: "Algo \u00b7 Expressions litt\u00e9rales",
-    aim: "Lire une fonction Python simple et calculer l'image d'un nombre par cette fonction.",
-    question: "Que va afficher ce programme ?",
-    diagram: `<div class="code-row" style="max-width:320px;"><div class="code-col"><pre class="code">def perimetre(x):
-    return 4 * x
-
-print(perimetre(7))</pre></div></div>`,
-    explanation: "La fonction calcule $4x$. Avec $x=7$ : $4\\times7=28$."
-  },
-  {
     tier: "final",
     objectif: "A3 \u00b7 Puissances",
     aim: "Calculer une somme de puissances de 10 puis exprimer le r\u00e9sultat en notation scientifique, comme automatisme final \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
     question: "Calculer $10^{3}+10^{0}+10^{-2}$, puis \u00e9crire le r\u00e9sultat en notation scientifique.",
     explanation: "$10^{3}+10^{0}+10^{-2}=1\\,000+1+0,01=1\\,001,01$, soit $1,00101\\times10^{3}$ en notation scientifique."
-  },
-  {
-    tier: "final",
-    theme: "obj-complement",
-    objectif: "Algo \u00b7 Expressions litt\u00e9rales",
-    aim: "Lire une fonction Python dont l'expression combine une distributivit\u00e9, en lien avec le calcul litt\u00e9ral de la semaine.",
-    question: "Que va afficher ce programme ?",
-    diagram: `<div class="code-row" style="max-width:320px;"><div class="code-col"><pre class="code">def f(x):
-    return 3 * (x + 2)
-
-print(f(4))</pre></div></div>`,
-    explanation: "La fonction calcule $3(x+2)$, qui se d\u00e9veloppe en $3x+6$. Avec $x=4$ : $3\\times(4+2)=3\\times6=18$ (ou, en d\u00e9veloppant d'abord, $3\\times4+6=18$)."
   }
 ];
 let current = 0;
