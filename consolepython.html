@@ -30,12 +30,9 @@
     <main class="container">
         <div class="console-container">
             <h2>Éditeur & Console Interactive</h2>
-              <iframe src="https://trinket.io/tools/1.0/jekyll/embed/python3" 
-                width="100%" 
-                height="500" 
-                frameborder="0" 
-                marginwidth="0" 
-                marginheight="0" 
+              <iframe style="width: 100%; height: 500px; border: none;"
+                name="embedded_python_anywhere"
+                src="https://www.pythonanywhere.com/embedded3/"
                 allowfullscreen>
             </iframe>
         </div>
@@ -44,6 +41,20 @@
     <footer>
         <p>&copy; 2026 - Cours de Mathématiques. Hébergé avec GitHub Pages.</p>
     </footer>
+
+    <div style="max-width: 800px; margin: 40px auto; padding: 15px 20px; background: #fff8e1; border: 1px dashed #d4a017; font-size: 0.9em;">
+        <p><strong>Note temporaire (à retirer) — alternatives à Trinket, fermé fin août 2026 :</strong></p>
+        <p>Texte envoyé par l'utilisatrice :</p>
+        <blockquote style="margin: 10px 0; padding-left: 15px; border-left: 3px solid #d4a017;">
+            Where to go instead<br>
+            These platforms cover similar ground, and several published guides specifically for people coming from Trinket:<br><br>
+            Pickcode: a coding platform with a guide for users transitioning from Trinket. Pickcode's Trinket transition guide<br>
+            Dodona: free for teachers, supports 20+ languages, and their team can help convert Trinket content. dodona.be/en/trinket<br>
+            Kita: a free collaborative browser-based computing platform with built-in assessment and AI, plus a migration guide. docs.getkita.org
+        </blockquote>
+        <p>Mes commentaires :</p>
+        <p>Aucune des trois alternatives proposées par Trinket ne convient vraiment pour un simple embed public sans compte élève : Dodona et Pickcode sont pensés pour des parcours d'exercices avec compte enseignant/élève, et Kita ne documente pas d'embed anonyme sans login. J'ai donc choisi <a href="https://www.pythonanywhere.com/embedded3/" target="_blank">PythonAnywhere</a>, qui propose un embed de console Python anonyme, gratuit, sans compte pour le visiteur — remplacement direct du code Trinket ci-dessus. Point de vigilance : je n'ai pas trouvé de limites documentées (quota, temps d'exécution) côté PythonAnywhere, donc à tester avec plusieurs élèves en simultané avant de s'y fier pleinement.</p>
+    </div>
 
 </body>
 </html>
