@@ -47,6 +47,8 @@
     --qcm:      #2455b8;
     --question: #b5511f;
     --final:    #9c2b3e;
+    --bonus:      #b8298f;
+    --bonus-soft: #fbe6f3;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -56,6 +58,7 @@
       --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70; --red-soft:#3a2222;
       --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
       --qcm:#7ea3ee; --question:#e08a5c; --final:#e17a70;
+      --bonus:#e88fc9; --bonus-soft:#3a2233;
     }
   }
   :root[data-theme="dark"] {
@@ -65,6 +68,7 @@
     --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70; --red-soft:#3a2222;
     --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
     --qcm:#7ea3ee; --question:#e08a5c; --final:#e17a70;
+    --bonus:#e88fc9; --bonus-soft:#3a2233;
   }
 
   * { box-sizing: border-box; }
@@ -177,6 +181,25 @@
     font-family: "Space Mono", monospace; font-size: 0.72rem; text-transform: uppercase;
     letter-spacing: .05em; color: var(--muted); margin-bottom: 6px;
   }
+
+  .diagram-options { display: flex; flex-direction: column; }
+  .diagram-options.split {
+    flex-direction: row; align-items: flex-start; gap: 24px; flex-wrap: wrap;
+  }
+  .diagram-options.split .diagram { flex: 1 1 260px; max-width: 320px; margin: 0; justify-content: flex-start; }
+  .diagram-options.split .options { flex: 2 1 420px; grid-template-columns: 1fr 1fr; margin: 0; align-self: stretch; align-items: start; }
+  .diagram-options.split .opt-code .code { font-size: 0.92rem; }
+
+  .scratch-combo {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; width: 100%;
+  }
+  .scratch-combo .code-label {
+    font-family: "Space Mono", monospace; font-size: 0.72rem; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--muted); margin-bottom: 2px;
+  }
+  .scratch-combo .code-label.second { margin-top: 10px; }
+  .scratch-combo .scratchblocks-holder { border: none; background: transparent; padding: 4px 0; }
   .code {
     font-family: "Space Mono", monospace; font-size: 0.9rem; line-height: 1.6;
     background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
@@ -224,6 +247,10 @@
   .opt.correct { border-color: var(--aqua); background: var(--aqua-soft); }
   .opt.wrong { border-color: var(--red); background: var(--red-soft); opacity: .7; }
 
+  .opt.opt-code { display: flex; align-items: flex-start; gap: 10px; }
+  .opt.opt-code .letter { margin-right: 0; margin-top: 3px; flex: none; }
+  .opt.opt-code .code { font-size: 1.05rem; line-height: 1.55; flex: 1 1 auto; }
+
   .answer-zone { margin-top: auto; padding-top: 14px; }
   .answer-zone .label {
     font-family: "Space Mono", monospace; font-size: 0.78rem; color: var(--muted);
@@ -245,6 +272,26 @@
     border: 1.5px solid var(--rule-strong); background: var(--surface); color: var(--ink);
   }
   .reveal-btn:hover { box-shadow: 0 2px 8px var(--shadow); }
+
+  .bonus-box {
+    margin-top: 18px; border: 1.5px dashed var(--bonus); border-radius: 10px;
+    background: var(--bonus-soft); padding: 14px 18px;
+  }
+  .bonus-box[hidden] { display: none; }
+  .bonus-label {
+    display: block; font-family: "Space Mono", monospace; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: .05em; color: var(--bonus);
+    font-weight: 700; margin-bottom: 8px;
+  }
+  .bonus-question { display: block; font-size: 1.1rem; color: var(--ink); margin-bottom: 12px; }
+  .bonus-reveal-btn {
+    font-family: "Public Sans", sans-serif; font-size: 0.82rem; font-weight: 600;
+    border-radius: 999px; padding: 7px 14px; cursor: pointer;
+    border: 1.5px solid var(--bonus); background: transparent; color: var(--bonus);
+  }
+  .bonus-reveal-btn:hover { background: var(--bonus-soft); box-shadow: 0 2px 8px var(--shadow); }
+  .bonus-answer { display: none; margin-top: 12px; font-size: 1.1rem; color: var(--ink); }
+  .bonus-answer.shown { display: block; }
 
   .worksheet-nav {
     position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: center;
@@ -328,14 +375,22 @@
       <button class="timer-btn small" id="timer-reset" type="button" aria-label="Réinitialiser le minuteur">↺</button>
     </div>
     <p class="question" id="qtext"></p>
-    <div class="diagram" id="diagram"></div>
-    <div class="options" id="options"></div>
+    <div class="diagram-options" id="diagram-options">
+      <div class="diagram" id="diagram"></div>
+      <div class="options" id="options"></div>
+    </div>
     <div class="answer-zone">
       <div class="answer-box" id="answer-box">
         <div class="aim"><strong>Objectif visé :</strong> <span id="aim-text"></span></div>
         <div class="content" id="answer-content"></div>
       </div>
       <button class="reveal-btn" id="reveal-btn">Voir la réponse</button>
+    </div>
+    <div class="bonus-box" id="bonus-box" hidden>
+      <span class="bonus-label">Bonus · Q7 (facultatif, pour les plus rapides)</span>
+      <span class="bonus-question" id="bonus-question"></span>
+      <button class="bonus-reveal-btn" id="bonus-reveal-btn" type="button">Voir la réponse bonus</button>
+      <div class="bonus-answer" id="bonus-answer"></div>
     </div>
   </section>
 </div>
@@ -380,23 +435,16 @@ const QUESTIONS = [
     objectif: "Algo · Bloc et fonction",
     aim: "Faire correspondre un script Scratch complet (déclenchement, saisie, appel d'un bloc personnalisé) à la définition Python équivalente, en particulier reconnaître un nom de fonction et de paramètre cohérents.",
     question: "Ce bloc personnalisé est appelé depuis le script principal ci-dessous.<br>Quel programme Python correspond exactement au bloc personnalisé ?",
-    diagram: `<div class="code-row">
-      <div class="code-col">
-        <div class="code-label">Bloc personnalisé (définition)</div>
-        <div class="scratchblocks-holder">
-          <pre class="scratchblocks">définir périmètre carré (côté)
+    splitLayout: true,
+    diagram: `<div class="scratch-combo">
+      <div class="code-label">Bloc personnalisé (définition)</div>
+      <pre class="scratchblocks">définir périmètre carré (côté)
 dire (regrouper [Réponse : ] et (regrouper (4 * côté) et [cm]))</pre>
-        </div>
-      </div>
-      <div class="code-col">
-        <div class="code-label">Script principal</div>
-        <div class="scratchblocks-holder">
-          <pre class="scratchblocks">quand @greenFlag est cliqué
+      <div class="code-label second">Script principal</div>
+      <pre class="scratchblocks">quand @greenFlag est cliqué
 demander [longueur du côté en cm] et attendre
 mettre [côté] à (réponse)
 périmètre carré (côté)::custom</pre>
-        </div>
-      </div>
     </div>`,
     options: [
       { letter:"A", text:`<pre class="code">def cote(perimetre):
@@ -413,9 +461,9 @@ périmètre carré (côté)::custom</pre>
   {
     tier: "question",
     objectif: "A1 · Comparer deux nombres",
-    aim: "Comparer deux fractions en choisissant soi-même la méthode la plus efficace (ici, la comparaison à 1 ne suffit pas : les deux fractions lui sont supérieures).",
-    question: "Comparer $A=\\dfrac{4}{3}$ et $B=\\dfrac{3}{2}$.",
-    explanation: "Deux méthodes possibles (la comparaison à $1$ ne permet pas de conclure ici : $A>1$ et $B>1$ tous les deux).<br>1. Même dénominateur : $A=\\dfrac{4}{3}=\\dfrac{8}{6}$ et $B=\\dfrac{3}{2}=\\dfrac{9}{6}$ ; comme $8<9$, on a $A<B$.<br>2. Différence : $A-B=\\dfrac{4}{3}-\\dfrac{3}{2}=\\dfrac{8}{6}-\\dfrac{9}{6}=-\\dfrac{1}{6}<0$, donc $A<B$."
+    aim: "Comparer deux fractions négatives en choisissant soi-même la méthode la plus efficace (avec des nombres négatifs, attention au sens de l'inégalité : la comparaison à $-1$ ne suffit pas ici, les deux fractions lui sont supérieures).",
+    question: "Comparer $A=-\\dfrac{5}{6}$ et $B=-\\dfrac{7}{9}$.",
+    explanation: "Deux méthodes possibles (la comparaison à $-1$ ne permet pas de conclure ici : $A>-1$ et $B>-1$ tous les deux).<br>1. Même dénominateur : $A=-\\dfrac{5}{6}=-\\dfrac{15}{18}$ et $B=-\\dfrac{7}{9}=-\\dfrac{14}{18}$ ; comme $-15<-14$, on a $A<B$.<br>2. Différence : $A-B=-\\dfrac{5}{6}+\\dfrac{7}{9}=-\\dfrac{15}{18}+\\dfrac{14}{18}=-\\dfrac{1}{18}<0$, donc $A<B$."
   },
   {
     tier: "question",
@@ -435,16 +483,13 @@ périmètre carré (côté)::custom</pre>
     tier: "final",
     theme: "obj-geometrie",
     objectif: "A22 · Pythagore, Thalès",
-    aim: "Calculer la valeur exacte d'une longueur avec le théorème de Pythagore, en simplifiant une racine carrée non entière.",
-    question: "Dans le triangle ABC rectangle en A, on donne $\\text{AB}=4$ et $\\text{AC}=8$. Déterminer la valeur exacte de $\\text{BC}$.",
-    explanation: "$\\text{BC}^2=\\text{AB}^2+\\text{AC}^2=16+64=80$, donc $\\text{BC}=\\sqrt{80}=\\sqrt{16\\times5}=4\\sqrt5$."
-  },
-  {
-    tier: "final",
-    objectif: "A1 · Comparer deux nombres",
-    aim: "Question de dépassement (facultative) : comparer deux nombres composés de plusieurs puissances de bases différentes, en repérant soi-même le facteur commun à faire apparaître.",
-    question: "Comparer $a=6^{53}\\times7^{55}$ et $b=42^{54}$ en calculant le quotient $\\dfrac{a}{b}$ et en le comparant à $1$.",
-    explanation: "$b=42^{54}=(6\\times7)^{54}=6^{54}\\times7^{54}$.<br>$\\dfrac{a}{b}=\\dfrac{6^{53}\\times7^{55}}{6^{54}\\times7^{54}}=6^{53-54}\\times7^{55-54}=6^{-1}\\times7^{1}=\\dfrac{7}{6}$. Comme $\\dfrac{7}{6}>1$, on a $a>b$."
+    aim: "Calculer la valeur exacte d'un côté adjacent à l'angle droit avec le théorème de Pythagore (soustraction, et non addition), en simplifiant une racine carrée non entière.",
+    question: "Dans le triangle ABC rectangle en A, on donne $\\text{BC}=7$ et $\\text{AB}=3$. Déterminer la valeur exacte de $\\text{AC}$.",
+    explanation: "$\\text{AC}^2=\\text{BC}^2-\\text{AB}^2=49-9=40$, donc $\\text{AC}=\\sqrt{40}=\\sqrt{4\\times10}=2\\sqrt{10}$.",
+    bonus: {
+      question: "Comparer $a=6^{53}\\times7^{55}$ et $b=42^{54}$ en calculant le quotient $\\dfrac{a}{b}$ et en le comparant à $1$.",
+      explanation: "$b=42^{54}=(6\\times7)^{54}=6^{54}\\times7^{54}$.<br>$\\dfrac{a}{b}=\\dfrac{6^{53}\\times7^{55}}{6^{54}\\times7^{54}}=6^{53-54}\\times7^{55-54}=6^{-1}\\times7^{1}=\\dfrac{7}{6}$. Comme $\\dfrac{7}{6}>1$, on a $a>b$."
+    }
   }
 ];
 
@@ -455,11 +500,16 @@ const objectifBadge = document.getElementById("objectif-badge");
 const objectifText = document.getElementById("objectif-text");
 const aimText = document.getElementById("aim-text");
 const qtext = document.getElementById("qtext");
+const diagramOptionsEl = document.getElementById("diagram-options");
 const diagramEl = document.getElementById("diagram");
 const optionsEl = document.getElementById("options");
 const answerBox = document.getElementById("answer-box");
 const answerContent = document.getElementById("answer-content");
 const revealBtn = document.getElementById("reveal-btn");
+const bonusBox = document.getElementById("bonus-box");
+const bonusQuestion = document.getElementById("bonus-question");
+const bonusRevealBtn = document.getElementById("bonus-reveal-btn");
+const bonusAnswer = document.getElementById("bonus-answer");
 const qnumDisplay = document.getElementById("qnum-display");
 const navPos = document.getElementById("nav-pos");
 const dotsWrap = document.getElementById("nav-dots");
@@ -533,6 +583,7 @@ function render(){
   objectifBadge.className = "badge " + (q.theme || "obj-nombres");
   aimText.textContent = q.aim;
   qtext.innerHTML = q.question;
+  diagramOptionsEl.classList.toggle("split", !!q.splitLayout);
   diagramEl.innerHTML = q.diagram || "";
   if (window.scratchblocks) {
     scratchblocks.renderMatching("#diagram pre.scratchblocks", { style: "scratch3", languages: ["fr"] });
@@ -542,7 +593,7 @@ function render(){
   if (q.options){
     q.options.forEach(opt => {
       const div = document.createElement("div");
-      div.className = "opt";
+      div.className = "opt" + (opt.text.indexOf('class="code"') !== -1 ? " opt-code" : "");
       div.innerHTML = "<span class='letter'>" + opt.letter + "</span>" + opt.text;
       div.dataset.correct = opt.correct;
       div.addEventListener("click", reveal);
@@ -554,6 +605,14 @@ function render(){
   answerContent.innerHTML = q.explanation;
   revealBtn.style.display = "inline-block";
   revealBtn.textContent = "Voir la réponse";
+
+  bonusBox.hidden = !q.bonus;
+  if (q.bonus) {
+    bonusQuestion.innerHTML = q.bonus.question;
+    bonusAnswer.innerHTML = q.bonus.explanation;
+  }
+  bonusAnswer.classList.remove("shown");
+  bonusRevealBtn.textContent = "Voir la réponse bonus";
 
   qnumDisplay.textContent = (current + 1) + " / " + QUESTIONS.length;
   navPos.textContent = (current + 1) + " / " + QUESTIONS.length;
@@ -591,6 +650,10 @@ function goTo(i){
 }
 
 revealBtn.addEventListener("click", reveal);
+bonusRevealBtn.addEventListener("click", () => {
+  const shown = bonusAnswer.classList.toggle("shown");
+  bonusRevealBtn.textContent = shown ? "Masquer la réponse bonus" : "Voir la réponse bonus";
+});
 btnPrev.addEventListener("click", () => goTo(current - 1));
 btnNext.addEventListener("click", () => goTo(current + 1));
 
