@@ -232,6 +232,31 @@
   .numeration-table td.sep, .numeration-table th.sep { border-left: none; border-right: none; font-weight: 700; padding: 6px 2px; }
   .numeration-table tr.total td { font-weight: 700; background: var(--aqua-soft); color: var(--aqua); }
 
+  .code-gutter {
+    display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+    font-family: "Space Mono", monospace; font-size: 1.25rem; line-height: 1.6;
+  }
+  .code-gutter .gutter {
+    background: var(--paper); color: var(--muted); padding: 14px 12px;
+    text-align: right; border-right: 1px solid var(--line); user-select: none;
+  }
+  .code-gutter .lines { background: var(--surface); color: var(--ink); padding: 14px 18px; white-space: pre; }
+
+  .trace-table {
+    border-collapse: collapse; margin: 4px 0 0; font-family: "Space Mono", monospace; font-size: 0.95rem;
+  }
+  .trace-table th, .trace-table td {
+    border: 1px solid var(--rule-strong); padding: 6px 16px; text-align: center; min-width: 24px;
+  }
+  .trace-table th {
+    background: var(--accent-soft); color: var(--accent); font-family: "Public Sans", sans-serif;
+    font-weight: 600; font-size: 0.8rem;
+  }
+  .trace-table td:first-child {
+    background: var(--accent-soft); color: var(--accent); font-family: "Public Sans", sans-serif;
+    font-weight: 600; font-size: 0.8rem; text-align: left;
+  }
+
   .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
   .opt {
     border: 1.5px solid var(--rule-strong); border-radius: 8px; padding: 13px 16px;
@@ -408,6 +433,7 @@
 const QUESTIONS = [
   {
     tier: "qcm",
+    duration: 30,
     objectif: "A4 · Écritures d'un nombre",
     aim: "Convertir une somme de fractions décimales en écriture décimale.",
     question: "On considère $A=\\dfrac{192}{100}+\\dfrac{14}{1\\,000}$. On a :",
@@ -431,32 +457,40 @@ const QUESTIONS = [
   },
   {
     tier: "qcm",
+    duration: 50,
     theme: "obj-complement",
-    objectif: "Algo · Bloc et fonction",
-    aim: "Faire correspondre un script Scratch complet (déclenchement, saisie, appel d'un bloc personnalisé) à la définition Python équivalente, en particulier reconnaître un nom de fonction et de paramètre cohérents.",
-    question: "Ce bloc personnalisé est appelé depuis le script principal ci-dessous.<br>Quel programme Python correspond exactement au bloc personnalisé ?",
-    splitLayout: true,
-    diagram: `<div class="scratch-combo">
-      <div class="code-label">Bloc personnalisé (définition)</div>
-      <pre class="scratchblocks">définir périmètre carré (côté)
-dire (regrouper [Réponse : ] et (regrouper (4 * côté) et [cm]))</pre>
-      <div class="code-label second">Script principal</div>
-      <pre class="scratchblocks">quand @greenFlag est cliqué
-demander [longueur du côté en cm] et attendre
-mettre [côté] à (réponse)
-périmètre carré (côté)::custom</pre>
+    objectif: "Algo · Trace d'un programme",
+    aim: "Suivre pas à pas l'exécution d'un programme avec plusieurs affectations successives, en actualisant la valeur de chaque variable ligne après ligne.",
+    question: "Quelles sont les valeurs prises par les variables <code>a</code> et <code>b</code> à la fin de ce programme ?",
+    diagram: `<div class="code-gutter">
+      <div class="gutter">1<br>2<br>3<br>4</div>
+      <div class="lines">a = 3
+b = 8
+a = a + 4
+b = 2*a + 5*b</div>
     </div>`,
     options: [
-      { letter:"A", text:`<pre class="code">def cote(perimetre):
-    return perimetre * 4</pre>`, correct:false },
-      { letter:"B", text:`<pre class="code">def aire_carre(cote):
-    return cote * cote</pre>`, correct:false },
-      { letter:"C", text:`<pre class="code">def perimetre_carre(cote):
-    return cote * cote</pre>`, correct:false },
-      { letter:"D", text:`<pre class="code">def perimetre_carre(cote):
-    return cote * 4</pre>`, correct:true }
+      { letter:"A", text:"$a=7$ et $b=46$", correct:false },
+      { letter:"B", text:"$a=3$ et $b=8$", correct:false },
+      { letter:"C", text:"$a=54$ et $b=7$", correct:false },
+      { letter:"D", text:"$a=7$ et $b=54$", correct:true }
     ],
-    explanation: "Le bloc personnalisé calcule <code>périmètre carré(côté) = 4 × côté</code>. Seule la proposition D reprend exactement ce nom de fonction et ce calcul.<br>En A, le nom de la fonction et celui du paramètre sont inversés (<code>cote(perimetre)</code> au lieu de <code>perimetre_carre(cote)</code>) : le calcul renvoie encore la bonne valeur, mais les noms ne veulent plus rien dire — ce n'est plus une transcription fidèle du bloc.<br>B calcule une aire, pas un périmètre. C reprend le bon nom mais calcule côté² au lieu de 4 × côté.<div class=\"console-panel\" style=\"margin-top:14px;\"><div class=\"prompt\">&gt;&gt;&gt; Script exécuté</div><div class=\"prompt\">&gt;&gt;&gt; perimetre_carre(6)</div><div class=\"result\">24</div></div>"
+    explanation: `<ul style="margin:4px 0 10px 1.1em; padding:0; line-height:1.7;">
+      <li><strong>Ligne 1 :</strong> la valeur <strong>3</strong> est affectée à <code>a</code>.</li>
+      <li><strong>Ligne 2 :</strong> la valeur <strong>8</strong> est affectée à <code>b</code>.</li>
+      <li><strong>Ligne 3 :</strong> la valeur <code>a+4 = 3+4 = 7</code> est affectée à <code>a</code>.</li>
+      <li><strong>Ligne 4 :</strong> la valeur <code>2*a+5*b = 2×7+5×8 = 54</code> est affectée à <code>b</code>.</li>
+    </ul>
+    <p style="margin:0 0 12px;">À la fin du programme, <code>a</code> vaut <strong>7</strong> et <code>b</code> vaut <strong>54</strong> : c'est la proposition D.<br>A oublie d'actualiser <code>a</code> avant la ligne 4 (utilise encore l'ancienne valeur $3$ : $2\\times3+5\\times8=46$). B ne met à jour aucune variable (ce sont les valeurs après la ligne 2 seulement). C inverse la variable qui reçoit le résultat de la ligne 4.</p>
+    <table class="trace-table">
+      <thead><tr><th></th><th>a</th><th>b</th></tr></thead>
+      <tbody>
+        <tr><td>Ligne 1</td><td>3</td><td></td></tr>
+        <tr><td>Ligne 2</td><td>3</td><td>8</td></tr>
+        <tr><td>Ligne 3</td><td>7</td><td>8</td></tr>
+        <tr><td>Ligne 4</td><td>7</td><td>54</td></tr>
+      </tbody>
+    </table>`
   },
   {
     tier: "question",
@@ -467,6 +501,7 @@ périmètre carré (côté)::custom</pre>
   },
   {
     tier: "question",
+    duration: 20,
     objectif: "A3 · Puissances",
     aim: "Écrire un quotient de puissances de même base sous la forme d'une seule puissance, avec un exposant relatif.",
     question: "Écrire sous la forme $a^n$, où $a$ et $n$ sont des entiers relatifs,<br><span style=\"display:block;text-align:center\">$\\dfrac{6^{3}}{6^{7}}$.</span>",
@@ -474,6 +509,7 @@ périmètre carré (côté)::custom</pre>
   },
   {
     tier: "final",
+    duration: 30,
     objectif: "A3 · Puissances",
     aim: "Simplifier une expression combinant une puissance de puissance et une division de puissances de même base.",
     question: "Écrire $\\dfrac{(5^{3})^{4}}{5^{15}}$ sous la forme d'une puissance de $5$.",
@@ -558,7 +594,7 @@ function startTimer(){
 function resetTimerToDefault(){
   stopTimer();
   const q = QUESTIONS[current];
-  timerRemaining = TIER_DURATIONS[q.tier] || 30;
+  timerRemaining = q.duration || TIER_DURATIONS[q.tier] || 30;
   updateTimerDisplay();
 }
 timerToggle.addEventListener("click", () => { timerRunning ? stopTimer() : startTimer(); });
