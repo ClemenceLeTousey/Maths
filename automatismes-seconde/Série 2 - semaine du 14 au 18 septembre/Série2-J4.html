@@ -292,7 +292,7 @@
     <div class="page-head">
       <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
       <div class="page-meta">
-        <span class="count" id="qnum-display">1 / 4</span>
+        <span class="count" id="qnum-display">1 / 5</span>
         <div class="jour">Série 2 · Jour 4</div>
       </div>
     </div>
@@ -320,7 +320,7 @@
   <div class="inner">
     <button class="nav-btn" id="btn-prev">← Précédent</button>
     <div class="nav-dots" id="nav-dots"></div>
-    <span class="nav-pos" id="nav-pos">1 / 4</span>
+    <span class="nav-pos" id="nav-pos">1 / 5</span>
     <button class="nav-btn" id="btn-next">Suivant →</button>
   </div>
 </div>
@@ -331,33 +331,35 @@ const QUESTIONS = [
     tier: "qcm",
     theme: "obj-geometrie",
     objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
-    aim: "Distinguer une condition n\u00e9cessaire (mais non suffisante) de l'\u00e9galit\u00e9 de deux vecteurs.",
-    question: "Vrai ou faux : si $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{DC}}$, alors les longueurs $\\text{AB}$ et $\\text{DC}$ sont \u00e9gales.",
+    aim: "Utiliser l'\u00e9galit\u00e9 de deux vecteurs pour identifier un parall\u00e9logramme, en respectant l'ordre des sommets.",
+    question: "On sait que $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{DC}}$. Quel quadrilat\u00e8re est un parall\u00e9logramme ?",
     options: [
-      { letter:"A", text:"Vrai", correct:true },
-      { letter:"B", text:"Faux", correct:false },
-      { letter:"C", text:"\u00c7a d\u00e9pend des points", correct:false },
-      { letter:"D", text:"Impossible \u00e0 savoir", correct:false }
+      { letter:"A", text:"ABCD", correct:true },
+      { letter:"B", text:"ABDC", correct:false },
+      { letter:"C", text:"ADCB", correct:false },
+      { letter:"D", text:"ACBD", correct:false }
     ],
-    explanation: "Deux vecteurs \u00e9gaux ont la m\u00eame longueur (entre autres conditions) : $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{DC}}$ entra\u00eene donc $\\text{AB}=\\text{DC}$. Attention, la r\u00e9ciproque est fausse : avoir la m\u00eame longueur ne suffit pas \u00e0 rendre deux vecteurs \u00e9gaux (il faut aussi la m\u00eame direction et le m\u00eame sens)."
+    explanation: "Dire que $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{DC}}$ signifie que $[\\text{AB}]$ et $[\\text{DC}]$ sont parall\u00e8les, de m\u00eame longueur et de m\u00eame sens : ce sont deux c\u00f4t\u00e9s oppos\u00e9s d'un parall\u00e9logramme. En respectant l'ordre des sommets, c'est le quadrilat\u00e8re <strong>ABCD</strong> qui est un parall\u00e9logramme."
   },
   {
     tier: "qcm",
-    theme: "obj-complement",
-    objectif: "Algo \u00b7 Expressions litt\u00e9rales",
-    aim: "Lire une fonction Python qui \u00e9value une expression litt\u00e9rale comportant un carr\u00e9.",
-    question: "Que va afficher ce programme ?",
-    diagram: `<div class="code-row" style="max-width:320px;"><div class="code-col"><pre class="code">def f(x):
-    return x * x - 1
-
-print(f(3))</pre></div></div>`,
+    objectif: "A3 \u00b7 Puissances",
+    aim: "Simplifier un produit de deux puissances litt\u00e9rales de m\u00eame base, en additionnant les exposants.",
+    question: "Simplifier $x^{3}\\times x^{5}$ (le r\u00e9sultat sera \u00e9crit sous la forme $x^n$).",
     options: [
-      { letter:"A", text:"$8$", correct:true },
-      { letter:"B", text:"$9$", correct:false },
-      { letter:"C", text:"$6$", correct:false },
-      { letter:"D", text:"$10$", correct:false }
+      { letter:"A", text:"$x^{15}$", correct:false },
+      { letter:"B", text:"$x^{8}$", correct:true },
+      { letter:"C", text:"$x^{2}$", correct:false },
+      { letter:"D", text:"$2x^{8}$", correct:false }
     ],
-    explanation: "La fonction calcule $x\\times x-1$. Avec $x=3$ : $3\\times3-1=9-1=8$."
+    explanation: "Pour multiplier deux puissances de m\u00eame base, on additionne les exposants : $x^3\\times x^5=x^{3+5}=x^8$.<br>$x^{15}$ viendrait d'une multiplication des exposants (confusion avec $(x^3)^5$) ; $x^2$ d'une soustraction (confusion avec la r\u00e8gle du quotient) ; $2x^8$ ajoute un coefficient qui n'a pas lieu d'\u00eatre ici."
+  },
+  {
+    tier: "final",
+    objectif: "A4 \u00b7 \u00c9critures d'un nombre",
+    aim: "Calculer une somme de termes de la forme $a\\times10^n$, en regroupant d'abord les termes de m\u00eame puissance, puis exprimer le r\u00e9sultat en notation scientifique, comme automatisme final \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
+    question: "\u00c9crire en notation scientifique $2\\times10^{3}+5\\times10^{1}+3\\times10^{-2}+8\\times10^{3}$.",
+    explanation: "On regroupe d'abord les termes en $10^{3}$ : $2\\times10^{3}+8\\times10^{3}=10\\times10^{3}=10\\,000$.<br>Puis $5\\times10^{1}=50$ et $3\\times10^{-2}=0,03$.<br>La somme vaut $10\\,000+50+0,03=10\\,050,03$, soit $1,005003\\times10^{4}$ en notation scientifique."
   },
   {
     tier: "question",
@@ -367,11 +369,19 @@ print(f(3))</pre></div></div>`,
     explanation: "$4(x+1)+3x=4x+4+3x=7x+4$."
   },
   {
-    tier: "final",
-    objectif: "A3 \u00b7 Puissances",
-    aim: "Calculer une somme de puissances de 10 puis exprimer le r\u00e9sultat en notation scientifique, comme automatisme final \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
-    question: "Calculer $10^{3}+10^{0}+10^{-2}$, puis \u00e9crire le r\u00e9sultat en notation scientifique.",
-    explanation: "$10^{3}+10^{0}+10^{-2}=1\\,000+1+0,01=1\\,001,01$, soit $1,00101\\times10^{3}$ en notation scientifique."
+    tier: "question",
+    theme: "obj-complement",
+    objectif: "Algo \u00b7 Lire un programme",
+    aim: "Lire une fonction Python \u00e0 deux param\u00e8tres comportant une puissance (op\u00e9rateur **), et calculer la valeur renvoy\u00e9e pour des arguments donn\u00e9s.",
+    question: "Voici un programme Python. Que renvoie la console si on saisit <code>mystere(3, 9)</code> ?",
+    diagram: `<div class="code-row" style="max-width:340px;">
+      <div class="code-col">
+        <pre class="code">def mystere(a,b):
+    return a**2 + 2*b + 6</pre>
+        <p style="margin-top:10px; font-size:0.85rem; color:var(--muted); font-style:italic;">Rappel : en Python, <code>**</code> repr\u00e9sente la puissance (<code>a**2</code> signifie $a^2$).</p>
+      </div>
+    </div>`,
+    explanation: "On remplace $a$ par $3$ et $b$ par $9$ : $a^2+2b+6=3^2+2\\times9+6=9+18+6=33$."
   }
 ];
 let current = 0;

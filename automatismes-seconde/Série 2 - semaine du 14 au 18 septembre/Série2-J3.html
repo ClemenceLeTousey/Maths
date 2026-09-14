@@ -363,11 +363,18 @@ const QUESTIONS = [
   },
   {
     tier: "final",
-    theme: "obj-geometrie",
-    objectif: "Vecteurs \u00b7 Somme",
-    aim: "Additionner deux vecteurs diff\u00e9rents plac\u00e9s bout \u00e0 bout, en composant leurs d\u00e9placements composante par composante.",
-    question: "$\\overrightarrow{\\text{AB}}$ correspond \u00e0 un d\u00e9placement de 2 carreaux vers la droite et 5 vers le haut. $\\overrightarrow{\\text{BC}}$ correspond \u00e0 4 carreaux vers la droite et 1 vers le bas. Quel d\u00e9placement repr\u00e9sente $\\overrightarrow{\\text{AB}}+\\overrightarrow{\\text{BC}}$ ?",
-    explanation: "On additionne s\u00e9par\u00e9ment les d\u00e9placements horizontaux et verticaux : \u00e0 droite, $2+4=6$ carreaux. En vertical, $5$ vers le haut et $1$ vers le bas se compensent partiellement : $5-1=4$ carreaux vers le haut. $\\overrightarrow{\\text{AB}}+\\overrightarrow{\\text{BC}}$ correspond donc \u00e0 6 carreaux vers la droite et 4 vers le haut."
+    theme: "obj-complement",
+    objectif: "Algo \u00b7 Lire un programme",
+    aim: "Lire un programme Python o\u00f9 une fonction en appelle une autre (composition de fonctions), et calculer la valeur affich\u00e9e.",
+    question: "Que va afficher ce programme ?",
+    diagram: `<div class="code-row" style="max-width:280px;"><div class="code-col"><pre class="code">def double(n):
+    return 2 * n
+
+def f(x):
+    return double(x) + 1
+
+print(f(5))</pre></div></div>`,
+    explanation: "On calcule d'abord $\\text{double}(5)=2\\times5=10$, puis $f(5)=\\text{double}(5)+1=10+1=11$. Le programme affiche $11$."
   }
 ];
 let current = 0;
