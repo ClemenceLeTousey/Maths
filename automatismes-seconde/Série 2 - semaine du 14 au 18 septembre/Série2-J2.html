@@ -330,34 +330,53 @@ const QUESTIONS = [
   {
     tier: "qcm",
     theme: "obj-geometrie",
-    objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
-    aim: "Comprendre la relation entre un vecteur et son oppos\u00e9.",
-    question: "$\\overrightarrow{\\text{AB}}$ et $\\overrightarrow{\\text{BA}}$ ont :",
+    objectif: "Vecteurs \u00b7 Translations",
+    aim: "Identifier la translation dont le vecteur est l'oppos\u00e9 d'un vecteur donn\u00e9 (ici $\\overrightarrow{\\text{BA}}$, oppos\u00e9 de $\\overrightarrow{\\text{AB}}$), pour retrouver la figure qu'elle transforme.",
+    question: "Quelle est la translation qui transforme la figure originale en la Figure 3 ?",
+    diagram: `<svg viewBox="0 40 340 240" role="img" aria-label="Quatre points A, B, C, D, une figure originale (Tux), et trois figures candidates num\u00e9rot\u00e9es de 1 \u00e0 3" style="max-width:500px;margin-left:100px;margin-right:auto">
+      <defs>
+        <image id="tuxImgS2J2Q1" href="../assets/img/tux.png" width="62" height="64"/>
+      </defs>
+      <g class="diagram-point"><line x1="126.5" y1="206.5" x2="133.5" y2="213.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="126.5" y1="213.5" x2="133.5" y2="206.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="130" y="200">A</text></g>
+      <g class="diagram-point"><line x1="216.5" y1="116.5" x2="223.5" y2="123.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="216.5" y1="123.5" x2="223.5" y2="116.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="220" y="110">B</text></g>
+      <g class="diagram-point"><line x1="126.5" y1="226.5" x2="133.5" y2="233.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="126.5" y1="233.5" x2="133.5" y2="226.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="130" y="245">C</text></g>
+      <g class="diagram-point"><line x1="293" y1="245.4" x2="300" y2="252.4" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="293" y1="252.4" x2="300" y2="245.4" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="297" y="238">D</text></g>
+
+      <g transform="translate(110,70)"><use href="#tuxImgS2J2Q1"/></g>
+      <text class="diagram-label" x="141" y="150" text-anchor="middle">Figure originale</text>
+
+      <g transform="translate(190,180)"><use href="#tuxImgS2J2Q1"/></g>
+      <text class="diagram-label" x="221" y="260" text-anchor="middle">Figure 1</text>
+
+      <g transform="translate(260,60) rotate(180,31,32)"><use href="#tuxImgS2J2Q1"/></g>
+      <text class="diagram-label" x="291" y="140" text-anchor="middle">Figure 2</text>
+
+      <g transform="translate(20,160)"><use href="#tuxImgS2J2Q1"/></g>
+      <text class="diagram-label" x="51" y="240" text-anchor="middle">Figure 3</text>
+    </svg>`,
     options: [
-      { letter:"A", text:"M\u00eame direction, m\u00eame sens", correct:false },
-      { letter:"B", text:"M\u00eame direction, sens contraire", correct:true },
-      { letter:"C", text:"Des directions diff\u00e9rentes", correct:false },
-      { letter:"D", text:"Rien en commun", correct:false }
+      { letter:"A", text:"La translation de vecteur $\\overrightarrow{\\text{BA}}$", correct:true },
+      { letter:"B", text:"La translation de vecteur $\\overrightarrow{\\text{AB}}$", correct:false },
+      { letter:"C", text:"La translation de vecteur $\\overrightarrow{\\text{CD}}$", correct:false },
+      { letter:"D", text:"La translation de vecteur $\\overrightarrow{\\text{DC}}$", correct:false }
     ],
-    explanation: "$\\overrightarrow{\\text{AB}}$ et $\\overrightarrow{\\text{BA}}$ parcourent le m\u00eame segment $[\\text{AB}]$, donc la m\u00eame direction et la m\u00eame longueur, mais dans des sens oppos\u00e9s : $\\overrightarrow{\\text{BA}}$ est l'oppos\u00e9 de $\\overrightarrow{\\text{AB}}$."
+    explanation: "Le vecteur $\\overrightarrow{\\text{BA}}$ va de B vers A : c'est le sens oppos\u00e9 de $\\overrightarrow{\\text{AB}}$. C'est ce d\u00e9placement qui transforme la figure originale en la <strong>Figure 3</strong>.<br>La translation de vecteur $\\overrightarrow{\\text{AB}}$ est le sens oppos\u00e9 de la bonne r\u00e9ponse : elle ram\u00e8nerait la Figure 3 vers la figure originale. Les translations de vecteur $\\overrightarrow{\\text{CD}}$ ou $\\overrightarrow{\\text{DC}}$ sont d'autres d\u00e9placements, qui ne correspondent \u00e0 aucune des figures repr\u00e9sent\u00e9es."
   },
   {
     tier: "qcm",
     theme: "obj-complement",
-    objectif: "Algo \u00b7 Expressions litt\u00e9rales",
-    aim: "Lire une fonction Python qui \u00e9value une expression litt\u00e9rale et calculer l'image d'un nombre.",
-    question: "Que va afficher ce programme ?",
-    diagram: `<div class="code-row" style="max-width:320px;"><div class="code-col"><pre class="code">def f(x):
-    return 2 * x + 3
-
-print(f(5))</pre></div></div>`,
+    objectif: "Algo \u00b7 Lire un programme",
+    aim: "Lire une fonction Python \u00e0 deux param\u00e8tres, et calculer la valeur renvoy\u00e9e pour des arguments donn\u00e9s.",
+    question: "Voici un programme Python. Que renvoie la console si on saisit <code>prix_total(5, 4)</code> ?",
+    diagram: `<pre class="code" style="font-size:1.25rem; display:inline-block; max-width:100%; white-space:pre-wrap; word-break:break-word;">def prix_total(prix, frais):
+    return 2 * prix + frais</pre>`,
     options: [
-      { letter:"A", text:"$13$", correct:true },
-      { letter:"B", text:"$10$", correct:false },
-      { letter:"C", text:"$8$", correct:false },
-      { letter:"D", text:"$16$", correct:false }
+      { letter:"A", text:"$14$", correct:true },
+      { letter:"B", text:"$9$", correct:false },
+      { letter:"C", text:"$18$", correct:false },
+      { letter:"D", text:"$40$", correct:false }
     ],
-    explanation: "La fonction calcule $2x+3$. Avec $x=5$ : $2\\times5+3=13$."
+    explanation: "On calcule <code>2 * prix + frais</code> avec <code>prix = 5</code> et <code>frais = 4</code> : $2\\times5+4=10+4=14$."
   },
   {
     tier: "question",
@@ -377,42 +396,32 @@ print(f(5))</pre></div></div>`,
     tier: "final",
     theme: "obj-geometrie",
     objectif: "Vecteurs \u00b7 Translations",
-    aim: "Lire, sur un quadrillage, le d\u00e9placement (en carreaux) associ\u00e9 au vecteur d'une translation entre deux figures superposables parmi plusieurs.",
-    question: "Les six figures ci-dessous sont superposables (num\u00e9rot\u00e9es de 1 \u00e0 6).<br>La figure 4 est l'image de la figure 2 par une translation. Quel d\u00e9placement repr\u00e9sente le vecteur de cette translation ?",
-    diagram: `<svg viewBox="0 0 320 280" style="max-width:340px;" role="img" aria-label="Six pingouins identiques plac\u00e9s sur un quadrillage, num\u00e9rot\u00e9s de 1 \u00e0 6">
-      <g stroke="var(--line)" stroke-width="1">
-        <line x1="0" y1="0" x2="0" y2="280"/>
-        <line x1="40" y1="0" x2="40" y2="280"/>
-        <line x1="80" y1="0" x2="80" y2="280"/>
-        <line x1="120" y1="0" x2="120" y2="280"/>
-        <line x1="160" y1="0" x2="160" y2="280"/>
-        <line x1="200" y1="0" x2="200" y2="280"/>
-        <line x1="240" y1="0" x2="240" y2="280"/>
-        <line x1="280" y1="0" x2="280" y2="280"/>
-        <line x1="320" y1="0" x2="320" y2="280"/>
-        <line x1="0" y1="0" x2="320" y2="0"/>
-        <line x1="0" y1="40" x2="320" y2="40"/>
-        <line x1="0" y1="80" x2="320" y2="80"/>
-        <line x1="0" y1="120" x2="320" y2="120"/>
-        <line x1="0" y1="160" x2="320" y2="160"/>
-        <line x1="0" y1="200" x2="320" y2="200"/>
-        <line x1="0" y1="240" x2="320" y2="240"/>
-        <line x1="0" y1="280" x2="320" y2="280"/>
+    aim: "Appliquer une translation donn\u00e9e par un vecteur \u00e0 un point d'un quadrillage, en suivant le m\u00eame d\u00e9placement (colonnes/rang\u00e9es).",
+    question: "Quelle est l'image du point I par la translation de vecteur $\\overrightarrow{\\text{AB}}$ ?",
+    diagram: `<svg viewBox="0 0 460 230" role="img" aria-label="Quadrillage de parall\u00e9logrammes form\u00e9 de trois rang\u00e9es de points align\u00e9s A, B, C, D puis H, G, F, E puis I, J, K, L, reli\u00e9s par des droites">
+      <g stroke="var(--red)" stroke-width="2">
+        <line x1="160" y1="30" x2="430" y2="30"/>
+        <line x1="120" y1="115" x2="390" y2="115"/>
+        <line x1="80" y1="200" x2="350" y2="200"/>
+        <line x1="160" y1="30" x2="80" y2="200"/>
+        <line x1="250" y1="30" x2="170" y2="200"/>
+        <line x1="340" y1="30" x2="260" y2="200"/>
+        <line x1="430" y1="30" x2="350" y2="200"/>
       </g>
-      <image href="../assets/img/tux.png" x="46" y="166" width="34" height="34"/>
-      <image href="../assets/img/tux.png" x="86" y="206" width="34" height="34"/>
-      <image href="../assets/img/tux.png" x="246" y="46" width="34" height="34"/>
-      <image href="../assets/img/tux.png" x="206" y="86" width="34" height="34"/>
-      <image href="../assets/img/tux.png" x="286" y="206" width="34" height="34"/>
-      <image href="../assets/img/tux.png" x="166" y="246" width="34" height="34"/>
-      <g class="diagram-point"><circle cx="40" cy="160" r="8"/><text x="40" y="163">1</text></g>
-      <g class="diagram-point"><circle cx="80" cy="200" r="8"/><text x="80" y="203">2</text></g>
-      <g class="diagram-point"><circle cx="240" cy="40" r="8"/><text x="240" y="43">3</text></g>
-      <g class="diagram-point"><circle cx="200" cy="80" r="8"/><text x="200" y="83">4</text></g>
-      <g class="diagram-point"><circle cx="280" cy="200" r="8"/><text x="280" y="203">5</text></g>
-      <g class="diagram-point"><circle cx="160" cy="240" r="8"/><text x="160" y="243">6</text></g>
+      <g class="diagram-point"><line x1="156" y1="26" x2="164" y2="34" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="156" y1="34" x2="164" y2="26" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="160" y="16">A</text></g>
+      <g class="diagram-point"><line x1="246" y1="26" x2="254" y2="34" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="246" y1="34" x2="254" y2="26" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="250" y="16">B</text></g>
+      <g class="diagram-point"><line x1="336" y1="26" x2="344" y2="34" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="336" y1="34" x2="344" y2="26" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="340" y="16">C</text></g>
+      <g class="diagram-point"><line x1="426" y1="26" x2="434" y2="34" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="426" y1="34" x2="434" y2="26" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="430" y="16">D</text></g>
+      <g class="diagram-point"><line x1="116" y1="111" x2="124" y2="119" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="116" y1="119" x2="124" y2="111" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="120" y="101">H</text></g>
+      <g class="diagram-point"><line x1="206" y1="111" x2="214" y2="119" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="206" y1="119" x2="214" y2="111" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="210" y="101">G</text></g>
+      <g class="diagram-point"><line x1="296" y1="111" x2="304" y2="119" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="296" y1="119" x2="304" y2="111" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="300" y="101">F</text></g>
+      <g class="diagram-point"><line x1="386" y1="111" x2="394" y2="119" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="386" y1="119" x2="394" y2="111" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="390" y="101">E</text></g>
+      <g class="diagram-point"><line x1="76" y1="196" x2="84" y2="204" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="76" y1="204" x2="84" y2="196" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="80" y="186">I</text></g>
+      <g class="diagram-point"><line x1="166" y1="196" x2="174" y2="204" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="166" y1="204" x2="174" y2="196" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="170" y="186">J</text></g>
+      <g class="diagram-point"><line x1="256" y1="196" x2="264" y2="204" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="256" y1="204" x2="264" y2="196" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="260" y="186">K</text></g>
+      <g class="diagram-point"><line x1="346" y1="196" x2="354" y2="204" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="346" y1="204" x2="354" y2="196" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="350" y="186">L</text></g>
     </svg>`,
-    explanation: "En suivant le m\u00eame point (le badge num\u00e9rot\u00e9) sur chaque figure, on passe de la figure 2 \u00e0 la figure 4 en se d\u00e9pla\u00e7ant de $3$ carreaux vers la droite et $3$ carreaux vers le haut : c'est le d\u00e9placement associ\u00e9 au vecteur de cette translation."
+    explanation: "Le vecteur $\\overrightarrow{\\text{AB}}$ correspond \u00e0 un d\u00e9placement d'une colonne vers la droite, sur la m\u00eame rang\u00e9e (c'est le m\u00eame d\u00e9placement qu'entre H et G, ou entre I et J). En appliquant ce d\u00e9placement au point I, on reste sur la rang\u00e9e du bas et on avance d'une colonne : l'image de I est donc le point <strong>J</strong>."
   }
 ];
 let current = 0;
