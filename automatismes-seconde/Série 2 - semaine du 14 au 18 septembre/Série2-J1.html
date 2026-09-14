@@ -377,9 +377,9 @@ const QUESTIONS = [
     tier: "qcm",
     objectif: "Calcul litt\u00e9ral \u00b7 Distributivit\u00e9",
     aim: "Appliquer la distributivit\u00e9 simple pour d\u00e9velopper une expression du type k(a+b).",
-    question: "D\u00e9velopper $3(x+5)$ :",
+    question: "D\u00e9velopper $4(x+2)$ :",
     sideDiagram: true,
-    diagram: `<svg class="diagram-table" viewBox="0 0 144 84" width="144" height="84" role="img" aria-label="Tableau de distributivit\u00e9 \u00e0 compl\u00e9ter pour 3(x+5)">
+    diagram: `<svg class="diagram-table" viewBox="0 0 144 84" width="144" height="84" role="img" aria-label="Tableau de distributivit\u00e9 \u00e0 compl\u00e9ter pour 4(x+2)">
       <rect class="corner" x="0" y="0" width="48" height="42"/>
       <rect class="hdr" x="48" y="0" width="48" height="42"/>
       <rect class="hdr" x="96" y="0" width="48" height="42"/>
@@ -388,16 +388,16 @@ const QUESTIONS = [
       <rect class="cell" x="96" y="42" width="48" height="42"/>
       <text x="24" y="21">\u00d7</text>
       <text x="72" y="21" class="var">x</text>
-      <text x="120" y="21">+5</text>
-      <text x="24" y="63">3</text>
+      <text x="120" y="21">+2</text>
+      <text x="24" y="63">4</text>
     </svg>`,
     options: [
-      { letter:"A", text:"$3x+5$", correct:false },
-      { letter:"B", text:"$3x+15$", correct:true },
-      { letter:"C", text:"$3x+8$", correct:false },
-      { letter:"D", text:"$x+15$", correct:false }
+      { letter:"A", text:"$4x+2$", correct:false },
+      { letter:"B", text:"$4x+8$", correct:true },
+      { letter:"C", text:"$4x+6$", correct:false },
+      { letter:"D", text:"$x+8$", correct:false }
     ],
-    explanation: "$3(x+5)=3\\times x+3\\times5=3x+15$. Le $3$ multiplie chacun des deux termes de la parenth\u00e8se, pas seulement le premier."
+    explanation: "$4(x+2)=4\\times x+4\\times2=4x+8$. Le $4$ multiplie chacun des deux termes de la parenth\u00e8se, pas seulement le premier."
   },
   {
     tier: "final",
@@ -441,9 +441,9 @@ const QUESTIONS = [
     tier: "final",
     objectif: "Calcul litt\u00e9ral \u00b7 Distributivit\u00e9",
     aim: "D\u00e9velopper et r\u00e9duire un produit de deux sommes (double distributivit\u00e9).",
-    question: "D\u00e9velopper et r\u00e9duire $(2x-1)(x+4)$.",
+    question: "D\u00e9velopper et r\u00e9duire $(3x+2)(x-1)$.",
     sideDiagram: true,
-    diagram: `<svg class="diagram-table" viewBox="0 0 144 126" width="144" height="126" role="img" aria-label="Tableau de distributivit\u00e9 \u00e0 compl\u00e9ter pour (2x-1)(x+4)">
+    diagram: `<svg class="diagram-table" viewBox="0 0 144 126" width="144" height="126" role="img" aria-label="Tableau de distributivit\u00e9 \u00e0 compl\u00e9ter pour (3x+2)(x-1)">
       <rect class="corner" x="0" y="0" width="48" height="42"/>
       <rect class="hdr" x="48" y="0" width="48" height="42"/>
       <rect class="hdr" x="96" y="0" width="48" height="42"/>
@@ -455,11 +455,11 @@ const QUESTIONS = [
       <rect class="cell" x="96" y="84" width="48" height="42"/>
       <text x="24" y="21">\u00d7</text>
       <text x="72" y="21" class="var">x</text>
-      <text x="120" y="21">+4</text>
-      <text x="24" y="63"><tspan>2</tspan><tspan class="var">x</tspan></text>
-      <text x="24" y="105">\u22121</text>
+      <text x="120" y="21">\u22121</text>
+      <text x="24" y="63"><tspan>3</tspan><tspan class="var">x</tspan></text>
+      <text x="24" y="105">+2</text>
     </svg>`,
-    explanation: "$(2x-1)(x+4)=2x\\times x+2x\\times4-1\\times x-1\\times4=2x^2+8x-x-4=2x^2+7x-4$."
+    explanation: "$(3x+2)(x-1)=3x\\times x+3x\\times(-1)+2\\times x+2\\times(-1)=3x^2-3x+2x-2=3x^2-x-2$."
   }
 ];
 let current = 0;
