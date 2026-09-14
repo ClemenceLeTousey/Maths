@@ -38,6 +38,8 @@
     --aqua-soft:    #dcf1e9;
     --red:          #b8342b;
     --red-soft:     #fbeae8;
+    --violet:       #7c4a9e;
+    --gold:         #9c7a10;
     --line:         #dce1ea;
     --rule-strong:  #b9c2d1;
     --shadow:       rgba(32, 35, 43, 0.10);
@@ -52,6 +54,7 @@
       --paper:#121319; --surface:#1b1e26; --ink:#f1f2f6; --ink-soft:#c3c7d1; --muted:#8b909c;
       --accent:#7ea3ee; --accent-soft:#223252; --orange:#e08a5c; --orange-soft:#3a2a1e;
       --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70; --red-soft:#3a2222;
+      --violet:#c9a4e8; --gold:#d9b23c;
       --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
       --qcm:#7ea3ee; --question:#e08a5c; --final:#e17a70;
     }
@@ -61,6 +64,7 @@
     --paper:#121319; --surface:#1b1e26; --ink:#f1f2f6; --ink-soft:#c3c7d1; --muted:#8b909c;
     --accent:#7ea3ee; --accent-soft:#223252; --orange:#e08a5c; --orange-soft:#3a2a1e;
     --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70; --red-soft:#3a2222;
+    --violet:#c9a4e8; --gold:#d9b23c;
     --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
     --qcm:#7ea3ee; --question:#e08a5c; --final:#e17a70;
   }
@@ -188,6 +192,9 @@
   .dline-aqua { stroke: var(--aqua); }
   .dline-orange { stroke: var(--orange); }
   .dline-magenta { stroke: var(--red); }
+  .dline-accent { stroke: var(--accent); }
+  .dline-violet { stroke: var(--violet); }
+  .dline-gold { stroke: var(--gold); }
   .daxis { stroke: var(--ink); stroke-width: 2; }
   .dgrid { stroke: var(--line); stroke-width: 1; }
   .dstep { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
@@ -340,8 +347,8 @@ const QUESTIONS = [
     objectif: "Droites · Lecture graphique",
     aim: "Reconnaître à l'œil le signe d'un coefficient directeur (croissante/décroissante), les droites remarquables (horizontale, verticale), et différencier deux droites parallèles par leur ordonnée à l'origine.",
     question: "Associer chaque droite à son équation.<br>① $y=0{,}5x+1{,}8$ &nbsp; ② $y=-0{,}5x+1{,}8$ &nbsp; ③ $y=0{,}5$<br>④ $y=0{,}5x+0{,}9$ &nbsp; ⑤ $x=0{,}5$ &nbsp; ⑥ $y=-0{,}5x-1{,}8$",
-    diagram: "<svg viewBox=\"0 0 400 300\" xmlns=\"http://www.w3.org/2000/svg\"><line class=\"daxis\" x1=\"200\" y1=\"0\" x2=\"200\" y2=\"300\"/><line class=\"daxis\" x1=\"0\" y1=\"150\" x2=\"400\" y2=\"150\"/><line class=\"dline dline-thin dline-muted\" x1=\"0\" y1=\"125\" x2=\"400\" y2=\"125\"/><line class=\"dline dline-dashed dline-ink\" x1=\"225\" y1=\"0\" x2=\"225\" y2=\"300\"/><line class=\"dline dline-dashed dline-soft\" x1=\"0\" y1=\"205\" x2=\"400\" y2=\"5\"/><line class=\"dline dline-dashed dline-ink\" x1=\"0\" y1=\"160\" x2=\"320\" y2=\"0\"/><line class=\"dline dline-dotted dline-ink\" x1=\"80\" y1=\"0\" x2=\"400\" y2=\"160\"/><line class=\"dline dline-solid dline-ink\" x1=\"0\" y1=\"140\" x2=\"320\" y2=\"300\"/><text class=\"dlabel\" x=\"233\" y=\"16\">d3</text><text class=\"dlabel\" x=\"366\" y=\"30\">d1</text><text class=\"dlabel\" x=\"328\" y=\"14\">d4</text><text class=\"dlabel\" x=\"56\" y=\"16\">d5</text><text class=\"dlabel\" x=\"366\" y=\"114\">d6</text><text class=\"dlabel\" x=\"326\" y=\"288\">d2</text></svg>",
-    explanation: "$d_3$ est verticale $\\to$ ⑤ $x=0{,}5$. $d_6$ est horizontale $\\to$ ③ $y=0{,}5$.<br>$d_1$ et $d_4$ sont croissantes (coefficient directeur $0{,}5$) : $d_4$ coupe l'axe des ordonnées plus haut que $d_1$, donc $d_4\\to$① $y=0{,}5x+1{,}8$ et $d_1\\to$④ $y=0{,}5x+0{,}9$.<br>$d_2$ et $d_5$ sont décroissantes (coefficient directeur $-0{,}5$) : $d_5$ coupe l'axe des ordonnées au-dessus de l'axe, $d_2$ en dessous, donc $d_5\\to$② $y=-0{,}5x+1{,}8$ et $d_2\\to$⑥ $y=-0{,}5x-1{,}8$."
+    diagram: "<svg viewBox=\"0 0 400 300\" xmlns=\"http://www.w3.org/2000/svg\"><line class=\"daxis\" x1=\"200\" y1=\"0\" x2=\"200\" y2=\"300\"/><line class=\"daxis\" x1=\"0\" y1=\"150\" x2=\"400\" y2=\"150\"/><line class=\"dline dline-gold\" x1=\"0\" y1=\"125\" x2=\"400\" y2=\"125\"/><line class=\"dline dline-dashed dline-aqua\" x1=\"225\" y1=\"0\" x2=\"225\" y2=\"300\"/><line class=\"dline dline-dashed dline-accent\" x1=\"0\" y1=\"205\" x2=\"400\" y2=\"5\"/><line class=\"dline dline-dashed dline-magenta\" x1=\"0\" y1=\"160\" x2=\"320\" y2=\"0\"/><line class=\"dline dline-dotted dline-violet\" x1=\"80\" y1=\"0\" x2=\"400\" y2=\"160\"/><line class=\"dline dline-solid dline-orange\" x1=\"0\" y1=\"140\" x2=\"320\" y2=\"300\"/><text class=\"dlabel\" x=\"233\" y=\"16\" style=\"fill:var(--aqua);font-weight:700\">𝒟₃</text><text class=\"dlabel\" x=\"366\" y=\"30\" style=\"fill:var(--accent);font-weight:700\">𝒟₁</text><text class=\"dlabel\" x=\"328\" y=\"14\" style=\"fill:var(--red);font-weight:700\">𝒟₄</text><text class=\"dlabel\" x=\"56\" y=\"16\" style=\"fill:var(--violet);font-weight:700\">𝒟₅</text><text class=\"dlabel\" x=\"366\" y=\"114\" style=\"fill:var(--gold);font-weight:700\">𝒟₆</text><text class=\"dlabel\" x=\"326\" y=\"288\" style=\"fill:var(--orange);font-weight:700\">𝒟₂</text></svg>",
+    explanation: "$\\mathcal{D}_3$ est verticale $\\to$ ⑤ $x=0{,}5$. $\\mathcal{D}_6$ est horizontale $\\to$ ③ $y=0{,}5$.<br>$\\mathcal{D}_1$ et $\\mathcal{D}_4$ sont croissantes (coefficient directeur $0{,}5$) : $\\mathcal{D}_4$ coupe l'axe des ordonnées plus haut que $\\mathcal{D}_1$, donc $\\mathcal{D}_4\\to$① $y=0{,}5x+1{,}8$ et $\\mathcal{D}_1\\to$④ $y=0{,}5x+0{,}9$.<br>$\\mathcal{D}_2$ et $\\mathcal{D}_5$ sont décroissantes (coefficient directeur $-0{,}5$) : $\\mathcal{D}_5$ coupe l'axe des ordonnées au-dessus de l'axe, $\\mathcal{D}_2$ en dessous, donc $\\mathcal{D}_5\\to$② $y=-0{,}5x+1{,}8$ et $\\mathcal{D}_2\\to$⑥ $y=-0{,}5x-1{,}8$."
   },
   {
     tier: "final",
