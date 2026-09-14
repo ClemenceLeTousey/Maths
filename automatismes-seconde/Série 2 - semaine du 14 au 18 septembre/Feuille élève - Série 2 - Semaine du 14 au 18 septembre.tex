@@ -20,6 +20,7 @@
 \usepackage[table]{xcolor}
 \usepackage{array}
 \usepackage{multirow}
+\usepackage{hhline}
 \usepackage{pifont}
 \usepackage[most]{tcolorbox}
 \tcbuselibrary{raster}
@@ -30,8 +31,31 @@
 \setlist[itemize]{topsep=1pt, itemsep=1pt, parsep=0pt, leftmargin=1.3em, label=$\star$}
 \usepackage{bbding}
 \usepackage{multicol}
+\usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{calc}
+\usetikzlibrary{arrows.meta}
+% Vrais blocs Scratch 3, mode "impression" (fond blanc, contours et texte
+% en noir) pour rester lisible, pour la partie Algo -- remplace les blocs
+% en pseudo-code texte.
+\usepackage{scratch3}
+\setdefaultscratch{print=true, fill blocks=true, fill gray=1, text color=black}
+
+% Pictogramme "téléphérique" pour la boîte "À retenir" de Translations et
+% vecteurs (cabine orange à bande de vitre violette, suspendue par un arceau
+% violet à un câble en pointillés). Origine du repère local = pointe de
+% l'arceau (point d'attache au câble), pour pouvoir aligner plusieurs
+% cabines le long d'une même droite.
+\newcommand{\telepherique}{%
+  \draw[cabinPurpleC, line width=1.8pt, line cap=round]
+    (0,0) .. controls (0.05,-0.22) and (0.15,-0.4) .. (0.38,-0.52);
+  \filldraw[cabinPurpleC, rounded corners=1.5pt] (-0.05,-1.06) rectangle (0.83,-0.98);
+  \fill[black!65] (0.14,-1.1) circle (0.045);
+  \fill[black!65] (0.64,-1.1) circle (0.045);
+  \filldraw[cabinOrangeC, draw=black, line width=0.55pt, rounded corners=7pt]
+    (-0.03,-1.0) rectangle (0.81,-0.5);
+  \filldraw[cabinPurpleC] (0.29,-1.0) rectangle (0.49,-0.5);
+}
 
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
@@ -48,19 +72,76 @@
 \definecolor{finalC}{HTML}{B5511F}
 \definecolor{bonusC}{HTML}{B8298F}
 \definecolor{bonussoftC}{HTML}{FBE6F3}
-\definecolor{emptyC}{HTML}{E7E9EE}
+\definecolor{emptyC}{HTML}{8A909C}
 \definecolor{redC}{HTML}{B8342B}
 % Couleurs des boîtes "À retenir"/"Exemple", reprises telles quelles de
 % \ARetenirBox/\ExempleBoxAuto dans CLT2627.sty (bleuPropriete, grisExemple)
 % pour rester visuellement fidèle au fichier original.
 \definecolor{bleuPropriete}{RGB}{41,121,204}
 \definecolor{grisExemple}{RGB}{85,85,95}
+% Couleurs du pictogramme "téléphérique" (\telepherique), reprises de la
+% cabine orange à bande violette de la capture fournie.
+\definecolor{cabinOrangeC}{HTML}{EF7B5B}
+\definecolor{cabinPurpleC}{HTML}{4A2E7D}
+% Couleurs de la boîte "console" (reprises de .console-panel sur le site
+% des projections élève), pour montrer le résultat d'un script Python sans
+% appeler print().
+\definecolor{consoleBgC}{HTML}{1E1E2E}
+\definecolor{consoleGreenC}{HTML}{6FCF97}
+% Boîte "console" façon terminal : fond sombre, invite ">>>" en vert,
+% résultat en blanc gras. #1 = contenu (invite(s) + résultat).
+\newcommand{\consoleBox}[1]{%
+  \begin{tcolorbox}[colback=consoleBgC, colframe=consoleBgC, arc=3pt,
+    boxrule=0pt, left=6pt, right=6pt, top=0pt, bottom=0pt,
+    before skip=0pt, after skip=0pt]
+  \ttfamily\footnotesize\color{white}#1
+  \end{tcolorbox}%
+}
+% Boîte invisible (même famille que \consoleBox) pour que le code Python,
+% placé à côté dans une minipage[t], parte de la même ligne de base que la
+% console (un \tcolorbox tout seul en tête de minipage[t] ne s'aligne pas
+% comme du texte simple).
+\newcommand{\codeBoxPlain}[1]{%
+  \begin{tcolorbox}[colback=white, colframe=white, arc=0pt,
+    boxrule=0pt, left=0pt, right=0pt, top=4pt, bottom=4pt,
+    before skip=0pt, after skip=0pt]
+  \ttfamily\small#1
+  \end{tcolorbox}%
+}
+% Panneau générique invisible (même famille), pour ranger côte à côte dans
+% un même tcbraster des contenus de nature différente (blocs Scratch,
+% scène, code, console) en gardant un alignement en haut cohérent. #1
+% (optionnel) = options tcolorbox (ex. raster multicolumn=N).
+\NewDocumentCommand{\PanelBox}{O{} m}{%
+  \begin{tcolorbox}[colback=grisExemple!6, colframe=grisExemple!6, arc=0pt,
+    boxrule=0pt, left=2pt, right=2pt, top=0pt, bottom=0pt,
+    before skip=0pt, after skip=0pt, #1]
+  #2
+  \end{tcolorbox}%
+}
+% Scène Scratch (aperçu) : Tux comme lutin, avec une bulle de dialogue
+% contenant le texte dit par le bloc "dire". #1 (optionnel) = angle de
+% rotation \rotatebox du lutin (positif = sens antihoraire ; passer une
+% valeur négative pour un "tourner" sens horaire), effet visible du bloc
+% "tourner". #2 = texte de la bulle.
+\NewDocumentCommand{\stagePanel}{O{0} m}{%
+  \begin{tikzpicture}[baseline=0pt]
+    \node[anchor=south west, inner sep=0] (tux) at (0,0)
+      {\rotatebox{#1}{\includegraphics[width=1.1cm]{../assets/img/tux.png}}};
+    \node[draw=inkC, fill=white, rounded corners=4pt, line width=0.8pt,
+      align=center, font=\tiny, text width=1.5cm, inner sep=3pt,
+      anchor=south west] (bubble) at ([xshift=0.75cm,yshift=0.75cm]tux.south)
+      {#2};
+  \end{tikzpicture}%
+}
 
 \newcommand{\starQ}{\textcolor{questionC}{$\bigstar$}}
 \newcommand{\starF}{\textcolor{finalC}{$\bigstar$}}
 \newcommand{\starFF}{\textcolor{finalC}{$\bigstar\bigstar$}}
 \newcommand{\okmark}{\ding{51}}
 \newcommand{\nomark}{\ding{55}}
+% Notation vectorielle (reprise de CLT2627.sty).
+\newcommand{\Vj}[1]{\overrightarrow{\text{#1}}}
 % Case à cocher vierge (l'élève y trace lui-même un crochet ou une croix).
 \newcommand{\corrbox}{\fboxsep=0pt\fbox{\rule{0pt}{8pt}\rule{8pt}{0pt}}}
 
@@ -70,10 +151,10 @@
 % juste/faux -- voir légende.)
 \newcommand{\qcase}[1]{%
   \begin{tikzpicture}[baseline=0pt]
-    \useasboundingbox (0,0) rectangle (2.95cm,1.05cm);
-    \node[anchor=north west, circle, draw=mutedC, line width=0.4pt,
-          inner sep=1pt, minimum size=1.1em, font=\tiny, text=mutedC]
-      at (0.08cm,1.12cm) {#1};
+    \useasboundingbox (0,0) rectangle (4.6cm,1.85cm);
+    \node[anchor=west, circle, draw=inkC, line width=0.6pt,
+          inner sep=1pt, minimum size=1.7em, font=\large, text=inkC]
+      at (0.05cm,0.925cm) {#1};
   \end{tikzpicture}%
 }
 % Case grisée : aucune question ce jour-là pour cet automatisme.
@@ -117,13 +198,23 @@
   ]{{\color{#1}\faCogs}~\textcolor{#1}{\Large\bfseries #2}~~{\normalsize\color{inksoftC} #3}}%
   \par
 }
+% Variante sans retour à la ligne, pour placer plusieurs cartes côte à côte
+% sur une même ligne (ex. A3/A4 en Série 2, suivies d'un texte).
+\newcommand{\autoCardLineInline}[3]{%
+  \tcbox[
+    colback=white, colframe=#1, coltext=#1,
+    boxrule=1.2pt, arc=5pt, left=10pt, right=10pt, top=2pt, bottom=2pt,
+  ]{{\color{#1}\faCogs}~\textcolor{#1}{\Large\bfseries #2}~~{\normalsize\color{inksoftC} #3}}%
+}
 
 % Boîte "À retenir" : même cadre que les boîtes "Propriété" du cours
 % (\Prp dans CLT2627.sty) -- pas de bordure pleine, seulement 4 coins en
 % équerre dessinés en overlay, fond bleuPropriete!6.
-\newcommand{\ARetenirBox}[1]{%
+% #1 (optionnel) = options tcolorbox supplémentaires (ex. raster
+% multicolumn=N pour élargir/rétrécir la boîte dans un tcbraster).
+\NewDocumentCommand{\ARetenirBox}{O{} m}{%
   \begin{tcolorbox}[
-    enhanced,
+    enhanced, #1,
     colback=bleuPropriete!6, colframe=bleuPropriete,
     boxrule=0pt, arc=0pt, outer arc=0pt,
     left=10pt, right=8pt, top=2pt, bottom=1pt,
@@ -139,25 +230,25 @@
     },
   ]
     \textbf{\textcolor{bleuPropriete}{À retenir}}\par\vspace{1pt}
-    #1
+    #2
   \end{tcolorbox}%
 }
 % Boîte "Exemple" : même liseré que \ExempleBoxAuto, plus le crayon
 % encerclé en overlay au coin supérieur gauche, repris à l'identique de
 % \Exemple dans CLT2627.sty (\PencilRightUp, police bbding).
-\newcommand{\ExempleBoxR}[1]{%
+\NewDocumentCommand{\ExempleBoxR}{O{} m}{%
   \begin{tcolorbox}[
-    enhanced,
+    enhanced, #1,
     colback=grisExemple!6, colframe=grisExemple,
     boxrule=0pt, borderline west={2pt}{0pt}{grisExemple},
     arc=0pt, outer arc=0pt,
-    left=16pt, right=8pt, top=3pt, bottom=1pt,
+    left=16pt, right=8pt, top=2pt, bottom=1pt,
     overlay={
       \node[anchor=center, circle, fill=white, draw=grisExemple, line width=0.8pt, minimum size=18pt] at ([yshift=-10pt]frame.north west) {\textcolor{grisExemple}{\fontsize{11}{11}\selectfont\PencilRightUp}};
     },
   ]
     \textbf{\textcolor{grisExemple}{Exemple}}\par\vspace{1pt}
-    #1
+    #2
   \end{tcolorbox}%
 }
 % Place une \ARetenirBox et une \ExempleBoxR côte à côte, chacune à sa
@@ -172,8 +263,8 @@
 }
 
 \newcolumntype{J}{>{\RaggedRight\arraybackslash}m{1.7cm}}
-\newcolumntype{N}{>{\centering\arraybackslash}m{1.05cm}}
-\newcolumntype{O}{>{\centering\arraybackslash}m{3.6cm}}
+\newcolumntype{N}{>{\centering\arraybackslash}m{1.7cm}}
+\newcolumntype{O}{>{\centering\arraybackslash}m{4.7cm}}
 % Colonne centrée de largeur fixe, pour le tableau de distributivité du
 % recto (repris de M{...} dans CLT2627.sty / CarteMentaleLittéral2.tex).
 \newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
@@ -185,59 +276,54 @@
 
 \vspace{0pt}
 
-\autoCardLine{qcmC}{A3}{Puissances}
-\vspace{1pt}
-\begin{center}
-{\small\textit{Mêmes rappels que la Série 1 -- voir Cartes Mentales et Cours Séquence~1.}}
-\end{center}
-\vspace{2pt}
-
-\autoCardLine{qcmC}{A4}{Écritures d'un nombre}
-\vspace{1pt}
-\begin{center}
-{\small\textit{Mêmes rappels que la Série 1 -- voir Cartes Mentales et Cours Séquence~1.}}
-\end{center}
+\noindent\mbox{\autoCardLineInline{qcmC}{A3}{Puissances}\hspace{6pt}\autoCardLineInline{qcmC}{A4}{Écritures d'un nombre}}%
+\hspace{14pt}%
+\textit{Voir Séquence 1 et rappels Automatismes Série 1.}\par
 \vspace{2pt}
 
 \autoCardLine{qcmC}{Calcul littéral}{Distributivité}
 \vspace{1pt}
 \RecapPair{%
+  \textbf{1. Distributivité simple}\\
   Pour tout nombre $k$ et tous nombres $a,b$~:
-  \[k(a+b)=k\times a+k\times b \quad\text{(distributivité simple).}\]
+  \[k(a+b)=k\times a+k\times b\]
+  \textbf{2. Double distributivité}\\
+  Pour tous nombres $a$, $b$, $c$ et $d$~:
+  \[(a+b)(c+d)=ac+ad+bc+bd\]
 }{%
   \begin{minipage}[c]{0.55\linewidth}
-  $3(x+5)$
-  \\ $=3\times x+3\times5$
-  \\ $=3x+15$
+  \normalsize
+  \[
+  \begin{array}{r@{\,}c@{\,}l}
+  A(x) &=& 3(x+5)\\
+       &=& 3\times x+3\times5\\
+       &=& 3x+15
+  \end{array}
+  \]
   \end{minipage}%
   \hfill
   \begin{minipage}[c]{0.38\linewidth}
   \centering
   \setlength{\tabcolsep}{2pt}
   {\renewcommand{\arraystretch}{1.1}
-  \begin{tabular}{|M{0.62cm}|M{0.62cm}|}
+  \begin{tabular}{|M{0.62cm}|M{0.62cm}|M{0.62cm}|}
   \hline
-  \cellcolor{redC!35} $\times$ & \cellcolor{black!10} $3$ \\
+  \cellcolor{redC!35} $\times$ & \cellcolor{black!10} $x$ & \cellcolor{black!10} $+5$ \\
   \hline
-  \cellcolor{black!10} $x$ & $3x$ \\
-  \hline
-  \cellcolor{black!10} $+5$ & $15$ \\
+  \cellcolor{black!10} $3$ & $3x$ & $15$ \\
   \hline
   \end{tabular}}
   \end{minipage}
-}
-\vspace{1pt}
-\RecapPair{%
-  Pour développer un produit de deux sommes~:
-  \[(a+b)(c+d)=ac+ad+bc+bd \quad\text{(double distributivité).}\]
-  On peut s'aider d'un \textbf{tableau de distributivité}~: on multiplie
-  chaque terme d'une ligne par chaque terme d'une colonne, puis on
-  additionne toutes les cases.
-}{%
+  \vspace{2pt}
   \begin{minipage}[c]{0.5\linewidth}
-  $(2x-1)(x+4)$
-  \\ $=2x^2+8x-x-4$
-  \\ $=2x^2+7x-4$
+  \normalsize
+  \[
+  \begin{array}{r@{\,}c@{\,}l}
+  B(x) &=& (2x-1)(x+4)\\
+       &=& 2x^2+8x-x-4\\
+       &=& 2x^2+7x-4
+  \end{array}
+  \]
   \end{minipage}%
   \hfill
   \begin{minipage}[c]{0.42\linewidth}
@@ -256,29 +342,116 @@
   \end{minipage}
 }
 
-\vspace*{0.1cm}
+\vspace*{0.04cm}
 
-\autoCardLine{questionC}{Vecteurs}{Translations, vocabulaire et égalité}
+\autoCardLine{questionC}{Translations et vecteurs}{}
 \vspace{1pt}
-\RecapPair{%
-  Deux vecteurs sont \textbf{égaux} s'ils ont même direction, même sens et
-  même norme. Un vecteur n'a pas d'origine ni d'extrémité fixe~: il admet
-  une infinité de représentants.
-}{%
-  Si $\overrightarrow{\text{AB}}$ représente un déplacement de $3$
-  carreaux vers la droite et $1$ carreau vers le haut, alors
-  $\overrightarrow{\text{CD}}$ représente le même vecteur si et seulement
-  s'il correspond au même déplacement, quels que soient $C$ et $D$.
+% Colonnes volontairement inégales (au lieu de \RecapPair) : la boîte
+% "À retenir" est plus étroite pour laisser plus de place à l'exemple et
+% agrandir la figure des DeLorean -- raster à 8 colonnes de base, la boîte
+% de gauche en occupe 3 et celle de droite 5 (via raster multicolumn), ce
+% qui garantit le même alignement en haut que \RecapPair ailleurs dans le
+% document (une paire de minipages manuelles désynchronisait les deux
+% boîtes verticalement).
+\begin{tcbraster}[raster columns=8, raster column skip=8pt, raster force size=false, raster equal height, raster valign=top, before skip=0pt, after skip=0pt]
+\ARetenirBox[raster multicolumn=3]{\normalsize
+  Une \textbf{translation} est une transformation qui permet de faire
+  \textbf{glisser} une figure parallèlement à une droite, dans un sens
+  donné.\\[3pt]
+  \textit{L'image n'est ni retournée, ni déformée}.\\ [3pt]
+  On peut schématiser ce glissement par une flèche appelée \textbf{vecteur}.
+  \vspace{-0.5cm}
+  \begin{center}
+  \includegraphics[width=5cm]{telecabines_schema.pdf}
+  \end{center}
+  \vspace*{-1em}
 }
+\ExempleBoxR[raster multicolumn=5]{\footnotesize
+\vspace*{-1cm}
+  \begin{center}
+  \includegraphics[width=\linewidth]{DeLoreanWide.png}
+  \end{center}
+  \vspace*{-0.5cm}
+  \footnotesize
+  La figure \textbf{4} est l'image de la figure originale par la translation
+  qui transforme A en B.\\
+  La figure \textbf{2}  est l'image de la figure originale par la
+  translation de vecteur $\Vj{DC}$.\\[2pt]
+  Les figures \textbf{1} et \textbf{3} ne sont pas des images par
+  translation~: une translation conserve la taille \emph{et}
+  l'orientation.
+}
+\end{tcbraster}
 
-\vspace*{0.12cm}
-
-\begin{multicols}{2}
-\autoCardLine{finalC}{Algo}{Expressions littérales}
-\columnbreak
-\textit{Pas de rappels. \\
-{\small Les questions ne nécessitent pas de pré-requis.}}
-\end{multicols}
+\vspace*{-0.2cm}
+\autoCardLine{finalC}{Algo}{}
+\vspace{1pt}
+\ARetenirBox{\normalsize
+  Un \textbf{bloc personnalisé} (Scratch) ou une \textbf{fonction} (Python)
+  permet de regrouper plusieurs instructions sous un même nom, pour les
+  réutiliser en un seul appel. \\
+  En Python, on la définit avec
+  \fbox{\texttt{def nom():}} suivi d'une ligne indentée, puis on l'exécute en
+  écrivant dans la console \texttt{nom()}.
+}
+\vspace{2pt}
+\ExempleBoxR{\footnotesize
+\begin{tcbraster}[raster columns=20, raster column skip=1pt, raster force size=false, raster valign=top, before skip=0pt, after skip=0pt]
+\PanelBox[raster multicolumn=3]{\centering
+  \begin{scratch}[scale=0.8]
+    \blockinit{quand \greenflag{} est cliqué}
+    \blockmoreblocks{AccordSol}
+  \end{scratch}
+}
+\PanelBox[raster multicolumn=3]{\vspace*{-1cm} \centering
+  \begin{scratch}[scale=0.7]
+    \initmoreblocks{définir \namemoreblocks{AccordSol}}
+    \blocklook{dire \ovalnum{Sol}}
+    \blocklook{dire \ovalnum{Si}}
+    \blocklook{dire \ovalnum{Ré}}
+  \end{scratch}
+}
+\PanelBox[raster multicolumn=4]{\centering\stagePanel{Sol, Si, Ré}}
+\PanelBox[raster multicolumn=10]{%
+  \ttfamily\small
+  def AccordSol():\\
+  \hspace*{1em}return "Sol", "Si", "Ré"\\[1pt]
+  \consoleBox{\scriptsize{\color{consoleGreenC}>>>} AccordSol()\\[1pt]\textbf{('Sol', 'Si', 'Ré')}}
+}
+\end{tcbraster}
+}
+\vspace{2pt}
+\ARetenirBox{\normalsize
+  Parfois, un bloc a besoin d'une information précise pour exécuter son
+  code~: c'est un \textbf{paramètre}. \\
+  En Python, on l'écrit entre
+  parenthèses~: \fbox{\texttt{def nom(param):}}~; l'appel \texttt{nom(valeur\_voulue)} dans la console
+  remplace \texttt{param} par \texttt{valeur} dans le code exécuté.
+}
+\vspace{0pt}
+\ExempleBoxR{\footnotesize
+\begin{tcbraster}[raster columns=20, raster column skip=1pt, raster force size=false, raster valign=top, before skip=0pt, after skip=0pt]
+\PanelBox[raster multicolumn=3]{\centering
+  \begin{scratch}[scale=0.8]
+    \blockinit{quand \greenflag{} est cliqué}
+    \blockmoreblocks{sayHello \ovalnum{John}}
+  \end{scratch}
+}
+\PanelBox[raster multicolumn=7]{\centering
+  \begin{scratch}[scale=0.8]
+    \initmoreblocks{définir \namemoreblocks{sayHello \ovalmoreblocks{person}}}
+    \blocklook{dire \ovaloperator{regrouper \ovalnum{Hello } et \ovaloperator{regrouper \ovalmoreblocks{person} et \ovalnum{!}}}}
+  \end{scratch}
+}
+\PanelBox[raster multicolumn=4]{\centering\stagePanel{Hello John!}}
+\PanelBox[raster multicolumn=6]{%
+  \ttfamily\scriptsize
+  def sayHello(person):\\
+  \hspace*{1em}return "Hello " + person + "!"\\[1pt]
+  \consoleBox{\scriptsize{\color{consoleGreenC}>>>} sayHello("John")\\[1pt]\textbf{'Hello John!'}}
+}
+\end{tcbraster}
+}
 
 \newpage
 % ============================= VERSO (page 2) ==============================
@@ -286,84 +459,56 @@
 \noindent
 Nom~: \hrulefill{} \hspace{14pt} Prénom~: \hrulefill{} \hspace{14pt} Classe~: \hrulefill
 
-\vspace{4pt}
-\footnotesize
-\textcolor{qcmC}{\textbf{QCM}} \hspace{16pt}
-\starQ{} = Question \hspace{16pt}
-\starFF{} = Automatisme final \hspace{16pt}
-\colorbox{emptyC}{\rule{0pt}{5pt}\hspace{10pt}} pas de question ce jour \hspace{16pt}
-\textcolor{questionC}{\okmark} juste \textperiodcentered{} \textcolor{redC}{\nomark} faux
-
 \vspace{3pt}
-\renewcommand{\arraystretch}{0.95}
+\renewcommand{\arraystretch}{1.0}
 \setlength{\tabcolsep}{2.5pt}
 \begin{center}
+\arrayrulecolor{black}
+\setlength{\arrayrulewidth}{0.9pt}
+\setlength{\doublerulesep}{0.6pt}
 \begin{tabular}{|J|N||*{5}{O|}}
-\hline
+\hhline{-------}
 \multicolumn{2}{|c||}{} &
-\shortstack{\textcolor{qcmC}{A3}\\{\tiny Puissances}} &
-\shortstack{\textcolor{qcmC}{A4}\\{\tiny Écritures d'un nombre}} &
-\shortstack{\textcolor{questionC}{Vecteurs}\\{\tiny Égalité, somme, translations}} &
-\shortstack{\textcolor{qcmC}{Calcul littéral}\\{\tiny Distributivité}} &
-\shortstack{\textcolor{finalC}{Algo}\\{\tiny Expressions littérales}} \\
-\hline\hline
+\shortstack{{\Large\textcolor{qcmC}{A3}}\\[2pt]{\small Puissances}} &
+\shortstack{{\Large\textcolor{qcmC}{A4}}\\[2pt]{\small Écritures d'un nombre}} &
+\shortstack{{\Large\textcolor{questionC}{Vecteurs}}\\[2pt]{\small Égalité, somme, translations}} &
+\shortstack{{\Large\textcolor{qcmC}{Calcul littéral}}\\[2pt]{\small Distributivité}} &
+{\Large\textcolor{finalC}{Algo}} \\
+\hhline{=======}
 
-\multirow{3}{1.6cm}{\textbf{Jour 1}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+\multirow{2}{1.6cm}{\textbf{Jour 1}\\[10pt] Date~:\\[8pt] \hrulefill}
   & \textcolor{qcmC}{\textbf{QCM}}
   & \qempty & \qempty & \qcase{1} & \qcase{2} & \qempty \\
-\cline{2-7}
-  & \starQ
-  & \qempty & \qempty & \qcase{3} & \qempty & \qempty \\
-\cline{2-7}
-  & \starFF
-  & \qempty & \qempty & \qempty & \qcase{4} & \qempty \\
-\hline
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qcase{3} & \qempty & \qcase{4} & \qcase{5} & \qempty \\
+\hhline{-------}
 
-\multirow{3}{1.6cm}{\textbf{Jour 2}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+\multirow{2}{1.6cm}{\textbf{Jour 2}\\[10pt] Date~:\\[8pt] \hrulefill}
   & \textcolor{qcmC}{\textbf{QCM}}
   & \qempty & \qempty & \qcase{1} & \qempty & \qcase{2} \\
-\cline{2-7}
-  & \starQ
-  & \qempty & \qcase{3} & \qempty & \qempty & \qempty \\
-\cline{2-7}
-  & \starFF
-  & \qempty & \qempty & \qcase{4} & \qempty & \qempty \\
-\hline
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qcase{3} & \qcase{4} & \qcase{5} & \qempty & \qempty \\
+\hhline{-------}
 
-\multirow{3}{1.6cm}{\textbf{Jour 3}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+\multirow{2}{1.6cm}{\textbf{Jour 3}\\[10pt] Date~:\\[8pt] \hrulefill}
   & \textcolor{qcmC}{\textbf{QCM}}
   & \qempty & \qempty & \qcase{1} & \qcase{2} & \qempty \\
-\cline{2-7}
-  & \starQ
-  & \qempty & \qcase{3} & \qempty & \qempty & \qempty \\
-\cline{2-7}
-  & \starFF
-  & \qempty & \qempty & \qcase{4} & \qempty & \qempty \\
-\hline
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qempty & \qcase{3} & \qempty & \qempty & \qcase{4} \\
+\hhline{-------}
 
-\multirow{3}{1.6cm}{\textbf{Jour 4}\\[-1pt] Date~:\\[-1pt] \hrulefill}
+\multirow{2}{1.6cm}{\textbf{Jour 4}\\[10pt] Date~:\\[8pt] \hrulefill}
   & \textcolor{qcmC}{\textbf{QCM}}
-  & \qempty & \qempty & \qcase{1} & \qempty & \qcase{2} \\
-\cline{2-7}
-  & \starQ
-  & \qempty & \qempty & \qempty & \qcase{3} & \qempty \\
-\cline{2-7}
-  & \starFF
-  & \qcase{4} & \qempty & \qempty & \qempty & \qempty \\
-\hline
+  & \qcase{1} & \qempty & \qcase{2} & \qempty & \qempty \\
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qempty & \qcase{3} & \qempty & \qcase{4} & \qcase{5} \\
+\hhline{-------}
 \end{tabular}
 \end{center}
-
-\vspace{4pt}
-\begin{tcolorbox}[
-  boxrule=1.2pt, colframe=bonusC, colback=bonussoftC, arc=3pt,
-  left=10pt, right=10pt, top=3pt, bottom=3pt
-]
-\textcolor{bonusC}{\textbf{\footnotesize Q5 $\cdot$ BONUS $\cdot$ JOUR 4}} \hspace{10pt}
-{\footnotesize\color{inksoftC} A1 --- Comparer $A=\dfrac43$ et $B=\dfrac32$ (méthode libre~: question de
-dépassement, hors des 4 questions du jour)} \hfill
-\rule{2.6cm}{0.4pt}\hspace{6pt}\corrbox
-\end{tcolorbox}
 \end{landscape}
 
 \end{document}
