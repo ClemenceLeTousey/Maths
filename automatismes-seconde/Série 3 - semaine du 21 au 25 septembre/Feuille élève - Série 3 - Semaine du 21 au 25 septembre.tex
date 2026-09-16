@@ -1,0 +1,393 @@
+% Feuille élève Série 3 (recto rappels + verso tableau de consignation
+% J1-J4), sur le modèle de la Série 2 (voir Feuille élève - Série 2 -
+% Semaine du 14 au 18 septembre.tex, même macros). Document autonome,
+% distinct du livret LaTeX complet (voir README.md du dossier
+% "Automatismes Hebdo") : se compile seul, sans dépendre de CLT2627.sty
+% ni du pipeline AutomatismesSeconde2627.tex. Compiler avec pdflatex ou
+% lualatex.
+%
+% Quatre fils cette semaine (voir banque-roulement.md, section
+% « Semaine 04 ») : Vecteurs (somme, relation de Chasles -- suite du fil
+% bout-à-bout de la Série 2), A9 -- Développer, factoriser (double
+% distributivité déjà rappelée en Série 2 : cette semaine se concentre sur
+% LA FACTORISATION, nouvelle), A8 -- Calcul littéral élémentaire
+% (fractions avec du littéral + expressions « en fonction de x »,
+% nouveau), Algo (suite : fonctions à plusieurs paramètres). Étiquetage
+% corrigé pour coller au livret Automatismes2GT.tex : "A9" et "A8"
+% remplacent l'ancien intitulé générique "Calcul littéral" de la Série 2.
+\documentclass[10pt]{article}
+\usepackage[a4paper,top=5mm,bottom=5mm,left=10mm,right=10mm]{geometry}
+\usepackage{pdflscape}
+\usepackage[french]{babel}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{pifont}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{raster}
+\usepackage{ragged2e}
+\usepackage{amssymb}
+\usepackage{fontawesome5}
+\usepackage{enumitem}
+\setlist[itemize]{topsep=1pt, itemsep=1pt, parsep=0pt, leftmargin=1.3em, label=$\star$}
+\usepackage{bbding}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{decorations.pathreplacing}
+% Vrais blocs Scratch 3, mode "impression" (fond blanc, contours et texte
+% en noir) pour rester lisible, pour la partie Algo -- remplace les blocs
+% en pseudo-code texte.
+\usepackage{scratch3}
+\setdefaultscratch{print=true, fill blocks=true, fill gray=1, text color=black}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Palette (reprise à l'identique de la Série 2, pour rester cohérent
+% avec les documents précédents) -------------------------------------------
+\definecolor{inkC}{HTML}{20232B}
+\definecolor{inksoftC}{HTML}{565A66}
+\definecolor{mutedC}{HTML}{8B8F99}
+\definecolor{rulestrongC}{HTML}{B9C2D1}
+\definecolor{qcmC}{HTML}{2455B8}
+\definecolor{questionC}{HTML}{12805C}
+\definecolor{finalC}{HTML}{B5511F}
+\definecolor{bonusC}{HTML}{B8298F}
+\definecolor{bonussoftC}{HTML}{FBE6F3}
+\definecolor{emptyC}{HTML}{8A909C}
+\definecolor{redC}{HTML}{B8342B}
+\definecolor{bleuPropriete}{RGB}{41,121,204}
+\definecolor{grisExemple}{RGB}{85,85,95}
+\definecolor{consoleBgC}{HTML}{1E1E2E}
+\definecolor{consoleGreenC}{HTML}{6FCF97}
+
+\newcommand{\consoleBox}[1]{%
+  \begin{tcolorbox}[colback=consoleBgC, colframe=consoleBgC, arc=3pt,
+    boxrule=0pt, left=6pt, right=6pt, top=0pt, bottom=0pt,
+    before skip=0pt, after skip=0pt]
+  \ttfamily\footnotesize\color{white}#1
+  \end{tcolorbox}%
+}
+\newcommand{\codeBoxPlain}[1]{%
+  \begin{tcolorbox}[colback=white, colframe=white, arc=0pt,
+    boxrule=0pt, left=0pt, right=0pt, top=4pt, bottom=4pt,
+    before skip=0pt, after skip=0pt]
+  \ttfamily\small#1
+  \end{tcolorbox}%
+}
+\NewDocumentCommand{\PanelBox}{O{} m}{%
+  \begin{tcolorbox}[colback=grisExemple!6, colframe=grisExemple!6, arc=0pt,
+    boxrule=0pt, left=2pt, right=2pt, top=0pt, bottom=0pt,
+    before skip=0pt, after skip=0pt, #1]
+  #2
+  \end{tcolorbox}%
+}
+\NewDocumentCommand{\stagePanel}{O{0} m}{%
+  \begin{tikzpicture}[baseline=0pt]
+    \node[anchor=south west, inner sep=0] (tux) at (0,0)
+      {\rotatebox{#1}{\includegraphics[width=1.1cm]{../assets/img/tux.png}}};
+    \node[draw=inkC, fill=white, rounded corners=4pt, line width=0.8pt,
+      align=center, font=\tiny, text width=1.5cm, inner sep=3pt,
+      anchor=south west] (bubble) at ([xshift=0.75cm,yshift=0.75cm]tux.south)
+      {#2};
+  \end{tikzpicture}%
+}
+
+\newcommand{\starQ}{\textcolor{questionC}{$\bigstar$}}
+\newcommand{\starF}{\textcolor{finalC}{$\bigstar$}}
+\newcommand{\okmark}{\ding{51}}
+\newcommand{\nomark}{\ding{55}}
+\newcommand{\Vj}[1]{\overrightarrow{\text{#1}}}
+\newcommand{\corrbox}{\fboxsep=0pt\fbox{\rule{0pt}{8pt}\rule{8pt}{0pt}}}
+
+\newcommand{\qcase}[1]{%
+  \begin{tikzpicture}[baseline=0pt]
+    \useasboundingbox (0,0) rectangle (4.6cm,1.85cm);
+    \node[anchor=west, circle, draw=inkC, line width=0.6pt,
+          inner sep=1pt, minimum size=1.7em, font=\large, text=inkC]
+      at (0.05cm,0.925cm) {#1};
+  \end{tikzpicture}%
+}
+\newcommand{\qcasebonus}[1]{%
+  \begin{tikzpicture}[baseline=0pt]
+    \useasboundingbox (0,0) rectangle (4.6cm,1.85cm);
+    \node[anchor=west, circle, draw=bonusC, line width=1pt,
+          inner sep=1pt, minimum size=1.7em, font=\large, text=bonusC]
+      at (0.05cm,0.925cm) {#1};
+  \end{tikzpicture}%
+}
+\newcommand{\qempty}{\cellcolor{emptyC}}
+
+\NewDocumentCommand{\RectoTitre}{m m}{%
+  \begin{center}
+  \begin{tcolorbox}[
+    enhanced,
+    width=0.8\linewidth,
+    colback=white,
+    colframe=inkC,
+    boxrule=0.8pt,
+    arc=8pt,
+    sharp corners=downhill,
+    left=10pt, right=10pt, top=4pt, bottom=3pt,
+    halign=center,
+    overlay={
+      \node[fill=white, anchor=west, font=\normalsize, inner xsep=4pt]
+        at ([xshift=14pt]frame.north west) {#1};
+    },
+  ]
+  {\huge\bfseries #2}
+  \end{tcolorbox}
+  \end{center}
+}
+
+\newcommand{\autoCardLine}[3]{%
+  \noindent\tcbox[
+    colback=white, colframe=#1, coltext=#1,
+    boxrule=1.2pt, arc=5pt, left=10pt, right=10pt, top=2pt, bottom=2pt,
+  ]{{\color{#1}\faCogs}~\textcolor{#1}{\Large\bfseries #2}~~{\normalsize\color{inksoftC} #3}}%
+  \par
+}
+\newcommand{\autoCardLineInline}[3]{%
+  \tcbox[
+    colback=white, colframe=#1, coltext=#1,
+    boxrule=1.2pt, arc=5pt, left=10pt, right=10pt, top=2pt, bottom=2pt,
+  ]{{\color{#1}\faCogs}~\textcolor{#1}{\Large\bfseries #2}~~{\normalsize\color{inksoftC} #3}}%
+}
+
+\NewDocumentCommand{\ARetenirBox}{O{} m}{%
+  \begin{tcolorbox}[
+    enhanced, #1,
+    colback=bleuPropriete!6, colframe=bleuPropriete,
+    boxrule=0pt, arc=0pt, outer arc=0pt,
+    left=10pt, right=8pt, top=2pt, bottom=1pt,
+    overlay={
+      \draw[bleuPropriete, line width=1.2pt] (frame.north west) -- ++(7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.north west) -- ++(0pt,-7pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.north east) -- ++(-7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.north east) -- ++(0pt,-7pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south west) -- ++(7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south west) -- ++(0pt,7pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south east) -- ++(-7pt,0pt);
+      \draw[bleuPropriete, line width=1.2pt] (frame.south east) -- ++(0pt,7pt);
+    },
+  ]
+    \textbf{\textcolor{bleuPropriete}{À retenir}}\par\vspace{1pt}
+    #2
+  \end{tcolorbox}%
+}
+\NewDocumentCommand{\ExempleBoxR}{O{} m}{%
+  \begin{tcolorbox}[
+    enhanced, #1,
+    colback=grisExemple!6, colframe=grisExemple,
+    boxrule=0pt, borderline west={2pt}{0pt}{grisExemple},
+    arc=0pt, outer arc=0pt,
+    left=16pt, right=8pt, top=2pt, bottom=1pt,
+    overlay={
+      \node[anchor=center, circle, fill=white, draw=grisExemple, line width=0.8pt, minimum size=18pt] at ([yshift=-10pt]frame.north west) {\textcolor{grisExemple}{\fontsize{11}{11}\selectfont\PencilRightUp}};
+    },
+  ]
+    \textbf{\textcolor{grisExemple}{Exemple}}\par\vspace{1pt}
+    #2
+  \end{tcolorbox}%
+}
+\newcommand{\RecapPair}[2]{%
+  \begin{tcbraster}[raster columns=2, raster column skip=8pt, raster force size=false, raster valign=top, before skip=0pt, after skip=0pt]
+    \ARetenirBox{\normalsize#1}
+    \ExempleBoxR{\footnotesize#2}
+  \end{tcbraster}%
+}
+
+\newcolumntype{J}{>{\RaggedRight\arraybackslash}m{1.7cm}}
+\newcolumntype{N}{>{\centering\arraybackslash}m{1.7cm}}
+\newcolumntype{O}{>{\centering\arraybackslash}m{3.9cm}}
+\newcolumntype{P}{>{\centering\arraybackslash}m{1.9cm}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\begin{document}
+
+% ============================= RECTO (page 1) =============================
+\RectoTitre{ Semaine du 21 au 25 septembre}{Automatismes Série 3}
+
+\vspace{0pt}
+
+\noindent\textit{Bonus du jour 4~: reprise d'A1 (comparer deux fractions), voir
+rappel Série 2.}\par
+\vspace{4pt}
+
+\autoCardLine{questionC}{Vecteurs}{Somme, relation de Chasles}
+\vspace{1pt}
+\RecapPair{%
+  \textbf{1. Somme bout à bout} (rappel Série 2)\\
+  Pour construire $\Vj{u}+\Vj{v}$, on place $\Vj{v}$ à la suite de $\Vj{u}$~:
+  le vecteur somme va de l'origine de $\Vj{u}$ à l'extrémité de $\Vj{v}$.\\[4pt]
+  \textbf{2. Relation de Chasles} (nouveau)\\
+  Pour tous points $A$, $M$, $B$~:
+  \[\Vj{AB}=\Vj{AM}+\Vj{MB}\]
+  \textit{Aller de A à M puis de M à B, c'est, au final, aller de A à B.}
+}{%
+  Simplifier $\Vj{AB}-\Vj{AC}-\Vj{CB}$~:
+  \[
+  \begin{array}{r@{\,}c@{\,}l}
+  \Vj{AB}-\Vj{AC}-\Vj{CB} &=& \Vj{AB}-(\Vj{AC}+\Vj{CB})\\
+   &=& \Vj{AB}-\Vj{AB}\\
+   &=& \Vj{0}
+  \end{array}
+  \]
+  \textit{On regroupe d'abord les deux derniers termes avec Chasles
+  ($\Vj{AC}+\Vj{CB}=\Vj{AB}$), avant de soustraire.}
+}
+
+\vspace*{0.15cm}
+
+\autoCardLine{finalC}{A9}{Développer, factoriser}
+\vspace{1pt}
+\RecapPair{%
+  \textit{La double distributivité a été rappelée en Série 2 -- cette
+  semaine, on travaille surtout l'opération inverse.}\\[4pt]
+  \textbf{Factoriser}, c'est transformer une somme en produit. Pour tous
+  réels $k$, $a$ et $b$~:
+  \[ka+kb=k(a+b) \qquad ka-kb=k(a-b)\]
+  On repère le \textbf{facteur commun} $k$ dans chaque terme de la somme.
+}{%
+  Factoriser $B=7x-21$~:
+  \[
+  \begin{array}{r@{\,}c@{\,}l}
+  B &=& 7\times x-7\times3\\
+   &=& 7(x-3)
+  \end{array}
+  \]
+  \textit{$7$ est le facteur commun à $7x$ et à $21=7\times3$.}
+}
+
+\vspace*{0.15cm}
+
+\autoCardLine{qcmC}{A8}{Calcul littéral élémentaire}
+\vspace{1pt}
+\begin{tcbraster}[raster columns=2, raster column skip=8pt, raster force size=false, raster valign=top, before skip=0pt, after skip=0pt]
+\ARetenirBox{\normalsize
+  \textbf{1. Fractions avec du littéral}\\
+  On peut simplifier une écriture fractionnaire contenant une lettre
+  exactement comme une fraction numérique~: on cherche un facteur
+  commun au numérateur et au dénominateur.\\[6pt]
+  \textbf{2. Une longueur en fonction de x}\\
+  Sur une figure, une longueur totale peut se lire comme une somme de
+  longueurs connues (dont certaines valent un même nombre de fois $x$).
+}
+\ExempleBoxR{\footnotesize
+  Simplifier $\dfrac{3x+9}{3}$~:
+  \[\dfrac{3x+9}{3}=\dfrac{3\times x+3\times3}{3}=\dfrac{3(x+3)}{3}=x+3\]
+  \vspace{4pt}
+  Exprimer $AB$ en fonction de $x$~:
+  \begin{center}
+  \begin{tikzpicture}[scale=0.85, baseline=0pt]
+    \draw[thick] (0,0) node[left]{$A$} -- (5,0) node[right]{$B$};
+    \foreach \i in {0,1,2,3,4,5} \draw (\i,0.08) -- (\i,-0.08);
+    \draw[decorate, decoration={brace, amplitude=4pt}, yshift=-6pt]
+      (0,0) -- (2,0) node[midway, yshift=-13pt]{$x$};
+    \draw[decorate, decoration={brace, amplitude=4pt}, yshift=-6pt]
+      (2,0) -- (5,0) node[midway, yshift=-13pt]{$7$};
+  \end{tikzpicture}
+  \end{center}
+  \[AB=x\times2+7\times3=2x+21\]
+}
+\end{tcbraster}
+
+\vspace*{0.1cm}
+\autoCardLine{qcmC}{Algo}{}
+\vspace{1pt}
+\ARetenirBox{\normalsize
+  Une fonction (Python) ou un bloc personnalisé (Scratch) peut recevoir
+  \textbf{plusieurs paramètres} -- rappel Série 2~: un seul paramètre.
+  En Python, on les sépare par une virgule~: \fbox{\texttt{def
+  nom(param1, param2):}}. L'appel \texttt{nom(v1, v2)} remplace
+  \texttt{param1} par \texttt{v1} et \texttt{param2} par \texttt{v2}.
+}
+\vspace{2pt}
+\ExempleBoxR{\footnotesize
+\begin{tcbraster}[raster columns=20, raster column skip=1pt, raster force size=false, raster valign=top, before skip=0pt, after skip=0pt]
+\PanelBox[raster multicolumn=3]{\centering
+  \begin{scratch}[scale=0.8]
+    \blockinit{quand \greenflag{} est cliqué}
+    \blockmoreblocks{aire \ovalnum{5} \ovalnum{3}}
+  \end{scratch}
+}
+\PanelBox[raster multicolumn=7]{\centering
+  \begin{scratch}[scale=0.8]
+    \initmoreblocks{définir \namemoreblocks{aire \ovalmoreblocks{L} \ovalmoreblocks{l}}}
+    \blocklook{dire \ovaloperator{\ovalmoreblocks{L} $\times$ \ovalmoreblocks{l}}}
+  \end{scratch}
+}
+\PanelBox[raster multicolumn=4]{\centering\stagePanel{15}}
+\PanelBox[raster multicolumn=6]{%
+  \ttfamily\scriptsize
+  def aire(L, l):\\
+  \hspace*{1em}return L * l\\[1pt]
+  \consoleBox{\scriptsize{\color{consoleGreenC}>>>} aire(5, 3)\\[1pt]\textbf{15}}
+}
+\end{tcbraster}
+}
+
+\newpage
+% ============================= VERSO (page 2) ==============================
+\begin{landscape}
+\noindent
+Nom~: \hrulefill{} \hspace{14pt} Prénom~: \hrulefill{} \hspace{14pt} Classe~: \hrulefill
+
+\vspace{3pt}
+\renewcommand{\arraystretch}{1.0}
+\setlength{\tabcolsep}{2.5pt}
+\begin{center}
+\arrayrulecolor{black}
+\setlength{\arrayrulewidth}{0.9pt}
+\setlength{\doublerulesep}{0.6pt}
+\begin{tabular}{|J|N||*{4}{O|}P|}
+\hhline{-------}
+\multicolumn{2}{|c||}{} &
+\shortstack{{\Large\textcolor{questionC}{Vecteurs}}\\[2pt]{\small Somme, relation de Chasles}} &
+\shortstack{{\Large\textcolor{qcmC}{A8}}\\[2pt]{\small Calcul littéral élémentaire}} &
+\shortstack{{\Large\textcolor{finalC}{A9}}\\[2pt]{\small Développer, factoriser}} &
+{\Large\textcolor{qcmC}{Algo}} &
+{\Large\textcolor{bonusC}{Bonus}} \\
+\hhline{=======}
+
+\multirow{2}{1.6cm}{\textbf{Jour 1}\\[10pt] Date~:\\[8pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qcase{1} & \qempty & \qcase{2} & \qempty & \qempty \\
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qcase{4} & \qempty & \qcase{3} & \qempty & \qempty \\
+\hhline{-------}
+
+\multirow{2}{1.6cm}{\textbf{Jour 2}\\[10pt] Date~:\\[8pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qcase{1} & \qempty & \qcase{2} & \qempty \\
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qempty & \qcase{3} & \qcase{4} & \qempty & \qempty \\
+\hhline{-------}
+
+\multirow{2}{1.6cm}{\textbf{Jour 3}\\[10pt] Date~:\\[8pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qcase{2} & \qcase{1} & \qempty & \qempty \\
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qcase{4} & \qempty & \qcase{3} & \qempty & \qempty \\
+\hhline{-------}
+
+\multirow{2}{1.6cm}{\textbf{Jour 4}\\[10pt] Date~:\\[8pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qcase{1} & \qempty & \qempty & \qcase{2} & \qempty \\
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qempty & \qcase{3} & \qcase{4} & \qempty & \qcasebonus{5} \\
+\hhline{-------}
+\end{tabular}
+\end{center}
+\end{landscape}
+
+\end{document}
