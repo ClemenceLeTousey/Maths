@@ -168,8 +168,24 @@
   .diagram { display: flex; justify-content: center; margin: 0 0 22px; }
   .diagram:empty { display: none; }
   .diagram svg { max-width: 100%; height: auto; }
+  .question-row.side { display: flex; align-items: flex-start; gap: 28px; }
+  .question-row.side .question { margin: 0; flex: 1 1 auto; }
+  .question-row.side .diagram { margin: 0; flex: 0 0 auto; }
   .code-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; width: 100%; }
   .code-col { flex: 1 1 220px; max-width: 320px; }
+  .code-col .code-label {
+    font-family: "Space Mono", monospace; font-size: 0.72rem; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--muted); margin-bottom: 6px;
+  }
+  .console-panel {
+    background: #1e1e2e; border-radius: 8px; padding: 12px 16px;
+    font-family: "Space Mono", monospace; font-size: 0.9rem; line-height: 1.8;
+    color: #d8dce6; min-height: 90px;
+  }
+  .console-panel .prompt { color: #6fcf97; }
+  .console-panel .result-svg { display: block; margin-top: 4px; }
+  .ink-blot-svg { transition: opacity .35s ease, transform .35s ease; }
+  .diagram.revealed .ink-blot-svg { opacity: 0; transform: scale(1.2); }
   .code {
     font-family: "Space Mono", monospace; font-size: 0.9rem; line-height: 1.6;
     background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
@@ -184,6 +200,12 @@
   .diagram-vector.solved { stroke-dasharray: none; }
   .diagram-vector polygon { fill: var(--accent); }
   .diagram-label { font-family: "Public Sans", sans-serif; font-size: 12px; fill: var(--ink-soft); }
+  .diagram-table rect { stroke: var(--ink); stroke-width: 1.5; }
+  .diagram-table rect.corner { fill: var(--red-soft); }
+  .diagram-table rect.hdr { fill: rgba(128,128,128,0.18); }
+  .diagram-table rect.cell { fill: none; }
+  .diagram-table text { font-family: "Space Mono", monospace; font-weight: 700; font-size: 15px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+  .diagram-table text.var, .diagram-table tspan.var { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-weight: 400; }
 
   .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
   .opt {
@@ -303,8 +325,10 @@
       <button class="timer-btn small" id="timer-plus" type="button" aria-label="Plus 5 secondes">+5</button>
       <button class="timer-btn small" id="timer-reset" type="button" aria-label="Réinitialiser le minuteur">↺</button>
     </div>
-    <p class="question" id="qtext"></p>
-    <div class="diagram" id="diagram"></div>
+    <div class="question-row" id="question-row">
+      <p class="question" id="qtext"></p>
+      <div class="diagram" id="diagram"></div>
+    </div>
     <div class="options" id="options"></div>
     <div class="answer-zone">
       <div class="answer-box" id="answer-box">
@@ -330,22 +354,58 @@ const QUESTIONS = [
   {
     tier: "qcm",
     theme: "obj-geometrie",
-    objectif: "Vecteurs \u00b7 D\u00e9finition",
-    aim: "Conna\u00eetre le vocabulaire",
-    question: "La longueur d'un vecteur s'appelle...",
+    objectif: "Vecteurs \u00b7 Translations",
+    aim: "Reconna\u00eetre, parmi plusieurs propositions, celle qui d\u00e9crit correctement une image par translation sur un quadrillage de parall\u00e9logrammes.",
+    question: "Parmi ces quatre propositions, laquelle est vraie ?",
+    diagram: `<svg viewBox="0 0 460 230" width="598" height="299" style="margin:0 auto;display:block" role="img" aria-label="Quadrillage de parall\u00e9logrammes form\u00e9 de trois rang\u00e9es de points align\u00e9s A, B, C, D puis H, G, F, E puis I, J, K, L, reli\u00e9s par des droites">
+      <g stroke="var(--red)" stroke-width="2">
+        <line x1="160" y1="30" x2="430" y2="30"/>
+        <line x1="120" y1="115" x2="390" y2="115"/>
+        <line x1="80" y1="200" x2="350" y2="200"/>
+        <line x1="160" y1="30" x2="80" y2="200"/>
+        <line x1="250" y1="30" x2="170" y2="200"/>
+        <line x1="340" y1="30" x2="260" y2="200"/>
+        <line x1="430" y1="30" x2="350" y2="200"/>
+      </g>
+      <g class="diagram-point"><line x1="156" y1="26" x2="164" y2="34" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="156" y1="34" x2="164" y2="26" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="160" y="16">A</text></g>
+      <g class="diagram-point"><line x1="246" y1="26" x2="254" y2="34" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="246" y1="34" x2="254" y2="26" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="250" y="16">B</text></g>
+      <g class="diagram-point"><line x1="336" y1="26" x2="344" y2="34" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="336" y1="34" x2="344" y2="26" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="340" y="16">C</text></g>
+      <g class="diagram-point"><line x1="426" y1="26" x2="434" y2="34" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="426" y1="34" x2="434" y2="26" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="430" y="16">D</text></g>
+      <g class="diagram-point"><line x1="116" y1="111" x2="124" y2="119" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="116" y1="119" x2="124" y2="111" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="120" y="101">H</text></g>
+      <g class="diagram-point"><line x1="206" y1="111" x2="214" y2="119" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="206" y1="119" x2="214" y2="111" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="210" y="101">G</text></g>
+      <g class="diagram-point"><line x1="296" y1="111" x2="304" y2="119" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="296" y1="119" x2="304" y2="111" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="300" y="101">F</text></g>
+      <g class="diagram-point"><line x1="386" y1="111" x2="394" y2="119" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="386" y1="119" x2="394" y2="111" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="390" y="101">E</text></g>
+      <g class="diagram-point"><line x1="76" y1="196" x2="84" y2="204" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="76" y1="204" x2="84" y2="196" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="80" y="186">I</text></g>
+      <g class="diagram-point"><line x1="166" y1="196" x2="174" y2="204" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="166" y1="204" x2="174" y2="196" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="170" y="186">J</text></g>
+      <g class="diagram-point"><line x1="256" y1="196" x2="264" y2="204" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="256" y1="204" x2="264" y2="196" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="260" y="186">K</text></g>
+      <g class="diagram-point"><line x1="346" y1="196" x2="354" y2="204" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="346" y1="204" x2="354" y2="196" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="350" y="186">L</text></g>
+    </svg>`,
     options: [
-      { letter:"A", text:"sa norme", correct:true },
-      { letter:"B", text:"sa direction", correct:false },
-      { letter:"C", text:"son sens", correct:false },
-      { letter:"D", text:"rien de particulier", correct:false }
+      { letter:"A", text:"F est l'image de G par la translation de vecteur $\\overrightarrow{\\text{AC}}$", correct:false },
+      { letter:"B", text:"E est l'image de G par la translation de vecteur $\\overrightarrow{\\text{AC}}$", correct:true },
+      { letter:"C", text:"K est l'image de G par la translation de vecteur $\\overrightarrow{\\text{AC}}$", correct:false },
+      { letter:"D", text:"G est l'image de E par la translation de vecteur $\\overrightarrow{\\text{AC}}$", correct:false }
     ],
-    explanation: "La longueur de la fl\u00e8che est la <em>norme</em> du vecteur, not\u00e9e $\\|\\vec{u}\\|$ (ou $\\text{AB}$ pour $\\overrightarrow{\\text{AB}}$) \u2014 la direction et le sens sont donn\u00e9s par l'orientation de la fl\u00e8che, pas par sa longueur."
+    explanation: "Le vecteur $\\overrightarrow{\\text{AC}}$ correspond \u00e0 un d\u00e9placement de deux colonnes vers la droite, sur la m\u00eame rang\u00e9e (deux fois le d\u00e9placement du vecteur $\\overrightarrow{\\text{AB}}$). En appliquant ce d\u00e9placement \u00e0 G, qui est sur la rang\u00e9e du milieu, on avance de deux colonnes~: on obtient <strong>E</strong>.<br>F serait l'image de G par la translation $\\overrightarrow{\\text{AB}}$ (une seule colonne)~; K est sur la rang\u00e9e du bas, ce n'est pas la bonne rang\u00e9e~; et dire que G est l'image de E par $\\overrightarrow{\\text{AC}}$ inverse le sens de la translation (ce serait le vecteur $\\overrightarrow{\\text{CA}}$)."
   },
   {
     tier: "qcm",
     objectif: "Calcul litt\u00e9ral \u00b7 Distributivit\u00e9",
     aim: "Appliquer la distributivit\u00e9 avec un facteur n\u00e9gatif, sans erreur de signe.",
     question: "D\u00e9velopper $-2(x-4)$ :",
+    sideDiagram: true,
+    diagram: `<svg class="diagram-table" viewBox="0 0 144 84" width="144" height="84" role="img" aria-label="Tableau de distributivit\u00e9 \u00e0 compl\u00e9ter pour -2(x-4)">
+      <rect class="corner" x="0" y="0" width="48" height="42"/>
+      <rect class="hdr" x="48" y="0" width="48" height="42"/>
+      <rect class="hdr" x="96" y="0" width="48" height="42"/>
+      <rect class="hdr" x="0" y="42" width="48" height="42"/>
+      <rect class="cell" x="48" y="42" width="48" height="42"/>
+      <rect class="cell" x="96" y="42" width="48" height="42"/>
+      <text x="24" y="21">\u00d7</text>
+      <text x="72" y="21" class="var">x</text>
+      <text x="120" y="21">\u22124</text>
+      <text x="24" y="63">\u22122</text>
+    </svg>`,
     options: [
       { letter:"A", text:"$-2x-8$", correct:false },
       { letter:"B", text:"$-2x+8$", correct:true },
@@ -365,16 +425,28 @@ const QUESTIONS = [
     tier: "final",
     theme: "obj-complement",
     objectif: "Algo \u00b7 Lire un programme",
-    aim: "Lire un programme Python o\u00f9 une fonction en appelle une autre (composition de fonctions), et calculer la valeur affich\u00e9e.",
-    question: "Que va afficher ce programme ?",
-    diagram: `<div class="code-row" style="max-width:280px;"><div class="code-col"><pre class="code">def double(n):
-    return 2 * n
-
-def f(x):
-    return double(x) + 1
-
-print(f(5))</pre></div></div>`,
-    explanation: "On calcule d'abord $\\text{double}(5)=2\\times5=10$, puis $f(5)=\\text{double}(5)+1=10+1=11$. Le programme affiche $11$."
+    aim: "Lire une fonction Python \u00e0 deux param\u00e8tres, et calculer la valeur renvoy\u00e9e pour des arguments donn\u00e9s.",
+    question: "Voici un programme Python.<br>Que renvoie la console si on saisit <code>note_finale(6, 3)</code> ?",
+    diagram: `<div class="code-row">
+      <div class="code-col">
+        <div class="code-label">Script Python</div>
+        <pre class="code">def note_finale(devoir, bonus):
+    return 1.5 * devoir + bonus</pre>
+      </div>
+      <div class="code-col">
+        <div class="code-label">Console</div>
+        <div class="console-panel">
+          <div class="prompt">&gt;&gt;&gt; # Script executed</div>
+          <div class="prompt">&gt;&gt;&gt; note_finale(6, 3)</div>
+          <svg class="result-svg" viewBox="0 0 100 44" width="100" height="44" role="img" aria-label="Résultat affiché par la console">
+            <text x="4" y="30" font-family="Space Mono, monospace" font-weight="700" font-size="22" fill="#ffffff">12.0</text>
+            <path class="ink-blot-svg" d="M2,26 C-2,12 18,0 38,6 C58,-4 90,8 88,26 C96,38 74,50 54,46 C34,54 0,44 2,26 Z" fill="#3f6be0"/>
+            <circle class="ink-blot-svg" cx="93" cy="8" r="4" fill="#3f6be0"/>
+          </svg>
+        </div>
+      </div>
+    </div>`,
+    explanation: "On calcule <code>1.5 * devoir + bonus</code> avec <code>devoir = 6</code> et <code>bonus = 3</code> : $1,5\\times6+3=9+3=12$. Comme <code>1.5</code> est un nombre à virgule (float), Python renvoie <code>12.0</code> et non <code>12</code>."
   }
 ];
 let current = 0;
@@ -463,6 +535,8 @@ function render(){
   aimText.textContent = q.aim;
   qtext.innerHTML = q.question;
   diagramEl.innerHTML = q.diagram || "";
+  diagramEl.classList.remove("revealed");
+  document.getElementById("question-row").classList.toggle("side", !!q.sideDiagram);
 
   optionsEl.innerHTML = "";
   if (q.options){
@@ -494,6 +568,7 @@ function reveal(){
   if (revealed) return;
   revealed = true;
   answerBox.classList.add("shown");
+  diagramEl.classList.add("revealed");
   const opts = optionsEl.querySelectorAll(".opt");
   opts.forEach(o => {
     if (o.dataset.correct === "true") o.classList.add("correct");
