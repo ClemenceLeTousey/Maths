@@ -1,0 +1,152 @@
+% Questions et corrigé du Jour 4, Série 2 (Automatismes Hebdo). Document
+% autonome, distinct du livret LaTeX complet et de la "Feuille élève -
+% Série 2 - Semaine du 14 au 18 septembre.tex". Même gabarit que
+% "Série2-J1/J2/J3 - Questions et corrigé.tex". Se compile seul avec
+% pdflatex ou lualatex.
+\documentclass[12pt]{article}
+\usepackage[a4paper,landscape,top=6mm,bottom=6mm,left=10mm,right=10mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{ragged2e}
+\usepackage{amsmath}
+\usepackage{pifont}
+\usepackage{enumitem}
+\usepackage{tikz}
+
+\setlength{\parindent}{0pt}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Palette (reprise de "Feuille élève - Série 2 - Semaine du 14 au 18 septembre.tex") ---
+\definecolor{inkC}{HTML}{20232B}
+\definecolor{inksoftC}{HTML}{565A66}
+\definecolor{mutedC}{HTML}{8B8F99}
+\definecolor{qcmC}{HTML}{2455B8}
+\definecolor{questionC}{HTML}{12805C}
+\definecolor{finalC}{HTML}{B5511F}
+\definecolor{paperC}{HTML}{F2F3EE}
+\definecolor{consoleBgC}{HTML}{1E1E2E}
+\definecolor{consoleGreenC}{HTML}{6FCF97}
+\definecolor{tacheBlueC}{HTML}{2D9CDB}
+
+\newcommand{\okmark}{\ding{51}}
+
+% Console façon terminal (fond sombre, invite ">>>" en vert) : le résultat
+% reste visible (document projeté en classe), simplement surligné d'une
+% "tache" bleue façon surligneur, pour attirer l'œil dessus.
+\newcommand{\consoleBoxResult}[2]{%
+  % #1 = appel affiché après >>>, #2 = résultat surligné
+  \begin{tcolorbox}[colback=consoleBgC, colframe=consoleBgC, arc=3pt,
+    boxrule=0pt, left=8pt, right=8pt, top=3pt, bottom=3pt]
+  \ttfamily\footnotesize\color{white}
+  {\color{consoleGreenC}>>>} \# Script executed\\[2pt]
+  {\color{consoleGreenC}>>>} #1\\[5pt]
+  \begin{tikzpicture}[baseline=-2pt]
+    \fill[tacheBlueC, opacity=0.6]
+      (0,0)
+      .. controls (0.2,0.24) and (0.55,-0.1) .. (0.9,0.11)
+      .. controls (1.2,0.28) and (1.5,-0.07) .. (1.78,0.12)
+      .. controls (1.98,0.25) and (1.78,0.42) .. (1.42,0.36)
+      .. controls (1.05,0.46) and (0.45,0.44) .. (0.15,0.28)
+      .. controls (-0.06,0.19) and (-0.06,0.07) .. (0,0) -- cycle;
+    \node[white, font=\bfseries] at (0.9,0.16) {#2};
+  \end{tikzpicture}
+  \end{tcolorbox}%
+}
+
+\NewDocumentCommand{\RectoTitre}{m m}{%
+  \begin{center}
+  \begin{tcolorbox}[
+    enhanced, width=0.85\linewidth, colback=white, colframe=inkC,
+    boxrule=0.8pt, arc=8pt, sharp corners=downhill,
+    left=10pt, right=10pt, top=4pt, bottom=3pt, halign=center,
+    overlay={
+      \node[fill=white, anchor=west, font=\normalsize, inner xsep=4pt]
+        at ([xshift=14pt]frame.north west) {#1};
+    },
+  ]
+  {\huge\bfseries #2}
+  \end{tcolorbox}
+  \end{center}
+}
+
+\newcommand{\QuestionCorrigee}[5]{%
+  \begin{tcolorbox}[
+    enhanced, colback=white, colframe=#2, boxrule=1pt, arc=4pt,
+    left=10pt, right=10pt, top=3pt, bottom=3pt,
+    before skip=3pt, after skip=3pt,
+  ]
+  \noindent{\textcolor{#2}{\textbf{Question #1 \textperiodcentered{} #3}}}\hfill{\small\textcolor{inksoftC}{#4}}\par
+  \vspace{3pt}
+  #5
+  \end{tcolorbox}%
+}
+
+% Petit bloc de code façon "console" du site (fond clair, cadre, monospace).
+\newcommand{\codebox}[1]{%
+  \fcolorbox{mutedC}{paperC}{\begin{minipage}{9.5cm}\ttfamily\footnotesize #1\end{minipage}}%
+}
+
+\begin{document}
+\pagestyle{empty}
+
+\normalsize
+\RectoTitre{Série 2 --- Jour 4 --- Semaine du 14 au 18 septembre}{Questions et corrigé}
+\vspace{4pt}
+
+\begin{tcbraster}[raster columns=2, raster column skip=10pt, raster row skip=3pt, raster force size=false, raster valign=top]
+\QuestionCorrigee{1}{qcmC}{QCM}{Vecteurs \textperiodcentered{} Égalité}{%
+  On sait que $\overrightarrow{\text{AB}}=\overrightarrow{\text{DC}}$. Quel quadrilatère est un parallélogramme~?
+  \vspace{3pt}
+  \begin{itemize}[label=,leftmargin=1.2em,itemsep=1pt]
+    \item[\textcolor{questionC}{\okmark}~A.] ABCD \hfill\textit{\small(réponse correcte)}
+    \item[B.] ABDC
+    \item[C.] ADCB
+    \item[D.] ACBD
+  \end{itemize}
+  \vspace{1pt}
+  \textbf{\textcolor{qcmC}{Corrigé}} --- Dire que $\overrightarrow{\text{AB}}=\overrightarrow{\text{DC}}$ signifie que $[\text{AB}]$ et $[\text{DC}]$ sont parallèles, de même longueur et de même sens~: ce sont deux côtés opposés d'un parallélogramme. En respectant l'ordre des sommets, c'est le quadrilatère \textbf{ABCD} qui est un parallélogramme.
+}
+\QuestionCorrigee{2}{qcmC}{QCM}{A3 --- Puissances}{%
+  Simplifier $x^{3}\times x^{5}$ (le résultat sera écrit sous la forme $x^n$).
+  \vspace{3pt}
+  \begin{itemize}[label=,leftmargin=1.2em,itemsep=1pt]
+    \item[A.] $x^{15}$
+    \item[\textcolor{questionC}{\okmark}~B.] $x^{8}$ \hfill\textit{\small(réponse correcte)}
+    \item[C.] $x^{2}$
+    \item[D.] $2x^{8}$
+  \end{itemize}
+  \vspace{1pt}
+  \textbf{\textcolor{qcmC}{Corrigé}} --- Pour multiplier deux puissances de même base, on additionne les exposants~: $x^3\times x^5=x^{3+5}=x^8$. $x^{15}$ viendrait d'une multiplication des exposants (confusion avec $(x^3)^5$)~; $x^2$ d'une soustraction (confusion avec la règle du quotient)~; $2x^8$ ajoute un coefficient qui n'a pas lieu d'être ici.
+}
+\QuestionCorrigee{3}{finalC}{Automatisme final}{A4 --- Écritures d'un nombre}{%
+  Écrire en notation scientifique\\
+  $2\times10^{3}+5\times10^{1}+3\times10^{-2}+8\times10^{3}$.
+  \vspace{3pt}
+
+  \textbf{\textcolor{finalC}{Corrigé}} --- On regroupe d'abord les termes en $10^{3}$~: $2\times10^{3}+8\times10^{3}=10\times10^{3}=10\,000$. Puis $5\times10^{1}=50$ et $3\times10^{-2}=0,03$. La somme vaut $10\,000+50+0,03=10\,050,03$, soit $1,005003\times10^{4}$ en notation scientifique.
+}
+\QuestionCorrigee{4}{questionC}{Question}{Calcul littéral \textperiodcentered{} Distributivité}{%
+  Développer et réduire $4(1-x)+3x$.
+  \vspace{3pt}
+
+  \textbf{\textcolor{questionC}{Corrigé}} --- $4(1-x)+3x=4-4x+3x=4-x$.
+}
+\QuestionCorrigee{5}{questionC}{Question}{Algo \textperiodcentered{} Lire un programme}{%
+  Voici un programme Python. Qu'affiche la console\\
+  \textcolor{orange}{si on saisit \texttt{mystere(3, 9)}~?}
+  \vspace{4pt}
+  \begin{center}
+  \fcolorbox{mutedC}{paperC}{\begin{minipage}{11.5cm}\ttfamily\small def mystere(a, b):\\
+  \hspace*{1em}return a**2 + 2*b + 6\end{minipage}}
+
+  \vspace{4pt}
+  \consoleBoxResult{mystere(3, 9)}{33}
+  \end{center}
+  \vspace{1pt}
+  \textbf{\textcolor{questionC}{Corrigé}} --- On remplace $a$ par $3$ et $b$ par $9$~: $a^2+2b+6=3^2+2\times9+6=9+18+6=33$.
+}
+\end{tcbraster}
+
+\end{document}

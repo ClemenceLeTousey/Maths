@@ -1,0 +1,138 @@
+% Tableau réponses (Série 2, gros caractères) en A3 paysage.
+% Document séparé, compilé en PDF puis inséré (\includepdf) dans la feuille
+% élève principale : le package geometry interdit de changer le format
+% physique de la page en cours de document via \newgeometry, donc on ne
+% peut pas simplement passer ces deux pages en A3 depuis le fichier
+% principal (resté en A4 paysage). Le contenu ci-dessous est celui du
+% tableau réponses de "Feuille élève - Série 2 ... - Gros caractères.tex",
+% avec les largeurs de colonnes et les cases réponses agrandies (~x1.45)
+% pour occuper la page A3 au lieu de flotter dans du vide.
+\documentclass[20pt]{extarticle}
+\usepackage{lmodern}
+\makeatletter
+\renewcommand\normalsize{\@setfontsize\normalsize{22pt}{27pt}}
+\renewcommand\small{\@setfontsize\small{19pt}{24pt}}
+\renewcommand\footnotesize{\@setfontsize\footnotesize{15pt}{19pt}}
+\renewcommand\scriptsize{\@setfontsize\scriptsize{13pt}{15pt}}
+\renewcommand\tiny{\@setfontsize\tiny{11pt}{12pt}}
+\renewcommand\large{\@setfontsize\large{27pt}{33pt}}
+\renewcommand\Large{\@setfontsize\Large{33pt}{39pt}}
+\renewcommand\LARGE{\@setfontsize\LARGE{39pt}{45pt}}
+\renewcommand\huge{\@setfontsize\huge{47pt}{57pt}}
+\renewcommand\Huge{\@setfontsize\Huge{57pt}{69pt}}
+\makeatother
+\normalsize
+\usepackage[a3paper,landscape,top=10mm,bottom=10mm,left=12mm,right=12mm]{geometry}
+\usepackage[french]{babel}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{ragged2e}
+\usepackage{tikz}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\renewcommand{\familydefault}{\sfdefault}
+
+\definecolor{inkC}{HTML}{20232B}
+\definecolor{qcmC}{HTML}{2455B8}
+\definecolor{questionC}{HTML}{12805C}
+\definecolor{finalC}{HTML}{B5511F}
+\definecolor{emptyC}{HTML}{8A909C}
+
+\newcommand{\qcase}[1]{%
+  \begin{tikzpicture}[baseline=0pt]
+    \useasboundingbox (0,0) rectangle (5.3cm,4.2cm);
+    \node[anchor=north west, circle, draw=inkC, line width=1.4pt,
+          inner sep=2pt, minimum size=1.3em, font=\Large, text=inkC]
+      at (0.15cm,4.05cm) {#1};
+  \end{tikzpicture}%
+}
+\newcommand{\qempty}{\cellcolor{emptyC}}
+
+\newcolumntype{J}{>{\RaggedRight\arraybackslash}m{4.8cm}}
+\newcolumntype{N}{>{\centering\arraybackslash}m{5.4cm}}
+\newcolumntype{O}{>{\centering\arraybackslash}m{5.6cm}}
+
+\begin{document}
+
+% ======================= TABLEAU RÉPONSES (1/2 -- Jour 1-2) ==================
+\noindent
+Nom~: \hrulefill{} \hspace{20pt} Prénom~: \hrulefill{} \hspace{20pt} Classe~: \hrulefill
+
+\vspace{8pt}
+\renewcommand{\arraystretch}{1.3}
+\setlength{\tabcolsep}{3pt}
+\begin{center}
+\arrayrulecolor{black}
+\setlength{\arrayrulewidth}{1.4pt}
+\begin{tabular}{|J|N|O|O|O|O|O|}
+\hhline{-------}
+ & &
+\shortstack{{\LARGE\textcolor{qcmC}{A3}}\\[4pt]{\normalsize Puissances}} &
+\shortstack{{\LARGE\textcolor{qcmC}{A4}}\\[4pt]{\footnotesize Écritures d'un nombre}} &
+\shortstack{{\LARGE\textcolor{questionC}{Vecteurs}}\\[4pt]\parbox{5.3cm}{\centering\normalsize Égalité, somme, translations}} &
+\shortstack{\parbox{5cm}{\centering\Large\textcolor{qcmC}{A9}}\\[4pt]{\normalsize Développer}\\[2pt]{\normalsize Factoriser}} &
+{\LARGE\textcolor{finalC}{Algo}} \\
+\hhline{-------}
+
+\multirow{2}{4.8cm}{\textbf{Jour 1}\\[20pt] Date~:\\[15pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qcase{1} & \qcase{2} & \qempty \\
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qcase{3} & \qempty & \qcase{4} & \qcase{5} & \qempty \\
+\hhline{-------}
+
+\multirow{2}{4.8cm}{\textbf{Jour 2}\\[20pt] Date~:\\[15pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qcase{1} & \qempty & \qcase{2} \\
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qcase{3} & \qcase{4} & \qcase{5} & \qempty & \qempty \\
+\hhline{-------}
+\end{tabular}
+\end{center}
+
+\newpage
+
+% ======================= TABLEAU RÉPONSES (2/2 -- Jour 3-4) ==================
+\noindent
+Nom~: \hrulefill{} \hspace{20pt} Prénom~: \hrulefill{} \hspace{20pt} Classe~: \hrulefill
+
+\vspace{8pt}
+\renewcommand{\arraystretch}{1.3}
+\setlength{\tabcolsep}{3pt}
+\begin{center}
+\arrayrulecolor{black}
+\setlength{\arrayrulewidth}{1.4pt}
+\begin{tabular}{|J|N|O|O|O|O|O|}
+\hhline{-------}
+ & &
+\shortstack{{\LARGE\textcolor{qcmC}{A3}}\\[4pt]{\normalsize Puissances}} &
+\shortstack{{\LARGE\textcolor{qcmC}{A4}}\\[4pt]{\footnotesize Écritures d'un nombre}} &
+\shortstack{{\LARGE\textcolor{questionC}{Vecteurs}}\\[4pt]\parbox{5.3cm}{\centering\normalsize Égalité, somme, translations}} &
+\shortstack{\parbox{5cm}{\centering\Large\textcolor{qcmC}{A9}}\\[4pt]{\normalsize Développer}\\[2pt]{\normalsize Factoriser}} &
+{\LARGE\textcolor{finalC}{Algo}} \\
+\hhline{-------}
+
+\multirow{2}{4.8cm}{\textbf{Jour 3}\\[20pt] Date~:\\[15pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qempty & \qempty & \qcase{1} & \qcase{2} & \qempty \\
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qempty & \qcase{3} & \qempty & \qempty & \qcase{4} \\
+\hhline{-------}
+
+\multirow{2}{4.8cm}{\textbf{Jour 4}\\[20pt] Date~:\\[15pt] \hrulefill}
+  & \textcolor{qcmC}{\textbf{QCM}}
+  & \qcase{2} & \qempty & \qcase{1} & \qempty & \qempty \\
+\hhline{~------}
+  & \textcolor{questionC}{\textbf{Questions}}
+  & \qempty & \qcase{3} & \qempty & \qcase{4} & \qcase{5} \\
+\hhline{-------}
+\end{tabular}
+\end{center}
+
+\end{document}

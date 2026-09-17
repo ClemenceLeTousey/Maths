@@ -1,0 +1,183 @@
+% Questions et corrigé du Jour 3, Série 2 (Automatismes Hebdo). Document
+% autonome, distinct du livret LaTeX complet et de la "Feuille élève -
+% Série 2 - Semaine du 14 au 18 septembre.tex". Même gabarit que
+% "Série2-J1/J2 - Questions et corrigé.tex". Se compile seul avec pdflatex
+% ou lualatex. Jour 3 est le premier jour de la semaine au format à 4
+% questions (2 QCM + 1 question + 1 automatisme final).
+\documentclass[12pt]{article}
+\usepackage[a4paper,landscape,top=6mm,bottom=6mm,left=10mm,right=10mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{ragged2e}
+\usepackage{amsmath}
+\usepackage{pifont}
+\usepackage{enumitem}
+\usepackage{tikz}
+
+\setlength{\parindent}{0pt}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Palette (reprise de "Feuille élève - Série 2 - Semaine du 14 au 18 septembre.tex") ---
+\definecolor{inkC}{HTML}{20232B}
+\definecolor{inksoftC}{HTML}{565A66}
+\definecolor{mutedC}{HTML}{8B8F99}
+\definecolor{qcmC}{HTML}{2455B8}
+\definecolor{questionC}{HTML}{12805C}
+\definecolor{finalC}{HTML}{B5511F}
+\definecolor{paperC}{HTML}{F2F3EE}
+\definecolor{consoleBgC}{HTML}{1E1E2E}
+\definecolor{consoleGreenC}{HTML}{6FCF97}
+\definecolor{tacheBlueC}{HTML}{2D9CDB}
+
+\newcommand{\okmark}{\ding{51}}
+
+% Console façon terminal (fond sombre, invite ">>>" en vert) : le résultat
+% reste visible (document projeté en classe), simplement surligné d'une
+% "tache" bleue façon surligneur, pour attirer l'œil dessus.
+\newcommand{\consoleBoxResult}[2]{%
+  % #1 = appel affiché après >>>, #2 = résultat surligné
+  \begin{tcolorbox}[colback=consoleBgC, colframe=consoleBgC, arc=3pt,
+    boxrule=0pt, left=8pt, right=8pt, top=3pt, bottom=3pt]
+  \ttfamily\footnotesize\color{white}
+  {\color{consoleGreenC}>>>} \# Script executed\\[2pt]
+  {\color{consoleGreenC}>>>} #1\\[5pt]
+  \begin{tikzpicture}[baseline=-2pt]
+    \fill[tacheBlueC, opacity=0.6]
+      (0,0)
+      .. controls (0.2,0.24) and (0.55,-0.1) .. (0.9,0.11)
+      .. controls (1.2,0.28) and (1.5,-0.07) .. (1.78,0.12)
+      .. controls (1.98,0.25) and (1.78,0.42) .. (1.42,0.36)
+      .. controls (1.05,0.46) and (0.45,0.44) .. (0.15,0.28)
+      .. controls (-0.06,0.19) and (-0.06,0.07) .. (0,0) -- cycle;
+    \node[white, font=\bfseries] at (0.9,0.16) {#2};
+  \end{tikzpicture}
+  \end{tcolorbox}%
+}
+
+\NewDocumentCommand{\RectoTitre}{m m}{%
+  \begin{center}
+  \begin{tcolorbox}[
+    enhanced, width=0.85\linewidth, colback=white, colframe=inkC,
+    boxrule=0.8pt, arc=8pt, sharp corners=downhill,
+    left=10pt, right=10pt, top=4pt, bottom=3pt, halign=center,
+    overlay={
+      \node[fill=white, anchor=west, font=\normalsize, inner xsep=4pt]
+        at ([xshift=14pt]frame.north west) {#1};
+    },
+  ]
+  {\huge\bfseries #2}
+  \end{tcolorbox}
+  \end{center}
+}
+
+\newcommand{\QuestionCorrigee}[5]{%
+  \begin{tcolorbox}[
+    enhanced, colback=white, colframe=#2, boxrule=1pt, arc=4pt,
+    left=10pt, right=10pt, top=3pt, bottom=3pt,
+    before skip=3pt, after skip=3pt,
+  ]
+  \noindent{\textcolor{#2}{\textbf{Question #1 \textperiodcentered{} #3}}}\hfill{\small\textcolor{inksoftC}{#4}}\par
+  \vspace{3pt}
+  #5
+  \end{tcolorbox}%
+}
+
+% Petit bloc de code façon "console" du site (fond clair, cadre, monospace).
+\newcommand{\codebox}[1]{%
+  \fcolorbox{mutedC}{paperC}{\begin{minipage}{9.5cm}\ttfamily\footnotesize #1\end{minipage}}%
+}
+
+\begin{document}
+\pagestyle{empty}
+
+\normalsize
+\RectoTitre{Série 2 --- Jour 3 --- Semaine du 14 au 18 septembre}{Questions et corrigé}
+\vspace{4pt}
+
+\begin{tcbraster}[raster columns=2, raster column skip=10pt, raster row skip=3pt, raster force size=false, raster valign=top]
+\QuestionCorrigee{1}{qcmC}{QCM}{Vecteurs \textperiodcentered{} Translations}{%
+  Parmi ces quatre propositions, laquelle est vraie~?
+  \vspace{4pt}
+  \begin{center}
+  \begin{tikzpicture}[scale=1.3, line width=0.6pt]
+    \coordinate (A) at (0,2); \coordinate (B) at (1,2); \coordinate (C) at (2,2); \coordinate (D) at (3,2);
+    \coordinate (H) at (-0.45,1); \coordinate (G) at (0.55,1); \coordinate (F) at (1.55,1); \coordinate (E) at (2.55,1);
+    \coordinate (I) at (-0.9,0); \coordinate (J) at (0.1,0); \coordinate (K) at (1.1,0); \coordinate (L) at (2.1,0);
+    \draw[gray] (A) -- (D);
+    \draw[gray] (H) -- (E);
+    \draw[gray] (I) -- (L);
+    \draw[gray] (A) -- (I);
+    \draw[gray] (B) -- (J);
+    \draw[gray] (C) -- (K);
+    \draw[gray] (D) -- (L);
+    \foreach \p/\lab/\pos in {A/A/above,B/B/above,C/C/above,D/D/above,H/H/left,G/G/above,F/F/above,E/E/right,I/I/left,J/J/below,K/K/below,L/L/below}
+      {\fill (\p) circle (1.4pt); \node[\pos, font=\scriptsize] at (\p) {\lab};}
+  \end{tikzpicture}
+  \end{center}
+  \vspace{2pt}
+  \begin{itemize}[label=,leftmargin=1.2em,itemsep=1pt]
+    \item[A.] F est l'image de G par la translation de vecteur $\overrightarrow{\text{AC}}$
+    \item[\textcolor{questionC}{\okmark}~B.] E est l'image de G par la translation de vecteur $\overrightarrow{\text{AC}}$ \hfill\textit{\small(réponse correcte)}
+    \item[C.] K est l'image de G par la translation de vecteur $\overrightarrow{\text{AC}}$
+    \item[D.] G est l'image de E par la translation de vecteur $\overrightarrow{\text{AC}}$
+  \end{itemize}
+  \vspace{1pt}
+  \textbf{\textcolor{qcmC}{Corrigé}} --- Le vecteur $\overrightarrow{\text{AC}}$ correspond à un déplacement de deux colonnes vers la droite, sur la même rangée (deux fois le déplacement du vecteur $\overrightarrow{\text{AB}}$). En appliquant ce déplacement à G, qui est sur la rangée du milieu, on avance de deux colonnes~: on obtient \textbf{E}. F serait l'image de G par la translation $\overrightarrow{\text{AB}}$ (une seule colonne)~; K est sur la rangée du bas, ce n'est pas la bonne rangée~; et dire que G est l'image de E par $\overrightarrow{\text{AC}}$ inverse le sens de la translation (ce serait le vecteur $\overrightarrow{\text{CA}}$).
+}
+\QuestionCorrigee{2}{qcmC}{QCM}{Calcul littéral \textperiodcentered{} Distributivité}{%
+  Développer $-2(x-4)$~:
+  \vspace{4pt}
+  \begin{center}
+  \begin{tikzpicture}[font=\Large, line width=1.2pt]
+    \def\w{2.3}
+    \def\h{1.7}
+    \fill[qcmC!12] (\w,0) rectangle (2*\w,\h);
+    \fill[qcmC!12] (2*\w,0) rectangle (3*\w,\h);
+    \fill[qcmC!12] (0,-\h) rectangle (\w,0);
+    \draw (0,0) rectangle (3*\w,\h);
+    \draw (0,-\h) rectangle (3*\w,0);
+    \draw (\w,-\h) -- (\w,\h);
+    \draw (2*\w,-\h) -- (2*\w,\h);
+    \node at (0.5*\w,0.5*\h) {$\times$};
+    \node[qcmC] at (1.5*\w,0.5*\h) {$x$};
+    \node[qcmC] at (2.5*\w,0.5*\h) {$-4$};
+    \node[qcmC] at (0.5*\w,-0.5*\h) {$-2$};
+    \node at (1.5*\w,-0.5*\h) {$-2x$};
+    \node at (2.5*\w,-0.5*\h) {$+8$};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{2pt}
+  \begin{itemize}[label=,leftmargin=1.2em,itemsep=1pt]
+    \item[A.] $-2x-8$
+    \item[\textcolor{questionC}{\okmark}~B.] $-2x+8$ \hfill\textit{\small(réponse correcte)}
+    \item[C.] $2x-8$
+    \item[D.] $-2x-4$
+  \end{itemize}
+  \vspace{1pt}
+  \textbf{\textcolor{qcmC}{Corrigé}} --- $-2(x-4)=-2\times x-2\times(-4)=-2x+8$. Le signe $-$ du facteur se distribue sur les deux termes, y compris sur le $-4$ (deux signes $-$ donnent $+$).
+}
+\QuestionCorrigee{3}{questionC}{Question}{A4 --- Écritures d'un nombre}{%
+  Donner l'écriture fractionnaire irréductible de $0,64$.
+  \vspace{3pt}
+
+  \textbf{\textcolor{questionC}{Corrigé}} --- $0,64=\dfrac{64}{100}$. Comme $\mathrm{PGCD}(64,100)=4$, on simplifie~: $\dfrac{64}{100}=\dfrac{16}{25}$, qui est irréductible.
+}
+\QuestionCorrigee{4}{finalC}{Automatisme final}{Algo \textperiodcentered{} Lire un programme}{%
+  Voici un programme Python.\\
+  Que renvoie la console si on saisit \texttt{note\_finale(6, 3)}~?
+  \vspace{2pt}
+  \begin{center}
+  \codebox{def note\_finale(devoir, bonus):\\
+  \hspace*{1em}return 1.5 * devoir + bonus}
+
+  \vspace{3pt}
+  \consoleBoxResult{note\_finale(6, 3)}{12.0}
+  \end{center}
+  \vspace{1pt}
+  \textbf{\textcolor{finalC}{Corrigé}} --- On calcule \texttt{1.5 * devoir + bonus} avec \texttt{devoir = 6} et \texttt{bonus = 3}~: $1,5\times6+3=9+3=12$. Comme \texttt{1.5} est un nombre à virgule (float), Python renvoie \texttt{12.0} et non \texttt{12}.
+}
+\end{tcbraster}
+
+\end{document}

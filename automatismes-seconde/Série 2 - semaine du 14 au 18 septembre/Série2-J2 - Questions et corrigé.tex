@@ -1,0 +1,164 @@
+% Questions et corrigé du Jour 2, Série 2 (Automatismes Hebdo). Document
+% autonome, distinct du livret LaTeX complet et de la "Feuille élève -
+% Série 2 - Semaine du 14 au 18 septembre.tex". Même gabarit que
+% "Série2-J1 - Questions et corrigé.tex". Se compile seul avec pdflatex ou
+% lualatex. Les diagrammes (figures Tux translatées, quadrillage de
+% parallélogrammes) sont des recréations TikZ simplifiées des diagrammes
+% SVG de Série2-J2.html : la disposition exacte diffère, mais le contenu
+% pédagogique est fidèle à la version projetée. L'ordre des questions suit
+% exactement celui de Série2-J2.html (et donc la numérotation du tableau
+% réponses verso).
+\documentclass[12pt]{article}
+\usepackage[a4paper,landscape,top=6mm,bottom=6mm,left=10mm,right=10mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{ragged2e}
+\usepackage{amsmath}
+\usepackage{pifont}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{graphicx}
+
+\setlength{\parindent}{0pt}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Palette (reprise de "Feuille élève - Série 2 - Semaine du 14 au 18 septembre.tex") ---
+\definecolor{inkC}{HTML}{20232B}
+\definecolor{inksoftC}{HTML}{565A66}
+\definecolor{mutedC}{HTML}{8B8F99}
+\definecolor{qcmC}{HTML}{2455B8}
+\definecolor{questionC}{HTML}{12805C}
+\definecolor{finalC}{HTML}{B5511F}
+\definecolor{paperC}{HTML}{F2F3EE}
+
+\newcommand{\okmark}{\ding{51}}
+
+\NewDocumentCommand{\RectoTitre}{m m}{%
+  \begin{center}
+  \begin{tcolorbox}[
+    enhanced, width=0.85\linewidth, colback=white, colframe=inkC,
+    boxrule=0.8pt, arc=8pt, sharp corners=downhill,
+    left=10pt, right=10pt, top=4pt, bottom=3pt, halign=center,
+    overlay={
+      \node[fill=white, anchor=west, font=\normalsize, inner xsep=4pt]
+        at ([xshift=14pt]frame.north west) {#1};
+    },
+  ]
+  {\huge\bfseries #2}
+  \end{tcolorbox}
+  \end{center}
+}
+
+\newcommand{\QuestionCorrigee}[5]{%
+  \begin{tcolorbox}[
+    enhanced, colback=white, colframe=#2, boxrule=1pt, arc=4pt,
+    left=10pt, right=10pt, top=3pt, bottom=3pt,
+    before skip=3pt, after skip=3pt,
+  ]
+  \noindent{\textcolor{#2}{\textbf{Question #1 \textperiodcentered{} #3}}}\hfill{\small\textcolor{inksoftC}{#4}}\par
+  \vspace{3pt}
+  #5
+  \end{tcolorbox}%
+}
+
+% Petit bloc de code façon "console" du site (fond clair, cadre, monospace).
+\newcommand{\codebox}[1]{%
+  \fcolorbox{mutedC}{paperC}{\begin{minipage}{9.5cm}\ttfamily\footnotesize #1\end{minipage}}%
+}
+
+\begin{document}
+\pagestyle{empty}
+
+\normalsize
+\RectoTitre{Série 2 --- Jour 2 --- Semaine du 14 au 18 septembre}{Questions et corrigé}
+\vspace{4pt}
+
+\begin{tcbraster}[raster columns=2, raster column skip=10pt, raster row skip=3pt, raster force size=false, raster valign=top]
+\QuestionCorrigee{1}{qcmC}{QCM}{Vecteurs \textperiodcentered{} Translations}{%
+  Quelle est la translation qui transforme la figure originale en la Figure 3~?
+  \vspace{4pt}
+  \begin{center}
+  \begin{tikzpicture}[line width=0.6pt]
+    \node (orig) at (2.3,3.6) {\includegraphics[width=1cm]{../assets/img/tux.png}};
+    \node[below, yshift=-0.7cm, font=\scriptsize] at (orig) {Figure originale};
+    \node (fig1) at (4.2,1.3) {\includegraphics[width=1cm]{../assets/img/tux.png}};
+    \node[below, yshift=-0.7cm, font=\scriptsize] at (fig1) {Figure 1};
+    \node[rotate=180] (fig2) at (5.6,3.9) {\includegraphics[width=1cm]{../assets/img/tux.png}};
+    \node[below, yshift=-0.7cm, font=\scriptsize] at (fig2) {Figure 2};
+    \node (fig3) at (0.4,1.7) {\includegraphics[width=1cm]{../assets/img/tux.png}};
+    \node[below, yshift=-0.7cm, font=\scriptsize] at (fig3) {Figure 3};
+    \node[font=\scriptsize] at (2.9,0.65) {$\times$A};
+    \node[font=\scriptsize] at (4.8,2.6) {$\times$B};
+    \node[font=\scriptsize] at (2.9,0.2) {$\times$C};
+    \node[font=\scriptsize] at (6.5,-0.2) {$\times$D};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{2pt}
+  \begin{itemize}[label=,leftmargin=1.2em,itemsep=1pt]
+    \item[\textcolor{questionC}{\okmark}~A.] La translation de vecteur $\overrightarrow{\text{BA}}$ \hfill\textit{\small(réponse correcte)}
+    \item[B.] La translation de vecteur $\overrightarrow{\text{AB}}$
+    \item[C.] La translation de vecteur $\overrightarrow{\text{CD}}$
+    \item[D.] La translation de vecteur $\overrightarrow{\text{DC}}$
+  \end{itemize}
+  \vspace{1pt}
+  \textbf{\textcolor{qcmC}{Corrigé}} --- Le vecteur $\overrightarrow{\text{BA}}$ va de B vers A~: c'est le sens opposé de $\overrightarrow{\text{AB}}$. C'est ce déplacement qui transforme la figure originale en la \textbf{Figure 3}. La translation de vecteur $\overrightarrow{\text{AB}}$ est le sens opposé de la bonne réponse~: elle ramènerait la Figure 3 vers la figure originale. Les translations de vecteur $\overrightarrow{\text{CD}}$ ou $\overrightarrow{\text{DC}}$ sont d'autres déplacements, qui ne correspondent à aucune des figures représentées.
+}
+\QuestionCorrigee{2}{qcmC}{QCM}{Algo \textperiodcentered{} Lire un programme}{%
+  Voici un programme Python. Que renvoie la console si on saisit \texttt{prix\_total(5, 4)}~?
+  \vspace{4pt}
+  \begin{center}
+  \codebox{def prix\_total(prix, frais):\\
+  \hspace*{1em}return 2 * prix + frais}
+  \end{center}
+  \vspace{2pt}
+  \begin{itemize}[label=,leftmargin=1.2em,itemsep=1pt]
+    \item[\textcolor{questionC}{\okmark}~A.] $14$ \hfill\textit{\small(réponse correcte)}
+    \item[B.] $9$
+    \item[C.] $18$
+    \item[D.] $40$
+  \end{itemize}
+  \vspace{1pt}
+  \textbf{\textcolor{qcmC}{Corrigé}} --- On calcule \texttt{2 * prix + frais} avec \texttt{prix = 5} et \texttt{frais = 4}~: $2\times5+4=10+4=14$.
+}
+\QuestionCorrigee{3}{questionC}{Question}{A3 --- Puissances}{%
+  Simplifier $\dfrac{x^{7}}{x^{2}}$ (le résultat sera écrit sous la forme $x^n$).
+  \vspace{3pt}
+
+  \textbf{\textcolor{questionC}{Corrigé}} --- Pour diviser deux puissances de même base, on soustrait les exposants~: $\dfrac{x^7}{x^2}=x^{7-2}=x^5$.
+}
+\QuestionCorrigee{4}{questionC}{Question}{A4 --- Écritures d'un nombre}{%
+  Donner l'écriture décimale de $\dfrac{3}{8}$.
+  \vspace{3pt}
+
+  \textbf{\textcolor{questionC}{Corrigé}} --- On connaît $\dfrac{3}{4}=0,75$. Or $\dfrac{3}{8}=\dfrac{3}{4}\times\dfrac{1}{2}$~: c'est la moitié de $\dfrac{3}{4}$. Donc $\dfrac{3}{8}=0,75\div2=0,375$.
+}
+\QuestionCorrigee{5}{finalC}{Automatisme final}{Vecteurs \textperiodcentered{} Translations}{%
+  Quelle est l'image du point I par la translation de vecteur $\overrightarrow{\text{AB}}$~?
+  \vspace{4pt}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.85, line width=0.6pt]
+    \coordinate (A) at (0,2); \coordinate (B) at (1,2); \coordinate (C) at (2,2); \coordinate (D) at (3,2);
+    \coordinate (H) at (-0.45,1); \coordinate (G) at (0.55,1); \coordinate (F) at (1.55,1); \coordinate (E) at (2.55,1);
+    \coordinate (I) at (-0.9,0); \coordinate (J) at (0.1,0); \coordinate (K) at (1.1,0); \coordinate (L) at (2.1,0);
+    \draw[gray] (A) -- (D);
+    \draw[gray] (H) -- (E);
+    \draw[gray] (I) -- (L);
+    \draw[gray] (A) -- (I);
+    \draw[gray] (B) -- (J);
+    \draw[gray] (C) -- (K);
+    \draw[gray] (D) -- (L);
+    \foreach \p/\lab/\pos in {A/A/above,B/B/above,C/C/above,D/D/above,H/H/left,G/G/above,F/F/above,E/E/right,I/I/left,J/J/below,K/K/below,L/L/below}
+      {\fill (\p) circle (1.4pt); \node[\pos, font=\scriptsize] at (\p) {\lab};}
+    \draw[->, thick, finalC] (A) -- (B);
+    \draw[->, thick, dashed, finalC] (I) -- (J);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{1pt}
+  \textbf{\textcolor{finalC}{Corrigé}} --- Le vecteur $\overrightarrow{\text{AB}}$ correspond à un déplacement d'une colonne vers la droite, sur la même rangée (c'est le même déplacement qu'entre H et G, ou entre I et J). En appliquant ce déplacement au point I, on reste sur la rangée du bas et on avance d'une colonne~: l'image de I est donc le point \textbf{J}.
+}
+\end{tcbraster}
+
+\end{document}
