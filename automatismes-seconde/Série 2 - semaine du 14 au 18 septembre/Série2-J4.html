@@ -170,12 +170,25 @@
   .diagram svg { max-width: 100%; height: auto; }
   .code-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; width: 100%; }
   .code-col { flex: 1 1 220px; max-width: 320px; }
+  .code-col .code-label {
+    font-family: "Space Mono", monospace; font-size: 0.72rem; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--muted); margin-bottom: 6px;
+  }
   .code {
     font-family: "Space Mono", monospace; font-size: 0.9rem; line-height: 1.6;
     background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
     padding: 12px 15px; white-space: pre; color: var(--ink); overflow-x: auto;
   }
   .opt .code { background: transparent; border: none; padding: 0; font-size: 0.85rem; }
+  .console-panel {
+    background: #1e1e2e; border-radius: 8px; padding: 12px 16px;
+    font-family: "Space Mono", monospace; font-size: 0.9rem; line-height: 1.8;
+    color: #d8dce6; min-height: 90px;
+  }
+  .console-panel .prompt { color: #6fcf97; }
+  .console-panel .result-svg { display: block; margin-top: 4px; }
+  .ink-blot-svg { transition: opacity .35s ease, transform .35s ease; }
+  .diagram.revealed .ink-blot-svg { opacity: 0; transform: scale(1.2); }
   .diagram-point circle { fill: var(--surface); stroke: var(--ink); stroke-width: 2.5; }
   .diagram-point.correct circle { stroke: var(--aqua); fill: var(--aqua-soft); }
   .diagram-point text { font-family: "Space Mono", monospace; font-weight: 700; font-size: 13px; fill: var(--ink); text-anchor: middle; }
@@ -358,27 +371,39 @@ const QUESTIONS = [
     tier: "final",
     objectif: "A4 \u00b7 \u00c9critures d'un nombre",
     aim: "Calculer une somme de termes de la forme $a\\times10^n$, en regroupant d'abord les termes de m\u00eame puissance, puis exprimer le r\u00e9sultat en notation scientifique, comme automatisme final \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
-    question: "\u00c9crire en notation scientifique $2\\times10^{3}+5\\times10^{1}+3\\times10^{-2}+8\\times10^{3}$.",
+    question: "\u00c9crire en notation scientifique<br>$2\\times10^{3}+5\\times10^{1}+3\\times10^{-2}+8\\times10^{3}$.",
     explanation: "On regroupe d'abord les termes en $10^{3}$ : $2\\times10^{3}+8\\times10^{3}=10\\times10^{3}=10\\,000$.<br>Puis $5\\times10^{1}=50$ et $3\\times10^{-2}=0,03$.<br>La somme vaut $10\\,000+50+0,03=10\\,050,03$, soit $1,005003\\times10^{4}$ en notation scientifique."
   },
   {
     tier: "question",
     objectif: "Calcul litt\u00e9ral \u00b7 Distributivit\u00e9",
     aim: "D\u00e9velopper et r\u00e9duire une expression combinant un produit distribu\u00e9 et un terme suppl\u00e9mentaire.",
-    question: "D\u00e9velopper et r\u00e9duire $4(x+1)+3x$.",
-    explanation: "$4(x+1)+3x=4x+4+3x=7x+4$."
+    question: "D\u00e9velopper et r\u00e9duire $4(1-x)+3x$.",
+    explanation: "$4(1-x)+3x=4-4x+3x=4-x$."
   },
   {
     tier: "question",
     theme: "obj-complement",
     objectif: "Algo \u00b7 Lire un programme",
     aim: "Lire une fonction Python \u00e0 deux param\u00e8tres comportant une puissance (op\u00e9rateur **), et calculer la valeur renvoy\u00e9e pour des arguments donn\u00e9s.",
-    question: "Voici un programme Python. Que renvoie la console si on saisit <code>mystere(3, 9)</code> ?",
-    diagram: `<div class="code-row" style="max-width:340px;">
+    question: "Voici un programme Python. Qu'affiche la console ?<br><span style=\"color:var(--orange);\">En Python, <code>**</code> repr\u00e9sente la puissance (<code>a**2</code> signifie $a^2$).</span>",
+    diagram: `<div class="code-row">
       <div class="code-col">
-        <pre class="code">def mystere(a,b):
+        <div class="code-label">Script Python</div>
+        <pre class="code" style="font-size:1.1rem; line-height:1.7;">def mystere(a, b):
     return a**2 + 2*b + 6</pre>
-        <p style="margin-top:10px; font-size:0.85rem; color:var(--muted); font-style:italic;">Rappel : en Python, <code>**</code> repr\u00e9sente la puissance (<code>a**2</code> signifie $a^2$).</p>
+      </div>
+      <div class="code-col">
+        <div class="code-label">Console</div>
+        <div class="console-panel">
+          <div class="prompt">&gt;&gt;&gt; # Script executed</div>
+          <div class="prompt">&gt;&gt;&gt; mystere(3, 9)</div>
+          <svg class="result-svg" viewBox="0 0 100 44" width="100" height="44" role="img" aria-label="R\u00e9sultat affich\u00e9 par la console">
+            <text x="4" y="30" font-family="Space Mono, monospace" font-weight="700" font-size="22" fill="#ffffff">33</text>
+            <path class="ink-blot-svg" d="M2,26 C-2,12 18,0 38,6 C58,-4 90,8 88,26 C96,38 74,50 54,46 C34,54 0,44 2,26 Z" fill="#3f6be0"/>
+            <circle class="ink-blot-svg" cx="93" cy="8" r="4" fill="#3f6be0"/>
+          </svg>
+        </div>
       </div>
     </div>`,
     explanation: "On remplace $a$ par $3$ et $b$ par $9$ : $a^2+2b+6=3^2+2\\times9+6=9+18+6=33$."
@@ -470,6 +495,7 @@ function render(){
   aimText.textContent = q.aim;
   qtext.innerHTML = q.question;
   diagramEl.innerHTML = q.diagram || "";
+  diagramEl.classList.remove("revealed");
 
   optionsEl.innerHTML = "";
   if (q.options){
@@ -501,6 +527,7 @@ function reveal(){
   if (revealed) return;
   revealed = true;
   answerBox.classList.add("shown");
+  diagramEl.classList.add("revealed");
   const opts = optionsEl.querySelectorAll(".opt");
   opts.forEach(o => {
     if (o.dataset.correct === "true") o.classList.add("correct");
