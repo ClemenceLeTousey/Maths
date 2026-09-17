@@ -197,6 +197,13 @@
   .diagram-vector.solved { stroke-dasharray: none; }
   .diagram-vector polygon { fill: var(--accent); }
   .diagram-label { font-family: "Public Sans", sans-serif; font-size: 12px; fill: var(--ink-soft); }
+  .diagram-table rect { stroke: var(--ink); stroke-width: 1.5; }
+  .diagram-table rect.hdr { fill: rgba(128,128,128,0.18); }
+  .diagram-table rect.cell { fill: none; }
+  .diagram-table rect.total { fill: var(--aqua-soft); }
+  .diagram-table text { font-family: "Space Mono", monospace; font-weight: 700; font-size: 15px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+  .diagram-table text.hdr-label { font-family: "Public Sans", sans-serif; font-weight: 600; font-size: 11.5px; }
+  .diagram-table line.comma-sep { stroke: var(--accent); stroke-width: 2.5; }
 
   .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
   .opt {
@@ -342,20 +349,6 @@
 const QUESTIONS = [
   {
     tier: "qcm",
-    theme: "obj-geometrie",
-    objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
-    aim: "Utiliser l'\u00e9galit\u00e9 de deux vecteurs pour identifier un parall\u00e9logramme, en respectant l'ordre des sommets.",
-    question: "On sait que $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{DC}}$. Quel quadrilat\u00e8re est un parall\u00e9logramme ?",
-    options: [
-      { letter:"A", text:"ABCD", correct:true },
-      { letter:"B", text:"ABDC", correct:false },
-      { letter:"C", text:"ADCB", correct:false },
-      { letter:"D", text:"ACBD", correct:false }
-    ],
-    explanation: "Dire que $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{DC}}$ signifie que $[\\text{AB}]$ et $[\\text{DC}]$ sont parall\u00e8les, de m\u00eame longueur et de m\u00eame sens : ce sont deux c\u00f4t\u00e9s oppos\u00e9s d'un parall\u00e9logramme. En respectant l'ordre des sommets, c'est le quadrilat\u00e8re <strong>ABCD</strong> qui est un parall\u00e9logramme."
-  },
-  {
-    tier: "qcm",
     objectif: "A3 \u00b7 Puissances",
     aim: "Simplifier un produit de deux puissances litt\u00e9rales de m\u00eame base, en additionnant les exposants.",
     question: "Simplifier $x^{3}\\times x^{5}$ (le r\u00e9sultat sera \u00e9crit sous la forme $x^n$).",
@@ -368,11 +361,91 @@ const QUESTIONS = [
     explanation: "Pour multiplier deux puissances de m\u00eame base, on additionne les exposants : $x^3\\times x^5=x^{3+5}=x^8$.<br>$x^{15}$ viendrait d'une multiplication des exposants (confusion avec $(x^3)^5$) ; $x^2$ d'une soustraction (confusion avec la r\u00e8gle du quotient) ; $2x^8$ ajoute un coefficient qui n'a pas lieu d'\u00eatre ici."
   },
   {
+    tier: "qcm",
+    theme: "obj-geometrie",
+    objectif: "Vecteurs \u00b7 \u00c9galit\u00e9",
+    aim: "Utiliser l'\u00e9galit\u00e9 de deux vecteurs pour identifier un parall\u00e9logramme, en respectant l'ordre des sommets.",
+    question: "On sait que $\\overrightarrow{\\text{AB}}=\\overrightarrow{\\text{DC}}$. Quel quadrilat\u00e8re est un parall\u00e9logramme ?",
+    options: [
+      { letter:"A", text:"ABDC", correct:false },
+      { letter:"B", text:"ADCB", correct:false },
+      { letter:"C", text:"ABCD", correct:true },
+      { letter:"D", text:"ACBD", correct:false }
+    ],
+    explanation: `<svg viewBox="20 20 325 225" width="520" style="max-width:100%;height:auto;display:block;margin:0 auto 12px" role="img" aria-label="Parall\u00e9logramme ABCD : les vecteurs AB et DC sont \u00e9gaux, les segments BC et AD sont trac\u00e9s en pointill\u00e9s">
+      <defs>
+        <marker id="arrowVectS2J4Q2" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+          <polygon points="0,0 6,2 0,4" fill="var(--accent)"/>
+        </marker>
+        <marker id="arrowTipS2J4Q2" markerWidth="5" markerHeight="4" refX="4" refY="2" orient="auto">
+          <polygon points="0,0 5,2 0,4" fill="var(--accent)"/>
+        </marker>
+      </defs>
+
+      <line x1="53" y1="194" x2="117" y2="66" stroke="var(--ink)" stroke-width="2" stroke-dasharray="7 6" stroke-linecap="round"/>
+      <line x1="233" y1="194" x2="297" y2="66" stroke="var(--ink)" stroke-width="2" stroke-dasharray="7 6" stroke-linecap="round"/>
+
+      <g class="diagram-vector solved"><line x1="57" y1="200" x2="220" y2="200" marker-end="url(#arrowVectS2J4Q2)"/></g>
+      <g class="diagram-vector solved"><line x1="127" y1="60" x2="288" y2="60" marker-end="url(#arrowVectS2J4Q2)"/></g>
+
+      <g class="diagram-point"><line x1="46.5" y1="196.5" x2="53.5" y2="203.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="46.5" y1="203.5" x2="53.5" y2="196.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="36" y="221">A</text></g>
+      <g class="diagram-point"><line x1="226.5" y1="196.5" x2="233.5" y2="203.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="226.5" y1="203.5" x2="233.5" y2="196.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="244" y="221">B</text></g>
+      <g class="diagram-point"><line x1="296.5" y1="56.5" x2="303.5" y2="63.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="296.5" y1="63.5" x2="303.5" y2="56.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="314" y="52">C</text></g>
+      <g class="diagram-point"><line x1="116.5" y1="56.5" x2="123.5" y2="63.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="116.5" y1="63.5" x2="123.5" y2="56.5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="106" y="52">D</text></g>
+
+      <g><line x1="126" y1="212" x2="152" y2="212" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arrowTipS2J4Q2)"/><text x="139" y="229" text-anchor="middle" font-family="Space Mono, monospace" font-size="15" font-weight="700" fill="var(--accent)">AB</text></g>
+      <g><line x1="195" y1="32" x2="221" y2="32" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arrowTipS2J4Q2)"/><text x="208" y="49" text-anchor="middle" font-family="Space Mono, monospace" font-size="15" font-weight="700" fill="var(--accent)">DC</text></g>
+    </svg>
+En respectant l'ordre des sommets, c'est le quadrilat\u00e8re <strong>ABCD</strong> qui est un parall\u00e9logramme.`
+  },
+  {
     tier: "final",
     objectif: "A4 \u00b7 \u00c9critures d'un nombre",
-    aim: "Calculer une somme de termes de la forme $a\\times10^n$, en regroupant d'abord les termes de m\u00eame puissance, puis exprimer le r\u00e9sultat en notation scientifique, comme automatisme final \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
-    question: "\u00c9crire en notation scientifique<br>$2\\times10^{3}+5\\times10^{1}+3\\times10^{-2}+8\\times10^{3}$.",
-    explanation: "On regroupe d'abord les termes en $10^{3}$ : $2\\times10^{3}+8\\times10^{3}=10\\times10^{3}=10\\,000$.<br>Puis $5\\times10^{1}=50$ et $3\\times10^{-2}=0,03$.<br>La somme vaut $10\\,000+50+0,03=10\\,050,03$, soit $1,005003\\times10^{4}$ en notation scientifique."
+    aim: "Calculer une somme de termes de la forme $a\\times10^n$, puis exprimer le r\u00e9sultat en notation scientifique, comme automatisme final \u2014 retour sur un objectif d\u00e9j\u00e0 travaill\u00e9.",
+    question: "\u00c9crire en notation scientifique<br>$2\\times10^{3}+5\\times10^{1}+3\\times10^{-2}$.",
+    explanation: `<svg class="diagram-table" viewBox="-6 -6 372 92" width="384" style="max-width:100%;height:auto;display:block;margin:0 auto 14px" role="img" aria-label="Tableau de num\u00e9ration avec les colonnes milliers, centaines, dizaines, unit\u00e9s, dixi\u00e8mes, centi\u00e8mes, et la ligne du bas donnant 2050,03">
+      <rect class="hdr" x="0" y="0" width="60" height="26"/>
+      <rect class="hdr" x="60" y="0" width="60" height="26"/>
+      <rect class="hdr" x="120" y="0" width="60" height="26"/>
+      <rect class="hdr" x="180" y="0" width="60" height="26"/>
+      <rect class="hdr" x="240" y="0" width="60" height="26"/>
+      <rect class="hdr" x="300" y="0" width="60" height="26"/>
+      <text class="hdr-label" x="30" y="13">Milliers</text>
+      <text class="hdr-label" x="90" y="13">Centaines</text>
+      <text class="hdr-label" x="150" y="13">Dizaines</text>
+      <text class="hdr-label" x="210" y="13">Unit\u00e9s</text>
+      <text class="hdr-label" x="270" y="13">Dixi\u00e8mes</text>
+      <text class="hdr-label" x="330" y="13">Centi\u00e8mes</text>
+
+      <rect class="hdr" x="0" y="26" width="60" height="24"/>
+      <rect class="hdr" x="60" y="26" width="60" height="24"/>
+      <rect class="hdr" x="120" y="26" width="60" height="24"/>
+      <rect class="hdr" x="180" y="26" width="60" height="24"/>
+      <rect class="hdr" x="240" y="26" width="60" height="24"/>
+      <rect class="hdr" x="300" y="26" width="60" height="24"/>
+      <text x="30" y="39">10<tspan dy="-5" font-size="10">3</tspan></text>
+      <text x="90" y="39">10<tspan dy="-5" font-size="10">2</tspan></text>
+      <text x="150" y="39">10<tspan dy="-5" font-size="10">1</tspan></text>
+      <text x="210" y="39">10<tspan dy="-5" font-size="10">0</tspan></text>
+      <text x="270" y="39">10<tspan dy="-5" font-size="10">\u22121</tspan></text>
+      <text x="330" y="39">10<tspan dy="-5" font-size="10">\u22122</tspan></text>
+
+      <rect class="total" x="0" y="50" width="60" height="30"/>
+      <rect class="total" x="60" y="50" width="60" height="30"/>
+      <rect class="total" x="120" y="50" width="60" height="30"/>
+      <rect class="total" x="180" y="50" width="60" height="30"/>
+      <rect class="total" x="240" y="50" width="60" height="30"/>
+      <rect class="total" x="300" y="50" width="60" height="30"/>
+      <text x="30" y="65">2</text>
+      <text x="90" y="65">0</text>
+      <text x="150" y="65">5</text>
+      <text x="210" y="65">0</text>
+      <text x="270" y="65">0</text>
+      <text x="330" y="65">3</text>
+
+      <line class="comma-sep" x1="240" y1="50" x2="240" y2="80"/>
+    </svg>
+$2\\times10^{3}+5\\times10^{1}+3\\times10^{-2}=2\\,050,03$, soit $2,05003\\times10^{3}$ en notation scientifique.`
   },
   {
     tier: "question",
@@ -386,7 +459,7 @@ const QUESTIONS = [
     theme: "obj-complement",
     objectif: "Algo \u00b7 Lire un programme",
     aim: "Lire une fonction Python \u00e0 deux param\u00e8tres comportant une puissance (op\u00e9rateur **), et calculer la valeur renvoy\u00e9e pour des arguments donn\u00e9s.",
-    question: "Voici un programme Python. Qu'affiche la console ?<br><span style=\"color:var(--orange);\">En Python, <code>**</code> repr\u00e9sente la puissance (<code>a**2</code> signifie $a^2$).</span>",
+    question: "Voici un programme Python. Qu'affiche la console ?<br><span style=\"color:var(--orange);\">En Python, l'op\u00e9rateur <code>**</code> permet de calculer la puissance d'un nombre (<code>a**2</code> calcule $a^2$).</span>",
     diagram: `<div class="code-row">
       <div class="code-col">
         <div class="code-label">Script Python</div>
