@@ -74,8 +74,8 @@
 \newcommand{\QuestionCorrigee}[5]{%
   \begin{tcolorbox}[
     enhanced, colback=white, colframe=#2, boxrule=1pt, arc=4pt,
-    left=10pt, right=10pt, top=3pt, bottom=3pt,
-    before skip=3pt, after skip=3pt,
+    left=10pt, right=10pt, top=2pt, bottom=2pt,
+    before skip=2pt, after skip=2pt,
   ]
   \noindent{\textcolor{#2}{\textbf{Question #1 \textperiodcentered{} #3}}}\hfill{\small\textcolor{inksoftC}{#4}}\par
   \vspace{3pt}
@@ -95,20 +95,8 @@
 \RectoTitre{Série 2 --- Jour 4 --- Semaine du 14 au 18 septembre}{Questions et corrigé}
 \vspace{4pt}
 
-\begin{tcbraster}[raster columns=2, raster column skip=10pt, raster row skip=3pt, raster force size=false, raster valign=top]
-\QuestionCorrigee{1}{qcmC}{QCM}{Vecteurs \textperiodcentered{} Égalité}{%
-  On sait que $\overrightarrow{\text{AB}}=\overrightarrow{\text{DC}}$. Quel quadrilatère est un parallélogramme~?
-  \vspace{3pt}
-  \begin{itemize}[label=,leftmargin=1.2em,itemsep=1pt]
-    \item[\textcolor{questionC}{\okmark}~A.] ABCD \hfill\textit{\small(réponse correcte)}
-    \item[B.] ABDC
-    \item[C.] ADCB
-    \item[D.] ACBD
-  \end{itemize}
-  \vspace{1pt}
-  \textbf{\textcolor{qcmC}{Corrigé}} --- Dire que $\overrightarrow{\text{AB}}=\overrightarrow{\text{DC}}$ signifie que $[\text{AB}]$ et $[\text{DC}]$ sont parallèles, de même longueur et de même sens~: ce sont deux côtés opposés d'un parallélogramme. En respectant l'ordre des sommets, c'est le quadrilatère \textbf{ABCD} qui est un parallélogramme.
-}
-\QuestionCorrigee{2}{qcmC}{QCM}{A3 --- Puissances}{%
+\begin{tcbraster}[raster columns=2, raster column skip=10pt, raster row skip=1pt, raster force size=false, raster valign=top]
+\QuestionCorrigee{1}{qcmC}{QCM}{A3 --- Puissances}{%
   Simplifier $x^{3}\times x^{5}$ (le résultat sera écrit sous la forme $x^n$).
   \vspace{3pt}
   \begin{itemize}[label=,leftmargin=1.2em,itemsep=1pt]
@@ -120,12 +108,76 @@
   \vspace{1pt}
   \textbf{\textcolor{qcmC}{Corrigé}} --- Pour multiplier deux puissances de même base, on additionne les exposants~: $x^3\times x^5=x^{3+5}=x^8$. $x^{15}$ viendrait d'une multiplication des exposants (confusion avec $(x^3)^5$)~; $x^2$ d'une soustraction (confusion avec la règle du quotient)~; $2x^8$ ajoute un coefficient qui n'a pas lieu d'être ici.
 }
+\QuestionCorrigee{2}{qcmC}{QCM}{Vecteurs \textperiodcentered{} Égalité}{%
+  On sait que $\overrightarrow{\text{AB}}=\overrightarrow{\text{DC}}$. Quel quadrilatère est un parallélogramme~?
+  \vspace{3pt}
+  \begin{itemize}[label=,leftmargin=1.2em,itemsep=1pt]
+    \item[A.] ABDC
+    \item[B.] ADCB
+    \item[\textcolor{questionC}{\okmark}~C.] ABCD \hfill\textit{\small(réponse correcte)}
+    \item[D.] ACBD
+  \end{itemize}
+  \vspace{1pt}
+  \textbf{\textcolor{qcmC}{Corrigé}} ---
+  \begin{center}
+  \begin{tikzpicture}[scale=0.42, line width=1.1pt, >=stealth]
+    \coordinate (A) at (0,0); \coordinate (B) at (3,0);
+    \coordinate (D) at (1,2); \coordinate (C) at (4,2);
+    \draw[gray, dashed] (A) -- (D);
+    \draw[gray, dashed] (B) -- (C);
+    \draw[->, qcmC] (A) -- (B) node[midway, below, font=\footnotesize\bfseries, qcmC] {AB};
+    \draw[->, qcmC] (D) -- (C) node[midway, above, font=\footnotesize\bfseries, qcmC] {DC};
+    \foreach \p/\lab/\pos in {A/A/below left,B/B/below right,C/C/above right,D/D/above left}
+      {\fill (\p) circle (1.4pt); \node[\pos, font=\scriptsize] at (\p) {\lab};}
+  \end{tikzpicture}
+  \end{center}
+  \vspace{-4pt}
+  En respectant l'ordre des sommets, c'est le quadrilatère \textbf{ABCD} qui est un parallélogramme.
+}
 \QuestionCorrigee{3}{finalC}{Automatisme final}{A4 --- Écritures d'un nombre}{%
   Écrire en notation scientifique\\
-  $2\times10^{3}+5\times10^{1}+3\times10^{-2}+8\times10^{3}$.
-  \vspace{3pt}
+  $2\times10^{3}+5\times10^{1}+3\times10^{-2}$.
+  \vspace{2pt}
 
-  \textbf{\textcolor{finalC}{Corrigé}} --- On regroupe d'abord les termes en $10^{3}$~: $2\times10^{3}+8\times10^{3}=10\times10^{3}=10\,000$. Puis $5\times10^{1}=50$ et $3\times10^{-2}=0,03$. La somme vaut $10\,000+50+0,03=10\,050,03$, soit $1,005003\times10^{4}$ en notation scientifique.
+  \textbf{\textcolor{finalC}{Corrigé}} ---
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize, line width=0.6pt]
+    \def\w{1.08}
+    \def\hh{0.4}
+    \def\hp{0.42}
+    % ligne 1 : noms des colonnes
+    \foreach \i/\lbl in {0/Milliers,1/Centaines,2/Dizaines,3/Unités,4/Dixièmes,5/Centièmes}
+      \fill[finalC!12] (\i*\w,0) rectangle (\i*\w+\w,\hh);
+    \foreach \i in {0,...,5} \draw (\i*\w,0) rectangle (\i*\w+\w,\hh);
+    \node[font=\scriptsize\bfseries] at (0.5*\w,0.5*\hh) {Milliers};
+    \node[font=\scriptsize\bfseries] at (1.5*\w,0.5*\hh) {Centaines};
+    \node[font=\scriptsize\bfseries] at (2.5*\w,0.5*\hh) {Dizaines};
+    \node[font=\scriptsize\bfseries] at (3.5*\w,0.5*\hh) {Unités};
+    \node[font=\scriptsize\bfseries] at (4.5*\w,0.5*\hh) {Dixièmes};
+    \node[font=\scriptsize\bfseries] at (5.5*\w,0.5*\hh) {Centièmes};
+    % ligne 2 : puissances de dix
+    \foreach \i in {0,...,5} \draw (\i*\w,-\hp) rectangle (\i*\w+\w,0);
+    \node at (0.5*\w,-0.5*\hp) {$10^{3}$};
+    \node at (1.5*\w,-0.5*\hp) {$10^{2}$};
+    \node at (2.5*\w,-0.5*\hp) {$10^{1}$};
+    \node at (3.5*\w,-0.5*\hp) {$10^{0}$};
+    \node at (4.5*\w,-0.5*\hp) {$10^{-1}$};
+    \node at (5.5*\w,-0.5*\hp) {$10^{-2}$};
+    % ligne 3 : résultat
+    \foreach \i in {0,...,5} \fill[qcmC!15] (\i*\w,-\hp-\hh) rectangle (\i*\w+\w,-\hp);
+    \foreach \i in {0,...,5} \draw (\i*\w,-\hp-\hh) rectangle (\i*\w+\w,-\hp);
+    \node[font=\bfseries] at (0.5*\w,-\hp-0.5*\hh) {2};
+    \node[font=\bfseries] at (1.5*\w,-\hp-0.5*\hh) {0};
+    \node[font=\bfseries] at (2.5*\w,-\hp-0.5*\hh) {5};
+    \node[font=\bfseries] at (3.5*\w,-\hp-0.5*\hh) {0};
+    \node[font=\bfseries] at (4.5*\w,-\hp-0.5*\hh) {0};
+    \node[font=\bfseries] at (5.5*\w,-\hp-0.5*\hh) {3};
+    % séparateur unités / dixièmes (virgule)
+    \draw[qcmC, line width=1.6pt] (4*\w,-\hp-\hh) -- (4*\w,0);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{-3pt}
+  $2\times10^{3}+5\times10^{1}+3\times10^{-2}=2\,050,03$, soit $2,05003\times10^{3}$ en notation scientifique.
 }
 \QuestionCorrigee{4}{questionC}{Question}{Calcul littéral \textperiodcentered{} Distributivité}{%
   Développer et réduire $4(1-x)+3x$.
@@ -135,16 +187,15 @@
 }
 \QuestionCorrigee{5}{questionC}{Question}{Algo \textperiodcentered{} Lire un programme}{%
   Voici un programme Python. Qu'affiche la console~?\\
-  \textcolor{orange}{En Python, \texttt{**} représente la puissance (\texttt{a**2} signifie $a^2$).}
-  \vspace{4pt}
+  \textcolor{orange}{En Python, l'opérateur \texttt{**} permet de calculer la puissance d'un nombre (\texttt{a**2} calcule $a^2$).}
+  \vspace{2pt}
   \begin{center}
   \fcolorbox{mutedC}{paperC}{\begin{minipage}{11.5cm}\ttfamily\small def mystere(a, b):\\
   \hspace*{1em}return a**2 + 2*b + 6\end{minipage}}
 
-  \vspace{4pt}
+  \vspace{2pt}
   \consoleBoxResult{mystere(3, 9)}{33}
   \end{center}
-  \vspace{1pt}
   \textbf{\textcolor{questionC}{Corrigé}} --- On remplace $a$ par $3$ et $b$ par $9$~: $a^2+2b+6=3^2+2\times9+6=9+18+6=33$.
 }
 \end{tcbraster}

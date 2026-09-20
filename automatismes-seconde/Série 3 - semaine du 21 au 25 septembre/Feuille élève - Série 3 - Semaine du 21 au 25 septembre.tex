@@ -105,23 +105,71 @@
 \newcommand{\Vj}[1]{\overrightarrow{\text{#1}}}
 \newcommand{\corrbox}{\fboxsep=0pt\fbox{\rule{0pt}{8pt}\rule{8pt}{0pt}}}
 
-\newcommand{\qcase}[1]{%
+% Case active : numéro de question entouré, couleur du type de question
+% (QCM / Question / Automatisme final). #1 couleur, #2 numéro.
+\newcommand{\qcase}[2]{%
   \begin{tikzpicture}[baseline=0pt]
-    \useasboundingbox (0,0) rectangle (4.6cm,1.85cm);
-    \node[anchor=west, circle, draw=inkC, line width=0.6pt,
-          inner sep=1pt, minimum size=1.7em, font=\large, text=inkC]
-      at (0.05cm,0.925cm) {#1};
+    \useasboundingbox (0,0) rectangle (4.8cm,1.2cm);
+    \node[anchor=west, circle, draw=#1, line width=0.8pt,
+          inner sep=1pt, minimum size=1.7em, font=\large, text=#1]
+      at (0.05cm,0.6cm) {#2};
   \end{tikzpicture}%
 }
-\newcommand{\qcasebonus}[1]{%
-  \begin{tikzpicture}[baseline=0pt]
-    \useasboundingbox (0,0) rectangle (4.6cm,1.85cm);
-    \node[anchor=west, circle, draw=bonusC, line width=1pt,
-          inner sep=1pt, minimum size=1.7em, font=\large, text=bonusC]
-      at (0.05cm,0.925cm) {#1};
-  \end{tikzpicture}%
+\newcommand{\qlegend}[2]{%
+  \tikz[baseline=-0.6ex]\node[circle, draw=#1, line width=0.6pt, inner sep=0.5pt,
+    minimum size=1.3em, font=\footnotesize, text=#1]{#2};%
 }
 \newcommand{\qempty}{\cellcolor{emptyC}}
+% Schémas 1 et 3 de la méthode « bout à bout » du cours (Séquence 2) :
+% u et v sur quadrillage, puis construction M -> N -> P et somme en rouge.
+\newcommand{\SommeSchemaUn}[1]{%
+  \begin{tikzpicture}[scale=#1, baseline=(current bounding box.south)]
+    \draw[thin, gray, opacity=0.7] (0,0) grid (6,6);
+    \draw[-{Stealth}, thick, blue] (0,0) -- (2,1) node[midway, rotate=30, above, font=\small] {$\Vj{u}$};
+    \draw[-{Stealth}, thick, blue] (2,5) -- (4,2) node[midway, rotate=-60, above, font=\small] {$\Vj{v}$};
+  \end{tikzpicture}%
+}
+\newcommand{\SommeSchemaTrois}[1]{%
+  \begin{tikzpicture}[scale=#1, baseline=(current bounding box.south)]
+    \draw[thin, gray, opacity=0.7] (0,0) grid (6,6);
+    \draw[-{Stealth}, thick, blue, dashed] (1,4) node[left, font=\small] {$M$} -- (3,5) node[above, font=\small] {$N$} node[midway, rotate=30, above, font=\small] {$\Vj{u}$};
+    \draw[-{Stealth}, thick, blue, dashed] (3,5) -- (5,2) node[right, font=\small] {$P$} node[midway, rotate=-60, above, font=\small] {$\Vj{v}$};
+    \draw[-{Stealth}, thick, red] (1,4) -- (5,2) node[midway, rotate=-25, below, font=\small] {$\Vj{u}+\Vj{v}$};
+  \end{tikzpicture}%
+}
+% Segment codé « en fonction de x », dans le style des questions J1/J3 :
+% les morceaux codés par un rond mesurent x, ceux codés // mesurent 4.
+\newcommand{\SegmentCode}[1]{%
+  \begin{tikzpicture}[scale=#1, line width=0.7pt]
+    \draw (0,0) -- (5.9,0);
+    \draw (0,0.12) -- (0,-0.12); \draw (1.3,0.12) -- (1.3,-0.12);
+    \draw (2.3,0.12) -- (2.3,-0.12); \draw (3.6,0.12) -- (3.6,-0.12);
+    \draw (4.6,0.12) -- (4.6,-0.12); \draw (5.9,0.12) -- (5.9,-0.12);
+    \draw (0.65,0) circle (0.11); \draw (2.95,0) circle (0.11); \draw (5.25,0) circle (0.11);
+    \draw (1.68,-0.14) -- (1.78,0.14); \draw (1.82,-0.14) -- (1.92,0.14);
+    \draw (3.98,-0.14) -- (4.08,0.14); \draw (4.12,-0.14) -- (4.22,0.14);
+    \node[below left=-1pt, font=\small] at (0,0) {$C$};
+    \node[below right=-1pt, font=\small] at (5.9,0) {$E$};
+    \draw[{Stealth}-{Stealth}, qcmC] (0.08,-0.45) -- (1.22,-0.45);
+    \node[below, font=\small, qcmC] at (0.65,-0.5) {$x$};
+    \draw[{Stealth}-{Stealth}, qcmC] (1.38,-0.45) -- (2.22,-0.45);
+    \node[below, font=\small, qcmC] at (1.8,-0.5) {$4$};
+  \end{tikzpicture}%
+}
+% Schéma de la relation de Chasles : A -> M -> B et le raccourci A -> B.
+\newcommand{\ChaslesFig}[1]{%
+  \begin{tikzpicture}[scale=#1, >={Stealth[length=5pt]}, line width=0.8pt]
+    \coordinate (A) at (0,0);
+    \coordinate (M) at (1.6,1.3);
+    \coordinate (B) at (4,0);
+    \fill (A) circle (1.3pt) node[below left=-1pt] {$A$};
+    \fill (M) circle (1.3pt) node[above=-1pt] {$M$};
+    \fill (B) circle (1.3pt) node[below right=-1pt] {$B$};
+    \draw[->, inksoftC] (A) -- (M) node[midway, above left=-2pt] {\small$\Vj{AM}$};
+    \draw[->, inksoftC] (M) -- (B) node[midway, above right=-2pt] {\small$\Vj{MB}$};
+    \draw[->, questionC, line width=1.1pt] (A) -- (B) node[midway, below=-1pt] {\small$\Vj{AB}$};
+  \end{tikzpicture}%
+}
 
 \NewDocumentCommand{\RectoTitre}{m m}{%
   \begin{center}
@@ -203,8 +251,8 @@
 }
 
 \newcolumntype{J}{>{\RaggedRight\arraybackslash}m{1.7cm}}
-\newcolumntype{N}{>{\centering\arraybackslash}m{1.7cm}}
-\newcolumntype{O}{>{\centering\arraybackslash}m{3.9cm}}
+\newcolumntype{N}{>{\centering\arraybackslash}m{2.5cm}}
+\newcolumntype{O}{>{\centering\arraybackslash}m{5.0cm}}
 \newcolumntype{P}{>{\centering\arraybackslash}m{1.9cm}}
 \newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
 
@@ -215,10 +263,6 @@
 
 \vspace{0pt}
 
-\noindent\textit{Bonus du jour 4~: reprise d'A1 (comparer deux fractions), voir
-rappel Série 2.}\par
-\vspace{4pt}
-
 \autoCardLine{questionC}{Vecteurs}{Somme, relation de Chasles}
 \vspace{1pt}
 \RecapPair{%
@@ -228,9 +272,22 @@ rappel Série 2.}\par
   \textbf{2. Relation de Chasles} (nouveau)\\
   Pour tous points $A$, $M$, $B$~:
   \[\Vj{AB}=\Vj{AM}+\Vj{MB}\]
-  \textit{Aller de A à M puis de M à B, c'est, au final, aller de A à B.}
+  \begin{center}\ChaslesFig{0.85}\end{center}
 }{%
-  Simplifier $\Vj{AB}-\Vj{AC}-\Vj{CB}$~:
+  Construire $\Vj{u}+\Vj{v}$ bout à bout~:
+  \begin{center}
+  \SommeSchemaUn{0.38}\hspace{16pt}\SommeSchemaTrois{0.38}
+  \end{center}
+  Simplifier $\Vj{AB}-\Vj{AC}-\Vj{CB}$~:\\[2pt]
+  \textbf{Méthode 1} \textit{(passer aux vecteurs opposés)}
+  \[
+  \begin{array}{r@{\,}c@{\,}l}
+  \Vj{AB}-\Vj{AC}-\Vj{CB} &=& \Vj{AB}+\Vj{CA}+\Vj{BC}\\
+   &=& \Vj{AB}+\Vj{BC}+\Vj{CA}\\
+   &=& \Vj{AC}+\Vj{CA}=\Vj{0}
+  \end{array}
+  \]
+  \textbf{Méthode 2} \textit{(regrouper avec Chasles)}
   \[
   \begin{array}{r@{\,}c@{\,}l}
   \Vj{AB}-\Vj{AC}-\Vj{CB} &=& \Vj{AB}-(\Vj{AC}+\Vj{CB})\\
@@ -238,8 +295,6 @@ rappel Série 2.}\par
    &=& \Vj{0}
   \end{array}
   \]
-  \textit{On regroupe d'abord les deux derniers termes avec Chasles
-  ($\Vj{AC}+\Vj{CB}=\Vj{AB}$), avant de soustraire.}
 }
 
 \vspace*{0.15cm}
@@ -248,20 +303,30 @@ rappel Série 2.}\par
 \vspace{1pt}
 \RecapPair{%
   \textit{La double distributivité a été rappelée en Série 2 -- cette
-  semaine, on travaille surtout l'opération inverse.}\\[4pt]
+  semaine, on travaille la procédure inverse.}\\[4pt]
   \textbf{Factoriser}, c'est transformer une somme en produit. Pour tous
   réels $k$, $a$ et $b$~:
   \[ka+kb=k(a+b) \qquad ka-kb=k(a-b)\]
   On repère le \textbf{facteur commun} $k$ dans chaque terme de la somme.
 }{%
-  Factoriser $B=7x-21$~:
+  Factoriser $B=7x-21$.\\[2pt]
+  On repère le facteur commun~: $7$.
   \[
   \begin{array}{r@{\,}c@{\,}l}
   B &=& 7\times x-7\times3\\
    &=& 7(x-3)
   \end{array}
   \]
-  \textit{$7$ est le facteur commun à $7x$ et à $21=7\times3$.}
+  \vspace{2pt}
+  Factoriser $C=3x^2+12x$.\\[2pt]
+  On repère le facteur commun~: $3x$.
+  \[
+  \begin{array}{r@{\,}c@{\,}l}
+  C &=& 3x\times x+3x\times4\\
+   &=& 3x(x+4)
+  \end{array}
+  \]
+  \vspace{2pt}
 }
 
 \vspace*{0.15cm}
@@ -270,67 +335,30 @@ rappel Série 2.}\par
 \vspace{1pt}
 \begin{tcbraster}[raster columns=2, raster column skip=8pt, raster force size=false, raster valign=top, before skip=0pt, after skip=0pt]
 \ARetenirBox{\normalsize
-  \textbf{1. Fractions avec du littéral}\\
-  On peut simplifier une écriture fractionnaire contenant une lettre
-  exactement comme une fraction numérique~: on cherche un facteur
-  commun au numérateur et au dénominateur.\\[6pt]
-  \textbf{2. Une longueur en fonction de x}\\
-  Sur une figure, une longueur totale peut se lire comme une somme de
-  longueurs connues (dont certaines valent un même nombre de fois $x$).
+  \textbf{Une longueur en fonction de x}\\
+  Sur une figure codée, les morceaux qui portent le même codage ont la
+  même longueur. On \textbf{additionne} tous les morceaux, puis on
+  \textbf{réduit} l'expression.\\[4pt]
+  Si l'on connaît la longueur totale, on retrouve $x$ en résolvant une
+  \textbf{équation}.
 }
 \ExempleBoxR{\footnotesize
-  Simplifier $\dfrac{3x+9}{3}$~:
-  \[\dfrac{3x+9}{3}=\dfrac{3\times x+3\times3}{3}=\dfrac{3(x+3)}{3}=x+3\]
-  \vspace{4pt}
-  Exprimer $AB$ en fonction de $x$~:
+  Exprimer $CE$ en fonction de $x$~:
   \begin{center}
-  \begin{tikzpicture}[scale=0.85, baseline=0pt]
-    \draw[thick] (0,0) node[left]{$A$} -- (5,0) node[right]{$B$};
-    \foreach \i in {0,1,2,3,4,5} \draw (\i,0.08) -- (\i,-0.08);
-    \draw[decorate, decoration={brace, amplitude=4pt}, yshift=-6pt]
-      (0,0) -- (2,0) node[midway, yshift=-13pt]{$x$};
-    \draw[decorate, decoration={brace, amplitude=4pt}, yshift=-6pt]
-      (2,0) -- (5,0) node[midway, yshift=-13pt]{$7$};
-  \end{tikzpicture}
+  \SegmentCode{0.8}
   \end{center}
-  \[AB=x\times2+7\times3=2x+21\]
+  Trois morceaux codés $\circ$ mesurent $x$, deux morceaux codés $/\!/$ mesurent $4$~:
+  \[CE=x+4+x+4+x=3x+8\]
+  Si $CE=23$~: $3x+8=23$, donc $3x=15$ et $x=5$.
 }
 \end{tcbraster}
 
 \vspace*{0.1cm}
+\begin{multicols}{2}
 \autoCardLine{qcmC}{Algo}{}
-\vspace{1pt}
-\ARetenirBox{\normalsize
-  Une fonction (Python) ou un bloc personnalisé (Scratch) peut recevoir
-  \textbf{plusieurs paramètres} -- rappel Série 2~: un seul paramètre.
-  En Python, on les sépare par une virgule~: \fbox{\texttt{def
-  nom(param1, param2):}}. L'appel \texttt{nom(v1, v2)} remplace
-  \texttt{param1} par \texttt{v1} et \texttt{param2} par \texttt{v2}.
-}
-\vspace{2pt}
-\ExempleBoxR{\footnotesize
-\begin{tcbraster}[raster columns=20, raster column skip=1pt, raster force size=false, raster valign=top, before skip=0pt, after skip=0pt]
-\PanelBox[raster multicolumn=3]{\centering
-  \begin{scratch}[scale=0.8]
-    \blockinit{quand \greenflag{} est cliqué}
-    \blockmoreblocks{aire \ovalnum{5} \ovalnum{3}}
-  \end{scratch}
-}
-\PanelBox[raster multicolumn=7]{\centering
-  \begin{scratch}[scale=0.8]
-    \initmoreblocks{définir \namemoreblocks{aire \ovalmoreblocks{L} \ovalmoreblocks{l}}}
-    \blocklook{dire \ovaloperator{\ovalmoreblocks{L} $\times$ \ovalmoreblocks{l}}}
-  \end{scratch}
-}
-\PanelBox[raster multicolumn=4]{\centering\stagePanel{15}}
-\PanelBox[raster multicolumn=6]{%
-  \ttfamily\scriptsize
-  def aire(L, l):\\
-  \hspace*{1em}return L * l\\[1pt]
-  \consoleBox{\scriptsize{\color{consoleGreenC}>>>} aire(5, 3)\\[1pt]\textbf{15}}
-}
-\end{tcbraster}
-}
+\columnbreak
+\textit{Mêmes rappels que la Série 2 (fonction, paramètre, appel).}
+\end{multicols}
 
 \newpage
 % ============================= VERSO (page 2) ==============================
@@ -339,53 +367,68 @@ rappel Série 2.}\par
 Nom~: \hrulefill{} \hspace{14pt} Prénom~: \hrulefill{} \hspace{14pt} Classe~: \hrulefill
 
 \vspace{3pt}
+{\footnotesize
+\qlegend{qcmC}{1} QCM \hspace{6pt} \qlegend{questionC}{2} Question \hspace{6pt} \qlegend{finalC}{3} Automatisme final
+\hspace{10pt}\textcolor{questionC}{\okmark} juste \textperiodcentered{} \textcolor{redC}{\nomark} faux
+\hspace{10pt}\colorbox{emptyC}{\rule{0pt}{5pt}\hspace{10pt}} pas de question ce jour
+\hspace{10pt}\textcolor{bonusC}{Bonus}~: réponses aux niveaux 2 et 3 du jour.\par}
+
+\vspace{3pt}
 \renewcommand{\arraystretch}{1.0}
 \setlength{\tabcolsep}{2.5pt}
 \begin{center}
 \arrayrulecolor{black}
 \setlength{\arrayrulewidth}{0.9pt}
 \setlength{\doublerulesep}{0.6pt}
-\begin{tabular}{|J|N||*{4}{O|}P|}
-\hhline{-------}
-\multicolumn{2}{|c||}{} &
-\shortstack{{\Large\textcolor{questionC}{Vecteurs}}\\[2pt]{\small Somme, relation de Chasles}} &
+\begin{tabular}{|J||*{5}{O|}}
+\hhline{------}
+\multicolumn{1}{|c||}{} &
+\shortstack{{\Large\textcolor{questionC}{Vecteurs}}\\[2pt]{\small Somme, norme, Chasles}} &
 \shortstack{{\Large\textcolor{qcmC}{A8}}\\[2pt]{\small Calcul littéral élémentaire}} &
 \shortstack{{\Large\textcolor{finalC}{A9}}\\[2pt]{\small Développer, factoriser}} &
-{\Large\textcolor{qcmC}{Algo}} &
-{\Large\textcolor{bonusC}{Bonus}} \\
-\hhline{=======}
+\shortstack{{\Large\textcolor{qcmC}{Algo}}\\[2pt]{\small Fonctions à évaluer}} &
+\shortstack{{\Large\textcolor{bonusC}{Bonus}}\\[2pt]{\small Niveaux 2 et 3}} \\
+\hhline{======}
 
-\multirow{2}{1.6cm}{\textbf{Jour 1}\\[10pt] Date~:\\[8pt] \hrulefill}
-  & \textcolor{qcmC}{\textbf{QCM}}
-  & \qcase{1} & \qempty & \qcase{2} & \qempty & \qempty \\
-\hhline{~------}
-  & \textcolor{questionC}{\textbf{Questions}}
-  & \qcase{4} & \qempty & \qcase{3} & \qempty & \qempty \\
-\hhline{-------}
+\multirow{3}{1.6cm}{\textbf{Jour 1}\\[8pt] Date~:\\[6pt] \hrulefill}
+  & \qempty & \qempty & \qcase{qcmC}{1} & \qempty & \multirow{3}{*}{} \\
+\hhline{~----~}
 
-\multirow{2}{1.6cm}{\textbf{Jour 2}\\[10pt] Date~:\\[8pt] \hrulefill}
-  & \textcolor{qcmC}{\textbf{QCM}}
-  & \qempty & \qcase{1} & \qempty & \qcase{2} & \qempty \\
-\hhline{~------}
-  & \textcolor{questionC}{\textbf{Questions}}
-  & \qempty & \qcase{3} & \qcase{4} & \qempty & \qempty \\
-\hhline{-------}
+  & \qempty & \qempty & \qcase{questionC}{2} & \qempty &  \\
+\hhline{~----~}
 
-\multirow{2}{1.6cm}{\textbf{Jour 3}\\[10pt] Date~:\\[8pt] \hrulefill}
-  & \textcolor{qcmC}{\textbf{QCM}}
-  & \qempty & \qcase{2} & \qcase{1} & \qempty & \qempty \\
-\hhline{~------}
-  & \textcolor{questionC}{\textbf{Questions}}
-  & \qcase{4} & \qempty & \qcase{3} & \qempty & \qempty \\
-\hhline{-------}
+  & \qempty & \qcase{finalC}{3} & \qempty & \qempty &  \\
+\hhline{------}
 
-\multirow{2}{1.6cm}{\textbf{Jour 4}\\[10pt] Date~:\\[8pt] \hrulefill}
-  & \textcolor{qcmC}{\textbf{QCM}}
-  & \qcase{1} & \qempty & \qempty & \qcase{2} & \qempty \\
-\hhline{~------}
-  & \textcolor{questionC}{\textbf{Questions}}
-  & \qempty & \qcase{3} & \qcase{4} & \qempty & \qcasebonus{5} \\
-\hhline{-------}
+\multirow{3}{1.6cm}{\textbf{Jour 2}\\[8pt] Date~:\\[6pt] \hrulefill}
+  & \qcase{qcmC}{1} & \qempty & \qempty & \qempty & \multirow{3}{*}{} \\
+\hhline{~----~}
+
+  & \qempty & \qcase{questionC}{2} & \qempty & \qempty &  \\
+\hhline{~----~}
+
+  & \qcase{finalC}{3} & \qempty & \qempty & \qempty &  \\
+\hhline{------}
+
+\multirow{3}{1.6cm}{\textbf{Jour 3}\\[8pt] Date~:\\[6pt] \hrulefill}
+  & \qcase{qcmC}{1} & \qempty & \qempty & \qempty & \multirow{3}{*}{} \\
+\hhline{~----~}
+
+  & \qempty & \qempty & \qcase{questionC}{2} & \qempty &  \\
+\hhline{~----~}
+
+  & \qempty & \qcase{finalC}{3} & \qempty & \qempty &  \\
+\hhline{------}
+
+\multirow{3}{1.6cm}{\textbf{Jour 4}\\[8pt] Date~:\\[6pt] \hrulefill}
+  & \qcase{qcmC}{1} & \qempty & \qempty & \qempty & \multirow{3}{*}{} \\
+\hhline{~----~}
+
+  & \qempty & \qempty & \qempty & \qcase{questionC}{2} &  \\
+\hhline{~----~}
+
+  & \qempty & \qcase{finalC}{3} & \qempty & \qempty &  \\
+\hhline{------}
 \end{tabular}
 \end{center}
 \end{landscape}
