@@ -100,7 +100,8 @@
   }
   .back-link:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
-  .pages { width: 100%; max-width: 1100px; }
+  /* min-height : garantit qu'on peut toujours faire défiler jusqu'à caler la carte en haut */
+  .pages { width: 100%; max-width: 1100px; min-height: calc(100vh - 16px); }
 
   .page {
     position: relative;
@@ -171,6 +172,19 @@
   .question-row.side { display: flex; align-items: flex-start; gap: 28px; }
   .question-row.side .question { margin: 0; flex: 1 1 auto; }
   .question-row.side .diagram { margin: 0; flex: 0 0 auto; }
+  /* Choix A-D à droite de la figure (optionsAside) pour garder la suite visible */
+  .question-row.aside { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-bottom: 18px; }
+  .question-row.aside .question { flex: 1 1 100%; margin: 0 0 6px; }
+  .question-row.aside .diagram { flex: 1 1 420px; margin: 0; min-width: 0; }
+  .question-row.aside .options { flex: 0 1 220px; grid-template-columns: 1fr; margin: 0; }
+  .question-row.aside .options .opt { padding: 10px 14px; font-size: 1.25rem; }
+  /* Questions niveau 2 / 3 à droite de la figure (levelsAside) */
+  .question-row.levels-aside { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px 28px; margin-bottom: 18px; }
+  .question-row.levels-aside .question { flex: 1 1 100%; margin: 0 0 6px; }
+  .question-row.levels-aside .diagram { flex: 0 0 auto; margin: 0; }
+  .question-row.levels-aside .levels-col { flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .question-row.levels-aside .levels-col .level { margin-top: 0; }
+  .question-row.levels-aside .levels-col .level-question { font-size: 1.18rem; }
   .code-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; width: 100%; }
   .code-col { flex: 1 1 220px; max-width: 320px; }
   .code {
@@ -230,6 +244,67 @@
     border: 1.5px solid var(--rule-strong); background: var(--surface); color: var(--ink);
   }
   .reveal-btn:hover { box-shadow: 0 2px 8px var(--shadow); }
+
+  /* Étoiles de difficulté (remplissage cumulatif : vert 1, bleu 2, rouge 3) */
+  .stars { display: inline-flex; gap: 2px; font-size: 1.05rem; line-height: 1; letter-spacing: 0; }
+  .stars .star { color: var(--rule-strong); }
+  .stars.s1 .star.on { color: var(--aqua); }
+  .stars.s2 .star.on { color: var(--accent); }
+  .stars.s3 .star.on { color: var(--final); }
+  .page-head .stars { margin-left: 10px; vertical-align: middle; }
+  .badge-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  /* Questions de niveau 2 et 3 « en dessous » de la question en cours */
+  .level {
+    margin-top: 18px; padding: 16px 18px 14px;
+    border: 1.5px solid var(--rule-strong); border-radius: 10px;
+    background: var(--paper);
+    background: color-mix(in srgb, var(--paper) 55%, var(--surface));
+  }
+  .level.level-2 { border-color: var(--accent); }
+  .level.level-3 { border-color: var(--final); }
+  .level-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .level-label {
+    font-family: "Space Mono", monospace; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted);
+  }
+  .level-question { margin: 0; font-size: 1.3rem; line-height: 1.45; color: var(--ink); }
+  .level-answer {
+    display: none; margin-top: 12px; padding: 12px 16px; border-radius: 8px;
+    background: var(--orange-soft); border-left: 4px solid var(--orange); font-size: 1.05rem;
+  }
+  .level-answer.shown { display: block; }
+  .level .reveal-btn { margin-top: 12px; font-size: 0.8rem; padding: 7px 14px; }
+
+  /* Schéma « segment en fonction de x » */
+  .diagram-segment line, .diagram-segment path { stroke: var(--ink); stroke-width: 1.6; fill: none; stroke-linecap: round; }
+  .diagram-segment circle { stroke: var(--ink); stroke-width: 1.6; fill: var(--surface); }
+  .diagram-segment .tick { stroke-width: 1.6; }
+  .diagram-segment .measure line, .diagram-segment .measure path { stroke: var(--accent); stroke-width: 1.8; }
+  .diagram-segment text { font-family: "Public Sans", sans-serif; font-size: 17px; fill: var(--ink); text-anchor: middle; }
+  .diagram-segment text.var { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-size: 19px; }
+
+  /* Figures vectorielles sur quadrillage */
+  .diagram-vec .vgrid line { stroke: var(--rule-strong); stroke-width: 1; opacity: .55; }
+  .diagram-vec .vec line { stroke-width: 3; stroke-linecap: round; }
+  .diagram-vec .vec.acc line { stroke: var(--accent); }   .diagram-vec .vec.acc polygon { fill: var(--accent); }
+  .diagram-vec .vec.org line { stroke: var(--orange); }   .diagram-vec .vec.org polygon { fill: var(--orange); }
+  .diagram-vec .vec.aqua line { stroke: var(--aqua); }    .diagram-vec .vec.aqua polygon { fill: var(--aqua); }
+  .diagram-vec .vec.red line { stroke: var(--final); }    .diagram-vec .vec.red polygon { fill: var(--final); }
+  .diagram-vec .vec.ink line { stroke: var(--ink-soft); } .diagram-vec .vec.ink polygon { fill: var(--ink-soft); }
+  .diagram-vec .vec.dashed line { stroke-dasharray: 7 6; }
+  .diagram-vec .vname text { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-size: 19px; text-anchor: middle; }
+  .diagram-vec .vname path { fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .diagram-vec .vname.acc text { fill: var(--accent); }  .diagram-vec .vname.acc path { stroke: var(--accent); }
+  .diagram-vec .vname.org text { fill: var(--orange); }  .diagram-vec .vname.org path { stroke: var(--orange); }
+  .diagram-vec .vname.aqua text { fill: var(--aqua); }   .diagram-vec .vname.aqua path { stroke: var(--aqua); }
+  .diagram-vec .vname.red text { fill: var(--final); }   .diagram-vec .vname.red path { stroke: var(--final); }
+  .diagram-vec .vname.ink text { fill: var(--ink-soft); }.diagram-vec .vname.ink path { stroke: var(--ink-soft); }
+  .diagram-vec .pt circle { fill: var(--ink); }
+  .diagram-vec .pt text { font-family: "Public Sans", sans-serif; font-size: 16px; fill: var(--ink); text-anchor: middle; }
+  .diagram-vec .rt { fill: none; stroke: var(--ink-soft); stroke-width: 1.5; stroke-dasharray: 4 4; }
+  .diagram-vec .len { font-family: "Public Sans", sans-serif; font-size: 15px; fill: var(--ink-soft); text-anchor: middle; }
+  .answer-box .diagram-vec, .level-answer .diagram-vec { display: block; margin: 10px auto 0; }
 
   .worksheet-nav {
     position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: center;
@@ -299,9 +374,12 @@
 <div class="pages">
   <section class="page" id="page">
     <div class="page-head">
-      <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
+      <div class="badge-row">
+        <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
+        <span class="stars s1" aria-label="Niveau 1"><span class="star on">★</span><span class="star">★</span><span class="star">★</span></span>
+      </div>
       <div class="page-meta">
-        <span class="count" id="qnum-display">1 / 5</span>
+        <span class="count" id="qnum-display">1 / 3</span>
         <div class="jour">Série 3 · Jour 4</div>
       </div>
     </div>
@@ -324,6 +402,18 @@
       </div>
       <button class="reveal-btn" id="reveal-btn">Voir la réponse</button>
     </div>
+    <div class="level level-2" id="lvl2">
+      <div class="level-head"><span class="stars s2" aria-label="Niveau 2"><span class="star on">★</span><span class="star on">★</span><span class="star">★</span></span><span class="level-label">Niveau 2</span></div>
+      <p class="level-question" id="lvl2-text"></p>
+      <div class="level-answer" id="lvl2-answer"></div>
+      <button class="reveal-btn" id="lvl2-reveal">Voir la réponse</button>
+    </div>
+    <div class="level level-3" id="lvl3">
+      <div class="level-head"><span class="stars s3" aria-label="Niveau 3"><span class="star on">★</span><span class="star on">★</span><span class="star on">★</span></span><span class="level-label">Niveau 3</span></div>
+      <p class="level-question" id="lvl3-text"></p>
+      <div class="level-answer" id="lvl3-answer"></div>
+      <button class="reveal-btn" id="lvl3-reveal">Voir la réponse</button>
+    </div>
   </section>
 </div>
 
@@ -331,7 +421,7 @@
   <div class="inner">
     <button class="nav-btn" id="btn-prev">← Précédent</button>
     <div class="nav-dots" id="nav-dots"></div>
-    <span class="nav-pos" id="nav-pos">1 / 5</span>
+    <span class="nav-pos" id="nav-pos">1 / 3</span>
     <button class="nav-btn" id="btn-next">Suivant →</button>
   </div>
 </div>
@@ -340,52 +430,56 @@
 const QUESTIONS = [
   {
     tier: "qcm",
-    theme: "obj-complement",
+    theme: "obj-geometrie",
     objectif: "Vecteurs",
-    aim: "Utiliser la relation de Chasles et le vecteur opposé pour simplifier une différence de vecteurs.",
-    question: "Simplifier $\\overrightarrow{AB}-\\overrightarrow{CB}$ :",
+    aim: "Utiliser la relation de Chasles pour simplifier une somme de plusieurs vecteurs.",
+    question: "Simplifier $\\overrightarrow{AB}+\\overrightarrow{BC}+\\overrightarrow{CD}$ :",
     options: [
-      { letter:"A", text:"$\\overrightarrow{AC}$", correct:true },
-      { letter:"B", text:"$\\overrightarrow{AB}$", correct:false },
-      { letter:"C", text:"$\\overrightarrow{CA}$", correct:false },
+      { letter:"A", text:"$\\overrightarrow{AD}$", correct:true },
+      { letter:"B", text:"$\\overrightarrow{AC}$", correct:false },
+      { letter:"C", text:"$\\overrightarrow{BD}$", correct:false },
       { letter:"D", text:"$\\overrightarrow{0}$", correct:false }
     ],
-    explanation: "$-\\overrightarrow{CB}=\\overrightarrow{BC}$, donc $\\overrightarrow{AB}-\\overrightarrow{CB}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$ (Chasles)."
-  },
-  {
-    tier: "qcm",
-    theme: "obj-complement",
-    objectif: "Algo",
-    aim: "Évaluer une fonction Python d'une variable combinant produit et somme (écho à la factorisation de la semaine).",
-    question: "<span class=\"code\">def f(x):<br>&nbsp;&nbsp;return x * (x + 1)</span><br>\\u00c9valuer <span class=\"code\">f(3)</span> :",
-    options: [
-      { letter:"A", text:"12", correct:true },
-      { letter:"B", text:"9", correct:false },
-      { letter:"C", text:"10", correct:false },
-      { letter:"D", text:"4", correct:false }
-    ],
-    explanation: "On remplace $x$ par $3$ : $f(3)=3\\times(3+1)=3\\times4=12$."
+    explanation: "On applique Chasles deux fois : $\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$, puis $\\overrightarrow{AC}+\\overrightarrow{CD}=\\overrightarrow{AD}$.",
+    niveau2: {
+      question: "Simplifier $\\overrightarrow{MN}-\\overrightarrow{RN}+\\overrightarrow{RS}$.",
+      explanation: "$-\\overrightarrow{RN}=\\overrightarrow{NR}$, donc la somme s'écrit $\\overrightarrow{MN}+\\overrightarrow{NR}+\\overrightarrow{RS}$ ; par Chasles, $\\overrightarrow{MN}+\\overrightarrow{NR}=\\overrightarrow{MR}$ puis $\\overrightarrow{MR}+\\overrightarrow{RS}=\\overrightarrow{MS}$."
+    },
+    niveau3: {
+      question: "Simplifier $\\overrightarrow{AB}+\\overrightarrow{CD}-\\overrightarrow{AD}-\\overrightarrow{CB}$.",
+      explanation: "$-\\overrightarrow{AD}=\\overrightarrow{DA}$ et $-\\overrightarrow{CB}=\\overrightarrow{BC}$. On regroupe : $(\\overrightarrow{AB}+\\overrightarrow{BC})+(\\overrightarrow{CD}+\\overrightarrow{DA})=\\overrightarrow{AC}+\\overrightarrow{CA}=\\overrightarrow{0}$."
+    }
   },
   {
     tier: "question",
+    theme: "obj-complement",
+    objectif: "Algo",
+    aim: "Évaluer une fonction Python d'une variable combinant produit et somme (écho à la factorisation de la semaine).",
+    question: "<span class=\"code\">def f(x):<br>&nbsp;&nbsp;return x * (x + 1)</span><br>Que renvoie <span class=\"code\">f(3)</span> ?",
+    explanation: "On remplace $x$ par $3$ : $f(3)=3\\times(3+1)=3\\times4=12$.",
+    niveau2: {
+      question: "<span class=\"code\">def h(x):<br>&nbsp;&nbsp;return x * (x + 1) - x * x</span><br>Que renvoie <span class=\"code\">h(7)</span> ? Et <span class=\"code\">h(100)</span> ?",
+      explanation: "$h(7)=7\\times8-7\\times7=56-49=7$. En développant, $x(x+1)-x\\times x=x^2+x-x^2=x$ : la fonction renvoie toujours $x$, donc $h(100)=100$."
+    },
+    niveau3: {
+      question: "<span class=\"code\">def k(x):<br>&nbsp;&nbsp;return (x + 1) * (x + 1) - x * x</span><br>Que renvoie <span class=\"code\">k(50)</span> ? Sans calculatrice !",
+      explanation: "$(x+1)(x+1)-x\\times x=x^2+x+x+1-x^2=2x+1$ : la fonction renvoie toujours $2x+1$, donc $k(50)=101$."
+    }
+  },
+  {
+    tier: "final",
     objectif: "A8 · Calcul littéral élémentaire",
     aim: "Simplifier une écriture fractionnaire contenant une lettre en factorisant le numérateur.",
     question: "Simplifier $\\dfrac{3x+9}{3}$ :",
-    explanation: "$\\dfrac{3x+9}{3}=\\dfrac{3\\times x+3\\times3}{3}=\\dfrac{3(x+3)}{3}=x+3$."
-  },
-  {
-    tier: "final",
-    objectif: "A9 · Développer, factoriser",
-    aim: "Factoriser une somme en reconnaissant un facteur commun entre ses deux termes.",
-    question: "Factoriser $5x+5y$ :",
-    explanation: "$5$ est le facteur commun \\u00e0 $5x$ et \\u00e0 $5y$ : $5x+5y=5(x+y)$."
-  },
-  {
-    tier: "final",
-    objectif: "A1 · Comparer deux nombres",
-    aim: "Comparer deux fractions de même numérateur.",
-    question: "Comparer $\\dfrac{3}{7}$ et $\\dfrac{3}{4}$ :",
-    explanation: "M\\u00eame num\\u00e9rateur : plus le d\\u00e9nominateur est grand, plus la fraction est petite. Comme $7>4$, on a $\\dfrac{3}{7}<\\dfrac{3}{4}$."
+    explanation: "$\\dfrac{3x+9}{3}=\\dfrac{3\\times x+3\\times3}{3}=\\dfrac{3(x+3)}{3}=x+3$.",
+    niveau2: {
+      question: "Simplifier $\\dfrac{2x^2+6x}{2x}$ (avec $x\\neq0$).",
+      explanation: "On factorise le numérateur par $2x$ : $\\dfrac{2x^2+6x}{2x}=\\dfrac{2x(x+3)}{2x}=x+3$."
+    },
+    niveau3: {
+      question: "Simplifier $\\dfrac{4x^2y-6xy^2}{2xy}$ (avec $x\\neq0$ et $y\\neq0$).",
+      explanation: "On factorise le numérateur par $2xy$ : $4x^2y=2xy\\times2x$ et $6xy^2=2xy\\times3y$, donc $\\dfrac{4x^2y-6xy^2}{2xy}=\\dfrac{2xy(2x-3y)}{2xy}=2x-3y$."
+    }
   }
 ];
 let current = 0;
@@ -400,6 +494,14 @@ const optionsEl = document.getElementById("options");
 const answerBox = document.getElementById("answer-box");
 const answerContent = document.getElementById("answer-content");
 const revealBtn = document.getElementById("reveal-btn");
+const LEVELS = [2, 3].map(n => ({
+  key: "niveau" + n,
+  el: document.getElementById("lvl" + n),
+  text: document.getElementById("lvl" + n + "-text"),
+  answer: document.getElementById("lvl" + n + "-answer"),
+  btn: document.getElementById("lvl" + n + "-reveal"),
+  revealed: false
+}));
 const qnumDisplay = document.getElementById("qnum-display");
 const navPos = document.getElementById("nav-pos");
 const dotsWrap = document.getElementById("nav-dots");
@@ -474,7 +576,20 @@ function render(){
   aimText.textContent = q.aim;
   qtext.innerHTML = q.question;
   diagramEl.innerHTML = q.diagram || "";
-  document.getElementById("question-row").classList.toggle("side", !!q.sideDiagram);
+  const questionRow = document.getElementById("question-row");
+  questionRow.classList.toggle("side", !!q.sideDiagram);
+  questionRow.classList.toggle("aside", !!q.optionsAside);
+  if (q.optionsAside) questionRow.appendChild(optionsEl);
+  else if (optionsEl.parentNode === questionRow) questionRow.insertAdjacentElement("afterend", optionsEl);
+  questionRow.classList.toggle("levels-aside", !!q.levelsAside);
+  if (q.levelsAside){
+    let col = questionRow.querySelector(".levels-col");
+    if (!col){ col = document.createElement("div"); col.className = "levels-col"; questionRow.appendChild(col); }
+    LEVELS.forEach(l => col.appendChild(l.el));
+  } else {
+    const section = document.getElementById("page");
+    LEVELS.forEach(l => { if (l.el.parentNode !== section) section.appendChild(l.el); });
+  }
 
   optionsEl.innerHTML = "";
   if (q.options){
@@ -492,6 +607,19 @@ function render(){
   answerContent.innerHTML = q.explanation;
   revealBtn.style.display = "inline-block";
   revealBtn.textContent = "Voir la réponse";
+
+  LEVELS.forEach(l => {
+    const q2 = q[l.key];
+    l.revealed = false;
+    l.answer.classList.remove("shown");
+    if (q2){
+      l.el.style.display = "";
+      l.text.innerHTML = q2.question;
+      l.answer.innerHTML = q2.explanation;
+    } else {
+      l.el.style.display = "none";
+    }
+  });
 
   qnumDisplay.textContent = (current + 1) + " / " + QUESTIONS.length;
   navPos.textContent = (current + 1) + " / " + QUESTIONS.length;
@@ -513,6 +641,18 @@ function reveal(){
   });
 }
 
+function revealLevel(l){
+  if (l.revealed || !QUESTIONS[current][l.key]) return;
+  l.revealed = true;
+  l.answer.classList.add("shown");
+}
+// Espace / Entrée : réponse principale, puis niveau 2, puis niveau 3
+function revealNext(){
+  if (!revealed) return reveal();
+  const l = LEVELS.find(l => !l.revealed && QUESTIONS[current][l.key]);
+  if (l) revealLevel(l);
+}
+
 function renderMath(){
   renderMathInElement(document.getElementById("page"), {
     delimiters: [
@@ -522,23 +662,34 @@ function renderMath(){
   });
 }
 
+// La page s'ouvre (et se recale à chaque question) sur la carte de la
+// question : l'en-tête avec le titre et le lien Sommaire reste accessible
+// en remontant.
+function scrollToPage(behavior){
+  const top = document.getElementById("page").getBoundingClientRect().top + window.scrollY - 16;
+  window.scrollTo({ top: Math.max(0, top), behavior: behavior || "auto" });
+}
+
 function goTo(i){
   current = Math.max(0, Math.min(QUESTIONS.length - 1, i));
   render();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToPage("smooth");
 }
 
 revealBtn.addEventListener("click", reveal);
+LEVELS.forEach(l => l.btn.addEventListener("click", () => revealLevel(l)));
 btnPrev.addEventListener("click", () => goTo(current - 1));
 btnNext.addEventListener("click", () => goTo(current + 1));
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight") goTo(current + 1);
   else if (e.key === "ArrowLeft") goTo(current - 1);
-  else if (e.key === " " || e.key === "Enter") { e.preventDefault(); reveal(); }
+  else if (e.key === " " || e.key === "Enter") { e.preventDefault(); revealNext(); }
 });
 
 render();
+scrollToPage();
+window.addEventListener("load", () => scrollToPage());
 </script>
 
 <script>

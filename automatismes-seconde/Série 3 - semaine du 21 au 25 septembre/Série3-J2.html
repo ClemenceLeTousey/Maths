@@ -100,7 +100,8 @@
   }
   .back-link:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
-  .pages { width: 100%; max-width: 1100px; }
+  /* min-height : garantit qu'on peut toujours faire défiler jusqu'à caler la carte en haut */
+  .pages { width: 100%; max-width: 1100px; min-height: calc(100vh - 16px); }
 
   .page {
     position: relative;
@@ -171,6 +172,19 @@
   .question-row.side { display: flex; align-items: flex-start; gap: 28px; }
   .question-row.side .question { margin: 0; flex: 1 1 auto; }
   .question-row.side .diagram { margin: 0; flex: 0 0 auto; }
+  /* Choix A-D à droite de la figure (optionsAside) pour garder la suite visible */
+  .question-row.aside { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-bottom: 18px; }
+  .question-row.aside .question { flex: 1 1 100%; margin: 0 0 6px; }
+  .question-row.aside .diagram { flex: 1 1 420px; margin: 0; min-width: 0; }
+  .question-row.aside .options { flex: 0 1 220px; grid-template-columns: 1fr; margin: 0; }
+  .question-row.aside .options .opt { padding: 10px 14px; font-size: 1.25rem; }
+  /* Questions niveau 2 / 3 à droite de la figure (levelsAside) */
+  .question-row.levels-aside { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px 28px; margin-bottom: 18px; }
+  .question-row.levels-aside .question { flex: 1 1 100%; margin: 0 0 6px; }
+  .question-row.levels-aside .diagram { flex: 0 0 auto; margin: 0; }
+  .question-row.levels-aside .levels-col { flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .question-row.levels-aside .levels-col .level { margin-top: 0; }
+  .question-row.levels-aside .levels-col .level-question { font-size: 1.18rem; }
   .code-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; width: 100%; }
   .code-col { flex: 1 1 220px; max-width: 320px; }
   .code {
@@ -230,6 +244,67 @@
     border: 1.5px solid var(--rule-strong); background: var(--surface); color: var(--ink);
   }
   .reveal-btn:hover { box-shadow: 0 2px 8px var(--shadow); }
+
+  /* Étoiles de difficulté (remplissage cumulatif : vert 1, bleu 2, rouge 3) */
+  .stars { display: inline-flex; gap: 2px; font-size: 1.05rem; line-height: 1; letter-spacing: 0; }
+  .stars .star { color: var(--rule-strong); }
+  .stars.s1 .star.on { color: var(--aqua); }
+  .stars.s2 .star.on { color: var(--accent); }
+  .stars.s3 .star.on { color: var(--final); }
+  .page-head .stars { margin-left: 10px; vertical-align: middle; }
+  .badge-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  /* Questions de niveau 2 et 3 « en dessous » de la question en cours */
+  .level {
+    margin-top: 18px; padding: 16px 18px 14px;
+    border: 1.5px solid var(--rule-strong); border-radius: 10px;
+    background: var(--paper);
+    background: color-mix(in srgb, var(--paper) 55%, var(--surface));
+  }
+  .level.level-2 { border-color: var(--accent); }
+  .level.level-3 { border-color: var(--final); }
+  .level-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .level-label {
+    font-family: "Space Mono", monospace; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted);
+  }
+  .level-question { margin: 0; font-size: 1.3rem; line-height: 1.45; color: var(--ink); }
+  .level-answer {
+    display: none; margin-top: 12px; padding: 12px 16px; border-radius: 8px;
+    background: var(--orange-soft); border-left: 4px solid var(--orange); font-size: 1.05rem;
+  }
+  .level-answer.shown { display: block; }
+  .level .reveal-btn { margin-top: 12px; font-size: 0.8rem; padding: 7px 14px; }
+
+  /* Schéma « segment en fonction de x » */
+  .diagram-segment line, .diagram-segment path { stroke: var(--ink); stroke-width: 1.6; fill: none; stroke-linecap: round; }
+  .diagram-segment circle { stroke: var(--ink); stroke-width: 1.6; fill: var(--surface); }
+  .diagram-segment .tick { stroke-width: 1.6; }
+  .diagram-segment .measure line, .diagram-segment .measure path { stroke: var(--accent); stroke-width: 1.8; }
+  .diagram-segment text { font-family: "Public Sans", sans-serif; font-size: 17px; fill: var(--ink); text-anchor: middle; }
+  .diagram-segment text.var { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-size: 19px; }
+
+  /* Figures vectorielles sur quadrillage */
+  .diagram-vec .vgrid line { stroke: var(--rule-strong); stroke-width: 1; opacity: .55; }
+  .diagram-vec .vec line { stroke-width: 3; stroke-linecap: round; }
+  .diagram-vec .vec.acc line { stroke: var(--accent); }   .diagram-vec .vec.acc polygon { fill: var(--accent); }
+  .diagram-vec .vec.org line { stroke: var(--orange); }   .diagram-vec .vec.org polygon { fill: var(--orange); }
+  .diagram-vec .vec.aqua line { stroke: var(--aqua); }    .diagram-vec .vec.aqua polygon { fill: var(--aqua); }
+  .diagram-vec .vec.red line { stroke: var(--final); }    .diagram-vec .vec.red polygon { fill: var(--final); }
+  .diagram-vec .vec.ink line { stroke: var(--ink-soft); } .diagram-vec .vec.ink polygon { fill: var(--ink-soft); }
+  .diagram-vec .vec.dashed line { stroke-dasharray: 7 6; }
+  .diagram-vec .vname text { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-size: 19px; text-anchor: middle; }
+  .diagram-vec .vname path { fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .diagram-vec .vname.acc text { fill: var(--accent); }  .diagram-vec .vname.acc path { stroke: var(--accent); }
+  .diagram-vec .vname.org text { fill: var(--orange); }  .diagram-vec .vname.org path { stroke: var(--orange); }
+  .diagram-vec .vname.aqua text { fill: var(--aqua); }   .diagram-vec .vname.aqua path { stroke: var(--aqua); }
+  .diagram-vec .vname.red text { fill: var(--final); }   .diagram-vec .vname.red path { stroke: var(--final); }
+  .diagram-vec .vname.ink text { fill: var(--ink-soft); }.diagram-vec .vname.ink path { stroke: var(--ink-soft); }
+  .diagram-vec .pt circle { fill: var(--ink); }
+  .diagram-vec .pt text { font-family: "Public Sans", sans-serif; font-size: 16px; fill: var(--ink); text-anchor: middle; }
+  .diagram-vec .rt { fill: none; stroke: var(--ink-soft); stroke-width: 1.5; stroke-dasharray: 4 4; }
+  .diagram-vec .len { font-family: "Public Sans", sans-serif; font-size: 15px; fill: var(--ink-soft); text-anchor: middle; }
+  .answer-box .diagram-vec, .level-answer .diagram-vec { display: block; margin: 10px auto 0; }
 
   .worksheet-nav {
     position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: center;
@@ -299,9 +374,12 @@
 <div class="pages">
   <section class="page" id="page">
     <div class="page-head">
-      <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
+      <div class="badge-row">
+        <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
+        <span class="stars s1" aria-label="Niveau 1"><span class="star on">★</span><span class="star">★</span><span class="star">★</span></span>
+      </div>
       <div class="page-meta">
-        <span class="count" id="qnum-display">1 / 4</span>
+        <span class="count" id="qnum-display">1 / 3</span>
         <div class="jour">Série 3 · Jour 2</div>
       </div>
     </div>
@@ -324,6 +402,18 @@
       </div>
       <button class="reveal-btn" id="reveal-btn">Voir la réponse</button>
     </div>
+    <div class="level level-2" id="lvl2">
+      <div class="level-head"><span class="stars s2" aria-label="Niveau 2"><span class="star on">★</span><span class="star on">★</span><span class="star">★</span></span><span class="level-label">Niveau 2</span></div>
+      <p class="level-question" id="lvl2-text"></p>
+      <div class="level-answer" id="lvl2-answer"></div>
+      <button class="reveal-btn" id="lvl2-reveal">Voir la réponse</button>
+    </div>
+    <div class="level level-3" id="lvl3">
+      <div class="level-head"><span class="stars s3" aria-label="Niveau 3"><span class="star on">★</span><span class="star on">★</span><span class="star on">★</span></span><span class="level-label">Niveau 3</span></div>
+      <p class="level-question" id="lvl3-text"></p>
+      <div class="level-answer" id="lvl3-answer"></div>
+      <button class="reveal-btn" id="lvl3-reveal">Voir la réponse</button>
+    </div>
   </section>
 </div>
 
@@ -331,7 +421,7 @@
   <div class="inner">
     <button class="nav-btn" id="btn-prev">← Précédent</button>
     <div class="nav-dots" id="nav-dots"></div>
-    <span class="nav-pos" id="nav-pos">1 / 4</span>
+    <span class="nav-pos" id="nav-pos">1 / 3</span>
     <button class="nav-btn" id="btn-next">Suivant →</button>
   </div>
 </div>
@@ -340,48 +430,60 @@
 const QUESTIONS = [
   {
     tier: "qcm",
-    objectif: "A8 · Calcul littéral élémentaire",
-    aim: "Simplifier une écriture fractionnaire contenant une lettre en cherchant un facteur commun.",
-    question: "Simplifier $\\dfrac{6x}{2}$ :",
+    theme: "obj-geometrie",
+    objectif: "Vecteurs",
+    aim: "Reconnaître visuellement la somme de deux vecteurs (construction bout à bout).",
+    question: "Quel vecteur est égal à $\\vec{u}+\\vec{v}$ ?",
+    optionsAside: true,
+    diagram: `<svg class="diagram-vec" viewBox="0 0 504 232" width="620" height="285" role="img" aria-label="Vecteurs u, v et quatre candidats a, b, c, d sur quadrillage"><g class="vgrid"><line x1="14" y1="14" x2="14" y2="218"/><line x1="48" y1="14" x2="48" y2="218"/><line x1="82" y1="14" x2="82" y2="218"/><line x1="116" y1="14" x2="116" y2="218"/><line x1="150" y1="14" x2="150" y2="218"/><line x1="184" y1="14" x2="184" y2="218"/><line x1="218" y1="14" x2="218" y2="218"/><line x1="252" y1="14" x2="252" y2="218"/><line x1="286" y1="14" x2="286" y2="218"/><line x1="320" y1="14" x2="320" y2="218"/><line x1="354" y1="14" x2="354" y2="218"/><line x1="388" y1="14" x2="388" y2="218"/><line x1="422" y1="14" x2="422" y2="218"/><line x1="456" y1="14" x2="456" y2="218"/><line x1="490" y1="14" x2="490" y2="218"/><line x1="14" y1="14" x2="490" y2="14"/><line x1="14" y1="48" x2="490" y2="48"/><line x1="14" y1="82" x2="490" y2="82"/><line x1="14" y1="116" x2="490" y2="116"/><line x1="14" y1="150" x2="490" y2="150"/><line x1="14" y1="184" x2="490" y2="184"/><line x1="14" y1="218" x2="490" y2="218"/></g><g class="vec acc"><line x1="48.0" y1="184.0" x2="105.3" y2="155.4"/><polygon points="116.0,150.0 107.7,160.3 102.8,150.4"/></g><g class="vname acc" transform="translate(88.3,179.5)"><text x="0" y="6">u</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g><g class="vec org"><line x1="48.0" y1="116.0" x2="76.6" y2="58.7"/><polygon points="82.0,48.0 81.6,61.2 71.7,56.3"/></g><g class="vname org" transform="translate(77.5,88.3)"><text x="0" y="6">v</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g><g class="vec ink"><line x1="184.0" y1="184.0" x2="277.5" y2="90.5"/><polygon points="286.0,82.0 281.4,94.4 273.6,86.6"/></g><g class="vname ink" transform="translate(244.9,142.9)"><text x="0" y="6">a</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g><g class="vec ink"><line x1="320.0" y1="48.0" x2="345.5" y2="73.5"/><polygon points="354.0,82.0 341.6,77.4 349.4,69.6"/></g><g class="vname ink" transform="translate(327.1,74.9)"><text x="0" y="6">b</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g><g class="vec ink"><line x1="354.0" y1="184.0" x2="444.6" y2="153.8"/><polygon points="456.0,150.0 446.4,159.0 442.9,148.6"/></g><g class="vname ink" transform="translate(409.4,180.3)"><text x="0" y="6">c</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g><g class="vec ink"><line x1="422.0" y1="150.0" x2="422.0" y2="60.0"/><polygon points="422.0,48.0 427.5,60.0 416.5,60.0"/></g><g class="vname ink" transform="translate(436.0,99.0)"><text x="0" y="6">d</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g></svg>`,
     options: [
-      { letter:"A", text:"$3x$", correct:true },
-      { letter:"B", text:"$3$", correct:false },
-      { letter:"C", text:"$6x-2$", correct:false },
-      { letter:"D", text:"$4x$", correct:false }
+      { letter:"A", text:"$\\vec{a}$", correct:true },
+      { letter:"B", text:"$\\vec{b}$", correct:false },
+      { letter:"C", text:"$\\vec{c}$", correct:false },
+      { letter:"D", text:"$\\vec{d}$", correct:false }
     ],
-    explanation: "$6$ et $2$ ont un facteur commun $2$ : $\\dfrac{6x}{2}=\\dfrac{2\\times3\\times x}{2}=3x$."
-  },
-  {
-    tier: "qcm",
-    theme: "obj-complement",
-    objectif: "Algo",
-    aim: "Évaluer une fonction Python à deux paramètres.",
-    question: "<span class=\"code\">def aire(L, l):<br>&nbsp;&nbsp;return L * l</span><br>\\u00c9valuer <span class=\"code\">aire(5, 3)</span> :",
-    options: [
-      { letter:"A", text:"15", correct:true },
-      { letter:"B", text:"8", correct:false },
-      { letter:"C", text:"53", correct:false },
-      { letter:"D", text:"2", correct:false }
-    ],
-    explanation: "On remplace $L$ par $5$ et $l$ par $3$ dans <span class='code'>return L * l</span> : $5\\times3=15$."
+    explanation: "On met $\\vec{v}$ bout à bout au bout de $\\vec{u}$ : 2 carreaux à droite et 1 vers le haut, puis 1 à droite et 2 vers le haut. Au total : 3 à droite, 3 vers le haut, c'est $\\vec{a}$.<svg class='diagram-vec' viewBox='0 0 504 232' width='460' height='212' role='img' aria-label='Construction bout à bout : u puis v, la somme est a'><g class='vgrid'><line x1='14' y1='14' x2='14' y2='218'/><line x1='48' y1='14' x2='48' y2='218'/><line x1='82' y1='14' x2='82' y2='218'/><line x1='116' y1='14' x2='116' y2='218'/><line x1='150' y1='14' x2='150' y2='218'/><line x1='184' y1='14' x2='184' y2='218'/><line x1='218' y1='14' x2='218' y2='218'/><line x1='252' y1='14' x2='252' y2='218'/><line x1='286' y1='14' x2='286' y2='218'/><line x1='320' y1='14' x2='320' y2='218'/><line x1='354' y1='14' x2='354' y2='218'/><line x1='388' y1='14' x2='388' y2='218'/><line x1='422' y1='14' x2='422' y2='218'/><line x1='456' y1='14' x2='456' y2='218'/><line x1='490' y1='14' x2='490' y2='218'/><line x1='14' y1='14' x2='490' y2='14'/><line x1='14' y1='48' x2='490' y2='48'/><line x1='14' y1='82' x2='490' y2='82'/><line x1='14' y1='116' x2='490' y2='116'/><line x1='14' y1='150' x2='490' y2='150'/><line x1='14' y1='184' x2='490' y2='184'/><line x1='14' y1='218' x2='490' y2='218'/></g><g class='vec acc'><line x1='48.0' y1='184.0' x2='105.3' y2='155.4'/><polygon points='116.0,150.0 107.7,160.3 102.8,150.4'/></g><g class='vname acc' transform='translate(88.3,179.5)'><text x='0' y='6'>u</text><path d='M-6,-9 H7 M4,-12 L7,-9 L4,-6' /></g><g class='vec org'><line x1='48.0' y1='116.0' x2='76.6' y2='58.7'/><polygon points='82.0,48.0 81.6,61.2 71.7,56.3'/></g><g class='vname org' transform='translate(77.5,88.3)'><text x='0' y='6'>v</text><path d='M-6,-9 H7 M4,-12 L7,-9 L4,-6' /></g><g class='vec acc dashed'><line x1='184.0' y1='184.0' x2='241.3' y2='155.4'/><polygon points='252.0,150.0 243.7,160.3 238.8,150.4'/></g><g class='vec org dashed'><line x1='252.0' y1='150.0' x2='280.6' y2='92.7'/><polygon points='286.0,82.0 285.6,95.2 275.7,90.3'/></g><g class='vec red'><line x1='184.0' y1='184.0' x2='277.5' y2='90.5'/><polygon points='286.0,82.0 281.4,94.4 273.6,86.6'/></g><g class='vname red' transform='translate(244.9,142.9)'><text x='0' y='6'>a</text><path d='M-6,-9 H7 M4,-12 L7,-9 L4,-6' /></g></svg>",
+    niveau2: {
+      question: "Sur la même figure, que vaut $\\vec{b}+\\vec{v}-\\vec{u}$ ?",
+      explanation: "$\\vec{b}$ va 1 à droite et 1 vers le bas : c'est $\\vec{u}-\\vec{v}$ (après $\\vec{u}$, on parcourt $\\vec{v}$ à l'envers). Donc $\\vec{b}+\\vec{v}-\\vec{u}=(\\vec{u}-\\vec{v})+\\vec{v}-\\vec{u}=\\vec{0}$.<svg class='diagram-vec' viewBox='0 0 504 232' width='460' height='212' role='img' aria-label='u puis l'opposé de v : la différence est b'><g class='vgrid'><line x1='14' y1='14' x2='14' y2='218'/><line x1='48' y1='14' x2='48' y2='218'/><line x1='82' y1='14' x2='82' y2='218'/><line x1='116' y1='14' x2='116' y2='218'/><line x1='150' y1='14' x2='150' y2='218'/><line x1='184' y1='14' x2='184' y2='218'/><line x1='218' y1='14' x2='218' y2='218'/><line x1='252' y1='14' x2='252' y2='218'/><line x1='286' y1='14' x2='286' y2='218'/><line x1='320' y1='14' x2='320' y2='218'/><line x1='354' y1='14' x2='354' y2='218'/><line x1='388' y1='14' x2='388' y2='218'/><line x1='422' y1='14' x2='422' y2='218'/><line x1='456' y1='14' x2='456' y2='218'/><line x1='490' y1='14' x2='490' y2='218'/><line x1='14' y1='14' x2='490' y2='14'/><line x1='14' y1='48' x2='490' y2='48'/><line x1='14' y1='82' x2='490' y2='82'/><line x1='14' y1='116' x2='490' y2='116'/><line x1='14' y1='150' x2='490' y2='150'/><line x1='14' y1='184' x2='490' y2='184'/><line x1='14' y1='218' x2='490' y2='218'/></g><g class='vec acc'><line x1='48.0' y1='184.0' x2='105.3' y2='155.4'/><polygon points='116.0,150.0 107.7,160.3 102.8,150.4'/></g><g class='vname acc' transform='translate(88.3,179.5)'><text x='0' y='6'>u</text><path d='M-6,-9 H7 M4,-12 L7,-9 L4,-6' /></g><g class='vec org'><line x1='48.0' y1='116.0' x2='76.6' y2='58.7'/><polygon points='82.0,48.0 81.6,61.2 71.7,56.3'/></g><g class='vname org' transform='translate(77.5,88.3)'><text x='0' y='6'>v</text><path d='M-6,-9 H7 M4,-12 L7,-9 L4,-6' /></g><g class='vec acc dashed'><line x1='320.0' y1='48.0' x2='377.3' y2='19.4'/><polygon points='388.0,14.0 379.7,24.3 374.8,14.4'/></g><g class='vec org dashed'><line x1='388.0' y1='14.0' x2='359.4' y2='71.3'/><polygon points='354.0,82.0 354.4,68.8 364.3,73.7'/></g><g class='vec red'><line x1='320.0' y1='48.0' x2='345.5' y2='73.5'/><polygon points='354.0,82.0 341.6,77.4 349.4,69.6'/></g><g class='vname red' transform='translate(327.1,74.9)'><text x='0' y='6'>b</text><path d='M-6,-9 H7 M4,-12 L7,-9 L4,-6' /></g></svg>"
+    },
+    niveau3: {
+      question: "Exprimer $\\vec{d}$ à l'aide de $\\vec{u}$ et $\\vec{v}$.",
+      explanation: "$\\vec{d}$ monte de 3 carreaux. En parcourant $\\vec{v}$ deux fois (2 à droite, 4 en haut) puis $\\vec{u}$ à l'envers (2 à gauche, 1 en bas), on obtient 0 à droite et 3 en haut : $\\vec{d}=\\vec{v}+\\vec{v}-\\vec{u}=2\\vec{v}-\\vec{u}$."
+    }
   },
   {
     tier: "question",
     objectif: "A8 · Calcul littéral élémentaire",
-    aim: "Exprimer une longueur totale comme une somme de longueurs connues, dont certaines valent un même nombre de fois x.",
-    question: "Exprime $AC$ en fonction de $x$ :",
-    sideDiagram: true,
-    diagram: `<svg viewBox="0 0 290 90" role="img" aria-label="Segment AC partage en 3 parts x puis 2 parts de longueur 4" style="max-width:420px"><line x1="20" y1="40" x2="270" y2="40" stroke="var(--ink)" stroke-width="2.5"/><line x1="20" y1="34" x2="20" y2="46" stroke="var(--ink)" stroke-width="2"/><line x1="70" y1="34" x2="70" y2="46" stroke="var(--ink)" stroke-width="2"/><line x1="120" y1="34" x2="120" y2="46" stroke="var(--ink)" stroke-width="2"/><line x1="170" y1="34" x2="170" y2="46" stroke="var(--ink)" stroke-width="2"/><line x1="220" y1="34" x2="220" y2="46" stroke="var(--ink)" stroke-width="2"/><line x1="270" y1="34" x2="270" y2="46" stroke="var(--ink)" stroke-width="2"/><text class="diagram-label" x="20" y="20" text-anchor="middle" style="font-size:16px;font-weight:700">A</text><text class="diagram-label" x="270" y="20" text-anchor="middle" style="font-size:16px;font-weight:700">C</text><line x1="20" y1="58" x2="170" y2="58" stroke="var(--ink-soft)" stroke-width="1.5"/><line x1="20" y1="52" x2="20" y2="58" stroke="var(--ink-soft)" stroke-width="1.5"/><line x1="170" y1="52" x2="170" y2="58" stroke="var(--ink-soft)" stroke-width="1.5"/><text class="diagram-label" x="95.0" y="76" text-anchor="middle" style="font-size:15px">x</text><line x1="170" y1="58" x2="270" y2="58" stroke="var(--ink-soft)" stroke-width="1.5"/><line x1="170" y1="52" x2="170" y2="58" stroke="var(--ink-soft)" stroke-width="1.5"/><line x1="270" y1="52" x2="270" y2="58" stroke="var(--ink-soft)" stroke-width="1.5"/><text class="diagram-label" x="220.0" y="76" text-anchor="middle" style="font-size:15px">4</text></svg>`,
-    explanation: "$AC=x\\times3+4\\times2=3x+8$. Les trois premiers segments valent chacun $x$, les deux derniers valent chacun $4$."
+    aim: "Calculer avec des racines carrées en utilisant la règle du produit √a × √b = √(a×b).",
+    question: "Calculer $A=\\sqrt{2}\\times\\sqrt{18}$.",
+    explanation: "$\\sqrt{2}\\times\\sqrt{18}=\\sqrt{2\\times18}=\\sqrt{36}=6$.",
+    niveau2: {
+      question: "Simplifier $B=\\sqrt{50}-\\sqrt{18}+\\sqrt{2}$.",
+      explanation: "On fait apparaître des carrés parfaits : $\\sqrt{50}=\\sqrt{25\\times2}=5\\sqrt{2}$ et $\\sqrt{18}=\\sqrt{9\\times2}=3\\sqrt{2}$, donc $B=5\\sqrt{2}-3\\sqrt{2}+\\sqrt{2}=3\\sqrt{2}$."
+    },
+    niveau3: {
+      question: "Calculer $C=\\left(\\sqrt{3}+\\sqrt{12}\\right)^2$.",
+      explanation: "$\\sqrt{12}=\\sqrt{4\\times3}=2\\sqrt{3}$, donc $\\sqrt{3}+\\sqrt{12}=3\\sqrt{3}$ et $C=\\left(3\\sqrt{3}\\right)^2=9\\times3=27$."
+    }
   },
   {
     tier: "final",
-    objectif: "A9 · Développer, factoriser",
-    aim: "Développer et réduire un produit de deux sommes (double distributivité).",
-    question: "D\\u00e9velopper et r\\u00e9duire $(x+3)(x+2)$ :",
-    sideDiagram: true,
-    diagram: `<svg class="diagram-table" viewBox="0 0 144 126" width="144" height="126" role="img" aria-label="Tableau de distributivite a completer pour (x+3)(x+2)"><rect class="corner" x="0" y="0" width="48" height="42"/><rect class="hdr" x="48" y="0" width="48" height="42"/><rect class="hdr" x="96" y="0" width="48" height="42"/><rect class="hdr" x="0" y="42" width="48" height="42"/><rect class="cell" x="48" y="42" width="48" height="42"/><rect class="cell" x="96" y="42" width="48" height="42"/><rect class="hdr" x="0" y="84" width="48" height="42"/><rect class="cell" x="48" y="84" width="48" height="42"/><rect class="cell" x="96" y="84" width="48" height="42"/><text x="24" y="21">×</text><text x="72" y="21" class="var">x</text><text x="120" y="21">+2</text><text x="24" y="63">x</text><text x="24" y="105">+3</text></svg>`,
-    explanation: "$(x+3)(x+2)=x\\times x+x\\times2+3\\times x+3\\times2=x^2+2x+3x+6=x^2+5x+6$."
+    theme: "obj-geometrie",
+    objectif: "Vecteurs",
+    aim: "Construire un point défini par une somme de vecteurs (bout à bout) et décrire sa position.",
+    question: "Où se trouve le point $D$ tel que $\\overrightarrow{AD}=\\overrightarrow{AB}+\\overrightarrow{AC}$ ? Décrire sa position par rapport à $A$.",
+    levelsAside: true,
+    diagram: `<svg class="diagram-vec" viewBox="0 0 266 300" width="320" height="361" role="img" aria-label="Points A, B, C sur quadrillage avec les vecteurs AB et AC"><g class="vgrid"><line x1="14" y1="14" x2="14" y2="286"/><line x1="48" y1="14" x2="48" y2="286"/><line x1="82" y1="14" x2="82" y2="286"/><line x1="116" y1="14" x2="116" y2="286"/><line x1="150" y1="14" x2="150" y2="286"/><line x1="184" y1="14" x2="184" y2="286"/><line x1="218" y1="14" x2="218" y2="286"/><line x1="252" y1="14" x2="252" y2="286"/><line x1="14" y1="14" x2="252" y2="14"/><line x1="14" y1="48" x2="252" y2="48"/><line x1="14" y1="82" x2="252" y2="82"/><line x1="14" y1="116" x2="252" y2="116"/><line x1="14" y1="150" x2="252" y2="150"/><line x1="14" y1="184" x2="252" y2="184"/><line x1="14" y1="218" x2="252" y2="218"/><line x1="14" y1="252" x2="252" y2="252"/><line x1="14" y1="286" x2="252" y2="286"/></g><g class="pt"><circle cx="48" cy="184" r="3"/><text x="40" y="196">A</text></g><g class="pt"><circle cx="150" cy="150" r="3"/><text x="160" y="164">B</text></g><g class="pt"><circle cx="82" cy="82" r="3"/><text x="73" y="78">C</text></g><g class="vec acc"><line x1="48.0" y1="184.0" x2="138.6" y2="153.8"/><polygon points="150.0,150.0 140.4,159.0 136.9,148.6"/></g><g class="vec org"><line x1="48.0" y1="184.0" x2="78.2" y2="93.4"/><polygon points="82.0,82.0 83.4,95.1 73.0,91.6"/></g></svg>`,
+    explanation: "$\\overrightarrow{AB}$ : 3 à droite, 1 vers le haut ; $\\overrightarrow{AC}$ : 1 à droite, 3 vers le haut. Bout à bout : $D$ est à 4 carreaux à droite et 4 carreaux au-dessus de $A$.<svg class='diagram-vec' viewBox='0 0 266 300' width='300' height='338' role='img' aria-label='Construction : on reporte AC au bout de AB, D est l'extrémité'><g class='vgrid'><line x1='14' y1='14' x2='14' y2='286'/><line x1='48' y1='14' x2='48' y2='286'/><line x1='82' y1='14' x2='82' y2='286'/><line x1='116' y1='14' x2='116' y2='286'/><line x1='150' y1='14' x2='150' y2='286'/><line x1='184' y1='14' x2='184' y2='286'/><line x1='218' y1='14' x2='218' y2='286'/><line x1='252' y1='14' x2='252' y2='286'/><line x1='14' y1='14' x2='252' y2='14'/><line x1='14' y1='48' x2='252' y2='48'/><line x1='14' y1='82' x2='252' y2='82'/><line x1='14' y1='116' x2='252' y2='116'/><line x1='14' y1='150' x2='252' y2='150'/><line x1='14' y1='184' x2='252' y2='184'/><line x1='14' y1='218' x2='252' y2='218'/><line x1='14' y1='252' x2='252' y2='252'/><line x1='14' y1='286' x2='252' y2='286'/></g><g class='pt'><circle cx='48' cy='184' r='3'/><text x='40' y='196'>A</text></g><g class='pt'><circle cx='150' cy='150' r='3'/><text x='160' y='164'>B</text></g><g class='pt'><circle cx='82' cy='82' r='3'/><text x='73' y='78'>C</text></g><g class='vec acc'><line x1='48.0' y1='184.0' x2='138.6' y2='153.8'/><polygon points='150.0,150.0 140.4,159.0 136.9,148.6'/></g><g class='vec org'><line x1='48.0' y1='184.0' x2='78.2' y2='93.4'/><polygon points='82.0,82.0 83.4,95.1 73.0,91.6'/></g><g class='vec org dashed'><line x1='150.0' y1='150.0' x2='180.2' y2='59.4'/><polygon points='184.0,48.0 185.4,61.1 175.0,57.6'/></g><g class='vec red'><line x1='48.0' y1='184.0' x2='175.5' y2='56.5'/><polygon points='184.0,48.0 179.4,60.4 171.6,52.6'/></g><g class='pt'><circle cx='184' cy='48' r='3'/><text x='194' y='42'>D</text></g></svg>",
+    niveau2: {
+      question: "Où se trouve le point $E$ tel que $\\overrightarrow{AE}=\\overrightarrow{AB}-\\overrightarrow{AC}$ ?",
+      explanation: "$\\overrightarrow{AB}-\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{CA}$ : après $\\overrightarrow{AB}$ (3 à droite, 1 vers le haut), on parcourt $\\overrightarrow{AC}$ à l'envers (1 à gauche, 3 vers le bas). $E$ est à 2 carreaux à droite et 2 carreaux en dessous de $A$.<svg class='diagram-vec' viewBox='0 0 266 300' width='300' height='338' role='img' aria-label='Construction : on reporte l'opposé de AC au bout de AB, E est l'extrémité'><g class='vgrid'><line x1='14' y1='14' x2='14' y2='286'/><line x1='48' y1='14' x2='48' y2='286'/><line x1='82' y1='14' x2='82' y2='286'/><line x1='116' y1='14' x2='116' y2='286'/><line x1='150' y1='14' x2='150' y2='286'/><line x1='184' y1='14' x2='184' y2='286'/><line x1='218' y1='14' x2='218' y2='286'/><line x1='252' y1='14' x2='252' y2='286'/><line x1='14' y1='14' x2='252' y2='14'/><line x1='14' y1='48' x2='252' y2='48'/><line x1='14' y1='82' x2='252' y2='82'/><line x1='14' y1='116' x2='252' y2='116'/><line x1='14' y1='150' x2='252' y2='150'/><line x1='14' y1='184' x2='252' y2='184'/><line x1='14' y1='218' x2='252' y2='218'/><line x1='14' y1='252' x2='252' y2='252'/><line x1='14' y1='286' x2='252' y2='286'/></g><g class='pt'><circle cx='48' cy='184' r='3'/><text x='40' y='196'>A</text></g><g class='pt'><circle cx='150' cy='150' r='3'/><text x='160' y='164'>B</text></g><g class='pt'><circle cx='82' cy='82' r='3'/><text x='73' y='78'>C</text></g><g class='vec acc'><line x1='48.0' y1='184.0' x2='138.6' y2='153.8'/><polygon points='150.0,150.0 140.4,159.0 136.9,148.6'/></g><g class='vec org'><line x1='48.0' y1='184.0' x2='78.2' y2='93.4'/><polygon points='82.0,82.0 83.4,95.1 73.0,91.6'/></g><g class='vec org dashed'><line x1='150.0' y1='150.0' x2='119.8' y2='240.6'/><polygon points='116.0,252.0 114.6,238.9 125.0,242.4'/></g><g class='vec red'><line x1='48.0' y1='184.0' x2='107.5' y2='243.5'/><polygon points='116.0,252.0 103.6,247.4 111.4,239.6'/></g><g class='pt'><circle cx='116' cy='252' r='3'/><text x='126' y='266'>E</text></g></svg>"
+    },
+    niveau3: {
+      question: "Montrer que $\\overrightarrow{AE}=\\overrightarrow{CB}$. Qu'en déduire pour le quadrilatère $AEBC$ ?",
+      explanation: "Par Chasles, $\\overrightarrow{CB}=\\overrightarrow{CA}+\\overrightarrow{AB}=\\overrightarrow{AB}-\\overrightarrow{AC}=\\overrightarrow{AE}$. Deux côtés opposés portés par des vecteurs égaux : $AEBC$ est un parallélogramme."
+    }
   }
 ];
 let current = 0;
@@ -396,6 +498,14 @@ const optionsEl = document.getElementById("options");
 const answerBox = document.getElementById("answer-box");
 const answerContent = document.getElementById("answer-content");
 const revealBtn = document.getElementById("reveal-btn");
+const LEVELS = [2, 3].map(n => ({
+  key: "niveau" + n,
+  el: document.getElementById("lvl" + n),
+  text: document.getElementById("lvl" + n + "-text"),
+  answer: document.getElementById("lvl" + n + "-answer"),
+  btn: document.getElementById("lvl" + n + "-reveal"),
+  revealed: false
+}));
 const qnumDisplay = document.getElementById("qnum-display");
 const navPos = document.getElementById("nav-pos");
 const dotsWrap = document.getElementById("nav-dots");
@@ -470,7 +580,20 @@ function render(){
   aimText.textContent = q.aim;
   qtext.innerHTML = q.question;
   diagramEl.innerHTML = q.diagram || "";
-  document.getElementById("question-row").classList.toggle("side", !!q.sideDiagram);
+  const questionRow = document.getElementById("question-row");
+  questionRow.classList.toggle("side", !!q.sideDiagram);
+  questionRow.classList.toggle("aside", !!q.optionsAside);
+  if (q.optionsAside) questionRow.appendChild(optionsEl);
+  else if (optionsEl.parentNode === questionRow) questionRow.insertAdjacentElement("afterend", optionsEl);
+  questionRow.classList.toggle("levels-aside", !!q.levelsAside);
+  if (q.levelsAside){
+    let col = questionRow.querySelector(".levels-col");
+    if (!col){ col = document.createElement("div"); col.className = "levels-col"; questionRow.appendChild(col); }
+    LEVELS.forEach(l => col.appendChild(l.el));
+  } else {
+    const section = document.getElementById("page");
+    LEVELS.forEach(l => { if (l.el.parentNode !== section) section.appendChild(l.el); });
+  }
 
   optionsEl.innerHTML = "";
   if (q.options){
@@ -488,6 +611,19 @@ function render(){
   answerContent.innerHTML = q.explanation;
   revealBtn.style.display = "inline-block";
   revealBtn.textContent = "Voir la réponse";
+
+  LEVELS.forEach(l => {
+    const q2 = q[l.key];
+    l.revealed = false;
+    l.answer.classList.remove("shown");
+    if (q2){
+      l.el.style.display = "";
+      l.text.innerHTML = q2.question;
+      l.answer.innerHTML = q2.explanation;
+    } else {
+      l.el.style.display = "none";
+    }
+  });
 
   qnumDisplay.textContent = (current + 1) + " / " + QUESTIONS.length;
   navPos.textContent = (current + 1) + " / " + QUESTIONS.length;
@@ -509,6 +645,18 @@ function reveal(){
   });
 }
 
+function revealLevel(l){
+  if (l.revealed || !QUESTIONS[current][l.key]) return;
+  l.revealed = true;
+  l.answer.classList.add("shown");
+}
+// Espace / Entrée : réponse principale, puis niveau 2, puis niveau 3
+function revealNext(){
+  if (!revealed) return reveal();
+  const l = LEVELS.find(l => !l.revealed && QUESTIONS[current][l.key]);
+  if (l) revealLevel(l);
+}
+
 function renderMath(){
   renderMathInElement(document.getElementById("page"), {
     delimiters: [
@@ -518,23 +666,34 @@ function renderMath(){
   });
 }
 
+// La page s'ouvre (et se recale à chaque question) sur la carte de la
+// question : l'en-tête avec le titre et le lien Sommaire reste accessible
+// en remontant.
+function scrollToPage(behavior){
+  const top = document.getElementById("page").getBoundingClientRect().top + window.scrollY - 16;
+  window.scrollTo({ top: Math.max(0, top), behavior: behavior || "auto" });
+}
+
 function goTo(i){
   current = Math.max(0, Math.min(QUESTIONS.length - 1, i));
   render();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToPage("smooth");
 }
 
 revealBtn.addEventListener("click", reveal);
+LEVELS.forEach(l => l.btn.addEventListener("click", () => revealLevel(l)));
 btnPrev.addEventListener("click", () => goTo(current - 1));
 btnNext.addEventListener("click", () => goTo(current + 1));
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight") goTo(current + 1);
   else if (e.key === "ArrowLeft") goTo(current - 1);
-  else if (e.key === " " || e.key === "Enter") { e.preventDefault(); reveal(); }
+  else if (e.key === " " || e.key === "Enter") { e.preventDefault(); revealNext(); }
 });
 
 render();
+scrollToPage();
+window.addEventListener("load", () => scrollToPage());
 </script>
 
 <script>
