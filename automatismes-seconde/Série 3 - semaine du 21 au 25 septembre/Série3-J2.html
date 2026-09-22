@@ -178,6 +178,13 @@
   .question-row.aside .diagram { flex: 1 1 420px; margin: 0; min-width: 0; }
   .question-row.aside .options { flex: 0 1 220px; grid-template-columns: 1fr; margin: 0; }
   .question-row.aside .options .opt { padding: 10px 14px; font-size: 1.25rem; }
+  /* Questions niveau 2 / 3 côte à côte, en deux colonnes (levelsRow) */
+  .levels-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; margin-top: 18px; }
+  .levels-row:empty { display: none; }
+  .levels-row .level { margin-top: 0; }
+  .levels-row .level-question { font-size: 1.18rem; }
+  .levels-row .level-answer svg { max-width: 100%; height: auto; }
+  @media (max-width: 760px) { .levels-row { grid-template-columns: 1fr; } }
   /* Questions niveau 2 / 3 à droite de la figure (levelsAside) */
   .question-row.levels-aside { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px 28px; margin-bottom: 18px; }
   .question-row.levels-aside .question { flex: 1 1 100%; margin: 0 0 6px; }
@@ -285,7 +292,9 @@
   .diagram-segment text.var { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-size: 19px; }
 
   /* Figures vectorielles sur quadrillage */
-  .diagram-vec .vgrid line { stroke: var(--rule-strong); stroke-width: 1; opacity: .55; }
+  .diagram-vec .vgrid line { stroke: #000; stroke-width: 1; }
+  :root[data-theme="dark"] .diagram-vec .vgrid line { stroke: var(--ink); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .diagram-vec .vgrid line { stroke: var(--ink); } }
   .diagram-vec .vec line { stroke-width: 3; stroke-linecap: round; }
   .diagram-vec .vec.acc line { stroke: var(--accent); }   .diagram-vec .vec.acc polygon { fill: var(--accent); }
   .diagram-vec .vec.org line { stroke: var(--orange); }   .diagram-vec .vec.org polygon { fill: var(--orange); }
@@ -432,8 +441,51 @@ const QUESTIONS = [
     tier: "qcm",
     theme: "obj-geometrie",
     objectif: "Vecteurs",
+    aim: "Calculer la norme d'un vecteur sur un quadrillage avec le théorème de Pythagore.",
+    question: "Les carreaux ont pour côté $1$. Quelle est la norme $\\lVert\\overrightarrow{AB}\\rVert$ ?",
+    optionsAside: true,
+    levelsRow: true,
+    diagram: `<svg class="diagram-vec" viewBox="0 0 368 232" width="480" height="303" role="img" aria-label="Vecteurs AB (3 à droite, 4 en haut) et CD (2 à droite, 1 en haut) sur un quadrillage de carreaux de côté 1"><g class="vgrid"><line x1="14" y1="14" x2="14" y2="218"/><line x1="48" y1="14" x2="48" y2="218"/><line x1="82" y1="14" x2="82" y2="218"/><line x1="116" y1="14" x2="116" y2="218"/><line x1="150" y1="14" x2="150" y2="218"/><line x1="184" y1="14" x2="184" y2="218"/><line x1="218" y1="14" x2="218" y2="218"/><line x1="252" y1="14" x2="252" y2="218"/><line x1="286" y1="14" x2="286" y2="218"/><line x1="320" y1="14" x2="320" y2="218"/><line x1="354" y1="14" x2="354" y2="218"/><line x1="14" y1="14" x2="354" y2="14"/><line x1="14" y1="48" x2="354" y2="48"/><line x1="14" y1="82" x2="354" y2="82"/><line x1="14" y1="116" x2="354" y2="116"/><line x1="14" y1="150" x2="354" y2="150"/><line x1="14" y1="184" x2="354" y2="184"/><line x1="14" y1="218" x2="354" y2="218"/></g><g class="pt"><circle cx="48" cy="184" r="3"/><text x="39" y="196">A</text></g><g class="pt"><circle cx="150" cy="48" r="3"/><text x="159" y="44">B</text></g><g class="vec acc"><line x1="48.0" y1="184.0" x2="142.8" y2="57.6"/><polygon points="150.0,48.0 147.2,60.9 138.4,54.3"/></g><g class="pt"><circle cx="218" cy="184" r="3"/><text x="209" y="196">C</text></g><g class="pt"><circle cx="286" cy="150" r="3"/><text x="295" y="146">D</text></g><g class="vec org"><line x1="218.0" y1="184.0" x2="275.3" y2="155.4"/><polygon points="286.0,150.0 277.7,160.3 272.8,150.4"/></g></svg>`,
+    options: [
+      { letter:"A", text:"$7$", correct:false },
+      { letter:"B", text:"$\\sqrt{7}$", correct:false },
+      { letter:"C", text:"$5$", correct:true },
+      { letter:"D", text:"$25$", correct:false }
+    ],
+    explanation: "$\\overrightarrow{AB}$ correspond à un déplacement de 3 carreaux vers la droite et 4 carreaux vers le haut. Pythagore dans le triangle rectangle de côtés $3$ et $4$ : $AB^2=3^2+4^2=9+16=25$, donc $\\lVert\\overrightarrow{AB}\\rVert=\\sqrt{25}=5$.<svg class='diagram-vec' viewBox='0 0 368 232' width='460' height='290' role='img' aria-label='Triangle rectangle de côtés 3 et 4 sous AB'><g class='vgrid'><line x1='14' y1='14' x2='14' y2='218'/><line x1='48' y1='14' x2='48' y2='218'/><line x1='82' y1='14' x2='82' y2='218'/><line x1='116' y1='14' x2='116' y2='218'/><line x1='150' y1='14' x2='150' y2='218'/><line x1='184' y1='14' x2='184' y2='218'/><line x1='218' y1='14' x2='218' y2='218'/><line x1='252' y1='14' x2='252' y2='218'/><line x1='286' y1='14' x2='286' y2='218'/><line x1='320' y1='14' x2='320' y2='218'/><line x1='354' y1='14' x2='354' y2='218'/><line x1='14' y1='14' x2='354' y2='14'/><line x1='14' y1='48' x2='354' y2='48'/><line x1='14' y1='82' x2='354' y2='82'/><line x1='14' y1='116' x2='354' y2='116'/><line x1='14' y1='150' x2='354' y2='150'/><line x1='14' y1='184' x2='354' y2='184'/><line x1='14' y1='218' x2='354' y2='218'/></g><g class='pt'><circle cx='48' cy='184' r='3'/><text x='39' y='196'>A</text></g><g class='pt'><circle cx='150' cy='48' r='3'/><text x='159' y='44'>B</text></g><g class='vec acc'><line x1='48.0' y1='184.0' x2='142.8' y2='57.6'/><polygon points='150.0,48.0 147.2,60.9 138.4,54.3'/></g><g class='pt'><circle cx='218' cy='184' r='3'/><text x='209' y='196'>C</text></g><g class='pt'><circle cx='286' cy='150' r='3'/><text x='295' y='146'>D</text></g><g class='vec org'><line x1='218.0' y1='184.0' x2='275.3' y2='155.4'/><polygon points='286.0,150.0 277.7,160.3 272.8,150.4'/></g><path class='rt' d='M48,184 H150 V48'/><text class='len' x='99.0' y='199.3'>3</text><text class='len' x='165.3' y='116.0'>4</text></svg>",
+    niveau2: {
+      question: "Quelle est la norme $\\lVert\\overrightarrow{CD}\\rVert$ ?",
+      explanation: "$\\overrightarrow{CD}$ correspond à un déplacement de 2 carreaux vers la droite et 1 carreau vers le haut : $CD^2=2^2+1^2=4+1=5$, donc $\\lVert\\overrightarrow{CD}\\rVert=\\sqrt{5}$. La racine ne se simplifie pas ($\\sqrt{5}\\approx2{,}24$).<svg class='diagram-vec' viewBox='0 0 368 232' width='460' height='290' role='img' aria-label='Triangle rectangle de côtés 2 et 1 sous CD'><g class='vgrid'><line x1='14' y1='14' x2='14' y2='218'/><line x1='48' y1='14' x2='48' y2='218'/><line x1='82' y1='14' x2='82' y2='218'/><line x1='116' y1='14' x2='116' y2='218'/><line x1='150' y1='14' x2='150' y2='218'/><line x1='184' y1='14' x2='184' y2='218'/><line x1='218' y1='14' x2='218' y2='218'/><line x1='252' y1='14' x2='252' y2='218'/><line x1='286' y1='14' x2='286' y2='218'/><line x1='320' y1='14' x2='320' y2='218'/><line x1='354' y1='14' x2='354' y2='218'/><line x1='14' y1='14' x2='354' y2='14'/><line x1='14' y1='48' x2='354' y2='48'/><line x1='14' y1='82' x2='354' y2='82'/><line x1='14' y1='116' x2='354' y2='116'/><line x1='14' y1='150' x2='354' y2='150'/><line x1='14' y1='184' x2='354' y2='184'/><line x1='14' y1='218' x2='354' y2='218'/></g><g class='pt'><circle cx='48' cy='184' r='3'/><text x='39' y='196'>A</text></g><g class='pt'><circle cx='150' cy='48' r='3'/><text x='159' y='44'>B</text></g><g class='vec acc'><line x1='48.0' y1='184.0' x2='142.8' y2='57.6'/><polygon points='150.0,48.0 147.2,60.9 138.4,54.3'/></g><g class='pt'><circle cx='218' cy='184' r='3'/><text x='209' y='196'>C</text></g><g class='pt'><circle cx='286' cy='150' r='3'/><text x='295' y='146'>D</text></g><g class='vec org'><line x1='218.0' y1='184.0' x2='275.3' y2='155.4'/><polygon points='286.0,150.0 277.7,160.3 272.8,150.4'/></g><path class='rt' d='M218,184 H286 V150'/><text class='len' x='252.0' y='199.3'>2</text><text class='len' x='301.3' y='167.0'>1</text></svg>"
+    },
+    niveau3: {
+      question: "Le vecteur $\\overrightarrow{EF}$ correspond à un déplacement de $12$ carreaux vers la droite et sa norme vaut $13$. De combien de carreaux monte-t-il ?",
+      explanation: "On appelle $v$ le déplacement vertical. Pythagore : $12^2+v^2=13^2$, donc $v^2=169-144=25$ et $v=5$. $\\overrightarrow{EF}$ monte de $5$ carreaux (il pourrait aussi en descendre $5$)."
+    }
+  },
+  {
+    tier: "question",
+    objectif: "A8 · Calcul littéral élémentaire",
+    aim: "Exprimer une longueur en fonction de x à partir d'une figure codée, en utilisant la longueur totale.",
+    question: "Les morceaux portant le même codage ont la même longueur et $AF=13$. Exprimer $BD$ en fonction de $x$.",
+    levelsRow: true,
+    diagram: `<svg class="diagram-segment" viewBox="0 0 548 132" width="700" height="169" role="img" aria-label="Segment AF de longueur 13 partagé en cinq morceaux codés, DE mesure x"><line x1="24" y1="62" x2="524" y2="62"/><line class="tick" x1="24" y1="56" x2="24" y2="68"/><line class="tick" x1="94" y1="56" x2="94" y2="68"/><line class="tick" x1="239" y1="56" x2="239" y2="68"/><line class="tick" x1="384" y1="56" x2="384" y2="68"/><line class="tick" x1="454" y1="56" x2="454" y2="68"/><line class="tick" x1="524" y1="56" x2="524" y2="68"/><line class="tick" x1="52.0" y1="69" x2="58.0" y2="55"/><line class="tick" x1="60.0" y1="69" x2="66.0" y2="55"/><circle cx="166.5" cy="62" r="6"/><circle cx="311.5" cy="62" r="6"/><line class="tick" x1="412.0" y1="69" x2="418.0" y2="55"/><line class="tick" x1="420.0" y1="69" x2="426.0" y2="55"/><line class="tick" x1="482.0" y1="69" x2="488.0" y2="55"/><line class="tick" x1="490.0" y1="69" x2="496.0" y2="55"/><text x="24" y="86">A</text><text x="94" y="86">B</text><text x="239" y="86">C</text><text x="384" y="86">D</text><text x="454" y="86">E</text><text x="524" y="86">F</text><g class="measure"><line x1="32" y1="24" x2="516" y2="24"/><path d="M24,24 l9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/><path d="M524,24 l-9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/></g><text x="274.0" y="14">13</text><g class="measure"><line x1="392" y1="100" x2="446" y2="100"/><path d="M384,100 l9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/><path d="M454,100 l-9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/></g><text class="var" x="419.0" y="124">x</text></svg>`,
+    explanation: "Les trois morceaux codés // mesurent $x$ : $AB+DE+EF=3x$. Ce qui reste du segment est $BD$ : $BD=AF-3x=13-3x$.",
+    niveau2: {
+      question: "On sait que $BD=4$. Déterminer $x$.",
+      explanation: "$13-3x=4$, donc $3x=13-4=9$ et $x=3$."
+    },
+    niveau3: {
+      question: "Exprimer $BC$ en fonction de $x$. Entre quelles valeurs $x$ peut-il varier ?",
+      explanation: "$BC=CD$, donc $BC=\\dfrac{BD}{2}=\\dfrac{13-3x}{2}$. Il faut $BC>0$, c'est-à-dire $13-3x>0$, soit $x<\\dfrac{13}{3}\\approx4{,}33$. Et $x>0$ : $x$ varie entre $0$ et $\\dfrac{13}{3}$ (exclus)."
+    }
+  },
+  {
+    tier: "final",
+    theme: "obj-geometrie",
+    objectif: "Vecteurs",
     aim: "Reconnaître visuellement la somme de deux vecteurs (construction bout à bout).",
     question: "Quel vecteur est égal à $\\vec{u}+\\vec{v}$ ?",
+    levelsRow: true,
     optionsAside: true,
     diagram: `<svg class="diagram-vec" viewBox="0 0 504 232" width="620" height="285" role="img" aria-label="Vecteurs u, v et quatre candidats a, b, c, d sur quadrillage"><g class="vgrid"><line x1="14" y1="14" x2="14" y2="218"/><line x1="48" y1="14" x2="48" y2="218"/><line x1="82" y1="14" x2="82" y2="218"/><line x1="116" y1="14" x2="116" y2="218"/><line x1="150" y1="14" x2="150" y2="218"/><line x1="184" y1="14" x2="184" y2="218"/><line x1="218" y1="14" x2="218" y2="218"/><line x1="252" y1="14" x2="252" y2="218"/><line x1="286" y1="14" x2="286" y2="218"/><line x1="320" y1="14" x2="320" y2="218"/><line x1="354" y1="14" x2="354" y2="218"/><line x1="388" y1="14" x2="388" y2="218"/><line x1="422" y1="14" x2="422" y2="218"/><line x1="456" y1="14" x2="456" y2="218"/><line x1="490" y1="14" x2="490" y2="218"/><line x1="14" y1="14" x2="490" y2="14"/><line x1="14" y1="48" x2="490" y2="48"/><line x1="14" y1="82" x2="490" y2="82"/><line x1="14" y1="116" x2="490" y2="116"/><line x1="14" y1="150" x2="490" y2="150"/><line x1="14" y1="184" x2="490" y2="184"/><line x1="14" y1="218" x2="490" y2="218"/></g><g class="vec acc"><line x1="48.0" y1="184.0" x2="105.3" y2="155.4"/><polygon points="116.0,150.0 107.7,160.3 102.8,150.4"/></g><g class="vname acc" transform="translate(88.3,179.5)"><text x="0" y="6">u</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g><g class="vec org"><line x1="48.0" y1="116.0" x2="76.6" y2="58.7"/><polygon points="82.0,48.0 81.6,61.2 71.7,56.3"/></g><g class="vname org" transform="translate(77.5,88.3)"><text x="0" y="6">v</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g><g class="vec ink"><line x1="184.0" y1="184.0" x2="277.5" y2="90.5"/><polygon points="286.0,82.0 281.4,94.4 273.6,86.6"/></g><g class="vname ink" transform="translate(244.9,142.9)"><text x="0" y="6">a</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g><g class="vec ink"><line x1="320.0" y1="48.0" x2="345.5" y2="73.5"/><polygon points="354.0,82.0 341.6,77.4 349.4,69.6"/></g><g class="vname ink" transform="translate(327.1,74.9)"><text x="0" y="6">b</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g><g class="vec ink"><line x1="354.0" y1="184.0" x2="444.6" y2="153.8"/><polygon points="456.0,150.0 446.4,159.0 442.9,148.6"/></g><g class="vname ink" transform="translate(409.4,180.3)"><text x="0" y="6">c</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g><g class="vec ink"><line x1="422.0" y1="150.0" x2="422.0" y2="60.0"/><polygon points="422.0,48.0 427.5,60.0 416.5,60.0"/></g><g class="vname ink" transform="translate(436.0,99.0)"><text x="0" y="6">d</text><path d="M-6,-9 H7 M4,-12 L7,-9 L4,-6" /></g></svg>`,
     options: [
@@ -450,39 +502,6 @@ const QUESTIONS = [
     niveau3: {
       question: "Exprimer $\\vec{d}$ à l'aide de $\\vec{u}$ et $\\vec{v}$.",
       explanation: "$\\vec{d}$ monte de 3 carreaux. En parcourant $\\vec{v}$ deux fois (2 à droite, 4 en haut) puis $\\vec{u}$ à l'envers (2 à gauche, 1 en bas), on obtient 0 à droite et 3 en haut : $\\vec{d}=\\vec{v}+\\vec{v}-\\vec{u}=2\\vec{v}-\\vec{u}$."
-    }
-  },
-  {
-    tier: "question",
-    objectif: "A8 · Calcul littéral élémentaire",
-    aim: "Calculer avec des racines carrées en utilisant la règle du produit √a × √b = √(a×b).",
-    question: "Calculer $A=\\sqrt{2}\\times\\sqrt{18}$.",
-    explanation: "$\\sqrt{2}\\times\\sqrt{18}=\\sqrt{2\\times18}=\\sqrt{36}=6$.",
-    niveau2: {
-      question: "Simplifier $B=\\sqrt{50}-\\sqrt{18}+\\sqrt{2}$.",
-      explanation: "On fait apparaître des carrés parfaits : $\\sqrt{50}=\\sqrt{25\\times2}=5\\sqrt{2}$ et $\\sqrt{18}=\\sqrt{9\\times2}=3\\sqrt{2}$, donc $B=5\\sqrt{2}-3\\sqrt{2}+\\sqrt{2}=3\\sqrt{2}$."
-    },
-    niveau3: {
-      question: "Calculer $C=\\left(\\sqrt{3}+\\sqrt{12}\\right)^2$.",
-      explanation: "$\\sqrt{12}=\\sqrt{4\\times3}=2\\sqrt{3}$, donc $\\sqrt{3}+\\sqrt{12}=3\\sqrt{3}$ et $C=\\left(3\\sqrt{3}\\right)^2=9\\times3=27$."
-    }
-  },
-  {
-    tier: "final",
-    theme: "obj-geometrie",
-    objectif: "Vecteurs",
-    aim: "Construire un point défini par une somme de vecteurs (bout à bout) et décrire sa position.",
-    question: "Où se trouve le point $D$ tel que $\\overrightarrow{AD}=\\overrightarrow{AB}+\\overrightarrow{AC}$ ? Décrire sa position par rapport à $A$.",
-    levelsAside: true,
-    diagram: `<svg class="diagram-vec" viewBox="0 0 266 300" width="320" height="361" role="img" aria-label="Points A, B, C sur quadrillage avec les vecteurs AB et AC"><g class="vgrid"><line x1="14" y1="14" x2="14" y2="286"/><line x1="48" y1="14" x2="48" y2="286"/><line x1="82" y1="14" x2="82" y2="286"/><line x1="116" y1="14" x2="116" y2="286"/><line x1="150" y1="14" x2="150" y2="286"/><line x1="184" y1="14" x2="184" y2="286"/><line x1="218" y1="14" x2="218" y2="286"/><line x1="252" y1="14" x2="252" y2="286"/><line x1="14" y1="14" x2="252" y2="14"/><line x1="14" y1="48" x2="252" y2="48"/><line x1="14" y1="82" x2="252" y2="82"/><line x1="14" y1="116" x2="252" y2="116"/><line x1="14" y1="150" x2="252" y2="150"/><line x1="14" y1="184" x2="252" y2="184"/><line x1="14" y1="218" x2="252" y2="218"/><line x1="14" y1="252" x2="252" y2="252"/><line x1="14" y1="286" x2="252" y2="286"/></g><g class="pt"><circle cx="48" cy="184" r="3"/><text x="40" y="196">A</text></g><g class="pt"><circle cx="150" cy="150" r="3"/><text x="160" y="164">B</text></g><g class="pt"><circle cx="82" cy="82" r="3"/><text x="73" y="78">C</text></g><g class="vec acc"><line x1="48.0" y1="184.0" x2="138.6" y2="153.8"/><polygon points="150.0,150.0 140.4,159.0 136.9,148.6"/></g><g class="vec org"><line x1="48.0" y1="184.0" x2="78.2" y2="93.4"/><polygon points="82.0,82.0 83.4,95.1 73.0,91.6"/></g></svg>`,
-    explanation: "$\\overrightarrow{AB}$ : 3 à droite, 1 vers le haut ; $\\overrightarrow{AC}$ : 1 à droite, 3 vers le haut. Bout à bout : $D$ est à 4 carreaux à droite et 4 carreaux au-dessus de $A$.<svg class='diagram-vec' viewBox='0 0 266 300' width='300' height='338' role='img' aria-label='Construction : on reporte AC au bout de AB, D est l'extrémité'><g class='vgrid'><line x1='14' y1='14' x2='14' y2='286'/><line x1='48' y1='14' x2='48' y2='286'/><line x1='82' y1='14' x2='82' y2='286'/><line x1='116' y1='14' x2='116' y2='286'/><line x1='150' y1='14' x2='150' y2='286'/><line x1='184' y1='14' x2='184' y2='286'/><line x1='218' y1='14' x2='218' y2='286'/><line x1='252' y1='14' x2='252' y2='286'/><line x1='14' y1='14' x2='252' y2='14'/><line x1='14' y1='48' x2='252' y2='48'/><line x1='14' y1='82' x2='252' y2='82'/><line x1='14' y1='116' x2='252' y2='116'/><line x1='14' y1='150' x2='252' y2='150'/><line x1='14' y1='184' x2='252' y2='184'/><line x1='14' y1='218' x2='252' y2='218'/><line x1='14' y1='252' x2='252' y2='252'/><line x1='14' y1='286' x2='252' y2='286'/></g><g class='pt'><circle cx='48' cy='184' r='3'/><text x='40' y='196'>A</text></g><g class='pt'><circle cx='150' cy='150' r='3'/><text x='160' y='164'>B</text></g><g class='pt'><circle cx='82' cy='82' r='3'/><text x='73' y='78'>C</text></g><g class='vec acc'><line x1='48.0' y1='184.0' x2='138.6' y2='153.8'/><polygon points='150.0,150.0 140.4,159.0 136.9,148.6'/></g><g class='vec org'><line x1='48.0' y1='184.0' x2='78.2' y2='93.4'/><polygon points='82.0,82.0 83.4,95.1 73.0,91.6'/></g><g class='vec org dashed'><line x1='150.0' y1='150.0' x2='180.2' y2='59.4'/><polygon points='184.0,48.0 185.4,61.1 175.0,57.6'/></g><g class='vec red'><line x1='48.0' y1='184.0' x2='175.5' y2='56.5'/><polygon points='184.0,48.0 179.4,60.4 171.6,52.6'/></g><g class='pt'><circle cx='184' cy='48' r='3'/><text x='194' y='42'>D</text></g></svg>",
-    niveau2: {
-      question: "Où se trouve le point $E$ tel que $\\overrightarrow{AE}=\\overrightarrow{AB}-\\overrightarrow{AC}$ ?",
-      explanation: "$\\overrightarrow{AB}-\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{CA}$ : après $\\overrightarrow{AB}$ (3 à droite, 1 vers le haut), on parcourt $\\overrightarrow{AC}$ à l'envers (1 à gauche, 3 vers le bas). $E$ est à 2 carreaux à droite et 2 carreaux en dessous de $A$.<svg class='diagram-vec' viewBox='0 0 266 300' width='300' height='338' role='img' aria-label='Construction : on reporte l'opposé de AC au bout de AB, E est l'extrémité'><g class='vgrid'><line x1='14' y1='14' x2='14' y2='286'/><line x1='48' y1='14' x2='48' y2='286'/><line x1='82' y1='14' x2='82' y2='286'/><line x1='116' y1='14' x2='116' y2='286'/><line x1='150' y1='14' x2='150' y2='286'/><line x1='184' y1='14' x2='184' y2='286'/><line x1='218' y1='14' x2='218' y2='286'/><line x1='252' y1='14' x2='252' y2='286'/><line x1='14' y1='14' x2='252' y2='14'/><line x1='14' y1='48' x2='252' y2='48'/><line x1='14' y1='82' x2='252' y2='82'/><line x1='14' y1='116' x2='252' y2='116'/><line x1='14' y1='150' x2='252' y2='150'/><line x1='14' y1='184' x2='252' y2='184'/><line x1='14' y1='218' x2='252' y2='218'/><line x1='14' y1='252' x2='252' y2='252'/><line x1='14' y1='286' x2='252' y2='286'/></g><g class='pt'><circle cx='48' cy='184' r='3'/><text x='40' y='196'>A</text></g><g class='pt'><circle cx='150' cy='150' r='3'/><text x='160' y='164'>B</text></g><g class='pt'><circle cx='82' cy='82' r='3'/><text x='73' y='78'>C</text></g><g class='vec acc'><line x1='48.0' y1='184.0' x2='138.6' y2='153.8'/><polygon points='150.0,150.0 140.4,159.0 136.9,148.6'/></g><g class='vec org'><line x1='48.0' y1='184.0' x2='78.2' y2='93.4'/><polygon points='82.0,82.0 83.4,95.1 73.0,91.6'/></g><g class='vec org dashed'><line x1='150.0' y1='150.0' x2='119.8' y2='240.6'/><polygon points='116.0,252.0 114.6,238.9 125.0,242.4'/></g><g class='vec red'><line x1='48.0' y1='184.0' x2='107.5' y2='243.5'/><polygon points='116.0,252.0 103.6,247.4 111.4,239.6'/></g><g class='pt'><circle cx='116' cy='252' r='3'/><text x='126' y='266'>E</text></g></svg>"
-    },
-    niveau3: {
-      question: "Montrer que $\\overrightarrow{AE}=\\overrightarrow{CB}$. Qu'en déduire pour le quadrilatère $AEBC$ ?",
-      explanation: "Par Chasles, $\\overrightarrow{CB}=\\overrightarrow{CA}+\\overrightarrow{AB}=\\overrightarrow{AB}-\\overrightarrow{AC}=\\overrightarrow{AE}$. Deux côtés opposés portés par des vecteurs égaux : $AEBC$ est un parallélogramme."
     }
   }
 ];
@@ -590,6 +609,12 @@ function render(){
     let col = questionRow.querySelector(".levels-col");
     if (!col){ col = document.createElement("div"); col.className = "levels-col"; questionRow.appendChild(col); }
     LEVELS.forEach(l => col.appendChild(l.el));
+  } else if (q.levelsRow){
+    const section = document.getElementById("page");
+    let row = section.querySelector(":scope > .levels-row");
+    if (!row){ row = document.createElement("div"); row.className = "levels-row"; }
+    section.appendChild(row);
+    LEVELS.forEach(l => row.appendChild(l.el));
   } else {
     const section = document.getElementById("page");
     LEVELS.forEach(l => { if (l.el.parentNode !== section) section.appendChild(l.el); });
@@ -666,11 +691,11 @@ function renderMath(){
   });
 }
 
-// La page s'ouvre (et se recale à chaque question) sur la carte de la
-// question : l'en-tête avec le titre et le lien Sommaire reste accessible
+// La page s'ouvre (et se recale à chaque question) pile sur l'énoncé, juste
+// sous le minuteur : l'en-tête, le badge et le minuteur restent accessibles
 // en remontant.
 function scrollToPage(behavior){
-  const top = document.getElementById("page").getBoundingClientRect().top + window.scrollY - 16;
+  const top = document.getElementById("question-row").getBoundingClientRect().top + window.scrollY - 8;
   window.scrollTo({ top: Math.max(0, top), behavior: behavior || "auto" });
 }
 
