@@ -454,34 +454,32 @@ const QUESTIONS = [
   {
     tier: "question",
     objectif: "A9 · Développer, factoriser",
-    aim: "Appliquer la distributivité simple avec un facteur négatif.",
-    question: "Développer $-2(x-4)$ :",
-    sideDiagram: true,
-    diagram: `<svg class="diagram-table" viewBox="0 0 144 84" width="144" height="84" role="img" aria-label="Tableau de distributivite a completer pour -2(x-4)"><rect class="corner" x="0" y="0" width="48" height="42"/><rect class="hdr" x="48" y="0" width="48" height="42"/><rect class="hdr" x="96" y="0" width="48" height="42"/><rect class="hdr" x="0" y="42" width="48" height="42"/><rect class="cell" x="48" y="42" width="48" height="42"/><rect class="cell" x="96" y="42" width="48" height="42"/><text x="24" y="21">×</text><text x="72" y="21" class="var">x</text><text x="120" y="21">−4</text><text x="24" y="63">−2</text></svg>`,
-    explanation: "$-2(x-4)=-2\\times x+(-2)\\times(-4)=-2x+8$. Attention au signe : $-2$ multiplié par $-4$ donne $+8$.",
+    aim: "Factoriser une expression en repérant un facteur commun numérique, puis littéral, puis une parenthèse commune.",
+    question: "Factoriser $5x-20$.",
+    explanation: "$20=5\\times4$, donc le facteur commun est $5$ : $5x-20=5\\times x-5\\times4=5(x-4)$. On vérifie en développant : $5(x-4)=5x-20$.",
     niveau2: {
-      question: "Développer et réduire $(2x-3)(x+6)$.",
-      explanation: "$(2x-3)(x+6)=2x\\times x+2x\\times6-3\\times x-3\\times6=2x^2+12x-3x-18=2x^2+9x-18$."
+      question: "Factoriser $3x^2-12x$.",
+      explanation: "$3x^2=3x\\times x$ et $12x=3x\\times4$ : le facteur commun est $3x$. $3x^2-12x=3x(x-4)$."
     },
     niveau3: {
-      question: "Développer et réduire $(2x-3)(x+6)-(x-1)(2x+5)$.",
-      explanation: "$(2x-3)(x+6)=2x^2+9x-18$ et $(x-1)(2x+5)=2x^2+5x-2x-5=2x^2+3x-5$. Différence : $2x^2+9x-18-2x^2-3x+5=6x-13$."
+      question: "Factoriser $(x+2)(x-1)+4(x+2)$.",
+      explanation: "Le facteur commun est la parenthèse $(x+2)$ : $(x+2)(x-1)+4(x+2)=(x+2)\\big[(x-1)+4\\big]=(x+2)(x+3)$."
     }
   },
   {
     tier: "final",
     objectif: "A8 · Calcul littéral élémentaire",
-    aim: "Exprimer une longueur en fonction de x à partir d'une figure codée, puis réduire l'expression.",
-    question: "Les morceaux portant le même codage ont la même longueur. Exprimer $BD$ en fonction de $x$.",
-    diagram: `<svg class="diagram-segment" viewBox="0 0 548 112" width="700" height="143" role="img" aria-label="Segment BD partagé en morceaux codés"><line x1="24" y1="44" x2="524" y2="44"/><line class="tick" x1="24" y1="38" x2="24" y2="50"/><line class="tick" x1="144" y1="38" x2="144" y2="50"/><line class="tick" x1="214" y1="38" x2="214" y2="50"/><line class="tick" x1="334" y1="38" x2="334" y2="50"/><line class="tick" x1="404" y1="38" x2="404" y2="50"/><line class="tick" x1="524" y1="38" x2="524" y2="50"/><line class="tick" x1="77.0" y1="51" x2="83.0" y2="37"/><line class="tick" x1="85.0" y1="51" x2="91.0" y2="37"/><circle cx="179.0" cy="44" r="6"/><line class="tick" x1="267.0" y1="51" x2="273.0" y2="37"/><line class="tick" x1="275.0" y1="51" x2="281.0" y2="37"/><circle cx="369.0" cy="44" r="6"/><line class="tick" x1="457.0" y1="51" x2="463.0" y2="37"/><line class="tick" x1="465.0" y1="51" x2="471.0" y2="37"/><text x="24" y="68">B</text><text x="524" y="68">D</text><g class="measure"><line x1="153" y1="78" x2="205" y2="78"/><path d="M145,78 l9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/><path d="M213,78 l-9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/></g><text class="var" x="179.0" y="102">x</text><g class="measure"><line x1="223" y1="78" x2="325" y2="78"/><path d="M215,78 l9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/><path d="M333,78 l-9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/></g><text x="274.0" y="102">6</text></svg>`,
-    explanation: "Deux morceaux codés ○ mesurent $x$, trois morceaux codés // mesurent $6$ : $BD=6+x+6+x+6=2x+18$.",
+    aim: "Exprimer une longueur en fonction de x quand le résultat est un quotient : partager la longueur restante en morceaux égaux.",
+    question: "Les morceaux portant le même codage ont la même longueur et $AF=20$. Exprimer <span style=\"color:var(--red)\">$BC$</span> en fonction de $x$.",
+    diagram: `<svg class="diagram-segment" viewBox="0 0 548 132" width="700" height="169" role="img" aria-label="Segment AF de longueur 20 partagé en cinq morceaux : AB et EF codés double-trait mesurent x, BC, CD et DE codés rond sont de même longueur"><line x1="24" y1="62" x2="524" y2="62"/><line class="tick" x1="24" y1="56" x2="24" y2="68"/><line class="tick" x1="94" y1="56" x2="94" y2="68"/><line class="tick" x1="214" y1="56" x2="214" y2="68"/><line class="tick" x1="334" y1="56" x2="334" y2="68"/><line class="tick" x1="454" y1="56" x2="454" y2="68"/><line class="tick" x1="524" y1="56" x2="524" y2="68"/><line class="tick" x1="52.0" y1="69" x2="58.0" y2="55"/><line class="tick" x1="60.0" y1="69" x2="66.0" y2="55"/><circle cx="154.0" cy="62" r="6"/><circle cx="274.0" cy="62" r="6"/><circle cx="394.0" cy="62" r="6"/><line class="tick" x1="482.0" y1="69" x2="488.0" y2="55"/><line class="tick" x1="490.0" y1="69" x2="496.0" y2="55"/><text x="24" y="86">A</text><text x="94" y="86">B</text><text x="214" y="86">C</text><text x="334" y="86">D</text><text x="454" y="86">E</text><text x="524" y="86">F</text><g class="measure"><line x1="32" y1="24" x2="516" y2="24"/><path d="M24,24 l9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/><path d="M524,24 l-9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/></g><text x="274.0" y="14">20</text><g class="measure"><line x1="32" y1="100" x2="86" y2="100"/><path d="M24,100 l9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/><path d="M94,100 l-9,-4.5 v9 z" style="fill:var(--accent)" stroke="none"/></g><text class="var" x="59.0" y="124">x</text></svg>`,
+    explanation: "Les deux morceaux codés // mesurent $x$ : $AB+EF=2x$. Ce qui reste est $BE=20-2x$, et il est partagé en trois morceaux codés ○ de même longueur : $BC=\\dfrac{20-2x}{3}$.",
     niveau2: {
-      question: "Un rectangle a pour largeur $x$ et pour longueur $x+6$. Son périmètre vaut $40$. Déterminer $x$.",
-      explanation: "Périmètre : $2x+2(x+6)=4x+12$. Donc $4x+12=40$, $4x=28$ et $x=7$."
+      question: "Exprimer $AC$ en fonction de $x$.",
+      explanation: "$AC=AB+BC=x+\\dfrac{20-2x}{3}=\\dfrac{3x}{3}+\\dfrac{20-2x}{3}=\\dfrac{3x+20-2x}{3}=\\dfrac{x+20}{3}$."
     },
     niveau3: {
-      question: "Un carré a pour côté $x+3$ et un rectangle a pour dimensions $x$ et $x+6$. Lequel a la plus grande aire ? De combien ?",
-      explanation: "Carré : $(x+3)(x+3)=x^2+3x+3x+9=x^2+6x+9$. Rectangle : $x(x+6)=x^2+6x$. Le carré a toujours $9$ unités d'aire de plus, quelle que soit la valeur de $x$."
+      question: "Pour quelles valeurs de $x$ le morceau $BC$ est-il plus long que le morceau $AB$ ?",
+      explanation: "Il faut $\\dfrac{20-2x}{3}>x$, c'est-à-dire $20-2x>3x$, donc $20>5x$ et $x<4$. Comme $x$ est une longueur, $x>0$ : $BC>AB$ pour $0<x<4$."
     }
   }
 ];
@@ -665,11 +663,11 @@ function renderMath(){
   });
 }
 
-// La page s'ouvre (et se recale à chaque question) sur la carte de la
-// question : l'en-tête avec le titre et le lien Sommaire reste accessible
+// La page s'ouvre (et se recale à chaque question) pile sur l'énoncé, juste
+// sous le minuteur : l'en-tête, le badge et le minuteur restent accessibles
 // en remontant.
 function scrollToPage(behavior){
-  const top = document.getElementById("page").getBoundingClientRect().top + window.scrollY - 16;
+  const top = document.getElementById("question-row").getBoundingClientRect().top + window.scrollY - 8;
   window.scrollTo({ top: Math.max(0, top), behavior: behavior || "auto" });
 }
 
