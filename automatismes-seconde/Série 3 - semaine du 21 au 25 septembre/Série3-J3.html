@@ -285,7 +285,9 @@
   .diagram-segment text.var { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-size: 19px; }
 
   /* Figures vectorielles sur quadrillage */
-  .diagram-vec .vgrid line { stroke: var(--rule-strong); stroke-width: 1; opacity: .55; }
+  .diagram-vec .vgrid line { stroke: #333; stroke-width: 1; }
+  :root[data-theme="dark"] .diagram-vec .vgrid line { stroke: var(--ink); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .diagram-vec .vgrid line { stroke: var(--ink); } }
   .diagram-vec .vec line { stroke-width: 3; stroke-linecap: round; }
   .diagram-vec .vec.acc line { stroke: var(--accent); }   .diagram-vec .vec.acc polygon { fill: var(--accent); }
   .diagram-vec .vec.org line { stroke: var(--orange); }   .diagram-vec .vec.org polygon { fill: var(--orange); }
