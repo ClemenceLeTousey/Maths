@@ -285,7 +285,9 @@
   .diagram-segment text.var { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-size: 19px; }
 
   /* Figures vectorielles sur quadrillage */
-  .diagram-vec .vgrid line { stroke: var(--rule-strong); stroke-width: 1; opacity: .55; }
+  .diagram-vec .vgrid line { stroke: #333; stroke-width: 1; }
+  :root[data-theme="dark"] .diagram-vec .vgrid line { stroke: var(--ink); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .diagram-vec .vgrid line { stroke: var(--ink); } }
   .diagram-vec .vec line { stroke-width: 3; stroke-linecap: round; }
   .diagram-vec .vec.acc line { stroke: var(--accent); }   .diagram-vec .vec.acc polygon { fill: var(--accent); }
   .diagram-vec .vec.org line { stroke: var(--orange); }   .diagram-vec .vec.org polygon { fill: var(--orange); }
@@ -432,22 +434,23 @@ const QUESTIONS = [
     tier: "qcm",
     theme: "obj-geometrie",
     objectif: "Vecteurs",
-    aim: "Utiliser la relation de Chasles pour simplifier une somme de plusieurs vecteurs.",
-    question: "Simplifier $\\overrightarrow{AB}+\\overrightarrow{BC}+\\overrightarrow{CD}$ :",
+    aim: "Calculer la norme d'un vecteur sur un quadrillage, simplifier la racine carrée obtenue, puis relier les normes de deux vecteurs colinéaires.",
+    question: "Les carreaux ont pour côté $1$. Quelle est la norme $\\lVert\\overrightarrow{AB}\\rVert$ ?",
+    diagram: `<svg class="diagram-vec" viewBox="0 0 470 198" width="560" height="236" role="img" aria-label="Vecteurs AB (6 carreaux à droite, 3 en haut) et CD (2 à droite, 1 en haut) sur un quadrillage de carreaux de côté 1"><g class="vgrid"><line x1="14" y1="14" x2="14" y2="184"/><line x1="48" y1="14" x2="48" y2="184"/><line x1="82" y1="14" x2="82" y2="184"/><line x1="116" y1="14" x2="116" y2="184"/><line x1="150" y1="14" x2="150" y2="184"/><line x1="184" y1="14" x2="184" y2="184"/><line x1="218" y1="14" x2="218" y2="184"/><line x1="252" y1="14" x2="252" y2="184"/><line x1="286" y1="14" x2="286" y2="184"/><line x1="320" y1="14" x2="320" y2="184"/><line x1="354" y1="14" x2="354" y2="184"/><line x1="388" y1="14" x2="388" y2="184"/><line x1="422" y1="14" x2="422" y2="184"/><line x1="456" y1="14" x2="456" y2="184"/><line x1="14" y1="184" x2="456" y2="184"/><line x1="14" y1="150" x2="456" y2="150"/><line x1="14" y1="116" x2="456" y2="116"/><line x1="14" y1="82" x2="456" y2="82"/><line x1="14" y1="48" x2="456" y2="48"/><line x1="14" y1="14" x2="456" y2="14"/></g><g class="pt"><circle cx="48" cy="150" r="3"/><text x="39" y="162">A</text></g><g class="pt"><circle cx="252" cy="48" r="3"/><text x="261" y="44">B</text></g><g class="vec acc"><line x1="48.0" y1="150.0" x2="241.3" y2="53.4"/><polygon points="252.0,48.0 242.8,59.1 237.6,48.7"/></g><g class="pt"><circle cx="320" cy="150" r="3"/><text x="311" y="162">C</text></g><g class="pt"><circle cx="388" cy="116" r="3"/><text x="397" y="112">D</text></g><g class="vec org"><line x1="320.0" y1="150.0" x2="377.3" y2="121.4"/><polygon points="388.0,116.0 378.8,127.1 373.6,116.7"/></g></svg>`,
     options: [
-      { letter:"A", text:"$\\overrightarrow{AD}$", correct:true },
-      { letter:"B", text:"$\\overrightarrow{AC}$", correct:false },
-      { letter:"C", text:"$\\overrightarrow{BD}$", correct:false },
-      { letter:"D", text:"$\\overrightarrow{0}$", correct:false }
+      { letter:"A", text:"$3\\sqrt{5}$", correct:true },
+      { letter:"B", text:"$5\\sqrt{3}$", correct:false },
+      { letter:"C", text:"$9$", correct:false },
+      { letter:"D", text:"$45$", correct:false }
     ],
-    explanation: "On applique Chasles deux fois : $\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$, puis $\\overrightarrow{AC}+\\overrightarrow{CD}=\\overrightarrow{AD}$.",
+    explanation: "$\\overrightarrow{AB}$ correspond à un déplacement de $6$ carreaux vers la droite et $3$ vers le haut. Pythagore : $AB^2=6^2+3^2=36+9=45$, donc $\\lVert\\overrightarrow{AB}\\rVert=\\sqrt{45}=\\sqrt{9\\times5}=3\\sqrt{5}$.<svg class='diagram-vec' viewBox='0 0 470 198' width='460' height='194' role='img' aria-label='Triangle rectangle de côtés 6 et 3 sous le vecteur AB'><g class='vgrid'><line x1='14' y1='14' x2='14' y2='184'/><line x1='48' y1='14' x2='48' y2='184'/><line x1='82' y1='14' x2='82' y2='184'/><line x1='116' y1='14' x2='116' y2='184'/><line x1='150' y1='14' x2='150' y2='184'/><line x1='184' y1='14' x2='184' y2='184'/><line x1='218' y1='14' x2='218' y2='184'/><line x1='252' y1='14' x2='252' y2='184'/><line x1='286' y1='14' x2='286' y2='184'/><line x1='320' y1='14' x2='320' y2='184'/><line x1='354' y1='14' x2='354' y2='184'/><line x1='388' y1='14' x2='388' y2='184'/><line x1='422' y1='14' x2='422' y2='184'/><line x1='456' y1='14' x2='456' y2='184'/><line x1='14' y1='184' x2='456' y2='184'/><line x1='14' y1='150' x2='456' y2='150'/><line x1='14' y1='116' x2='456' y2='116'/><line x1='14' y1='82' x2='456' y2='82'/><line x1='14' y1='48' x2='456' y2='48'/><line x1='14' y1='14' x2='456' y2='14'/></g><g class='pt'><circle cx='48' cy='150' r='3'/><text x='39' y='162'>A</text></g><g class='pt'><circle cx='252' cy='48' r='3'/><text x='261' y='44'>B</text></g><g class='vec acc'><line x1='48.0' y1='150.0' x2='241.3' y2='53.4'/><polygon points='252.0,48.0 242.8,59.1 237.6,48.7'/></g><g class='pt'><circle cx='320' cy='150' r='3'/><text x='311' y='162'>C</text></g><g class='pt'><circle cx='388' cy='116' r='3'/><text x='397' y='112'>D</text></g><g class='vec org'><line x1='320.0' y1='150.0' x2='377.3' y2='121.4'/><polygon points='388.0,116.0 378.8,127.1 373.6,116.7'/></g><path class='rt' d='M48,150 H252 V48'/><text class='len' x='150.0' y='165.3'>6</text><text class='len' x='269.3' y='104.0'>3</text></svg>",
     niveau2: {
-      question: "Simplifier $\\overrightarrow{MN}-\\overrightarrow{RN}+\\overrightarrow{RS}$.",
-      explanation: "$-\\overrightarrow{RN}=\\overrightarrow{NR}$, donc la somme s'écrit $\\overrightarrow{MN}+\\overrightarrow{NR}+\\overrightarrow{RS}$ ; par Chasles, $\\overrightarrow{MN}+\\overrightarrow{NR}=\\overrightarrow{MR}$ puis $\\overrightarrow{MR}+\\overrightarrow{RS}=\\overrightarrow{MS}$."
+      question: "Calculer $\\lVert\\overrightarrow{CD}\\rVert$. Que remarque-t-on par rapport à $\\lVert\\overrightarrow{AB}\\rVert$ ?",
+      explanation: "$CD^2=2^2+1^2=5$, donc $\\lVert\\overrightarrow{CD}\\rVert=\\sqrt{5}$. Or $\\overrightarrow{AB}$ va $6=3\\times2$ carreaux à droite et $3=3\\times1$ vers le haut : $\\overrightarrow{AB}=3\\overrightarrow{CD}$, et sa norme est bien trois fois plus grande, $3\\sqrt{5}$.<svg class='diagram-vec' viewBox='0 0 470 198' width='460' height='194' role='img' aria-label='Triangle rectangle de côtés 2 et 1 sous le vecteur CD'><g class='vgrid'><line x1='14' y1='14' x2='14' y2='184'/><line x1='48' y1='14' x2='48' y2='184'/><line x1='82' y1='14' x2='82' y2='184'/><line x1='116' y1='14' x2='116' y2='184'/><line x1='150' y1='14' x2='150' y2='184'/><line x1='184' y1='14' x2='184' y2='184'/><line x1='218' y1='14' x2='218' y2='184'/><line x1='252' y1='14' x2='252' y2='184'/><line x1='286' y1='14' x2='286' y2='184'/><line x1='320' y1='14' x2='320' y2='184'/><line x1='354' y1='14' x2='354' y2='184'/><line x1='388' y1='14' x2='388' y2='184'/><line x1='422' y1='14' x2='422' y2='184'/><line x1='456' y1='14' x2='456' y2='184'/><line x1='14' y1='184' x2='456' y2='184'/><line x1='14' y1='150' x2='456' y2='150'/><line x1='14' y1='116' x2='456' y2='116'/><line x1='14' y1='82' x2='456' y2='82'/><line x1='14' y1='48' x2='456' y2='48'/><line x1='14' y1='14' x2='456' y2='14'/></g><g class='pt'><circle cx='48' cy='150' r='3'/><text x='39' y='162'>A</text></g><g class='pt'><circle cx='252' cy='48' r='3'/><text x='261' y='44'>B</text></g><g class='vec acc'><line x1='48.0' y1='150.0' x2='241.3' y2='53.4'/><polygon points='252.0,48.0 242.8,59.1 237.6,48.7'/></g><g class='pt'><circle cx='320' cy='150' r='3'/><text x='311' y='162'>C</text></g><g class='pt'><circle cx='388' cy='116' r='3'/><text x='397' y='112'>D</text></g><g class='vec org'><line x1='320.0' y1='150.0' x2='377.3' y2='121.4'/><polygon points='388.0,116.0 378.8,127.1 373.6,116.7'/></g><path class='rt' d='M320,150 H388 V116'/><text class='len' x='354.0' y='165.3'>2</text><text class='len' x='405.3' y='138.0'>1</text></svg>"
     },
     niveau3: {
-      question: "Simplifier $\\overrightarrow{AB}+\\overrightarrow{CD}-\\overrightarrow{AD}-\\overrightarrow{CB}$.",
-      explanation: "$-\\overrightarrow{AD}=\\overrightarrow{DA}$ et $-\\overrightarrow{CB}=\\overrightarrow{BC}$. On regroupe : $(\\overrightarrow{AB}+\\overrightarrow{BC})+(\\overrightarrow{CD}+\\overrightarrow{DA})=\\overrightarrow{AC}+\\overrightarrow{CA}=\\overrightarrow{0}$."
+      question: "Sans refaire de calcul de Pythagore, donner $\\lVert5\\overrightarrow{CD}\\rVert$ puis $\\lVert-2\\overrightarrow{CD}\\rVert$.",
+      explanation: "Multiplier un vecteur par $k$ multiplie sa longueur par $|k|$ : $\\lVert5\\overrightarrow{CD}\\rVert=5\\sqrt{5}$. Avec $-2$, le vecteur change de sens mais garde la même longueur : $\\lVert-2\\overrightarrow{CD}\\rVert=2\\sqrt{5}$, et non $-2\\sqrt{5}$ — une norme est toujours positive."
     }
   },
   {
@@ -468,17 +471,17 @@ const QUESTIONS = [
   },
   {
     tier: "final",
-    objectif: "A8 · Calcul littéral élémentaire",
-    aim: "Simplifier une écriture fractionnaire contenant une lettre en factorisant le numérateur.",
-    question: "Simplifier $\\dfrac{3x+9}{3}$ :",
-    explanation: "$\\dfrac{3x+9}{3}=\\dfrac{3\\times x+3\\times3}{3}=\\dfrac{3(x+3)}{3}=x+3$.",
+    objectif: "A9 · Développer, factoriser",
+    aim: "Factoriser une expression par x, y compris quand le second terme est x lui-même, puis utiliser la forme factorisée pour un calcul mental.",
+    question: "Factoriser $x^2+7x$.",
+    explanation: "$x^2=x\\times x$ et $7x=x\\times7$ : le facteur commun est $x$. Donc $x^2+7x=x(x+7)$. On vérifie en développant : $x(x+7)=x^2+7x$.",
     niveau2: {
-      question: "Simplifier $\\dfrac{2x^2+6x}{2x}$ (avec $x\\neq0$).",
-      explanation: "On factorise le numérateur par $2x$ : $\\dfrac{2x^2+6x}{2x}=\\dfrac{2x(x+3)}{2x}=x+3$."
+      question: "Factoriser $5x^2-x$.",
+      explanation: "$5x^2=5x\\times x$ et, attention, $-x=(-1)\\times x$. Le facteur commun est $x$ : $5x^2-x=x(5x-1)$. Le piège est d'oublier ce $-1$ et d'écrire $x(5x)$."
     },
     niveau3: {
-      question: "Simplifier $\\dfrac{4x^2y-6xy^2}{2xy}$ (avec $x\\neq0$ et $y\\neq0$).",
-      explanation: "On factorise le numérateur par $2xy$ : $4x^2y=2xy\\times2x$ et $6xy^2=2xy\\times3y$, donc $\\dfrac{4x^2y-6xy^2}{2xy}=\\dfrac{2xy(2x-3y)}{2xy}=2x-3y$."
+      question: "Factoriser $x^2+x$, puis en déduire $99^2+99$ de tête.",
+      explanation: "$x^2+x=x\\times x+x\\times1=x(x+1)$. Pour $x=99$ : $99^2+99=99\\times(99+1)=99\\times100=9900$."
     }
   }
 ];
@@ -662,11 +665,11 @@ function renderMath(){
   });
 }
 
-// La page s'ouvre (et se recale à chaque question) sur la carte de la
-// question : l'en-tête avec le titre et le lien Sommaire reste accessible
+// La page s'ouvre (et se recale à chaque question) pile sur l'énoncé, juste
+// sous le minuteur : l'en-tête, le badge et le minuteur restent accessibles
 // en remontant.
 function scrollToPage(behavior){
-  const top = document.getElementById("page").getBoundingClientRect().top + window.scrollY - 16;
+  const top = document.getElementById("question-row").getBoundingClientRect().top + window.scrollY - 8;
   window.scrollTo({ top: Math.max(0, top), behavior: behavior || "auto" });
 }
 
