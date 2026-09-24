@@ -185,6 +185,9 @@
   .question-row.levels-aside .levels-col { flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
   .question-row.levels-aside .levels-col .level { margin-top: 0; }
   .question-row.levels-aside .levels-col .level-question { font-size: 1.18rem; }
+  /* Sans figure, l'énoncé lui-même passe à gauche des niveaux 2 et 3 */
+  .question-row.levels-aside.no-diagram .question { flex: 1 1 380px; margin: 0; }
+  .question-row.levels-aside.no-diagram .levels-col { flex: 1 1 420px; }
   .code-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; width: 100%; }
   .code-col { flex: 1 1 220px; max-width: 320px; }
   .code {
@@ -436,6 +439,7 @@ const QUESTIONS = [
     objectif: "Vecteurs",
     aim: "Calculer la norme d'un vecteur sur un quadrillage, simplifier la racine carrée obtenue, puis relier les normes de deux vecteurs colinéaires.",
     question: "Les carreaux ont pour côté $1$. Quelle est la norme $\\lVert\\overrightarrow{AB}\\rVert$ ?",
+    optionsAside: true,
     diagram: `<svg class="diagram-vec" viewBox="0 0 470 198" width="560" height="236" role="img" aria-label="Vecteurs AB (6 carreaux à droite, 3 en haut) et CD (2 à droite, 1 en haut) sur un quadrillage de carreaux de côté 1"><g class="vgrid"><line x1="14" y1="14" x2="14" y2="184"/><line x1="48" y1="14" x2="48" y2="184"/><line x1="82" y1="14" x2="82" y2="184"/><line x1="116" y1="14" x2="116" y2="184"/><line x1="150" y1="14" x2="150" y2="184"/><line x1="184" y1="14" x2="184" y2="184"/><line x1="218" y1="14" x2="218" y2="184"/><line x1="252" y1="14" x2="252" y2="184"/><line x1="286" y1="14" x2="286" y2="184"/><line x1="320" y1="14" x2="320" y2="184"/><line x1="354" y1="14" x2="354" y2="184"/><line x1="388" y1="14" x2="388" y2="184"/><line x1="422" y1="14" x2="422" y2="184"/><line x1="456" y1="14" x2="456" y2="184"/><line x1="14" y1="184" x2="456" y2="184"/><line x1="14" y1="150" x2="456" y2="150"/><line x1="14" y1="116" x2="456" y2="116"/><line x1="14" y1="82" x2="456" y2="82"/><line x1="14" y1="48" x2="456" y2="48"/><line x1="14" y1="14" x2="456" y2="14"/></g><g class="pt"><circle cx="48" cy="150" r="3"/><text x="39" y="162">A</text></g><g class="pt"><circle cx="252" cy="48" r="3"/><text x="261" y="44">B</text></g><g class="vec acc"><line x1="48.0" y1="150.0" x2="241.3" y2="53.4"/><polygon points="252.0,48.0 242.8,59.1 237.6,48.7"/></g><g class="pt"><circle cx="320" cy="150" r="3"/><text x="311" y="162">C</text></g><g class="pt"><circle cx="388" cy="116" r="3"/><text x="397" y="112">D</text></g><g class="vec org"><line x1="320.0" y1="150.0" x2="377.3" y2="121.4"/><polygon points="388.0,116.0 378.8,127.1 373.6,116.7"/></g></svg>`,
     options: [
       { letter:"A", text:"$3\\sqrt{5}$", correct:true },
@@ -459,6 +463,7 @@ const QUESTIONS = [
     objectif: "Algo",
     aim: "Évaluer une fonction Python d'une variable combinant produit et somme (écho à la factorisation de la semaine).",
     question: "<span class=\"code\">def f(x):<br>&nbsp;&nbsp;return x * (x + 1)</span><br>Que renvoie <span class=\"code\">f(3)</span> ?",
+    levelsAside: true,
     explanation: "On remplace $x$ par $3$ : $f(3)=3\\times(3+1)=3\\times4=12$.",
     niveau2: {
       question: "<span class=\"code\">def h(x):<br>&nbsp;&nbsp;return x * (x + 1) - x * x</span><br>Que renvoie <span class=\"code\">h(7)</span> ? Et <span class=\"code\">h(100)</span> ?",
@@ -474,6 +479,7 @@ const QUESTIONS = [
     objectif: "A9 · Développer, factoriser",
     aim: "Factoriser une expression par x, y compris quand le second terme est x lui-même, puis utiliser la forme factorisée pour un calcul mental.",
     question: "Factoriser $x^2+7x$.",
+    levelsAside: true,
     explanation: "$x^2=x\\times x$ et $7x=x\\times7$ : le facteur commun est $x$. Donc $x^2+7x=x(x+7)$. On vérifie en développant : $x(x+7)=x^2+7x$.",
     niveau2: {
       question: "Factoriser $5x^2-x$.",
@@ -585,6 +591,7 @@ function render(){
   if (q.optionsAside) questionRow.appendChild(optionsEl);
   else if (optionsEl.parentNode === questionRow) questionRow.insertAdjacentElement("afterend", optionsEl);
   questionRow.classList.toggle("levels-aside", !!q.levelsAside);
+  questionRow.classList.toggle("no-diagram", !!q.levelsAside && !q.diagram);
   if (q.levelsAside){
     let col = questionRow.querySelector(".levels-col");
     if (!col){ col = document.createElement("div"); col.className = "levels-col"; questionRow.appendChild(col); }
