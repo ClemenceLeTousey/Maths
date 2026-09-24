@@ -109,8 +109,7 @@
     border: 1px solid var(--line);
     border-radius: 4px;
     box-shadow: 0 1px 3px var(--shadow), 0 10px 30px -18px var(--shadow);
-    padding: 34px 40px 34px 56px;
-    min-height: 560px;
+    padding: 20px 28px 22px 48px;
     display: flex;
     flex-direction: column;
   }
@@ -119,7 +118,7 @@
     background: var(--red); opacity: 0.55;
   }
 
-  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px; }
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 2px; }
 
   .badge {
     display: inline-flex; align-items: center; gap: 7px;
@@ -138,7 +137,9 @@
   .page-meta .count { font-size: 1.05rem; color: var(--ink-soft); }
   .page-meta .jour { font-size: 0.72rem; margin-top: 4px; }
 
-  .timer-bar { display: flex; align-items: center; gap: 8px; margin: 14px 0 18px; }
+  .timer-bar { display: flex; align-items: center; gap: 8px; margin: 8px 0 12px; }
+  /* Le « Voir la réponse » du niveau 1 (étoile verte) vit dans la barre du minuteur */
+  .timer-bar .reveal-btn { align-self: center; margin: 0 0 0 16px; border-color: var(--aqua); color: var(--aqua); }
   .timer-display {
     font-family: "Space Mono", monospace; font-size: 1.3rem; font-weight: 700;
     color: var(--ink); min-width: 2.8em; text-align: center;
@@ -154,7 +155,7 @@
   .timer-btn.small { padding: 5px 9px; font-size: 0.72rem; }
 
   .aim {
-    margin: 0 0 14px;
+    margin: 0 0 10px;
     color: var(--ink-soft);
     font-size: 0.92rem;
     font-style: italic;
@@ -163,10 +164,10 @@
 
   .question {
     font-size: clamp(1.55rem, 1.3rem + 0.9vw, 1.95rem);
-    font-weight: 500; line-height: 1.4; margin: 0 0 22px; color: var(--ink);
+    font-weight: 500; line-height: 1.35; margin: 0 0 12px; color: var(--ink);
   }
 
-  .diagram { display: flex; justify-content: center; margin: 0 0 22px; }
+  .diagram { display: flex; justify-content: center; margin: 0 0 12px; }
   .diagram:empty { display: none; }
   .diagram svg { max-width: 100%; height: auto; }
   .question-row.side { display: flex; align-items: flex-start; gap: 28px; }
@@ -211,9 +212,9 @@
   .diagram-table text { font-family: "Space Mono", monospace; font-weight: 700; font-size: 15px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
   .diagram-table text.var, .diagram-table tspan.var { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-weight: 400; }
 
-  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
   .opt {
-    border: 1.5px solid var(--rule-strong); border-radius: 8px; padding: 13px 16px;
+    border: 1.5px solid var(--rule-strong); border-radius: 8px; padding: 10px 14px;
     font-size: 1.35rem; cursor: pointer; background: var(--surface);
     transition: background .15s, border-color .15s;
   }
@@ -226,7 +227,7 @@
   .opt.correct { border-color: var(--aqua); background: var(--aqua-soft); }
   .opt.wrong { border-color: var(--red); background: var(--red-soft); opacity: .7; }
 
-  .answer-zone { margin-top: auto; padding-top: 14px; }
+  .answer-zone { margin-top: 0; padding-top: 0; }
   .answer-zone .label {
     font-family: "Space Mono", monospace; font-size: 0.78rem; color: var(--muted);
     text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
@@ -234,7 +235,7 @@
   .answer-line { height: 1px; background: var(--rule-strong); margin-bottom: 18px; }
 
   .answer-box {
-    display: none; margin-top: 4px; padding: 14px 18px; border-radius: 8px;
+    display: none; margin-top: 8px; padding: 12px 16px; border-radius: 8px;
     background: var(--orange-soft); border-left: 4px solid var(--orange);
   }
   .answer-box.shown { display: block; }
@@ -259,14 +260,14 @@
 
   /* Questions de niveau 2 et 3 « en dessous » de la question en cours */
   .level {
-    margin-top: 18px; padding: 16px 18px 14px;
+    margin-top: 12px; padding: 12px 15px 11px;
     border: 1.5px solid var(--rule-strong); border-radius: 10px;
     background: var(--paper);
     background: color-mix(in srgb, var(--paper) 55%, var(--surface));
   }
   .level.level-2 { border-color: var(--accent); }
   .level.level-3 { border-color: var(--final); }
-  .level-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .level-head { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
   .level-label {
     font-family: "Space Mono", monospace; font-size: 0.72rem; font-weight: 700;
     letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted);
@@ -277,7 +278,12 @@
     background: var(--orange-soft); border-left: 4px solid var(--orange); font-size: 1.05rem;
   }
   .level-answer.shown { display: block; }
-  .level .reveal-btn { margin-top: 12px; font-size: 0.8rem; padding: 7px 14px; }
+  .level .reveal-btn { margin-top: 9px; font-size: 0.8rem; padding: 7px 14px; }
+  /* Niveaux 2 et 3 côte à côte sous la figure (levelsPair) */
+  .levels-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; margin-top: 12px; }
+  .levels-pair .level { margin-top: 0; }
+  .levels-pair .level-question { font-size: 1.18rem; }
+  @media (max-width: 820px) { .levels-pair { grid-template-columns: 1fr; } }
 
   /* Schéma « segment en fonction de x » */
   .diagram-segment line, .diagram-segment path { stroke: var(--ink); stroke-width: 1.6; fill: none; stroke-linecap: round; }
@@ -394,6 +400,7 @@
       <button class="timer-btn small" id="timer-minus" type="button" aria-label="Moins 5 secondes">−5</button>
       <button class="timer-btn small" id="timer-plus" type="button" aria-label="Plus 5 secondes">+5</button>
       <button class="timer-btn small" id="timer-reset" type="button" aria-label="Réinitialiser le minuteur">↺</button>
+      <button class="reveal-btn" id="reveal-btn">Voir la réponse</button>
     </div>
     <div class="question-row" id="question-row">
       <p class="question" id="qtext"></p>
@@ -405,7 +412,6 @@
         <div class="aim"><strong>Objectif visé :</strong> <span id="aim-text"></span></div>
         <div class="content" id="answer-content"></div>
       </div>
-      <button class="reveal-btn" id="reveal-btn">Voir la réponse</button>
     </div>
     <div class="level level-2" id="lvl2">
       <div class="level-head"><span class="stars s2" aria-label="Niveau 2"><span class="star on">★</span><span class="star on">★</span><span class="star">★</span></span><span class="level-label">Niveau 2</span></div>
@@ -440,6 +446,7 @@ const QUESTIONS = [
     aim: "Calculer la norme d'un vecteur sur un quadrillage, simplifier la racine carrée obtenue, puis relier les normes de deux vecteurs colinéaires.",
     question: "Les carreaux ont pour côté $1$. Quelle est la norme $\\lVert\\overrightarrow{AB}\\rVert$ ?",
     optionsAside: true,
+    levelsPair: true,
     diagram: `<svg class="diagram-vec" viewBox="0 0 470 198" width="560" height="236" role="img" aria-label="Vecteurs AB (6 carreaux à droite, 3 en haut) et CD (2 à droite, 1 en haut) sur un quadrillage de carreaux de côté 1"><g class="vgrid"><line x1="14" y1="14" x2="14" y2="184"/><line x1="48" y1="14" x2="48" y2="184"/><line x1="82" y1="14" x2="82" y2="184"/><line x1="116" y1="14" x2="116" y2="184"/><line x1="150" y1="14" x2="150" y2="184"/><line x1="184" y1="14" x2="184" y2="184"/><line x1="218" y1="14" x2="218" y2="184"/><line x1="252" y1="14" x2="252" y2="184"/><line x1="286" y1="14" x2="286" y2="184"/><line x1="320" y1="14" x2="320" y2="184"/><line x1="354" y1="14" x2="354" y2="184"/><line x1="388" y1="14" x2="388" y2="184"/><line x1="422" y1="14" x2="422" y2="184"/><line x1="456" y1="14" x2="456" y2="184"/><line x1="14" y1="184" x2="456" y2="184"/><line x1="14" y1="150" x2="456" y2="150"/><line x1="14" y1="116" x2="456" y2="116"/><line x1="14" y1="82" x2="456" y2="82"/><line x1="14" y1="48" x2="456" y2="48"/><line x1="14" y1="14" x2="456" y2="14"/></g><g class="pt"><circle cx="48" cy="150" r="3"/><text x="39" y="162">A</text></g><g class="pt"><circle cx="252" cy="48" r="3"/><text x="261" y="44">B</text></g><g class="vec acc"><line x1="48.0" y1="150.0" x2="241.3" y2="53.4"/><polygon points="252.0,48.0 242.8,59.1 237.6,48.7"/></g><g class="pt"><circle cx="320" cy="150" r="3"/><text x="311" y="162">C</text></g><g class="pt"><circle cx="388" cy="116" r="3"/><text x="397" y="112">D</text></g><g class="vec org"><line x1="320.0" y1="150.0" x2="377.3" y2="121.4"/><polygon points="388.0,116.0 378.8,127.1 373.6,116.7"/></g></svg>`,
     options: [
       { letter:"A", text:"$3\\sqrt{5}$", correct:true },
@@ -592,12 +599,20 @@ function render(){
   else if (optionsEl.parentNode === questionRow) questionRow.insertAdjacentElement("afterend", optionsEl);
   questionRow.classList.toggle("levels-aside", !!q.levelsAside);
   questionRow.classList.toggle("no-diagram", !!q.levelsAside && !q.diagram);
+  const section = document.getElementById("page");
+  const pair = section.querySelector(".levels-pair");
   if (q.levelsAside){
     let col = questionRow.querySelector(".levels-col");
     if (!col){ col = document.createElement("div"); col.className = "levels-col"; questionRow.appendChild(col); }
     LEVELS.forEach(l => col.appendChild(l.el));
+    if (pair) pair.remove();
+  } else if (q.levelsPair){
+    const box = pair || document.createElement("div");
+    box.className = "levels-pair";
+    section.appendChild(box);
+    LEVELS.forEach(l => box.appendChild(l.el));
   } else {
-    const section = document.getElementById("page");
+    if (pair) pair.remove();
     LEVELS.forEach(l => { if (l.el.parentNode !== section) section.appendChild(l.el); });
   }
 
