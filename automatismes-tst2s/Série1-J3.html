@@ -104,7 +104,9 @@
   }
   .back-link:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
-  .pages { width: 100%; max-width: 1100px; }
+  /* min-height : garantit qu'on peut toujours faire défiler jusqu'à caler
+     l'énoncé en haut de l'écran. */
+  .pages { width: 100%; max-width: 1100px; min-height: calc(100vh - 16px); }
 
   .page {
     position: relative;
@@ -112,8 +114,7 @@
     border: 1px solid var(--line);
     border-radius: 4px;
     box-shadow: 0 1px 3px var(--shadow), 0 10px 30px -18px var(--shadow);
-    padding: 34px 40px 34px 56px;
-    min-height: 560px;
+    padding: 20px 28px 22px 48px;
     display: flex;
     flex-direction: column;
   }
@@ -122,7 +123,7 @@
     background: var(--red); opacity: 0.55;
   }
 
-  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px; }
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 2px; }
 
   .badge {
     display: inline-flex; align-items: center; gap: 7px;
@@ -141,7 +142,7 @@
   .page-meta .count { font-size: 1.05rem; color: var(--ink-soft); }
   .page-meta .jour { font-size: 0.72rem; margin-top: 4px; }
 
-  .timer-bar { display: flex; align-items: center; gap: 8px; margin: 14px 0 18px; }
+  .timer-bar { display: flex; align-items: center; gap: 8px; margin: 8px 0 12px; }
   .timer-display {
     font-family: "Space Mono", monospace; font-size: 1.3rem; font-weight: 700;
     color: var(--ink); min-width: 2.8em; text-align: center;
@@ -166,12 +167,16 @@
 
   .question {
     font-size: clamp(1.55rem, 1.3rem + 0.9vw, 1.95rem);
-    font-weight: 500; line-height: 1.4; margin: 0 0 22px; color: var(--ink);
+    font-weight: 500; line-height: 1.35; margin: 0 0 12px; color: var(--ink);
   }
 
-  .diagram { display: flex; justify-content: center; margin: 0 0 22px; }
+  .diagram { display: flex; justify-content: center; margin: 0 0 12px; }
   .diagram:empty { display: none; }
-  .diagram svg { max-width: 100%; height: auto; }
+  /* Les figures n'ont pas de largeur intrinsèque (viewBox seul) : sans
+     plafond elles s'étirent sur toute la largeur de la carte et la figure
+     dépasse du bas de l'écran. On les borne pour que l'énoncé, la figure
+     et les propositions tiennent ensemble à l'ouverture. */
+  .diagram svg { max-width: min(100%, 560px); height: auto; max-height: min(44vh, 330px); }
   .diagram-point circle { fill: var(--surface); stroke: var(--ink); stroke-width: 2.5; }
   .diagram-point.correct circle { stroke: var(--aqua); fill: var(--aqua-soft); }
   .diagram-point text { font-family: "Space Mono", monospace; font-weight: 700; font-size: 13px; fill: var(--ink); text-anchor: middle; }
@@ -317,9 +322,11 @@
       <button class="timer-btn small" id="timer-plus" type="button" aria-label="Plus 5 secondes">+5</button>
       <button class="timer-btn small" id="timer-reset" type="button" aria-label="Réinitialiser le minuteur">↺</button>
     </div>
-    <p class="question" id="qtext"></p>
-    <div class="diagram" id="diagram"></div>
-    <div class="options" id="options"></div>
+    <div class="question-row" id="question-row">
+      <p class="question" id="qtext"></p>
+      <div class="diagram" id="diagram"></div>
+      <div class="options" id="options"></div>
+    </div>
     <div class="answer-zone">
       <div class="answer-box" id="answer-box">
         <div class="aim"><strong>Objectif visé :</strong> <span id="aim-text"></span></div>
@@ -494,10 +501,18 @@ function renderMath(){
   });
 }
 
+// La page s'ouvre (et se recale à chaque question) pile sur l'énoncé, juste
+// sous le minuteur : l'en-tête, le badge et le minuteur restent accessibles
+// en remontant.
+function scrollToPage(behavior){
+  const top = document.getElementById("question-row").getBoundingClientRect().top + window.scrollY - 8;
+  window.scrollTo({ top: Math.max(0, top), behavior: behavior || "auto" });
+}
+
 function goTo(i){
   current = Math.max(0, Math.min(QUESTIONS.length - 1, i));
   render();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToPage("smooth");
 }
 
 revealBtn.addEventListener("click", reveal);
@@ -511,6 +526,8 @@ document.addEventListener("keydown", (e) => {
 });
 
 render();
+scrollToPage();
+window.addEventListener("load", () => scrollToPage());
 </script>
 
 <script>
