@@ -192,6 +192,7 @@
   .code-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; width: 100%; }
   .code-col { flex: 1 1 220px; max-width: 320px; }
   .code {
+    display: inline-block; vertical-align: top; max-width: 100%;
     font-family: "Space Mono", monospace; font-size: 0.9rem; line-height: 1.6;
     background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
     padding: 12px 15px; white-space: pre; color: var(--ink); overflow-x: auto;
@@ -470,7 +471,6 @@ const QUESTIONS = [
     objectif: "Algo",
     aim: "Évaluer une fonction Python d'une variable combinant produit et somme (écho à la factorisation de la semaine).",
     question: "<span class=\"code\">def f(x):<br>&nbsp;&nbsp;return x * (x + 1)</span><br>Que renvoie <span class=\"code\">f(3)</span> ?",
-    levelsAside: true,
     explanation: "On remplace $x$ par $3$ : $f(3)=3\\times(3+1)=3\\times4=12$.",
     niveau2: {
       question: "<span class=\"code\">def h(x):<br>&nbsp;&nbsp;return x * (x + 1) - x * x</span><br>Que renvoie <span class=\"code\">h(7)</span> ? Et <span class=\"code\">h(100)</span> ?",
