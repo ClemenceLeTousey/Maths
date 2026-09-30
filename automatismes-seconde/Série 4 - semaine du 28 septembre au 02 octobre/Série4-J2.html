@@ -14,7 +14,7 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Série 4 · Jour 1 — Automatismes</title>
+<title>Série 4 · Jour 2 — Automatismes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -329,6 +329,7 @@
   .diagram-shape .fig { fill: var(--accent-soft); stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: miter; }
   .diagram-shape text { font-family: "Public Sans", sans-serif; font-size: 19px; fill: var(--ink); text-anchor: middle; }
   .diagram-shape text.found { fill: var(--orange); }
+  .diagram-shape .cut { fill: none; stroke: var(--orange); stroke-width: 2; stroke-dasharray: 7 6; }
   .answer-box .diagram-shape { display: block; margin: 10px auto 0; }
 
   .worksheet-nav {
@@ -385,13 +386,13 @@
   <div class="brand-row">
     <div>
       <h1>Automatismes — Série 4<br>Semaine du 28 septembre au 2 octobre</h1>
-      <p class="subtitle">Jour 1 · projection en classe</p>
+      <p class="subtitle">Jour 2 · projection en classe</p>
     </div>
     <div class="header-actions">
     <a class="theme-toggle" href="Série4-sommaire.html" aria-label="Sommaire" title="Sommaire">📋</a>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
-    <a class="back-link" href="../Série 3 - semaine du 21 au 25 septembre/Série3-J4.html">Série 3</a>
-    <a class="back-link" href="Série4-J2.html">J+1</a>
+    <a class="back-link" href="Série4-J1.html">J-1</a>
+    <span class="back-link" aria-hidden="true" style="visibility: hidden;">J+1</span>
     </div>
   </div>
 </div>
@@ -405,7 +406,7 @@
       </div>
       <div class="page-meta">
         <span class="count" id="qnum-display">1 / 3</span>
-        <div class="jour">Série 4 · Jour 1</div>
+        <div class="jour">Série 4 · Jour 2</div>
       </div>
     </div>
     <div class="timer-bar">
@@ -457,59 +458,59 @@ const QUESTIONS = [
     tier: "qcm",
     theme: "obj-complement",
     objectif: "Algo · Structures conditionnelles",
-    aim: "Lire une instruction conditionnelle if / else et savoir quelle branche est exécutée, en particulier à la valeur frontière d'une inégalité stricte.",
-    question: "Que renvoient <span class=\"code big-inline\">f(4)</span> et <span class=\"code big-inline\">f(3)</span> ?<span class=\"hint\"><span class=\"code inl\">if</span> signifie « si » et <span class=\"code inl\">else</span> signifie « sinon ».</span>",
+    aim: "Lire une instruction conditionnelle if / else avec un test « inférieur ou égal » : la valeur frontière passe dans le if, et un nombre négatif se remplace entre parenthèses.",
+    question: "Que renvoient <span class=\"code big-inline\">f(2)</span> et <span class=\"code big-inline\">f(-3)</span> ?<span class=\"hint\"><span class=\"code inl\">if</span> signifie « si » et <span class=\"code inl\">else</span> signifie « sinon ». <span class=\"code inl\">&lt;=</span> signifie $\\leqslant$.</span>",
     optionsAside: true,
     levelsPair: true,
-    diagram: `<span class="code big">def f(x):<br>&nbsp;&nbsp;&nbsp;&nbsp;if x &gt; 3:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 2 * x<br>&nbsp;&nbsp;&nbsp;&nbsp;else:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return x + 10</span>`,
+    diagram: `<span class="code big">def f(x):<br>&nbsp;&nbsp;&nbsp;&nbsp;if x &lt;= 2:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 5 - x<br>&nbsp;&nbsp;&nbsp;&nbsp;else:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 3 * x</span>`,
     options: [
-      { letter:"A", text:"$8$ et $13$", correct:true },
-      { letter:"B", text:"$8$ et $6$", correct:false },
-      { letter:"C", text:"$14$ et $13$", correct:false },
-      { letter:"D", text:"$14$ et $6$", correct:false }
+      { letter:"A", text:"$3$ et $8$", correct:true },
+      { letter:"B", text:"$6$ et $8$", correct:false },
+      { letter:"C", text:"$3$ et $-9$", correct:false },
+      { letter:"D", text:"$3$ et $2$", correct:false }
     ],
-    explanation: "$4>3$ est vrai : <span class=\"code inl\">f(4)</span> renvoie $2\\times4=8$. $3>3$ est <em>faux</em> ($3$ n'est pas strictement supérieur à $3$) : on passe dans le <span class=\"code inl\">else</span>, <span class=\"code inl\">f(3)</span> renvoie $3+10=13$. Surprise : $f(3)$ est plus grand que $f(4)$ ! Les pièges : $6$ (croire que $3>3$ est vrai) et $14$ (se tromper de branche pour $4$).",
+    explanation: "$2\\leqslant2$ est <em>vrai</em> (« inférieur <em>ou égal</em> ») : <span class=\"code inl\">f(2)</span> renvoie $5-2=3$. $-3\\leqslant2$ est vrai aussi : <span class=\"code inl\">f(-3)</span> renvoie $5-(-3)=5+3=8$. Les pièges : $6$ (croire que $2\\leqslant2$ est faux et passer dans le <span class=\"code inl\">else</span>), $-9$ (mauvaise branche pour $-3$), $2$ (calculer $5-3$ au lieu de $5-(-3)$).",
     niveau2: {
-      question: "<span class=\"code\">a = 8<br>if a &gt; 4:<br>&nbsp;&nbsp;&nbsp;&nbsp;a = 2 * a - 5<br>if a &gt; 10:<br>&nbsp;&nbsp;&nbsp;&nbsp;a = a - 10<br>print(a)</span><br>Qu'affiche ce programme ?",
-      explanation: "$8>4$ est vrai : <span class=\"code inl\">a</span> prend la valeur $2\\times8-5=11$. Le second test se fait avec la <em>nouvelle</em> valeur : $11>10$ est vrai, donc <span class=\"code inl\">a</span> devient $11-10=1$. Le programme affiche $1$ (et non $11$, qu'on obtient en testant encore $8>10$)."
+      question: "<span class=\"code\">x = -3<br>if x &lt; 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;x = -x<br>else:<br>&nbsp;&nbsp;&nbsp;&nbsp;x = x + 1<br>print(2 * x + 1)</span><br>Qu'affiche ce programme ?",
+      explanation: "$-3\\lt 0$ est vrai : on exécute le <span class=\"code inl\">if</span>, <span class=\"code inl\">x</span> prend la valeur $-(-3)=3$ ; le <span class=\"code inl\">else</span> est sauté. On affiche $2\\times3+1=7$ (et non $-5$, qu'on obtient en oubliant que <span class=\"code inl\">x</span> a changé)."
     },
     niveau3: {
-      question: "Avec la fonction <span class=\"code inl\">f</span> de la question, trouver <em>tous</em> les nombres $x$ pour lesquels <span class=\"code inl\">f(x)</span> renvoie $12$.",
-      explanation: "On étudie chaque branche, puis on vérifie sa condition.<br>• Si $x>3$ : $2x=12$, donc $x=6$, et on a bien $6>3$ ✓.<br>• Si $x\\leqslant3$ : $x+10=12$, donc $x=2$, et on a bien $2\\leqslant3$ ✓.<br>Il y a donc deux solutions : $x=2$ et $x=6$. (La vérification n'est pas décorative : pour obtenir $14$, la seconde branche donnerait $x=4$, refusé car $4>3$ ; seul $x=7$ convient.)"
+      question: "Avec la fonction <span class=\"code inl\">f</span> de la question, trouver <em>tous</em> les nombres $x$ pour lesquels <span class=\"code inl\">f(x)</span> renvoie $6$.",
+      explanation: "On étudie chaque branche, puis on vérifie sa condition.<br>• Si $x\\leqslant2$ : $5-x=6$, donc $x=-1$, et on a bien $-1\\leqslant2$ ✓.<br>• Si $x>2$ : $3x=6$, donc $x=2$… mais $2>2$ est <em>faux</em> : refusé (d'ailleurs <span class=\"code inl\">f(2)</span> renvoie $3$, pas $6$).<br>Une seule solution : $x=-1$."
     }
   },
   {
     tier: "question",
     objectif: "A10 · Équations",
-    aim: "Résoudre une équation du premier degré en isolant l'inconnue : mêmes opérations sur les deux membres, puis vérification.",
-    question: "Résoudre l'équation $5x-7=13$.",
+    aim: "Résoudre une équation du premier degré, y compris avec un coefficient négatif, des parenthèses ou des fractions, puis vérifier.",
+    question: "Résoudre l'équation :$$-3x+8=2$$",
     levelsAside: true,
-    explanation: "On ajoute $7$ aux deux membres : $5x=20$. On divise les deux membres par $5$ : $x=4$.<br>Vérification : $5\\times4-7=20-7=13$ ✓. La solution est $4$.",
+    explanation: "On soustrait $8$ aux deux membres : $-3x=-6$. On divise les deux membres par $-3$ : $x=2$.<br>Vérification : $-3\\times2+8=-6+8=2$ ✓. La solution est $2$.",
     niveau2: {
-      question: "Résoudre l'équation $7x+4=3x-8$.",
-      explanation: "On soustrait $3x$ aux deux membres : $4x+4=-8$. On soustrait $4$ : $4x=-12$. On divise par $4$ : $x=-3$.<br>Vérification : $7\\times(-3)+4=-17$ et $3\\times(-3)-8=-17$ ✓. La solution est $-3$."
+      question: "Résoudre l'équation :$$2(x-3)=5x+9$$",
+      explanation: "On développe : $2x-6=5x+9$. On soustrait $5x$ aux deux membres : $-3x-6=9$. On ajoute $6$ : $-3x=15$. On divise par $-3$ : $x=-5$.<br>Vérification : $2\\times(-5-3)=-16$ et $5\\times(-5)+9=-16$ ✓. La solution est $-5$."
     },
     niveau3: {
-      question: "Résoudre l'équation $3(x-2)-(x+4)=2(x+1)$.",
-      explanation: "On développe chaque membre, en changeant les signes derrière le « $-$ » : $3x-6-x-4=2x+2$, soit $2x-10=2x+2$.<br>On soustrait $2x$ aux deux membres : $-10=2$, ce qui est faux quelle que soit la valeur de $x$.<br>L'équation n'a <em>aucune</em> solution : $S=\\varnothing$."
+      question: "Résoudre l'équation :$$\\dfrac{x}{3}+2=\\dfrac{x+1}{2}$$",
+      explanation: "On multiplie les deux membres par $6$ pour chasser les dénominateurs : $2x+12=3(x+1)$, soit $2x+12=3x+3$.<br>On soustrait $2x$ puis $3$ : $9=x$.<br>Vérification : $\\dfrac{9}{3}+2=5$ et $\\dfrac{9+1}{2}=5$ ✓. La solution est $9$."
     }
   },
   {
     tier: "final",
     theme: "obj-geometrie",
     objectif: "A21 · Périmètres, aires",
-    aim: "Calculer le périmètre d'une figure composée en déduisant les longueurs manquantes, puis relier périmètre, aire et équation.",
-    question: "Tous les angles sont droits. Calculer le périmètre de la figure.",
+    aim: "Calculer l'aire d'une figure composée en la découpant en rectangles (ou par différence), puis exprimer une aire en fonction de x.",
+    question: "Tous les angles sont droits. Calculer l'aire de la figure.",
     levelsAside: true,
-    diagram: `<svg class="diagram-shape" viewBox="0 0 380 290" width="380" height="290" role="img" aria-label="Rectangle de 10 m sur 8 m dont on a retiré un carré de 3 m dans le coin en haut à droite"><path class="fig" d="M50,248 H330 V108 H246 V24 H50 Z"/><text x="190" y="274">10 m</text><text x="24" y="141">8 m</text><text x="300" y="100">3 m</text><text x="270" y="62">3 m</text></svg>`,
-    explanation: "Il faut d'abord trouver les deux côtés non marqués : le côté droit mesure $8-3=5$ m et le côté du haut $10-3=7$ m.<br>$P=10+5+3+3+7+8=36$ m.<br>Remarque : c'est exactement le périmètre du rectangle entier, $2\\times(10+8)=36$ m — le coin retiré ne change pas le périmètre.<svg class='diagram-shape' viewBox='0 0 380 290' width='300' height='229' role='img' aria-label='La même figure avec les côtés 7 m et 5 m ajoutés'><path class='fig' d='M50,248 H330 V108 H246 V24 H50 Z'/><text x='190' y='274'>10 m</text><text x='24' y='141'>8 m</text><text x='300' y='100'>3 m</text><text x='270' y='62'>3 m</text><text class='found' x='148' y='16'>7 m</text><text class='found' x='357' y='183'>5 m</text></svg>",
+    diagram: `<svg class="diagram-shape" viewBox="0 0 380 290" width="380" height="290" role="img" aria-label="Figure en L : 12 m en bas, 9 m à gauche, 4 m à droite, 5 m en haut"><path class="fig" d="M50,248 H314 V160 H160 V50 H50 Z"/><text x="182" y="274">12 m</text><text x="26" y="155">9 m</text><text x="340" y="210">4 m</text><text x="105" y="40">5 m</text></svg>`,
+    explanation: "On découpe la figure en deux rectangles (pointillés).<br>En bas : $12\\times4=48$ m². En haut : largeur $5$ m, hauteur $9-4=5$ m, donc $5\\times5=25$ m².<br>$A=48+25=73$ m².<br>Autre méthode : grand rectangle moins le coin vide, $12\\times9-7\\times5=108-35=73$ m².<svg class='diagram-shape' viewBox='0 0 380 290' width='300' height='229' role='img' aria-label='La même figure découpée en deux rectangles de 48 m² et 25 m²'><path class='fig' d='M50,248 H314 V160 H160 V50 H50 Z'/><path class='cut' d='M50,160 H160'/><text x='182' y='274'>12 m</text><text x='26' y='155'>9 m</text><text x='340' y='210'>4 m</text><text x='105' y='40'>5 m</text><text class='found' x='185' y='110'>5 m</text><text class='found' x='182' y='210'>48 m²</text><text class='found' x='105' y='112'>25 m²</text></svg>",
     niveau2: {
-      question: "Le carré retiré a maintenant pour côté $x$ (avec $0\\lt x\\lt 8$). Exprimer le périmètre $P$ et l'aire $A$ de la figure en fonction de $x$.",
-      explanation: "Côtés : $10$, $8-x$, $x$, $x$, $10-x$, $8$. Donc $P=10+(8-x)+x+x+(10-x)+8=36$ : le périmètre ne dépend pas de $x$ !<br>Aire : rectangle entier moins le carré, $A=10\\times8-x^2=80-x^2$."
+      question: "La largeur du haut ($5$ m) est remplacée par $x$ (avec $0\\lt x\\lt 12$). Exprimer l'aire $A$ de la figure en fonction de $x$.",
+      explanation: "Rectangle du bas : $12\\times4=48$. Rectangle du haut : largeur $x$, hauteur $9-4=5$, donc $5x$.<br>$A=48+5x$."
     },
     niveau3: {
-      question: "Pour quelle valeur de $x$ l'aire de la figure est-elle égale à $55$ m² ?",
-      explanation: "$80-x^2=55$, donc $x^2=25$. Cette équation a deux solutions, $5$ et $-5$ ; mais $x$ est une longueur, donc $x=5$ m (et on a bien $0\\lt 5\\lt 8$).<br>Vérification : $80-25=55$ ✓."
+      question: "Pour quelle valeur de $x$ l'aire de la figure est-elle égale à la <em>moitié</em> de l'aire du rectangle de $12$ m sur $9$ m qui l'entoure ?",
+      explanation: "Rectangle entier : $12\\times9=108$ m², dont la moitié vaut $54$ m².<br>$48+5x=54$, donc $5x=6$ et $x=1{,}2$ m (on a bien $0\\lt 1{,}2\\lt 12$).<br>Vérification : $48+5\\times1{,}2=48+6=54$ ✓."
     }
   }
 ];
