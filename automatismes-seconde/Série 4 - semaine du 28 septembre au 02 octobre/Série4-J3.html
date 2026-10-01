@@ -14,7 +14,7 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Série 4 · Jour 2 — Automatismes</title>
+<title>Série 4 · Jour 3 — Automatismes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -386,13 +386,13 @@
   <div class="brand-row">
     <div>
       <h1>Automatismes — Série 4<br>Semaine du 28 septembre au 2 octobre</h1>
-      <p class="subtitle">Jour 2 · projection en classe</p>
+      <p class="subtitle">Jour 3 · projection en classe</p>
     </div>
     <div class="header-actions">
     <a class="theme-toggle" href="Série4-sommaire.html" aria-label="Sommaire" title="Sommaire">📋</a>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
-    <a class="back-link" href="Série4-J1.html">J-1</a>
-    <a class="back-link" href="Série4-J3.html">J+1</a>
+    <a class="back-link" href="Série4-J2.html">J-1</a>
+    <span class="back-link" aria-hidden="true" style="visibility: hidden;">J+1</span>
     </div>
   </div>
 </div>
@@ -406,7 +406,7 @@
       </div>
       <div class="page-meta">
         <span class="count" id="qnum-display">1 / 3</span>
-        <div class="jour">Série 4 · Jour 2</div>
+        <div class="jour">Série 4 · Jour 3</div>
       </div>
     </div>
     <div class="timer-bar">
@@ -457,60 +457,60 @@ const QUESTIONS = [
   {
     tier: "qcm",
     theme: "obj-complement",
-    objectif: "Algo · Structures conditionnelles",
-    aim: "Lire une instruction conditionnelle if / else avec un test « inférieur ou égal » : la valeur frontière passe dans le if, et un nombre négatif se remplace entre parenthèses.",
-    question: "Que renvoient <span class=\"code big-inline\">f(2)</span> et <span class=\"code big-inline\">f(-3)</span> ?<span class=\"hint\"><span class=\"code inl\">if</span> signifie « si » et <span class=\"code inl\">else</span> signifie « sinon ». <span class=\"code inl\">&lt;=</span> signifie $\\leqslant$.</span>",
+    objectif: "Algo · Variables et affectations",
+    aim: "Suivre des affectations successives : chaque ligne utilise la valeur la plus récente des variables, et print affiche des valeurs, pas des expressions.",
+    question: "Qu'affiche ce script ?",
     optionsAside: true,
     levelsPair: true,
-    diagram: `<span class="code big">def f(x):<br>&nbsp;&nbsp;&nbsp;&nbsp;if x &lt;= 2:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 5 - x<br>&nbsp;&nbsp;&nbsp;&nbsp;else:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 3 * x</span>`,
+    diagram: `<span class="code big">a = 4<br>b = 3<br>a = a + 2<br>b = 2*a - b<br>print(a, b)</span>`,
     options: [
-      { letter:"A", text:"$3$ et $8$", correct:true },
-      { letter:"B", text:"$6$ et $8$", correct:false },
-      { letter:"C", text:"$3$ et $-9$", correct:false },
-      { letter:"D", text:"$3$ et $2$", correct:false }
+      { letter:"A", text:"<span class=\"code\">6 9</span>", correct:true },
+      { letter:"B", text:"<span class=\"code\">4 5</span>", correct:false },
+      { letter:"C", text:"<span class=\"code\">6 5</span>", correct:false },
+      { letter:"D", text:"<span class=\"code\">a+2 2*a-b</span>", correct:false }
     ],
-    explanation: "$2\\leqslant2$ est <em>vrai</em> (« inférieur <em>ou égal</em> ») : <span class=\"code inl\">f(2)</span> renvoie $5-2=3$. $-3\\leqslant2$ est vrai aussi : <span class=\"code inl\">f(-3)</span> renvoie $5-(-3)=5+3=8$. Les pièges : $6$ (croire que $2\\leqslant2$ est faux et passer dans le <span class=\"code inl\">else</span>), $-9$ (mauvaise branche pour $-3$), $2$ (calculer $5-3$ au lieu de $5-(-3)$).",
+    explanation: "Ligne 3 : <span class=\"code inl\">a</span> prend la valeur $4+2=6$. Ligne 4 : on utilise la <em>nouvelle</em> valeur de <span class=\"code inl\">a</span> : <span class=\"code inl\">b</span> prend la valeur $2\\times6-3=9$. Le script affiche <span class=\"code inl\">6 9</span>.<br>Les pièges : <span class=\"code inl\">6 5</span> (calculer <span class=\"code inl\">b</span> avec l'ancienne valeur $4$), <span class=\"code inl\">4 5</span> (oublier la ligne 3), <span class=\"code inl\">a+2 2*a-b</span> (<span class=\"code inl\">print</span> affiche des valeurs, pas des formules).",
     niveau2: {
-      question: "<span class=\"code\">x = -3<br>if x &lt; 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;x = -x<br>else:<br>&nbsp;&nbsp;&nbsp;&nbsp;x = x + 1<br>print(2 * x + 1)</span><br>Qu'affiche ce programme ?",
-      explanation: "$-3\\lt 0$ est vrai : on exécute le <span class=\"code inl\">if</span>, <span class=\"code inl\">x</span> prend la valeur $-(-3)=3$ ; le <span class=\"code inl\">else</span> est sauté. On affiche $2\\times3+1=7$ (et non $-5$, qu'on obtient en oubliant que <span class=\"code inl\">x</span> a changé)."
+      question: "<span class=\"code\">x = -2<br>y = 3<br>x = x * y<br>y = y - x<br>x = x + y<br>print(x, y)</span><br>Qu'affiche ce script ?",
+      explanation: "Ligne 3 : <span class=\"code inl\">x</span> vaut $-2\\times3=-6$. Ligne 4 : <span class=\"code inl\">y</span> vaut $3-(-6)=9$. Ligne 5 : <span class=\"code inl\">x</span> vaut $-6+9=3$. Le script affiche <span class=\"code inl\">3 9</span>."
     },
     niveau3: {
-      question: "Avec la fonction <span class=\"code inl\">f</span> de la question, trouver <em>tous</em> les nombres $x$ pour lesquels <span class=\"code inl\">f(x)</span> renvoie $6$.",
-      explanation: "On étudie chaque branche, puis on vérifie sa condition.<br>• Si $x\\leqslant2$ : $5-x=6$, donc $x=-1$, et on a bien $-1\\leqslant2$ ✓.<br>• Si $x>2$ : $3x=6$, donc $x=2$… mais $2>2$ est <em>faux</em> : refusé (d'ailleurs <span class=\"code inl\">f(2)</span> renvoie $3$, pas $6$).<br>Une seule solution : $x=-1$."
+      question: "Dans le script de la question, par quel nombre faut-il remplacer le $4$ de la ligne 1 pour que le second nombre affiché soit $15$ ?",
+      explanation: "Si la ligne 1 est <span class=\"code inl\">a = n</span>, alors <span class=\"code inl\">a</span> devient $n+2$, puis <span class=\"code inl\">b</span> devient $2(n+2)-3=2n+1$.<br>On résout $2n+1=15$ : $2n=14$, donc $n=7$.<br>Vérification : <span class=\"code inl\">a</span> vaut $9$, <span class=\"code inl\">b</span> vaut $2\\times9-3=15$ ✓."
     }
   },
   {
     tier: "question",
     objectif: "A10 · Équations",
-    aim: "Résoudre une équation du premier degré, y compris avec un coefficient négatif, des parenthèses ou des fractions, puis vérifier.",
-    question: "Résoudre l'équation :$$-3x+8=2$$",
+    aim: "Résoudre une équation du premier degré (fraction, parenthèses précédées d'un signe moins), et reconnaître une équation toujours vraie.",
+    question: "Résoudre l'équation :$$\\dfrac{x}{4}-1=2$$",
     levelsAside: true,
-    explanation: "On soustrait $8$ aux deux membres : $-3x=-6$. On divise les deux membres par $-3$ : $x=2$.<br>Vérification : $-3\\times2+8=-6+8=2$ ✓. La solution est $2$.",
+    explanation: "On ajoute $1$ aux deux membres : $\\dfrac{x}{4}=3$. On multiplie les deux membres par $4$ : $x=12$.<br>Vérification : $\\dfrac{12}{4}-1=3-1=2$ ✓. La solution est $12$.",
     niveau2: {
-      question: "Résoudre l'équation :$$2(x-3)=5x+9$$",
-      explanation: "On développe : $2x-6=5x+9$. On soustrait $5x$ aux deux membres : $-3x-6=9$. On ajoute $6$ : $-3x=15$. On divise par $-3$ : $x=-5$.<br>Vérification : $2\\times(-5-3)=-16$ et $5\\times(-5)+9=-16$ ✓. La solution est $-5$."
+      question: "Résoudre l'équation :$$5-2(x-4)=3x+3$$",
+      explanation: "On développe, en changeant les signes derrière le « $-$ » : $5-2x+8=3x+3$, soit $13-2x=3x+3$.<br>On ajoute $2x$ et on soustrait $3$ : $10=5x$, donc $x=2$.<br>Vérification : $5-2\\times(2-4)=5+4=9$ et $3\\times2+3=9$ ✓. La solution est $2$."
     },
     niveau3: {
-      question: "Résoudre l'équation :$$\\dfrac{x}{3}+2=\\dfrac{x+1}{2}$$",
-      explanation: "On multiplie les deux membres par $6$ pour chasser les dénominateurs : $2x+12=3(x+1)$, soit $2x+12=3x+3$.<br>On soustrait $2x$ puis $3$ : $9=x$.<br>Vérification : $\\dfrac{9}{3}+2=5$ et $\\dfrac{9+1}{2}=5$ ✓. La solution est $9$."
+      question: "Résoudre l'équation :$$2(3x-1)-4x=2(x-1)$$",
+      explanation: "On développe : $6x-2-4x=2x-2$, soit $2x-2=2x-2$.<br>Cette égalité est vraie <em>quelle que soit</em> la valeur de $x$ : tous les nombres réels sont solutions, $S=\\mathbb{R}$.<br>(À comparer avec le Jour 1, où l'on aboutissait à $-10=2$, toujours faux : aucune solution.)"
     }
   },
   {
     tier: "final",
     theme: "obj-geometrie",
     objectif: "A21 · Périmètres, aires",
-    aim: "Calculer l'aire d'une figure composée en la découpant en rectangles (ou par différence), puis exprimer une aire en fonction de x.",
-    question: "Tous les angles sont droits. Calculer l'aire de la figure.",
+    aim: "Calculer le périmètre et l'aire d'une même figure composée : une encoche diminue l'aire mais augmente le périmètre.",
+    question: "Tous les angles sont droits. Calculer le périmètre et l'aire de la figure.",
     levelsAside: true,
-    diagram: `<svg class="diagram-shape" viewBox="0 0 380 290" width="380" height="290" role="img" aria-label="Figure en L : 12 m en bas, 9 m à gauche, 4 m à droite, 5 m en haut"><path class="fig" d="M50,248 H314 V160 H160 V50 H50 Z"/><text x="182" y="274">12 m</text><text x="26" y="155">9 m</text><text x="340" y="210">4 m</text><text x="105" y="40">5 m</text></svg>`,
-    explanation: "On découpe la figure en deux rectangles (pointillés).<br>En bas : $12\\times4=48$ m². En haut : largeur $5$ m, hauteur $9-4=5$ m, donc $5\\times5=25$ m².<br>$A=48+25=73$ m².<br>Autre méthode : grand rectangle moins le coin vide, $12\\times9-7\\times5=108-35=73$ m².<svg class='diagram-shape' viewBox='0 0 380 290' width='300' height='229' role='img' aria-label='La même figure découpée en deux rectangles de 48 m² et 25 m²'><path class='fig' d='M50,248 H314 V160 H160 V50 H50 Z'/><path class='cut' d='M50,160 H160'/><text x='182' y='274'>12 m</text><text x='26' y='155'>9 m</text><text x='340' y='210'>4 m</text><text x='105' y='40'>5 m</text><text class='found' x='185' y='110'>5 m</text><text class='found' x='182' y='210'>48 m²</text><text class='found' x='105' y='112'>25 m²</text></svg>",
+    diagram: `<svg class="diagram-shape" viewBox="0 0 380 260" width="380" height="260" role="img" aria-label="Rectangle de 10 m sur 6 m avec une encoche de 4 m de large et 2 m de profondeur en haut ; le premier morceau du haut mesure 3 m"><path class="fig" d="M65,210 H315 V60 H240 V110 H140 V60 H65 Z"/><text x="190" y="236">10 m</text><text x="40" y="140">6 m</text><text x="102" y="52">3 m</text><text x="190" y="100">4 m</text><text x="118" y="91">2 m</text></svg>`,
+    explanation: "Côtés non marqués : en haut à droite $10-3-4=3$ m, à droite $6$ m, et le second bord de l'encoche $2$ m.<br>$P=10+6+3+2+4+2+3+6=36$ m (le rectangle entier fait $32$ m : l'encoche ajoute ses deux bords de $2$ m).<br>$A=10\\times6-4\\times2=60-8=52$ m².<svg class='diagram-shape' viewBox='0 0 380 260' width='300' height='205' role='img' aria-label='La même figure avec les côtés 3 m, 6 m et 2 m ajoutés'><path class='fig' d='M65,210 H315 V60 H240 V110 H140 V60 H65 Z'/><text x='190' y='236'>10 m</text><text x='40' y='140'>6 m</text><text x='102' y='52'>3 m</text><text x='190' y='100'>4 m</text><text x='118' y='91'>2 m</text><text class='found' x='277' y='52'>3 m</text><text class='found' x='340' y='140'>6 m</text><text class='found' x='262' y='91'>2 m</text></svg>",
     niveau2: {
-      question: "La largeur du haut ($5$ m) est remplacée par $x$ (avec $0\\lt x\\lt 12$). Exprimer l'aire $A$ de la figure en fonction de $x$.",
-      explanation: "Rectangle du bas : $12\\times4=48$. Rectangle du haut : largeur $x$, hauteur $9-4=5$, donc $5x$.<br>$A=48+5x$."
+      question: "La profondeur de l'encoche ($2$ m) est remplacée par $x$ (avec $0\\lt x\\lt 6$). Exprimer le périmètre $P$ et l'aire $A$ en fonction de $x$.",
+      explanation: "$P=10+6+3+x+4+x+3+6=32+2x$.<br>$A=10\\times6-4\\times x=60-4x$.<br>Plus l'encoche est profonde, plus le périmètre augmente… et plus l'aire diminue."
     },
     niveau3: {
-      question: "Pour quelle valeur de $x$ l'aire de la figure est-elle égale à la <em>moitié</em> de l'aire du rectangle de $12$ m sur $9$ m qui l'entoure ?",
-      explanation: "Rectangle entier : $12\\times9=108$ m², dont la moitié vaut $54$ m².<br>$48+5x=54$, donc $5x=6$ et $x=1{,}2$ m (on a bien $0\\lt 1{,}2\\lt 12$).<br>Vérification : $48+5\\times1{,}2=48+6=54$ ✓."
+      question: "Pour quelle valeur de $x$ le périmètre (en m) et l'aire (en m²) ont-ils la même valeur ?",
+      explanation: "$32+2x=60-4x$, donc $6x=28$ et $x=\\dfrac{28}{6}=\\dfrac{14}{3}\\approx4{,}67$ m (on a bien $0\\lt \\dfrac{14}{3}\\lt 6$).<br>Vérification : $32+2\\times\\dfrac{14}{3}=\\dfrac{124}{3}$ et $60-4\\times\\dfrac{14}{3}=\\dfrac{124}{3}$ ✓."
     }
   }
 ];
