@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soutien — Seconde</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #inscription { background: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); padding: 1.5rem; }
+        #inscription h2 { margin-top: 0.5rem; }
+        .identite { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
+        .identite label { display: flex; flex-direction: column; font-weight: 600; gap: 0.3rem; }
+        .identite input, .identite select { padding: 0.5rem; font-size: 1rem; border: 1px solid #bbb; border-radius: 4px; }
+        .semaine { background: #f7f9fc; border: 1px solid #ddd; border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 1rem; }
+        .semaine h3 { margin: 0 0 0.5rem; font-size: 1.1rem; }
+        .semaine .type { font-weight: normal; color: #666; font-size: 0.95rem; }
+        .creneau { display: flex; align-items: center; gap: 0.6rem; padding: 0.35rem 0; cursor: pointer; }
+        .creneau input { width: 1.2rem; height: 1.2rem; }
+        .note { font-size: 0.95rem; color: #555; }
+        .envoyer { font-size: 1.05rem; padding: 0.7rem 1.4rem; border: 0; border-radius: 6px; background: #2c5aa0; color: #fff; cursor: pointer; }
+        .erreur { color: #b00020; font-weight: 600; }
+        #recap { white-space: pre-wrap; background: #f4f4f4; border-radius: 6px; padding: 0.8rem; display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Barre de Navigation Supérieure -->
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li class="nav-home"><a href="index.html">🏠 Accueil</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-trigger">Python ▾</a>
+                <ul class="dropdown-menu">
+                    <li><a href="consolepython.html">Console en ligne</a></li>
+                    <li><a href="algo-coursTD.html">Cours et TD</a></li>
+                </ul>
+            </li>
+             <li class="nav-home"><a href="numworks.html"> Numworks </a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>Soutien en mathématiques — Seconde</h1>
+        <p>Inscription aux créneaux de soutien</p>
+    </header>
+
+    <main class="container">
+
+        <form id="inscription" novalidate>
+            <h2>Qui es-tu ?</h2>
+            <div class="identite">
+                <label>Nom <input type="text" id="nom" autocomplete="family-name" required></label>
+                <label>Prénom <input type="text" id="prenom" autocomplete="given-name" required></label>
+                <label>Classe
+                    <select id="classe" required>
+                        <option value="">—</option>
+                        <option>2B</option>
+                        <option>2F</option>
+                        <option>2H</option>
+                    </select>
+                </label>
+            </div>
+
+            <h2>Choisis tes créneaux</h2>
+            <p class="note">Coche uniquement des créneaux où tu es disponible : vérifie-les sur ta fiche.</p>
+            <div id="semaines"></div>
+
+            <p id="message" class="erreur"></p>
+            <button type="submit" class="envoyer">Envoyer mon inscription</button>
+            <p class="note">Le bouton ouvre ta messagerie avec un message déjà rempli : il ne te reste qu'à l'envoyer.</p>
+            <div id="recap"></div>
+        </form>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 - Cours de Mathématiques. Hébergé avec GitHub Pages.</p>
+    </footer>
+
+    <script>
+        // Adresse qui reçoit les inscriptions
+        const DESTINATAIRE = "clemence.le-tousey@ac-normandie.fr";
+
+        // Créneaux du professeur. semaine : "AB" = chaque semaine, "A" = semaine A seulement.
+        const CRENEAUX = [
+            { jour: 0, horaire: "10h – 11h", semaine: "AB" },
+            { jour: 0, horaire: "11h – 12h", semaine: "AB" },
+            { jour: 0, horaire: "12h – 13h", semaine: "AB" },
+            { jour: 1, horaire: "8h – 9h",   semaine: "A" },
+            { jour: 1, horaire: "9h – 10h",  semaine: "A" },
+            { jour: 1, horaire: "10h – 11h", semaine: "A" },
+            { jour: 1, horaire: "13h – 14h", semaine: "AB" },
+            { jour: 1, horaire: "16h – 17h", semaine: "AB" },
+            { jour: 2, horaire: "11h – 12h", semaine: "A" },
+        ];
+
+        // Semaines de cours (lundi) et leur type, vacances exclues.
+        const SEMAINES = [
+            ["2026-10-05", "B"], ["2026-10-12", "A"],
+            // vacances de la Toussaint
+            ["2026-11-02", "B"], ["2026-11-09", "A"], ["2026-11-16", "B"], ["2026-11-23", "A"],
+            ["2026-11-30", "B"], ["2026-12-07", "A"], ["2026-12-14", "B"],
+            // vacances de Noël
+        ];
+
+        // Jours fériés (aucun créneau ce jour-là)
+        const FERIES = ["2026-11-11"];
+
+        const JOURS = ["Lundi", "Mardi", "Mercredi"];
+        const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet",
+                      "août", "septembre", "octobre", "novembre", "décembre"];
+
+        function dateLocale(iso) {
+            const [a, m, j] = iso.split("-").map(Number);
+            return new Date(a, m - 1, j);
+        }
+        function iso(d) {
+            return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+        }
+        function texteDate(d) {
+            return (d.getDate() === 1 ? "1er" : d.getDate()) + " " + MOIS[d.getMonth()];
+        }
+
+        const conteneur = document.getElementById("semaines");
+        const aujourdhui = new Date(); aujourdhui.setHours(0, 0, 0, 0);
+
+        SEMAINES.forEach(([lundiIso, type]) => {
+            const lundi = dateLocale(lundiIso);
+            const items = [];
+            CRENEAUX.forEach(c => {
+                if (!c.semaine.includes(type)) return;
+                const d = new Date(lundi); d.setDate(d.getDate() + c.jour);
+                if (d < aujourdhui || FERIES.includes(iso(d))) return;
+                items.push(JOURS[c.jour] + " " + texteDate(d) + " — " + c.horaire);
+            });
+            if (!items.length) return;
+            const bloc = document.createElement("div");
+            bloc.className = "semaine";
+            const titre = document.createElement("h3");
+            titre.innerHTML = "Semaine du " + texteDate(lundi) + ' <span class="type">(semaine ' + type + ")</span>";
+            bloc.appendChild(titre);
+            items.forEach(txt => {
+                const l = document.createElement("label");
+                l.className = "creneau";
+                const cb = document.createElement("input");
+                cb.type = "checkbox"; cb.value = txt;
+                l.appendChild(cb);
+                l.appendChild(document.createTextNode(txt));
+                bloc.appendChild(l);
+            });
+            conteneur.appendChild(bloc);
+        });
+
+        document.getElementById("inscription").addEventListener("submit", e => {
+            e.preventDefault();
+            const nom = document.getElementById("nom").value.trim();
+            const prenom = document.getElementById("prenom").value.trim();
+            const classe = document.getElementById("classe").value;
+            const choix = [...conteneur.querySelectorAll("input:checked")].map(cb => cb.value);
+            const msg = document.getElementById("message");
+            if (!nom || !prenom || !classe) { msg.textContent = "Indique ton nom, ton prénom et ta classe."; return; }
+            if (!choix.length) { msg.textContent = "Coche au moins un créneau."; return; }
+            msg.textContent = "";
+            const sujet = "Inscription soutien – " + prenom + " " + nom.toUpperCase() + " (" + classe + ")";
+            const corps = "Bonjour,\n\nJe m'inscris au soutien de mathématiques sur les créneaux suivants :\n"
+                + choix.map(c => "- " + c).join("\n")
+                + "\n\n" + prenom + " " + nom.toUpperCase() + " (" + classe + ")";
+            const recap = document.getElementById("recap");
+            recap.style.display = "block";
+            recap.textContent = "Si ta messagerie ne s'ouvre pas, envoie ce message à " + DESTINATAIRE
+                + " (ou par Pronote) :\n\n" + sujet + "\n\n" + corps;
+            window.location.href = "mailto:" + DESTINATAIRE
+                + "?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(corps);
+        });
+    </script>
+
+</body>
+</html>
