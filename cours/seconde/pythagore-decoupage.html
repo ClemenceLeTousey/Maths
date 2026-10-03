@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pythagore par découpage</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
+<style>
+  :root{
+    --bg:#f3f1ea;
+    --surface:#ffffff;
+    --panel:#e9e6dc;
+    --ink:#1b1a17;
+    --ink-dim:#5d5a52;
+    --line:#cfcabd;
+    --brand:#2f5f8a;
+    --brand-soft:#dbe7f2;
+    --sq-b:#9cc0e6;      /* carré construit sur [AB] avant découpage */
+    --sq-a:#b9a3dd;      /* carré construit sur [AC] */
+    --sq-c:#ffffff;      /* carré construit sur [BC] */
+    --p0:#5b8fd0;
+    --p1:#e3a53c;
+    --p2:#5aa36b;
+    --p3:#d06a86;
+    --callout-bg:#fff6df;
+    --callout-border:#c9a227;
+    --shadow:0 10px 30px -12px rgba(27,26,23,.25);
+  }
+  /* Fond volontairement clair et fixe (visibilité en vidéoprojection) : pas de variante sombre. */
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Source Sans 3",system-ui,sans-serif;
+    font-weight:400;
+    padding-inline:16px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; animation:none !important;}
+  }
+
+  .stage{
+    max-width:1280px;
+    min-height:100vh;
+    margin:0 auto;
+    padding-block:14px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .topbar{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    flex-wrap:wrap;
+    color:var(--ink-dim);
+    font-size:1rem;
+  }
+  .topbar .title{font-weight:500; color:var(--ink);}
+  .progress{margin-left:auto; font-variant-numeric:tabular-nums;}
+
+  .slide{
+    flex:1;
+    min-height:0;
+    display:grid;
+    grid-template-columns:minmax(0,5fr) minmax(0,7fr);
+    gap:22px;
+    align-items:stretch;
+  }
+  @media (max-width:820px){
+    .slide{grid-template-columns:1fr;}
+  }
+
+  .text-panel{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:1.1rem;
+    min-width:0;
+  }
+  #stepText{
+    font-size:clamp(1.25rem,2.4vw,2.05rem);
+    line-height:1.4;
+    font-weight:400;
+    text-wrap:pretty;
+  }
+  #stepText p{margin:0 0 .7em;}
+  #stepText p:last-child{margin-bottom:0;}
+  #stepText .dim{color:var(--ink-dim); font-size:.8em;}
+  .intro-title{
+    font-size:1.35em;
+    font-weight:500;
+    line-height:1.2;
+    margin:0 0 .5em;
+  }
+
+  .m{font-style:italic; white-space:nowrap;}
+  .m sup{font-style:normal; font-size:.65em;}
+  .nowrap{white-space:nowrap;}
+  .tag{
+    display:inline-block;
+    width:.8em; height:.8em;
+    border-radius:3px;
+    vertical-align:-.05em;
+    border:1px solid rgba(0,0,0,.25);
+  }
+
+  .theorem{
+    background:var(--callout-bg);
+    border:1.5px solid var(--callout-border);
+    border-radius:14px;
+    padding:.75em 1.1em;
+    font-size:.92em;
+  }
+  .theorem .head{color:var(--ink-dim); font-size:.75em; letter-spacing:.04em; text-transform:uppercase; margin-bottom:.25em;}
+
+  .slider-box{
+    display:none;
+    flex-direction:column;
+    gap:.6rem;
+    background:var(--surface);
+    border-radius:14px;
+    padding:.9rem 1.1rem;
+    box-shadow:var(--shadow);
+    font-size:clamp(1rem,1.6vw,1.3rem);
+  }
+  .slider-box.on{display:flex;}
+  .slider-box label{display:flex; align-items:center; gap:.8rem; flex-wrap:wrap;}
+  .slider-box input[type=range]{flex:1; min-width:160px; accent-color:var(--brand);}
+  #liveCalc{font-variant-numeric:tabular-nums; color:var(--ink);}
+
+  .diagram-panel{
+    background:var(--panel);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:58vh;
+  }
+  @media (max-width:820px){ .diagram-panel{min-height:auto;} }
+  #fig{width:100%; height:100%; max-height:80vh; display:block;}
+
+  .navbar{
+    display:flex;
+    gap:10px;
+    justify-content:flex-end;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  button{
+    font-family:inherit;
+    font-size:1.05rem;
+    font-weight:600;
+    padding:.55em 1.2em;
+    border-radius:10px;
+    border:1.5px solid var(--brand);
+    background:var(--surface);
+    color:var(--brand);
+    cursor:pointer;
+  }
+  button.primary{background:var(--brand); color:#fff;}
+  button:disabled{opacity:.35; cursor:default;}
+  .hint{color:var(--ink-dim); font-size:.9rem; margin-right:auto;}
+
+  /* ----- Figure ----- */
+  .layer{opacity:0; transition:opacity .45s ease;}
+  #fig.show-squares .l-squares,
+  #fig.show-areas .l-areas,
+  #fig.show-grid .l-grid,
+  #fig.show-cuts .l-cuts,
+  #fig.show-arrows .l-arrows,
+  #fig.show-ghosts .l-ghosts{opacity:1;}
+
+  .tri{fill:#fbf8ef; stroke:var(--ink); stroke-width:.06; stroke-linejoin:round;}
+  .ra{fill:none; stroke:var(--ink); stroke-width:.04;}
+  .vlabel{font-family:"Source Sans 3"; font-size:.55px; fill:var(--ink); font-style:italic;}
+  .sqC{fill:var(--sq-c); stroke:var(--ink); stroke-width:.05; stroke-linejoin:round;}
+  .sqA{fill:var(--sq-a); stroke:var(--ink); stroke-width:.05; stroke-linejoin:round;}
+  .sqBoutline{fill:none; stroke:var(--ink); stroke-width:.05; stroke-linejoin:round; transition:opacity .45s ease;}
+  .piece{fill:var(--sq-b); stroke:var(--sq-b); stroke-width:.01; stroke-linejoin:round; transition:fill .5s ease, stroke .5s ease;}
+  #fig.show-colors .piece{stroke:var(--ink); stroke-width:.045;}
+  #fig.show-colors #piece0{fill:var(--p0);}
+  #fig.show-colors #piece1{fill:var(--p1);}
+  #fig.show-colors #piece2{fill:var(--p2);}
+  #fig.show-colors #piece3{fill:var(--p3);}
+  #fig.show-colors .sqBoutline{opacity:0;}
+  .ghost{fill:none; stroke:var(--ink-dim); stroke-width:.035; stroke-dasharray:.12 .1;}
+  .gridline{stroke:rgba(27,26,23,.45); stroke-width:.025;}
+  .cut{stroke:var(--ink); stroke-width:.05; stroke-dasharray:.18 .12;}
+  .centre{fill:var(--ink);}
+  .alabel{font-family:"Source Sans 3"; font-size:.6px; fill:var(--ink); text-anchor:middle; dominant-baseline:middle; font-style:italic;}
+  .alabel tspan.exp{font-style:normal;}
+  .arrow{fill:none; stroke-width:.06; stroke-linecap:round; stroke-linejoin:round;}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="topbar">
+    <span class="title">Théorème de Pythagore</span>
+    <span>Pourquoi est-ce vrai ?</span>
+    <span class="progress" id="progress"></span>
+  </div>
+
+  <div class="slide">
+    <div class="text-panel">
+      <div id="stepText"></div>
+      <div class="slider-box" id="sliderBox">
+        <label>
+          <span class="nowrap"><span class="m">AC</span> =</span>
+          <input type="range" id="slA" min="1" max="4" step="0.1" value="3">
+          <span id="slVal" class="nowrap"></span>
+        </label>
+        <div id="liveCalc"></div>
+        <div><button id="replay">Rejouer le découpage</button></div>
+      </div>
+    </div>
+    <div class="diagram-panel">
+      <svg id="fig" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Triangle rectangle et carrés construits sur ses côtés">
+        <!-- carré sur l'hypoténuse -->
+        <g class="layer l-squares"><path id="sqC" class="sqC"/></g>
+        <!-- triangle -->
+        <path id="tri" class="tri"/>
+        <path id="ra" class="ra"/>
+        <!-- emplacements d'origine (pointillés) -->
+        <g class="layer l-ghosts"><path id="ghostB" class="ghost"/><path id="ghostA" class="ghost"/></g>
+        <!-- carré sur [AB], en 4 morceaux -->
+        <g class="layer l-squares">
+          <path id="piece0" class="piece"/><path id="piece1" class="piece"/>
+          <path id="piece2" class="piece"/><path id="piece3" class="piece"/>
+          <path id="sqBoutline" class="sqBoutline"/>
+          <path id="sqA" class="sqA"/>
+        </g>
+        <!-- quadrillages -->
+        <g class="layer l-grid"><path id="gridLines" class="gridline"/></g>
+        <!-- découpe -->
+        <g class="layer l-cuts"><path id="cuts" class="cut"/><circle id="centre" class="centre" r=".09"/></g>
+        <!-- vecteurs de translation -->
+        <g class="layer l-arrows" id="arrows"></g>
+        <!-- aires -->
+        <g class="layer l-areas">
+          <text id="labC" class="alabel">BC<tspan class="exp" dy="-.22" font-size=".38">2</tspan></text>
+          <text id="labB" class="alabel">AB<tspan class="exp" dy="-.22" font-size=".38">2</tspan></text>
+          <text id="labA" class="alabel">AC<tspan class="exp" dy="-.22" font-size=".38">2</tspan></text>
+        </g>
+        <!-- sommets -->
+        <text id="vA" class="vlabel">A</text>
+        <text id="vB" class="vlabel">B</text>
+        <text id="vC" class="vlabel">C</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="navbar">
+    <span class="hint">Flèches du clavier ou espace pour avancer</span>
+    <button id="prev">Précédent</button>
+    <button id="next" class="primary">Suivant</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const B_LEG = 4;                       // AB (le plus grand côté de l'angle droit)
+  const PIECE_COLORS = ['--p0','--p1','--p2','--p3'];
+  const sq = s => `<span class="m">${s}<sup>2</sup></span>`;
+  const m  = s => `<span class="m">${s}</span>`;
+  const tag = v => `<span class="tag" style="background:var(${v})"></span>`;
+  const THEOREM = `<div class="theorem"><div class="head">Théorème de Pythagore</div>
+    Si le triangle ${m('ABC')} est rectangle en ${m('A')}, alors
+    <span class="nowrap">${sq('BC')} = ${sq('AB')} + ${sq('AC')}</span>.</div>`;
+
+  // Chaque étape : texte, calques visibles, avancement des 4 morceaux (t) et du petit carré (tS).
+  const STEPS = [
+    { html:`<p class="intro-title">Le théorème de Pythagore</p>
+            <p>On le connaît sous la forme <span class="nowrap">${sq('BC')} = ${sq('AB')} + ${sq('AC')}</span>.</p>
+            <p>Mais que signifie vraiment cette égalité, et pourquoi est-elle toujours vraie ?</p>`,
+      flags:[], t:0, tS:0 },
+    { html:`<p>${m('ABC')} est un triangle rectangle en ${m('A')}.</p>
+            <p>Son plus grand côté, ${m('[BC]')}, est l'<span class="nowrap">hypoténuse</span>.</p>`,
+      flags:[], t:0, tS:0 },
+    { html:`<p>Sur chacun des trois côtés, on construit un carré.</p>`,
+      flags:['squares'], t:0, tS:0 },
+    { html:`<p>Un carré de côté ${m('AB')} a pour aire <span class="nowrap">${m('AB')} × ${m('AB')} = ${sq('AB')}</span>.</p>
+            <p>Le théorème dit donc :</p>
+            <p>aire du grand carré = somme des aires des deux petits carrés.</p>`,
+      flags:['squares','areas'], t:0, tS:0 },
+    { html:`<p>Vérifions sur un exemple : <span class="nowrap">${m('AB')} = 4</span>, <span class="nowrap">${m('AC')} = 3</span> et <span class="nowrap">${m('BC')} = 5</span>.</p>
+            <p>On compte les carreaux :</p>
+            <p><span class="nowrap">16 + 9 = 25</span> &nbsp;donc&nbsp; <span class="nowrap">${sq('AB')} + ${sq('AC')} = ${sq('BC')}</span>.</p>`,
+      flags:['squares','areas','grid'], t:0, tS:0 },
+    { html:`<p>Mais un exemple ne prouve rien !</p>
+            <p>Idée : découper les deux petits carrés et ranger les morceaux dans le grand carré, sans trou et sans chevauchement.</p>`,
+      flags:['squares','areas'], t:0, tS:0 },
+    { html:`<p>On découpe le carré construit sur ${m('[AB]')} par deux droites qui passent par son centre :</p>
+            <p>l'une parallèle à ${m('(BC)')}, l'autre perpendiculaire à ${m('(BC)')}.</p>`,
+      flags:['squares','cuts'], t:0, tS:0 },
+    { html:`<p>On obtient quatre morceaux superposables ${tag('--p0')} ${tag('--p1')} ${tag('--p2')} ${tag('--p3')}.</p>`,
+      flags:['squares','colors'], t:0, tS:0 },
+    { html:`<p>On fait glisser chaque morceau dans le grand carré, sans le tourner :</p>
+            <p>ce sont des <span class="nowrap">translations</span>.</p>`,
+      flags:['squares','colors','ghosts','arrows'], t:1, tS:0, stagger:true },
+    { html:`<p>Il reste un trou au centre…</p>
+            <p>exactement de la taille du carré construit sur ${m('[AC]')} ${tag('--sq-a')} !</p>`,
+      flags:['squares','colors','ghosts'], t:1, tS:1 },
+    { html:`<p>Les deux petits carrés remplissent exactement le grand carré.</p>
+            <p>Leurs aires sont donc égales : <span class="nowrap">${sq('AB')} + ${sq('AC')} = ${sq('BC')}</span>.</p>
+            ${THEOREM}`,
+      flags:['squares','colors'], t:1, tS:1 },
+    { html:`<p>Et cela marche pour <em>tous</em> les triangles rectangles.</p>
+            <p class="dim">Faites varier la longueur ${m('AC')}, puis rejouez le découpage.</p>`,
+      flags:['squares','colors','ghosts'], t:1, tS:1, slider:true },
+  ];
+
+  // ---------- état animé ----------
+  const st = { a:3, t:[0,0,0,0], tS:0 };
+  let tweens = [];
+  let step = 0;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const $ = id => document.getElementById(id);
+  const fig = $('fig');
+  const P = (x,y) => ({x,y});
+  const add = (p,q) => P(p.x+q.x, p.y+q.y);
+  const sub = (p,q) => P(p.x-q.x, p.y-q.y);
+  const mul = (p,k) => P(p.x*k, p.y*k);
+  const lerp = (p,q,t) => P(p.x+(q.x-p.x)*t, p.y+(q.y-p.y)*t);
+  // repère mathématique -> SVG (axe des ordonnées vers le haut)
+  const sx = p => `${(+p.x).toFixed(4)},${(-p.y).toFixed(4)}`;
+  const poly = pts => 'M' + pts.map(sx).join('L') + 'Z';
+  const ease = t => t<.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+
+  function geometry(a){
+    const b = B_LEG, c = Math.hypot(a,b);
+    const A = P(0,0), B = P(b,0), C = P(0,a);
+    const n = P(a,b);                           // vecteur normal sortant, de longueur c
+    const D = add(B,n), E = add(C,n);           // carré BDEC sur l'hypoténuse
+    const u = P(-b/c, a/c), v = P(a/c, b/c);    // u dirige (BC), v lui est perpendiculaire
+    const O = P(b/2,-b/2);                      // centre du carré sur [AB]
+    const h = c/2;
+    const P1 = add(O,mul(u,h)), P2 = add(O,mul(u,-h)), P3 = add(O,mul(v,h)), P4 = add(O,mul(v,-h));
+    const TL = P(0,0), TR = P(b,0), BR = P(b,-b), BL = P(0,-b);
+    const pieces = [
+      { pts:[O,P1,TL,P3], to:B },   // coins (+u,+v) -> B
+      { pts:[O,P3,TR,P2], to:C },   // (-u,+v) -> C
+      { pts:[O,P2,BR,P4], to:E },   // (-u,-v) -> E
+      { pts:[O,P4,BL,P1], to:D },   // (+u,-v) -> D
+    ];
+    const sqA = [P(0,0),P(0,a),P(-a,a),P(-a,0)];
+    const sqAcentre = P(-a/2,a/2);
+    const centreC = mul(add(B,E),.5);
+    return {a,b,c,A,B,C,D,E,u,v,O,P1,P2,P3,P4,pieces,sqA,sqAcentre,centreC};
+  }
+
+  function arrowPath(p,q){
+    const d = sub(q,p), L = Math.hypot(d.x,d.y);
+    if (L < 1e-6) return '';
+    const ux = d.x/L, uy = d.y/L, s = .28;
+    const q2 = sub(q, mul(P(ux,uy), .02));
+    const l = P(q2.x - s*ux + s*.55*uy, q2.y - s*uy - s*.55*ux);
+    const r = P(q2.x - s*ux - s*.55*uy, q2.y - s*uy + s*.55*ux);
+    return `M${sx(p)}L${sx(q2)}M${sx(l)}L${sx(q2)}L${sx(r)}`;
+  }
+
+  function render(){
+    const g = geometry(st.a);
+    const {a,b,A,B,C,D,E} = g;
+    const mg = 1;
+    const minX = -a - mg, maxX = a + b + mg;
+    const minY = -b - mg, maxY = a + b + mg;
+    fig.setAttribute('viewBox', `${minX} ${-maxY} ${maxX-minX} ${maxY-minY}`);
+
+    $('tri').setAttribute('d', poly([A,B,C]));
+    const r = .38;
+    $('ra').setAttribute('d', `M${sx(P(r,0))}L${sx(P(r,r))}L${sx(P(0,r))}`);
+    $('sqC').setAttribute('d', poly([B,D,E,C]));
+    $('ghostB').setAttribute('d', poly([P(0,0),P(b,0),P(b,-b),P(0,-b)]));
+    $('ghostA').setAttribute('d', poly(g.sqA));
+    $('sqBoutline').setAttribute('d', poly([P(0,0),P(b,0),P(b,-b),P(0,-b)]));
+
+    g.pieces.forEach((pc,i) => {
+      const off = mul(sub(pc.to, g.O), ease(st.t[i]));
+      $('piece'+i).setAttribute('d', poly(pc.pts.map(p => add(p,off))));
+    });
+    const offA = mul(sub(g.centreC, g.sqAcentre), ease(st.tS));
+    $('sqA').setAttribute('d', poly(g.sqA.map(p => add(p,offA))));
+
+    // quadrillages unité (exemple 3-4-5)
+    let gl = '';
+    for (let k=1;k<b;k++){ gl += `M${sx(P(k,0))}L${sx(P(k,-b))}M${sx(P(0,-k))}L${sx(P(b,-k))}`; }
+    for (let k=1;k<a;k++){ gl += `M${sx(P(-k,0))}L${sx(P(-k,a))}M${sx(P(0,k))}L${sx(P(-a,k))}`; }
+    const cu = mul(g.u,1), cv = mul(g.v,1);
+    for (let k=1;k<Math.round(g.c);k++){
+      gl += `M${sx(add(B,mul(cu,k*g.c/Math.round(g.c))))}L${sx(add(D,mul(cu,k*g.c/Math.round(g.c))))}`;
+      gl += `M${sx(add(B,mul(cv,k*g.c/Math.round(g.c))))}L${sx(add(C,mul(cv,k*g.c/Math.round(g.c))))}`;
+    }
+    $('gridLines').setAttribute('d', gl);
+
+    $('cuts').setAttribute('d', `M${sx(g.P1)}L${sx(g.P2)}M${sx(g.P3)}L${sx(g.P4)}`);
+    $('centre').setAttribute('cx', g.O.x); $('centre').setAttribute('cy', -g.O.y);
+
+    // vecteurs de translation : du centre O vers le coin d'arrivée de chaque morceau
+    $('arrows').innerHTML = g.pieces.map((pc,i) =>
+      `<path class="arrow" style="stroke:var(${PIECE_COLORS[i]})" d="${arrowPath(g.O, pc.to)}"/>`).join('');
+
+    const place = (id,p) => { $(id).setAttribute('x',p.x); $(id).setAttribute('y',-p.y); };
+    place('labC', g.centreC);
+    place('labB', P(b/2,-b/2));
+    place('labA', g.sqAcentre);
+    place('vA', P(-.45,-.55));
+    place('vB', P(b+.15,-.5));
+    place('vC', P(-.45,a+.45));
+
+    // valeurs du curseur
+    const fr = x => (Math.round(x*100)/100).toString().replace('.',',');
+    $('slVal').textContent = fr(a);
+    $('liveCalc').innerHTML =
+      `<span class="nowrap">${sq('AB')} + ${sq('AC')} = ${fr(b*b)} + ${fr(a*a)} = ${fr(b*b+a*a)}</span>` +
+      ` <span class="nowrap">= ${sq('BC')}</span>`;
+  }
+
+  // ---------- animation ----------
+  function tweenTo(key, idx, to, delay, dur){
+    const from = idx==null ? st[key] : st[key][idx];
+    if (from === to) return;
+    tweens = tweens.filter(tw => !(tw.key===key && tw.idx===idx));
+    tweens.push({key, idx, from, to, start:performance.now()+delay, dur});
+  }
+  function frame(now){
+    tweens = tweens.filter(tw => {
+      const k = Math.min(1, Math.max(0, (now - tw.start)/tw.dur));
+      const val = tw.from + (tw.to - tw.from)*k;
+      if (tw.idx==null) st[tw.key] = val; else st[tw.key][tw.idx] = val;
+      return k < 1;
+    });
+    render();
+    if (tweens.length) requestAnimationFrame(frame);
+  }
+  function kick(){ requestAnimationFrame(frame); }
+
+  function applyTargets(s, forward){
+    const dur = reduce ? 1 : 1100;
+    const gap = reduce ? 0 : 450;
+    for (let i=0;i<4;i++){
+      const order = forward ? i : 3-i;
+      tweenTo('t', i, s.t, s.stagger ? order*gap : 0, dur);
+    }
+    tweenTo('tS', null, s.tS, 0, dur);
+    kick();
+  }
+
+  function go(i){
+    if (i<0 || i>=STEPS.length) return;
+    const forward = i > step;
+    step = i;
+    const s = STEPS[i];
+    $('stepText').innerHTML = s.html;
+    fig.className.baseVal = s.flags.map(f => 'show-'+f).join(' ');
+    $('sliderBox').classList.toggle('on', !!s.slider);
+    if (!s.slider && st.a !== 3){ st.a = 3; $('slA').value = 3; }
+    $('progress').textContent = `${i+1} / ${STEPS.length}`;
+    $('prev').disabled = i===0;
+    $('next').disabled = i===STEPS.length-1;
+    applyTargets(s, forward);
+    render();
+  }
+
+  $('next').addEventListener('click', e => { e.currentTarget.blur(); go(step+1); });
+  $('prev').addEventListener('click', e => { e.currentTarget.blur(); go(step-1); });
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT') return;
+    if (['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); go(step+1); }
+    if (['ArrowLeft','PageUp','Backspace'].includes(e.key)){ e.preventDefault(); go(step-1); }
+  });
+  $('slA').addEventListener('input', e => { st.a = +e.target.value; render(); });
+  $('replay').addEventListener('click', () => {
+    st.t = [0,0,0,0]; st.tS = 0; tweens = [];
+    const dur = reduce ? 1 : 1100, gap = reduce ? 0 : 450;
+    for (let i=0;i<4;i++) tweenTo('t', i, 1, 400 + i*gap, dur);
+    tweenTo('tS', null, 1, 400 + 4*gap + 300, dur);
+    kick();
+  });
+
+  go(0);
+})();
+</script>
+</body>
+</html>
