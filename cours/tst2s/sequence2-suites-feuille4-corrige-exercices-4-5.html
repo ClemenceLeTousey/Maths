@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feuille 4 – Corrigé exercices 4 et 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --panel: #ffffff;
+    --ink: #1f2328;
+    --muted: #6b7280;
+    --line: #e4e2dc;
+    --blue: #1C7ED6;
+    --sky: #339AF0;
+    --rappel: #EEF5FD;
+    --rang: #E8590C;      /* valeur de n (suites explicites) */
+    --c0: #1C7ED6;        /* chaîne de récurrence : couleurs successives */
+    --c1: #2F9E44;
+    --c2: #AE3EC9;
+    --c3: #E03131;
+    --c4: #E8590C;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400; font-size: 20px; line-height: 1.5;
+  }
+  header { background: var(--panel); border-bottom: 1px solid var(--line); padding: 16px 24px; }
+  header h1 { margin: 0; font-size: 26px; font-weight: 500; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: 17px; }
+  nav { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  nav a {
+    font-size: 16px; font-weight: 500; text-decoration: none; color: var(--blue);
+    border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; background: var(--panel);
+  }
+  main { max-width: 1000px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  .exo { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; margin-bottom: 28px; scroll-margin-top: 12px; }
+  .exo-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
+  .pastille { background: var(--sky); color: #fff; font-weight: 600; padding: 2px 12px; border-radius: 4px; font-size: 18px; }
+  .exo-titre { color: var(--sky); font-style: italic; font-size: 19px; }
+
+  .methode { background: var(--rappel); border-left: 4px solid var(--blue); border-radius: 6px; padding: 10px 16px; margin: 6px 0 18px; font-size: 18.5px; }
+  .methode p { margin: 4px 0; }
+  .methode .t { color: var(--blue); font-weight: 500; }
+
+  .q { display: grid; grid-template-columns: 2em minmax(0, 1fr); gap: 10px; padding: 14px 0; border-top: 1px dashed var(--line); }
+  .q:first-of-type { border-top: none; }
+  .num {
+    width: 1.55em; height: 1.55em; border-radius: 50%; border: 1.5px solid var(--ink);
+    display: inline-flex; align-items: center; justify-content: center; font-size: 16px; margin-top: 3px;
+  }
+  .enonce { color: var(--muted); font-size: 18px; margin: 0 0 8px; }
+  .expl { margin: 8px 0 4px; }
+  .calc { margin: 4px 0 4px 0; padding-left: 14px; border-left: 2px solid var(--line); }
+  .calc div { margin: 5px 0; }
+  .note { font-size: 18px; color: var(--muted); margin: 6px 0 0; }
+  .attention { font-size: 18px; margin: 8px 0 0; padding: 6px 12px; border-radius: 6px; background: #FFF4E6; border-left: 4px solid #E8590C; }
+  .conclusion { margin: 8px 0 0; }
+  .verdict { display: inline-block; padding: 1px 10px; border-radius: 4px; background: #EBFBEE; color: #2B8A3E; font-weight: 500; }
+
+  /* écritures mathématiques : jamais coupées en fin de ligne */
+  .m { white-space: nowrap; }
+  .m i { font-style: italic; }
+  .res { border-bottom: 2px solid currentColor; padding: 0 1px; }
+  .k { color: var(--rang); font-weight: 500; }
+  .x0 { color: var(--c0); font-weight: 500; }
+  .x1 { color: var(--c1); font-weight: 500; }
+  .x2 { color: var(--c2); font-weight: 500; }
+  .x3 { color: var(--c3); font-weight: 500; }
+  .x4 { color: var(--c4); font-weight: 500; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 2px; font-size: 0.92em; line-height: 1.15; }
+  .frac > span:first-child { border-bottom: 1.3px solid currentColor; padding: 0 3px; }
+  .frac > span:last-child { padding: 0 3px; }
+
+
+  @media (max-width: 600px) {
+    body { font-size: 18px; }
+    header { padding: 12px 16px; }
+    .exo { padding: 14px 14px; }
+    .q { grid-template-columns: 1.8em minmax(0, 1fr); gap: 6px; }
+    .m { white-space: normal; }
+    .m > span, .m > i { white-space: nowrap; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Séquence 2 — Suites numériques — Feuille 4</h1>
+  <p>Corrigé détaillé des exercices 4 et 5</p>
+  <nav>
+    <a href="#exo4">Exercice 4 · Suites explicites</a>
+    <a href="#exo5">Exercice 5 · Suites définies par récurrence</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ===================== EXERCICE 4 ===================== -->
+<section class="exo" id="exo4">
+  <div class="exo-head"><span class="pastille">Exercice 4</span><span class="exo-titre">Suites explicites</span></div>
+
+  <div class="methode">
+    <p><span class="t">Méthode.</span> La suite est donnée <span class="t">de façon explicite</span> : <span class="m"><i>u</i>(<i>n</i>)</span> s’exprime directement en fonction de <i>n</i>.</p>
+    <p>Pour calculer un terme, on <span class="t">remplace <i>n</i> par la valeur du rang</span> <span class="k">(en orange)</span> partout où il apparaît, puis on calcule en respectant les priorités : puissances, puis multiplications et divisions, puis additions et soustractions.</p>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q">
+    <span class="num">1</span>
+    <div>
+      <p class="enonce"><span class="m"><i>u</i>(<i>n</i>) = <i>n</i><sup>2</sup> + 4<i>n</i></span> pour tout entier naturel <i>n</i>. Calculer <span class="m"><i>u</i>(0)</span>, <span class="m"><i>u</i>(3)</span> et <span class="m"><i>u</i>(5)</span>.</p>
+      <p class="expl">Attention : <span class="m">4<i>n</i></span> signifie <span class="m">4 × <i>n</i></span>.</p>
+      <div class="calc">
+        <div class="m"><i>u</i>(<span class="k">0</span>) = <span class="k">0</span><sup>2</sup> + 4 × <span class="k">0</span> = 0 + 0 = <span class="res">0</span></div>
+        <div class="m"><i>u</i>(<span class="k">3</span>) = <span class="k">3</span><sup>2</sup> + 4 × <span class="k">3</span> = 9 + 12 = <span class="res">21</span></div>
+        <div class="m"><i>u</i>(<span class="k">5</span>) = <span class="k">5</span><sup>2</sup> + 4 × <span class="k">5</span> = 25 + 20 = <span class="res">45</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q">
+    <span class="num">2</span>
+    <div>
+      <p class="enonce"><span class="m"><i>v</i>(<i>n</i>) = 50 − 3<i>n</i></span> pour tout entier naturel <i>n</i>. Calculer <span class="m"><i>v</i>(0)</span>, <span class="m"><i>v</i>(10)</span> et <span class="m"><i>v</i>(20)</span>.</p>
+      <p class="expl">On effectue d’abord la multiplication <span class="m">3 × <i>n</i></span>, puis la soustraction.</p>
+      <div class="calc">
+        <div class="m"><i>v</i>(<span class="k">0</span>) = 50 − 3 × <span class="k">0</span> = 50 − 0 = <span class="res">50</span></div>
+        <div class="m"><i>v</i>(<span class="k">10</span>) = 50 − 3 × <span class="k">10</span> = 50 − 30 = <span class="res">20</span></div>
+        <div class="m"><i>v</i>(<span class="k">20</span>) = 50 − 3 × <span class="k">20</span> = 50 − 60 = <span class="res">−10</span></div>
+      </div>
+      <p class="note">Un terme d’une suite peut tout à fait être négatif.</p>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q">
+    <span class="num">3</span>
+    <div>
+      <p class="enonce"><span class="m"><i>w</i>(<i>n</i>) = −0,5<i>n</i><sup>2</sup> + 3</span> pour tout entier naturel <i>n</i>. Calculer le premier terme, puis <span class="m"><i>w</i>(6)</span> et <span class="m"><i>w</i>(25)</span>.</p>
+      <p class="expl">« Pour tout entier naturel <i>n</i> » : la suite commence au rang 0, donc le <b style="font-weight:500">premier terme</b> est <span class="m"><i>w</i>(0)</span>.</p>
+      <div class="calc">
+        <div class="m"><i>w</i>(<span class="k">0</span>) = −0,5 × <span class="k">0</span><sup>2</sup> + 3 = −0,5 × 0 + 3 = 0 + 3 = <span class="res">3</span></div>
+        <div class="m"><i>w</i>(<span class="k">6</span>) = −0,5 × <span class="k">6</span><sup>2</sup> + 3 = −0,5 × 36 + 3 = −18 + 3 = <span class="res">−15</span></div>
+        <div class="m"><i>w</i>(<span class="k">25</span>) = −0,5 × <span class="k">25</span><sup>2</sup> + 3 = −0,5 × 625 + 3 = −312,5 + 3 = <span class="res">−309,5</span></div>
+      </div>
+      <p class="attention">Le carré ne porte que sur <i>n</i> : on calcule d’abord <span class="m"><span class="k">6</span><sup>2</sup> = 36</span>, puis on multiplie par −0,5. Il ne faut pas calculer <span class="m">(−0,5 × 6)<sup>2</sup></span>.</p>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q">
+    <span class="num">4</span>
+    <div>
+      <p class="enonce"><span class="m"><i>t</i>(<i>n</i>) = <span class="frac"><span>12</span><span><i>n</i></span></span></span> pour tout entier <span class="m"><i>n</i> ⩾ 1</span>. Calculer le premier terme, puis <span class="m"><i>t</i>(3)</span> et <span class="m"><i>t</i>(4)</span>. Pourquoi cette suite ne peut-elle pas commencer au rang 0 ?</p>
+      <p class="expl">« Pour tout entier <span class="m"><i>n</i> ⩾ 1</span> » : la suite commence au rang 1, donc le premier terme est <span class="m"><i>t</i>(1)</span>.</p>
+      <div class="calc">
+        <div class="m"><i>t</i>(<span class="k">1</span>) = <span class="frac"><span>12</span><span class="k">1</span></span> = <span class="res">12</span></div>
+        <div class="m"><i>t</i>(<span class="k">3</span>) = <span class="frac"><span>12</span><span class="k">3</span></span> = <span class="res">4</span></div>
+        <div class="m"><i>t</i>(<span class="k">4</span>) = <span class="frac"><span>12</span><span class="k">4</span></span> = <span class="res">3</span></div>
+      </div>
+      <p class="conclusion">Si on remplaçait <i>n</i> par <span class="k">0</span>, on obtiendrait <span class="m"><i>t</i>(<span class="k">0</span>) = <span class="frac"><span>12</span><span class="k">0</span></span></span> : c’est <b style="font-weight:500">impossible</b>, car on ne peut pas diviser par 0. Le terme <span class="m"><i>t</i>(0)</span> n’existe pas, donc la suite ne peut pas commencer au rang 0.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EXERCICE 5 ===================== -->
+<section class="exo" id="exo5">
+  <div class="exo-head"><span class="pastille">Exercice 5</span><span class="exo-titre">Suites définies par récurrence</span></div>
+
+  <div class="methode">
+    <p><span class="t">Méthode.</span> La suite est définie <span class="t">par récurrence</span> : on connaît le premier terme, et une relation qui donne chaque terme <span class="t">à partir du précédent</span>.</p>
+    <p>On calcule donc les termes <span class="t">de proche en proche</span>, un par un : pour obtenir <span class="m"><i>u</i>(3)</span>, il faut d’abord <span class="m"><i>u</i>(1)</span>, puis <span class="m"><i>u</i>(2)</span>.</p>
+    <p>Dans les calculs ci-dessous, <span class="t">le terme utilisé pour calculer le suivant est en couleur</span>. Le résultat d’une ligne prend la couleur de la ligne suivante, là où il est réutilisé.</p>
+    <p>Quand on remplace un terme négatif dans un produit, on le met entre parenthèses : <span class="m">0,5 × (−4)</span>.</p>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q">
+    <span class="num">1</span>
+    <div>
+      <p class="enonce"><span class="m"><i>u</i>(0) = −4</span> et, pour tout entier naturel <i>n</i>, <span class="m"><i>u</i>(<i>n</i> + 1) = 0,5 × <i>u</i>(<i>n</i>) + 2</span>. Calculer <span class="m"><i>u</i>(1)</span>, <span class="m"><i>u</i>(2)</span> et <span class="m"><i>u</i>(3)</span>.</p>
+      <p class="expl">Pour obtenir un terme, on multiplie le <b style="font-weight:500">terme précédent</b> par 0,5, puis on ajoute 2.</p>
+      <div class="calc">
+        <div class="m">Pour <span class="m"><i>n</i> = 0</span> : <i>u</i>(1) = 0,5 × <span class="x0"><i>u</i>(0)</span> + 2 = 0,5 × <span class="x0">(−4)</span> + 2 = −2 + 2 = <span class="res x1">0</span></div>
+        <div class="m">Pour <span class="m"><i>n</i> = 1</span> : <i>u</i>(2) = 0,5 × <span class="x1"><i>u</i>(1)</span> + 2 = 0,5 × <span class="x1">0</span> + 2 = 0 + 2 = <span class="res x2">2</span></div>
+        <div class="m">Pour <span class="m"><i>n</i> = 2</span> : <i>u</i>(3) = 0,5 × <span class="x2"><i>u</i>(2)</span> + 2 = 0,5 × <span class="x2">2</span> + 2 = 1 + 2 = <span class="res">3</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q">
+    <span class="num">2</span>
+    <div>
+      <p class="enonce"><span class="m"><i>v</i>(0) = −1</span> et, pour tout entier naturel <i>n</i>, <span class="m"><i>v</i>(<i>n</i> + 1) = −2 × <i>v</i>(<i>n</i>) + 10</span>. Calculer le terme de rang 1, puis <span class="m"><i>v</i>(3)</span>.</p>
+      <p class="expl">Le terme de rang 1 est <span class="m"><i>v</i>(1)</span>. Pour obtenir <span class="m"><i>v</i>(3)</span>, on ne peut pas sauter d’étape : il faut d’abord calculer <span class="m"><i>v</i>(2)</span>.</p>
+      <div class="calc">
+        <div class="m"><i>v</i>(1) = −2 × <span class="x0"><i>v</i>(0)</span> + 10 = −2 × <span class="x0">(−1)</span> + 10 = 2 + 10 = <span class="res x1">12</span></div>
+        <div class="m"><i>v</i>(2) = −2 × <span class="x1"><i>v</i>(1)</span> + 10 = −2 × <span class="x1">12</span> + 10 = −24 + 10 = <span class="res x2">−14</span></div>
+        <div class="m"><i>v</i>(3) = −2 × <span class="x2"><i>v</i>(2)</span> + 10 = −2 × <span class="x2">(−14)</span> + 10 = 28 + 10 = <span class="res">38</span></div>
+      </div>
+      <p class="note">Règle des signes : <span class="m">−2 × (−1) = 2</span> et <span class="m">−2 × (−14) = 28</span> (négatif × négatif = positif).</p>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q">
+    <span class="num">3</span>
+    <div>
+      <p class="enonce"><span class="m"><i>a</i>(1) = 2</span> et, pour tout entier <span class="m"><i>n</i> ⩾ 1</span>, <span class="m"><i>a</i>(<i>n</i> + 1) = 3 × <i>a</i>(<i>n</i>) − 1</span>. Calculer <span class="m"><i>a</i>(2)</span>, <span class="m"><i>a</i>(3)</span> et <span class="m"><i>a</i>(4)</span>.</p>
+      <p class="expl">Ici la suite commence au rang 1 : on part de <span class="m"><i>a</i>(1) = 2</span>. On multiplie le terme précédent par 3, puis on retranche 1.</p>
+      <div class="calc">
+        <div class="m"><i>a</i>(2) = 3 × <span class="x0"><i>a</i>(1)</span> − 1 = 3 × <span class="x0">2</span> − 1 = 6 − 1 = <span class="res x1">5</span></div>
+        <div class="m"><i>a</i>(3) = 3 × <span class="x1"><i>a</i>(2)</span> − 1 = 3 × <span class="x1">5</span> − 1 = 15 − 1 = <span class="res x2">14</span></div>
+        <div class="m"><i>a</i>(4) = 3 × <span class="x2"><i>a</i>(3)</span> − 1 = 3 × <span class="x2">14</span> − 1 = 42 − 1 = <span class="res">41</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q">
+    <span class="num">4</span>
+    <div>
+      <p class="enonce"><span class="m"><i>b</i>(1) = 100</span> et, pour tout entier <span class="m"><i>n</i> ⩾ 1</span>, <span class="m"><i>b</i>(<i>n</i> + 1) = <i>b</i>(<i>n</i>) − 15</span>. Quel est le premier terme de la suite <i>b</i> ? Calculer le troisième terme de la suite, puis <span class="m"><i>b</i>(5)</span>.</p>
+      <p class="expl">La suite commence au rang 1, donc son <b style="font-weight:500">premier terme</b> est <span class="m"><i>b</i>(1) = <span class="res">100</span></span>.</p>
+      <p class="attention">Comme la suite commence au rang 1, les termes sont <span class="m"><i>b</i>(1)</span> (1<sup>er</sup>), <span class="m"><i>b</i>(2)</span> (2<sup>e</sup>), <span class="m"><i>b</i>(3)</span> (3<sup>e</sup>)… Le troisième terme est donc <span class="m"><i>b</i>(3)</span>, et non <span class="m"><i>b</i>(2)</span>.</p>
+      <p class="expl">Pour passer d’un terme au suivant, on retranche 15.</p>
+      <div class="calc">
+        <div class="m"><i>b</i>(2) = <span class="x0"><i>b</i>(1)</span> − 15 = <span class="x0">100</span> − 15 = <span class="res x1">85</span></div>
+        <div class="m"><i>b</i>(3) = <span class="x1"><i>b</i>(2)</span> − 15 = <span class="x1">85</span> − 15 = <span class="res x2">70</span> &nbsp;← troisième terme</div>
+        <div class="m"><i>b</i>(4) = <span class="x2"><i>b</i>(3)</span> − 15 = <span class="x2">70</span> − 15 = <span class="res x3">55</span></div>
+        <div class="m"><i>b</i>(5) = <span class="x3"><i>b</i>(4)</span> − 15 = <span class="x3">55</span> − 15 = <span class="res">40</span></div>
+      </div>
+      <p class="conclusion">Le troisième terme est <span class="m"><i>b</i>(3) = 70</span> et <span class="m"><i>b</i>(5) = 40</span>.</p>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q">
+    <span class="num">5</span>
+    <div>
+      <p class="enonce"><i>Vrai ou faux ?</i> <span class="m"><i>w</i>(0) = 5</span> et, pour tout entier naturel <i>n</i>, <span class="m"><i>w</i>(<i>n</i> + 1) = 2 × <i>w</i>(<i>n</i>) + 1</span>. Affirmation : <span class="m"><i>w</i>(3) = 47</span>.</p>
+      <p class="expl">Pour vérifier l’affirmation, on calcule <span class="m"><i>w</i>(3)</span> de proche en proche.</p>
+      <div class="calc">
+        <div class="m"><i>w</i>(1) = 2 × <span class="x0"><i>w</i>(0)</span> + 1 = 2 × <span class="x0">5</span> + 1 = 10 + 1 = <span class="res x1">11</span></div>
+        <div class="m"><i>w</i>(2) = 2 × <span class="x1"><i>w</i>(1)</span> + 1 = 2 × <span class="x1">11</span> + 1 = 22 + 1 = <span class="res x2">23</span></div>
+        <div class="m"><i>w</i>(3) = 2 × <span class="x2"><i>w</i>(2)</span> + 1 = 2 × <span class="x2">23</span> + 1 = 46 + 1 = <span class="res">47</span></div>
+      </div>
+      <p class="conclusion">On trouve bien <span class="m"><i>w</i>(3) = 47</span> : l’affirmation est <span class="verdict">vraie</span>.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+</body>
+</html>
