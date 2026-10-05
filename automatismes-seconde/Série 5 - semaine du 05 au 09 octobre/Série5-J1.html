@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("automatismes-theme");
+      if (t !== "light" && t !== "dark") t = "dark";
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Série 5 · Jour 1 — Automatismes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+<style>
+  :root {
+    color-scheme: light;
+    --paper:        #f2f3ee;
+    --surface:      #ffffff;
+    --ink:          #20232b;
+    --ink-soft:     #565a66;
+    --muted:        #8b8f99;
+    --accent:       #2455b8;
+    --accent-soft:  #e4ecfb;
+    --orange:       #b5511f;
+    --orange-soft:  #f7e6dc;
+    --aqua:         #12805c;
+    --aqua-soft:    #dcf1e9;
+    --red:          #b8342b;
+    --red-soft:     #fbeae8;
+    --line:         #dce1ea;
+    --rule-strong:  #b9c2d1;
+    --shadow:       rgba(32, 35, 43, 0.10);
+    /* couleurs de "palier" (QCM / question simple / automatisme final) */
+    --qcm:      #2455b8;
+    --question: #b5511f;
+    --final:    #9c2b3e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper:#121319; --surface:#1b1e26; --ink:#f1f2f6; --ink-soft:#c3c7d1; --muted:#8b909c;
+      --accent:#7ea3ee; --accent-soft:#223252; --orange:#e08a5c; --orange-soft:#3a2a1e;
+      --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70; --red-soft:#3a2222;
+      --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
+      --qcm:#7ea3ee; --question:#e08a5c; --final:#e17a70;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper:#121319; --surface:#1b1e26; --ink:#f1f2f6; --ink-soft:#c3c7d1; --muted:#8b909c;
+    --accent:#7ea3ee; --accent-soft:#223252; --orange:#e08a5c; --orange-soft:#3a2a1e;
+    --aqua:#4fc79a; --aqua-soft:#1c3229; --red:#e17a70; --red-soft:#3a2222;
+    --line:#2b2f3a; --rule-strong:#3b4150; --shadow:rgba(0,0,0,0.35);
+    --qcm:#7ea3ee; --question:#e08a5c; --final:#e17a70;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 120px;
+  }
+
+  h1, .display { font-family: "Fraunces", Georgia, serif; text-wrap: balance; }
+
+  .site-header { width: 100%; max-width: 1100px; margin-bottom: 22px; }
+  .brand-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .brand-row h1 { margin: 0 0 4px; font-size: clamp(1.5rem, 1.15rem + 1.4vw, 2.1rem); font-weight: 600; color: var(--ink); }
+  .brand-row .subtitle { margin: 0; color: var(--ink-soft); font-size: 0.98rem; }
+
+  .back-link {
+    align-self: center;
+    font-family: "Public Sans", sans-serif; font-size: 0.78rem; font-weight: 600;
+    color: var(--ink); text-decoration: none;
+    border: 1.5px solid var(--rule-strong); border-radius: 999px;
+    padding: 7px 12px; white-space: nowrap;
+  }
+  .back-link:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+  /* min-height : garantit qu'on peut toujours faire défiler jusqu'à caler la carte en haut */
+  .pages { width: 100%; max-width: 1100px; min-height: calc(100vh - 16px); }
+
+  .page {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: 0 1px 3px var(--shadow), 0 10px 30px -18px var(--shadow);
+    padding: 20px 28px 22px 48px;
+    display: flex;
+    flex-direction: column;
+  }
+  .page::before {
+    content: ""; position: absolute; top: 0; bottom: 0; left: 34px; width: 1px;
+    background: var(--red); opacity: 0.55;
+  }
+
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 2px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 0.76rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase;
+    padding: 6px 11px; border-radius: 999px;
+  }
+  .badge .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .badge.obj-nombres { background: var(--accent-soft); color: var(--accent); }
+  .badge.obj-nombres .dot { background: var(--accent); }
+  .badge.obj-geometrie { background: var(--aqua-soft); color: var(--aqua); }
+  .badge.obj-geometrie .dot { background: var(--aqua); }
+  .badge.obj-complement { background: var(--orange-soft); color: var(--orange); }
+  .badge.obj-complement .dot { background: var(--orange); }
+
+  .page-meta { text-align: right; font-family: "Space Mono", monospace; color: var(--muted); }
+  .page-meta .count { font-size: 1.05rem; color: var(--ink-soft); }
+  .page-meta .jour { font-size: 0.72rem; margin-top: 4px; }
+
+  .timer-bar { display: flex; align-items: center; gap: 8px; margin: 8px 0 12px; }
+  /* Le « Voir la réponse » du niveau 1 (étoile verte) vit dans la barre du minuteur */
+  .timer-bar .reveal-btn { align-self: center; margin: 0 0 0 16px; border-color: var(--aqua); color: var(--aqua); }
+  .timer-display {
+    font-family: "Space Mono", monospace; font-size: 1.3rem; font-weight: 700;
+    color: var(--ink); min-width: 2.8em; text-align: center;
+  }
+  .timer-display.warning { color: var(--orange); }
+  .timer-display.done { color: var(--red); }
+  .timer-btn {
+    border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface);
+    color: var(--ink); font-family: "Space Mono", monospace; font-size: 0.85rem; font-weight: 700;
+    padding: 6px 12px; cursor: pointer; line-height: 1;
+  }
+  .timer-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .timer-btn.small { padding: 5px 9px; font-size: 0.72rem; }
+
+  .aim {
+    margin: 0 0 10px;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    font-style: italic;
+  }
+  .aim strong { font-style: normal; color: var(--ink); font-weight: 600; }
+
+  .question {
+    font-size: clamp(1.55rem, 1.3rem + 0.9vw, 1.95rem);
+    font-weight: 500; line-height: 1.35; margin: 0 0 12px; color: var(--ink);
+  }
+
+  /* Petite aide de vocabulaire sous l'énoncé (if = si, else = sinon) */
+  .question .hint { display: block; margin-top: 6px; font-size: 0.62em; font-weight: 400; color: var(--ink-soft); }
+  .question .hint .code.inl { font-size: 0.95em; }
+  .diagram { display: flex; justify-content: center; margin: 0 0 12px; }
+  .diagram:empty { display: none; }
+  .diagram svg { max-width: 100%; height: auto; }
+  .question-row.side { display: flex; align-items: flex-start; gap: 28px; }
+  .question-row.side .question { margin: 0; flex: 1 1 auto; }
+  .question-row.side .diagram { margin: 0; flex: 0 0 auto; }
+  /* Choix A-D à droite de la figure (optionsAside) pour garder la suite visible */
+  .question-row.aside { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-bottom: 18px; }
+  .question-row.aside .question { flex: 1 1 100%; margin: 0 0 6px; }
+  .question-row.aside .diagram { flex: 1 1 420px; margin: 0; min-width: 0; }
+  .question-row.aside .options { flex: 0 1 220px; grid-template-columns: 1fr; margin: 0; }
+  .question-row.aside .options .opt { padding: 10px 14px; font-size: 1.25rem; }
+  /* Questions niveau 2 / 3 à droite de la figure (levelsAside) */
+  .question-row.levels-aside { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px 28px; margin-bottom: 18px; }
+  .question-row.levels-aside .question { flex: 1 1 100%; margin: 0 0 6px; }
+  .question-row.levels-aside .diagram { flex: 0 0 auto; margin: 0; }
+  .question-row.levels-aside .levels-col { flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .question-row.levels-aside .levels-col .level { margin-top: 0; }
+  .question-row.levels-aside .levels-col .level-question { font-size: 1.18rem; }
+  /* Sans figure, l'énoncé lui-même passe à gauche des niveaux 2 et 3 */
+  .question-row.levels-aside.no-diagram .question { flex: 1 1 380px; margin: 0; }
+  .question-row.levels-aside.no-diagram .levels-col { flex: 1 1 420px; }
+  /* La réponse du niveau 1 reste à gauche, sous l'énoncé (sinon elle tombe sous les niveaux 2 et 3, hors de l'écran) */
+  .question-row.levels-aside .main-col { flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .question-row.levels-aside .main-col .question { flex: 0 0 auto; margin: 0; }
+  .question-row.levels-aside .main-col .answer-box { margin-top: 0; }
+  .code-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; width: 100%; }
+  .code-col { flex: 1 1 220px; max-width: 320px; }
+  .code {
+    display: inline-block; vertical-align: top; max-width: 100%;
+    font-family: "Space Mono", monospace; font-size: 0.9rem; line-height: 1.6;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px 15px; white-space: pre; color: var(--ink); overflow-x: auto;
+  }
+  .code.big { font-size: 1.75rem; line-height: 1.5; padding: 16px 22px; }
+  .code.big-inline { display: inline; font-size: 0.95em; line-height: inherit; padding: 2px 10px; vertical-align: baseline; white-space: nowrap; }
+  /* Petit bout de code dans une phrase : reste sur la ligne de base du texte */
+  .code.inl { display: inline; font-size: 0.85em; line-height: inherit; padding: 1px 6px; border-radius: 5px; vertical-align: baseline; white-space: nowrap; }
+  .opt .code { background: transparent; border: none; padding: 0; font-size: 0.85rem; }
+  .diagram-point circle { fill: var(--surface); stroke: var(--ink); stroke-width: 2.5; }
+  .diagram-point.correct circle { stroke: var(--aqua); fill: var(--aqua-soft); }
+  .diagram-point text { font-family: "Space Mono", monospace; font-weight: 700; font-size: 13px; fill: var(--ink); text-anchor: middle; }
+  .diagram-grid line { stroke: var(--line); stroke-width: 1; }
+  .diagram-vector line { stroke: var(--accent); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 6 5; }
+  .diagram-vector.solved { stroke-dasharray: none; }
+  .diagram-vector polygon { fill: var(--accent); }
+  .diagram-label { font-family: "Public Sans", sans-serif; font-size: 12px; fill: var(--ink-soft); }
+  .diagram-table rect { stroke: var(--ink); stroke-width: 1.5; }
+  .diagram-table rect.corner { fill: var(--red-soft); }
+  .diagram-table rect.hdr { fill: rgba(128,128,128,0.18); }
+  .diagram-table rect.cell { fill: none; }
+  .diagram-table text { font-family: "Space Mono", monospace; font-weight: 700; font-size: 15px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+  .diagram-table text.var, .diagram-table tspan.var { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-weight: 400; }
+
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+  .opt {
+    border: 1.5px solid var(--rule-strong); border-radius: 8px; padding: 10px 14px;
+    font-size: 1.35rem; cursor: pointer; background: var(--surface);
+    transition: background .15s, border-color .15s;
+  }
+  .opt:hover { border-color: var(--accent); }
+  .opt .letter {
+    display: inline-block; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--ink); color: var(--surface); text-align: center; line-height: 24px;
+    font-family: "Space Mono", monospace; font-size: .82rem; margin-right: 9px; font-weight: 700;
+  }
+  .opt.correct { border-color: var(--aqua); background: var(--aqua-soft); }
+  .opt.wrong { border-color: var(--red); background: var(--red-soft); opacity: .7; }
+
+  .answer-zone { margin-top: 0; padding-top: 0; }
+  .answer-zone .label {
+    font-family: "Space Mono", monospace; font-size: 0.78rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
+  }
+  .answer-line { height: 1px; background: var(--rule-strong); margin-bottom: 18px; }
+
+  .answer-box {
+    display: none; margin-top: 8px; padding: 12px 16px; border-radius: 8px;
+    background: var(--orange-soft); border-left: 4px solid var(--orange);
+  }
+  .answer-box.shown { display: block; }
+  .answer-box .content { font-size: 1.1rem; color: var(--ink); }
+
+  .reveal-btn {
+    align-self: flex-start; margin-top: 14px;
+    font-family: "Public Sans", sans-serif; font-size: 0.85rem; font-weight: 600;
+    border-radius: 999px; padding: 9px 18px; cursor: pointer;
+    border: 1.5px solid var(--rule-strong); background: var(--surface); color: var(--ink);
+  }
+  .reveal-btn:hover { box-shadow: 0 2px 8px var(--shadow); }
+
+  /* Étoiles de difficulté (remplissage cumulatif : vert 1, bleu 2, rouge 3) */
+  .stars { display: inline-flex; gap: 2px; font-size: 1.05rem; line-height: 1; letter-spacing: 0; }
+  .stars .star { color: var(--rule-strong); }
+  .stars.s1 .star.on { color: var(--aqua); }
+  .stars.s2 .star.on { color: var(--accent); }
+  .stars.s3 .star.on { color: var(--final); }
+  .page-head .stars { margin-left: 10px; vertical-align: middle; }
+  .badge-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  /* Questions de niveau 2 et 3 « en dessous » de la question en cours */
+  .level {
+    margin-top: 12px; padding: 12px 15px 11px;
+    border: 1.5px solid var(--rule-strong); border-radius: 10px;
+    background: var(--paper);
+    background: color-mix(in srgb, var(--paper) 55%, var(--surface));
+  }
+  .level.level-2 { border-color: var(--accent); }
+  .level.level-3 { border-color: var(--final); }
+  .level-head { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+  .level-label {
+    font-family: "Space Mono", monospace; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted);
+  }
+  .level-question { margin: 0; font-size: 1.3rem; line-height: 1.45; color: var(--ink); }
+  .level-answer {
+    display: none; margin-top: 12px; padding: 12px 16px; border-radius: 8px;
+    background: var(--orange-soft); border-left: 4px solid var(--orange); font-size: 1.05rem;
+  }
+  .level-answer.shown { display: block; }
+  .level .reveal-btn { margin-top: 9px; font-size: 0.8rem; padding: 7px 14px; }
+  /* Niveaux 2 et 3 côte à côte sous la figure (levelsPair) */
+  .levels-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; margin-top: 12px; }
+  .levels-pair .level { margin-top: 0; }
+  .levels-pair .level-question { font-size: 1.18rem; }
+  @media (max-width: 820px) { .levels-pair { grid-template-columns: 1fr; } }
+
+  /* Schéma « segment en fonction de x » */
+  .diagram-segment line, .diagram-segment path { stroke: var(--ink); stroke-width: 1.6; fill: none; stroke-linecap: round; }
+  .diagram-segment circle { stroke: var(--ink); stroke-width: 1.6; fill: var(--surface); }
+  .diagram-segment .tick { stroke-width: 1.6; }
+  .diagram-segment .measure line, .diagram-segment .measure path { stroke: var(--accent); stroke-width: 1.8; }
+  .diagram-segment text { font-family: "Public Sans", sans-serif; font-size: 17px; fill: var(--ink); text-anchor: middle; }
+  .diagram-segment text.var { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-size: 19px; }
+
+  /* Figures vectorielles sur quadrillage */
+  .diagram-vec .vgrid line { stroke: #333; stroke-width: 1; }
+  :root[data-theme="dark"] .diagram-vec .vgrid line { stroke: var(--ink); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .diagram-vec .vgrid line { stroke: var(--ink); } }
+  .diagram-vec .vec line { stroke-width: 3; stroke-linecap: round; }
+  .diagram-vec .vec.acc line { stroke: var(--accent); }   .diagram-vec .vec.acc polygon { fill: var(--accent); }
+  .diagram-vec .vec.org line { stroke: var(--orange); }   .diagram-vec .vec.org polygon { fill: var(--orange); }
+  .diagram-vec .vec.aqua line { stroke: var(--aqua); }    .diagram-vec .vec.aqua polygon { fill: var(--aqua); }
+  .diagram-vec .vec.red line { stroke: var(--final); }    .diagram-vec .vec.red polygon { fill: var(--final); }
+  .diagram-vec .vec.ink line { stroke: var(--ink-soft); } .diagram-vec .vec.ink polygon { fill: var(--ink-soft); }
+  .diagram-vec .vec.dashed line { stroke-dasharray: 7 6; }
+  .diagram-vec .vname text { font-family: "Times New Roman", "Latin Modern Math", serif; font-style: italic; font-size: 19px; text-anchor: middle; }
+  .diagram-vec .vname path { fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .diagram-vec .vname.acc text { fill: var(--accent); }  .diagram-vec .vname.acc path { stroke: var(--accent); }
+  .diagram-vec .vname.org text { fill: var(--orange); }  .diagram-vec .vname.org path { stroke: var(--orange); }
+  .diagram-vec .vname.aqua text { fill: var(--aqua); }   .diagram-vec .vname.aqua path { stroke: var(--aqua); }
+  .diagram-vec .vname.red text { fill: var(--final); }   .diagram-vec .vname.red path { stroke: var(--final); }
+  .diagram-vec .vname.ink text { fill: var(--ink-soft); }.diagram-vec .vname.ink path { stroke: var(--ink-soft); }
+  .diagram-vec .pt circle { fill: var(--ink); }
+  .diagram-vec .pt text { font-family: "Public Sans", sans-serif; font-size: 16px; fill: var(--ink); text-anchor: middle; }
+  .diagram-vec .rt { fill: none; stroke: var(--ink-soft); stroke-width: 1.5; stroke-dasharray: 4 4; }
+  .diagram-vec .len { font-family: "Public Sans", sans-serif; font-size: 15px; fill: var(--ink-soft); text-anchor: middle; }
+  .answer-box .diagram-vec, .level-answer .diagram-vec { display: block; margin: 10px auto 0; }
+
+  /* Figure composée (périmètres, aires) */
+  .diagram-shape .fig { fill: var(--accent-soft); stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: miter; }
+  .diagram-shape text { font-family: "Public Sans", sans-serif; font-size: 19px; fill: var(--ink); text-anchor: middle; }
+  .diagram-shape text.found { fill: var(--orange); }
+  .diagram-shape .cut { fill: none; stroke: var(--orange); stroke-width: 2; stroke-dasharray: 7 6; }
+  .answer-box .diagram-shape { display: block; margin: 10px auto 0; }
+
+  .worksheet-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: center;
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--paper) 60%, transparent);
+    pointer-events: none;
+  }
+  .worksheet-nav .inner {
+    pointer-events: auto; display: flex; align-items: center; gap: 14px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 10px 8px 16px; box-shadow: 0 6px 20px var(--shadow);
+  }
+  .nav-dots { display: flex; gap: 6px; }
+  .nav-dots button { width: 8px; height: 8px; border-radius: 50%; border: none; padding: 0; cursor: pointer; background: var(--line); }
+  .nav-dots button.current { background: var(--accent); width: 18px; border-radius: 5px; }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px; border: none; background: none; cursor: pointer;
+    font-family: "Public Sans", sans-serif; font-weight: 600; font-size: 0.85rem;
+    color: var(--ink); padding: 7px 10px; border-radius: 999px;
+  }
+  .nav-btn:hover { background: var(--accent-soft); color: var(--accent); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; background: none; color: var(--ink); }
+  .nav-pos { font-family: "Space Mono", monospace; font-size: 0.78rem; color: var(--muted); min-width: 40px; text-align: center; }
+
+  @media (max-width: 560px) {
+    .page { padding: 26px 22px 26px 42px; }
+    .page::before { left: 22px; }
+    .options { grid-template-columns: 1fr; }
+  }
+  .header-actions { display: flex; align-items: center; gap: 10px; }
+  .theme-toggle {
+    flex: none; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface); color: var(--ink);
+    font-size: 1.05rem; cursor: pointer; line-height: 1; padding: 0; text-decoration: none;
+  }
+  .theme-toggle:hover { background: var(--accent-soft); border-color: var(--accent); }
+
+  .katex .mord:not(.mathnormal):not(.mathit):not(.mathbf):not(.mathcal):not(.mathtt):not(.vbox) {
+    font-family: "Public Sans", system-ui, sans-serif;
+  }
+  /* Le ":not(.vbox)" ci-dessus n'exclut que le conteneur externe : les
+     glyphes qu'il contient (ex. la barre oblique du "\neq", empilée via
+     un vbox) restent des .mord imbriqués et héritaient quand même de
+     Public Sans, ce qui cassait leur alignement. */
+  .katex .vbox .mord {
+    font-family: inherit !important;
+  }
+  /* Une formule ne se coupe jamais en fin de ligne : elle passe entière à la ligne suivante */
+  .katex { white-space: nowrap; }
+  /* Interligne plus large dans les corrigés : les fractions \dfrac ne chevauchent pas la ligne voisine */
+  .answer-box .content, .level-answer { line-height: 1.9; }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="brand-row">
+    <div>
+      <h1>Automatismes — Série 5<br>Semaine du 5 au 9 octobre</h1>
+      <p class="subtitle">Jour 1 · projection en classe</p>
+    </div>
+    <div class="header-actions">
+    <a class="theme-toggle" href="Série5-sommaire.html" aria-label="Sommaire" title="Sommaire">📋</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Changer de thème (clair / sombre)" title="Thème clair / sombre">🌙</button>
+    <a class="back-link" href="../Série 4 - semaine du 28 septembre au 02 octobre/Série4-J3.html">Série 4</a>
+    <a class="back-link" href="Série5-J2.html">J+1</a>
+    </div>
+  </div>
+</div>
+
+<div class="pages">
+  <section class="page" id="page">
+    <div class="page-head">
+      <div class="badge-row">
+        <span class="badge obj-nombres" id="objectif-badge"><span class="dot"></span><span id="objectif-text"></span></span>
+        <span class="stars s1" aria-label="Niveau 1"><span class="star on">★</span><span class="star">★</span><span class="star">★</span></span>
+      </div>
+      <div class="page-meta">
+        <span class="count" id="qnum-display">1 / 3</span>
+        <div class="jour">Série 5 · Jour 1</div>
+      </div>
+    </div>
+    <div class="timer-bar">
+      <button class="timer-btn" id="timer-toggle" type="button" aria-label="Démarrer le minuteur">▶</button>
+      <span class="timer-display" id="timer-display">0:30</span>
+      <button class="timer-btn small" id="timer-minus" type="button" aria-label="Moins 5 secondes">−5</button>
+      <button class="timer-btn small" id="timer-plus" type="button" aria-label="Plus 5 secondes">+5</button>
+      <button class="timer-btn small" id="timer-reset" type="button" aria-label="Réinitialiser le minuteur">↺</button>
+      <button class="reveal-btn" id="reveal-btn">Voir la réponse</button>
+    </div>
+    <div class="question-row" id="question-row">
+      <p class="question" id="qtext"></p>
+      <div class="diagram" id="diagram"></div>
+    </div>
+    <div class="options" id="options"></div>
+    <div class="answer-zone">
+      <div class="answer-box" id="answer-box">
+        <div class="aim"><strong>Objectif visé :</strong> <span id="aim-text"></span></div>
+        <div class="content" id="answer-content"></div>
+      </div>
+    </div>
+    <div class="level level-2" id="lvl2">
+      <div class="level-head"><span class="stars s2" aria-label="Niveau 2"><span class="star on">★</span><span class="star on">★</span><span class="star">★</span></span><span class="level-label">Niveau 2</span></div>
+      <p class="level-question" id="lvl2-text"></p>
+      <div class="level-answer" id="lvl2-answer"></div>
+      <button class="reveal-btn" id="lvl2-reveal">Voir la réponse</button>
+    </div>
+    <div class="level level-3" id="lvl3">
+      <div class="level-head"><span class="stars s3" aria-label="Niveau 3"><span class="star on">★</span><span class="star on">★</span><span class="star on">★</span></span><span class="level-label">Niveau 3</span></div>
+      <p class="level-question" id="lvl3-text"></p>
+      <div class="level-answer" id="lvl3-answer"></div>
+      <button class="reveal-btn" id="lvl3-reveal">Voir la réponse</button>
+    </div>
+  </section>
+</div>
+
+<div class="worksheet-nav">
+  <div class="inner">
+    <button class="nav-btn" id="btn-prev">← Précédent</button>
+    <div class="nav-dots" id="nav-dots"></div>
+    <span class="nav-pos" id="nav-pos">1 / 3</span>
+    <button class="nav-btn" id="btn-next">Suivant →</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    tier: "qcm",
+    objectif: "A13 · Proportions",
+    aim: "Calculer une proportion (effectif de la partie ÷ effectif total) et l'exprimer sous forme fractionnaire, décimale ou en pourcentage.",
+    question: "Dans un groupe de $60$ enfants, $6$ sont des garçons. Le pourcentage de garçons dans ce groupe est :",
+    levelsPair: true,
+    options: [
+      { letter:"A", text:"$54\\,\\%$", correct:false },
+      { letter:"B", text:"$10\\,\\%$", correct:true },
+      { letter:"C", text:"$6\\,\\%$", correct:false },
+      { letter:"D", text:"$60\\,\\%$", correct:false }
+    ],
+    explanation: "Proportion de garçons : $p=\\dfrac{6}{60}=\\dfrac{1}{10}=0{,}1=10\\,\\%$.<br>Les pièges : $6\\,\\%$ (confondre l'effectif et le pourcentage : ce serait vrai sur $100$ enfants), $54\\,\\%$ (c'est le nombre de filles, $60-6$), $60\\,\\%$ (l'effectif total).",
+    niveau2: {
+      question: "Dans une classe de $32$ élèves, $12$ sont externes. Donner la proportion d'externes sous forme de fraction irréductible, puis sous forme décimale, puis en pourcentage.",
+      explanation: "$p=\\dfrac{12}{32}=\\dfrac{3}{8}$ (on simplifie par $4$).<br>$3\\div8=0{,}375$, donc $p=0{,}375=37{,}5\\,\\%$."
+    },
+    niveau3: {
+      question: "Dans la classe A, $6$ élèves sur $24$ sont des filles ; dans la classe B, $18$ élèves sur $36$. On réunit les deux classes. Quelle est la proportion de filles dans le groupe ? Pourquoi n'est-ce pas la moyenne des deux proportions ?",
+      explanation: "Classe A : $\\dfrac{6}{24}=25\\,\\%$ ; classe B : $\\dfrac{18}{36}=50\\,\\%$.<br>Groupe : $\\dfrac{6+18}{24+36}=\\dfrac{24}{60}=0{,}4=40\\,\\%$, et non $\\dfrac{25+50}{2}=37{,}5\\,\\%$.<br>On n'additionne pas les pourcentages, on additionne les effectifs : la classe B, plus nombreuse, pèse davantage."
+    }
+  },
+  {
+    tier: "question",
+    theme: "obj-complement",
+    objectif: "Algo · Variables et affectations",
+    aim: "Suivre des affectations successives : une variable ne garde que sa dernière valeur, l'ancienne est écrasée.",
+    question: "Qu'affiche ce script ?",
+    levelsAside: true,
+    diagram: `<span class="code big">a = 5<br>b = a + 3<br>a = 2 * b<br>print(a, b)</span>`,
+    explanation: "Ligne 2 : <span class=\"code inl\">b</span> prend la valeur $5+3=8$. Ligne 3 : <span class=\"code inl\">a</span> prend la valeur $2\\times8=16$ (l'ancienne valeur $5$ est écrasée).<br>Le script affiche <span class=\"code inl\">16 8</span>.",
+    niveau2: {
+      question: "<span class=\"code\">a = 7<br>b = 2<br>a = b<br>b = a<br>print(a, b)</span><br>Ce script devait échanger les valeurs de <span class=\"code inl\">a</span> et <span class=\"code inl\">b</span>. Qu'affiche-t-il ?",
+      explanation: "Ligne 3 : <span class=\"code inl\">a</span> prend la valeur de <span class=\"code inl\">b</span>, soit $2$ : la valeur $7$ est perdue. Ligne 4 : <span class=\"code inl\">b</span> prend la valeur de <span class=\"code inl\">a</span>, qui vaut maintenant $2$.<br>Le script affiche <span class=\"code inl\">2 2</span> : l'échange est raté."
+    },
+    niveau3: {
+      question: "<span class=\"code\">a = 7<br>b = 2<br>a = a + b<br>b = a - b<br>a = a - b<br>print(a, b)</span><br>Qu'affiche ce script ? Que fait-il, quelles que soient les valeurs de départ ?",
+      explanation: "<span class=\"code inl\">a</span> vaut $9$, puis <span class=\"code inl\">b</span> vaut $9-2=7$, puis <span class=\"code inl\">a</span> vaut $9-7=2$ : le script affiche <span class=\"code inl\">2 7</span>.<br>Avec $x$ et $y$ au départ : <span class=\"code inl\">a</span> vaut $x+y$, puis <span class=\"code inl\">b</span> vaut $(x+y)-y=x$, puis <span class=\"code inl\">a</span> vaut $(x+y)-x=y$. Les valeurs sont échangées, sans troisième variable."
+    }
+  },
+  {
+    tier: "final",
+    objectif: "A10 · Équations",
+    aim: "Résoudre une équation du premier degré dont l'inconnue apparaît dans les deux membres, puis vérifier.",
+    question: "Résoudre l'équation :$$5x-7=2x+8$$",
+    levelsAside: true,
+    explanation: "On soustrait $2x$ aux deux membres : $3x-7=8$.<br>On ajoute $7$ aux deux membres : $3x=15$. On divise les deux membres par $3$ : $x=5$.<br>Vérification : $5\\times5-7=18$ et $2\\times5+8=18$ ✓. La solution est $5$.",
+    niveau2: {
+      question: "Résoudre l'équation :$$-2(x-5)=3x-5$$",
+      explanation: "On développe, attention au signe : $-2x+10=3x-5$.<br>On ajoute $2x$ et on ajoute $5$ aux deux membres : $15=5x$, donc $x=3$.<br>Vérification : $-2\\times(3-5)=4$ et $3\\times3-5=4$ ✓. La solution est $3$."
+    },
+    niveau3: {
+      question: "Résoudre l'équation :$$7-3(2x-1)=4-x$$",
+      explanation: "On développe, en changeant les signes derrière le « $-3$ » : $7-6x+3=4-x$, soit $10-6x=4-x$.<br>On ajoute $6x$ et on soustrait $4$ aux deux membres : $6=5x$, donc $x=\\dfrac{6}{5}=1{,}2$.<br>Vérification : $7-3\\times(2{,}4-1)=7-4{,}2=2{,}8$ et $4-1{,}2=2{,}8$ ✓."
+    }
+  }
+];
+let current = 0;
+let revealed = false;
+
+const objectifBadge = document.getElementById("objectif-badge");
+const objectifText = document.getElementById("objectif-text");
+const aimText = document.getElementById("aim-text");
+const qtext = document.getElementById("qtext");
+const diagramEl = document.getElementById("diagram");
+const optionsEl = document.getElementById("options");
+const answerBox = document.getElementById("answer-box");
+const answerContent = document.getElementById("answer-content");
+const answerZone = document.querySelector(".answer-zone");
+const revealBtn = document.getElementById("reveal-btn");
+const LEVELS = [2, 3].map(n => ({
+  key: "niveau" + n,
+  el: document.getElementById("lvl" + n),
+  text: document.getElementById("lvl" + n + "-text"),
+  answer: document.getElementById("lvl" + n + "-answer"),
+  btn: document.getElementById("lvl" + n + "-reveal"),
+  revealed: false
+}));
+const qnumDisplay = document.getElementById("qnum-display");
+const navPos = document.getElementById("nav-pos");
+const dotsWrap = document.getElementById("nav-dots");
+const btnPrev = document.getElementById("btn-prev");
+const btnNext = document.getElementById("btn-next");
+
+// --- Minuteur ---------------------------------------------------------
+const TIER_DURATIONS = { qcm: 20, question: 40, final: 60 };
+const timerToggle = document.getElementById("timer-toggle");
+const timerDisplay = document.getElementById("timer-display");
+const timerMinus = document.getElementById("timer-minus");
+const timerPlus = document.getElementById("timer-plus");
+const timerReset = document.getElementById("timer-reset");
+let timerRemaining = 30;
+let timerInterval = null;
+let timerRunning = false;
+
+function formatTime(s){
+  const m = Math.floor(s / 60), sec = s % 60;
+  return m + ":" + String(sec).padStart(2, "0");
+}
+function updateTimerDisplay(){
+  timerDisplay.textContent = formatTime(Math.max(timerRemaining, 0));
+  timerDisplay.classList.toggle("warning", timerRemaining <= 10 && timerRemaining > 0);
+  timerDisplay.classList.toggle("done", timerRemaining <= 0);
+}
+function stopTimer(){
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerRunning = false;
+  timerToggle.textContent = "▶";
+  timerToggle.setAttribute("aria-label", "Démarrer le minuteur");
+}
+function tickTimer(){
+  timerRemaining--;
+  updateTimerDisplay();
+  if (timerRemaining <= 0) stopTimer();
+}
+function startTimer(){
+  if (timerRemaining <= 0) return;
+  timerRunning = true;
+  timerToggle.textContent = "⏸";
+  timerToggle.setAttribute("aria-label", "Mettre en pause");
+  timerInterval = setInterval(tickTimer, 1000);
+}
+function resetTimerToDefault(){
+  stopTimer();
+  const q = QUESTIONS[current];
+  timerRemaining = TIER_DURATIONS[q.tier] || 30;
+  updateTimerDisplay();
+}
+timerToggle.addEventListener("click", () => { timerRunning ? stopTimer() : startTimer(); });
+timerMinus.addEventListener("click", () => { timerRemaining = Math.max(0, timerRemaining - 5); updateTimerDisplay(); });
+timerPlus.addEventListener("click", () => { timerRemaining += 5; updateTimerDisplay(); });
+timerReset.addEventListener("click", resetTimerToDefault);
+
+QUESTIONS.forEach((_, i) => {
+  const b = document.createElement("button");
+  b.setAttribute("aria-label", "Aller à la question " + (i + 1));
+  b.addEventListener("click", () => { current = i; render(); });
+  dotsWrap.appendChild(b);
+});
+
+function render(){
+  revealed = false;
+  const q = QUESTIONS[current];
+
+  resetTimerToDefault();
+
+  objectifText.textContent = q.objectif;
+  objectifBadge.className = "badge " + (q.theme || "obj-nombres");
+  aimText.textContent = q.aim;
+  qtext.innerHTML = q.question;
+  diagramEl.innerHTML = q.diagram || "";
+  const questionRow = document.getElementById("question-row");
+  questionRow.classList.toggle("side", !!q.sideDiagram);
+  questionRow.classList.toggle("aside", !!q.optionsAside);
+  if (q.optionsAside) questionRow.appendChild(optionsEl);
+  else if (optionsEl.parentNode === questionRow) questionRow.insertAdjacentElement("afterend", optionsEl);
+  questionRow.classList.toggle("levels-aside", !!q.levelsAside);
+  questionRow.classList.toggle("no-diagram", !!q.levelsAside && !q.diagram);
+  const section = document.getElementById("page");
+  const pair = section.querySelector(".levels-pair");
+  // levelsAside : énoncé (ou figure) + réponse à gauche, niveaux 2 et 3 à droite
+  let mainCol = questionRow.querySelector(".main-col");
+  if (q.levelsAside){
+    if (!mainCol){ mainCol = document.createElement("div"); mainCol.className = "main-col"; }
+    if (q.diagram){ questionRow.prepend(qtext); mainCol.append(diagramEl, answerZone); }
+    else mainCol.append(qtext, diagramEl, answerZone);
+    questionRow.appendChild(mainCol);
+  } else {
+    if (mainCol){ questionRow.prepend(qtext); qtext.after(diagramEl); }
+    (optionsEl.parentNode === questionRow ? questionRow : optionsEl).insertAdjacentElement("afterend", answerZone);
+    if (mainCol) mainCol.remove();
+  }
+  if (q.levelsAside){
+    let col = questionRow.querySelector(".levels-col");
+    if (!col){ col = document.createElement("div"); col.className = "levels-col"; }
+    questionRow.appendChild(col);
+    LEVELS.forEach(l => col.appendChild(l.el));
+    if (pair) pair.remove();
+  } else if (q.levelsPair){
+    const box = pair || document.createElement("div");
+    box.className = "levels-pair";
+    section.appendChild(box);
+    LEVELS.forEach(l => box.appendChild(l.el));
+  } else {
+    if (pair) pair.remove();
+    LEVELS.forEach(l => { if (l.el.parentNode !== section) section.appendChild(l.el); });
+  }
+
+  optionsEl.innerHTML = "";
+  if (q.options){
+    q.options.forEach(opt => {
+      const div = document.createElement("div");
+      div.className = "opt";
+      div.innerHTML = "<span class='letter'>" + opt.letter + "</span>" + opt.text;
+      div.dataset.correct = opt.correct;
+      div.addEventListener("click", reveal);
+      optionsEl.appendChild(div);
+    });
+  }
+
+  answerBox.classList.remove("shown");
+  answerContent.innerHTML = q.explanation;
+  revealBtn.style.display = "inline-block";
+  revealBtn.textContent = "Voir la réponse";
+
+  LEVELS.forEach(l => {
+    const q2 = q[l.key];
+    l.revealed = false;
+    l.answer.classList.remove("shown");
+    if (q2){
+      l.el.style.display = "";
+      l.text.innerHTML = q2.question;
+      l.answer.innerHTML = q2.explanation;
+    } else {
+      l.el.style.display = "none";
+    }
+  });
+
+  qnumDisplay.textContent = (current + 1) + " / " + QUESTIONS.length;
+  navPos.textContent = (current + 1) + " / " + QUESTIONS.length;
+  Array.prototype.slice.call(dotsWrap.children).forEach((d, i) => d.classList.toggle("current", i === current));
+  btnPrev.disabled = current === 0;
+  btnNext.disabled = current === QUESTIONS.length - 1;
+
+  renderMath();
+}
+
+function reveal(){
+  if (revealed) return;
+  revealed = true;
+  answerBox.classList.add("shown");
+  const opts = optionsEl.querySelectorAll(".opt");
+  opts.forEach(o => {
+    if (o.dataset.correct === "true") o.classList.add("correct");
+    else if (opts.length) o.classList.add("wrong");
+  });
+}
+
+function revealLevel(l){
+  if (l.revealed || !QUESTIONS[current][l.key]) return;
+  l.revealed = true;
+  l.answer.classList.add("shown");
+}
+// Espace / Entrée : réponse principale, puis niveau 2, puis niveau 3
+function revealNext(){
+  if (!revealed) return reveal();
+  const l = LEVELS.find(l => !l.revealed && QUESTIONS[current][l.key]);
+  if (l) revealLevel(l);
+}
+
+function renderMath(){
+  renderMathInElement(document.getElementById("page"), {
+    delimiters: [
+      {left:"$$", right:"$$", display:true},
+      {left:"$", right:"$", display:false}
+    ]
+  });
+}
+
+// La page s'ouvre (et se recale à chaque question) pile sur l'énoncé, juste
+// sous le minuteur : l'en-tête, le badge et le minuteur restent accessibles
+// en remontant.
+function scrollToPage(behavior){
+  const top = document.getElementById("question-row").getBoundingClientRect().top + window.scrollY - 8;
+  window.scrollTo({ top: Math.max(0, top), behavior: behavior || "auto" });
+}
+
+function goTo(i){
+  current = Math.max(0, Math.min(QUESTIONS.length - 1, i));
+  render();
+  scrollToPage("smooth");
+}
+
+revealBtn.addEventListener("click", reveal);
+LEVELS.forEach(l => l.btn.addEventListener("click", () => revealLevel(l)));
+btnPrev.addEventListener("click", () => goTo(current - 1));
+btnNext.addEventListener("click", () => goTo(current + 1));
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") goTo(current + 1);
+  else if (e.key === "ArrowLeft") goTo(current - 1);
+  else if (e.key === " " || e.key === "Enter") { e.preventDefault(); revealNext(); }
+});
+
+render();
+scrollToPage();
+window.addEventListener("load", () => scrollToPage());
+</script>
+
+<script>
+  (function () {
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+    function current() {
+      var attr = document.documentElement.getAttribute("data-theme");
+      if (attr === "light" || attr === "dark") return attr;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    function updateIcon() { btn.textContent = current() === "dark" ? "☀️" : "🌙"; }
+    updateIcon();
+    btn.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("automatismes-theme", next); } catch (e) {}
+      updateIcon();
+    });
+  })();
+</script>
+</body>
+</html>
