@@ -170,6 +170,9 @@
   /* Petite aide de vocabulaire sous l'énoncé (if = si, else = sinon) */
   .question .hint { display: block; margin-top: 6px; font-size: 0.62em; font-weight: 400; color: var(--ink-soft); }
   .question .hint .code.inl { font-size: 0.95em; }
+  /* Traduction anglaise de l'énoncé (niveau 1) */
+  .question .en { display: block; margin-top: 8px; font-size: 0.68em; font-weight: 400; font-style: italic; color: var(--ink-soft); }
+  .question .en .en-tag { font-style: normal; font-size: 0.75em; font-weight: 600; letter-spacing: 0.04em; border: 1px solid var(--rule-strong); border-radius: 4px; padding: 1px 5px; margin-right: 6px; vertical-align: 0.1em; }
   .diagram { display: flex; justify-content: center; margin: 0 0 12px; }
   .diagram:empty { display: none; }
   .diagram svg { max-width: 100%; height: auto; }
@@ -467,6 +470,7 @@ const QUESTIONS = [
     objectif: "A13 · Proportions",
     aim: "Appliquer une proportion : effectif = proportion × effectif total, que la proportion soit donnée sous forme décimale, fractionnaire ou en pourcentage.",
     question: "Un panier contient $60$ fruits. La proportion de fruits mûrs dans ce panier est égale à $\\dfrac{1}{5}$. Le nombre de fruits mûrs est :",
+    questionEn: "A basket contains $60$ fruits. The proportion of ripe fruits in this basket is $\\dfrac{1}{5}$. The number of ripe fruits is:",
     levelsPair: true,
     options: [
       { letter:"A", text:"$48$", correct:false },
@@ -490,6 +494,7 @@ const QUESTIONS = [
     objectif: "Algo · Variables et affectations",
     aim: "Suivre des affectations successives : chaque ligne s'exécute dans l'ordre et utilise la valeur la plus récente des variables.",
     question: "Qu'affiche ce script ?",
+    questionEn: "What does this script display?",
     levelsAside: true,
     diagram: `<span class="code big">x = 3<br>x = x + 4<br>x = x * x<br>print(x)</span>`,
     explanation: "<span class=\"code inl\">x</span> vaut $3$, puis $3+4=7$, puis $7\\times7=49$.<br>Le script affiche <span class=\"code inl\">49</span> (et non $3\\times3+4=13$ : l'ordre des lignes compte).",
@@ -507,6 +512,7 @@ const QUESTIONS = [
     objectif: "A10 · Équations",
     aim: "Résoudre une équation dont un membre contient une parenthèse à développer, y compris précédée d'un signe moins, puis vérifier.",
     question: "Résoudre l'équation :$$5(x+1)=2x-7$$",
+    questionEn: "Solve the equation above.",
     levelsAside: true,
     explanation: "On développe le membre de gauche : $5x+5=2x-7$.<br>On soustrait $2x$ aux deux membres : $3x+5=-7$. On soustrait $5$ aux deux membres : $3x=-12$. On divise les deux membres par $3$ : $x=-4$.<br>Vérification : $5\\times(-4+1)=-15$ et $2\\times(-4)-7=-15$ ✓. La solution est $-4$.",
     niveau2: {
@@ -612,7 +618,7 @@ function render(){
   objectifText.textContent = q.objectif;
   objectifBadge.className = "badge " + (q.theme || "obj-nombres");
   aimText.textContent = q.aim;
-  qtext.innerHTML = q.question;
+  qtext.innerHTML = q.question + (q.questionEn ? '<span class="en" lang="en"><span class="en-tag">EN</span>' + q.questionEn + '</span>' : '');
   diagramEl.innerHTML = q.diagram || "";
   const questionRow = document.getElementById("question-row");
   questionRow.classList.toggle("side", !!q.sideDiagram);
