@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercice 41 p 186</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --panel: #ffffff;
+    --ink: #1f2328;
+    --muted: #6b7280;
+    --line: #e4e2dc;
+    --c1: #7048E8;
+    --c2: #D9480F;
+    --c3: #2B8A3E;
+    --res: #C92A2A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.45;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+    padding: 14px 24px; border-bottom: 1px solid var(--line); background: var(--panel);
+  }
+  h1 { font-size: 24px; font-weight: 500; margin: 0; }
+  .tag { font-size: 16px; color: var(--muted); }
+  main {
+    display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 24px; padding: 20px 24px; max-width: 1400px; margin: 0 auto;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; padding: 16px; } header { padding: 12px 16px; } }
+  .fig { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px; align-self: start; }
+  .fig svg { width: 100%; height: auto; display: block; }
+  .side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; }
+  .consigne { margin: 0 0 6px; color: var(--muted); font-size: 17px; }
+  .questions { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px; }
+  .questions .q {
+    display: flex; gap: 8px; align-items: baseline; font-size: 18px;
+    padding: 4px 8px; border-radius: 6px; cursor: pointer; border-left: 4px solid transparent;
+  }
+  .questions .q.wide { grid-column: 1 / -1; }
+  .questions .q .num { flex: none; color: var(--muted); min-width: 1.4em; }
+  .questions .q.active { background: #f1f0ec; border-left-color: var(--ink); }
+  .questions .q.done { color: var(--muted); }
+  .etape { font-size: 15px; color: var(--muted); margin-bottom: 4px; }
+  .caption { font-size: 21px; min-height: 8.5em; }
+  .caption p { margin: 0 0 8px; }
+  .nav { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    font: inherit; font-size: 17px; font-weight: 600;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    padding: 8px 18px; border-radius: 8px; cursor: pointer;
+  }
+  .btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .progress { flex: 1; min-width: 120px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .progress div { height: 100%; background: var(--ink); width: 0; transition: width .3s; }
+  .hint { font-size: 14px; color: var(--muted); }
+  .recap { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; font-size: 19px; }
+
+  /* Notation vectorielle : flèche dessinée en SVG au-dessus de la lettre */
+  .m { white-space: nowrap; }
+  .vec { position: relative; display: inline-block; padding-top: .32em; line-height: 1; }
+  .vec i, .vec span.up { font-style: italic; padding: 0 .04em; }
+  .vec span.up { font-style: normal; }
+  .vec svg { position: absolute; top: 0; height: .42em; overflow: visible; }
+  .vec svg.shaft { left: .08em; right: .12em; width: calc(100% - .2em); }
+  .vec svg.head { right: .02em; width: .3em; }
+  .c1 { color: var(--c1); } .c2 { color: var(--c2); } .c3 { color: var(--c3); } .res { color: var(--res); }
+
+  /* Animations */
+  .draw { transition: stroke-dashoffset .7s ease-in-out; }
+  .fade { transition: opacity .35s ease; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Exercice 41 p 186 — Question 3 — Corrigé</h1>
+  <span class="tag">Relation de Chasles · vecteurs mis bout à bout</span>
+</header>
+
+<main>
+  <div class="fig"><svg id="fig" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="side">
+    <div class="card">
+      <p class="consigne">Question 3 : réduire les sommes suivantes en transformant l’égalité si nécessaire.</p>
+      <div class="questions" id="questions"></div>
+    </div>
+    <div class="card">
+      <div class="etape" id="etape"></div>
+      <div class="caption" id="caption"></div>
+      <div class="nav">
+        <button class="btn" id="prev">◀ Précédent</button>
+        <button class="btn primary" id="next">Suivant ▶</button>
+        <div class="progress"><div id="bar"></div></div>
+      </div>
+      <p class="hint">Flèches ← → ou barre d'espace pour avancer · clic sur une question pour y aller directement.</p>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ------------------------------------------------------------ Figure */
+/* Coordonnées dans le réseau triangulaire : (i, j) = i pas vers la droite
+   le long de [AI] + j pas le long de [AE]. */
+const P = {
+  A: [0, 0], L: [1, 0], K: [2, 0], J: [3, 0], I: [4, 0],
+  B: [0, 1], M: [1, 1], O: [2, 1], H: [3, 1],
+  C: [0, 2], N: [1, 2], G: [2, 2],
+  D: [0, 3], F: [1, 3],
+  E: [0, 4]
+};
+const LAB = {
+  A: [-10, 16, 'end'], L: [0, 26, 'middle'], K: [0, 26, 'middle'], J: [0, 26, 'middle'], I: [10, 16, 'start'],
+  B: [-12, -6, 'end'], C: [-12, -6, 'end'], D: [-12, -6, 'end'],
+  F: [12, -6, 'start'], G: [12, -6, 'start'], H: [12, -6, 'start'],
+  E: [0, -18, 'middle'],
+  M: [9, -15, 'start'], N: [10, -12, 'start'], O: [9, -15, 'start']
+};
+const HEX = { c1: '#7048E8', c2: '#D9480F', c3: '#2B8A3E', res: '#C92A2A' };
+
+/* --------------------------------------------------- Notation dans le texte */
+function V(name) {
+  const lower = /[a-z0-9]/.test(name) && name === name.toLowerCase();
+  const inner = lower ? `<i>${name}</i>` : `<span class="up">${name}</span>`;
+  return `<span class="vec">${inner}` +
+    `<svg class="shaft" viewBox="0 0 10 10" preserveAspectRatio="none"><line x1="0" y1="5" x2="10" y2="5" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke"/></svg>` +
+    `<svg class="head" viewBox="0 0 10 10" preserveAspectRatio="none"><polyline points="2,1 9.5,5 2,9" fill="none" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+}
+const M = s => `<span class="m">${s}</span>`;
+const Z = V('0');
+/* vecteur coloré */
+const v1 = n => `<span class="c1">${V(n)}</span>`;
+const v2 = n => `<span class="c2">${V(n)}</span>`;
+const v3 = n => `<span class="c3">${V(n)}</span>`;
+const vr = n => `<span class="res">${V(n)}</span>`;
+const EG = (a, b) => `${a}&nbsp;=&nbsp;${b}`;
+const MEME = `même direction, même sens et même longueur`;
+
+/* Éléments de figure :
+   g = vecteur de l'énoncé (pointillés), s = flèche tracée, r = résultat, z = vecteur nul */
+const g = (n, c, off) => ({ k: 'arrow', from: n[0], to: n[1], c, st: 'given', off });
+const s = (n, c, off) => ({ k: 'arrow', from: n[0], to: n[1], c, st: 'solid', off });
+const r = (n, off) => ({ k: 'arrow', from: n[0], to: n[1], c: 'res', st: 'result', off });
+const z = p => ({ k: 'zero', at: p });
+
+/* ------------------------------------------------------------- Étapes */
+const QUESTIONS = [
+  { id: '3a', txt: M(V('AC') + ' + ' + V('AK')) },
+  { id: '3f', txt: M(V('FO') + ' + ' + V('MN')) },
+  { id: '3b', txt: M(V('GC') + ' + ' + V('CK')) },
+  { id: '3g', txt: M(V('BN') + ' + ' + V('CK')) },
+  { id: '3c', txt: M(V('CE') + ' + ' + V('GI')) },
+  { id: '3h', txt: M(V('FC') + ' + ' + V('HK')) },
+  { id: '3d', txt: M(V('HM') + ' + ' + V('KI')) },
+  { id: '3i', txt: M(V('AB') + ' + ' + V('MN') + ' + ' + V('OJ')) },
+  { id: '3e', txt: M(V('DO') + ' + ' + V('LF')) },
+  { id: '3j', txt: M(V('MC') + ' + ' + V('KJ') + ' + ' + V('ED')) }
+];
+
+const STEPS = [
+  { q: null, et: 'Figure de l’énoncé',
+    cap: `<p>Pour réduire une somme, on met les vecteurs <em>bout à bout</em>&nbsp;: on remplace un vecteur par un vecteur égal (${MEME}) dont l’origine est l’extrémité du précédent.</p><p>On conclut ensuite avec la relation de Chasles.</p>`,
+    els: [] },
+
+  /* ---------------- 3a */
+  { q: '3a', clear: true,
+    cap: `<p>${v1('AC')} et ${v2('AK')} ont la même origine A&nbsp;: ils ne sont pas bout à bout.</p>`,
+    els: [g('AC', 'c1'), g('AK', 'c2')] },
+  { q: '3a',
+    cap: `<p>On garde ${v1('AC')}. Au bout, en C, on place un vecteur égal à ${v2('AK')}&nbsp;:</p><p>${M(EG(v2('CG'), v2('AK')))} (${MEME}).</p>`,
+    els: [s('AC', 'c1'), s('CG', 'c2')] },
+  { q: '3a',
+    cap: `<p>${M(v1('AC') + ' + ' + v2('AK') + ' = ' + v1('AC') + ' + ' + v2('CG'))}</p><p>${M('= ' + vr('AG'))} (relation de Chasles)</p>`,
+    els: [r('AG')] },
+
+  /* ---------------- 3b */
+  { q: '3b', clear: true,
+    cap: `<p>L’extrémité de ${v1('GC')} est l’origine de ${v2('CK')}&nbsp;: les vecteurs sont déjà bout à bout.</p>`,
+    els: [s('GC', 'c1'), s('CK', 'c2')] },
+  { q: '3b',
+    cap: `<p>${M(v1('GC') + ' + ' + v2('CK') + ' = ' + vr('GK'))} (relation de Chasles)</p>`,
+    els: [r('GK')] },
+
+  /* ---------------- 3c */
+  { q: '3c', clear: true,
+    cap: `<p>${v1('CE')} se termine en E, mais ${v2('GI')} commence en G&nbsp;: les vecteurs ne sont pas bout à bout.</p>`,
+    els: [g('CE', 'c1'), g('GI', 'c2')] },
+  { q: '3c',
+    cap: `<p>Au bout de ${v1('CE')}, en E, on place un vecteur égal à ${v2('GI')}&nbsp;:</p><p>${M(EG(v2('EG'), v2('GI')))} (${MEME}).</p>`,
+    els: [s('CE', 'c1'), s('EG', 'c2')] },
+  { q: '3c',
+    cap: `<p>${M(v1('CE') + ' + ' + v2('GI') + ' = ' + v1('CE') + ' + ' + v2('EG'))}</p><p>${M('= ' + vr('CG'))} (relation de Chasles)</p>`,
+    els: [r('CG')] },
+
+  /* ---------------- 3d */
+  { q: '3d', clear: true,
+    cap: `<p>${v1('HM')} se termine en M, mais ${v2('KI')} commence en K.</p>`,
+    els: [g('HM', 'c1'), g('KI', 'c2')] },
+  { q: '3d',
+    cap: `<p>Au bout de ${v1('HM')}, en M, on place un vecteur égal à ${v2('KI')}&nbsp;:</p><p>${M(EG(v2('MH'), v2('KI')))} (${MEME}).</p><p>On revient au point de départ H.</p>`,
+    els: [s('HM', 'c1', 7), s('MH', 'c2', 7)] },
+  { q: '3d',
+    cap: `<p>${M(v1('HM') + ' + ' + v2('KI') + ' = ' + v1('HM') + ' + ' + v2('MH'))}</p><p>${M('= ' + V('HH') + ' = ' + `<span class="res">${Z}</span>`)}</p><p class="hint">Les vecteurs ${V('HM')} et ${V('KI')} sont opposés.</p>`,
+    els: [z('H')] },
+
+  /* ---------------- 3e */
+  { q: '3e', clear: true,
+    cap: `<p>${v1('DO')} se termine en O, mais ${v2('LF')} commence en L.</p>`,
+    els: [g('DO', 'c1'), g('LF', 'c2')] },
+  { q: '3e',
+    cap: `<p>Un vecteur égal à ${v2('LF')} placé en O sortirait de la figure.</p><p>On change l’ordre des termes&nbsp;: ${M(v1('DO') + ' + ' + v2('LF') + ' = ' + v2('LF') + ' + ' + v1('DO'))}.</p>`,
+    els: [s('LF', 'c2')] },
+  { q: '3e',
+    cap: `<p>Au bout de ${v2('LF')}, en F, on place un vecteur égal à ${v1('DO')}&nbsp;:</p><p>${M(EG(v1('FH'), v1('DO')))} (${MEME}).</p>`,
+    els: [s('FH', 'c1')] },
+  { q: '3e',
+    cap: `<p>${M(v1('DO') + ' + ' + v2('LF') + ' = ' + v2('LF') + ' + ' + v1('FH'))}</p><p>${M('= ' + vr('LH'))} (relation de Chasles)</p>`,
+    els: [r('LH')] },
+
+  /* ---------------- 3f */
+  { q: '3f', clear: true,
+    cap: `<p>${v1('FO')} se termine en O, mais ${v2('MN')} commence en M.</p>`,
+    els: [g('FO', 'c1'), g('MN', 'c2')] },
+  { q: '3f',
+    cap: `<p>Au bout de ${v1('FO')}, en O, on place un vecteur égal à ${v2('MN')}&nbsp;:</p><p>${M(EG(v2('OG'), v2('MN')))} (${MEME}).</p>`,
+    els: [s('FO', 'c1'), s('OG', 'c2')] },
+  { q: '3f',
+    cap: `<p>${M(v1('FO') + ' + ' + v2('MN') + ' = ' + v1('FO') + ' + ' + v2('OG'))}</p><p>${M('= ' + vr('FG'))} (relation de Chasles)</p>`,
+    els: [r('FG')] },
+
+  /* ---------------- 3g */
+  { q: '3g', clear: true,
+    cap: `<p>${v1('BN')} se termine en N, mais ${v2('CK')} commence en C.</p>`,
+    els: [g('BN', 'c1'), g('CK', 'c2')] },
+  { q: '3g',
+    cap: `<p>Au bout de ${v1('BN')}, en N, on place un vecteur égal à ${v2('CK')}&nbsp;:</p><p>${M(EG(v2('NJ'), v2('CK')))} (${MEME}).</p>`,
+    els: [s('BN', 'c1'), s('NJ', 'c2')] },
+  { q: '3g',
+    cap: `<p>${M(v1('BN') + ' + ' + v2('CK') + ' = ' + v1('BN') + ' + ' + v2('NJ'))}</p><p>${M('= ' + vr('BJ'))} (relation de Chasles)</p>`,
+    els: [r('BJ')] },
+
+  /* ---------------- 3h */
+  { q: '3h', clear: true,
+    cap: `<p>${v1('FC')} se termine en C, mais ${v2('HK')} commence en H.</p><p>Un vecteur égal à ${v2('HK')} placé en C sortirait de la figure (de même pour ${v1('FC')} placé en K).</p>`,
+    els: [g('FC', 'c1'), g('HK', 'c2')] },
+  { q: '3h',
+    cap: `<p>On remplace les deux vecteurs&nbsp;:</p><p>${M(EG(v1('GM'), v1('FC')))} et, au bout en M, ${M(EG(v2('MA'), v2('HK')))}.</p><p>(${MEME})</p>`,
+    els: [s('GM', 'c1'), s('MA', 'c2')] },
+  { q: '3h',
+    cap: `<p>${M(v1('FC') + ' + ' + v2('HK') + ' = ' + v1('GM') + ' + ' + v2('MA'))}</p><p>${M('= ' + vr('GA'))} (relation de Chasles)</p>`,
+    els: [r('GA', 16)] },
+
+  /* ---------------- 3i */
+  { q: '3i', clear: true,
+    cap: `<p>Trois vecteurs à mettre bout à bout&nbsp;: ${v1('AB')}, ${v2('MN')} et ${v3('OJ')}.</p>`,
+    els: [g('AB', 'c1'), g('MN', 'c2'), g('OJ', 'c3')] },
+  { q: '3i',
+    cap: `<p>Au bout de ${v1('AB')}, en B, on place ${M(EG(v2('BC'), v2('MN')))}.</p>`,
+    els: [s('AB', 'c1'), s('BC', 'c2')] },
+  { q: '3i',
+    cap: `<p>Au bout de ${v2('BC')}, en C, on place ${M(EG(v3('CM'), v3('OJ')))}.</p>`,
+    els: [s('CM', 'c3')] },
+  { q: '3i',
+    cap: `<p>${M(v1('AB') + ' + ' + v2('MN') + ' + ' + v3('OJ'))}</p><p>${M('= ' + v1('AB') + ' + ' + v2('BC') + ' + ' + v3('CM'))}</p><p>${M('= ' + vr('AM'))} (relation de Chasles)</p>`,
+    els: [r('AM')] },
+
+  /* ---------------- 3j */
+  { q: '3j', clear: true,
+    cap: `<p>Trois vecteurs à mettre bout à bout&nbsp;: ${v1('MC')}, ${v2('KJ')} et ${v3('ED')}.</p>`,
+    els: [g('MC', 'c1'), g('KJ', 'c2'), g('ED', 'c3')] },
+  { q: '3j',
+    cap: `<p>Au bout de ${v1('MC')}, en C, on place ${M(EG(v2('CN'), v2('KJ')))}.</p>`,
+    els: [s('MC', 'c1'), s('CN', 'c2')] },
+  { q: '3j',
+    cap: `<p>Au bout de ${v2('CN')}, en N, on place ${M(EG(v3('NM'), v3('ED')))}.</p><p>On revient au point de départ M.</p>`,
+    els: [s('NM', 'c3')] },
+  { q: '3j',
+    cap: `<p>${M(v1('MC') + ' + ' + v2('KJ') + ' + ' + v3('ED'))}</p><p>${M('= ' + v1('MC') + ' + ' + v2('CN') + ' + ' + v3('NM'))}</p><p>${M('= ' + V('MM') + ' = ' + `<span class="res">${Z}</span>`)}</p>`,
+    els: [z('M')] },
+
+  /* ---------------- Récapitulatif */
+  { q: null, et: 'Récapitulatif', clear: true,
+    cap: `<div class="recap">
+      <p>a. ${M(V('AC') + ' + ' + V('AK') + ' = ' + vr('AG'))}</p>
+      <p>f. ${M(V('FO') + ' + ' + V('MN') + ' = ' + vr('FG'))}</p>
+      <p>b. ${M(V('GC') + ' + ' + V('CK') + ' = ' + vr('GK'))}</p>
+      <p>g. ${M(V('BN') + ' + ' + V('CK') + ' = ' + vr('BJ'))}</p>
+      <p>c. ${M(V('CE') + ' + ' + V('GI') + ' = ' + vr('CG'))}</p>
+      <p>h. ${M(V('FC') + ' + ' + V('HK') + ' = ' + vr('GA'))}</p>
+      <p>d. ${M(V('HM') + ' + ' + V('KI') + ' = ' + `<span class="res">${Z}</span>`)}</p>
+      <p>i. ${M(V('AB') + ' + ' + V('MN') + ' + ' + V('OJ') + ' = ' + vr('AM'))}</p>
+      <p>e. ${M(V('DO') + ' + ' + V('LF') + ' = ' + vr('LH'))}</p>
+      <p>j. ${M(V('MC') + ' + ' + V('KJ') + ' + ' + V('ED') + ' = ' + `<span class="res">${Z}</span>`)}</p>
+    </div>`,
+    els: [] }
+];
+
+/* ----------------------------------------------------------- Dessin SVG */
+const U = 125, MX = 70, MY = 50, R3 = Math.sqrt(3) / 2;
+const W = 4 * U + 2 * MX, H = 4 * R3 * U + 2 * MY + 20;
+const px = p => { const [i, j] = typeof p === 'string' ? P[p] : p; return [MX + (i + j / 2) * U, MY + (4 - j) * R3 * U]; };
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('fig');
+svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+function drawBase(layer) {
+  // triangles « pointe en haut » colorés
+  for (let j = 0; j < 4; j++) for (let i = 0; i + j < 4; i++) {
+    const pts = [[i, j], [i + 1, j], [i, j + 1]].map(px).map(p => p.join(',')).join(' ');
+    el('polygon', { points: pts, fill: '#8FD3E1', stroke: '#8FD3E1', 'stroke-width': 0.6 }, layer);
+  }
+  // contour
+  el('polygon', { points: ['A', 'I', 'E'].map(px).map(p => p.join(',')).join(' '), fill: 'none', stroke: '#1f2328', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, layer);
+}
+function drawLabels(layer) {
+  for (const n in P) {
+    const [x, y] = px(n), o = LAB[n];
+    const t = el('text', { x: x + o[0], y: y + o[1], 'text-anchor': o[2], 'dominant-baseline': 'middle', 'font-size': 24, fill: '#1f2328',
+      stroke: '#ffffff', 'stroke-width': 5, 'paint-order': 'stroke', 'stroke-linejoin': 'round' }, layer);
+    t.textContent = n;
+  }
+}
+
+function drawArrow(e, layer) {
+  let [x1, y1] = px(e.from), [x2, y2] = px(e.to);
+  const color = HEX[e.c];
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy);
+  const ux = dx / len, uy = dy / len;
+  if (e.off) { const nx = uy, ny = -ux; x1 += nx * e.off; y1 += ny * e.off; x2 += nx * e.off; y2 += ny * e.off; }
+  const res = e.st === 'result', given = e.st === 'given';
+  const hl = res ? 18 : 15, hw = res ? 7.5 : 6.5;
+  const bx = x2 - ux * hl, by = y2 - uy * hl;
+  const gr = el('g', {}, layer);
+  if (given) gr.setAttribute('opacity', 0.75);
+  const line = el('line', { x1, y1, x2: bx, y2: by, stroke: color, 'stroke-width': res ? 4.2 : given ? 2.4 : 3.2, 'stroke-linecap': 'round' }, gr);
+  if (given) line.setAttribute('stroke-dasharray', '8 7');
+  const head = el('polygon', { points: `${x2},${y2} ${bx - uy * hw},${by + ux * hw} ${bx + uy * hw},${by - ux * hw}`, fill: color }, gr);
+  return { line, head, len: Math.hypot(bx - x1, by - y1), given };
+}
+
+/* ----------------------------------------------------------------- État */
+let cur = 0;
+
+function render(animate) {
+  svg.innerHTML = '';
+  const gBase = el('g', {}, svg), gGiven = el('g', {}, svg), gSolid = el('g', {}, svg), gRes = el('g', {}, svg), gLab = el('g', {}, svg);
+  drawBase(gBase);
+
+  let start = cur;
+  while (start > 0 && !STEPS[start].clear && STEPS[start - 1].q === STEPS[cur].q) start--;
+  let order = 0;
+  for (let j = start; j <= cur; j++) {
+    for (const e of STEPS[j].els) {
+      const isNew = animate && j === cur;
+      const delay = isNew ? order++ * 0.8 : 0;
+      if (e.k === 'arrow') {
+        const layer = e.st === 'given' ? gGiven : e.st === 'result' ? gRes : gSolid;
+        const a = drawArrow(e, layer);
+        if (isNew) {
+          if (a.given) fadeIn(a.line, delay); else animLine(a.line, a.len, delay);
+          fadeIn(a.head, delay + 0.6);
+        }
+      } else if (e.k === 'zero') {
+        const [x, y] = px(e.at);
+        const c = el('circle', { cx: x, cy: y, r: 11, fill: 'none', stroke: HEX.res, 'stroke-width': 3.5 }, gRes);
+        if (isNew) fadeIn(c, delay);
+      }
+    }
+  }
+  drawLabels(gLab);
+  updatePanel();
+}
+
+function animLine(node, len, delay) {
+  node.style.strokeDasharray = len;
+  node.style.strokeDashoffset = len;
+  node.classList.add('draw');
+  node.style.transitionDelay = delay + 's';
+  requestAnimationFrame(() => requestAnimationFrame(() => { node.style.strokeDashoffset = 0; }));
+}
+function fadeIn(node, delay) {
+  node.style.opacity = 0;
+  node.classList.add('fade');
+  node.style.transitionDelay = delay + 's';
+  requestAnimationFrame(() => requestAnimationFrame(() => { node.style.opacity = ''; }));
+}
+
+/* ------------------------------------------------------------- Panneau */
+const qList = document.getElementById('questions');
+const qOrder = ['3a', '3b', '3c', '3d', '3e', '3f', '3g', '3h', '3i', '3j'];
+QUESTIONS.forEach(q => {
+  const d = document.createElement('div');
+  d.className = 'q' + (q.wide ? ' wide' : '');
+  d.dataset.id = q.id;
+  const num = q.id.length === 1 ? q.id + '.' : q.id.slice(1) + '.';
+  d.innerHTML = `<span class="num">${num}</span><span>${q.txt}</span>`;
+  d.addEventListener('click', () => { cur = STEPS.findIndex(s => s.q === q.id); render(true); });
+  qList.appendChild(d);
+});
+
+function updatePanel() {
+  const st = STEPS[cur];
+  const k = st.q ? qOrder.indexOf(st.q) : (cur === 0 ? -1 : 99);
+  [...qList.children].forEach(d => {
+    const i = qOrder.indexOf(d.dataset.id);
+    d.classList.toggle('active', i === k);
+    d.classList.toggle('done', i < k && k !== 99);
+  });
+  let et = st.et;
+  if (!et) {
+    const same = STEPS.filter(s => s.q === st.q);
+    const nom = st.q.length === 1 ? `Question ${st.q}` : `Question 3.${st.q.slice(1)}`;
+    et = `${nom} — étape ${same.indexOf(st) + 1} sur ${same.length}`;
+  }
+  document.getElementById('etape').textContent = et;
+  document.getElementById('caption').innerHTML = st.cap;
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === STEPS.length - 1;
+  document.getElementById('bar').style.width = (100 * cur / (STEPS.length - 1)) + '%';
+  history.replaceState(null, '', '#' + cur);
+}
+
+function go(delta) {
+  const n = Math.max(0, Math.min(STEPS.length - 1, cur + delta));
+  if (n === cur) return;
+  cur = n; render(delta > 0);
+}
+document.getElementById('prev').addEventListener('click', () => go(-1));
+document.getElementById('next').addEventListener('click', () => go(1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+});
+
+// Accès direct : …html#12 = étape 12
+const h = /^#(\d+)$/.exec(location.hash);
+if (h) cur = Math.min(STEPS.length - 1, +h[1]);
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => render(false));
+</script>
+</body>
+</html>
