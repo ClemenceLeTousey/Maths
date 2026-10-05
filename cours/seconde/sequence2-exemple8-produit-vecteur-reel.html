@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cours Exemple 8</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --panel: #ffffff;
+    --ink: #1f2328;
+    --muted: #6b7280;
+    --line: #e4e2dc;
+    --c1: #1C7ED6;
+    --c2: #D9480F;
+    --res: #007D32;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.45;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+    padding: 14px 24px; border-bottom: 1px solid var(--line); background: var(--panel);
+  }
+  h1 { font-size: 24px; font-weight: 500; margin: 0; }
+  .tag { font-size: 16px; color: var(--muted); }
+  main {
+    display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 24px; padding: 20px 24px; max-width: 1400px; margin: 0 auto;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; padding: 16px; } header { padding: 12px 16px; } }
+  .fig { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px; align-self: start; }
+  .fig svg { width: 100%; height: auto; display: block; }
+  .side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; }
+  .consigne { margin: 6px 0 4px; color: var(--muted); font-size: 17px; }
+  .consigne:first-child { margin-top: 0; }
+  .questions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px 12px; }
+  .questions .q {
+    display: flex; gap: 8px; align-items: center; font-size: 18px;
+    padding: 4px 8px; border-radius: 6px; cursor: pointer; border-left: 4px solid transparent;
+  }
+  .questions .q.wide { grid-column: 1 / -1; }
+  .questions .q .num { flex: none; color: var(--muted); }
+  .questions .q.active { background: #f1f0ec; border-left-color: var(--ink); }
+  .questions .q.done { color: var(--muted); }
+  @media (max-width: 520px) { .questions { grid-template-columns: 1fr; } }
+  .etape { font-size: 15px; color: var(--muted); margin-bottom: 4px; }
+  .caption { font-size: 21px; min-height: 9.5em; }
+  .caption p { margin: 0 0 8px; }
+  .nav { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    font: inherit; font-size: 17px; font-weight: 600;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    padding: 8px 18px; border-radius: 8px; cursor: pointer;
+  }
+  .btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .progress { flex: 1; min-width: 120px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .progress div { height: 100%; background: var(--ink); width: 0; transition: width .3s; }
+  .hint { font-size: 14px; color: var(--muted); }
+  .methode { border-left: 4px solid var(--line); padding-left: 12px; }
+
+  /* Notation vectorielle : flèche dessinée en SVG au-dessus de la lettre */
+  .m { white-space: nowrap; }
+  .vec { position: relative; display: inline-block; padding-top: .32em; line-height: 1; }
+  .vec i, .vec span.up { font-style: italic; padding: 0 .04em; }
+  .vec span.up { font-style: normal; }
+  .vec svg { position: absolute; top: 0; height: .42em; overflow: visible; }
+  .vec svg.shaft { left: .08em; right: .12em; width: calc(100% - .2em); }
+  .vec svg.head { right: .02em; width: .3em; }
+  /* Fraction en ligne */
+  .fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center;
+        font-size: .82em; line-height: 1.08; margin: 0 .12em; }
+  .fr > span:first-child { border-bottom: 1.3px solid currentColor; padding: 0 .18em; }
+  .c1 { color: var(--c1); } .c2 { color: var(--c2); } .res { color: var(--res); }
+
+  /* Animations */
+  .draw { transition: stroke-dashoffset .7s ease-in-out; }
+  .fade { transition: opacity .35s ease; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Séquence 2 — Cours — Exemple 8</h1>
+  <span class="tag">Produit d’un vecteur par un réel</span>
+</header>
+
+<main>
+  <div class="fig"><svg id="fig" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="side">
+    <div class="card" id="enonce"></div>
+    <div class="card">
+      <div class="etape" id="etape"></div>
+      <div class="caption" id="caption"></div>
+      <div class="nav">
+        <button class="btn" id="prev">◀ Précédent</button>
+        <button class="btn primary" id="next">Suivant ▶</button>
+        <div class="progress"><div id="bar"></div></div>
+      </div>
+      <p class="hint">Flèches ← → ou barre d'espace pour avancer · clic sur une question pour y aller directement.</p>
+    </div>
+  </div>
+</main>
+
+<script>
+/* --------------------------------------------------- Notation dans le texte */
+function V(name) {
+  const lower = /[a-z0-9]/.test(name) && name === name.toLowerCase();
+  const inner = lower ? `<i>${name}</i>` : `<span class="up">${name}</span>`;
+  return `<span class="vec">${inner}` +
+    `<svg class="shaft" viewBox="0 0 10 10" preserveAspectRatio="none"><line x1="0" y1="5" x2="10" y2="5" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke"/></svg>` +
+    `<svg class="head" viewBox="0 0 10 10" preserveAspectRatio="none"><polyline points="2,1 9.5,5 2,9" fill="none" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+}
+const M = s => `<span class="m">${s}</span>`;
+const F = (a, b) => `<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const v1 = n => `<span class="c1">${V(n)}</span>`;
+const v2 = n => `<span class="c2">${V(n)}</span>`;
+const vr = n => `<span class="res">${V(n)}</span>`;
+const col = (c, s) => `<span class="${c}">${s}</span>`;
+
+/* ------------------------------------------------------------- Énoncé */
+const QUESTIONS = [
+  { id: '1a', num: '(a)', txt: M(V('AH') + ' = ' + F(5, 4) + V('AB')) },
+  { id: '1b', num: '(b)', txt: M(V('BI') + ' = ' + F(2, 3) + V('BC')) },
+  { id: '1c', num: '(c)', txt: M(V('DJ') + ' = ' + F(5, 9) + V('DC')) },
+  { id: '2',  num: '', wide: true, txt: `Représentants de ${M('2' + V('u'))}, ${M('−' + V('u'))} et ${M(F(1, 2) + V('u'))}` }
+];
+const qOrder = ['1a', '1b', '1c', '2'];
+
+/* ------------------------------------------------------------- Figures */
+/* Coordonnées du quadrillage (comme dans le cours, y vers le haut). */
+const FIGS = {
+  1: { x0: 0, x1: 10, y0: 0, y1: 6, U: 62, MX: 46, MY: 46,
+       quad: [[3, 5], [6, 5], [9, 2], [1, 1]],
+       pts: { A: [[3, 5], 'n'], E: [[4, 5], 'n'], B: [[6, 5], 'n'], C: [[9, 2], 'e'], D: [[1, 1], 'sw'], F: [[2, 3], 'w'] } },
+  2: { x0: -3, x1: 6, y0: -1, y1: 3, U: 66, MX: 40, MY: 40, quad: null, pts: {} }
+};
+const HEX = { c1: '#1C7ED6', c2: '#D9480F', res: '#007D32', mag: '#D6336C', grey: '#868e96' };
+
+/* Éléments de figure */
+const arrow = (from, to, c, o = {}) => ({ k: 'arrow', from, to, c, ...o });
+const pt = (name, at, pos, o = {}) => ({ k: 'pt', name, at, pos, ...o });
+const droite = (a, b) => ({ k: 'droite', a, b });
+const parts = (from, to, n, m, c, lo = 20) => ({ k: 'parts', from, to, n, m, c, lo });   // lo : écart des numéros
+const dep = (from, moves, c) => ({ k: 'dep', from, moves, c });   // déplacement en carreaux
+/* vlab(point, coefficient, nom, couleur, inclinaison en degrés, décalage en px : < 0 au-dessus, > 0 au-dessous) */
+const vlab = (at, coef, name, c, rot, off, o = {}) => ({ k: 'vlab', at, coef, name, c, rot, off, ...o });
+
+const A = [3, 5], B = [6, 5], C = [9, 2], D = [1, 1];
+const H = [6.75, 5], I = [8, 3], J = [1 + 40 / 9, 1 + 5 / 9];
+
+/* Vecteurs de la question 2 */
+const old = e => ({ ...e, old: true });
+const U_OLD = arrow([0, 0], [3, 1], 'c1', { old: true }), UL_OLD = vlab([1.5, 0.5], '', 'u', 'c1', 18.4, -20, { old: true });
+const A2 = arrow([-2, -1], [4, 1], 'res'), L2 = vlab([1, 0], '2', 'u', 'res', 18.4, 22);
+const AM = arrow([2, 3], [-1, 2], 'res'), LM = vlab([0.5, 2.5], '−', 'u', 'res', 18.4, -20);
+const AD = arrow([-3, 2], [-1.5, 2.5], 'res'), LD = vlab([-2.25, 2.25], '1/2', 'u', 'res', 18.4, -28);
+
+/* ------------------------------------------------------------- Étapes */
+const STEPS = [
+  { q: null, fig: 1, et: 'Méthode',
+    cap: `<div class="methode"><p>Pour placer un point M tel que ${M(V('AM') + ' = <i>k</i>' + V('AB'))}, on regarde :</p>
+      <p>• la <em>direction</em> : M est sur la droite (AB)&nbsp;;</p>
+      <p>• le <em>sens</em> : si ${M('<i>k</i> &gt; 0')}, même sens que ${V('AB')}&nbsp;; si ${M('<i>k</i> &lt; 0')}, sens opposé&nbsp;;</p>
+      <p>• la <em>longueur</em> : AM vaut <i>k</i> fois AB (sans le signe).</p></div>`,
+    els: [] },
+
+  /* ---------------- 1(a) */
+  { q: '1a', fig: 1, clear: true,
+    cap: `<p>${M(V('AH') + ' = ' + F(5, 4) + V('AB'))}</p>
+      <p>${V('AH')} a même direction que ${V('AB')} : H est sur la droite (AB).</p>
+      <p>Comme ${M(F(5, 4) + ' &gt; 0')}, ${V('AH')} a même sens que ${V('AB')}.</p>`,
+    els: [droite(A, B), arrow(A, B, 'c1', { given: true, off: -16 })] },
+  { q: '1a', fig: 1,
+    cap: `<p>Le vecteur ${v1('AB')} correspond à un déplacement de 3 carreaux vers la droite.</p>
+      <p>Donc ${M('AH = ' + F(5, 4) + ' × 3 = ' + F(15, 4) + ' = 3,75')} carreaux.</p>`,
+    els: [{ k: 'txt', s: '3 carreaux', at: [4.5, 5], d: [0, 42], c: 'c1' }] },
+  { q: '1a', fig: 1,
+    cap: `<p>On partage [AB] en 4 parts égales : une part mesure ${M('3 ÷ 4 = 0,75')} carreau.</p>
+      <p>On reporte 5 parts à partir de A : on dépasse B d’une part.</p>`,
+    clear: true, els: [droite(A, B), parts(A, B, 4, 5, 'c2', 40)] },
+  { q: '1a', fig: 1,
+    cap: `<p>On place H à 3,75 carreaux de A, du côté de B, au-delà de B.</p>
+      <p class="res">${M(V('AH') + ' = ' + F(5, 4) + V('AB'))}</p>`,
+    els: [arrow(A, H, 'res', { off: -16 }), pt('H', H, 'n', { c: 'res' })] },
+
+  /* ---------------- 1(b) */
+  { q: '1b', fig: 1, clear: true,
+    cap: `<p>${M(V('BI') + ' = ' + F(2, 3) + V('BC'))}</p>
+      <p>Le vecteur ${v1('BC')} correspond à un déplacement de 3 carreaux vers la droite et 3 carreaux vers le bas.</p>`,
+    els: [pt('H', H, 'n', { c: 'res', old: true }),
+          arrow(B, C, 'c1', { given: true }), dep(B, [[3, 0, '3', [0, -14]], [0, -3, '3', [16, 0]]], 'c1')] },
+  { q: '1b', fig: 1,
+    cap: `<p>Comme ${M(F(2, 3) + ' &gt; 0')}, ${V('BI')} a même direction et même sens que ${V('BC')}.</p>
+      <p>${M(F(2, 3) + ' × 3 = 2')} : le vecteur ${v2('BI')} correspond à un déplacement de 2 carreaux vers la droite et 2 carreaux vers le bas.</p>`,
+    els: [dep(B, [[0, -2, '2', [-16, 0]], [2, 0, '2', [0, 24]]], 'c2')] },
+  { q: '1b', fig: 1,
+    cap: `<p>On place I : il est bien sur le segment [BC], aux deux tiers en partant de B.</p>
+      <p class="res">${M(V('BI') + ' = ' + F(2, 3) + V('BC'))}</p>`,
+    els: [arrow(B, I, 'res', { off: -12 }), pt('I', I, 'e', { c: 'res' })] },
+
+  /* ---------------- 1(c) */
+  { q: '1c', fig: 1, clear: true,
+    cap: `<p>${M(V('DJ') + ' = ' + F(5, 9) + V('DC'))}</p>
+      <p>Le vecteur ${v1('DC')} correspond à un déplacement de 8 carreaux vers la droite et 1 carreau vers le haut.</p>
+      <p>Or ${M(F(5, 9) + ' × 8 = ' + F(40, 9))} : ce n’est pas un nombre entier de carreaux. On ne peut pas compter les carreaux.</p>`,
+    els: [pt('H', H, 'n', { c: 'res', old: true }), pt('I', I, 'e', { c: 'res', old: true }),
+          arrow(D, C, 'c1', { given: true }), dep(D, [[8, 0, '8', [0, 24]], [0, 1, '1', [16, 0]]], 'c1')] },
+  { q: '1c', fig: 1,
+    cap: `<p>Comme ${M(F(5, 9) + ' &gt; 0')}, J est sur [DC], du côté de C.</p>
+      <p>On mesure DC à la règle, puis on calcule ${M('DJ = ' + F(5, 9) + ' × DC')}.</p>
+      <p>Cela revient à partager [DC] en 9 parts égales et à en reporter 5 à partir de D.</p>`,
+    clear: true, els: [pt('H', H, 'n', { c: 'res', old: true }), pt('I', I, 'e', { c: 'res', old: true }),
+          arrow(D, C, 'c1', { given: true, old: true }), parts(D, C, 9, 5, 'c2', 22)] },
+  { q: '1c', fig: 1,
+    cap: `<p>On place J au bout de la 5<sup>e</sup> part.</p>
+      <p class="res">${M(V('DJ') + ' = ' + F(5, 9) + V('DC'))}</p>`,
+    els: [arrow(D, J, 'res', { off: 12 }), pt('J', J, 'n', { c: 'res' })] },
+  { q: '1c', fig: 1, et: 'Question 1 — bilan',
+    cap: `<p>Les trois points placés :</p>
+      <p>${M(V('AH') + ' = ' + F(5, 4) + V('AB'))} : H au-delà de B.</p>
+      <p>${M(V('BI') + ' = ' + F(2, 3) + V('BC'))} : I sur [BC].</p>
+      <p>${M(V('DJ') + ' = ' + F(5, 9) + V('DC'))} : J sur [DC].</p>`,
+    clear: true,
+    els: [arrow(A, H, 'res', { off: -16, old: true }), arrow(B, I, 'res', { off: -12, old: true }), arrow(D, J, 'res', { off: 12, old: true }),
+          pt('H', H, 'n', { c: 'res', old: true }), pt('I', I, 'e', { c: 'res', old: true }), pt('J', J, 'n', { c: 'res', old: true })] },
+
+  /* ---------------- 2 */
+  { q: '2', fig: 2, clear: true,
+    cap: `<p>Le vecteur ${v1('u')} correspond à un déplacement de 3 carreaux vers la droite et 1 carreau vers le haut.</p>
+      <p>Un représentant peut être tracé <em>n’importe où</em> sur le quadrillage : seul le déplacement compte.</p>`,
+    els: [U_OLD, UL_OLD, dep([0, 0], [[3, 0, '3', [0, 22]], [0, 1, '1', [16, 0]]], 'c1')] },
+  { q: '2', fig: 2, clear: true,
+    cap: `<p>${M('2' + V('u'))} : comme ${M('2 &gt; 0')}, même direction et même sens que ${V('u')}, longueur multipliée par 2.</p>
+      <p>${M('2' + V('u'))} correspond à un déplacement de ${M('2 × 3 = 6')} carreaux vers la droite et ${M('2 × 1 = 2')} carreaux vers le haut.</p>`,
+    els: [U_OLD, UL_OLD, dep([-2, -1], [[6, 0, '6', [0, -14]], [0, 2, '2', [16, 0]]], 'c2'), A2, L2] },
+  { q: '2', fig: 2, clear: true,
+    cap: `<p>${M('−' + V('u'))} : comme ${M('−1 &lt; 0')}, même direction que ${V('u')} mais sens opposé, même longueur.</p>
+      <p>${M('−' + V('u'))} correspond à un déplacement de 3 carreaux vers la gauche et 1 carreau vers le bas.</p>`,
+    els: [U_OLD, UL_OLD, old(A2), old(L2), dep([2, 3], [[-3, 0, '3', [0, -14]], [0, -1, '1', [-16, 0]]], 'c2'), AM, LM] },
+  { q: '2', fig: 2, clear: true,
+    cap: `<p>${M(F(1, 2) + V('u'))} : comme ${M(F(1, 2) + ' &gt; 0')}, même direction et même sens que ${V('u')}, longueur divisée par 2.</p>
+      <p>${M(F(1, 2) + V('u'))} correspond à un déplacement de ${M(F(3, 2) + ' = 1,5')} carreau vers la droite et ${M(F(1, 2) + ' = 0,5')} carreau vers le haut.</p>`,
+    els: [U_OLD, UL_OLD, old(A2), old(L2), old(AM), old(LM), dep([-3, 2], [[1.5, 0, '1,5', [0, 22]], [0, 0.5, '0,5', [26, 4]]], 'c2'), AD, LD] },
+  { q: '2', fig: 2, et: 'Question 2 — bilan', clear: true,
+    cap: `<p>${M('2' + V('u'))} : 2 fois plus long, même sens.</p>
+      <p>${M('−' + V('u'))} : même longueur, sens opposé.</p>
+      <p>${M(F(1, 2) + V('u'))} : 2 fois plus court, même sens.</p>
+      <p>Les trois vecteurs ont la même direction que ${V('u')} : leurs représentants sont parallèles.</p>`,
+    els: [U_OLD, UL_OLD, old(A2), old(L2), old(AM), old(LM), old(AD), old(LD)] }
+];
+
+/* ----------------------------------------------------------- Dessin SVG */
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('fig');
+let G; // figure courante
+const px = ([x, y]) => [G.MX + (x - G.x0) * G.U, G.MY + (G.y1 - y) * G.U];
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function text(s, x, y, attrs, parent) {
+  const t = el('text', { x, y, 'dominant-baseline': 'middle', 'text-anchor': 'middle', 'font-size': 24, fill: '#1f2328',
+    stroke: '#ffffff', 'stroke-width': 5, 'paint-order': 'stroke', 'stroke-linejoin': 'round', ...attrs }, parent);
+  t.textContent = s;
+  return t;
+}
+
+function drawBase(layer) {
+  for (let x = G.x0; x <= G.x1; x++) {
+    const [a, b] = [px([x, G.y0]), px([x, G.y1])];
+    el('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#d5d7da', 'stroke-width': 1 }, layer);
+  }
+  for (let y = G.y0; y <= G.y1; y++) {
+    const [a, b] = [px([G.x0, y]), px([G.x1, y])];
+    el('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#d5d7da', 'stroke-width': 1 }, layer);
+  }
+  if (G.quad) el('polygon', { points: G.quad.map(px).map(p => p.join(',')).join(' '), fill: 'none',
+    stroke: HEX.mag, 'stroke-width': 3.2, 'stroke-linejoin': 'round' }, layer);
+}
+
+const POS = { n: [0, -22], s: [0, 24], e: [20, 0], w: [-20, 0], sw: [-16, 18] };
+function drawPoint(name, at, pos, color, layer) {
+  const [x, y] = px(at), r = 6;
+  const g = el('g', {}, layer);
+  el('line', { x1: x - r, y1: y - r, x2: x + r, y2: y + r, stroke: color, 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+  el('line', { x1: x - r, y1: y + r, x2: x + r, y2: y - r, stroke: color, 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+  const o = POS[pos];
+  text(name, x + o[0], y + o[1], { fill: color }, g);
+  return g;
+}
+
+function drawArrow(e, layer) {
+  let [x1, y1] = px(e.from), [x2, y2] = px(e.to);
+  const color = HEX[e.c];
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy);
+  const ux = dx / len, uy = dy / len;
+  if (e.off) { const nx = uy, ny = -ux; x1 += nx * e.off; y1 += ny * e.off; x2 += nx * e.off; y2 += ny * e.off; }
+  const hl = 16, hw = 7;
+  const bx = x2 - ux * hl, by = y2 - uy * hl;
+  const gr = el('g', {}, layer);
+  if (e.given) gr.setAttribute('opacity', 0.8);
+  const line = el('line', { x1, y1, x2: bx, y2: by, stroke: color, 'stroke-width': e.given ? 2.6 : 3.6, 'stroke-linecap': 'round' }, gr);
+  if (e.given) line.setAttribute('stroke-dasharray', '8 7');
+  const head = el('polygon', { points: `${x2},${y2} ${bx - uy * hw},${by + ux * hw} ${bx + uy * hw},${by - ux * hw}`, fill: color }, gr);
+  return { line, head, len: Math.hypot(bx - x1, by - y1), given: e.given };
+}
+
+/* droite (AB) en pointillés gris, prolongée jusqu'au bord du quadrillage */
+function drawDroite(e, layer) {
+  const [ax, ay] = e.a, [bx, by] = e.b;
+  const t = [-10, 10];
+  const p1 = px([ax + (bx - ax) * t[0], ay + (by - ay) * t[0]]), p2 = px([ax + (bx - ax) * t[1], ay + (by - ay) * t[1]]);
+  const [L, R, T, Bm] = [px([G.x0, 0])[0], px([G.x1, 0])[0], px([0, G.y1])[1], px([0, G.y0])[1]];
+  const cl = el('clipPath', { id: 'clipGrid' }, layer);
+  el('rect', { x: L, y: T, width: R - L, height: Bm - T }, cl);
+  return el('line', { x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1], stroke: HEX.grey, 'stroke-width': 1.6,
+    'stroke-dasharray': '3 6', 'stroke-linecap': 'round', 'clip-path': 'url(#clipGrid)' }, layer);
+}
+
+/* partage en n parts égales, m parts reportées à partir de « from » */
+function drawParts(e, layer) {
+  const [ax, ay] = px(e.from), [bx, by] = px(e.to);
+  const sx = (bx - ax) / e.n, sy = (by - ay) / e.n, sl = Math.hypot(sx, sy);
+  const ux = sx / sl, uy = sy / sl, nx = -uy, ny = ux; // normale vers le bas de l'écran
+  const color = HEX[e.c];
+  const out = [];
+  const g = el('g', {}, layer);
+  const band = el('line', { x1: ax, y1: ay, x2: ax + sx * e.m, y2: ay + sy * e.m, stroke: color, 'stroke-width': 5,
+    'stroke-linecap': 'butt', opacity: 0.55 }, g);
+  out.push({ node: band, len: sl * e.m, line: true });
+  for (let k = 0; k <= Math.max(e.n, e.m); k++) {
+    const x = ax + sx * k, y = ay + sy * k;
+    const t = el('line', { x1: x - nx * 8, y1: y - ny * 8, x2: x + nx * 8, y2: y + ny * 8, stroke: k <= e.m ? color : HEX.grey,
+      'stroke-width': 2, 'stroke-linecap': 'round' }, g);
+    out.push({ node: t, k });
+  }
+  for (let k = 1; k <= e.m; k++) {
+    const x = ax + sx * (k - 0.5) + nx * e.lo, y = ay + sy * (k - 0.5) + ny * e.lo;
+    out.push({ node: text(String(k), x, y, { 'font-size': 17, fill: color, 'stroke-width': 4 }, g), k });
+  }
+  return out;
+}
+
+/* déplacement en carreaux : petites flèches pointillées horizontales / verticales */
+function drawDep(e, layer) {
+  const color = HEX[e.c];
+  let cur = e.from.slice();
+  const out = [];
+  e.moves.forEach(([dx, dy, lab, lo]) => {
+    const nxt = [cur[0] + dx, cur[1] + dy];
+    const [x1, y1] = px(cur), [x2, y2] = px(nxt);
+    const L = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / L, uy = (y2 - y1) / L;
+    const bx = x2 - ux * 10, by = y2 - uy * 10;
+    const g = el('g', { opacity: 0.9 }, layer);
+    const line = el('line', { x1, y1, x2: bx, y2: by, stroke: color, 'stroke-width': 2, 'stroke-dasharray': '5 4' }, g);
+    el('polygon', { points: `${x2},${y2} ${bx - uy * 5},${by + ux * 5} ${bx + uy * 5},${by - ux * 5}`, fill: color }, g);
+    text(lab, (x1 + x2) / 2 + lo[0], (y1 + y2) / 2 + lo[1], { 'font-size': 18, fill: color, 'stroke-width': 4 }, g);
+    out.push(g);
+    cur = nxt;
+  });
+  return out;
+}
+
+/* nom de vecteur sur la figure : coefficient + lettre surmontée d'une flèche */
+function drawVlab(e, layer) {
+  const [x, y] = px(e.at);
+  const color = HEX[e.c];
+  const g = el('g', { transform: `translate(${x},${y}) rotate(${-e.rot}) translate(0,${e.off})` }, layer);
+  const st = { fill: color, 'font-size': 22, stroke: '#ffffff', 'stroke-width': 5, 'paint-order': 'stroke' };
+  let cx = 0;
+  if (e.coef === '1/2') {
+    text('1', -10, -11, { ...st, 'font-size': 16 }, g);
+    text('2', -10, 11, { ...st, 'font-size': 16 }, g);
+    el('line', { x1: -16, y1: 0, x2: -4, y2: 0, stroke: color, 'stroke-width': 1.5 }, g);
+    cx = 6;
+  } else if (e.coef) {
+    text(e.coef, -8, 2, st, g); cx = 8;
+  }
+  text(e.name, cx, 3, { ...st, 'font-style': 'italic', 'font-family': 'Times New Roman, serif', 'font-size': 26 }, g);
+  el('line', { x1: cx - 6, y1: -14, x2: cx + 7, y2: -14, stroke: color, 'stroke-width': 1.6 }, g);
+  el('polyline', { points: `${cx + 3},-17.5 ${cx + 8},-14 ${cx + 3},-10.5`, fill: 'none', stroke: color, 'stroke-width': 1.6,
+    'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+  return g;
+}
+
+/* ----------------------------------------------------------------- État */
+let cur = 0;
+
+function render(animate) {
+  const st = STEPS[cur];
+  G = FIGS[st.fig];
+  const W = (G.x1 - G.x0) * G.U + 2 * G.MX, Hh = (G.y1 - G.y0) * G.U + 2 * G.MY;
+  svg.setAttribute('viewBox', `0 0 ${W} ${Hh}`);
+  svg.innerHTML = '';
+  const gBase = el('g', {}, svg), gAux = el('g', {}, svg), gVec = el('g', {}, svg), gRes = el('g', {}, svg), gLab = el('g', {}, svg);
+  drawBase(gBase);
+  for (const n in G.pts) drawPoint(n, G.pts[n][0], G.pts[n][1], '#1f2328', gLab);
+
+  let start = cur;
+  while (start > 0 && !STEPS[start].clear && STEPS[start - 1].q === st.q) start--;
+  let order = 0;
+  for (let j = start; j <= cur; j++) {
+    for (const e of STEPS[j].els) {
+      const isNew = animate && j === cur && !e.old;
+      const delay = isNew ? order++ * 0.7 : 0;
+      if (e.k === 'arrow') {
+        const a = drawArrow(e, e.c === 'res' ? gRes : gVec);
+        if (isNew) {
+          if (a.given) fadeIn(a.line, delay); else animLine(a.line, a.len, delay);
+          fadeIn(a.head, delay + 0.6);
+        }
+      } else if (e.k === 'pt') {
+        const p = drawPoint(e.name, e.at, e.pos, HEX[e.c], gLab);
+        if (isNew) fadeIn(p, delay);
+      } else if (e.k === 'droite') {
+        const l = drawDroite(e, gAux);
+        if (isNew) fadeIn(l, delay);
+      } else if (e.k === 'parts') {
+        const items = drawParts(e, gAux);
+        if (isNew) {
+          items.forEach(it => {
+            if (it.line) animLine(it.node, it.len, delay, 0.25 * e.m);
+            else fadeIn(it.node, delay + 0.25 * (it.k || 0));
+          });
+          order += e.m * 0.25 / 0.7;
+        }
+      } else if (e.k === 'dep') {
+        drawDep(e, gAux).forEach((g, i) => { if (isNew) fadeIn(g, delay + i * 0.5); });
+        if (isNew) order += (e.moves.length - 1) * 0.5 / 0.7;
+      } else if (e.k === 'txt') {
+        const [x, y] = px(e.at);
+        const t = text(e.s, x + e.d[0], y + e.d[1], { 'font-size': 18, fill: HEX[e.c], 'stroke-width': 4 }, gAux);
+        if (isNew) fadeIn(t, delay);
+      } else if (e.k === 'vlab') {
+        const g = drawVlab(e, gLab);
+        if (isNew) fadeIn(g, delay + 0.6);
+      }
+    }
+  }
+  updatePanel();
+}
+
+function animLine(node, len, delay, dur) {
+  node.style.strokeDasharray = len;
+  node.style.strokeDashoffset = len;
+  node.classList.add('draw');
+  if (dur) node.style.transitionDuration = dur + 's';
+  node.style.transitionDelay = delay + 's';
+  requestAnimationFrame(() => requestAnimationFrame(() => { node.style.strokeDashoffset = 0; }));
+}
+function fadeIn(node, delay) {
+  node.style.opacity = 0;
+  node.classList.add('fade');
+  node.style.transitionDelay = delay + 's';
+  requestAnimationFrame(() => requestAnimationFrame(() => { node.style.opacity = ''; }));
+}
+
+/* ------------------------------------------------------------- Panneau */
+const enonce = document.getElementById('enonce');
+enonce.innerHTML = `<p class="consigne">1. Placer les points H, I et J tels que :</p><div class="questions" id="q1"></div>
+  <p class="consigne">2. Construire des représentants des vecteurs ${M('2' + V('u'))}, ${M('−' + V('u'))} et ${M(F(1, 2) + V('u'))}.</p><div class="questions" id="q2"></div>`;
+const qItems = [];
+QUESTIONS.forEach(q => {
+  const d = document.createElement('div');
+  d.className = 'q' + (q.wide ? ' wide' : '');
+  d.dataset.id = q.id;
+  d.innerHTML = q.id === '2' ? `<span>Étapes de la construction</span>` : `<span class="num">${q.num}</span><span>${q.txt}</span>`;
+  d.addEventListener('click', () => { cur = STEPS.findIndex(s => s.q === q.id); render(true); });
+  document.getElementById(q.id === '2' ? 'q2' : 'q1').appendChild(d);
+  qItems.push(d);
+});
+
+function updatePanel() {
+  const st = STEPS[cur];
+  const k = st.q ? qOrder.indexOf(st.q) : -1;
+  qItems.forEach(d => {
+    const i = qOrder.indexOf(d.dataset.id);
+    d.classList.toggle('active', i === k);
+    d.classList.toggle('done', i < k);
+  });
+  let et = st.et;
+  if (!et) {
+    const same = STEPS.filter(s => s.q === st.q && !s.et);
+    const nom = st.q === '2' ? 'Question 2' : `Question 1 ${QUESTIONS.find(q => q.id === st.q).num}`;
+    et = `${nom} — étape ${same.indexOf(st) + 1} sur ${same.length}`;
+  }
+  document.getElementById('etape').textContent = et;
+  document.getElementById('caption').innerHTML = st.cap;
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === STEPS.length - 1;
+  document.getElementById('bar').style.width = (100 * cur / (STEPS.length - 1)) + '%';
+  history.replaceState(null, '', '#' + cur);
+}
+
+function go(delta) {
+  const n = Math.max(0, Math.min(STEPS.length - 1, cur + delta));
+  if (n === cur) return;
+  cur = n; render(delta > 0);
+}
+document.getElementById('prev').addEventListener('click', () => go(-1));
+document.getElementById('next').addEventListener('click', () => go(1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+});
+
+// Accès direct : …html#5 = étape 5
+const h = /^#(\d+)$/.exec(location.hash);
+if (h) cur = Math.min(STEPS.length - 1, +h[1]);
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => render(false));
+</script>
+</body>
+</html>

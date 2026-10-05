@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vecteurs colinéaires</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
+<style>
+  :root{
+    --bg:#f3f6f9;
+    --surface:#ffffff;
+    --ink:#14202b;
+    --ink-dim:#56677a;
+    --line:#cfd9e3;
+    --grid:#d5dde5;
+    --blue:#1c5fd6;
+    --chip:#339af0;
+    --orange:#e8590c;
+    --method-bg:#fff6df;
+    --method-border:#d4a72c;
+    --corr-bg:#eaf6ec;
+    --corr-border:#3f9a4f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Source Sans 3",system-ui,sans-serif;
+    font-weight:400;
+    font-size:19px;
+    line-height:1.45;
+  }
+  .page{max-width:1280px; margin:0 auto; padding:24px 16px 60px;}
+  header{text-align:center; margin-bottom:18px;}
+  header h1{font-weight:500; font-size:2rem; margin:0;}
+  header p{margin:4px 0 0; color:var(--orange); font-size:1.05rem;}
+
+  .tabs{display:flex; gap:8px; justify-content:center; margin:14px 0 22px; flex-wrap:wrap;}
+  .tabs button{
+    font:inherit; font-weight:500; font-size:1rem;
+    padding:6px 18px; border-radius:999px;
+    border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer;
+  }
+  .tabs button[aria-selected="true"]{background:var(--chip); border-color:var(--chip); color:#fff;}
+
+  .exo{display:none;}
+  .exo.active{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:24px; align-items:start;}
+  @media (max-width:900px){ .exo.active{grid-template-columns:1fr;} }
+
+  .figure{
+    position:sticky; top:16px;
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    padding:14px;
+  }
+  @media (max-width:900px){ .figure{position:static;} }
+  .figure .intro{margin:0 0 10px;}
+  .chip{
+    display:inline-block; background:var(--chip); color:#fff; font-weight:500;
+    border-radius:6px; padding:1px 10px; margin-right:8px; font-size:.95rem;
+  }
+  .figure svg.fig{width:100%; height:auto; display:block;}
+
+  .questions{display:flex; flex-direction:column; gap:16px;}
+  .q{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px 16px;}
+  .q-head{display:flex; gap:10px; align-items:baseline;}
+  .num{
+    flex:none; width:1.6em; height:1.6em; border-radius:50%;
+    border:1.5px solid var(--ink); display:inline-flex; align-items:center; justify-content:center;
+    font-size:.85rem; font-weight:500;
+  }
+  .method{
+    margin:12px 0 0; padding:10px 14px;
+    background:var(--method-bg); border-left:4px solid var(--method-border); border-radius:6px;
+  }
+  .method .tag{color:#9a7212; font-weight:500; margin-right:6px;}
+  .method p{margin:.35em 0 0;}
+  table.prop{border-collapse:collapse; margin:.5em 0; background:var(--surface);}
+  table.prop th, table.prop td{border:1px solid var(--line); padding:4px 14px; text-align:center; font-weight:400;}
+  table.prop th{text-align:left; color:var(--ink-dim);}
+  table.prop td.gap{border:none; background:var(--corr-bg); padding:0 6px;}
+  details{margin-top:12px;}
+  summary{
+    list-style:none; cursor:pointer; display:inline-block;
+    font-weight:500; font-size:.95rem; color:var(--corr-border);
+    border:1px solid var(--corr-border); border-radius:999px; padding:4px 14px;
+    user-select:none;
+  }
+  summary::-webkit-details-marker{display:none;}
+  details[open] summary{background:var(--corr-border); color:#fff;}
+  .corr{
+    margin-top:10px; padding:10px 14px;
+    background:var(--corr-bg); border-left:4px solid var(--corr-border); border-radius:6px;
+  }
+  .corr p{margin:.3em 0;}
+  .corr ul{margin:.3em 0; padding-left:1.3em; list-style:none;}
+  .corr li{margin:.25em 0;}
+  .corr li::before{content:"\22C6"; margin-left:-1.1em; margin-right:.45em; color:var(--ink-dim);}
+  .coefs{display:grid; grid-template-columns:repeat(auto-fill,minmax(115px,1fr)); gap:6px 14px; margin:.4em 0;}
+  .coefs span.eq{white-space:nowrap;}
+  .ans{color:#b02a37; font-weight:500;}
+
+  /* Notation vectorielle façon \vec{} de LaTeX : flèche dessinée en SVG au-dessus des lettres */
+  .vecvar{position:relative; display:inline-block; font-weight:400; padding:.55em .06em 0; line-height:1; white-space:nowrap;}
+  .vecvar.it{font-style:italic;}
+  .vecvar svg{position:absolute; top:.02em; left:50%; transform:translateX(-50%); height:.5em; overflow:visible;}
+  .frac{display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; font-size:.85em; line-height:1.1; margin:0 .1em;}
+  .frac > span:first-child{border-bottom:1px solid currentColor; padding:0 .15em;}
+  .nowrap{white-space:nowrap;}
+
+  /* Diaporama : une question à la fois, schéma toujours à gauche */
+  .q{display:none;}
+  .q.current{display:block;}
+  .q .q-head{font-size:1.15rem;}
+  .nav{
+    display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap;
+    position:fixed; left:0; right:0; bottom:0; z-index:5;
+    padding:10px 16px; background:rgba(243,246,249,.95); border-top:1px solid var(--line);
+  }
+  .page{padding-bottom:90px;}
+  .coefs.five{grid-template-columns:repeat(5,max-content); gap:8px 26px;}
+  @media (max-width:700px){ .coefs.five{grid-template-columns:repeat(2,max-content);} }
+  .nav button{
+    font:inherit; font-weight:500; font-size:1rem;
+    padding:8px 20px; border-radius:999px; cursor:pointer;
+    border:1px solid var(--line); background:var(--surface); color:var(--ink);
+  }
+  .nav button.next{background:var(--chip); border-color:var(--chip); color:#fff;}
+  .nav button:disabled{opacity:.35; cursor:default;}
+  .nav .where{color:var(--ink-dim); min-width:12em; text-align:center;}
+  .dots{display:flex; gap:7px; align-items:center;}
+  .dots span{width:9px; height:9px; border-radius:50%; background:var(--line); cursor:pointer;}
+  .dots span.sep{width:1px; height:14px; border-radius:0; background:var(--ink-dim); cursor:default; margin:0 4px;}
+  .dots span.on{background:var(--chip); transform:scale(1.3);}
+
+  /* Correction pas à pas */
+  .steps .step{display:none;}
+  .steps .step.shown{display:block;}
+  .steps .step + .step.shown{border-top:1px dashed var(--corr-border); margin-top:10px; padding-top:8px;}
+  .step-title{color:var(--corr-border); font-weight:500; margin:.2em 0 .3em;}
+  .step.remark .step-title{color:var(--ink-dim);}
+  .step-next{
+    font:inherit; font-weight:500; font-size:.95rem; margin-top:10px; cursor:pointer;
+    padding:5px 16px; border-radius:999px; border:1px solid var(--corr-border);
+    background:var(--surface); color:var(--corr-border);
+  }
+  .step-next[hidden]{display:none;}
+  .steps .step, .step-next{scroll-margin-bottom:90px;}
+
+  /* Section cours */
+  .exo.cours.active{display:block; max-width:900px; margin:0 auto;}
+  .cours .q{border:none; background:none; padding:0;}
+  .cours-title{font-weight:500; font-size:1.5rem; margin:0 0 16px; color:var(--ink);}
+  .box{padding:12px 18px; margin:0 0 18px; font-size:1.2rem;}
+  .box p{margin:.3em 0;}
+  .box-tag{font-weight:500;}
+  .box.dfn{background:rgba(46,160,67,.07); border-left:4px solid #2ea043;}
+  .box.dfn .box-tag{color:#2ea043;}
+  .box.noter{background:rgba(214,144,20,.09); border-left:4px solid #d69014;}
+  .box.noter .box-tag{color:#b07610;}
+  .hl{color:#2ea043; font-weight:500;}
+  .hl-noter{color:#b07610; font-weight:500;}
+  ul.stars{list-style:none; margin:.3em 0; padding-left:1.4em;}
+  ul.stars li{margin:.35em 0;}
+  ul.stars li::before{content:"\22C6"; margin-left:-1.2em; margin-right:.5em; color:var(--ink-dim);}
+
+  .dfn-row .box{margin:0 0 18px;}
+  .ex-body{display:grid; grid-template-columns:280px minmax(0,1fr); gap:22px; align-items:center;}
+  @media (max-width:700px){ .ex-body{grid-template-columns:1fr;} }
+  .box.exemple{background:rgba(85,85,95,.06); border-left:4px solid #55555f;}
+  .box.exemple .box-tag{color:#55555f;}
+  .fig-ex{width:100%; height:auto; display:block;}
+  .hl-ex{color:#e8590c; font-weight:500;}
+
+  /* Explications à la demande (question 4) */
+  .explic{margin-top:14px; padding-top:10px; border-top:1px dashed var(--corr-border);}
+  .ex-btns{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 4px;}
+  .ex-btns button{
+    font:inherit; font-size:1rem; cursor:pointer; padding:2px 12px 4px; border-radius:999px;
+    border:1px solid var(--corr-border); background:var(--surface); color:var(--ink);
+  }
+  .ex-btns button.on{background:var(--corr-border); color:#fff;}
+  .ex-item{display:none; margin-top:8px; padding:8px 12px; background:var(--surface); border-radius:6px;}
+  .ex-item.shown{display:block;}
+
+  .explic-remark{margin-top:14px; padding-top:10px; border-top:1px dashed var(--corr-border);}
+  .explic-remark .step-title{color:var(--ink-dim);}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>Vecteurs colinéaires</h1>
+    <p>Objectif 5 : produit d’un vecteur par un nombre réel et colinéarité de deux vecteurs</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-target="cours">Cours</button>
+    <button role="tab" aria-selected="false" data-target="exo1">Exercice 1</button>
+    <button role="tab" aria-selected="false" data-target="exo2">Exercice 2</button>
+  </div>
+
+  <!-- ===================== COURS ===================== -->
+  <!-- Repris de « Séquence 2 - Cours - Vecteurs - Version complétée.tex » : Définition 7 et l'encadré « À noter » qui la suit -->
+  <section class="exo cours" id="cours">
+    <div class="q">
+      <h2 class="cours-title">Vecteurs colinéaires</h2>
+      <div class="dfn-row">
+        <div class="box dfn">
+          <p class="box-tag">Définition 7 — <i>Vecteurs colinéaires</i></p>
+          <p>Deux vecteurs <V>u</V> et <V>v</V> sont dits <span class="hl">colinéaires</span> s’il existe un réel <i>k</i> tel que <span class="nowrap"><V>v</V> = <i>k</i> <V>u</V></span> ou <span class="nowrap"><V>u</V> = <i>k</i> <V>v</V></span>.</p>
+          <p>Le réel <i>k</i> est appelé <span class="hl">coefficient de colinéarité</span>.</p>
+        </div>
+        <div class="box exemple">
+          <p class="box-tag">Exemple</p>
+          <div class="ex-body">
+          <svg class="fig-ex" id="figEx" aria-label="Quadrillage avec les vecteurs u, v et w"></svg>
+          <div>
+          <p>Les droites qui portent <V>u</V> et <V>v</V> (en pointillés verts) sont parallèles : <V>u</V> et <V>v</V> ont la même direction.<br>On a <span class="nowrap"><V>v</V> = −2 <V>u</V></span>.<br>Donc <V>u</V> et <V>v</V> sont colinéaires.<br>Le coefficient de colinéarité est <span class="hl-ex">−2</span>.</p>
+          <p>La droite qui porte <V>w</V> (en pointillés gris) est sécante avec les deux autres.<br>Donc <V>w</V> n’est colinéaire ni à <V>u</V>, ni à <V>v</V>.</p>
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class="box noter">
+        <p class="box-tag">À noter</p>
+        <ul class="stars">
+          <li>Deux vecteurs sont colinéaires si et seulement s’ils ont <span class="hl-noter">même direction</span>.</li>
+          <li>Le vecteur nul est colinéaire à n’importe quel vecteur.<br>En effet, <span class="nowrap"><V>0</V> = 0 <V>u</V></span>.</li>
+          <li>La notion de colinéarité est fortement liée à celle de parallélisme et d’alignement.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== EXERCICE 1 ===================== -->
+  <section class="exo" id="exo1">
+    <div class="figure">
+      <p class="intro"><span class="chip">Exercice 1</span>On a représenté ci-dessous dix vecteurs dans un quadrillage.</p>
+      <svg class="fig" id="fig1" aria-label="Quadrillage avec dix vecteurs"></svg>
+    </div>
+
+    <div class="questions">
+      <div class="q">
+        <div class="q-head"><span class="num">1</span><div>Repérer les vecteurs colinéaires au vecteur <V>u</V>.</div></div>
+        <div class="method"><span class="tag">Point méthode</span>
+          <p>Deux vecteurs sont colinéaires s’ils ont la <em>même direction</em>.</p>
+          <p>Pour repérer la direction d’un vecteur, on imagine la droite qui le porte. Deux vecteurs ont la même direction lorsque les droites qui les portent sont parallèles (ou confondues). Le sens et la longueur n’ont pas d’importance.</p>
+          <p>En pratique, il est possible de lire le déplacement de chaque vecteur avec les carreaux (horizontalement et verticalement) et de regarder si ces déplacements sont proportionnels à ceux de <V>u</V>.</p>
+        </div>
+        <details><summary>Voir la correction</summary>
+          <div class="corr steps" data-fig="fig1">
+            <div class="step" data-draw="u">
+              <p class="step-title">Étape 1 — On repère la direction de <V>u</V></p>
+              <p>On trace la droite qui porte le vecteur <V>u</V> (en pointillés orange sur le schéma).<br>Tous les vecteurs colinéaires à <V>u</V> devront être portés par cette droite ou par une droite parallèle.</p>
+            </div>
+            <div class="step" data-draw="v,c,r" data-color="#2f9e44">
+              <p class="step-title">Étape 2 — On cherche les vecteurs qui ont cette direction</p>
+              <p>On regarde les droites qui portent les autres vecteurs.<br>Seules les droites qui portent <V>v</V>, <V>c</V> et <V>r</V> (en pointillés verts sur le schéma) sont parallèles à celle de <V>u</V>.<br>Les droites qui portent les autres vecteurs sont sécantes avec la droite qui porte <V>u</V>.</p>
+            </div>
+            <div class="step">
+              <p class="step-title">Étape 3 — On conclut</p>
+              <p>Les vecteurs <V>v</V>, <V>c</V> et <V>r</V> ont la même direction que <V>u</V>.<br>Le sens et la longueur ne comptent pas : <V>v</V> est de sens opposé, mais il a bien la même direction.</p>
+              <p>Les vecteurs colinéaires à <V>u</V> sont donc <span class="ans"><V>v</V>, <V>c</V> et <V>r</V></span>.</p>
+            </div>
+            <div class="step remark">
+              <p class="step-title">Remarque — Vérifier avec les carreaux</p>
+              <p>Le vecteur <V>u</V> correspond à un déplacement de 2 carreaux vers la droite et 1 carreau vers le haut : le déplacement vertical est la moitié du déplacement horizontal.</p>
+              <table class="prop">
+                <tr><th></th><td><V>u</V></td><td><V>v</V></td><td><V>c</V></td><td><V>r</V></td></tr>
+                <tr><th>Déplacement horizontal (carreaux)</th><td>2</td><td>4</td><td>4</td><td>6</td></tr>
+                <tr><th>Déplacement vertical (carreaux)</th><td>1</td><td>2</td><td>2</td><td>3</td></tr>
+              </table>
+              <p>C’est un tableau de proportionnalité : les déplacements de <V>v</V>, <V>c</V> et <V>r</V> sont proportionnels à ceux de <V>u</V>.<br>À l’inverse, <V>w</V> correspond à un déplacement de 3 carreaux vers la droite et 2 carreaux vers le bas : 2 n’est pas la moitié de 3, donc <V>w</V> n’a pas la même direction que <V>u</V>.</p>
+            </div>
+            <button type="button" class="step-next">Étape suivante →</button>
+          </div>
+        </details>
+      </div>
+
+      <div class="q">
+        <div class="q-head"><span class="num">2</span><div>Repérer les vecteurs colinéaires au vecteur <V>w</V>, puis celui qui est colinéaire au vecteur <V>t</V>.</div></div>
+        <div class="method"><span class="tag">Point méthode</span>
+          <p>Même démarche qu’à la question 1.</p>
+          <p>On imagine la droite qui porte le vecteur <V>w</V>, puis on cherche les vecteurs portés par une droite parallèle à celle-ci (ou par la même droite).</p>
+          <p>Attention, le sens n’a pas d’importance : un vecteur de sens opposé a la même direction.</p>
+        </div>
+        <details><summary>Voir la correction pour <V>w</V></summary>
+          <div class="corr steps" data-fig="fig1">
+            <div class="step" data-draw="w">
+              <p class="step-title">Étape 1 — On repère la direction de <V>w</V></p>
+              <p>On trace la droite qui porte le vecteur <V>w</V> (en pointillés orange sur le schéma).</p>
+            </div>
+            <div class="step" data-draw="b,s" data-color="#2f9e44">
+              <p class="step-title">Étape 2 — On cherche les vecteurs qui ont cette direction</p>
+              <p>Les droites qui portent <V>b</V> et <V>s</V> (en pointillés verts sur le schéma) sont parallèles à la droite qui porte <V>w</V>.<br>Les droites qui portent les autres vecteurs sont sécantes avec la droite qui porte <V>w</V>.</p>
+            </div>
+            <div class="step">
+              <p class="step-title">Étape 3 — On conclut</p>
+              <p>Les vecteurs <V>b</V> et <V>s</V> ont la même direction que <V>w</V>, même s’ils sont de sens opposé.<br>Les vecteurs colinéaires à <V>w</V> sont donc <span class="ans"><V>b</V> et <V>s</V></span>.</p>
+            </div>
+            <div class="step remark">
+              <p class="step-title">Remarque — Vérifier avec les carreaux</p>
+              <p>Le vecteur <V>w</V> correspond à un déplacement de 3 carreaux vers la droite et 2 carreaux vers le bas.</p>
+              <table class="prop">
+                <tr><th></th><td><V>w</V></td><td><V>b</V></td><td><V>s</V></td></tr>
+                <tr><th>Déplacement horizontal (carreaux)</th><td>3</td><td>3</td><td>6</td></tr>
+                <tr><th>Déplacement vertical (carreaux)</th><td>2</td><td>2</td><td>4</td></tr>
+              </table>
+              <p>Les déplacements de <V>b</V> et <V>s</V> sont proportionnels à ceux de <V>w</V>.</p>
+            </div>
+            <button type="button" class="step-next">Étape suivante →</button>
+          </div>
+        </details>
+        <details><summary>Voir la correction pour <V>t</V></summary>
+          <div class="corr steps" data-fig="fig1">
+            <div class="step" data-draw="t">
+              <p class="step-title">Étape 1 — On repère la direction de <V>t</V></p>
+              <p>On trace la droite qui porte le vecteur <V>t</V> (en pointillés orange sur le schéma).</p>
+            </div>
+            <div class="step" data-draw="a" data-color="#2f9e44">
+              <p class="step-title">Étape 2 — On cherche le vecteur qui a cette direction</p>
+              <p>Seule la droite qui porte <V>a</V> (en pointillés verts sur le schéma) est parallèle à la droite qui porte <V>t</V>.<br>Les droites qui portent les autres vecteurs sont sécantes avec la droite qui porte <V>t</V>.</p>
+            </div>
+            <div class="step">
+              <p class="step-title">Étape 3 — On conclut</p>
+              <p>Le vecteur <V>a</V> a la même direction que <V>t</V>, même s’il est de sens opposé.<br>Le vecteur colinéaire à <V>t</V> est donc <span class="ans"><V>a</V></span>.</p>
+            </div>
+            <div class="step remark">
+              <p class="step-title">Remarque — Vérifier avec les carreaux</p>
+              <p>Le vecteur <V>t</V> correspond à un déplacement de 1 carreau vers la droite et 2 carreaux vers le haut.</p>
+              <table class="prop">
+                <tr><th></th><td><V>t</V></td><td><V>a</V></td></tr>
+                <tr><th>Déplacement horizontal (carreaux)</th><td>1</td><td>2</td></tr>
+                <tr><th>Déplacement vertical (carreaux)</th><td>2</td><td>4</td></tr>
+              </table>
+              <p>Les déplacements de <V>a</V> sont proportionnels à ceux de <V>t</V>.</p>
+            </div>
+            <button type="button" class="step-next">Étape suivante →</button>
+          </div>
+        </details>
+      </div>
+
+      <div class="q">
+        <div class="q-head"><span class="num">3</span><div>Le vecteur <V>d</V> est-il colinéaire au vecteur <V>u</V> ? Justifier.</div></div>
+        <div class="method"><span class="tag">Point méthode</span>
+          <p>Pour montrer que deux vecteurs <em>ne sont pas</em> colinéaires, on montre qu’ils n’ont pas la même direction.</p>
+          <p>On imagine la droite qui porte le vecteur <V>u</V> et la droite qui porte le vecteur <V>d</V> : si ces droites sont sécantes, les vecteurs ne sont pas colinéaires.</p>
+          <p>Si les droites semblent presque parallèles, on trace la parallèle à la droite qui porte <V>u</V> passant par l’origine de <V>d</V>, et on regarde si <V>d</V> est porté par cette droite.</p>
+        </div>
+        <details><summary>Voir la correction</summary>
+          <div class="corr steps" data-fig="fig1">
+            <div class="step" data-draw="u">
+              <p class="step-title">Étape 1 — On repère la direction de <V>u</V></p>
+              <p>On trace la droite qui porte le vecteur <V>u</V> (en pointillés orange sur le schéma).</p>
+            </div>
+            <div class="step" data-par="u@d" data-color="#2f9e44">
+              <p class="step-title">Étape 2 — On trace la parallèle passant par l’origine de <V>d</V></p>
+              <p>On trace la droite parallèle à la droite qui porte <V>u</V>, passant par l’origine du vecteur <V>d</V> (en pointillés verts sur le schéma).<br>Si <V>d</V> avait la même direction que <V>u</V>, il serait porté par cette droite verte.</p>
+            </div>
+            <div class="step" data-draw="d" data-color="#495057">
+              <p class="step-title">Étape 3 — On trace la droite qui porte <V>d</V></p>
+              <p>La droite qui porte <V>d</V> (en pointillés gris sur le schéma) ne se confond pas avec la droite verte : elles se coupent à l’origine de <V>d</V>.<br>La droite qui porte <V>d</V> n’est donc pas parallèle à la droite qui porte <V>u</V> : ces deux droites sont sécantes.<br>Elles se coupent en dehors du quadrillage, mais on voit qu’elles s’écartent l’une de l’autre.</p>
+            </div>
+            <div class="step">
+              <p class="step-title">Étape 4 — On conclut</p>
+              <p>Les vecteurs <V>u</V> et <V>d</V> n’ont pas la même direction, même s’ils se ressemblent.<br>Donc <span class="ans"><V>d</V> n’est pas colinéaire à <V>u</V></span>.</p>
+            </div>
+            <div class="step remark">
+              <p class="step-title">Remarque — Vérifier avec les carreaux</p>
+              <p>Le vecteur <V>u</V> correspond à un déplacement de 2 carreaux vers la droite et 1 carreau vers le haut.<br>Le vecteur <V>d</V> correspond à un déplacement de 3 carreaux vers la droite et 1 carreau vers le haut.</p>
+              <p>Horizontalement, on passe de 2 à 3 : on multiplie par <span class="frac"><span>3</span><span>2</span></span>.<br>Verticalement, on passe de 1 à 1 : on multiplie par 1.</p>
+              <p>Ce n’est pas le même nombre : les déplacements de <V>d</V> ne sont pas proportionnels à ceux de <V>u</V>.</p>
+            </div>
+            <button type="button" class="step-next">Étape suivante →</button>
+          </div>
+        </details>
+      </div>
+
+      <div class="q">
+        <div class="q-head"><span class="num">4</span><div>Compléter avec le coefficient de colinéarité qui convient :
+          <div class="coefs five" style="margin-top:8px">
+            <span class="eq"><V>v</V> = … <V>u</V></span><span class="eq"><V>c</V> = … <V>u</V></span><span class="eq"><V>r</V> = … <V>u</V></span><span class="eq"><V>b</V> = … <V>w</V></span><span class="eq"><V>s</V> = … <V>w</V></span>
+            <span class="eq"><V>a</V> = … <V>t</V></span><span class="eq"><V>s</V> = … <V>b</V></span><span class="eq"><V>u</V> = … <V>v</V></span><span class="eq"><V>r</V> = … <V>c</V></span><span class="eq"><V>r</V> = … <V>v</V></span>
+          </div></div></div>
+        <div class="method"><span class="tag">Point méthode</span>
+          Le coefficient <i>k</i> s’obtient en deux temps :
+          <ul style="margin:.3em 0; padding-left:1.3em; list-style:none">
+            <li>⋆ son <em>signe</em> : <i>k</i> est positif si les vecteurs sont de même sens, négatif s’ils sont de sens opposés ;</li>
+            <li>⋆ sa <em>valeur</em> : par combien faut-il multiplier la longueur du second vecteur pour obtenir celle du premier ? (on compare les déplacements, ce peut être une fraction).</li>
+          </ul>
+        </div>
+        <details><summary>Voir la correction</summary>
+          <div class="corr">
+            <div class="coefs five">
+              <span class="eq"><V>v</V> = <span class="ans">−2</span> <V>u</V></span>
+              <span class="eq"><V>c</V> = <span class="ans">2</span> <V>u</V></span>
+              <span class="eq"><V>r</V> = <span class="ans">3</span> <V>u</V></span>
+              <span class="eq"><V>b</V> = <span class="ans">−1</span> <V>w</V></span>
+              <span class="eq"><V>s</V> = <span class="ans">−2</span> <V>w</V></span>
+              <span class="eq"><V>a</V> = <span class="ans">−2</span> <V>t</V></span>
+              <span class="eq"><V>s</V> = <span class="ans">2</span> <V>b</V></span>
+              <span class="eq"><V>u</V> = <span class="ans">−<span class="frac"><span>1</span><span>2</span></span></span> <V>v</V></span>
+              <span class="eq"><V>r</V> = <span class="ans"><span class="frac"><span>3</span><span>2</span></span></span> <V>c</V></span>
+              <span class="eq"><V>r</V> = <span class="ans">−<span class="frac"><span>3</span><span>2</span></span></span> <V>v</V></span>
+            </div>
+            <div class="explic">
+              <p class="step-title">Explication</p>
+              <div class="ex-btns">
+                <button type="button" data-i="0"><V>v</V> = −2 <V>u</V></button>
+                <button type="button" data-i="1"><V>c</V> = 2 <V>u</V></button>
+                <button type="button" data-i="2"><V>r</V> = 3 <V>u</V></button>
+                <button type="button" data-i="3"><V>b</V> = −1 <V>w</V></button>
+                <button type="button" data-i="4"><V>s</V> = −2 <V>w</V></button>
+                <button type="button" data-i="5"><V>a</V> = −2 <V>t</V></button>
+                <button type="button" data-i="6"><V>s</V> = 2 <V>b</V></button>
+                <button type="button" data-i="7"><V>u</V> = −<span class="frac"><span>1</span><span>2</span></span> <V>v</V></button>
+                <button type="button" data-i="8"><V>r</V> = <span class="frac"><span>3</span><span>2</span></span> <V>c</V></button>
+                <button type="button" data-i="9"><V>r</V> = −<span class="frac"><span>3</span><span>2</span></span> <V>v</V></button>
+              </div>
+              <div class="ex-item" data-i="0">
+                <p>Les vecteurs <V>v</V> et <V>u</V> ont même direction et sont de sens opposé.<br>La norme de <V>v</V> est deux fois plus grande que celle de <V>u</V>.<br>Donc <span class="ans nowrap"><V>v</V> = −2 <V>u</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="1">
+                <p>Les vecteurs <V>c</V> et <V>u</V> ont même direction et sont de même sens.<br>La norme de <V>c</V> est deux fois plus grande que celle de <V>u</V>.<br>Donc <span class="ans nowrap"><V>c</V> = 2 <V>u</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="2">
+                <p>Les vecteurs <V>r</V> et <V>u</V> ont même direction et sont de même sens.<br>La norme de <V>r</V> est trois fois plus grande que celle de <V>u</V>.<br>Donc <span class="ans nowrap"><V>r</V> = 3 <V>u</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="3">
+                <p>Les vecteurs <V>b</V> et <V>w</V> ont même direction et sont de sens opposé.<br>La norme de <V>b</V> est égale à celle de <V>w</V>.<br>Donc <span class="ans nowrap"><V>b</V> = −1 <V>w</V></span>.<br>On peut aussi écrire <span class="nowrap"><V>b</V> = −<V>w</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="4">
+                <p>Les vecteurs <V>s</V> et <V>w</V> ont même direction et sont de sens opposé.<br>La norme de <V>s</V> est deux fois plus grande que celle de <V>w</V>.<br>Donc <span class="ans nowrap"><V>s</V> = −2 <V>w</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="5">
+                <p>Les vecteurs <V>a</V> et <V>t</V> ont même direction et sont de sens opposé.<br>La norme de <V>a</V> est deux fois plus grande que celle de <V>t</V>.<br>Donc <span class="ans nowrap"><V>a</V> = −2 <V>t</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="6">
+                <p>Les vecteurs <V>s</V> et <V>b</V> ont même direction et sont de même sens.<br>La norme de <V>s</V> est deux fois plus grande que celle de <V>b</V>.<br>Donc <span class="ans nowrap"><V>s</V> = 2 <V>b</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="7">
+                <p>Les vecteurs <V>u</V> et <V>v</V> ont même direction et sont de sens opposé.<br>La norme de <V>u</V> est deux fois plus petite que celle de <V>v</V> : c’est la moitié.<br>Donc <span class="ans nowrap"><V>u</V> = −<span class="frac"><span>1</span><span>2</span></span> <V>v</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="8">
+                <p>Les vecteurs <V>r</V> et <V>c</V> ont même direction et sont de même sens.<br>La norme de <V>r</V> est une fois et demie celle de <V>c</V>.<br>On peut se dire <span class="nowrap"><V>r</V> = 1,5 <V>c</V></span>, mais le coefficient de colinéarité ne s’écrit pas – par convention – sous forme décimale.<br>On sait que <span class="nowrap">1,5 = <span class="frac"><span>3</span><span>2</span></span></span>.<br>Donc <span class="ans nowrap"><V>r</V> = <span class="frac"><span>3</span><span>2</span></span> <V>c</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="9">
+                <p>Les vecteurs <V>r</V> et <V>v</V> ont même direction et sont de sens opposé.<br>La norme de <V>r</V> est une fois et demie celle de <V>v</V>.<br>On peut se dire <span class="nowrap"><V>r</V> = −1,5 <V>v</V></span>, mais le coefficient de colinéarité ne s’écrit pas – par convention – sous forme décimale.<br>On sait que <span class="nowrap">1,5 = <span class="frac"><span>3</span><span>2</span></span></span>.<br>Donc <span class="ans nowrap"><V>r</V> = −<span class="frac"><span>3</span><span>2</span></span> <V>v</V></span>.</p>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== EXERCICE 2 ===================== -->
+  <section class="exo" id="exo2">
+    <div class="figure">
+      <p class="intro"><span class="chip">Exercice 2</span>On considère les points placés dans le quadrillage ci-dessous.</p>
+      <svg class="fig" id="fig2" aria-label="Quadrillage avec neuf points"></svg>
+    </div>
+
+    <div class="questions">
+      <div class="q">
+        <div class="q-head"><span class="num">1</span><div>Parmi les vecteurs <V>CD</V>, <V>EF</V>, <V>GH</V> et <V>AK</V>, repérer ceux qui sont colinéaires au vecteur <V>AB</V>.</div></div>
+        <div class="method"><span class="tag">Point méthode</span>
+          <p>Deux vecteurs sont colinéaires s’ils ont la <em>même direction</em>.</p>
+          <p>On trace la droite (AB), puis les droites qui portent les autres vecteurs : (CD), (EF), (GH) et (AK).</p>
+          <p>Un vecteur est colinéaire à <V>AB</V> lorsque la droite qui le porte est parallèle à la droite (AB), ou confondue avec elle.</p>
+        </div>
+        <details><summary>Voir la correction</summary>
+          <div class="corr">
+            <p>Les vecteurs colinéaires à <V>AB</V> sont <span class="ans"><V>CD</V>, <V>GH</V> et <V>AK</V></span>.</p>
+            <div class="explic" data-fig="fig2">
+              <p class="step-title">Explication</p>
+              <div class="ex-btns">
+                <button type="button" data-i="0" data-lines="AB,CD"><V>CD</V></button>
+                <button type="button" data-i="1" data-lines="AB,GH"><V>GH</V></button>
+                <button type="button" data-i="2" data-lines="AB" data-arrows="AK"><V>AK</V></button>
+                <button type="button" data-i="3" data-lines="AB,EF" data-color="#495057"><V>EF</V></button>
+              </div>
+              <div class="ex-item" data-i="0">
+                <p>La droite (CD) (en pointillés verts) est parallèle à la droite (AB) (en pointillés orange).<br>Donc <V>CD</V> et <V>AB</V> ont même direction : <span class="ans"><V>CD</V> est colinéaire à <V>AB</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="1">
+                <p>La droite (GH) (en pointillés verts) est parallèle à la droite (AB) (en pointillés orange).<br>Donc <V>GH</V> et <V>AB</V> ont même direction : <span class="ans"><V>GH</V> est colinéaire à <V>AB</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="2">
+                <p>Le point K est sur la droite (AB) (en pointillés orange).<br>Les droites (AK) et (AB) sont donc confondues.<br>Donc <V>AK</V> et <V>AB</V> ont même direction : <span class="ans"><V>AK</V> est colinéaire à <V>AB</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="3">
+                <p>La droite (EF) (en pointillés gris) est sécante avec la droite (AB) (en pointillés orange).<br>Donc <V>EF</V> et <V>AB</V> n’ont pas la même direction : <span class="ans"><V>EF</V> n’est pas colinéaire à <V>AB</V></span>.</p>
+              </div>
+            </div>
+            <div class="explic-remark">
+              <p class="step-title">Remarque — Vérifier avec les carreaux</p>
+              <p>On part du premier point (l’origine) et on compte le déplacement jusqu’au second (l’extrémité).<br>Le vecteur <V>AB</V> correspond à un déplacement de 3 carreaux vers la droite et 1 carreau vers le haut.</p>
+              <table class="prop">
+                <tr><th></th><td><V>AB</V></td><td><V>CD</V></td><td><V>GH</V></td><td><V>AK</V></td><td class="gap"></td><td><V>EF</V></td></tr>
+                <tr><th>Déplacement horizontal (carreaux)</th><td>3</td><td>6</td><td>9</td><td>9</td><td class="gap"></td><td>3</td></tr>
+                <tr><th>Déplacement vertical (carreaux)</th><td>1</td><td>2</td><td>3</td><td>3</td><td class="gap"></td><td>2</td></tr>
+              </table>
+              <p>Les déplacements de <V>CD</V>, <V>GH</V> et <V>AK</V> sont proportionnels à ceux de <V>AB</V> : le déplacement horizontal vaut trois fois le déplacement vertical.<br>Pour <V>EF</V>, 3 n’est pas le triple de 2 : ses déplacements ne sont pas proportionnels à ceux de <V>AB</V>.</p>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="q">
+        <div class="q-head"><span class="num">2</span><div>Pour chaque vecteur trouvé à la question 1, donner le réel <i>k</i> tel que ce vecteur soit égal à <i>k</i> <V>AB</V>.</div></div>
+        <div class="method"><span class="tag">Point méthode</span>
+          <p>Le coefficient <i>k</i> s’obtient en deux temps :</p>
+          <ul class="stars">
+            <li>son <em>signe</em> : <i>k</i> est positif si le vecteur est de même sens que <V>AB</V>, négatif s’il est de sens opposé ;</li>
+            <li>sa <em>valeur</em> : combien de fois la norme de <V>AB</V> faut-il prendre pour obtenir la norme du vecteur ?</li>
+          </ul>
+        </div>
+        <details><summary>Voir la correction</summary>
+          <div class="corr">
+            <div class="coefs">
+              <span class="eq"><V>CD</V> = <span class="ans">−2</span> <V>AB</V></span>
+              <span class="eq"><V>GH</V> = <span class="ans">−3</span> <V>AB</V></span>
+              <span class="eq"><V>AK</V> = <span class="ans">3</span> <V>AB</V></span>
+            </div>
+            <div class="explic" data-fig="fig2">
+              <p class="step-title">Explication</p>
+              <div class="ex-btns">
+                <button type="button" data-i="0" data-vec="AB,CD"><V>CD</V> = −2 <V>AB</V></button>
+                <button type="button" data-i="1" data-vec="AB,GH"><V>GH</V> = −3 <V>AB</V></button>
+                <button type="button" data-i="2" data-vec="AB,AK"><V>AK</V> = 3 <V>AB</V></button>
+              </div>
+              <div class="ex-item" data-i="0">
+                <p>Les vecteurs <V>CD</V> et <V>AB</V> ont même direction et sont de sens opposé.<br>La norme de <V>CD</V> est deux fois plus grande que celle de <V>AB</V>.<br>Donc <span class="ans nowrap"><V>CD</V> = −2 <V>AB</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="1">
+                <p>Les vecteurs <V>GH</V> et <V>AB</V> ont même direction et sont de sens opposé.<br>La norme de <V>GH</V> est trois fois plus grande que celle de <V>AB</V>.<br>Donc <span class="ans nowrap"><V>GH</V> = −3 <V>AB</V></span>.</p>
+              </div>
+              <div class="ex-item" data-i="2">
+                <p>Les vecteurs <V>AK</V> et <V>AB</V> ont même direction et sont de même sens.<br>La norme de <V>AK</V> est trois fois plus grande que celle de <V>AB</V>.<br>Donc <span class="ans nowrap"><V>AK</V> = 3 <V>AB</V></span>.</p>
+              </div>
+            </div>
+            <div class="explic-remark">
+              <p class="step-title">Remarque — Vérifier avec les carreaux</p>
+              <p><V>AB</V> correspond à un déplacement de 3 carreaux vers la droite et 1 carreau vers le haut.<br><V>CD</V> correspond à un déplacement de 6 carreaux vers la gauche et 2 carreaux vers le bas : deux fois plus, dans l’autre sens.<br><V>GH</V> correspond à un déplacement de 9 carreaux vers la gauche et 3 carreaux vers le bas : trois fois plus, dans l’autre sens.<br><V>AK</V> correspond à un déplacement de 9 carreaux vers la droite et 3 carreaux vers le haut : trois fois plus, dans le même sens.</p>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="q">
+        <div class="q-head"><span class="num">3</span><div>Les vecteurs <V>CD</V> et <V>GH</V> sont-ils colinéaires ? Si oui, déterminer le réel <i>k</i> tel que <span class="nowrap"><V>GH</V> = <i>k</i> <V>CD</V></span>.</div></div>
+        <div class="method"><span class="tag">Point méthode</span>
+          <p>On regarde si les droites (CD) et (GH) sont parallèles : si oui, les vecteurs ont la même direction et sont colinéaires.</p>
+          <p>Pour le coefficient, on donne d’abord son signe (même sens ou sens opposé), puis sa valeur : combien de fois la norme de <V>CD</V> faut-il prendre pour obtenir celle de <V>GH</V> ? Ce peut être une fraction.</p>
+        </div>
+        <details><summary>Voir la correction</summary>
+          <div class="corr steps" data-fig="fig2">
+            <div class="step" data-draw="CD">
+              <p class="step-title">Étape 1 — On repère la direction de <V>CD</V></p>
+              <p>On trace la droite (CD) (en pointillés orange sur le schéma).</p>
+            </div>
+            <div class="step" data-draw="GH" data-color="#2f9e44">
+              <p class="step-title">Étape 2 — On compare avec la droite (GH)</p>
+              <p>La droite (GH) (en pointillés verts sur le schéma) est parallèle à la droite (CD).<br>Les vecteurs <V>CD</V> et <V>GH</V> ont donc la même direction : ils sont colinéaires.</p>
+            </div>
+            <div class="step" data-vec="CD,GH" data-color="#e8590c">
+              <p class="step-title">Étape 3 — On cherche le coefficient</p>
+              <p>Les vecteurs <V>GH</V> et <V>CD</V> sont de même sens : le coefficient est positif.<br>La norme de <V>GH</V> est une fois et demie celle de <V>CD</V>.</p>
+            </div>
+            <div class="step">
+              <p class="step-title">Étape 4 — On conclut</p>
+              <p>Les vecteurs <V>CD</V> et <V>GH</V> sont colinéaires et <span class="ans nowrap"><V>GH</V> = <span class="frac"><span>3</span><span>2</span></span> <V>CD</V></span>.</p>
+            </div>
+            <div class="step remark">
+              <p class="step-title">Remarque — Vérifier avec les carreaux</p>
+              <p><V>CD</V> correspond à un déplacement de 6 carreaux vers la gauche et 2 carreaux vers le bas.<br><V>GH</V> correspond à un déplacement de 9 carreaux vers la gauche et 3 carreaux vers le bas.</p>
+              <p>Horizontalement : 9 ÷ 6 = <span class="frac"><span>3</span><span>2</span></span>.<br>Verticalement : 3 ÷ 2 = <span class="frac"><span>3</span><span>2</span></span>.<br>C’est le même nombre : les déplacements sont proportionnels.</p>
+              <p>On retrouve aussi ce résultat avec la question 2 : <span class="nowrap"><V>GH</V> = −3 <V>AB</V></span> et <span class="nowrap"><V>CD</V> = −2 <V>AB</V></span>, et <span class="nowrap">−3 ÷ (−2) = <span class="frac"><span>3</span><span>2</span></span></span>.</p>
+            </div>
+            <button type="button" class="step-next">Étape suivante →</button>
+          </div>
+        </details>
+      </div>
+
+      <div class="q">
+        <div class="q-head"><span class="num">4</span><div>Que peut-on en déduire pour les droites (AB) et (CD) ? Et pour les points A, B et K ?</div></div>
+        <div class="method"><span class="tag">Point méthode</span>
+          <p>On utilise les propriétés du cours :</p>
+          <ul class="stars">
+            <li><V>AB</V> et <V>CD</V> colinéaires ⟺ les droites (AB) et (CD) sont parallèles (ou confondues) ;</li>
+            <li><V>AB</V> et <V>AC</V> colinéaires ⟺ les points A, B et C sont alignés.</li>
+          </ul>
+        </div>
+        <details><summary>Voir la correction</summary>
+          <div class="corr steps" data-fig="fig2">
+            <div class="step" data-draw="AB,CD" data-color="#2f9e44">
+              <p class="step-title">Étape 1 — Les droites (AB) et (CD)</p>
+              <p>On a <V>CD</V> = −2 <V>AB</V>, donc <V>AB</V> et <V>CD</V> sont colinéaires.<br>Ainsi, <span class="ans">les droites (AB) et (CD) sont parallèles</span>.</p>
+            </div>
+            <div class="step" data-clear="1" data-draw="AK" data-color="#2f9e44">
+              <p class="step-title">Étape 2 — Les points A, B et K</p>
+              <p>On a <V>AK</V> = 3 <V>AB</V>, donc <V>AB</V> et <V>AK</V> sont colinéaires.<br>Ainsi, <span class="ans">les points A, B et K sont alignés</span>.</p>
+            </div>
+            <button type="button" class="step-next">Étape suivante →</button>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <nav class="nav" aria-label="Navigation entre les questions">
+    <button type="button" class="prev">← Question précédente</button>
+    <div class="dots"></div>
+    <span class="where"></span>
+    <button type="button" class="next">Question suivante →</button>
+  </nav>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Notation vectorielle : <V>u</V> → lettre(s) surmontée(s) d'une flèche SVG ----------
+  function arrowSvg(n){
+    // largeur de flèche proportionnelle au nombre de lettres
+    var w = n === 1 ? 24 : 20 * n + 6, h = 11;
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" style="width:' + (n === 1 ? 0.78 : 0.6 * n + 0.1) + 'em" aria-hidden="true">'
+      + '<path d="M1 5.5 H' + (w - 5) + ' M' + (w - 11) + ' 1 L' + (w - 3.5) + ' 5.5 L' + (w - 11) + ' 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  Array.prototype.slice.call(document.querySelectorAll("V")).forEach(function(el){
+    var t = el.textContent.trim();
+    var span = document.createElement("span");
+    span.className = "vecvar" + (/^[a-z]$/.test(t) ? " it" : "");
+    span.innerHTML = t + arrowSvg(t.length);
+    el.replaceWith(span);
+  });
+
+  // ---------- Figures ----------
+  var NS = "http://www.w3.org/2000/svg";
+  function make(tag, attrs, parent){
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function grid(svg, W, H, pad){
+    svg.setAttribute("viewBox", (-pad) + " " + (-pad) + " " + (W + 2 * pad) + " " + (H + 2 * pad));
+    var g = make("g", {stroke: "#d5dde5", "stroke-width": 0.04}, svg);
+    for (var x = 0; x <= W; x++) make("line", {x1: x, y1: 0, x2: x, y2: H}, g);
+    for (var y = 0; y <= H; y++) make("line", {x1: 0, y1: y, x2: W, y2: y}, g);
+  }
+  // étiquette de vecteur dans le SVG : lettre italique + petite flèche
+  function vecLabel(svg, x, y, letter, color){
+    var g = make("g", {fill: color}, svg);
+    var t = make("text", {x: x, y: y, "font-size": 0.75, "font-style": "italic",
+      "font-family": "Source Sans 3, sans-serif", "text-anchor": "middle"}, g);
+    t.textContent = letter;
+    make("path", {d: "M" + (x - 0.24) + " " + (y - 0.62) + " H" + (x + 0.24)
+      + " M" + (x + 0.12) + " " + (y - 0.71) + " L" + (x + 0.26) + " " + (y - 0.62) + " L" + (x + 0.12) + " " + (y - 0.53),
+      fill: "none", stroke: color, "stroke-width": 0.06, "stroke-linecap": "round", "stroke-linejoin": "round"}, g);
+  }
+
+  var FIGS = {}; // calques de tracés des corrections pas à pas
+
+  // Exercice 1 : mêmes vecteurs que dans le PDF (repère tikz, y vers le haut)
+  (function(){
+    var svg = document.getElementById("fig1"), W = 22, H = 9, BLUE = "#1c5fd6";
+    grid(svg, W, H, 0.6);
+    var defs = make("defs", {}, svg);
+    var clip = make("clipPath", {id: "clip1"}, defs);
+    make("rect", {x: 0, y: 0, width: W, height: H}, clip);
+    var overlay = make("g", {"clip-path": "url(#clip1)"}, svg); // sous les vecteurs
+    var m = make("marker", {id: "ah", viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto-start-reverse"}, defs);
+    make("path", {d: "M0 0 L10 5 L0 10 z", fill: BLUE}, m);
+    // [nom, x1, y1, x2, y2, décalage étiquette dx, dy]
+    var V = [
+      ["u", 1, 7, 3, 8, -0.4, 0.5],
+      ["t", 5, 6, 6, 8, -0.5, 0],
+      ["w", 8, 8, 11, 6, 0.5, 0.5],
+      ["v", 17, 9, 13, 7, -0.4, 0.55],
+      ["c", 18, 6, 22, 8, -0.45, 0.55],
+      ["a", 20, 5, 18, 1, 0.5, 0.1],
+      ["b", 16, 1, 13, 3, -0.5, -0.45],
+      ["d", 16, 4, 19, 5, -0.4, 0.55],
+      ["s", 7, 0, 1, 4, 0.5, 0.5],
+      ["r", 8, 2, 14, 5, -0.45, 0.6]
+    ];
+    V.forEach(function(v){
+      var x1 = v[1], y1 = H - v[2], x2 = v[3], y2 = H - v[4];
+      make("line", {x1: x1, y1: y1, x2: x2, y2: y2, stroke: BLUE, "stroke-width": 0.11, "marker-end": "url(#ah)"}, svg);
+      vecLabel(svg, (x1 + x2) / 2 + v[5], (y1 + y2) / 2 - v[6] + 0.25, v[0], BLUE);
+    });
+    // droite (en pointillés) qui porte un vecteur, prolongée jusqu'aux bords du quadrillage
+    FIGS.fig1 = {
+      draw: function(name, color){
+        V.forEach(function(v){
+          if (v[0] !== name) return;
+          var x1 = v[1], y1 = H - v[2], dx = v[3] - v[1], dy = -(v[4] - v[2]);
+          make("line", {x1: x1 - 40 * dx, y1: y1 - 40 * dy, x2: x1 + 40 * dx, y2: y1 + 40 * dy,
+            stroke: color || "#e8590c", "stroke-width": 0.08, "stroke-dasharray": "0.3 0.2"}, overlay);
+        });
+      },
+      // droite parallèle à la droite qui porte « ref », passant par l'origine du vecteur « at »
+      par: function(ref, at, color){
+        var R = V.filter(function(v){ return v[0] === ref; })[0], A = V.filter(function(v){ return v[0] === at; })[0];
+        var x1 = A[1], y1 = H - A[2], dx = R[3] - R[1], dy = -(R[4] - R[2]);
+        make("line", {x1: x1 - 40 * dx, y1: y1 - 40 * dy, x2: x1 + 40 * dx, y2: y1 + 40 * dy,
+          stroke: color, "stroke-width": 0.08, "stroke-dasharray": "0.3 0.2"}, overlay);
+      },
+      clear: function(){ while (overlay.firstChild) overlay.removeChild(overlay.firstChild); }
+    };
+  })();
+
+  // Exemple du cours : vecteurs u et v de l'Exemple de la Définition 7 (repère tikz),
+  // plus un vecteur w non colinéaire, et les droites qui portent chacun d'eux
+  (function(){
+    var svg = document.getElementById("figEx"), W = 8, H = 5;
+    grid(svg, W, H, 0.5);
+    var defs = make("defs", {}, svg);
+    var clip = make("clipPath", {id: "clipEx"}, defs);
+    make("rect", {x: 0, y: 0, width: W, height: H}, clip);
+    var lines = make("g", {"clip-path": "url(#clipEx)"}, svg);
+    // [nom, x1, y1, x2, y2, couleur du vecteur, couleur de la droite, étiquette x, y]
+    var V = [
+      ["u", 1, 3, 3, 4, "#1c5fd6", "#2f9e44", 1.65, 1.3],
+      ["v", 5, 3, 1, 1, "#e8590c", "#2f9e44", 3.25, 2.5],
+      ["w", 6, 1, 7, 3, "#7048e8", "#868e96", 7.0, 3.5]
+    ];
+    V.forEach(function(v){
+      var x1 = v[1], y1 = H - v[2], dx = v[3] - v[1], dy = -(v[4] - v[2]);
+      make("line", {x1: x1 - 20 * dx, y1: y1 - 20 * dy, x2: x1 + 20 * dx, y2: y1 + 20 * dy,
+        stroke: v[6], "stroke-width": 0.06, "stroke-dasharray": "0.25 0.17"}, lines);
+    });
+    V.forEach(function(v){
+      var m = make("marker", {id: "axEx" + v[0], viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto"}, defs);
+      make("path", {d: "M0 0 L10 5 L0 10 z", fill: v[5]}, m);
+      make("line", {x1: v[1], y1: H - v[2], x2: v[3], y2: H - v[4], stroke: v[5], "stroke-width": 0.1, "marker-end": "url(#axEx" + v[0] + ")"}, svg);
+      vecLabel(svg, v[7], v[8], v[0], v[5]);
+    });
+  })();
+
+  // Exercice 2 : points (repère tikz, y vers le haut)
+  (function(){
+    var svg = document.getElementById("fig2"), W = 14, H = 8;
+    grid(svg, W, H, 0.6);
+    var defs = make("defs", {}, svg);
+    var clip = make("clipPath", {id: "clip2"}, defs);
+    make("rect", {x: 0, y: 0, width: W, height: H}, clip);
+    var overlay = make("g", {"clip-path": "url(#clip2)"}, svg); // sous les points
+    var markers = {};
+    // [nom, x, y, position étiquette]
+    var P = [["A",1,2,"below"],["B",4,3,"above"],["C",11,7,"above"],["D",5,5,"above"],
+             ["E",6,1,"below"],["F",9,3,"above"],["G",13,4,"right"],["H",4,1,"below"],["K",10,5,"above"]];
+    P.forEach(function(p){
+      var x = p[1], y = H - p[2], s = 0.17;
+      make("path", {d: "M" + (x - s) + " " + (y - s) + " L" + (x + s) + " " + (y + s) + " M" + (x - s) + " " + (y + s) + " L" + (x + s) + " " + (y - s),
+        stroke: "#14202b", "stroke-width": 0.07, "stroke-linecap": "round"}, svg);
+      var off = {above: [0, -0.35], below: [0, 0.75], right: [0.5, 0.2]}[p[3]];
+      var t = make("text", {x: x + off[0], y: y + off[1], "font-size": 0.62, fill: "#14202b",
+        "font-family": "Source Sans 3, sans-serif", "text-anchor": "middle"}, svg);
+      t.textContent = p[0];
+    });
+    function pt(n){ var q = P.filter(function(p){ return p[0] === n; })[0]; return [q[1], H - q[2]]; }
+    function marker(color){
+      if (markers[color]) return markers[color];
+      var id = "ah2-" + Object.keys(markers).length;
+      var m = make("marker", {id: id, viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto"}, defs);
+      make("path", {d: "M0 0 L10 5 L0 10 z", fill: color}, m);
+      return (markers[color] = id);
+    }
+    FIGS.fig2 = {
+      // droite (XY) en pointillés, prolongée jusqu'aux bords du quadrillage
+      draw: function(name, color){
+        var a = pt(name[0]), b = pt(name[1]), dx = b[0] - a[0], dy = b[1] - a[1];
+        make("line", {x1: a[0] - 40 * dx, y1: a[1] - 40 * dy, x2: a[0] + 40 * dx, y2: a[1] + 40 * dy,
+          stroke: color || "#e8590c", "stroke-width": 0.08, "stroke-dasharray": "0.3 0.2"}, overlay);
+      },
+      // vecteur XY dessiné en flèche
+      vec: function(name, color){
+        var a = pt(name[0]), b = pt(name[1]), c = color || "#1c5fd6";
+        make("line", {x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: c, "stroke-width": 0.1, "marker-end": "url(#" + marker(c) + ")"}, overlay);
+      },
+      clear: function(){ while (overlay.firstChild) overlay.removeChild(overlay.firstChild); }
+    };
+  })();
+
+  // ---------- Diaporama : une question à la fois ----------
+  var tabs = document.querySelectorAll(".tabs button");
+  var slides = [];
+  Array.prototype.forEach.call(document.querySelectorAll(".exo"), function(sec, e){
+    var qs = sec.querySelectorAll(".q");
+    Array.prototype.forEach.call(qs, function(q, n){ slides.push({q: q, sec: sec, exo: e + 1, n: n + 1, total: qs.length}); });
+  });
+  var dotsBox = document.querySelector(".dots"), dots = [];
+  slides.forEach(function(sl, i){
+    if (i > 0 && sl.n === 1) { var sep = document.createElement("span"); sep.className = "sep"; dotsBox.appendChild(sep); }
+    var d = document.createElement("span");
+    d.title = sl.sec.id === "cours" ? "Cours" : "Exercice " + (sl.exo - 1) + ", question " + sl.n;
+    d.addEventListener("click", function(){ go(i); });
+    dotsBox.appendChild(d); dots.push(d);
+  });
+  var prev = document.querySelector(".nav .prev"), next = document.querySelector(".nav .next"), where = document.querySelector(".nav .where");
+  var cur = 0;
+  function go(i){
+    if (i < 0 || i >= slides.length) return;
+    cur = i;
+    var sl = slides[i];
+    slides.forEach(function(o){
+      o.q.classList.toggle("current", o === sl);
+      // on referme les corrections en changeant de question
+      Array.prototype.forEach.call(o.q.querySelectorAll("details"), function(d){ d.open = false; });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".exo"), function(s){ s.classList.toggle("active", s === sl.sec); });
+    Array.prototype.forEach.call(tabs, function(b){ b.setAttribute("aria-selected", b.dataset.target === sl.sec.id ? "true" : "false"); });
+    dots.forEach(function(d, k){ d.classList.toggle("on", k === i); });
+    where.textContent = sl.sec.id === "cours" ? "Cours" : "Exercice " + (sl.exo - 1) + " · question " + sl.n + " / " + sl.total;
+    prev.disabled = i === 0;
+    next.disabled = i === slides.length - 1;
+    window.scrollTo({top: 0});
+  }
+  prev.addEventListener("click", function(){ go(cur - 1); });
+  next.addEventListener("click", function(){ go(cur + 1); });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "ArrowRight" || e.key === "PageDown") go(cur + 1);
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") go(cur - 1);
+  });
+  // les onglets mènent à la première question de l'exercice
+  Array.prototype.forEach.call(tabs, function(b){
+    b.addEventListener("click", function(){
+      for (var k = 0; k < slides.length; k++) if (slides[k].sec.id === b.dataset.target) { go(k); break; }
+    });
+  });
+  go(0);
+
+  // explications à la demande : un bouton par égalité, une explication affichée à la fois
+  Array.prototype.forEach.call(document.querySelectorAll(".explic"), function(box){
+    var btns = box.querySelectorAll(".ex-btns button"), items = box.querySelectorAll(".ex-item");
+    var fig = box.dataset.fig ? FIGS[box.dataset.fig] : null;
+    function select(i){
+      Array.prototype.forEach.call(btns, function(b){ b.classList.toggle("on", b.dataset.i === i); });
+      Array.prototype.forEach.call(items, function(it){ it.classList.toggle("shown", it.dataset.i === i); });
+      if (fig) {
+        fig.clear();
+        Array.prototype.forEach.call(btns, function(b){
+          if (b.dataset.i !== i) return;
+          if (b.dataset.vec) {
+            var v = b.dataset.vec.split(",");
+            fig.draw(v[0]); fig.vec(v[0], "#1c5fd6"); fig.vec(v[1], "#2f9e44");
+          }
+          // première droite en orange (référence), les suivantes en vert ou dans la couleur du bouton
+          if (b.dataset.lines) b.dataset.lines.split(",").forEach(function(n, k){ fig.draw(n, k === 0 ? "#e8590c" : (b.dataset.color || "#2f9e44")); });
+          if (b.dataset.arrows) b.dataset.arrows.split(",").forEach(function(n){ fig.vec(n, b.dataset.color || "#2f9e44"); });
+        });
+      }
+    }
+    Array.prototype.forEach.call(btns, function(b){
+      b.addEventListener("click", function(){ select(b.classList.contains("on") ? null : b.dataset.i); });
+    });
+    var d = box.closest("details");
+    if (d) d.addEventListener("toggle", function(){ if (!d.open) select(null); });
+  });
+
+  // libellé du bouton de correction + correction pas à pas
+  Array.prototype.forEach.call(document.querySelectorAll("details"), function(d){
+    var summary = d.querySelector("summary");
+    var closedLabel = summary.innerHTML, openLabel = closedLabel.replace("Voir", "Masquer");
+    var box = d.querySelector(".steps");
+    var steps = box ? box.querySelectorAll(".step") : [];
+    var nextBtn = box ? box.querySelector(".step-next") : null;
+    var fig = box ? FIGS[box.dataset.fig] : null;
+    var k = 0;
+    function show(i){
+      steps[i].classList.add("shown");
+      if (fig && steps[i].dataset.clear) fig.clear();
+      if (fig && steps[i].dataset.draw) steps[i].dataset.draw.split(",").forEach(function(n){ fig.draw(n, steps[i].dataset.color); });
+      if (fig && fig.vec && steps[i].dataset.vec) steps[i].dataset.vec.split(",").forEach(function(n){ fig.vec(n, steps[i].dataset.color); });
+      if (fig && steps[i].dataset.par) { var pa = steps[i].dataset.par.split("@"); fig.par(pa[0], pa[1], steps[i].dataset.color); }
+      nextBtn.hidden = i === steps.length - 1;
+      if (i > 0) (i === steps.length - 1 ? steps[i] : nextBtn).scrollIntoView({behavior: "smooth", block: "nearest"});
+    }
+    function reset(){
+      Array.prototype.forEach.call(steps, function(st){ st.classList.remove("shown"); });
+      // n'efface le schéma que si c'est cette correction qui l'a tracé
+      if (fig && fig.owner === d) { fig.clear(); fig.owner = null; }
+      k = 0;
+    }
+    if (nextBtn) nextBtn.addEventListener("click", function(){ if (k < steps.length - 1) show(++k); });
+    d.addEventListener("toggle", function(){
+      summary.innerHTML = d.open ? openLabel : closedLabel;
+      if (d.open) {
+        // une seule correction ouverte à la fois dans une même question
+        Array.prototype.forEach.call(d.parentNode.querySelectorAll(":scope > details"), function(o){ if (o !== d) o.open = false; });
+      }
+      if (!box) return;
+      reset();
+      if (d.open) { if (fig) { fig.clear(); fig.owner = d; } show(0); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
