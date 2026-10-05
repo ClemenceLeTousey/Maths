@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feuille 3 – Exercices 1 et 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --panel: #ffffff;
+    --ink: #1f2328;
+    --muted: #6b7280;
+    --line: #e4e2dc;
+    --c1: #7048E8;
+    --c2: #D9480F;
+    --res: #C92A2A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.45;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+    padding: 14px 24px; border-bottom: 1px solid var(--line); background: var(--panel);
+  }
+  h1 { font-size: 24px; font-weight: 500; margin: 0; }
+  .tag { font-size: 16px; color: var(--muted); }
+  main {
+    display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 24px; padding: 20px 24px; max-width: 1400px; margin: 0 auto;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; padding: 16px; } header { padding: 12px 16px; } }
+  .fig { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px; align-self: start; }
+  .fig svg { width: 100%; height: auto; display: block; }
+  .figtitle { font-size: 19px; padding: 6px 10px 0; min-height: 2.2em; }
+  .side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; }
+  .consigne { margin: 8px 0 4px; color: var(--muted); font-size: 17px; }
+  .consigne:first-child { margin-top: 0; }
+  .questions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px 12px; }
+  .questions .q {
+    display: flex; gap: 8px; align-items: center; font-size: 18px;
+    padding: 4px 8px; border-radius: 6px; cursor: pointer; border-left: 4px solid transparent;
+  }
+  .questions .q .num { flex: none; color: var(--muted); }
+  .questions .q.active { background: #f1f0ec; border-left-color: var(--ink); }
+  .questions .q.done { color: var(--muted); }
+  .etape { font-size: 15px; color: var(--muted); margin-bottom: 4px; }
+  .caption { font-size: 21px; min-height: 8.5em; }
+  .caption p { margin: 0 0 10px; }
+  .nav { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    font: inherit; font-size: 17px; font-weight: 600;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    padding: 8px 18px; border-radius: 8px; cursor: pointer;
+  }
+  .btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .progress { flex: 1; min-width: 120px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .progress div { height: 100%; background: var(--ink); width: 0; transition: width .3s; }
+  .hint { font-size: 14px; color: var(--muted); }
+  .recap { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; }
+  .recap p { margin: 0; }
+
+  /* Notation vectorielle : flèche dessinée en SVG au-dessus de la lettre */
+  .m { white-space: nowrap; }
+  .vec { position: relative; display: inline-block; padding-top: .32em; line-height: 1; }
+  .vec span.up { font-style: normal; padding: 0 .04em; }
+  .vec svg { position: absolute; top: 0; height: .42em; overflow: visible; }
+  .vec svg.shaft { left: .08em; right: .12em; width: calc(100% - .2em); }
+  .vec svg.head { right: .02em; width: .3em; }
+  .frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .86em; line-height: 1.12; margin: 0 .12em; }
+  .frac > span:first-child { border-bottom: 1.4px solid currentColor; padding: 0 .18em; }
+  .cn { display: inline-flex; align-items: center; justify-content: center; width: 1.35em; height: 1.35em; border: 1.4px solid currentColor; border-radius: 50%; font-size: .8em; }
+  .c1 { color: var(--c1); } .c2 { color: var(--c2); } .res { color: var(--res); }
+
+  /* Animations */
+  .draw { transition: stroke-dashoffset .7s ease-in-out; }
+  .fade { transition: opacity .35s ease; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Feuille d’exercices n°3 — Exercices 1 et 2 — Corrigé</h1>
+  <span class="tag">Produit d’un vecteur par un nombre réel</span>
+</header>
+
+<main>
+  <div class="fig">
+    <div class="figtitle" id="figtitle"></div>
+    <svg id="fig" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div class="side">
+    <div class="card" id="questions"></div>
+    <div class="card">
+      <div class="etape" id="etape"></div>
+      <div class="caption" id="caption"></div>
+      <div class="nav">
+        <button class="btn" id="prev">◀ Précédent</button>
+        <button class="btn primary" id="next">Suivant ▶</button>
+        <div class="progress"><div id="bar"></div></div>
+      </div>
+      <p class="hint">Flèches ← → ou barre d'espace pour avancer · clic sur un cas pour y aller directement.</p>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ------------------------------------------------------------ Données */
+/* Abscisses en graduations (1 = écart entre deux graduations). */
+const CAS = {
+  '1-1': { lo: -4, hi: 6, A: 0, B: 4, C: -3 },
+  '1-2': { lo: -2, hi: 5, A: 0, B: 1, C: 4 },
+  '1-3': { lo: -4, hi: 2.4, A: 0, B: 1, C: -3 },
+  '1-4': { lo: -2, hi: 4, A: 0, B: 2, C: -1 },
+  '1-5': { lo: -2, hi: 9, A: 0, B: 7, C: 2 },
+  '1-6': { lo: -2, hi: 8, A: 0, B: 6, C: 1 },
+  '2-1': { lo: -4, hi: 6, A: 0, B: 2, k: [-3, 2] },
+  '2-2': { lo: -3, hi: 9, A: -1, B: 7, k: [7, 8] },
+  '2-3': { lo: -2, hi: 6, A: 0, B: 4, k: [1, 4] },
+  '2-4': { lo: -4, hi: 8, A: 0, B: 6, k: [-1, 2] },
+  '2-5': { lo: -2, hi: 5, A: 0, B: 3, k: [2, 3] },
+  '2-6': { lo: -5, hi: 12, A: 4, B: 10, k: [-4, 3] }
+};
+for (const id in CAS) {
+  const c = CAS[id];
+  if (c.k) c.C = c.A + c.k[0] / c.k[1] * (c.B - c.A);
+}
+const HEX = { c1: '#7048E8', c2: '#D9480F', res: '#C92A2A', ink: '#1f2328' };
+const ROND = ['①', '②', '③', '④', '⑤', '⑥'];
+
+/* --------------------------------------------------- Notation dans le texte */
+function V(name) {
+  return `<span class="vec"><span class="up">${name}</span>` +
+    `<svg class="shaft" viewBox="0 0 10 10" preserveAspectRatio="none"><line x1="0" y1="5" x2="10" y2="5" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke"/></svg>` +
+    `<svg class="head" viewBox="0 0 10 10" preserveAspectRatio="none"><polyline points="2,1 9.5,5 2,9" fill="none" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+}
+const M = s => `<span class="m">${s}</span>`;
+const F = (n, d) => `<span class="frac"><span>${n}</span><span>${d}</span></span>`;
+const AC = `<span class="c2">${V('AC')}</span>`, AB = `<span class="c1">${V('AB')}</span>`;
+const lAC = `<span class="c2">AC</span>`, lAB = `<span class="c1">AB</span>`;
+/* coefficient signé : −F(3,4) ; F(4,1) s'écrit 4 */
+const coef = (neg, n, d) => (neg ? '−' : '') + (d === 1 ? n : F(n, d));
+const pgcd = (a, b) => b ? pgcd(b, a % b) : a;
+const cote = x => x > 0 ? 'la droite' : 'la gauche';
+
+/* ------------------------------------------------------------- Étapes */
+const STEPS = [];
+const add = s => STEPS.push(s);
+
+/* Exercice 1 */
+add({ ex: 1, et: 'Exercice 1', cas: '1-1', intro: true,
+  cap: `<p>Exprimer ${AC} en fonction de ${AB}.</p><p>Pour chaque cas, on suit les mêmes étapes&nbsp;: la direction, le sens, les longueurs, puis le nombre.</p><p>On prend pour unité l’écart entre deux graduations.</p>`,
+  els: [] });
+
+for (let i = 1; i <= 6; i++) {
+  const id = '1-' + i, c = CAS[id];
+  const ac = Math.abs(c.C - c.A), ab = Math.abs(c.B - c.A);
+  const meme = Math.sign(c.C - c.A) === Math.sign(c.B - c.A);
+  const g = pgcd(ac, ab), n = ac / g, d = ab / g;
+  const fr = F(ac, ab) + (ab === 1 ? ` = ${ac}` : '');
+  add({ ex: 1, cas: id, clear: true,
+    cap: `<p>Les vecteurs ${AC} et ${AB} ont même direction&nbsp;: les points A, B et C sont alignés.</p>`,
+    els: [{ k: 'vec', from: c.A, to: c.B, c: 'c1', row: -1 }, { k: 'vec', from: c.A, to: c.C, c: 'c2', row: 1 }] });
+  add({ ex: 1, cas: id,
+    cap: meme
+      ? `<p>Les vecteurs ${AC} et ${AB} ont&nbsp;: <span class="res">le même sens</span>.</p><p>Tous les deux vont vers ${cote(c.B - c.A)}.</p>`
+      : `<p>Les vecteurs ${AC} et ${AB} ont&nbsp;: <span class="res">des sens opposés</span>.</p><p>${AB} va vers ${cote(c.B - c.A)}, ${AC} va vers ${cote(c.C - c.A)}.</p>`,
+    els: [] });
+  add({ ex: 1, cas: id,
+    cap: `<p>On compte les graduations.</p><p>On a&nbsp;: ${M(lAC + ' = ' + ac)} et ${M(lAB + ' = ' + ab)}.</p>`,
+    els: [{ k: 'count', from: c.A, to: c.B, c: 'c1', row: -1 }, { k: 'count', from: c.A, to: c.C, c: 'c2', row: 1 }] });
+  add({ ex: 1, cas: id,
+    cap: `<p>Donc la longueur ${lAC} vaut ${M(fr)} ${ab === 1 ? 'fois' : ''} celle de ${lAB}.</p>`,
+    els: [] });
+  add({ ex: 1, cas: id,
+    cap: `<p>${meme ? 'Les vecteurs ont le même sens&nbsp;: le nombre est positif.' : 'Les vecteurs sont de sens opposés&nbsp;: le nombre est négatif.'}</p><p>On a donc&nbsp;: <span class="res">${M(V('AC') + ' = ' + coef(!meme, n, d) + '&nbsp;' + V('AB'))}</span></p>`,
+    res: M(V('AC') + ' = ' + coef(!meme, n, d) + '&nbsp;' + V('AB')),
+    els: [] });
+}
+
+/* Exercice 2 */
+add({ ex: 2, et: 'Exercice 2', cas: '2-1', intro: true, hideC: true,
+  cap: `<p>Représenter le vecteur ${AC}, c’est-à-dire placer le point C.</p><p>On utilise le nombre devant ${AB}&nbsp;: son signe donne le sens, sa valeur donne la longueur.</p><p>On prend pour unité l’écart entre deux graduations.</p>`,
+  els: [] });
+
+for (let i = 1; i <= 6; i++) {
+  const id = '2-' + i, c = CAS[id];
+  const [kn, kd] = c.k, neg = kn < 0, an = Math.abs(kn);
+  const ab = Math.abs(c.B - c.A), ac = Math.abs(c.C - c.A);
+  const kTxt = coef(neg, an, kd);
+  const egal = M(V('AC') + ' = ' + kTxt + '&nbsp;' + V('AB'));
+  const unit = n => n > 1 ? 'graduations' : 'graduation';
+  add({ ex: 2, cas: id, clear: true, hideC: true,
+    cap: `<p>${egal}</p><p>Les vecteurs ${AC} et ${AB} ont même direction&nbsp;: le point C est sur la droite (AB).</p>`,
+    els: [{ k: 'vec', from: c.A, to: c.B, c: 'c1', row: -1 }] });
+  add({ ex: 2, cas: id, hideC: true,
+    cap: neg
+      ? `<p>Le nombre ${M(kTxt)} est négatif&nbsp;: les vecteurs ${AC} et ${AB} ont <span class="res">des sens opposés</span>.</p><p>C est de l’autre côté de A par rapport à B.</p>`
+      : `<p>Le nombre ${M(kTxt)} est positif&nbsp;: les vecteurs ${AC} et ${AB} ont <span class="res">le même sens</span>.</p><p>C est du même côté de A que B.</p>`,
+    els: [] });
+  add({ ex: 2, cas: id, hideC: true,
+    cap: `<p>On compte les graduations.</p><p>On a&nbsp;: ${M(lAB + ' = ' + ab)}, or ${M(lAC + ' = ' + F(an, kd) + ' × ' + lAB)}.</p>`,
+    els: [{ k: 'count', from: c.A, to: c.B, c: 'c1', row: -1 }] });
+  add({ ex: 2, cas: id, hideC: true,
+    cap: `<p>Donc la longueur ${lAC} vaut ${M(F(an, kd) + ' × ' + ab + ' = ' + ac)}.</p>`,
+    els: [] });
+  add({ ex: 2, cas: id,
+    cap: `<p>On part de A et on compte ${ac} ${unit(ac)} vers ${cote(c.C - c.A)}&nbsp;: on place le point <span class="res">C</span>.</p><p>${egal}</p>`,
+    res: `C est à ${ac} ${unit(ac)} de A, vers ${cote(c.C - c.A)}`,
+    els: [{ k: 'count', from: c.A, to: c.C, c: 'c2', row: 1 }, { k: 'vec', from: c.A, to: c.C, c: 'c2', row: 1 }, { k: 'pt', at: c.C, name: 'C' }] });
+}
+
+/* Récapitulatif */
+const rec = ex => STEPS.filter(s => s.res && s.ex === ex).map(s => `<p>${ROND[+s.cas.slice(2) - 1]} ${s.res}</p>`).join('');
+add({ ex: 3, et: 'Récapitulatif', recap: true,
+  cap: `<p class="hint">Exercice 1</p><div class="recap">${rec(1)}</div><p class="hint" style="margin-top:12px">Exercice 2</p><div class="recap">${rec(2)}</div>`,
+  els: [] });
+
+/* ----------------------------------------------------------- Dessin SVG */
+const W = 760, H = 260, MX = 50, Y0 = 135, ROW = 52;
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('fig');
+svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+let G = 50, LO = 0;
+const X = x => MX + (x - LO) * G;
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function cross(x, y, color, layer, s = 6, w = 2.2) {
+  const g = el('g', { stroke: color, 'stroke-width': w, 'stroke-linecap': 'round' }, layer);
+  el('line', { x1: x - s, y1: y - s, x2: x + s, y2: y + s }, g);
+  el('line', { x1: x - s, y1: y + s, x2: x + s, y2: y - s }, g);
+  return g;
+}
+function label(x, y, name, color, layer) {
+  const t = el('text', { x, y, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': 24, fill: color,
+    stroke: '#fff', 'stroke-width': 5, 'paint-order': 'stroke' }, layer);
+  t.textContent = name;
+  return t;
+}
+
+function drawBase(c, showC, layer) {
+  G = Math.min(64, (W - 2 * MX) / (c.hi - c.lo)); LO = c.lo;
+  el('line', { x1: X(c.lo), y1: Y0, x2: X(c.hi), y2: Y0, stroke: HEX.ink, 'stroke-width': 1.6 }, layer);
+  for (let x = Math.ceil(c.lo); x <= c.hi; x++) {
+    if (x === c.lo || x === c.hi) continue;
+    el('line', { x1: X(x), y1: Y0 - 6, x2: X(x), y2: Y0 + 6, stroke: HEX.ink, 'stroke-width': 1.4 }, layer);
+  }
+  const pts = { A: c.A, B: c.B };
+  if (showC) pts.C = c.C;
+  for (const n in pts) { cross(X(pts[n]), Y0, HEX.ink, layer); label(X(pts[n]) + 14, Y0 - 20, n, HEX.ink, layer); }
+}
+
+function drawVec(e, layer) {
+  const y = Y0 + e.row * ROW, x1 = X(e.from), x2 = X(e.to), color = HEX[e.c];
+  const dir = Math.sign(x2 - x1), hl = 13, hw = 6;
+  const g = el('g', {}, layer);
+  el('line', { x1, y1: Y0, x2: x1, y2: y, stroke: '#9aa0a6', 'stroke-width': 1, 'stroke-dasharray': '3 4' }, g);
+  el('line', { x1: x2, y1: Y0, x2, y2: y, stroke: '#9aa0a6', 'stroke-width': 1, 'stroke-dasharray': '3 4' }, g);
+  const line = el('line', { x1, y1: y, x2: x2 - dir * hl, y2: y, stroke: color, 'stroke-width': 3.2, 'stroke-linecap': 'round' }, g);
+  const head = el('polygon', { points: `${x2},${y} ${x2 - dir * hl},${y - hw} ${x2 - dir * hl},${y + hw}`, fill: color }, g);
+  const lab = el('g', { fill: color }, g);
+  const name = e.c === 'c1' ? 'AB' : 'AC';
+  const tx = el('text', { x: 0, y: 0, 'font-size': 22 }, lab);
+  tx.textContent = name;
+  const bb = tx.getBBox();
+  const ay = -22 * 0.86;
+  el('line', { x1: bb.x + 1, y1: ay, x2: bb.x + bb.width - 0.5, y2: ay, stroke: color, 'stroke-width': 1.4 }, lab);
+  el('polyline', { points: `${bb.x + bb.width - 5},${ay - 3.2} ${bb.x + bb.width - 0.5},${ay} ${bb.x + bb.width - 5},${ay + 3.2}`, fill: 'none', stroke: color, 'stroke-width': 1.4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, lab);
+  const lx = dir > 0 ? Math.min(x1, x2) - bb.width - 12 : Math.max(x1, x2) + 12;
+  lab.setAttribute('transform', `translate(${lx},${y + 8})`);
+  return { g, line, head, lab, len: Math.abs(x2 - x1) - hl };
+}
+
+function drawCount(e, layer, isNew, delay) {
+  const y = Y0 + e.row * ROW + e.row * 26, color = HEX[e.c];
+  const n = Math.abs(e.to - e.from), dir = Math.sign(e.to - e.from);
+  const g = el('g', {}, layer);
+  for (let i = 0; i < n; i++) {
+    const cx = X(e.from + dir * (i + 0.5));
+    const b = el('g', {}, g);
+    el('circle', { cx, cy: y, r: 11, fill: '#fff', stroke: color, 'stroke-width': 1.3 }, b);
+    const t = el('text', { x: cx, y: y + 1, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': 15, fill: color }, b);
+    t.textContent = i + 1;
+    if (isNew) fadeIn(b, delay + i * 0.18);
+  }
+  return n * 0.18;
+}
+
+/* ----------------------------------------------------------------- État */
+let cur = 0;
+
+function render(animate) {
+  svg.innerHTML = '';
+  const st = STEPS[cur];
+  const figT = document.getElementById('figtitle');
+  if (st.recap) {
+    svg.style.display = 'none';
+    figT.innerHTML = 'Résultats des deux exercices.';
+    updatePanel(); return;
+  }
+  svg.style.display = '';
+  const c = CAS[st.cas];
+  const caseNum = +st.cas.slice(2);
+  figT.innerHTML = st.intro ? `Exercice ${st.ex}` :
+    `Exercice ${st.ex} — cas ${ROND[caseNum - 1]}` + (c.k ? `&nbsp;: ${M(V('AC') + ' = ' + coef(c.k[0] < 0, Math.abs(c.k[0]), c.k[1]) + '&nbsp;' + V('AB'))}` : '');
+
+  const gBase = el('g', {}, svg), gEls = el('g', {}, svg), gTop = el('g', {}, svg);
+  drawBase(c, st.ex === 1, gBase);
+
+  let start = cur;
+  while (start > 0 && !STEPS[start].clear && STEPS[start - 1].cas === st.cas) start--;
+  let t = 0;
+  for (let j = start; j <= cur; j++) {
+    for (const e of STEPS[j].els) {
+      const isNew = animate && j === cur;
+      if (e.k === 'vec') {
+        const v = drawVec(e, gEls);
+        if (isNew) { animLine(v.line, v.len, t); fadeIn(v.head, t + 0.6); fadeIn(v.lab, t + 0.6); t += 0.8; }
+      } else if (e.k === 'count') {
+        const d = drawCount(e, gEls, isNew, t);
+        if (isNew) t += d + 0.2;
+      } else if (e.k === 'pt') {
+        const cr = cross(X(e.at), Y0, HEX.res, gTop, 7, 2.8);
+        const lb = label(X(e.at) + 14, Y0 - 20, e.name, HEX.res, gTop);
+        if (isNew) { fadeIn(cr, t); fadeIn(lb, t); }
+      }
+    }
+  }
+  updatePanel();
+}
+
+function animLine(node, len, delay) {
+  node.style.strokeDasharray = len;
+  node.style.strokeDashoffset = len;
+  node.classList.add('draw');
+  node.style.transitionDelay = delay + 's';
+  requestAnimationFrame(() => requestAnimationFrame(() => { node.style.strokeDashoffset = 0; }));
+}
+function fadeIn(node, delay) {
+  node.style.opacity = 0;
+  node.classList.add('fade');
+  node.style.transitionDelay = delay + 's';
+  requestAnimationFrame(() => requestAnimationFrame(() => { node.style.opacity = ''; }));
+}
+
+/* ------------------------------------------------------------- Panneau */
+const qCard = document.getElementById('questions');
+const ORDER = [];
+qCard.innerHTML =
+  `<p class="consigne">Exercice 1 — Exprimer ${V('AC')} en fonction de ${V('AB')}.</p><div class="questions" id="q1"></div>` +
+  `<p class="consigne">Exercice 2 — Représenter le vecteur ${V('AC')}.</p><div class="questions" id="q2"></div>`;
+for (const ex of [1, 2]) {
+  const box = document.getElementById('q' + ex);
+  for (let i = 1; i <= 6; i++) {
+    const id = ex + '-' + i, c = CAS[id];
+    ORDER.push(id);
+    const d = document.createElement('div');
+    d.className = 'q'; d.dataset.id = id;
+    d.innerHTML = `<span class="num">${ROND[i - 1]}</span>` +
+      (c.k ? `<span>${M(V('AC') + ' = ' + coef(c.k[0] < 0, Math.abs(c.k[0]), c.k[1]) + '&nbsp;' + V('AB'))}</span>` : `<span>cas ${i}</span>`);
+    d.addEventListener('click', () => { cur = STEPS.findIndex(s => s.cas === id && !s.intro); render(true); });
+    box.appendChild(d);
+  }
+}
+
+function updatePanel() {
+  const st = STEPS[cur];
+  const k = st.recap ? 99 : st.intro ? ORDER.indexOf(st.cas) - 0.5 : ORDER.indexOf(st.cas);
+  [...qCard.querySelectorAll('.q')].forEach(d => {
+    const i = ORDER.indexOf(d.dataset.id);
+    d.classList.toggle('active', i === k);
+    d.classList.toggle('done', i < k && k !== 99);
+  });
+  let et = st.et;
+  if (!et) {
+    const same = STEPS.filter(s => s.cas === st.cas && !s.intro);
+    et = `Exercice ${st.ex} — cas ${ROND[+st.cas.slice(2) - 1]} — étape ${same.indexOf(st) + 1} sur ${same.length}`;
+  }
+  document.getElementById('etape').textContent = et;
+  document.getElementById('caption').innerHTML = st.cap;
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === STEPS.length - 1;
+  document.getElementById('bar').style.width = (100 * cur / (STEPS.length - 1)) + '%';
+  history.replaceState(null, '', '#' + cur);
+}
+
+function go(delta) {
+  const n = Math.max(0, Math.min(STEPS.length - 1, cur + delta));
+  if (n === cur) return;
+  cur = n; render(delta > 0);
+}
+document.getElementById('prev').addEventListener('click', () => go(-1));
+document.getElementById('next').addEventListener('click', () => go(1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+});
+
+// Accès direct : …html#12 = étape 12
+const h = /^#(\d+)$/.exec(location.hash);
+if (h) cur = Math.min(STEPS.length - 1, +h[1]);
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => render(false));
+</script>
+</body>
+</html>
