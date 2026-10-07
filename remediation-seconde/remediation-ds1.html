@@ -250,7 +250,7 @@ window.MathJax = {
 /* Contenu repris des modules LaTeX des plans d'action (Feuilles de remédiation/Plans d'action DS1 - 2B/modules). */
 const R = String.raw;
 const THEMES = [];
-const CXS = g => `{\\color{#E03131}\\cancel{\\color{#1D2733}{${g}}}}`;
+const CXS = g => `{\\color{red}\\cancel{\\color{black}{${g}}}}`;
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 function highlight(code) {
   return esc(code)
@@ -2229,7 +2229,7 @@ const CHECK = {
 
 
 // ---------- Simplification des fractions : fraction de départ, décomposition avec le facteur barré, résultat ----------
-const CX = g => `{\\color{#E03131}\\cancel{\\color{#1D2733}{${g}}}}`;
+const CX = g => `{\\color{red}\\cancel{\\color{black}{${g}}}}`;
 function simpNotation(s) {
   const divs = [];
   // déjà décomposée : \dfrac{N}{D}=\dfrac{a\times g}{b\times g}
