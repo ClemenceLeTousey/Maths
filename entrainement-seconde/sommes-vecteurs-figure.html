@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sommes de vecteurs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --panel: #ffffff;
+    --ink: #1f2328;
+    --muted: #6b7280;
+    --line: #e4e2dc;
+    --c1: #7048E8;
+    --c2: #D9480F;
+    --c3: #2B8A3E;
+    --res: #C92A2A;
+    --ok: #2B8A3E;
+    --ko: #C92A2A;
+    --sky: #339AF0;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400; font-size: 20px; line-height: 1.45;
+  }
+  header { padding: 18px 24px 8px; max-width: 1300px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 500; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 17px; margin: 0; }
+  section.exo { max-width: 1300px; margin: 18px auto 28px; padding: 0 24px; }
+  .exo-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .pill { background: var(--sky); color: #fff; font-weight: 600; font-size: 18px; padding: 2px 12px; border-radius: 6px; }
+  .stars { color: #228BE6; letter-spacing: 2px; }
+  .stars .empty { color: #c9c9c9; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 22px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } header, section.exo { padding-left: 16px; padding-right: 16px; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; }
+  .fig { align-self: start; position: sticky; top: 12px; padding: 8px; }
+  @media (max-width: 900px) { .fig { position: static; } }
+  .fig svg { width: 100%; height: auto; display: block; }
+  .enonce { margin: 0 0 10px; }
+  .consigne { margin: 0 0 12px; color: var(--muted); font-size: 18px; }
+  ol.items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  ol.items > li { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--panel); }
+  ol.items > li.active { border-color: var(--ink); }
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .lab { color: var(--muted); min-width: 1.4em; }
+  .expr { font-size: 22px; white-space: nowrap; }
+  input.rep {
+    font: inherit; font-size: 20px; width: 4.2em; text-align: center; text-transform: uppercase;
+    padding: 2px 6px; border: 1px solid #c8c6bf; border-radius: 6px; background: #fff; color: var(--ink);
+  }
+  .vin { position: relative; display: inline-block; }
+  .vin input.rep { padding-top: 12px; padding-bottom: 2px; font-style: italic; }
+  .vin svg { position: absolute; top: 5px; left: 50%; height: 9px; overflow: visible; pointer-events: none; display: none; }
+  .vin.filled svg { display: block; }
+  input.rep.ok { border-color: var(--ok); background: #EBFBEE; }
+  input.rep.ko { border-color: var(--ko); background: #FFF5F5; }
+  .btn {
+    font: inherit; font-size: 16px; font-weight: 600;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    padding: 4px 12px; border-radius: 7px; cursor: pointer;
+  }
+  .btn:hover { border-color: var(--ink); }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .btn.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .fb { font-size: 17px; }
+  .fb.ok { color: var(--ok); }
+  .fb.ko { color: var(--ko); }
+  .corr { display: none; margin-top: 8px; padding: 8px 12px; border-left: 3px solid var(--ink); background: #f6f5f1; font-size: 19px; }
+  .corr.show { display: block; }
+  .corr p { margin: 0 0 6px; }
+  .corr p:last-child { margin-bottom: 0; }
+  .seq p { margin: 0 0 6px; }
+  .seq .num { display: inline-block; min-width: 1.6em; color: var(--muted); }
+  .seq-nav { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+  .seq-nav .cpt { color: var(--muted); font-size: 16px; }
+  .corr .rq .lbl { text-decoration: underline; }
+  .corr .autres { color: var(--muted); font-size: 17px; }
+  .tools { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .c1 { color: var(--c1); } .c2 { color: var(--c2); } .c3 { color: var(--c3); } .res { color: var(--res); }
+  .m { white-space: nowrap; }
+  .vec { position: relative; display: inline-block; padding-top: .32em; line-height: 1; }
+  .vec i, .vec span.up { font-style: italic; padding: 0 .04em; }
+  .vec span.up { font-style: normal; }
+  .vec svg { position: absolute; top: 0; height: .42em; overflow: visible; }
+  .vec svg.shaft { left: .08em; right: .12em; width: calc(100% - .2em); }
+  .vec svg.head { right: .02em; width: .3em; }
+  .tabs { display: flex; gap: 10px; margin-top: 14px; }
+  .tab { font: inherit; font-size: 18px; font-weight: 600; padding: 6px 20px; border-radius: 8px;
+         border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+  .tab:hover { border-color: var(--ink); }
+  .tab.on { background: var(--sky); border-color: var(--sky); color: #fff; }
+  section.exo[hidden] { display: none; }
+  footer { max-width: 1300px; margin: 0 auto 30px; padding: 0 24px; color: var(--muted); font-size: 16px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Sommes de vecteurs sur une figure</h1>
+  <p class="sub">Entraînement — Séquence 2, Objectif 4 : somme de deux vecteurs et relation de Chasles</p>
+  <nav class="tabs">
+    <button class="tab on" data-tab="1">Exo 1</button>
+    <button class="tab" data-tab="2">Exo 2</button>
+  </nav>
+</header>
+
+<section class="exo" id="exo1">
+  <div class="exo-head"><span class="pill">Exercice 1</span><span class="stars">★★<span class="empty">☆</span></span></div>
+  <div class="grid">
+    <div class="card fig"><svg id="fig1"></svg></div>
+    <div>
+      <p class="enonce">La figure est un pavage du plan par des parallélogrammes tous identiques.</p>
+      <p class="consigne">Compléter les égalités en n'utilisant que des noms de points de la figure. Écrire par exemple AC, ou 0 pour le vecteur nul.</p>
+      <ol class="items" id="items1"></ol>
+      <div class="tools">
+        <button class="btn" data-all="1">Tout vérifier</button>
+        <button class="btn" data-reset="1">Effacer</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="exo" id="exo2" hidden>
+  <div class="exo-head"><span class="pill">Exercice 2</span><span class="stars">★★<span class="empty">☆</span></span></div>
+  <div class="grid">
+    <div class="card fig"><svg id="fig2"></svg></div>
+    <div>
+      <p class="enonce"><span class="m"><i>ABCD</i></span> est un parallélogramme de centre <i>O</i>. Les points <i>I</i>, <i>J</i>, <i>K</i> et <i>L</i> sont les milieux respectifs des côtés [<i>AB</i>], [<i>BC</i>], [<i>CD</i>] et [<i>DA</i>]. Les segments [<i>IK</i>] et [<i>LJ</i>] passent par <i>O</i> et découpent <i>ABCD</i> en quatre parallélogrammes.</p>
+      <p class="consigne">Compléter les égalités en n'utilisant que des noms de points de la figure. Écrire par exemple AC, ou 0 pour le vecteur nul.</p>
+      <ol class="items" id="items2"></ol>
+      <div class="tools">
+        <button class="btn" data-all="2">Tout vérifier</button>
+        <button class="btn" data-reset="2">Effacer</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>Cliquer sur « Correction » pour voir la démarche : les vecteurs utilisés sont tracés en couleur sur la figure, le résultat en rouge.</footer>
+
+<script>
+/* --------------------------------------------------- Notation dans le texte */
+function V(name) {
+  const inner = name === '0' ? `<span class="up">0</span>` : `<i>${name}</i>`;
+  return `<span class="vec">${inner}` +
+    `<svg class="shaft" viewBox="0 0 10 10" preserveAspectRatio="none"><line x1="0" y1="5" x2="10" y2="5" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke"/></svg>` +
+    `<svg class="head" viewBox="0 0 10 10" preserveAspectRatio="none"><polyline points="2,1 9.5,5 2,9" fill="none" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+}
+const M = s => `<span class="m">${s}</span>`;
+const c = (k, n) => `<span class="${k}">${V(n)}</span>`;
+const Z = V('0');
+
+/* --------------------------------------------------------------- Données
+   Les points sont repérés dans le réseau de la figure : (i, j) = i pas dans
+   la direction de [AB] + j pas dans la direction de [AE] (ex. 1) ou de [AL] (ex. 2).
+   Chaque question : termes (signe, vecteur), étapes de correction,
+   et chaîne de vecteurs à tracer (couleur, origine, extrémité).            */
+const EXOS = {
+  1: {
+    P: { A:[0,0], B:[1,0], C:[2,0], D:[3,0],
+         E:[0,1], F:[1,1], G:[2,1], H:[3,1],
+         I:[0,2], J:[1,2], K:[2,2], L:[3,2] },
+    px: ([i, j]) => [70 + i * 135 + j * 55, 270 - j * 105],
+    size: [640, 330],
+    interior: { F: [-15, -15], G: [-15, -15] },
+    /* Correction pas à pas : vecteurs de départ (src), dans l'ordre où on les
+       met bout à bout, et éventuelle étape préalable (prep) pour les différences. */
+    seq: [
+      { src: ['AB', 'FG'] },
+      { src: ['EF', 'KG'] },
+      { src: ['IF', 'GC'] },
+      { src: ['FB', 'BK'],
+        prep: `Soustraire ${V('BF')}, c'est ajouter son opposé ${V('FB')}. On change l'ordre des termes pour mettre les vecteurs bout à bout : ${M(V('BK') + ' − ' + V('BF') + ' = ' + V('FB') + ' + ' + V('BK'))}.` },
+      { src: ['AL', 'FE'],
+        prep: `Soustraire ${V('EF')}, c'est ajouter son opposé ${V('FE')} : ${M(V('AL') + ' − ' + V('EF') + ' = ' + V('AL') + ' + ' + V('FE'))}.` },
+      { src: ['EH', 'CG'],
+        prep: `Soustraire ${V('HE')}, c'est ajouter son opposé ${V('EH')}. On change l'ordre des termes pour que le tracé reste dans la figure : ${M(V('CG') + ' − ' + V('HE') + ' = ' + V('EH') + ' + ' + V('CG'))}.` },
+      { src: ['AB', 'GK', 'JE'] },
+      { src: ['DH', 'FE', 'JG'] },
+    ],
+    edges() {
+      const e = [];
+      for (let j = 0; j <= 2; j++) e.push([[0, j], [3, j]]);
+      for (let i = 0; i <= 3; i++) e.push([[i, 0], [i, 2]]);
+      return e;
+    },
+    items: [
+      { t: [['+','AB'], ['+','FG']],
+        steps: [`Mise bout à bout : on trace le représentant de ${c('c2','FG')} qui part de <i>B</i>, l'extrémité de ${c('c1','AB')}. C'est ${c('c2','BC')}.`,
+                `On part de <i>A</i> et on arrive en <i>C</i> : <span class="m">${V('AB')} + ${V('FG')} = ${c('res','AC')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','AB')} + ${c('c2','FG')} = ${c('c1','AB')} + ${c('c2','BC')} = ${c('res','AC')}</span>.`,
+        draw: [['c1','A','B'], ['c2','B','C'], ['res','A','C']] },
+      { t: [['+','EF'], ['+','KG']],
+        steps: [`Mise bout à bout : le représentant de ${c('c2','KG')} qui part de <i>F</i>, l'extrémité de ${c('c1','EF')}, est ${c('c2','FB')}.`,
+                `On part de <i>E</i> et on arrive en <i>B</i> : <span class="m">${V('EF')} + ${V('KG')} = ${c('res','EB')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','EF')} + ${c('c2','KG')} = ${c('c1','EF')} + ${c('c2','FB')} = ${c('res','EB')}</span>.`,
+        draw: [['c1','E','F'], ['c2','F','B'], ['res','E','B']] },
+      { t: [['+','IF'], ['+','GC']],
+        steps: [`Mise bout à bout : le représentant de ${c('c2','GC')} qui part de <i>F</i>, l'extrémité de ${c('c1','IF')}, est ${c('c2','FB')}.`,
+                `On part de <i>I</i> et on arrive en <i>B</i> : <span class="m">${V('IF')} + ${V('GC')} = ${c('res','IB')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','IF')} + ${c('c2','GC')} = ${c('c1','IF')} + ${c('c2','FB')} = ${c('res','IB')}</span>.`,
+        draw: [['c1','I','F'], ['c2','F','B'], ['res','I','B']] },
+      { t: [['+','BK'], ['-','BF']],
+        steps: [`Soustraire ${V('BF')}, c'est ajouter son opposé ${c('c1','FB')} : <span class="m">${V('BK')} − ${V('BF')} = ${c('c1','FB')} + ${c('c2','BK')}</span> (on peut changer l'ordre des termes).`,
+                `Mise bout à bout : ${c('c1','FB')} arrive en <i>B</i> et ${c('c2','BK')} part de <i>B</i>. On part de <i>F</i> et on arrive en <i>K</i> : <span class="m">${V('BK')} − ${V('BF')} = ${c('res','FK')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','FB')} + ${c('c2','BK')} = ${c('res','FK')}</span>.`,
+        draw: [['c1','F','B'], ['c2','B','K'], ['res','F','K']] },
+      { t: [['+','AL'], ['-','EF']],
+        steps: [`Soustraire ${V('EF')}, c'est ajouter son opposé ${c('c2','FE')} : <span class="m">${V('AL')} − ${V('EF')} = ${c('c1','AL')} + ${c('c2','FE')}</span>.`,
+                `Mise bout à bout : le représentant de ${c('c2','FE')} qui part de <i>L</i> est ${c('c2','LK')}. On part de <i>A</i> et on arrive en <i>K</i> : <span class="m">${V('AL')} − ${V('EF')} = ${c('res','AK')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','AL')} + ${c('c2','LK')} = ${c('res','AK')}</span>.`,
+        draw: [['c1','A','L'], ['c2','L','K'], ['res','A','K']] },
+      { t: [['+','CG'], ['-','HE']],
+        steps: [`Soustraire ${V('HE')}, c'est ajouter son opposé ${c('c1','EH')} : <span class="m">${V('CG')} − ${V('HE')} = ${c('c1','EH')} + ${c('c2','CG')}</span> (on peut changer l'ordre des termes).`,
+                `Mise bout à bout : le représentant de ${c('c2','CG')} qui part de <i>H</i>, l'extrémité de ${c('c1','EH')}, est ${c('c2','HL')}. On part de <i>E</i> et on arrive en <i>L</i> : <span class="m">${V('CG')} − ${V('HE')} = ${c('res','EL')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','EH')} + ${c('c2','HL')} = ${c('res','EL')}</span>.`,
+        draw: [['c1','E','H'], ['c2','H','L'], ['res','E','L']] },
+      { t: [['+','AB'], ['+','GK'], ['+','JE']],
+        steps: [`Mise bout à bout : le représentant de ${c('c2','GK')} qui part de <i>B</i> est ${c('c2','BF')}, puis celui de ${c('c3','JE')} qui part de <i>F</i> est ${c('c3','FA')}.`,
+                `On part de <i>A</i> et on revient en <i>A</i> : <span class="m">${V('AB')} + ${V('GK')} + ${V('JE')} = ${c('res','0')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','AB')} + ${c('c2','BF')} + ${c('c3','FA')} = ${V('AA')} = ${c('res','0')}</span>.`,
+        draw: [['c1','A','B'], ['c2','B','F'], ['c3','F','A']] },
+      { t: [['+','DH'], ['+','FE'], ['+','JG']],
+        steps: [`Mise bout à bout : le représentant de ${c('c2','FE')} qui part de <i>H</i> est ${c('c2','HG')}, puis celui de ${c('c3','JG')} qui part de <i>G</i> est ${c('c3','GD')}.`,
+                `On part de <i>D</i> et on revient en <i>D</i> : <span class="m">${V('DH')} + ${V('FE')} + ${V('JG')} = ${c('res','0')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','DH')} + ${c('c2','HG')} + ${c('c3','GD')} = ${V('DD')} = ${c('res','0')}</span>.`,
+        draw: [['c1','D','H'], ['c2','H','G'], ['c3','G','D']] },
+    ]
+  },
+  2: {
+    P: { A:[0,0], I:[1,0], B:[2,0],
+         L:[0,1], O:[1,1], J:[2,1],
+         D:[0,2], K:[1,2], C:[2,2] },
+    px: ([i, j]) => [70 + i * 140 + j * 62, 300 - j * 120],
+    size: [530, 360],
+    interior: { O: [-20, -10] },
+    seq: [
+      { src: ['DL', 'LO'] },
+      { src: ['AI', 'AL'] },
+      { src: ['AI', 'IB'],
+        prep: `<i>K</i> et <i>I</i> sont les milieux de [<i>DC</i>] et [<i>AB</i>], et ${V('DC')} = ${V('AB')}, donc ${V('KC')} = ${V('AI')}. On change l'ordre des termes : ${M(V('IB') + ' + ' + V('KC') + ' = ' + V('AI') + ' + ' + V('IB'))}.` },
+      { src: ['AO', 'OD'],
+        prep: `Soustraire ${V('OA')}, c'est ajouter son opposé ${V('AO')}. On change l'ordre des termes pour mettre les vecteurs bout à bout : ${M(V('OD') + ' − ' + V('OA') + ' = ' + V('AO') + ' + ' + V('OD'))}.` },
+      { src: ['LK', 'OI'],
+        prep: `Soustraire ${V('IO')}, c'est ajouter son opposé ${V('OI')} : ${M(V('LK') + ' − ' + V('IO') + ' = ' + V('LK') + ' + ' + V('OI'))}.` },
+      { src: ['BC', 'CK'],
+        prep: `Soustraire ${V('KC')}, c'est ajouter son opposé ${V('CK')} : ${M(V('AD') + ' − ' + V('KC') + ' = ' + V('AD') + ' + ' + V('CK'))}. <i>ABCD</i> est un parallélogramme, donc ${V('AD')} = ${V('BC')} : ${M(V('AD') + ' − ' + V('KC') + ' = ' + V('BC') + ' + ' + V('CK'))}.` },
+      { src: ['JO', 'OA', 'AJ'],
+        prep: `On change l'ordre des termes pour mettre les vecteurs bout à bout : ${M(V('OA') + ' + ' + V('JO') + ' + ' + V('AJ') + ' = ' + V('JO') + ' + ' + V('OA') + ' + ' + V('AJ'))}.` },
+      { src: ['IL', 'CJ', 'DK'] },
+    ],
+    edges() {
+      return [ [[0,0],[2,0]], [[2,0],[2,2]], [[2,2],[0,2]], [[0,2],[0,0]],
+               [[1,0],[1,2]], [[0,1],[2,1]],
+               [[0,0],[2,2]], [[2,0],[0,2]] ];
+    },
+    items: [
+      { t: [['+','DL'], ['+','LO']],
+        steps: [`Les vecteurs sont déjà bout à bout : ${c('c2','LO')} part de <i>L</i>, l'extrémité de ${c('c1','DL')}.`,
+                `On part de <i>D</i> et on arrive en <i>O</i> : <span class="m">${V('DL')} + ${V('LO')} = ${c('res','DO')}</span>.`],
+        rq: `c'est directement la relation de Chasles, <span class="m">${c('c1','DL')} + ${c('c2','LO')} = ${c('res','DO')}</span>.`,
+        draw: [['c1','D','L'], ['c2','L','O'], ['res','D','O']] },
+      { t: [['+','AI'], ['+','AL']],
+        steps: [`Mise bout à bout : <i>AIOL</i> est un parallélogramme, donc le représentant de ${c('c2','AL')} qui part de <i>I</i> est ${c('c2','IO')}.`,
+                `On part de <i>A</i> et on arrive en <i>O</i> : <span class="m">${V('AI')} + ${V('AL')} = ${c('res','AO')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','AI')} + ${c('c2','IO')} = ${c('res','AO')}</span>. On reconnaît aussi la règle du parallélogramme.`,
+        draw: [['c1','A','I'], ['c2','I','O'], ['res','A','O']] },
+      { t: [['+','IB'], ['+','KC']],
+        steps: [`<i>K</i> et <i>I</i> sont les milieux de [<i>DC</i>] et [<i>AB</i>], et ${V('DC')} = ${V('AB')}, donc ${c('c1','KC')} = ${c('c1','AI')}.`,
+                `Mise bout à bout : on place ${c('c1','AI')} puis ${c('c2','IB')} (on peut changer l'ordre des termes). On part de <i>A</i> et on arrive en <i>B</i> : <span class="m">${V('IB')} + ${V('KC')} = ${c('res','AB')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','AI')} + ${c('c2','IB')} = ${c('res','AB')}</span>.`,
+        draw: [['c1','A','I'], ['c2','I','B'], ['res','A','B']] },
+      { t: [['+','OD'], ['-','OA']],
+        steps: [`Soustraire ${V('OA')}, c'est ajouter son opposé ${c('c1','AO')} : <span class="m">${V('OD')} − ${V('OA')} = ${c('c1','AO')} + ${c('c2','OD')}</span> (on peut changer l'ordre des termes).`,
+                `Mise bout à bout : ${c('c1','AO')} arrive en <i>O</i> et ${c('c2','OD')} part de <i>O</i>. On part de <i>A</i> et on arrive en <i>D</i> : <span class="m">${V('OD')} − ${V('OA')} = ${c('res','AD')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','AO')} + ${c('c2','OD')} = ${c('res','AD')}</span>.`,
+        draw: [['c1','A','O'], ['c2','O','D'], ['res','A','D']] },
+      { t: [['+','LK'], ['-','IO']],
+        steps: [`Soustraire ${V('IO')}, c'est ajouter son opposé ${c('c2','OI')} : <span class="m">${V('LK')} − ${V('IO')} = ${c('c1','LK')} + ${c('c2','OI')}</span>.`,
+                `Mise bout à bout : le représentant de ${c('c2','OI')} qui part de <i>K</i> est ${c('c2','KO')}. On part de <i>L</i> et on arrive en <i>O</i> : <span class="m">${V('LK')} − ${V('IO')} = ${c('res','LO')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','LK')} + ${c('c2','KO')} = ${c('res','LO')}</span>.`,
+        draw: [['c1','L','K'], ['c2','K','O'], ['res','L','O']] },
+      { t: [['+','AD'], ['-','KC']],
+        steps: [`Soustraire ${V('KC')}, c'est ajouter son opposé ${c('c2','CK')} : <span class="m">${V('AD')} − ${V('KC')} = ${c('c1','AD')} + ${c('c2','CK')}</span>.`,
+                `Mise bout à bout : <i>ABCD</i> est un parallélogramme, donc le représentant de ${c('c1','AD')} qui arrive en <i>C</i> est ${c('c1','BC')}. On place ${c('c1','BC')} puis ${c('c2','CK')} : on part de <i>B</i> et on arrive en <i>K</i>, donc <span class="m">${V('AD')} − ${V('KC')} = ${c('res','BK')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','BC')} + ${c('c2','CK')} = ${c('res','BK')}</span>.`,
+        draw: [['c1','B','C'], ['c2','C','K'], ['res','B','K']] },
+      { t: [['+','OA'], ['+','JO'], ['+','AJ']],
+        steps: [`Mise bout à bout : en changeant l'ordre des termes, ${c('c1','JO')} arrive en <i>O</i>, ${c('c2','OA')} part de <i>O</i> et arrive en <i>A</i>, ${c('c3','AJ')} part de <i>A</i>.`,
+                `On part de <i>J</i> et on revient en <i>J</i> : <span class="m">${V('OA')} + ${V('JO')} + ${V('AJ')} = ${c('res','0')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','JO')} + ${c('c2','OA')} + ${c('c3','AJ')} = ${V('JJ')} = ${c('res','0')}</span>.`,
+        draw: [['c1','J','O'], ['c2','O','A'], ['c3','A','J']] },
+      { t: [['+','IL'], ['+','CJ'], ['+','DK']],
+        steps: [`Mise bout à bout : <i>J</i> et <i>L</i> sont des milieux, donc le représentant de ${c('c2','CJ')} qui part de <i>L</i> est ${c('c2','LA')}. De même, celui de ${c('c3','DK')} qui part de <i>A</i> est ${c('c3','AI')}.`,
+                `On part de <i>I</i> et on revient en <i>I</i> : <span class="m">${V('IL')} + ${V('CJ')} + ${V('DK')} = ${c('res','0')}</span>.`],
+        rq: `avec la relation de Chasles, <span class="m">${c('c1','IL')} + ${c('c2','LA')} + ${c('c3','AI')} = ${V('II')} = ${c('res','0')}</span>.`,
+        draw: [['c1','I','L'], ['c2','L','A'], ['c3','A','I']] },
+    ]
+  }
+};
+
+/* ------------------------------------------------------------ Dessin SVG */
+const NS = 'http://www.w3.org/2000/svg';
+const COL = { c1: '#7048E8', c2: '#D9480F', c3: '#2B8A3E', res: '#C92A2A' };
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+function drawFigure(n) {
+  const X = EXOS[n], svg = document.getElementById('fig' + n);
+  svg.setAttribute('viewBox', `0 0 ${X.size[0]} ${X.size[1]}`);
+  const defs = el('defs', {}, svg);
+  for (const k in COL) {
+    const m = el('marker', { id: `h${n}${k}`, viewBox: '0 0 10 10', refX: 9, refY: 5,
+      markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs);
+    el('path', { d: 'M0,0 L10,5 L0,10 z', fill: COL[k] }, m);
+  }
+  const base = el('g', {}, svg);
+  for (const [a, b] of X.edges()) {
+    const [x1, y1] = X.px(a), [x2, y2] = X.px(b);
+    el('line', { x1, y1, x2, y2, stroke: '#1f2328', 'stroke-width': 1.4, 'stroke-linecap': 'round' }, base);
+  }
+  X.layer = el('g', {}, svg);
+  const labels = el('g', {}, svg);
+  const pts = Object.values(X.P).map(X.px);
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  for (const name in X.P) {
+    const [x, y] = X.px(X.P[name]);
+    el('circle', { cx: x, cy: y, r: 3, fill: '#1f2328' }, labels);
+    let dx, dy;
+    if (name in X.interior) [dx, dy] = X.interior[name];
+    else { const d = Math.hypot(x - cx, y - cy); dx = (x - cx) / d * 22; dy = (y - cy) / d * 22; }
+    const t = el('text', { x: x + dx, y: y + dy, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
+      'font-size': 24, 'font-style': 'italic', fill: '#1f2328',
+      stroke: '#ffffff', 'stroke-width': 5, 'paint-order': 'stroke', 'stroke-linejoin': 'round' }, labels);
+    t.textContent = name;
+  }
+}
+
+function showArrows(n, list) {
+  const X = EXOS[n];
+  X.layer.innerHTML = '';
+  for (const [k, a, b] of list) {
+    if (k === 'pt') {
+      const [x, y] = X.px(X.P[a]);
+      el('circle', { cx: x, cy: y, r: 11, fill: 'none', stroke: COL.c1, 'stroke-width': 3 }, X.layer);
+      continue;
+    }
+    let [x1, y1] = X.px(X.P[a]), [x2, y2] = X.px(X.P[b]);
+    const d = Math.hypot(x2 - x1, y2 - y1), s = 5 / d;
+    x1 += (x2 - x1) * s; y1 += (y2 - y1) * s; x2 -= (x2 - x1) * s * 1.2; y2 -= (y2 - y1) * s * 1.2;
+    el('line', { x1, y1, x2, y2, stroke: COL[k], 'stroke-width': k === 'res' ? 4 : 3.4,
+      'stroke-dasharray': k === 'res' ? '9 5' : 'none', 'marker-end': `url(#h${n}${k})`, 'stroke-linecap': 'round' }, X.layer);
+  }
+}
+
+/* ------------------------------------------------------- Calcul des réponses */
+const vecOf = (X, a, b) => [X.P[b][0] - X.P[a][0], X.P[b][1] - X.P[a][1]];
+function expected(X, item) {
+  let v = [0, 0];
+  for (const [s, name] of item.t) {
+    const w = vecOf(X, name[0], name[1]), k = s === '+' ? 1 : -1;
+    v = [v[0] + k * w[0], v[1] + k * w[1]];
+  }
+  return v;
+}
+function allNames(X, v) {
+  const out = [];
+  for (const a in X.P) for (const b in X.P) {
+    if (a === b) continue;
+    const w = vecOf(X, a, b);
+    if (w[0] === v[0] && w[1] === v[1]) out.push(a + b);
+  }
+  return out;
+}
+function check(X, item, raw) {
+  const s = raw.toUpperCase().replace(/[^A-Z0]/g, '');
+  if (!s) return null;
+  const v = expected(X, item), nul = v[0] === 0 && v[1] === 0;
+  if (s === '0') return nul;
+  if (s.length !== 2 || !(s[0] in X.P) || !(s[1] in X.P)) return false;
+  const w = vecOf(X, s[0], s[1]);
+  return w[0] === v[0] && w[1] === v[1];
+}
+
+/* ------------------------------------------------ Correction pas à pas */
+const NOMS = { c1: 'violet', c2: 'orange', c3: 'vert' };
+function buildSteps(X, item, sq) {
+  const steps = [], chain = item.draw.filter(d => d[0] !== 'res');
+  const expr = item.t.map(([s, name], i) => (i === 0 ? '' : (s === '+' ? ' + ' : ' − ')) + V(name)).join('');
+  if (sq.prep) steps.push({ txt: sq.prep, draw: [] });
+  const start = chain[0][1];
+  steps.push({ txt: `On part de l'origine du premier vecteur : le point <i>${start}</i>.`, draw: [['pt', start]] });
+  let drawn = [['pt', start]];
+  chain.forEach(([k, a, b], i) => {
+    const name = a + b, src = sq.src[i];
+    const vec = `<span class="${k}">${V(name)}</span>`;
+    let txt;
+    if (i === 0) {
+      txt = src === name
+        ? `On trace le vecteur ${vec} en ${NOMS[k]} : on arrive en <i>${b}</i>.`
+        : `On trace en ${NOMS[k]} le représentant de ${V(src)} qui part de <i>${a}</i> : c'est ${vec}. On arrive en <i>${b}</i>.`;
+    } else {
+      txt = src === name
+        ? `Bout à bout : ${vec} part de <i>${a}</i>, là où on est arrivé. On le trace en ${NOMS[k]} : on arrive en <i>${b}</i>.`
+        : `Bout à bout : on trace en ${NOMS[k]} le représentant de ${V(src)} qui part de <i>${a}</i>, là où on est arrivé. C'est ${vec}, qui arrive en <i>${b}</i>.`;
+    }
+    drawn = drawn.concat([[k, a, b]]);
+    steps.push({ txt, draw: drawn });
+  });
+  const res = item.draw.find(d => d[0] === 'res');
+  const end = chain[chain.length - 1][2];
+  const concl = res
+    ? `Conclusion : on est parti de <i>${start}</i> et on est arrivé en <i>${end}</i>, donc ${M(expr + ' = ' + `<span class="res">${V(start + end)}</span>`)}.`
+    : `Conclusion : on est revenu au point de départ <i>${start}</i>, donc ${M(expr + ' = ' + `<span class="res">${Z}</span>`)}.`;
+  steps.push({ txt: concl, draw: res ? drawn.filter(d => d[0] !== 'pt').concat([res]) : drawn, rq: true });
+  return steps;
+}
+
+/* ----------------------------------------------------------- Questions */
+function build(n) {
+  const X = EXOS[n], ol = document.getElementById('items' + n);
+  X.items.forEach((item, idx) => {
+    const expr = item.t.map(([s, name], i) => (i === 0 ? '' : (s === '+' ? ' + ' : ' − ')) + V(name)).join('');
+    const v = expected(X, item), nul = v[0] === 0 && v[1] === 0;
+    const autres = nul ? '' : allNames(X, v);
+    const sq = X.seq && X.seq[idx];
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="row">
+        <span class="lab">${'abcdefgh'[idx]}.</span>
+        <span class="expr">${M(expr + ' =')}</span>
+        <span class="vin"><input class="rep" maxlength="3" autocomplete="off" spellcheck="false" aria-label="Réponse ${'abcdefgh'[idx]}"><svg viewBox="0 0 100 10" preserveAspectRatio="none"><line x1="0" y1="5" x2="100" y2="5" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/><polyline points="90,0.5 100,5 90,9.5" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/></svg></span>
+        <button class="btn" data-check>Vérifier</button>
+        <button class="btn" data-corr>Correction</button>
+        <span class="fb"></span>
+      </div>
+      <div class="corr">
+        ${sq ? `<div class="seq"></div>
+        <div class="seq-nav">
+          <button class="btn" data-prev>◀ Précédent</button>
+          <button class="btn dark" data-next>Étape suivante ▶</button>
+          <span class="cpt"></span>
+        </div>` : item.steps.map(p => `<p>${p}</p>`).join('')}
+        <p class="rq"${sq ? ' hidden' : ''}><span class="lbl">Remarque</span> : ${item.rq}</p>
+        ${nul ? '' : `<p class="autres"${sq ? ' hidden' : ''}>Réponses acceptées : ${autres.map(V).join(', ')} (vecteurs égaux).</p>`}
+      </div>`;
+    const input = li.querySelector('input'), fb = li.querySelector('.fb'), corr = li.querySelector('.corr');
+    let show = () => showArrows(n, item.draw);
+    if (sq) {
+      const steps = buildSteps(X, item, sq), box = corr.querySelector('.seq');
+      const prev = corr.querySelector('[data-prev]'), next = corr.querySelector('[data-next]');
+      const cpt = corr.querySelector('.cpt'), tail = corr.querySelectorAll('.rq, .autres');
+      let k = 0;
+      const render = () => {
+        box.innerHTML = steps.slice(0, k + 1).map((s, i) => `<p><span class="num">${i + 1}.</span>${s.txt}</p>`).join('');
+        tail.forEach(x => x.hidden = !steps[k].rq);
+        prev.disabled = k === 0; next.disabled = k === steps.length - 1;
+        cpt.textContent = `Étape ${k + 1} / ${steps.length}`;
+        showArrows(n, steps[k].draw);
+      };
+      prev.onclick = () => { if (k > 0) { k--; render(); } };
+      next.onclick = () => { if (k < steps.length - 1) { k++; render(); } };
+      show = () => { k = 0; render(); };
+    }
+    li.verify = () => {
+      const r = check(X, item, input.value);
+      input.classList.remove('ok', 'ko');
+      if (r === null) { fb.textContent = ''; fb.className = 'fb'; return; }
+      input.classList.add(r ? 'ok' : 'ko');
+      fb.textContent = r ? 'Juste !' : 'Pas encore…';
+      fb.className = 'fb ' + (r ? 'ok' : 'ko');
+    };
+    const vin = li.querySelector('.vin'), arrow = vin.querySelector('svg');
+    li.arrow = () => {
+      const s = input.value.trim();
+      vin.classList.toggle('filled', s.length > 0);
+      const w = Math.max(1, s.length) * 0.62;
+      arrow.style.width = w + 'em'; arrow.style.marginLeft = (-w / 2) + 'em';
+    };
+    input.addEventListener('input', () => { input.value = input.value.toUpperCase(); li.arrow(); });
+    li.querySelector('[data-check]').onclick = li.verify;
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') li.verify(); });
+    li.querySelector('[data-corr]').onclick = () => {
+      const open = !corr.classList.contains('show');
+      ol.querySelectorAll('.corr').forEach(x => x.classList.remove('show'));
+      ol.querySelectorAll('li').forEach(x => x.classList.remove('active'));
+      if (open) { corr.classList.add('show'); li.classList.add('active'); show(); }
+      else showArrows(n, []);
+    };
+    ol.appendChild(li);
+  });
+}
+
+for (const n of [1, 2]) { drawFigure(n); build(n); }
+document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => {
+  document.querySelectorAll('[data-tab]').forEach(x => x.classList.toggle('on', x === b));
+  for (const n of [1, 2]) document.getElementById('exo' + n).hidden = String(n) !== b.dataset.tab;
+  window.scrollTo(0, 0);
+});
+document.querySelectorAll('[data-all]').forEach(b => b.onclick = () =>
+  document.querySelectorAll(`#items${b.dataset.all} > li`).forEach(li => li.verify()));
+document.querySelectorAll('[data-reset]').forEach(b => b.onclick = () => {
+  const n = b.dataset.reset;
+  document.querySelectorAll(`#items${n} > li`).forEach(li => {
+    li.querySelector('input').value = ''; li.verify(); li.arrow();
+    li.querySelector('.corr').classList.remove('show'); li.classList.remove('active');
+  });
+  showArrows(n, []);
+});
+</script>
+</body>
+</html>
