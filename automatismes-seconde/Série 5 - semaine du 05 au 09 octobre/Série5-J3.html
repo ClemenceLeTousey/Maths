@@ -386,6 +386,9 @@
   .katex { white-space: nowrap; }
   /* Interligne plus large dans les corrigés : les fractions \dfrac ne chevauchent pas la ligne voisine */
   .answer-box .content, .level-answer { line-height: 1.9; }
+  /* Résolution d'équation : ce qu'on ajoute / soustrait / divise des deux côtés */
+  .neutr { color: var(--red); font-weight: 600; }
+  .answer-box .katex-display, .level-answer .katex-display { overflow-x: auto; overflow-y: hidden; }
 </style>
 </head>
 <body>
@@ -465,38 +468,34 @@ const QUESTIONS = [
   {
     tier: "qcm",
     objectif: "A13 · Proportions",
-    aim: "Retrouver l'effectif total à partir d'un effectif partiel et de sa proportion (effectif total = effectif ÷ proportion), puis appliquer une autre proportion.",
-    question: "Au lycée, $120$ professeurs viennent en bus, ce qui représente $60\\,\\%$ du total des professeurs. Par ailleurs, $30\\,\\%$ des professeurs viennent en métro. Le nombre de professeurs venant en métro est :",
+    aim: "Appliquer une proportion : effectif = proportion × effectif total, que la proportion soit donnée sous forme décimale, fractionnaire ou en pourcentage.",
+    question: "Une salle de concert accueille $800$ spectateurs. $35\\,\\%$ d'entre eux ont moins de $18$ ans. Le nombre de spectateurs de moins de $18$ ans est :",
     levelsPair: true,
     options: [
-      { letter:"A", text:"$58$", correct:false },
-      { letter:"B", text:"$36$", correct:false },
-      { letter:"C", text:"$72$", correct:false },
-      { letter:"D", text:"$60$", correct:true }
+      { letter:"A", text:"$520$", correct:false },
+      { letter:"B", text:"$765$", correct:false },
+      { letter:"C", text:"$280$", correct:true },
+      { letter:"D", text:"$28$", correct:false }
     ],
-    explanation: "On retrouve d'abord le nombre total $N$ de professeurs : $0{,}6\\times N=120$, donc $N=\\dfrac{120}{0{,}6}=200$.<br>Métro : $0{,}3\\times200=60$. (Plus rapide : $30\\,\\%$ est la moitié de $60\\,\\%$, donc la moitié de $120$.)<br>Les pièges : $36$ ($30\\,\\%$ de $120$ au lieu de $30\\,\\%$ du total), $72$ ($60\\,\\%$ de $120$).",
+    explanation: "Effectif = proportion × effectif total : $35\\,\\%=0{,}35$ et $0{,}35\\times800=280$ spectateurs.<br>(Autre lecture : $1\\,\\%$ de $800$ vaut $8$, donc $35\\,\\%$ de $800$ vaut $35\\times8=280$.)<br>Les pièges : $520$ (ce sont les spectateurs de $18$ ans ou plus, $800-280$), $765$ (soustraire $35$ au lieu de prendre $35\\,\\%$), $28$ (calculer $0{,}035\\times800$ au lieu de $0{,}35\\times800$).",
     niveau2: {
-      question: "Après trois jours de marche, un randonneur a parcouru $84$ km, soit les $\\dfrac{7}{12}$ de son parcours. Quelle est la longueur totale du parcours ? Combien de kilomètres lui reste-t-il ?",
-      explanation: "Si $L$ est la longueur totale : $\\dfrac{7}{12}\\times L=84$, donc $L=84\\times\\dfrac{12}{7}=12\\times12=144$ km.<br>Il lui reste $144-84=60$ km (ou $\\dfrac{5}{12}\\times144=60$)."
+      question: "Un club de sport compte $240$ adhérents, qui pratiquent chacun un seul sport : les $\\dfrac{5}{8}$ font du football et $25\\,\\%$ du basket. Combien d'adhérents pratiquent un autre sport ?",
+      explanation: "Football : $\\dfrac{5}{8}\\times240=\\dfrac{5\\times240}{8}=150$.<br>Basket : $0{,}25\\times240=60$.<br>Autre sport : $240-150-60=30$."
     },
     niveau3: {
-      question: "Dans une classe, $40\\,\\%$ des élèves sont des garçons, et il y a $6$ filles de plus que de garçons. Combien y a-t-il d'élèves dans la classe ?",
-      explanation: "Les filles représentent $60\\,\\%$ des élèves : l'écart filles − garçons représente $60\\,\\%-40\\,\\%=20\\,\\%$ de l'effectif $N$.<br>$0{,}2\\times N=6$, donc $N=\\dfrac{6}{0{,}2}=30$ élèves.<br>Vérification : $12$ garçons, $18$ filles, et $18-12=6$ ✓."
+      question: "Dans une course, $\\dfrac{1}{6}$ des participants sont des enfants, $30\\,\\%$ sont des seniors et les $32$ autres sont des adultes. Combien y a-t-il de participants ?",
+      explanation: "Proportion d'adultes :$$1-\\dfrac{1}{6}-\\dfrac{3}{10}=\\dfrac{30}{30}-\\dfrac{5}{30}-\\dfrac{9}{30}=\\dfrac{16}{30}=\\dfrac{8}{15}$$Si $N$ est le nombre de participants :$$\\dfrac{8}{15}\\times N=32\\quad\\text{donc}\\quad N=32\\times\\dfrac{15}{8}=60$$Vérification : $10$ enfants, $18$ seniors, $32$ adultes, et $10+18+32=60$ ✓."
     }
   },
   {
     tier: "question",
     theme: "obj-complement",
     objectif: "Algo · Structures conditionnelles",
-    aim: "Lire une instruction conditionnelle if / else : la valeur frontière d'un test strict passe dans le else, et un nombre négatif se remplace entre parenthèses.",
-    question: "Que renvoient <span class=\"code big-inline\">f(5)</span> et <span class=\"code big-inline\">f(-2)</span> ?<span class=\"hint\"><span class=\"code inl\">if</span> signifie « si » et <span class=\"code inl\">else</span> signifie « sinon ».</span>",
+    aim: "Lire une instruction conditionnelle if / else : la valeur frontière d'un test strict passe dans le else.",
+    question: "Que renvoie <span class=\"code big-inline\">f(5)</span> ?<span class=\"hint\"><span class=\"code inl\">if</span> signifie « si » et <span class=\"code inl\">else</span> signifie « sinon ».</span>",
     levelsAside: true,
     diagram: `<span class="code big">def f(x):<br>&nbsp;&nbsp;&nbsp;&nbsp;if x &lt; 5:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 2 * x + 1<br>&nbsp;&nbsp;&nbsp;&nbsp;else:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return x - 3</span>`,
-    explanation: "$5\\lt5$ est <em>faux</em> : on passe dans le <span class=\"code inl\">else</span>, <span class=\"code inl\">f(5)</span> renvoie $5-3=2$.<br>$-2\\lt5$ est vrai : <span class=\"code inl\">f(-2)</span> renvoie $2\\times(-2)+1=-3$.<br>Les pièges : $11$ (croire que $5\\lt5$ est vrai), $-5$ (mauvaise branche pour $-2$).",
-    niveau2: {
-      question: "<span class=\"code\">x = 4<br>y = 10<br>if x &gt; y:<br>&nbsp;&nbsp;&nbsp;&nbsp;x = x - y<br>else:<br>&nbsp;&nbsp;&nbsp;&nbsp;y = y - x<br>if y &gt; x:<br>&nbsp;&nbsp;&nbsp;&nbsp;y = y - x<br>print(x, y)</span><br>Qu'affiche ce script ?",
-      explanation: "$4\\gt10$ est faux : on exécute le <span class=\"code inl\">else</span>, <span class=\"code inl\">y</span> vaut $10-4=6$.<br>Second test, avec la <em>nouvelle</em> valeur de <span class=\"code inl\">y</span> : $6\\gt4$ est vrai, <span class=\"code inl\">y</span> vaut $6-4=2$.<br>Le script affiche <span class=\"code inl\">4 2</span>."
-    },
+    explanation: "$5\\lt5$ est <em>faux</em> : on passe dans le <span class=\"code inl\">else</span>, <span class=\"code inl\">f(5)</span> renvoie $5-3=2$.<br>Le piège : $11$ (croire que $5\\lt5$ est vrai et calculer $2\\times5+1$).",
     niveau3: {
       question: "Avec la fonction <span class=\"code inl\">f</span> de la question, trouver <em>tous</em> les nombres $x$ pour lesquels <span class=\"code inl\">f(x)</span> renvoie $x$ lui-même.",
       explanation: "On étudie chaque branche, puis on vérifie sa condition.<br>• Si $x\\lt5$ : $2x+1=x$, donc $x=-1$, et on a bien $-1\\lt5$ ✓.<br>• Si $x\\geqslant5$ : $x-3=x$ donne $-3=0$, impossible.<br>Une seule solution : $x=-1$ (<span class=\"code inl\">f(-1)</span> renvoie $-1$)."
@@ -505,17 +504,17 @@ const QUESTIONS = [
   {
     tier: "final",
     objectif: "A10 · Équations",
-    aim: "Résoudre une équation dont les deux membres contiennent une parenthèse à développer, puis vérifier.",
-    question: "Résoudre l'équation :$$2(x+3)=4(x-1)$$",
+    aim: "Résoudre une équation dont un membre contient une parenthèse à développer, y compris précédée d'un signe moins, puis vérifier.",
+    question: "Résoudre l'équation :$$3(x-2)=x+8$$",
     levelsAside: true,
-    explanation: "On développe les deux membres : $2x+6=4x-4$.<br>On soustrait $2x$ aux deux membres : $6=2x-4$. On ajoute $4$ aux deux membres : $10=2x$. On divise les deux membres par $2$ : $x=5$.<br>Vérification : $2\\times(5+3)=16$ et $4\\times(5-1)=16$ ✓. La solution est $5$.",
+    explanation: "$$\\begin{aligned}3(x-2)&=x+8\\\\3x-6&=x+8\\\\3x-6\\neu{-}{x}&=x+8\\neu{-}{x}\\\\2x-6&=8\\\\2x-6\\neu{+}{6}&=8\\neu{+}{6}\\\\2x&=14\\\\2x\\neu{\\div}{2}&=14\\neu{\\div}{2}\\\\x&=7\\end{aligned}$$Vérification : $3\\times(7-2)=15$ et $7+8=15$ ✓. La solution est $7$.",
     niveau2: {
-      question: "Résoudre l'équation :$$3(2x-1)=-2(x-6)$$",
-      explanation: "On développe les deux membres : $6x-3=-2x+12$.<br>On ajoute $2x$ et on ajoute $3$ aux deux membres : $8x=15$, donc $x=\\dfrac{15}{8}$.<br>Vérification : $2x-1=\\dfrac{11}{4}$ et $3\\times\\dfrac{11}{4}=\\dfrac{33}{4}$ ; $x-6=-\\dfrac{33}{8}$ et $-2\\times\\left(-\\dfrac{33}{8}\\right)=\\dfrac{33}{4}$ ✓."
+      question: "Résoudre l'équation :$$2x-3(x-4)=9$$",
+      explanation: "$$\\begin{aligned}2x-3(x-4)&=9\\\\2x-3x+12&=9\\\\-x+12&=9\\\\-x+12\\neu{-}{12}&=9\\neu{-}{12}\\\\-x&=-3\\\\-x\\neu{\\div}{(-1)}&=-3\\neu{\\div}{(-1)}\\\\x&=3\\end{aligned}$$Vérification : $2\\times3-3\\times(3-4)=6+3=9$ ✓. La solution est $3$."
     },
     niveau3: {
-      question: "Résoudre l'équation :$$(x+2)(x-3)=(x+1)(x-4)$$",
-      explanation: "Double distributivité dans chaque membre : $x^2-3x+2x-6=x^2-4x+x-4$, soit $x^2-x-6=x^2-3x-4$.<br>On soustrait $x^2$ aux deux membres : $-x-6=-3x-4$. On ajoute $3x$ et $6$ : $2x=2$, donc $x=1$.<br>Vérification : $3\\times(-2)=-6$ et $2\\times(-3)=-6$ ✓."
+      question: "Résoudre l'équation :$$x(2x-1)=2x^2+3x-20$$",
+      explanation: "$$\\begin{aligned}x(2x-1)&=2x^2+3x-20\\\\2x^2-x&=2x^2+3x-20\\\\2x^2-x\\neu{-}{2x^2}&=2x^2+3x-20\\neu{-}{2x^2}\\\\-x&=3x-20\\\\-x\\neu{-}{3x}&=3x-20\\neu{-}{3x}\\\\-4x&=-20\\\\-4x\\neu{\\div}{(-4)}&=-20\\neu{\\div}{(-4)}\\\\x&=5\\end{aligned}$$Vérification : $5\\times9=45$ et $50+15-20=45$ ✓. La solution est $5$."
     }
   }
 ];
@@ -718,7 +717,10 @@ function renderMath(){
     delimiters: [
       {left:"$$", right:"$$", display:true},
       {left:"$", right:"$", display:false}
-    ]
+    ],
+    // \neu{-}{x} : opération faite sur les deux membres, en couleur
+    trust: ctx => ctx.command === "\\htmlClass",
+    macros: { "\\neu": "\\mathbin{\\htmlClass{neutr}{#1}}\\htmlClass{neutr}{#2}" }
   });
 }
 
