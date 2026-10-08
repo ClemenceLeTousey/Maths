@@ -256,7 +256,7 @@ const QUESTIONS = [
   { label: "Question 1",
     html: String.raw`Quel est le terme de rang $3$ de la suite $a$ ?` },
   { label: "Question 2",
-    html: String.raw`Compléter les égalités liant des termes successifs de la suite $a$ : $\;a(1)=a(0)+\ldots\ \ a(2)=a(1)+\ldots\ \ a(3)=a(2)+\ldots\ \ \cdots\ \ a(n+1)=a(n)+\ldots$` },
+    html: String.raw`Compléter les égalités liant des termes successifs de la suite $a$ : $\;a_1=a_0+\ldots\ \ a_2=a_1+\ldots\ \ a_3=a_2+\ldots\ \ \cdots\ \ a_{n+1}=a_n+\ldots$` },
   { label: "Question 3",
     html: String.raw`Donner une définition par récurrence de chacune des suites $b$, $c$ et $d$, en précisant le premier terme.` },
 ];
@@ -266,18 +266,18 @@ const STEPS = [
   /* --- Q1 --- */
   { q: 0, hl: ["a"], tags: [], dim: ["b","c","d"],
     html: String.raw`<div class="lead">La suite commence au rang $0$</div>
-      <p>Le premier terme est donc $a(\textcolor{#E8590C}{0})$, et non $a(1)$. On numérote les termes :</p>
+      <p>Le premier terme est donc $a_{\textcolor{#E8590C}{0}}$, et non $a_1$. On numérote les termes :</p>
       <table class="rk">
         <tr class="rang"><th>Rang $n$</th><td>$0$</td><td>$1$</td><td>$2$</td><td>$3$</td><td>$4$</td></tr>
-        <tr><th>Terme $a(n)$</th><td>$2$</td><td>$5$</td><td>$8$</td><td>$11$</td><td>$14$</td></tr>
+        <tr><th>Terme $a_n$</th><td>$2$</td><td>$5$</td><td>$8$</td><td>$11$</td><td>$14$</td></tr>
       </table>` },
 
   { q: 0, hl: ["a"], tags: [], dim: ["b","c","d"],
     html: String.raw`<table class="rk">
         <tr class="rang"><th>Rang $n$</th><td>$0$</td><td>$1$</td><td>$2$</td><td class="on">$3$</td><td>$4$</td></tr>
-        <tr><th>Terme $a(n)$</th><td>$2$</td><td>$5$</td><td>$8$</td><td class="on">$11$</td><td>$14$</td></tr>
+        <tr><th>Terme $a_n$</th><td>$2$</td><td>$5$</td><td>$8$</td><td class="on">$11$</td><td>$14$</td></tr>
       </table>
-      <p class="accent">Le terme de rang $3$ de la suite $a$ est $a(3)=11$.</p>` },
+      <p class="accent">Le terme de rang $3$ de la suite $a$ est $a_3=11$.</p>` },
 
   { q: 0, hl: [], tags: [], dim: ["b","c","d"], remark: true, warnbox: true,
     html: String.raw`<span class="warn">Attention :</span> le terme de rang $3$ n'est pas le $3^\text{e}$ nombre de la liste ($8$), mais le $4^\text{e}$, car on commence à compter au rang $0$.` },
@@ -285,21 +285,21 @@ const STEPS = [
   /* --- Q2 --- */
   { q: 1, hl: ["a"], tags: [], dim: ["b","c","d"],
     html: String.raw`<div class="lead">Comment passe-t-on d'un terme au suivant ?</div>
-      ${chain(["T|known|$a(0)=2$", "A|$+3$", "T|$a(1)=5$", "A|$+3$", "T|$a(2)=8$", "A|$+3$", "T|$a(3)=11$", "A|$+3$", "T|$a(4)=14$"])}
+      ${chain(["T|known|$a_0=2$", "A|$+3$", "T|$a_1=5$", "A|$+3$", "T|$a_2=8$", "A|$+3$", "T|$a_3=11$", "A|$+3$", "T|$a_4=14$"])}
       <p>On ajoute toujours $3$ : $5-2=3$, $\ 8-5=3$, $\ 11-8=3$, $\ 14-11=3$.</p>` },
 
   { q: 1, hl: ["a"], tags: [], dim: ["b","c","d"],
     html: String.raw`<div class="lead">On complète les égalités</div>
-      $$a(1)=a(0)+\textcolor{#2F9E44}{3}\qquad a(2)=a(1)+\textcolor{#2F9E44}{3}\qquad a(3)=a(2)+\textcolor{#2F9E44}{3}$$` },
+      $$a_1=a_0+\textcolor{#2F9E44}{3}\qquad a_2=a_1+\textcolor{#2F9E44}{3}\qquad a_3=a_2+\textcolor{#2F9E44}{3}$$` },
 
   { q: 1, hl: ["a"], tags: ["a"], dim: ["b","c","d"],
     html: String.raw`<div class="lead">Pour n'importe quel rang $n$</div>
-      <p>Le terme suivant $a(n+1)$ s'obtient toujours en ajoutant $3$ au terme $a(n)$ :</p>
-      ${chain(["T|known|$a(n)$", "A|$+3$", "T|goal|$a(n+1)$"])}
-      $$a(n+1)=a(n)+\textcolor{#2F9E44}{3}$$` },
+      <p>Le terme suivant $a_{n+1}$ s'obtient toujours en ajoutant $3$ au terme $a_n$ :</p>
+      ${chain(["T|known|$a_n$", "A|$+3$", "T|goal|$a_{n+1}$"])}
+      $$a_{n+1}=a_n+\textcolor{#2F9E44}{3}$$` },
 
   { q: 1, hl: [], tags: ["a"], dim: ["b","c","d"], remark: true,
-    html: String.raw`Avec le premier terme, on obtient une définition par récurrence de la suite $a$ : $a(0)=2$ et, pour tout entier naturel $n$, $a(n+1)=a(n)+3$.` },
+    html: String.raw`Avec le premier terme, on obtient une définition par récurrence de la suite $a$ : $a_0=2$ et, pour tout entier naturel $n$, $a_{n+1}=a_n+3$.` },
 
   /* --- Q3 --- */
   { q: 2, hl: [], tags: ["a"], dim: ["a"],
@@ -309,14 +309,14 @@ const STEPS = [
   { q: 2, hl: ["b"], tags: ["a","b"], dim: ["a","c","d"],
     html: String.raw`<div class="lead">Suite $b$ : $\ 2\ ;\ 6\ ;\ 18\ ;\ 54\ ;\ 162$</div>
       ${chain(["T|known|$2$", "A|$\\times3$", "T|$6$", "A|$\\times3$", "T|$18$", "A|$\\times3$", "T|$54$", "A|$\\times3$", "T|$162$"])}
-      <p>On multiplie toujours par $3$. Le premier terme est $b(0)=2$.</p>
-      $$b(0)=2\quad\text{et, pour tout entier naturel } n,\quad b(n+1)=3\times b(n)$$` },
+      <p>On multiplie toujours par $3$. Le premier terme est $b_0=2$.</p>
+      $$b_0=2\quad\text{et, pour tout entier naturel } n,\quad b_{n+1}=3\times b_n$$` },
 
   { q: 2, hl: ["c"], tags: ["a","b","c"], dim: ["a","b","d"],
     html: String.raw`<div class="lead">Suite $c$ : $\ 6\ ;\ -6\ ;\ 6\ ;\ -6\ ;\ 6$</div>
       ${chain(["T|known|$6$", "A|$\\times(-1)$", "T|$-6$", "A|$\\times(-1)$", "T|$6$", "A|$\\times(-1)$", "T|$-6$", "A|$\\times(-1)$", "T|$6$"])}
-      <p>On change le signe à chaque fois, c'est-à-dire qu'on multiplie par $-1$. Le premier terme est $c(0)=6$.</p>
-      $$c(0)=6\quad\text{et, pour tout entier naturel } n,\quad c(n+1)=-1\times c(n)=-c(n)$$` },
+      <p>On change le signe à chaque fois, c'est-à-dire qu'on multiplie par $-1$. Le premier terme est $c_0=6$.</p>
+      $$c_0=6\quad\text{et, pour tout entier naturel } n,\quad c_{n+1}=-1\times c_n=-c_n$$` },
 
   { q: 2, hl: [], tags: ["a","b","c"], dim: ["a","b","d"], remark: true, warnbox: true,
     html: String.raw`<span class="warn">Attention :</span> « $-12$ » ne marche pas : $6-12=-6$, mais $-6-12=-18\neq6$. L'opération doit être <b>la même</b> pour passer de chaque terme au suivant.` },
@@ -335,14 +335,14 @@ const STEPS = [
         <tr><td class="r">$2\times7+1$</td><td>$=15$</td></tr>
         <tr><td class="r">$2\times15+1$</td><td>$=31$</td></tr>
       </table>
-      ${chain(["T|known|$d(n)$", "A|$\\times2$", "T|ghost|$2\\times d(n)$", "A|$+1$", "T|goal|$d(n+1)$"])}` },
+      ${chain(["T|known|$d_n$", "A|$\\times2$", "T|ghost|$2\\times d_n$", "A|$+1$", "T|goal|$d_{n+1}$"])}` },
 
   { q: 2, hl: ["d"], tags: ["a","b","c","d"], dim: ["a","b","c"],
-    html: String.raw`<p>Le premier terme est $d(0)=1$.</p>
-      $$d(0)=1\quad\text{et, pour tout entier naturel } n,\quad d(n+1)=2\times d(n)+1$$` },
+    html: String.raw`<p>Le premier terme est $d_0=1$.</p>
+      $$d_0=1\quad\text{et, pour tout entier naturel } n,\quad d_{n+1}=2\times d_n+1$$` },
 
   { q: 2, hl: [], tags: ["a","b","c","d"], remark: true,
-    html: String.raw`Sans le premier terme, la relation ne suffit pas : avec $d(0)=5$ et la même relation, on obtiendrait $5\ ;\ 11\ ;\ 23\ ;\ \ldots$, une tout autre suite.` },
+    html: String.raw`Sans le premier terme, la relation ne suffit pas : avec $d_0=5$ et la même relation, on obtiendrait $5\ ;\ 11\ ;\ 23\ ;\ \ldots$, une tout autre suite.` },
 ];
 
 /* ============ navigation ============ */
@@ -354,7 +354,7 @@ const counter = document.getElementById("counter");
 const btnPrev = document.getElementById("btn-prev");
 const btnNext = document.getElementById("btn-next");
 const suiteEls = Array.from(document.querySelectorAll(".suite"));
-const REL = { a: String.raw`$a(n+1)=a(n)+3$`, b: String.raw`$b(n+1)=3\times b(n)$`, c: String.raw`$c(n+1)=-c(n)$`, d: String.raw`$d(n+1)=2\times d(n)+1$` };
+const REL = { a: String.raw`$a_{n+1}=a_n+3$`, b: String.raw`$b_{n+1}=3\times b_n$`, c: String.raw`$c_{n+1}=-c_n$`, d: String.raw`$d_{n+1}=2\times d_n+1$` };
 
 function renderMath(node) {
   if (typeof renderMathInElement !== "function") return;

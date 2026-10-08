@@ -197,10 +197,10 @@
 
     <div class="data-row">
       <div class="suites" id="suites">
-        <div class="suite" data-s="a"><span class="tag"></span><span class="lab">(a)</span>$u(n)=5n-3$</div>
-        <div class="suite" data-s="b"><span class="tag"></span><span class="lab">(b)</span>$u(0)=20$ et $u(n+1)=u(n)+6$</div>
-        <div class="suite" data-s="c"><span class="tag"></span><span class="lab">(c)</span>$u(n)=3\times 4^n$</div>
-        <div class="suite" data-s="d"><span class="tag"></span><span class="lab">(d)</span>$u(0)=1$ et $u(n+1)=5\times u(n)$</div>
+        <div class="suite" data-s="a"><span class="tag"></span><span class="lab">(a)</span>$u_n=5n-3$</div>
+        <div class="suite" data-s="b"><span class="tag"></span><span class="lab">(b)</span>$u_0=20$ et $u_{n+1}=u_n+6$</div>
+        <div class="suite" data-s="c"><span class="tag"></span><span class="lab">(c)</span>$u_n=3\times 4^n$</div>
+        <div class="suite" data-s="d"><span class="tag"></span><span class="lab">(d)</span>$u_0=1$ et $u_{n+1}=5\times u_n$</div>
       </div>
       <div class="chips" id="chips"></div>
     </div>
@@ -247,13 +247,13 @@ function chain(items, label) {
 /* ============ contenu ============ */
 const QUESTIONS = [
   { label: "Question 1",
-    html: String.raw`Pour chacune de ces suites, dire si elle est définie de façon explicite ou par récurrence, puis calculer $u(2)$.` },
+    html: String.raw`Pour chacune de ces suites, dire si elle est définie de façon explicite ou par récurrence, puis calculer $u_2$.` },
   { label: "Question 2",
-    html: String.raw`Pour laquelle des suites (a) et (b) peut-on calculer directement $u(30)$ ? Le faire.` },
+    html: String.raw`Pour laquelle des suites (a) et (b) peut-on calculer directement $u_{30}$ ? Le faire.` },
   { label: "Question 3",
     html: String.raw`On reprend la suite (d). Traduire en une phrase en français comment on passe d'un terme au suivant.` },
   { label: "Question 4",
-    html: String.raw`La suite $s$ est définie par $s(0)=1$ et $s(n+1)=2\times s(n)-5$. Exprimer $s(21)$ en fonction de $s(20)$, puis $s(n)$ en fonction de $s(n-1)$.` },
+    html: String.raw`La suite $s$ est définie par $s_0=1$ et $s_{n+1}=2\times s_n-5$. Exprimer $s_{21}$ en fonction de $s_{20}$, puis $s_n$ en fonction de $s_{n-1}$.` },
 ];
 
 /* hl : suites mises en avant dans l'en-tête ; tags : étiquettes « explicite / récurrence » affichées */
@@ -261,92 +261,92 @@ const STEPS = [
   /* --- Q1 --- */
   { q: 0, hl: [], tags: [],
     html: String.raw`<div class="lead">Comment reconnaître ?</div>
-      <p><span class="badge exp">Explicite</span> &nbsp; $u(n)$ est donné <span class="warn">directement en fonction de $n$</span> : on remplace $n$ par sa valeur.</p>
+      <p><span class="badge exp">Explicite</span> &nbsp; $u_n$ est donné <span class="warn">directement en fonction de $n$</span> : on remplace $n$ par sa valeur.</p>
       <p><span class="badge rec">Par récurrence</span> &nbsp; on donne le <span class="ok">premier terme</span> et une relation qui calcule un terme <span class="ok">à partir du précédent</span> : on calcule de proche en proche.</p>` },
 
   { q: 0, hl: ["a"], tags: ["a"],
-    html: String.raw`<div class="lead">Suite (a) : $u(n)=5n-3$</div>
-      <p><span class="badge exp">Explicite</span> &nbsp; $u(n)$ s'écrit directement avec $n$.</p>
+    html: String.raw`<div class="lead">Suite (a) : $u_n=5n-3$</div>
+      <p><span class="badge exp">Explicite</span> &nbsp; $u_n$ s'écrit directement avec $n$.</p>
       <p>On remplace $n$ par $\textcolor{#E8590C}{2}$ :</p>
-      $$u(\textcolor{#E8590C}{2})=5\times\textcolor{#E8590C}{2}-3=10-3=7$$` },
+      $$u_{\textcolor{#E8590C}{2}}=5\times\textcolor{#E8590C}{2}-3=10-3=7$$` },
 
   { q: 0, hl: ["b"], tags: ["a","b"],
-    html: String.raw`<div class="lead">Suite (b) : $u(0)=20$ et $u(n+1)=u(n)+6$</div>
-      <p><span class="badge rec">Par récurrence</span> &nbsp; on a le premier terme $u(0)$, et chaque terme se calcule à partir du précédent.</p>
-      <p>Pour obtenir $u(2)$, il faut d'abord $u(1)$ :</p>
-      $$u(1)=u(0)+6=20+6=26\qquad u(2)=u(1)+6=26+6=32$$
-      ${chain(["T|known|$u(0)=20$", "A|$+6$", "T|$u(1)=26$", "A|$+6$", "T|goal|$u(2)=32$"])}` },
+    html: String.raw`<div class="lead">Suite (b) : $u_0=20$ et $u_{n+1}=u_n+6$</div>
+      <p><span class="badge rec">Par récurrence</span> &nbsp; on a le premier terme $u_0$, et chaque terme se calcule à partir du précédent.</p>
+      <p>Pour obtenir $u_2$, il faut d'abord $u_1$ :</p>
+      $$u_1=u_0+6=20+6=26\qquad u_2=u_1+6=26+6=32$$
+      ${chain(["T|known|$u_0=20$", "A|$+6$", "T|$u_1=26$", "A|$+6$", "T|goal|$u_2=32$"])}` },
 
   { q: 0, hl: ["c"], tags: ["a","b","c"],
-    html: String.raw`<div class="lead">Suite (c) : $u(n)=3\times 4^n$</div>
-      <p><span class="badge exp">Explicite</span> &nbsp; $u(n)$ s'écrit directement avec $n$.</p>
+    html: String.raw`<div class="lead">Suite (c) : $u_n=3\times 4^n$</div>
+      <p><span class="badge exp">Explicite</span> &nbsp; $u_n$ s'écrit directement avec $n$.</p>
       <p>On remplace $n$ par $\textcolor{#E8590C}{2}$, et on calcule <span class="warn">d'abord la puissance</span> :</p>
-      $$u(\textcolor{#E8590C}{2})=3\times 4^{\textcolor{#E8590C}{2}}=3\times16=48$$` },
+      $$u_{\textcolor{#E8590C}{2}}=3\times 4^{\textcolor{#E8590C}{2}}=3\times16=48$$` },
 
   { q: 0, hl: [], tags: ["a","b","c"], remark: true, warnbox: true,
     html: String.raw`<span class="warn">Attention :</span> $3\times4^2\neq12^2$. La puissance ne porte que sur le $4$ : on ne multiplie pas $3\times4$ avant d'élever au carré.` },
 
   { q: 0, hl: ["d"], tags: ["a","b","c","d"],
-    html: String.raw`<div class="lead">Suite (d) : $u(0)=1$ et $u(n+1)=5\times u(n)$</div>
-      <p><span class="badge rec">Par récurrence</span> &nbsp; on a le premier terme $u(0)$, et chaque terme se calcule à partir du précédent.</p>
-      $$u(1)=5\times u(0)=5\times1=5\qquad u(2)=5\times u(1)=5\times5=25$$
-      ${chain(["T|known|$u(0)=1$", "A|$\\times5$", "T|$u(1)=5$", "A|$\\times5$", "T|goal|$u(2)=25$"])}` },
+    html: String.raw`<div class="lead">Suite (d) : $u_0=1$ et $u_{n+1}=5\times u_n$</div>
+      <p><span class="badge rec">Par récurrence</span> &nbsp; on a le premier terme $u_0$, et chaque terme se calcule à partir du précédent.</p>
+      $$u_1=5\times u_0=5\times1=5\qquad u_2=5\times u_1=5\times5=25$$
+      ${chain(["T|known|$u_0=1$", "A|$\\times5$", "T|$u_1=5$", "A|$\\times5$", "T|goal|$u_2=25$"])}` },
 
   /* --- Q2 --- */
   { q: 1, hl: ["a","b"], tags: ["a","b"], dim: ["c","d"],
     html: String.raw`<div class="lead">Suite (b) : par récurrence</div>
-      <p>Pour obtenir $u(30)$, il faut connaître $u(29)$, donc $u(28)$, … : on doit calculer <span class="warn">tous les termes un par un</span>, depuis $u(0)$.</p>
-      ${chain(["T|known|$u(0)$", "A|$+6$", "T|$u(1)$", "A|$+6$", "T|$u(2)$", "A|$+6$", "T|ghost|$\\cdots$", "A|$+6$", "T|$u(29)$", "A|$+6$", "T|goal|$u(30)$"])}
+      <p>Pour obtenir $u_{30}$, il faut connaître $u_{29}$, donc $u_{28}$, … : on doit calculer <span class="warn">tous les termes un par un</span>, depuis $u_0$.</p>
+      ${chain(["T|known|$u_0$", "A|$+6$", "T|$u_1$", "A|$+6$", "T|$u_2$", "A|$+6$", "T|ghost|$\\cdots$", "A|$+6$", "T|$u_{29}$", "A|$+6$", "T|goal|$u_{30}$"])}
       <p>Cela fait $30$ calculs : ce n'est pas un calcul direct.</p>` },
 
   { q: 1, hl: ["a"], tags: ["a","b"], dim: ["b","c","d"],
     html: String.raw`<div class="lead">Suite (a) : explicite</div>
       <p>On remplace directement $n$ par $\textcolor{#E8590C}{30}$, sans calculer les termes précédents :</p>
-      ${chain(["T|known|$n=30$", "D|on remplace $n$", "T|goal|$u(30)$"])}
-      $$u(\textcolor{#E8590C}{30})=5\times\textcolor{#E8590C}{30}-3=150-3=147$$` },
+      ${chain(["T|known|$n=30$", "D|on remplace $n$", "T|goal|$u_{30}$"])}
+      $$u_{\textcolor{#E8590C}{30}}=5\times\textcolor{#E8590C}{30}-3=150-3=147$$` },
 
   { q: 1, hl: ["a"], tags: ["a","b"], dim: ["b","c","d"],
-    html: String.raw`<p>On peut calculer directement $u(30)$ pour la suite <span class="accent">(a)</span>, définie de façon explicite : $u(30)=147$.</p>` },
+    html: String.raw`<p>On peut calculer directement $u_{30}$ pour la suite <span class="accent">(a)</span>, définie de façon explicite : $u_{30}=147$.</p>` },
 
   /* --- Q3 --- */
   { q: 2, hl: ["d"], tags: ["d"], dim: ["a","b","c"],
     html: String.raw`<div class="lead">On lit la relation de récurrence</div>
-      <p>$u(n+1)=5\times u(n)$ : le terme <span class="ok">suivant</span> $u(n+1)$ s'obtient à partir du terme $u(n)$ en le multipliant par $5$.</p>
-      ${chain(["T|known|$u(n)$", "A|$\\times5$", "T|goal|$u(n+1)$"])}` },
+      <p>$u_{n+1}=5\times u_n$ : le terme <span class="ok">suivant</span> $u_{n+1}$ s'obtient à partir du terme $u_n$ en le multipliant par $5$.</p>
+      ${chain(["T|known|$u_n$", "A|$\\times5$", "T|goal|$u_{n+1}$"])}` },
 
   { q: 2, hl: ["d"], tags: ["d"], dim: ["a","b","c"],
     html: String.raw`<p class="accent">Pour passer d'un terme au suivant, on multiplie par $5$.</p>` },
 
   { q: 2, hl: [], tags: ["d"], dim: ["a","b","c"], remark: true,
-    html: String.raw`Vérification avec la question 1 : $u(0)=1$, puis $u(1)=5$, puis $u(2)=25$. On multiplie bien par $5$ à chaque fois.` },
+    html: String.raw`Vérification avec la question 1 : $u_0=1$, puis $u_1=5$, puis $u_2=25$. On multiplie bien par $5$ à chaque fois.` },
 
   /* --- Q4 --- */
   { q: 3, hl: [], tags: [], dim: ["a","b","c","d"],
     html: String.raw`<div class="lead">On traduit la relation en français</div>
-      <p>$s(n+1)=2\times s(n)-5$ signifie :</p>
+      <p>$s_{n+1}=2\times s_n-5$ signifie :</p>
       <p class="accent" style="text-align:center">un terme $=2\times$ (le terme précédent) $-\,5$</p>` },
 
   { q: 3, hl: [], tags: [], dim: ["a","b","c","d"],
-    html: String.raw`<div class="lead">$s(21)$ en fonction de $s(20)$</div>
-      <p>Le terme qui précède $s(21)$ est $s(20)$. On remplace $n$ par $\textcolor{#E8590C}{20}$ dans la relation :</p>
-      $$s(\textcolor{#E8590C}{20}+1)=2\times s(\textcolor{#E8590C}{20})-5\qquad\text{donc}\qquad s(21)=2\times s(20)-5$$` },
+    html: String.raw`<div class="lead">$s_{21}$ en fonction de $s_{20}$</div>
+      <p>Le terme qui précède $s_{21}$ est $s_{20}$. On remplace $n$ par $\textcolor{#E8590C}{20}$ dans la relation :</p>
+      $$s_{\textcolor{#E8590C}{20}+1}=2\times s_{\textcolor{#E8590C}{20}}-5\qquad\text{donc}\qquad s_{21}=2\times s_{20}-5$$` },
 
   { q: 3, hl: [], tags: [], dim: ["a","b","c","d"],
-    html: String.raw`<div class="lead">$s(n)$ en fonction de $s(n-1)$</div>
+    html: String.raw`<div class="lead">$s_n$ en fonction de $s_{n-1}$</div>
       <p>On repère la régularité : chaque terme s'écrit avec le terme précédent.</p>
       <table class="pat">
-        <tr><td class="r">$s(1)$</td><td>$=2\times s(0)-5$</td></tr>
-        <tr><td class="r">$s(2)$</td><td>$=2\times s(1)-5$</td></tr>
+        <tr><td class="r">$s_1$</td><td>$=2\times s_0-5$</td></tr>
+        <tr><td class="r">$s_2$</td><td>$=2\times s_1-5$</td></tr>
         <tr class="sep"><td class="r">$\vdots$</td><td></td></tr>
-        <tr><td class="r">$s(21)$</td><td>$=2\times s(20)-5$</td></tr>
+        <tr><td class="r">$s_{21}$</td><td>$=2\times s_{20}-5$</td></tr>
         <tr class="sep"><td class="r">$\vdots$</td><td></td></tr>
-        <tr class="new"><td class="r">$s(\textcolor{#E8590C}{n})$</td><td>$=2\times s(\textcolor{#E8590C}{n-1})-5$</td></tr>
+        <tr class="new"><td class="r">$s_{\textcolor{#E8590C}{n}}$</td><td>$=2\times s_{\textcolor{#E8590C}{n-1}}-5$</td></tr>
       </table>
-      <p>Le terme qui précède $s(n)$ est $s(n-1)$, d'où :</p>
-      $$s(n)=2\times s(n-1)-5\quad\text{pour tout entier } n\geqslant1$$` },
+      <p>Le terme qui précède $s_n$ est $s_{n-1}$, d'où :</p>
+      $$s_n=2\times s_{n-1}-5\quad\text{pour tout entier } n\geqslant1$$` },
 
   { q: 3, hl: [], tags: [], dim: ["a","b","c","d"], remark: true,
-    html: String.raw`Pourquoi $n\geqslant1$ ? Pour $n=0$, on aurait besoin de $s(-1)$, qui n'existe pas : la suite commence au rang $0$.` },
+    html: String.raw`Pourquoi $n\geqslant1$ ? Pour $n=0$, on aurait besoin de $s_{-1}$, qui n'existe pas : la suite commence au rang $0$.` },
 ];
 
 /* ============ navigation ============ */
