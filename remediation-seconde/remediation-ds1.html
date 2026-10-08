@@ -838,25 +838,25 @@ THEMES.push({
   exos: [
     { stars: 1, comp: 'Calculer', groups: [
       { n: 1, q: R`Écrire sous la forme \(a\sqrt{b}\), avec \(b\) le plus petit possible.`, items: [
-        { l: 'a)', q: R`\(\sqrt{24}\)`, t: 'rad', a: [2, 6], c: R`\(\sqrt{4\times6}=2\sqrt{6}\)` },
-        { l: 'b)', q: R`\(\sqrt{99}\)`, t: 'rad', a: [3, 11], c: R`\(\sqrt{9\times11}=3\sqrt{11}\)` },
-        { l: 'c)', q: R`\(\sqrt{52}\)`, t: 'rad', a: [2, 13], c: R`\(\sqrt{4\times13}=2\sqrt{13}\)` },
-        { l: 'd)', q: R`\(\sqrt{162}\)`, t: 'rad', a: [9, 2], c: R`\(\sqrt{81\times2}=9\sqrt{2}\)` },
-        { l: 'e)', q: R`\(\sqrt{242}\)`, t: 'rad', a: [11, 2], c: R`\(\sqrt{121\times2}=11\sqrt{2}\)` },
-        { l: 'f)', q: R`\(\sqrt{60}\)`, t: 'rad', a: [2, 15], c: R`\(\sqrt{4\times15}=2\sqrt{15}\)` }
+        { l: 'a)', q: R`\(\sqrt{24}\)`, t: 'rad', a: [2, 6], c: radCorr(1, 2, 6) },
+        { l: 'b)', q: R`\(\sqrt{99}\)`, t: 'rad', a: [3, 11], c: radCorr(1, 3, 11) },
+        { l: 'c)', q: R`\(\sqrt{52}\)`, t: 'rad', a: [2, 13], c: radCorr(1, 2, 13) },
+        { l: 'd)', q: R`\(\sqrt{162}\)`, t: 'rad', a: [9, 2], c: radCorr(1, 9, 2) },
+        { l: 'e)', q: R`\(\sqrt{242}\)`, t: 'rad', a: [11, 2], c: radCorr(1, 11, 2) },
+        { l: 'f)', q: R`\(\sqrt{60}\)`, t: 'rad', a: [2, 15], c: radCorr(1, 2, 15) }
       ] },
       { n: 2, q: 'Même consigne, en écrivant toutes les multiplications sur ton cahier.', items: [
-        { l: 'a)', q: R`\(2\sqrt{32}\)`, t: 'rad', a: [8, 2], c: R`\(2\times\sqrt{16}\times\sqrt{2}=2\times4\times\sqrt{2}=8\sqrt{2}\)` },
-        { l: 'b)', q: R`\(3\sqrt{44}\)`, t: 'rad', a: [6, 11], c: R`\(3\times\sqrt{4}\times\sqrt{11}=3\times2\times\sqrt{11}=6\sqrt{11}\)` },
-        { l: 'c)', q: R`\(5\sqrt{112}\)`, t: 'rad', a: [20, 7], c: R`\(5\times\sqrt{16}\times\sqrt{7}=5\times4\times\sqrt{7}=20\sqrt{7}\)` },
-        { l: 'd)', q: R`\(4\sqrt{96}\)`, t: 'rad', a: [16, 6], c: R`\(4\times\sqrt{16}\times\sqrt{6}=4\times4\times\sqrt{6}=16\sqrt{6}\)` }
+        { l: 'a)', q: R`\(2\sqrt{32}\)`, t: 'rad', a: [8, 2], c: radCorr(2, 4, 2) },
+        { l: 'b)', q: R`\(3\sqrt{44}\)`, t: 'rad', a: [6, 11], c: radCorr(3, 2, 11) },
+        { l: 'c)', q: R`\(5\sqrt{112}\)`, t: 'rad', a: [20, 7], c: radCorr(5, 4, 7) },
+        { l: 'd)', q: R`\(4\sqrt{96}\)`, t: 'rad', a: [16, 6], c: radCorr(4, 4, 6) }
       ] }
     ] },
     { stars: 2, comp: 'Calculer', consigne: R`Écrire chaque expression sous la forme \(a\sqrt{b}\).`, groups: [{ items: [
-      { l: 'R =', q: R`\(\sqrt{44}+\sqrt{99}\)`, t: 'rad', a: [5, 11], c: R`\(R=2\sqrt{11}+3\sqrt{11}=5\sqrt{11}\)` },
-      { l: 'S =', q: R`\(2\sqrt{32}+\sqrt{162}\)`, t: 'rad', a: [17, 2], c: R`\(S=2\times4\sqrt{2}+9\sqrt{2}=8\sqrt{2}+9\sqrt{2}=17\sqrt{2}\)` },
-      { l: 'T =', q: R`\(3\sqrt{24}-\sqrt{96}\)`, t: 'rad', a: [2, 6], c: R`\(T=3\times2\sqrt{6}-4\sqrt{6}=6\sqrt{6}-4\sqrt{6}=2\sqrt{6}\)` },
-      { l: 'U =', q: R`\(\sqrt{128}-3\sqrt{32}+\sqrt{2}\)`, t: 'rad', a: [-3, 2], c: R`\(U=8\sqrt{2}-3\times4\sqrt{2}+\sqrt{2}=8\sqrt{2}-12\sqrt{2}+1\sqrt{2}=-3\sqrt{2}\)` }
+      { l: 'R =', q: R`\(\sqrt{44}+\sqrt{99}\)`, t: 'rad', a: [5, 11], c: R`\(R=\sqrt{4\times11}+\sqrt{9\times11}=\sqrt{4}\times\sqrt{11}+\sqrt{9}\times\sqrt{11}=2\sqrt{11}+3\sqrt{11}=5\sqrt{11}\)` },
+      { l: 'S =', q: R`\(2\sqrt{32}+\sqrt{162}\)`, t: 'rad', a: [17, 2], c: R`\(S=2\times\sqrt{16\times2}+\sqrt{81\times2}=2\times\sqrt{16}\times\sqrt{2}+\sqrt{81}\times\sqrt{2}=2\times4\sqrt{2}+9\sqrt{2}=8\sqrt{2}+9\sqrt{2}=17\sqrt{2}\)` },
+      { l: 'T =', q: R`\(3\sqrt{24}-\sqrt{96}\)`, t: 'rad', a: [2, 6], c: R`\(T=3\times\sqrt{4\times6}-\sqrt{16\times6}=3\times\sqrt{4}\times\sqrt{6}-\sqrt{16}\times\sqrt{6}=3\times2\sqrt{6}-4\sqrt{6}=6\sqrt{6}-4\sqrt{6}=2\sqrt{6}\)` },
+      { l: 'U =', q: R`\(\sqrt{128}-3\sqrt{32}+\sqrt{2}\)`, t: 'rad', a: [-3, 2], c: R`\(U=\sqrt{64\times2}-3\times\sqrt{16\times2}+\sqrt{2}=\sqrt{64}\times\sqrt{2}-3\times\sqrt{16}\times\sqrt{2}+\sqrt{2}=8\sqrt{2}-3\times4\sqrt{2}+\sqrt{2}=8\sqrt{2}-12\sqrt{2}+\sqrt{2}=-3\sqrt{2}\)` }
     ] }] }
   ]
 });
@@ -1721,11 +1721,22 @@ GEN['rac-base-1'] = () => {
 };
 
 // ----- Racines : la forme a√b -----
+// Correction détaillée de mult√(k²b) : plus grand carré, racine d'un produit, √(k²) = k, produit.
+function radCorr(mult, k, b) {
+  const n = k * k * b, r = mult * k, M = mult === 1 ? '' : R`${mult}\times`;
+  const lignes = [
+    R`${mult === 1 ? '' : mult}\sqrt{${n}}`,
+    R`${M}\sqrt{${k * k}\times${b}}\quad\text{car ${k * k} est le plus grand carré qui divise ${n}}`,
+    R`${M}\sqrt{${k * k}}\times\sqrt{${b}}`,
+    mult === 1 ? R`${k}\sqrt{${b}}` : R`${M}${k}\times\sqrt{${b}}`
+  ];
+  if (mult !== 1) lignes.push(R`${r}\sqrt{${b}}`);
+  return R`\(${lignes.join('=')}\)`;
+}
 function radItem(mult, k, b) {   // mult√(k²b) = mult·k √b
   const n = k * k * b, r = mult * k;
   const m = mult === 1 ? '' : R`${mult}`;
-  const c = mult === 1 ? R`\(\sqrt{${k * k}\times${b}}=${k}\sqrt{${b}}\)` : R`\(${mult}\times\sqrt{${k * k}}\times\sqrt{${b}}=${mult}\times${k}\times\sqrt{${b}}=${r}\sqrt{${b}}\)`;
-  return { q: R`\(${m}\sqrt{${n}}\)`, t: 'rad', a: [r, b], qv: `${mult}*r${n}`, c };
+  return { q: R`\(${m}\sqrt{${n}}\)`, t: 'rad', a: [r, b], qv: `${mult}*r${n}`, c: radCorr(mult, k, b) };
 }
 GEN['rac-simpl-0'] = () => {
   const g1 = [...Array(6)].map((_, i) => { let k, b; do { k = ri(2, 11); b = pick(SQF); } while (k * k * b > 300); return Object.assign(radItem(1, k, b), { l: LBL[i] + ')' }); });
@@ -1740,7 +1751,15 @@ GEN['rac-simpl-1'] = () => {
     for (let j = 0; j < cnt; j++) { let k; do { k = ri(2, 5); } while (k * k * b > 200); terms.push({ m: j === 2 ? 1 : ri(1, 3), k, s: j === 0 ? 1 : (i >= 2 && j === 1 ? -1 : 1) }); }
     if (i === 3) terms[2].k = 1;
     const q = terms.map((t, j) => `${j === 0 ? '' : t.s < 0 ? '-' : '+'}${t.m === 1 ? '' : t.m}\\sqrt{${t.k * t.k * b}}`).join('');
-    const mid = terms.map((t, j) => `${j === 0 ? (t.s < 0 ? '-' : '') : t.s < 0 ? '-' : '+'}${t.m === 1 ? '' : t.m + '\\times'}${t.k === 1 ? '' : t.k}\\sqrt{${b}}`).join('');
+    const sg = (t, j) => j === 0 ? (t.s < 0 ? '-' : '') : t.s < 0 ? '-' : '+', mx = t => t.m === 1 ? '' : t.m + '\\times';
+    const etape = f => terms.map((t, j) => sg(t, j) + (t.k === 1 ? (t.m === 1 ? '' : t.m) + `\\sqrt{${b}}` : f(t))).join('');
+    const lignes = [
+      etape(t => `${mx(t)}\\sqrt{${t.k * t.k}\\times${b}}`),
+      etape(t => `${mx(t)}\\sqrt{${t.k * t.k}}\\times\\sqrt{${b}}`),
+      etape(t => `${mx(t)}${t.k}\\sqrt{${b}}`)
+    ];
+    if (terms.some(t => t.m !== 1 && t.k !== 1)) lignes.push(etape(t => `${t.m * t.k}\\sqrt{${b}}`));
+    const mid = lignes.join('=');
     const tot = terms.reduce((s, t) => s + t.s * t.m * t.k, 0);
     const res = tot === 0 ? '0' : `${tot === 1 ? '' : tot === -1 ? '-' : tot}\\sqrt{${b}}`;
     return { l: nm + ' =', q: `\\(${q}\\)`, t: tot === 0 ? 'num' : 'rad', a: tot === 0 ? 0 : [tot, b], qv: terms.map((t, j) => `${j === 0 ? '' : t.s < 0 ? '-' : '+'}${t.m}*r${t.k * t.k * b}`).join(''), c: `\\(${nm}=${mid}=${res}\\)` };
