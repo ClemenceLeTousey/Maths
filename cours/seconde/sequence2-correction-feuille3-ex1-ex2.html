@@ -107,7 +107,7 @@
         <button class="btn primary" id="next">Suivant ▶</button>
         <div class="progress"><div id="bar"></div></div>
       </div>
-      <p class="hint">Flèches ← → ou barre d'espace pour avancer · clic sur un cas pour y aller directement.</p>
+      <p class="hint">Clic n'importe où, barre d'espace ou flèche → pour avancer · ← pour revenir · clic sur un cas pour y aller directement.</p>
     </div>
   </div>
 </main>
@@ -402,8 +402,13 @@ function go(delta) {
   if (n === cur) return;
   cur = n; render(delta > 0);
 }
-document.getElementById('prev').addEventListener('click', () => go(-1));
-document.getElementById('next').addEventListener('click', () => go(1));
+document.getElementById('prev').addEventListener('click', e => { e.currentTarget.blur(); go(-1); });
+document.getElementById('next').addEventListener('click', e => { e.currentTarget.blur(); go(1); });
+// Clic n'importe où sur la page = étape suivante (sauf boutons et choix d'un cas)
+document.addEventListener('click', e => {
+  if (e.target.closest('button, .q, a')) return;
+  go(1);
+});
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(1); }
   if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
