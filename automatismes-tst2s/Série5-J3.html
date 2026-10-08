@@ -149,6 +149,7 @@
   }
   .timer-display.warning { color: var(--orange); }
   .timer-display.done { color: var(--red); }
+  .nval { color: var(--red); font-weight: 600; }
   .timer-btn {
     border: 1.5px solid var(--rule-strong); border-radius: 999px; background: var(--surface);
     color: var(--ink); font-family: "Space Mono", monospace; font-size: 0.85rem; font-weight: 700;
@@ -362,9 +363,9 @@ const QUESTIONS = [
     "tier": "question",
     "theme": "obj-geometrie",
     "objectif": "Suites · Calcul de termes par récurrence",
-    "aim": "Une suite définie par récurrence se calcule de proche en proche : la relation donne chaque terme à partir du précédent. Ici le premier terme est u₁ ; on remplace n par 1 pour obtenir u₂, puis n par 2 pour obtenir u₃. Attention : ici la relation fait aussi intervenir n.",
-    "question": "La suite $u$ est définie, pour tout entier naturel $n\\geqslant 1$, par&nbsp;: $$\\begin{cases} u_1=3 \\\\ u_{n+1}=u_n+2n \\end{cases}$$ Calculer $u_3$.",
-    "explanation": "On calcule les termes de proche en proche, en remplaçant aussi $n$ dans $2n$&nbsp;:<br>avec $n=1$&nbsp;: $u_2=u_1+2\\times 1=3+2=5$<br>avec $n=2$&nbsp;: $u_3=u_2+2\\times 2=5+4=\\boxed{9}$."
+    "aim": "Une suite définie par récurrence se calcule de proche en proche : la relation donne chaque terme à partir du précédent. Ici le premier terme est u₀ ; on remplace n par 0 pour obtenir u₁, puis n par 1 pour obtenir u₂. Attention : ici la relation fait aussi intervenir n, qu'il faut remplacer partout, y compris dans 2n.",
+    "question": "La suite $u$ est définie, pour tout entier naturel $n$, par&nbsp;: $$\\begin{cases} u_0=3 \\\\ u_{n+1}=u_n+2n \\end{cases}$$ Calculer $u_2$.",
+    "explanation": "On calcule les termes de proche en proche, en remplaçant $n$ partout, y compris dans $2n$&nbsp;:<br>avec $n=\\nv{0}$&nbsp;: $u_1=u_{\\nv{0}}+2\\times \\nv{0}=3+0=3$<br>avec $n=\\nv{1}$&nbsp;: $u_2=u_{\\nv{1}}+2\\times \\nv{1}=3+2=\\boxed{5}$."
   },
   {
     "tier": "final",
@@ -506,7 +507,10 @@ function renderMath(){
     delimiters: [
       {left:"$$", right:"$$", display:true},
       {left:"$", right:"$", display:false}
-    ]
+    ],
+    // \nv{0} : valeur de n remplacée dans la relation de récurrence, en couleur
+    trust: ctx => ctx.command === "\\htmlClass",
+    macros: { "\\nv": "\\htmlClass{nval}{#1}" }
   });
 }
 
