@@ -67,6 +67,9 @@
                     const v = el.getAttribute(attr);
                     if (v && !/^(#|[a-z]+:)/i.test(v)) el.setAttribute(attr, new URL(v, accueil).href);
                 });
+                carte.querySelectorAll('select.choix-semaine option[value]').forEach(o => {
+                    if (o.value) o.value = new URL(o.value, accueil).href;
+                });
                 cible.innerHTML = carte.innerHTML;
             } catch (e) {
                 cible.innerHTML = '<p>Impossible de charger le contenu. <a href="../index.html">Ouvre la page d\'accueil</a>.</p>';

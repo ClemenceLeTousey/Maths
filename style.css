@@ -335,3 +335,16 @@ li:last-child {
     margin: 0 auto;
     border: 0;
 }
+
+/* Menu déroulant de choix de la semaine (Automatismes) */
+.choix-semaine {
+    display: block;
+    width: 100%;
+    margin: 10px 0 4px;
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+}
