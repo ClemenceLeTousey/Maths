@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feuille 3 ¾ – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --panel: #ffffff;
+    --ink: #1f2328;
+    --muted: #6b7280;
+    --line: #e4e2dc;
+    --c1: #7048E8;
+    --c2: #D9480F;
+    --c3: #0C8599;
+    --res: #C92A2A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.45;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+    padding: 14px 24px; border-bottom: 1px solid var(--line); background: var(--panel);
+  }
+  h1 { font-size: 24px; font-weight: 500; margin: 0; }
+  .tag { font-size: 16px; color: var(--muted); }
+  main {
+    display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 24px; padding: 20px 24px; max-width: 1400px; margin: 0 auto;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; padding: 16px; } header { padding: 12px 16px; } }
+  .fig { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px; align-self: start; }
+  .fig svg { width: 100%; height: auto; max-height: 60vh; display: block; }
+  .figtitle { font-size: 19px; padding: 6px 10px 0; min-height: 2.2em; }
+  .board { font-size: 26px; padding: 6px 18px 4px; display: flex; flex-direction: column; gap: 4px; }
+  .board:empty { display: none; }
+  .board .bl { transition: opacity .4s ease; }
+  .board .bl.old { color: var(--muted); }
+  .side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .tab {
+    font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    padding: 4px 12px; border-radius: 6px;
+  }
+  .tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .consigne { margin: 4px 0 6px; color: var(--muted); font-size: 17px; }
+  .questions { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 2px 12px; }
+  .questions.wide { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  .questions .q {
+    display: flex; gap: 8px; align-items: center; font-size: 18px;
+    padding: 4px 8px; border-radius: 6px; cursor: pointer; border-left: 4px solid transparent;
+  }
+  .questions .q .num { flex: none; color: var(--muted); }
+  .questions .q.active { background: #f1f0ec; border-left-color: var(--ink); }
+  .questions .q.done { color: var(--muted); }
+  .etape { font-size: 15px; color: var(--muted); margin-bottom: 4px; }
+  .caption { font-size: 21px; min-height: 8.5em; }
+  .caption p { margin: 0 0 10px; }
+  .nav { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    font: inherit; font-size: 17px; font-weight: 600;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    padding: 8px 18px; border-radius: 8px; cursor: pointer;
+  }
+  .btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .progress { flex: 1; min-width: 120px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .progress div { height: 100%; background: var(--ink); width: 0; transition: width .3s; }
+  .hint { font-size: 14px; color: var(--muted); }
+  .recap { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; }
+  .recap p { margin: 0; }
+  .recapfig { padding: 10px 14px; font-size: 20px; }
+  .recapfig .hint { margin: 10px 0 2px; }
+
+  /* Notation vectorielle : flèche dessinée en SVG au-dessus de la lettre */
+  .m { white-space: nowrap; }
+  .vec { position: relative; display: inline-block; padding-top: .32em; line-height: 1; }
+  .vec span.up { font-style: normal; padding: 0 .04em; }
+  .vec span.up.it { font-style: italic; padding: 0 .1em 0 .02em; }
+  .vec sub { font-size: .65em; font-style: normal; vertical-align: -.25em; line-height: 0; }
+  .vec svg { position: absolute; top: 0; height: .42em; overflow: visible; }
+  .vec svg.shaft { left: .08em; right: .12em; width: calc(100% - .2em); }
+  .vec svg.head { right: .02em; width: .3em; }
+  .frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .86em; line-height: 1.12; margin: 0 .12em; }
+  .frac > span:first-child { border-bottom: 1.4px solid currentColor; padding: 0 .18em; }
+  .c1 { color: var(--c1); } .c2 { color: var(--c2); } .c3 { color: var(--c3); } .res { color: var(--res); }
+  .it { font-style: italic; }
+
+  /* Animations */
+  .draw { transition: stroke-dashoffset .7s ease-in-out; }
+  .fade { transition: opacity .35s ease; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Feuille d’exercices n°3 ¾ — Vecteurs et démonstrations — Corrigé</h1>
+  <span class="tag">Colinéarité · Alignement · Parallélisme · Milieu d’un segment</span>
+</header>
+
+<main>
+  <div class="fig">
+    <div class="figtitle" id="figtitle"></div>
+    <div class="board" id="board"></div>
+    <svg id="fig" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="recapfig" id="recapfig" style="display:none"></div>
+  </div>
+  <div class="side">
+    <div class="card">
+      <div class="tabs" id="tabs"></div>
+      <p class="consigne" id="consigne"></p>
+      <div class="questions" id="questions"></div>
+    </div>
+    <div class="card">
+      <div class="etape" id="etape"></div>
+      <div class="caption" id="caption"></div>
+      <div class="nav">
+        <button class="btn" id="prev">◀ Précédent</button>
+        <button class="btn primary" id="next">Suivant ▶</button>
+        <div class="progress"><div id="bar"></div></div>
+      </div>
+      <p class="hint">Clic n'importe où, barre d'espace ou flèche → pour avancer · ← pour revenir · clic sur un exercice ou une question pour y aller directement.</p>
+    </div>
+  </div>
+</main>
+
+<script>
+/* --------------------------------------------------- Notation dans le texte */
+const ARROW =
+  `<svg class="shaft" viewBox="0 0 10 10" preserveAspectRatio="none"><line x1="0" y1="5" x2="10" y2="5" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke"/></svg>` +
+  `<svg class="head" viewBox="0 0 10 10" preserveAspectRatio="none"><polyline points="2,1 9.5,5 2,9" fill="none" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+/* V('AB') : vecteur nommé par deux points */
+const V = name => `<span class="vec"><span class="up">${name}</span>${ARROW}</span>`;
+const M = s => `<span class="m">${s}</span>`;
+const F = (n, d) => `<span class="frac"><span>${n}</span><span>${d}</span></span>`;
+const col = (c, s) => `<span class="${c}">${s}</span>`;
+const sp = '&#8239;';            // espace fine insécable entre un nombre et un vecteur
+const K = (k, vec) => k + sp + vec;
+const P = s => `<p>${s}</p>`;
+const ZERO = `<span class="vec"><span class="up">0</span>${ARROW}</span>`;
+
+/* Morceaux de formule pour les étiquettes de la figure SVG */
+const sV = s => ({ v: s });
+const half = n => ({ fr: [n, 2] });
+
+/* --------------------------------------------------------- Exercices */
+const EX = {
+  1: { comp: 'Raisonner', consigne: `Montrer que les points C, M et N sont alignés.`,
+    items: [['fig', '1.', 'Placer M et N'], ['CM', '2.', V('CM')], ['CN', '2.', V('CN')], ['col', '3.', 'Conclusion']] },
+  2: { comp: 'Raisonner', consigne: `Montrer que les droites (MN) et (AC) sont parallèles.`,
+    items: [['fig', '1.', 'Placer M et N'], ['MB', '2.', V('MB')], ['MN', '2.', V('MN')], ['col', '', 'Conclusion']] },
+  3: { comp: 'Raisonner', consigne: `Montrer que les droites (MN) et (BC) sont parallèles.`,
+    items: [['fig', '1.', 'Figure'], ['MN', '2.', V('MN')], ['par', '3.', 'Parallélisme']] },
+  4: { comp: 'Raisonner', consigne: `Démontrer que les points A, E et F sont alignés.`,
+    items: [['conj', '1.', 'Conjecture'], ['AE', '2.', V('AE')], ['AF', '3.', V('AF')], ['ali', '4.', 'Alignement']] },
+  5: { comp: 'Raisonner', consigne: `Démontrer que C est le milieu du segment [EF].`,
+    items: [['fig', '1.', 'Figure'], ['CE', '2.', V('CE')], ['CF', '3.', V('CF')], ['mil', '4.', 'Milieu']] }
+};
+
+/* ------------------------------------------------------------ Figures */
+/* Chaque figure est un réseau : le point (x, y) est dessiné en x·e1 + y·e2 (pixels). */
+const tri = (A, B, C, pos = ['sw', 'se', 'n']) => [
+  { k: 'poly', pts: [A, B, C], close: true },
+  { k: 'pt', at: A, name: 'A', pos: pos[0] }, { k: 'pt', at: B, name: 'B', pos: pos[1] }, { k: 'pt', at: C, name: 'C', pos: pos[2] }];
+const para = (pos = ['sw', 'se', 'ne', 'nw']) => [
+  { k: 'poly', pts: [[0, 0], [3, 0], [4, 2], [1, 2]], close: true },
+  { k: 'pt', at: [0, 0], name: 'A', pos: pos[0] }, { k: 'pt', at: [3, 0], name: 'B', pos: pos[1] },
+  { k: 'pt', at: [4, 2], name: 'C', pos: pos[2] }, { k: 'pt', at: [1, 2], name: 'D', pos: pos[3] }];
+const FIG = {
+  1: { e1: [62, 0], e2: [0, -62], base: [{ k: 'grid', x: [-2, 6], y: [-1, 5] }, ...tri([0, 0], [3, 0], [1, 2], ['sw', 'se', 'nw'])] },
+  2: { e1: [62, 0], e2: [0, -62], base: [{ k: 'grid', x: [-1, 7], y: [-1, 5] }, ...tri([0, 0], [4, 0], [6, 4], ['sw', 'se', 'n'])] },
+  3: { e1: [62, 0], e2: [0, -62], base: [{ k: 'grid', x: [0, 9], y: [0, 5] }, ...tri([4, 2], [8, 4], [2, 4], ['s', 'ne', 'nw'])] },
+  4: { e1: [92, 0], e2: [0, -92], base: para() },
+  5: { e1: [78, 0], e2: [0, -78], base: para(['sw', 's', 'ne', 'w']) }
+};
+const figKey = st => st.ex;
+
+/* Éléments de figure */
+const vec = (from, to, c, lab, o = {}) => ({ k: 'vec', from, to, c, lab, ...o });
+const pt = (at, name, pos, c = 'res') => ({ k: 'pt', at, name, pos, c, keep: true });
+const dash = (a, b) => ({ k: 'poly', pts: [a, b], dash: true, c: 'grey', keep: true });
+/* Déplacements mis bout à bout : seq = [{ d: [dx, dy], c, n, lab }] */
+function chain(start, seq, o = {}) {
+  const out = []; let p = start;
+  for (const s of seq) for (let i = 0; i < (s.n || 1); i++) {
+    const q = [p[0] + s.d[0], p[1] + s.d[1]];
+    out.push({ k: 'vec', from: p, to: q, c: s.c, dash: true, w: 2.6, lab: s.lab, side: s.side, lpos: s.lpos, ...o });
+    p = q;
+  }
+  return out;
+}
+
+/* ------------------------------------------------------------- Étapes */
+const STEPS = [];
+const add = s => STEPS.push(s);
+const intro = (ex, cap, els = [], board = []) => add({ ex, item: '0', intro: true, cap, els, board });
+
+/* ======================== Exercice 1 */
+intro(1,
+  P(`ABC est un triangle. On définit les points M et N par ${M(V('BM') + ' = ' + K('2', V('AC')))} et ${M(V('AN') + ' = ' + K(F(1, 2), V('BC')))}.`) +
+  P(`Pour montrer que C, M et N sont alignés, on exprime ${V('CM')} et ${V('CN')} en fonction des deux mêmes vecteurs ${V('AC')} et ${V('CB')}, puis on cherche un réel ${M('<i>k</i>')} tel que ${M(V('CM') + ' = ' + K('<i>k</i>', V('CN')))}.`));
+
+add({ ex: 1, item: 'fig',
+  cap: P(`Le vecteur ${V('AC')} correspond à un déplacement de 1 carreau vers la droite et 2 carreaux vers le haut.`) +
+       P(`${M(V('BM') + ' = ' + K('2', V('AC')))}&nbsp;: on part de B et on fait deux fois ce déplacement, soit 2 carreaux vers la droite et 4 carreaux vers le haut.`),
+  els: [vec([0, 0], [1, 2], 'c2', [sV('AC')], { w: 2.4 }), ...chain([3, 0], [{ d: [1, 2], c: 'c2', n: 2, side: -1 }]), pt([5, 4], 'M', 'ne')],
+  board: [M(V('BM') + ' = ' + K('2', V('AC')))] });
+add({ ex: 1, item: 'fig',
+  cap: P(`Le vecteur ${V('BC')} correspond à un déplacement de 2 carreaux vers la gauche et 2 carreaux vers le haut.`) +
+       P(`${M(V('AN') + ' = ' + K(F(1, 2), V('BC')))}&nbsp;: on part de A et on fait la moitié de ce déplacement, soit 1 carreau vers la gauche et 1 carreau vers le haut.`),
+  els: [vec([3, 0], [1, 2], 'c1', [sV('BC')], { w: 2.4, side: -1 }), vec([0, 0], [-1, 1], 'res', [half(1), sV('BC')], { w: 3 }), pt([-1, 1], 'N', 'nw')],
+  board: [M(V('AN') + ' = ' + K(F(1, 2), V('BC')))] });
+add({ ex: 1, item: 'fig',
+  cap: P(`Observation&nbsp;: les points C, M et N semblent alignés.`) + P(`Une figure ne suffit pas&nbsp;: il faut le démontrer.`),
+  els: [dash([-1, 1], [5, 4])] });
+
+add({ ex: 1, item: 'CM',
+  cap: P(`Relation de Chasles&nbsp;: on passe par le point B.`) + P(M(V('CM') + ' = ' + V('CB') + ' + ' + V('BM'))),
+  els: chain([1, 2], [{ d: [2, -2], c: 'c1', lab: [sV('CB')], side: -1 }, { d: [2, 4], c: 'c2', lab: [sV('BM')], side: -1 }]),
+  board: [M(V('CM') + ' = ' + V('CB') + ' + ' + V('BM'))] });
+add({ ex: 1, item: 'CM',
+  cap: P(`D’après l’énoncé, ${M(V('BM') + ' = ' + K('2', V('AC')))}.`) + P(`Donc <span class="res">${M(V('CM') + ' = ' + V('CB') + ' + ' + K('2', V('AC')))}</span>.`),
+  els: [vec([1, 2], [5, 4], 'res', [sV('CM')], { w: 3.6 })],
+  board: [col('res', M('= ' + V('CB') + ' + ' + K('2', V('AC'))))],
+  res: M(V('CM') + ' = ' + V('CB') + ' + ' + K('2', V('AC'))) });
+
+add({ ex: 1, item: 'CN',
+  cap: P(`Relation de Chasles&nbsp;: on passe par le point A.`) + P(M(V('CN') + ' = ' + V('CA') + ' + ' + V('AN'))),
+  els: chain([1, 2], [{ d: [-1, -2], c: 'c2', lab: [sV('CA')], side: -1 }, { d: [-1, 1], c: 'c1', lab: [sV('AN')], side: -1 }]),
+  board: [M(V('CN') + ' = ' + V('CA') + ' + ' + V('AN'))] });
+add({ ex: 1, item: 'CN',
+  cap: P(`${V('CA')} et ${V('AC')} sont opposés&nbsp;: ${M(V('CA') + ' = −' + V('AC'))}.`) + P(`D’après l’énoncé, ${M(V('AN') + ' = ' + K(F(1, 2), V('BC')))}.`),
+  els: [], board: [M('= −' + V('AC') + ' + ' + K(F(1, 2), V('BC')))] });
+add({ ex: 1, item: 'CN',
+  cap: P(`On veut ${V('CB')} et non ${V('BC')}&nbsp;: comme ${M(V('BC') + ' = −' + V('CB'))}, on a ${M(K(F(1, 2), V('BC')) + ' = −' + K(F(1, 2), V('CB')))}.`) +
+       P(`Donc <span class="res">${M(V('CN') + ' = −' + K(F(1, 2), V('CB')) + ' − ' + V('AC'))}</span>.`),
+  els: [vec([1, 2], [-1, 1], 'res', [sV('CN')], { w: 3.6, side: -1 })],
+  board: [M('= −' + V('AC') + ' − ' + K(F(1, 2), V('CB'))), col('res', M('= −' + K(F(1, 2), V('CB')) + ' − ' + V('AC')))],
+  res: M(V('CN') + ' = −' + K(F(1, 2), V('CB')) + ' − ' + V('AC')) });
+
+add({ ex: 1, item: 'col',
+  cap: P(`On compare les nombres devant ${V('CB')}&nbsp;: 1 pour ${V('CM')} et ${M('−' + F(1, 2))} pour ${V('CN')}.`) +
+       P(`Or ${M('−2 × (−' + F(1, 2) + ') = 1')}&nbsp;: on essaie ${M('<i>k</i> = −2')}.`),
+  els: [vec([1, 2], [5, 4], 'res', [sV('CM')], { w: 3.6 }), vec([1, 2], [-1, 1], 'res', [sV('CN')], { w: 3.6, side: -1 })],
+  board: [M(V('CM') + ' = ' + V('CB') + ' + ' + K('2', V('AC'))), M(V('CN') + ' = −' + K(F(1, 2), V('CB')) + ' − ' + V('AC'))] });
+add({ ex: 1, item: 'col',
+  cap: P(`On développe&nbsp;: ${M('−2 × (−' + F(1, 2) + ') = 1')} et ${M('−2 × (−1) = 2')}.`) + P(`On retrouve exactement ${V('CM')}.`),
+  els: [],
+  board: [M('−' + K('2', V('CN')) + ' = −2(−' + K(F(1, 2), V('CB')) + ' − ' + V('AC') + ')'), M('= ' + V('CB') + ' + ' + K('2', V('AC')) + ' = ' + V('CM'))] });
+add({ ex: 1, item: 'col',
+  cap: P(`${M(V('CM') + ' = −' + K('2', V('CN')))}&nbsp;: les vecteurs ${V('CM')} et ${V('CN')} sont colinéaires.`) +
+       P(`Ils ont en commun le point C. <span class="res">Ainsi, les points C, M et N sont alignés.</span>`),
+  els: [], board: [col('res', M(V('CM') + ' = −' + K('2', V('CN'))))],
+  res: M(V('CM') + ' = −' + K('2', V('CN'))) + '&nbsp;: C, M et N sont alignés' });
+
+/* ======================== Exercice 2 */
+intro(2,
+  P(`ABC est un triangle. On définit les points M et N par ${M(V('AM') + ' = ' + K(F(1, 4), V('AB')))} et ${M(V('BN') + ' = ' + K(F(3, 4), V('BC')))}.`) +
+  P(`Pour montrer que (MN) et (AC) sont parallèles, on cherche un réel ${M('<i>k</i>')} tel que ${M(V('MN') + ' = ' + K('<i>k</i>', V('AC')))}.`));
+
+add({ ex: 2, item: 'fig',
+  cap: P(`Le vecteur ${V('AB')} correspond à un déplacement de 4 carreaux vers la droite.`) +
+       P(`${M(V('AM') + ' = ' + K(F(1, 4), V('AB')))}&nbsp;: on part de A et on fait le quart de ce déplacement, soit 1 carreau vers la droite.`),
+  els: [vec([0, 0], [1, 0], 'res', [sV('AM')], { w: 3.4, lpos: 'above' }), pt([1, 0], 'M', 's')],
+  board: [M(V('AM') + ' = ' + K(F(1, 4), V('AB')))] });
+add({ ex: 2, item: 'fig',
+  cap: P(`Le vecteur ${V('BC')} correspond à un déplacement de 2 carreaux vers la droite et 4 carreaux vers le haut.`) +
+       P(`${M(V('BN') + ' = ' + K(F(3, 4), V('BC')))}&nbsp;: on part de B et on fait les trois quarts de ce déplacement, soit 1,5 carreau vers la droite et 3 carreaux vers le haut.`),
+  els: [vec([4, 0], [5.5, 3], 'res', [{ fr: [3, 4] }, sV('BC')], { w: 3.4 }), pt([5.5, 3], 'N', 'w')],
+  board: [M(V('BN') + ' = ' + K(F(3, 4), V('BC')))] });
+add({ ex: 2, item: 'fig',
+  cap: P(`Observation&nbsp;: les droites (MN) et (AC) semblent parallèles.`) + P(`Il reste à le démontrer.`),
+  els: [{ k: 'poly', pts: [[1, 0], [5.5, 3]], c: 'res', keep: true }] });
+
+add({ ex: 2, item: 'MB',
+  cap: P(`On commence par exprimer ${V('MB')} en fonction de ${V('AB')}.`) + P(`Relation de Chasles&nbsp;: on passe par le point A.`),
+  els: [vec([1, 0], [0, 0], 'c2', [sV('MA')], { dash: true, w: 2.6, lpos: 'above' }), vec([0, -0.6], [4, -0.6], 'c1', [sV('AB')], { dash: true, w: 2.6, lpos: 'below' })],
+  board: [M(V('MB') + ' = ' + V('MA') + ' + ' + V('AB'))] });
+add({ ex: 2, item: 'MB',
+  cap: P(`${V('MA')} est l’opposé de ${V('AM')}&nbsp;: ${M(V('MA') + ' = −' + V('AM') + ' = −' + K(F(1, 4), V('AB')))}.`),
+  els: [], board: [M('= −' + K(F(1, 4), V('AB')) + ' + ' + V('AB'))] });
+add({ ex: 2, item: 'MB',
+  cap: P(`On additionne les nombres devant ${V('AB')}&nbsp;: ${M('−' + F(1, 4) + ' + 1 = −' + F(1, 4) + ' + ' + F(4, 4) + ' = ' + F(3, 4))}.`) +
+       P(`Donc <span class="res">${M(V('MB') + ' = ' + K(F(3, 4), V('AB')))}</span>.`),
+  els: [vec([1, 0], [4, 0], 'res', [{ fr: [3, 4] }, sV('AB')], { w: 3.6, lpos: 'below' })],
+  board: [col('res', M('= ' + K(F(3, 4), V('AB'))))],
+  res: M(V('MB') + ' = ' + K(F(3, 4), V('AB'))) });
+
+add({ ex: 2, item: 'MN',
+  cap: P(`Relation de Chasles&nbsp;: on passe par le point B.`) + P(M(V('MN') + ' = ' + V('MB') + ' + ' + V('BN'))),
+  els: chain([1, 0], [{ d: [3, 0], c: 'c1', lab: [sV('MB')], lpos: 'below' }, { d: [1.5, 3], c: 'c2', lab: [sV('BN')], side: -1 }]),
+  board: [M(V('MN') + ' = ' + V('MB') + ' + ' + V('BN'))] });
+add({ ex: 2, item: 'MN',
+  cap: P(`On remplace ${V('MB')} par ${M(K(F(3, 4), V('AB')))} (calcul précédent) et ${V('BN')} par ${M(K(F(3, 4), V('BC')))} (énoncé).`),
+  els: [], board: [M('= ' + K(F(3, 4), V('AB')) + ' + ' + K(F(3, 4), V('BC')))] });
+add({ ex: 2, item: 'MN',
+  cap: P(`Les deux termes ont le même nombre ${F(3, 4)}&nbsp;: on le met en facteur.`),
+  els: [], board: [M('= ' + F(3, 4) + '(' + V('AB') + ' + ' + V('BC') + ')')] });
+add({ ex: 2, item: 'MN',
+  cap: P(`Relation de Chasles&nbsp;: ${M(V('AB') + ' + ' + V('BC') + ' = ' + V('AC'))}.`) + P(`Donc <span class="res">${M(V('MN') + ' = ' + K(F(3, 4), V('AC')))}</span>.`),
+  els: [vec([0, 0], [6, 4], 'c3', [sV('AC')], { w: 2.6 }), vec([1, 0], [5.5, 3], 'res', [sV('MN')], { w: 3.6, side: -1 })],
+  board: [col('res', M('= ' + K(F(3, 4), V('AC'))))],
+  res: M(V('MN') + ' = ' + K(F(3, 4), V('AC'))) });
+
+add({ ex: 2, item: 'col',
+  cap: P(`${M(V('MN') + ' = ' + K(F(3, 4), V('AC')))}&nbsp;: les vecteurs ${V('MN')} et ${V('AC')} sont colinéaires.`) +
+       P(`<span class="res">Ainsi, les droites (MN) et (AC) sont parallèles.</span>`),
+  els: [vec([0, 0], [6, 4], 'c3', [sV('AC')], { w: 2.6 }), vec([1, 0], [5.5, 3], 'res', [sV('MN')], { w: 3.6, side: -1 })],
+  board: [col('res', M(V('MN') + ' = ' + K(F(3, 4), V('AC'))))],
+  res: '(MN) et (AC) sont parallèles' });
+
+/* ======================== Exercice 3 */
+intro(3,
+  P(`ABC est un triangle. On définit les points M et N par ${M(V('AM') + ' = −' + K(F(1, 2), V('AB')))} et ${M(V('AN') + ' = −' + K(F(1, 2), V('AC')))}.`) +
+  P(`Le nombre devant ${V('AB')} et ${V('AC')} est négatif&nbsp;: M et N sont « derrière » A.`));
+
+add({ ex: 3, item: 'fig',
+  cap: P(`Le vecteur ${V('AB')} correspond à un déplacement de 4 carreaux vers la droite et 2 carreaux vers le haut.`) +
+       P(`${M(V('AM') + ' = −' + K(F(1, 2), V('AB')))}&nbsp;: sens opposé et moitié de la longueur. On part de A&nbsp;: 2 carreaux vers la gauche et 1 carreau vers le bas.`),
+  els: [vec([4, 2], [8, 4], 'c1', [sV('AB')], { w: 2.4, dash: true, side: -1 }), vec([4, 2], [2, 1], 'res', [sV('AM')], { w: 3.4 }), pt([2, 1], 'M', 'sw')],
+  board: [M(V('AM') + ' = −' + K(F(1, 2), V('AB')))] });
+add({ ex: 3, item: 'fig',
+  cap: P(`Le vecteur ${V('AC')} correspond à un déplacement de 2 carreaux vers la gauche et 2 carreaux vers le haut.`) +
+       P(`${M(V('AN') + ' = −' + K(F(1, 2), V('AC')))}&nbsp;: on part de A, 1 carreau vers la droite et 1 carreau vers le bas.`),
+  els: [vec([4, 2], [2, 4], 'c2', [sV('AC')], { w: 2.4, dash: true, side: -1 }), vec([4, 2], [5, 1], 'res', [sV('AN')], { w: 3.4, side: -1 }), pt([5, 1], 'N', 'se'),
+        { k: 'poly', pts: [[2, 1], [5, 1]], c: 'res', keep: true }],
+  board: [M(V('AN') + ' = −' + K(F(1, 2), V('AC')))] });
+
+add({ ex: 3, item: 'MN',
+  cap: P(`Relation de Chasles&nbsp;: on passe par le point A.`) + P(M(V('MN') + ' = ' + V('MA') + ' + ' + V('AN'))),
+  els: chain([2, 1], [{ d: [2, 1], c: 'c1', lab: [sV('MA')], side: -1 }, { d: [1, -1], c: 'c2', lab: [sV('AN')] }]),
+  board: [M(V('MN') + ' = ' + V('MA') + ' + ' + V('AN'))] });
+add({ ex: 3, item: 'MN',
+  cap: P(`${V('MA')} est l’opposé de ${V('AM')}&nbsp;: ${M(V('MA') + ' = ' + K(F(1, 2), V('AB')))}.`) + P(`D’après l’énoncé, ${M(V('AN') + ' = −' + K(F(1, 2), V('AC')))}.`),
+  els: [], board: [M('= ' + K(F(1, 2), V('AB')) + ' − ' + K(F(1, 2), V('AC')))] });
+add({ ex: 3, item: 'MN',
+  cap: P(`On met ${F(1, 2)} en facteur.`),
+  els: [], board: [M('= ' + F(1, 2) + '(' + V('AB') + ' − ' + V('AC') + ')')] });
+add({ ex: 3, item: 'MN',
+  cap: P(`Dans la parenthèse&nbsp;: ${M('−' + V('AC') + ' = ' + V('CA'))}, puis la relation de Chasles.`) +
+       P(M(V('AB') + ' − ' + V('AC') + ' = ' + V('CA') + ' + ' + V('AB') + ' = ' + V('CB') + ' = −' + V('BC'))),
+  els: [vec([8, 4], [2, 4], 'c3', [sV('BC')], { w: 2.6, dash: true, lpos: 'above' })],
+  board: [M('= ' + K(F(1, 2), V('CB')))] });
+add({ ex: 3, item: 'MN',
+  cap: P(`Donc <span class="res">${M(V('MN') + ' = −' + K(F(1, 2), V('BC')))}</span>.`) + P(`Sur la figure&nbsp;: ${V('MN')} va dans le sens opposé à ${V('BC')} et il est deux fois plus court.`),
+  els: [vec([8, 4], [2, 4], 'c3', [sV('BC')], { w: 2.6, lpos: 'above' }), vec([2, 1], [5, 1], 'res', [sV('MN')], { w: 3.6, lpos: 'below' })],
+  board: [col('res', M('= −' + K(F(1, 2), V('BC'))))],
+  res: M(V('MN') + ' = −' + K(F(1, 2), V('BC'))) });
+
+add({ ex: 3, item: 'par',
+  cap: P(`${M(V('MN') + ' = −' + K(F(1, 2), V('BC')))}&nbsp;: les vecteurs ${V('MN')} et ${V('BC')} sont colinéaires.`) +
+       P(`<span class="res">Ainsi, les droites (MN) et (BC) sont parallèles.</span>`),
+  els: [vec([8, 4], [2, 4], 'c3', [sV('BC')], { w: 2.6, lpos: 'above' }), vec([2, 1], [5, 1], 'res', [sV('MN')], { w: 3.6, lpos: 'below' })],
+  board: [col('res', M(V('MN') + ' = −' + K(F(1, 2), V('BC'))))],
+  res: '(MN) et (BC) sont parallèles' });
+
+/* ======================== Exercice 4 */
+intro(4,
+  P(`ABCD est un parallélogramme. On définit les points E et F par ${M(V('BE') + ' = ' + K(F(1, 2), V('BC')))} et ${M(V('DF') + ' = ' + K('2', V('DC')))}.`) +
+  P(`ABCD est un parallélogramme&nbsp;: ${M(V('AB') + ' = ' + V('DC'))} et ${M(V('AD') + ' = ' + V('BC'))}. Ces égalités vont servir.`));
+
+add({ ex: 4, item: 'conj',
+  cap: P(`${M(V('BE') + ' = ' + K(F(1, 2), V('BC')))}&nbsp;: E est le milieu de [BC].`) +
+       P(`${M(V('DF') + ' = ' + K('2', V('DC')))}&nbsp;: F est sur la droite (DC), au-delà de C, avec DF = 2 DC.`),
+  els: [vec([3, 0], [3.5, 1], 'res', [half(1), sV('BC')], { w: 3.4, side: -1 }), pt([3.5, 1], 'E', 'se'),
+        vec([1, 2], [7, 2], 'res', ['2', sV('DC')], { w: 3.4, lpos: 'above' }), pt([7, 2], 'F', 'ne')] });
+add({ ex: 4, item: 'conj',
+  cap: P(`Conjecture&nbsp;: les points A, E et F semblent alignés.`) +
+       P(`On peut le vérifier sur GeoGebra (code Capytale ${M('414a-11688973')}), mais il faut le démontrer.`),
+  els: [dash([0, 0], [7, 2])] });
+
+add({ ex: 4, item: 'AE',
+  cap: P(`Relation de Chasles&nbsp;: on passe par le point B.`) + P(M(V('AE') + ' = ' + V('AB') + ' + ' + V('BE'))),
+  els: chain([0, 0], [{ d: [3, 0], c: 'c1', lab: [sV('AB')], lpos: 'below' }, { d: [0.5, 1], c: 'c2', lab: [sV('BE')], side: -1 }]),
+  board: [M(V('AE') + ' = ' + V('AB') + ' + ' + V('BE'))] });
+add({ ex: 4, item: 'AE',
+  cap: P(`D’après l’énoncé, ${M(V('BE') + ' = ' + K(F(1, 2), V('BC')))}.`),
+  els: [], board: [M('= ' + V('AB') + ' + ' + K(F(1, 2), V('BC')))] });
+add({ ex: 4, item: 'AE',
+  cap: P(`ABCD est un parallélogramme, donc ${M(V('BC') + ' = ' + V('AD'))}.`) + P(`Donc <span class="res">${M(V('AE') + ' = ' + V('AB') + ' + ' + K(F(1, 2), V('AD')))}</span>.`),
+  els: [vec([0, 0], [1, 2], 'c2', [sV('AD')], { w: 2.4, dash: true }), vec([0, 0], [3.5, 1], 'res', [sV('AE')], { w: 3.6 })],
+  board: [col('res', M('= ' + V('AB') + ' + ' + K(F(1, 2), V('AD'))))],
+  res: M(V('AE') + ' = ' + V('AB') + ' + ' + K(F(1, 2), V('AD'))) });
+
+add({ ex: 4, item: 'AF',
+  cap: P(`Relation de Chasles&nbsp;: on passe par le point D.`) + P(M(V('AF') + ' = ' + V('AD') + ' + ' + V('DF'))),
+  els: chain([0, 0], [{ d: [1, 2], c: 'c2', lab: [sV('AD')] }, { d: [6, 0], c: 'c1', lab: [sV('DF')], lpos: 'below' }]),
+  board: [M(V('AF') + ' = ' + V('AD') + ' + ' + V('DF'))] });
+add({ ex: 4, item: 'AF',
+  cap: P(`D’après l’énoncé, ${M(V('DF') + ' = ' + K('2', V('DC')))}.`),
+  els: [], board: [M('= ' + V('AD') + ' + ' + K('2', V('DC')))] });
+add({ ex: 4, item: 'AF',
+  cap: P(`ABCD est un parallélogramme, donc ${M(V('DC') + ' = ' + V('AB'))}.`) + P(`Donc <span class="res">${M(V('AF') + ' = ' + V('AD') + ' + ' + K('2', V('AB')))}</span>.`),
+  els: [vec([0, 0], [7, 2], 'res', [sV('AF')], { w: 3.6, lo: [161, -24] })],
+  board: [col('res', M('= ' + V('AD') + ' + ' + K('2', V('AB'))))],
+  res: M(V('AF') + ' = ' + K('2', V('AB')) + ' + ' + V('AD')) });
+
+add({ ex: 4, item: 'ali',
+  cap: P(`On compare les nombres devant ${V('AD')}&nbsp;: ${F(1, 2)} pour ${V('AE')} et 1 pour ${V('AF')}.`) + P(`On essaie donc de multiplier ${V('AE')} par 2.`),
+  els: [vec([0, 0], [3.5, 1], 'res', [sV('AE')], { w: 3.6 }), vec([0, 0], [7, 2], 'res', [sV('AF')], { w: 3.6, lo: [161, -24] })],
+  board: [M(V('AE') + ' = ' + V('AB') + ' + ' + K(F(1, 2), V('AD'))), M(V('AF') + ' = ' + K('2', V('AB')) + ' + ' + V('AD'))] });
+add({ ex: 4, item: 'ali',
+  cap: P(`On développe&nbsp;: on retrouve exactement ${V('AF')}.`),
+  els: [],
+  board: [M(K('2', V('AE')) + ' = 2(' + V('AB') + ' + ' + K(F(1, 2), V('AD')) + ')'), M('= ' + K('2', V('AB')) + ' + ' + V('AD') + ' = ' + V('AF'))] });
+add({ ex: 4, item: 'ali',
+  cap: P(`${M(V('AF') + ' = ' + K('2', V('AE')))}&nbsp;: les vecteurs ${V('AE')} et ${V('AF')} sont colinéaires.`) +
+       P(`Ils ont en commun le point A. <span class="res">Ainsi, les points A, E et F sont alignés.</span>`),
+  els: [], board: [col('res', M(V('AF') + ' = ' + K('2', V('AE'))))],
+  res: M(V('AF') + ' = ' + K('2', V('AE'))) + '&nbsp;: A, E et F sont alignés' });
+
+/* ======================== Exercice 5 */
+intro(5,
+  P(`ABCD est un parallélogramme. E est le symétrique de A par rapport à B, F est le symétrique de A par rapport à D.`) +
+  P(`Rappel&nbsp;: I est le milieu de [AB] ⟺ ${M(V('IA') + ' + ' + V('IB') + ' = ' + ZERO)}.`) +
+  P(`On va donc montrer que ${M(V('CE') + ' + ' + V('CF') + ' = ' + ZERO)}.`));
+
+add({ ex: 5, item: 'fig',
+  cap: P(`E est le symétrique de A par rapport à B&nbsp;: B est le milieu de [AE].`) + P(`Donc ${M(V('BE') + ' = ' + V('AB'))}.`),
+  els: [vec([0, -0.6], [3, -0.6], 'c1', [sV('AB')], { w: 2.4, dash: true, lpos: 'below' }), vec([3, 0], [6, 0], 'res', [sV('BE')], { w: 3.4, lpos: 'below' }), pt([6, 0], 'E', 'se')],
+  board: [M(V('BE') + ' = ' + V('AB'))] });
+add({ ex: 5, item: 'fig',
+  cap: P(`F est le symétrique de A par rapport à D&nbsp;: D est le milieu de [AF].`) + P(`Donc ${M(V('DF') + ' = ' + V('AD'))}.`),
+  els: [vec([1, 2], [2, 4], 'res', [sV('DF')], { w: 3.4 }), { k: 'poly', pts: [[0, 0], [1, 2]], c: 'res', keep: true }, pt([2, 4], 'F', 'n')],
+  board: [M(V('DF') + ' = ' + V('AD'))] });
+add({ ex: 5, item: 'fig',
+  cap: P(`Sur la figure, C semble être le milieu de [EF].`),
+  els: [{ k: 'poly', pts: [[3, 0], [6, 0]], c: 'res', keep: true }, dash([6, 0], [2, 4])] });
+
+add({ ex: 5, item: 'CE',
+  cap: P(`Relation de Chasles&nbsp;: on passe par le point B.`) + P(M(V('CE') + ' = ' + V('CB') + ' + ' + V('BE'))),
+  els: chain([4, 2], [{ d: [-1, -2], c: 'c2', lab: [sV('CB')], side: -1 }, { d: [3, 0], c: 'c1', lab: [sV('BE')], lpos: 'below' }]),
+  board: [M(V('CE') + ' = ' + V('CB') + ' + ' + V('BE'))] });
+add({ ex: 5, item: 'CE',
+  cap: P(`ABCD est un parallélogramme&nbsp;: ${M(V('BC') + ' = ' + V('AD'))}, donc ${M(V('CB') + ' = −' + V('AD'))}.`) + P(`B est le milieu de [AE]&nbsp;: ${M(V('BE') + ' = ' + V('AB'))}.`),
+  els: [], board: [M('= −' + V('AD') + ' + ' + V('AB'))] });
+add({ ex: 5, item: 'CE',
+  cap: P(`On range dans l’ordre&nbsp;: <span class="res">${M(V('CE') + ' = ' + V('AB') + ' − ' + V('AD'))}</span>.`),
+  els: [vec([4, 2], [6, 0], 'res', [sV('CE')], { w: 3.6 })],
+  board: [col('res', M('= ' + V('AB') + ' − ' + V('AD')))],
+  res: M(V('CE') + ' = ' + V('AB') + ' − ' + V('AD')) });
+
+add({ ex: 5, item: 'CF',
+  cap: P(`Relation de Chasles&nbsp;: on passe par le point D.`) + P(M(V('CF') + ' = ' + V('CD') + ' + ' + V('DF'))),
+  els: chain([4, 2], [{ d: [-3, 0], c: 'c1', lab: [sV('CD')], lpos: 'below' }, { d: [1, 2], c: 'c2', lab: [sV('DF')], side: -1 }]),
+  board: [M(V('CF') + ' = ' + V('CD') + ' + ' + V('DF'))] });
+add({ ex: 5, item: 'CF',
+  cap: P(`ABCD est un parallélogramme&nbsp;: ${M(V('DC') + ' = ' + V('AB'))}, donc ${M(V('CD') + ' = −' + V('AB'))}.`) + P(`D est le milieu de [AF]&nbsp;: ${M(V('DF') + ' = ' + V('AD'))}.`),
+  els: [], board: [M('= −' + V('AB') + ' + ' + V('AD'))] });
+add({ ex: 5, item: 'CF',
+  cap: P(`Donc <span class="res">${M(V('CF') + ' = −' + V('AB') + ' + ' + V('AD'))}</span>.`),
+  els: [vec([4, 2], [2, 4], 'res', [sV('CF')], { w: 3.6 })],
+  board: [col('res', M('= −' + V('AB') + ' + ' + V('AD')))],
+  res: M(V('CF') + ' = −' + V('AB') + ' + ' + V('AD')) });
+
+add({ ex: 5, item: 'mil',
+  cap: P(`On additionne les deux résultats&nbsp;: ${V('AB')} et ${M('−' + V('AB'))} s’annulent, ${M('−' + V('AD'))} et ${V('AD')} aussi.`),
+  els: [vec([4, 2], [6, 0], 'res', [sV('CE')], { w: 3.6 }), vec([4, 2], [2, 4], 'res', [sV('CF')], { w: 3.6 })],
+  board: [M(V('CE') + ' + ' + V('CF') + ' = ' + V('AB') + ' − ' + V('AD') + ' − ' + V('AB') + ' + ' + V('AD')), M('= ' + ZERO)] });
+add({ ex: 5, item: 'mil',
+  cap: P(`${M(V('CE') + ' + ' + V('CF') + ' = ' + ZERO)}&nbsp;: c’est la caractérisation vectorielle du milieu.`) +
+       P(`<span class="res">Ainsi, C est le milieu du segment [EF].</span>`),
+  els: [], board: [col('res', M(V('CE') + ' + ' + V('CF') + ' = ' + ZERO))],
+  res: M(V('CE') + ' + ' + V('CF') + ' = ' + ZERO) + '&nbsp;: C est le milieu de [EF]' });
+
+/* Récapitulatif */
+add({ ex: 6, item: '0', recap: true, cap: P(`Récapitulatif de tous les résultats.`), els: [] });
+
+/* ----------------------------------------------------------- Dessin SVG */
+const HEX = { c1: '#7048E8', c2: '#D9480F', c3: '#0C8599', res: '#C92A2A', ink: '#1f2328', grey: '#9aa0a6', grid: '#dddad3' };
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('fig');
+let FG = FIG[1];
+const XY = p => [p[0] * FG.e1[0] + p[1] * FG.e2[0], p[0] * FG.e1[1] + p[1] * FG.e2[1]];
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function cross(x, y, color, layer, s = 6, w = 2.2) {
+  const g = el('g', { stroke: color, 'stroke-width': w, 'stroke-linecap': 'round' }, layer);
+  el('line', { x1: x - s, y1: y - s, x2: x + s, y2: y + s }, g);
+  el('line', { x1: x - s, y1: y + s, x2: x + s, y2: y - s }, g);
+  return g;
+}
+
+/* Écriture mathématique dans la figure : renvoie un groupe centré en (cx, cy) */
+function svgMath(parts, cx, cy, color, layer, size = 22) {
+  const g = el('g', { fill: color }, layer);
+  const halo = { stroke: '#fff', 'stroke-width': 5, 'paint-order': 'stroke', 'stroke-linejoin': 'round' };
+  let x = 0, top = -size * 0.95, bot = size * 0.28;
+  const txt = (s, xx, yy, sz, it) => {
+    const t = el('text', { x: xx, y: yy, 'font-size': sz, ...halo, ...(it ? { 'font-style': 'italic' } : {}) }, g);
+    t.textContent = s;
+    return t.getComputedTextLength();
+  };
+  for (const p of parts) {
+    if (typeof p === 'string') { x += txt(p, x, 0, size); continue; }
+    if (p.fr) {
+      const s2 = size * 0.68;
+      const w1 = Math.max(txt(String(p.fr[0]), x + 2, -size * 0.42, s2), txt(String(p.fr[1]), x + 2, size * 0.28, s2));
+      el('line', { x1: x + 1, y1: -size * 0.33, x2: x + w1 + 3, y2: -size * 0.33, stroke: color, 'stroke-width': 1.3 }, g);
+      x += w1 + 7; top = Math.min(top, -size * 0.95); bot = Math.max(bot, size * 0.32);
+      continue;
+    }
+    const x0 = x;
+    x += txt(p.v, x, 0, size, p.it) + (p.it && !p.sub ? 2 : 0);
+    if (p.sub) { x -= 1; x += txt(p.sub, x, size * 0.28, size * 0.65); }
+    const ay = -size * (p.it ? 0.78 : 0.86), x1 = x0 + 1.5, x2 = x - 0.5;
+    el('line', { x1, y1: ay, x2, y2: ay, stroke: color, 'stroke-width': 1.4 }, g);
+    el('polyline', { points: `${x2 - 4.5},${ay - 3.2} ${x2},${ay} ${x2 - 4.5},${ay + 3.2}`, fill: 'none', stroke: color, 'stroke-width': 1.4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+    x += 1;
+  }
+  const h = bot - top;
+  g.setAttribute('transform', `translate(${cx - x / 2},${cy - (top + bot) / 2})`);
+  g.dataset.w = x; g.dataset.h = h;
+  return g;
+}
+
+const POS = { n: [0, -22], s: [0, 24], e: [20, 0], w: [-20, 0], ne: [15, -18], nw: [-15, -18], se: [15, 20], sw: [-15, 20] };
+function drawPt(e, layer) {
+  const [x, y] = XY(e.at), color = HEX[e.c || 'ink'];
+  const g = el('g', {}, layer);
+  if (e.cross !== false) cross(x, y, color, g, e.c === 'res' ? 7 : 6, e.c === 'res' ? 2.8 : 2.2);
+  const o = Array.isArray(e.pos) ? e.pos : POS[e.pos || 'ne'];
+  const t = el('text', { x: x + o[0], y: y + o[1], 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': 24, fill: color,
+    stroke: '#fff', 'stroke-width': 5, 'paint-order': 'stroke' }, g);
+  t.textContent = e.name;
+  return g;
+}
+
+function drawVec(e, layer) {
+  const [x1, y1] = XY(e.from), [x2, y2] = XY(e.to), color = HEX[e.c];
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len;
+  const w = e.w || 3, hl = 9 + w * 1.4, hw = 3 + w;
+  const g = el('g', {}, layer);
+  if (e.guide) {
+    const yA = XY([0, 0])[1];
+    for (const xx of [x1, x2]) el('line', { x1: xx, y1: yA, x2: xx, y2: y1, stroke: HEX.grey, 'stroke-width': 1, 'stroke-dasharray': '3 4' }, g);
+  }
+  const line = el('line', { x1, y1, x2: x2 - ux * hl, y2: y2 - uy * hl, stroke: color, 'stroke-width': w, 'stroke-linecap': e.dash ? 'butt' : 'round',
+    ...(e.dash ? { 'stroke-dasharray': '8 5' } : {}) }, g);
+  const head = el('polygon', { points: `${x2},${y2} ${x2 - ux * hl - uy * hw},${y2 - uy * hl + ux * hw} ${x2 - ux * hl + uy * hw},${y2 - uy * hl - ux * hw}`, fill: color }, g);
+  let lab = null;
+  if (e.lab) {
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    lab = svgMath(e.lab, 0, 0, color, g);
+    const lw = +lab.dataset.w, lh = +lab.dataset.h;
+    let nx, ny;
+    if (e.lo) { nx = 0; ny = 0; }
+    else if (e.lpos === 'above') { nx = 0; ny = -1; } else if (e.lpos === 'below') { nx = 0; ny = 1; }
+    else { const s = e.side || 1; nx = uy * s; ny = -ux * s; }
+    const off = 8 + Math.abs(nx) * lw / 2 + Math.abs(ny) * lh / 2;
+    const cx = mx + nx * off + (e.lo ? e.lo[0] : 0), cy = my + ny * off + (e.lo ? e.lo[1] : 0);
+    lab.setAttribute('transform', lab.getAttribute('transform').replace(/translate\(([-\d.e]+),([-\d.e]+)\)/,
+      (_, a, b) => `translate(${+a + cx},${+b + cy})`));
+  }
+  return { g, line, head, lab, len: len - hl };
+}
+
+function drawBase(e, layer) {
+  if (e.k === 'grid') {
+    for (let i = Math.ceil(e.x[0]); i <= Math.floor(e.x[1]); i++) {
+      const [a, b] = [XY([i, e.y[0]]), XY([i, e.y[1]])];
+      el('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: HEX.grid, 'stroke-width': 1 }, layer);
+    }
+    for (let j = Math.ceil(e.y[0]); j <= Math.floor(e.y[1]); j++) {
+      const [a, b] = [XY([e.x[0], j]), XY([e.x[1], j])];
+      el('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: HEX.grid, 'stroke-width': 1 }, layer);
+    }
+  } else if (e.k === 'axis') {
+    const [a, b] = [XY([e.lo, 0]), XY([e.hi, 0])];
+    el('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: HEX.ink, 'stroke-width': 1.6 }, layer);
+    for (let x = Math.ceil(e.lo); x <= e.hi; x++) {
+      if (x === e.lo || x === e.hi) continue;
+      const [px, py] = XY([x, 0]);
+      el('line', { x1: px, y1: py - 6, x2: px, y2: py + 6, stroke: HEX.ink, 'stroke-width': 1.4 }, layer);
+    }
+  } else if (e.k === 'poly') {
+    const pts = e.pts.map(p => XY(p).join(',')).join(' ');
+    el(e.close ? 'polygon' : 'polyline', { points: pts, fill: 'none', stroke: HEX[e.c || 'ink'], 'stroke-width': e.c === 'grey' ? 1.2 : 1.8,
+      ...(e.dash ? { 'stroke-dasharray': '6 5' } : {}) }, layer);
+  } else if (e.k === 'pt') drawPt(e, layer);
+  else if (e.k === 'vec') drawVec(e, layer);
+}
+
+/* Cadre de chaque figure : calculé une fois, avec tous les éléments de toutes ses étapes */
+const VIEW = {};
+function viewOf(key) {
+  if (VIEW[key]) return VIEW[key];
+  const g = el('g', {}, svg);
+  for (const e of FIG[key].base) drawBase(e, g);
+  for (const s of STEPS) if (figKey(s) == key) for (const e of s.els) drawBase(e, g);
+  const bb = g.getBBox();
+  svg.removeChild(g);
+  const pad = 20, w = Math.max(760, bb.width + 2 * pad), h = Math.max(240, bb.height + 2 * pad);
+  return VIEW[key] = `${bb.x + bb.width / 2 - w / 2} ${bb.y + bb.height / 2 - h / 2} ${w} ${h}`;
+}
+
+/* ----------------------------------------------------------------- État */
+let cur = 0;
+const exStart = ex => STEPS.findIndex(s => s.ex === ex);
+const itemLabel = (ex, item) => { const it = EX[ex].items.find(i => i[0] === item); return it ? (it[1] ? it[1] + ' ' : '') + it[2] : ''; };
+
+function render(animate) {
+  svg.innerHTML = '';
+  const st = STEPS[cur];
+  const figT = document.getElementById('figtitle'), board = document.getElementById('board'), rf = document.getElementById('recapfig');
+  if (st.recap) {
+    svg.style.display = 'none'; board.innerHTML = ''; rf.style.display = '';
+    figT.innerHTML = 'Résultats des exercices 1 à 5.';
+    rf.innerHTML = [1, 2, 3, 4, 5].map(ex =>
+      `<p class="hint">Exercice ${ex}</p><div class="recap">${STEPS.filter(s => s.ex === ex && s.res).map(s => `<p>${s.res}</p>`).join('')}</div>`).join('');
+    updatePanel(); return;
+  }
+  svg.style.display = ''; rf.style.display = 'none';
+  const key = figKey(st);
+  FG = FIG[key];
+  svg.setAttribute('viewBox', viewOf(key));
+  figT.innerHTML = `Exercice ${st.ex}` + (st.intro ? '' : ` — ${itemLabel(st.ex, st.item)}`);
+
+  const gBase = el('g', {}, svg), gEls = el('g', {}, svg), gTop = el('g', {}, svg);
+  for (const e of FG.base) drawBase(e, gBase);
+
+  /* Tableau des calculs : lignes des étapes déjà vues pour la même question */
+  let bl = [];
+  for (let j = exStart(st.ex); j <= cur; j++) {
+    const S = STEPS[j];
+    if (S.item === st.item && S.board) bl.push(...S.board.map(l => [l, j === cur]));
+  }
+  board.innerHTML = bl.map(([l, isNew], i) => `<div class="bl${animate && isNew ? ' new' : ''}">${l}</div>`).join('');
+  if (animate) board.querySelectorAll('.bl.new').forEach((d, i) => { d.style.opacity = 0; d.style.transitionDelay = (0.15 + i * 0.35) + 's'; requestAnimationFrame(() => requestAnimationFrame(() => { d.style.opacity = ''; })); });
+
+  let t = 0;
+  for (let j = exStart(st.ex); j <= cur; j++) {
+    const S = STEPS[j];
+    for (const e of S.els) {
+      const same = S.item === st.item;
+      if (!same && !e.keep) continue;
+      const isNew = animate && j === cur;
+      if (e.k === 'vec') {
+        const v = drawVec(e, e.c === 'res' ? gTop : gEls);
+        if (isNew) {
+          if (e.dash) fadeIn(v.line, t); else animLine(v.line, v.len, t);
+          fadeIn(v.head, t + 0.55); if (v.lab) fadeIn(v.lab, t + 0.55);
+          t += e.dash ? 0.45 : 0.75;
+        }
+      } else if (e.k === 'poly') {
+        const p = el('g', {}, gEls); drawBase(e, p);
+        if (isNew) { fadeIn(p, t); t += 0.3; }
+      } else if (e.k === 'pt') {
+        const p = drawPt(e, gTop);
+        if (isNew) { fadeIn(p, t); t += 0.2; }
+      }
+    }
+  }
+  updatePanel();
+}
+
+function animLine(node, len, delay) {
+  node.style.strokeDasharray = len;
+  node.style.strokeDashoffset = len;
+  node.classList.add('draw');
+  node.style.transitionDelay = delay + 's';
+  requestAnimationFrame(() => requestAnimationFrame(() => { node.style.strokeDashoffset = 0; }));
+}
+function fadeIn(node, delay) {
+  node.style.opacity = 0;
+  node.classList.add('fade');
+  node.style.transitionDelay = delay + 's';
+  requestAnimationFrame(() => requestAnimationFrame(() => { node.style.opacity = ''; }));
+}
+
+/* ------------------------------------------------------------- Panneau */
+const tabs = document.getElementById('tabs'), qBox = document.getElementById('questions');
+for (const ex of [1, 2, 3, 4, 5, 6]) {
+  const b = document.createElement('button');
+  b.className = 'tab'; b.dataset.ex = ex;
+  b.textContent = ex === 6 ? 'Récapitulatif' : 'Exercice ' + ex;
+  b.addEventListener('click', () => { cur = exStart(ex); render(true); });
+  tabs.appendChild(b);
+}
+let shownEx = null;
+function buildQuestions(ex) {
+  shownEx = ex;
+  qBox.innerHTML = '';
+  if (ex === 6) { document.getElementById('consigne').innerHTML = 'Tous les résultats des exercices 1 à 5.'; return; }
+  document.getElementById('consigne').innerHTML = `Exercice ${ex} — ${EX[ex].consigne} <span style="white-space:nowrap">(${EX[ex].comp})</span>`;
+  qBox.classList.toggle('wide', !!EX[ex].wide);
+  for (const [id, num, txt] of EX[ex].items) {
+    const d = document.createElement('div');
+    d.className = 'q'; d.dataset.id = id;
+    d.innerHTML = (num ? `<span class="num">${num}</span>` : '') + `<span>${txt}</span>`;
+    d.addEventListener('click', () => { cur = STEPS.findIndex(s => s.ex === ex && s.item === id); render(true); });
+    qBox.appendChild(d);
+  }
+}
+
+function updatePanel() {
+  const st = STEPS[cur];
+  if (shownEx !== st.ex) buildQuestions(st.ex);
+  [...tabs.children].forEach(b => b.classList.toggle('active', +b.dataset.ex === st.ex));
+  if (st.ex !== 6) {
+    const ids = EX[st.ex].items.map(i => i[0]), k = st.intro ? -1 : ids.indexOf(st.item);
+    [...qBox.children].forEach(d => {
+      const i = ids.indexOf(d.dataset.id);
+      d.classList.toggle('active', i === k);
+      d.classList.toggle('done', i < k);
+    });
+  }
+  let et;
+  if (st.recap) et = 'Récapitulatif';
+  else if (st.intro) et = `Exercice ${st.ex} — présentation`;
+  else {
+    const same = STEPS.filter(s => s.ex === st.ex && s.item === st.item);
+    et = `Exercice ${st.ex} — étape ${same.indexOf(st) + 1} sur ${same.length}`;
+  }
+  document.getElementById('etape').textContent = et;
+  document.getElementById('caption').innerHTML = st.cap;
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === STEPS.length - 1;
+  document.getElementById('bar').style.width = (100 * cur / (STEPS.length - 1)) + '%';
+  history.replaceState(null, '', '#' + cur);
+}
+
+function go(delta) {
+  const n = Math.max(0, Math.min(STEPS.length - 1, cur + delta));
+  if (n === cur) return;
+  cur = n; render(delta > 0);
+}
+document.getElementById('prev').addEventListener('click', () => go(-1));
+document.getElementById('next').addEventListener('click', () => go(1));
+// Les boutons ne gardent pas le focus (sinon la barre d'espace les réactiverait)
+document.addEventListener('click', e => { const b = e.target.closest('button'); if (b) b.blur(); });
+// Clic n'importe où sur la page = étape suivante (sauf boutons et choix d'une question)
+document.addEventListener('click', e => {
+  if (e.target.closest('button, .q, a')) return;
+  go(1);
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+});
+
+// Accès direct : …html#12 = étape 12
+const h = /^#(\d+)$/.exec(location.hash);
+if (h) cur = Math.min(STEPS.length - 1, +h[1]);
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => render(false));
+</script>
+</body>
+</html>
