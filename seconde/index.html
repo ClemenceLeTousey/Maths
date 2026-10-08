@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathématiques — Secondes</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        body {
+            background-color: #f5f0e6;
+        }
+        #contenu-seconde {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barre de Navigation Supérieure -->
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li class="nav-home"><a href="../index.html" style="background-color: #ff6f26; border-radius: 4px; color: white !important;">🏠 Accueil</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-trigger"><img src="../img/python-logo.png" alt="" style="height: 1em; width: auto; vertical-align: -0.15em; margin-right: 4px;"> Python ▾</a>
+                <ul class="dropdown-menu">
+                    <li><a href="../consolepython.html">Console en ligne</a></li>
+                    <li><a href="../algo-coursTD.html">Cours et TD</a></li>
+                </ul>
+            </li>
+            <li class="nav-home"><a href="../numworks.html">🖩 Numworks</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>Mathématiques — Secondes</h1>
+        <p>Lycée Lebrun 2026-2027 · Cours, exercices, automatismes et remédiation</p>
+    </header>
+
+    <main class="container">
+        <!-- Le contenu est repris automatiquement du bloc « Secondes » de la page d'accueil
+             (une seule source à mettre à jour : ../index.html). -->
+        <div id="contenu-seconde" class="class-card">
+            <p>Chargement… Si rien ne s'affiche, <a href="../index.html">ouvre la page d'accueil</a>.</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 - Cours de Mathématiques. Hébergé avec GitHub Pages.</p>
+    </footer>
+
+    <script>
+        (async () => {
+            const cible = document.getElementById('contenu-seconde');
+            try {
+                const accueil = new URL('../index.html', location.href);
+                const html = await (await fetch(accueil, { cache: 'no-cache' })).text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const carte = doc.querySelector('.grid-classes .class-column .class-card');
+                if (!carte) throw new Error('bloc Secondes introuvable');
+                // On retire le badge « Secondes » (déjà dans le titre de la page)
+                const badge = carte.querySelector(':scope > span');
+                if (badge) badge.remove();
+                // Liens relatifs : on les rend relatifs à la page d'accueil
+                carte.querySelectorAll('[href], [src]').forEach(el => {
+                    const attr = el.hasAttribute('href') ? 'href' : 'src';
+                    const v = el.getAttribute(attr);
+                    if (v && !/^(#|[a-z]+:)/i.test(v)) el.setAttribute(attr, new URL(v, accueil).href);
+                });
+                cible.innerHTML = carte.innerHTML;
+            } catch (e) {
+                cible.innerHTML = '<p>Impossible de charger le contenu. <a href="../index.html">Ouvre la page d\'accueil</a>.</p>';
+            }
+        })();
+    </script>
+
+</body>
+</html>
