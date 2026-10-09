@@ -8,8 +8,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Cahier à petits carreaux : une colonne, encre bleue, flèches et corrections au stylo rouge. */
+/* Cahier à petits carreaux : une colonne, encre bleue, flèches et corrections au stylo rouge. Thème clair fixe. */
 :root {
+  color-scheme: light;
   --paper: #f5f7fb;
   --grid: #e3e9f3;
   --card: #ffffff;
@@ -26,19 +27,8 @@
   --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #111726; --grid: #182034; --card: #172036; --ink: #e5eaf5; --muted: #9ba7c0;
-    --line: #2b3754; --blue: #86a6ff; --soft: #1e2a46; --red: #ff7a6e; --red-soft: #3a2024;
-    --ok: #5fd08f; --ok-soft: #173327; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #111726; --grid: #182034; --card: #172036; --ink: #e5eaf5; --muted: #9ba7c0;
-  --line: #2b3754; --blue: #86a6ff; --soft: #1e2a46; --red: #ff7a6e; --red-soft: #3a2024;
-  --ok: #5fd08f; --ok-soft: #173327; color-scheme: dark;
-}
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
   margin: 0;
   background-color: var(--paper);
@@ -226,6 +216,8 @@ footer { color: var(--muted); font-size: 0.9rem; }
   const par = (x) => (round2(x) < 0 ? '(' + fmt(x) + ')' : fmt(x));
   const plus = (x) => (round2(x) < 0 ? ' − ' + fmt(-x) : ' + ' + fmt(x));
   const V = (s) => '<i class="v">' + s + '</i>';
+  // « On se décale de n rangs : on ajoute n fois r » (ou on retire, si r est négatif)
+  const shift = (n, r) => 'On se décale de ' + n + ' rangs : ' + (round2(r) < 0 ? 'on retire ' + n + ' fois ' + fmt(-r) + ', ou on ajoute ' + n + ' fois ' + par(r) : 'on ajoute ' + n + ' fois ' + fmt(r)) + '.';
   const M = (s) => '<span class="m">' + s + '</span>';
   function parse(s) {
     s = String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/(€|cm|L)$/, '');
@@ -279,7 +271,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
     return {
       stmt: '<p>La suite ' + V(s) + ' est arithmétique, avec ' + M(V(s) + '(0) = ' + fmt(u0)) + ' et ' + M(V('r') + ' = ' + fmt(r)) + '.</p><p class="q">Calculer ' + M(V(s) + '(' + n + ')') + '.</p>',
       answers: [{ label: M(V(s) + '(' + n + ') ='), value: ans }],
-      corr: '<p>On se décale de ' + n + ' rangs : on ajoute ' + n + ' fois ' + par(r) + '.</p><div class="chain">' + chain(s, 0, n, r, u0) + '</div>' +
+      corr: '<p>' + shift(n, r) + '</p><div class="chain">' + chain(s, 0, n, r, u0) + '</div>' +
         '<p class="calc">' + M(V(s) + '(' + n + ') = ' + V(s) + '(0) + ' + n + ' × ' + V('r') + ' = ' + fmt(u0) + ' + ' + n + ' × ' + par(r) + ' = ' + fmt(u0) + plus(n * r) + ' = <b>' + fmt(ans) + '</b>') + '</p>'
     };
   }
@@ -307,7 +299,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
     return {
       stmt: '<p>' + c.txt + '</p><p class="q">' + c.q + '</p>',
       answers: [{ label: M(V(c.s) + '(' + c.n + ') ='), value: ans, unit: c.unit }],
-      corr: '<p>' + M(V(c.s) + '(0) = ' + fmt(c.u0)) + ' et ' + M(V('r') + ' = ' + fmt(c.r)) + (c.r < 0 ? ' (ça diminue)' : '') + '. On se décale de ' + c.n + ' rangs.</p><div class="chain">' + chain(c.s, 0, c.n, c.r, c.u0) + '</div>' +
+      corr: '<p>' + M(V(c.s) + '(0) = ' + fmt(c.u0)) + ' et ' + M(V('r') + ' = ' + fmt(c.r)) + (c.r < 0 ? ' (ça diminue)' : '') + '. ' + shift(c.n, c.r) + '</p><div class="chain">' + chain(c.s, 0, c.n, c.r, c.u0) + '</div>' +
         '<p class="calc">' + M(V(c.s) + '(' + c.n + ') = ' + V(c.s) + '(0) + ' + c.n + ' × ' + V('r') + ' = ' + fmt(c.u0) + ' + ' + c.n + ' × ' + par(c.r) + ' = ' + fmt(c.u0) + plus(c.n * c.r) + ' = <b>' + fmt(ans) + ' ' + c.unit + '</b>') + '</p>'
     };
   }
@@ -322,7 +314,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
         { label: '+', value: r, unit: '× ' + V('n') },
         { label: '2. ' + M(V(s) + '(' + N + ') ='), value: u0 + N * r }
       ],
-      corr: '<p>On se décale de ' + V('n') + ' rangs : on ajoute ' + V('n') + ' fois ' + par(r) + '.</p><div class="chain">' + chain(s, 0, 5, 0, null, { symbolic: true, rlabel: (r < 0 ? fmt(r) : '+' + fmt(r)), big: '+ n × ' + par(r) }) + '</div>' +
+      corr: '<p>' + shift(V('n'), r) + '</p><div class="chain">' + chain(s, 0, 5, 0, null, { symbolic: true, rlabel: (r < 0 ? fmt(r) : '+' + fmt(r)), big: '+ n × ' + par(r) }) + '</div>' +
         '<p class="calc">1. ' + M(V(s) + '(' + V('n') + ') = ' + V(s) + '(0) + ' + V('n') + ' × ' + V('r') + ' = ' + fmt(u0) + ' + ' + V('n') + ' × ' + par(r) + ', donc <b>' + V(s) + '(' + V('n') + ') = ' + fmt(u0) + rn + '</b>') + '</p>' +
         '<p class="calc">2. ' + M(V(s) + '(' + N + ') = ' + fmt(u0) + ' + ' + par(r) + ' × ' + N + ' = ' + fmt(u0) + plus(N * r) + ' = <b>' + fmt(u0 + N * r) + '</b>') + '</p>' +
         '<p style="color:var(--muted)">Pour un ' + V('r') + ' négatif, tape le signe moins dans la 2<sup>e</sup> case (par exemple −3).</p>'
