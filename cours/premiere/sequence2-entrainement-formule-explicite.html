@@ -284,16 +284,6 @@ footer { color: var(--muted); font-size: 0.9rem; }
     };
   }
 
-  function genB() {
-    const s = pick(letters), p = ri(1, 4), up = ri(-5, 40), r = intR(), k = ri(3, 8), n = p + k, ans = up + k * r;
-    return {
-      stmt: '<p>La suite ' + V(s) + ' est arithmétique, avec ' + M(V(s) + '(' + p + ') = ' + fmt(up)) + ' et ' + M(V('r') + ' = ' + fmt(r)) + '.</p><p class="q">Calculer ' + M(V(s) + '(' + n + ')') + '.</p>',
-      answers: [{ label: M(V(s) + '(' + n + ') ='), value: ans }],
-      corr: '<p>On part de ' + M(V(s) + '(' + p + ')') + ', pas de ' + M(V(s) + '(0)') + ' ! De ' + p + ' à ' + n + ', on se décale de ' + n + ' − ' + p + ' = ' + k + ' cases.</p><div class="chain">' + chain(s, p, n, r, up) + '</div>' +
-        '<p class="calc">' + M(V(s) + '(' + n + ') = ' + V(s) + '(' + p + ') + ' + k + ' × ' + V('r') + ' = ' + fmt(up) + ' + ' + k + ' × ' + par(r) + ' = ' + fmt(up) + plus(k * r) + ' = <b>' + fmt(ans) + '</b>') + '</p>'
-    };
-  }
-
   const contexts = [
     () => { const s0 = ri(5, 20) * 10, d = pick([10, 15, 20, 25, 30]), n = ri(4, 10);
       return { s: 's', u0: s0, r: d, n, unit: '€',
@@ -388,7 +378,6 @@ footer { color: var(--muted); font-size: 0.9rem; }
   const exos = document.getElementById('exos');
   [
     { id: 'e1', title: 'Calculer un terme à partir de u(0)', gen: genA },
-    { id: 'e2', title: 'Calculer un terme à partir d\'un autre terme', gen: genB },
     { id: 'e3', title: 'Problème concret', gen: genC },
     { id: 'e4', title: 'Exprimer u(n) en fonction de n', gen: genD }
   ].forEach((d, i) => mountExo(exos, Object.assign({ num: 'Exercice ' + (i + 1) }, d)));
