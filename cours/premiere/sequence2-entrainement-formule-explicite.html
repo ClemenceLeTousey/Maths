@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Entraînement formule explicite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Cahier à petits carreaux : une colonne, encre bleue, corrections au stylo rouge. */
+:root {
+  --paper: #f5f7fb;
+  --grid: #e3e9f3;
+  --card: #ffffff;
+  --ink: #1b2747;
+  --muted: #5b6784;
+  --line: #cfd8e7;
+  --blue: #2c55c9;
+  --soft: #e9effb;
+  --red: #c8352a;
+  --red-soft: #fbe9e7;
+  --ok: #1d7f47;
+  --ok-soft: #e3f4ea;
+  --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111726; --grid: #182034; --card: #172036; --ink: #e5eaf5; --muted: #9ba7c0;
+    --line: #2b3754; --blue: #86a6ff; --soft: #1e2a46; --red: #ff7a6e; --red-soft: #3a2024;
+    --ok: #5fd08f; --ok-soft: #173327; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111726; --grid: #182034; --card: #172036; --ink: #e5eaf5; --muted: #9ba7c0;
+  --line: #2b3754; --blue: #86a6ff; --soft: #1e2a46; --red: #ff7a6e; --red-soft: #3a2024;
+  --ok: #5fd08f; --ok-soft: #173327; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font: 17px/1.55 var(--body);
+}
+.wrap { max-width: 860px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2rem, 6vw, 3rem); font-weight: 800; letter-spacing: -0.01em; }
+h2 { font-size: 1.55rem; font-weight: 800; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+p { margin: 0; }
+.eyebrow { font: 600 0.78rem var(--body); letter-spacing: 0.09em; text-transform: uppercase; color: var(--red); }
+i.v { font-style: italic; }
+.m { font-variant-numeric: tabular-nums; white-space: nowrap; }
+header { display: grid; gap: 12px; }
+header .lead { color: var(--muted); max-width: 62ch; }
+nav { display: flex; flex-wrap: wrap; gap: 8px; }
+nav a { color: var(--blue); text-decoration: none; border: 1px solid var(--line); background: var(--card); padding: 4px 12px; border-radius: 999px; font-size: 0.92rem; }
+nav a:hover { border-color: var(--blue); }
+section { display: grid; gap: 18px; }
+.sec-head { display: grid; gap: 6px; }
+.sec-head p { color: var(--muted); max-width: 64ch; }
+
+/* Encadré propriété */
+.prop { background: var(--card); border: 2px solid var(--blue); border-radius: 6px; padding: 18px 20px; display: grid; gap: 12px; }
+.prop .tag { font: 700 0.8rem var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue); }
+.formula { font-size: 1.35rem; text-align: center; padding: 10px; background: var(--soft); border-radius: 4px; }
+.formula b { font-weight: 700; }
+.diagram { overflow-x: auto; }
+.diagram svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+.methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.method { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.method .ex { font-size: 0.95rem; color: var(--muted); }
+.method .ex .m { color: var(--ink); }
+.warn { border-left: 4px solid var(--red); background: var(--red-soft); padding: 12px 16px; border-radius: 0 6px 6px 0; display: grid; gap: 6px; }
+.warn ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+
+/* Explorateur */
+.explorer { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: grid; gap: 14px; }
+.ctrls { display: flex; flex-wrap: wrap; gap: 14px; align-items: end; }
+.ctrls label { display: grid; gap: 4px; font-size: 0.9rem; color: var(--muted); }
+.ctrls input { width: 7rem; }
+.live { font-size: 1.15rem; }
+.plot { overflow-x: auto; }
+.plot svg { display: block; width: 100%; height: auto; min-width: 320px; }
+.plot .axis { stroke: var(--muted); stroke-width: 1; }
+.plot .gridl { stroke: var(--line); stroke-width: 1; }
+.plot .fit { stroke: var(--blue); stroke-width: 1.5; stroke-dasharray: 5 5; opacity: 0.6; }
+.plot .pt { fill: var(--blue); }
+.plot .hl { fill: var(--red); }
+.plot text { fill: var(--muted); font: 12px var(--body); }
+.plot text.hlt { fill: var(--red); font-weight: 700; }
+
+/* Champs et boutons */
+input[type="text"] {
+  font: 500 1rem var(--mono); color: var(--ink); background: var(--paper);
+  border: 1.5px solid var(--line); border-radius: 4px; padding: 6px 8px; width: 8rem;
+}
+input[type="text"]:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color: var(--blue); }
+input.good { border-color: var(--ok); background: var(--ok-soft); }
+input.bad { border-color: var(--red); background: var(--red-soft); }
+button { font: 700 0.95rem var(--body); border-radius: 4px; padding: 8px 14px; cursor: pointer; border: 1.5px solid var(--blue); }
+button.primary { background: var(--blue); color: var(--card); }
+button.ghost { background: transparent; color: var(--blue); }
+button.redo { background: transparent; color: var(--red); border-color: var(--red); }
+button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Exercices */
+.exo { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 18px 20px; display: grid; gap: 14px; }
+.exo-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: baseline; }
+.exo-top .num { font: 800 0.85rem var(--display); color: var(--red); letter-spacing: 0.06em; text-transform: uppercase; }
+.score { font: 500 0.85rem var(--mono); color: var(--muted); }
+.stmt { display: grid; gap: 8px; min-width: 0; }
+.stmt .q { font-weight: 700; }
+.answers { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+.ans { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ans .lab { font-weight: 700; }
+.msg { font-weight: 700; min-height: 1.4em; }
+.msg.good { color: var(--ok); }
+.msg.bad { color: var(--red); }
+.corr { border-top: 2px dashed var(--red); padding-top: 12px; color: var(--ink); display: grid; gap: 6px; }
+.corr .t { font: 700 0.8rem var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--red); }
+.corr p { overflow-x: auto; }
+.terms { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 1.05rem; }
+
+/* QCM pièges */
+.qcm { display: grid; gap: 14px; }
+.qitem { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: grid; gap: 10px; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opts button { background: var(--paper); color: var(--ink); border: 1.5px solid var(--line); font-weight: 400; }
+.opts button.right { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); font-weight: 700; }
+.opts button.wrong { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+.why { color: var(--muted); font-size: 0.95rem; }
+
+/* Interro blanche */
+.exam { background: var(--card); border: 2px solid var(--ink); border-radius: 6px; padding: 20px; display: grid; gap: 20px; }
+.exam .exo { border: none; padding: 0; border-bottom: 1px solid var(--line); padding-bottom: 16px; border-radius: 0; }
+.note { font: 800 2rem var(--display); color: var(--red); }
+footer { color: var(--muted); font-size: 0.9rem; }
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  .exo, .prop, .exam { padding: 14px; }
+  .formula { font-size: 1.1rem; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .corr, .msg { animation: pop .2s ease-out; }
+  @keyframes pop { from { transform: translateY(-3px); } to { transform: none; } }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a href="../../index.html" style="color:var(--blue); font-size:0.92rem">← Retour au site</a>
+  <header>
+    <span class="eyebrow">1TC · Séquence 2 · Croissances linéaires</span>
+    <h1>Suites arithmétiques : la formule explicite</h1>
+    <p class="lead">Révise l'interrogation : relis le rappel, évite les pièges, puis entraîne-toi. Chaque exercice propose un nouvel énoncé à volonté, avec la correction rédigée comme sur ta copie.</p>
+    <nav>
+      <a href="#rappel">Rappel</a>
+      <a href="#explorer">Explorer</a>
+      <a href="#pieges">Pièges</a>
+      <a href="#exercices">Exercices</a>
+      <a href="#interro">Interro blanche</a>
+    </nav>
+  </header>
+
+  <!-- RAPPEL -->
+  <section id="rappel">
+    <div class="sec-head">
+      <span class="eyebrow">Rappel de cours</span>
+      <h2>Calculer n'importe quel terme</h2>
+      <p>Pour passer de <span class="m"><i class="v">u</i>(0)</span> à <span class="m"><i class="v">u</i>(<i class="v">n</i>)</span>, on ajoute <i class="v">n</i> fois la raison <i class="v">r</i>.</p>
+    </div>
+
+    <div class="diagram" aria-label="Schéma : de u(0) à u(n) on ajoute n fois r">
+      <svg viewBox="0 0 640 150" width="640" role="img">
+        <g font-family="Atkinson Hyperlegible, system-ui, sans-serif" font-size="17" text-anchor="middle">
+          <g style="fill: var(--ink)">
+            <text x="40" y="82">u(0)</text><text x="130" y="82">u(1)</text><text x="220" y="82">u(2)</text>
+            <text x="310" y="82">u(3)</text><text x="400" y="82">…</text><text x="500" y="82">u(n−1)</text><text x="600" y="82">u(n)</text>
+          </g>
+          <g fill="none" style="stroke: var(--red)" stroke-width="2">
+            <path d="M48 62 Q85 25 122 62"/><path d="M138 62 Q175 25 212 62"/><path d="M228 62 Q265 25 302 62"/><path d="M512 62 Q556 25 592 62"/>
+          </g>
+          <g style="fill: var(--red)" font-size="14">
+            <text x="85" y="34">+r</text><text x="175" y="34">+r</text><text x="265" y="34">+r</text><text x="553" y="34">+r</text>
+          </g>
+          <path d="M40 94 Q320 160 600 94" fill="none" style="stroke: var(--blue)" stroke-width="2.5"/>
+          <path d="M600 94 l-11 1 l6 8 z" style="fill: var(--blue)"/>
+          <text x="320" y="142" style="fill: var(--blue)" font-weight="700">+ n × r</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="prop">
+      <span class="tag">Propriété · Formule explicite</span>
+      <p>Soit <i class="v">u</i> une suite arithmétique de raison <i class="v">r</i>.</p>
+      <div class="formula m"><b><i class="v">u</i>(<i class="v">n</i>) = <i class="v">u</i>(0) + <i class="v">n</i> × <i class="v">r</i></b></div>
+      <p>Plus généralement, si on connaît un autre terme <span class="m"><i class="v">u</i>(<i class="v">p</i>)</span> :</p>
+      <div class="formula m"><b><i class="v">u</i>(<i class="v">n</i>) = <i class="v">u</i>(<i class="v">p</i>) + (<i class="v">n</i> − <i class="v">p</i>) × <i class="v">r</i></b></div>
+    </div>
+
+    <div class="methods">
+      <div class="method">
+        <h3>Calculer un terme</h3>
+        <p>On remplace <i class="v">n</i> dans la formule.</p>
+        <p class="ex"><span class="m"><i class="v">u</i>(0) = 12</span>, <span class="m"><i class="v">r</i> = 3</span> :<br><span class="m"><i class="v">u</i>(10) = 12 + 10 × 3 = 42</span></p>
+      </div>
+      <div class="method">
+        <h3>Partir d'un autre terme</h3>
+        <p>On compte le nombre de « bonds » entre les deux rangs.</p>
+        <p class="ex"><span class="m"><i class="v">v</i>(5) = 2</span>, <span class="m"><i class="v">r</i> = −5</span> :<br><span class="m"><i class="v">v</i>(0) = <i class="v">v</i>(5) − 5 × <i class="v">r</i> = 2 + 25 = 27</span></p>
+      </div>
+      <div class="method">
+        <h3>Retrouver la raison</h3>
+        <p>Entre <span class="m"><i class="v">w</i>(3)</span> et <span class="m"><i class="v">w</i>(6)</span>, on ajoute 3 fois <i class="v">r</i>.</p>
+        <p class="ex"><span class="m">32 = 5 + 3<i class="v">r</i></span> donc <span class="m">3<i class="v">r</i> = 27</span> et <span class="m"><i class="v">r</i> = 9</span></p>
+      </div>
+      <div class="method">
+        <h3>Trouver le rang</h3>
+        <p>On résout une équation d'inconnue <i class="v">n</i>.</p>
+        <p class="ex"><span class="m">18 − 1,5<i class="v">n</i> = 0</span> donc <span class="m">1,5<i class="v">n</i> = 18</span> et <span class="m"><i class="v">n</i> = 12</span></p>
+      </div>
+    </div>
+
+    <div class="warn">
+      <strong>À ne pas oublier</strong>
+      <ul>
+        <li>Si la suite commence à <span class="m"><i class="v">u</i>(0)</span>, le 1<sup>er</sup> terme est <span class="m"><i class="v">u</i>(0)</span>, donc le 3<sup>e</sup> terme est <span class="m"><i class="v">u</i>(2)</span>.</li>
+        <li>Raison négative : mets des parenthèses, <span class="m">15 + 4 × (−3) = 15 − 12 = 3</span>.</li>
+        <li>Dans un problème, vérifie l'unité de <i class="v">n</i> : 2 ans = 24 mois ; l'année 2035 correspond à <span class="m"><i class="v">n</i> = 15</span> si <span class="m"><i class="v">n</i> = 0</span> en 2020.</li>
+        <li>Rédige avec les notations : <span class="m"><i class="v">u</i>(20) = <i class="v">u</i>(0) + 20 × <i class="v">r</i> = …</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- EXPLORATEUR -->
+  <section id="explorer">
+    <div class="sec-head">
+      <span class="eyebrow">Pour visualiser</span>
+      <h2>Explorer une suite</h2>
+      <p>Change le premier terme, la raison ou le rang : le calcul et le nuage de points se mettent à jour. Les points sont toujours alignés, c'est une croissance linéaire.</p>
+    </div>
+    <div class="explorer">
+      <div class="ctrls">
+        <label for="ex-u0">Premier terme <i class="v">u</i>(0)<input type="text" id="ex-u0" value="12" inputmode="decimal"></label>
+        <label for="ex-r">Raison <i class="v">r</i><input type="text" id="ex-r" value="3" inputmode="decimal"></label>
+        <label for="ex-n">Rang <i class="v">n</i><input type="text" id="ex-n" value="10" inputmode="numeric"></label>
+      </div>
+      <p class="live m" id="ex-live"></p>
+      <div class="plot" id="ex-plot"></div>
+    </div>
+  </section>
+
+  <!-- PIÈGES -->
+  <section id="pieges">
+    <div class="sec-head">
+      <span class="eyebrow">Échauffement</span>
+      <h2>Les pièges classiques</h2>
+      <p>Clique sur la bonne réponse. L'explication s'affiche ensuite.</p>
+    </div>
+    <div class="qcm" id="qcm"></div>
+  </section>
+
+  <!-- EXERCICES -->
+  <section id="exercices">
+    <div class="sec-head">
+      <span class="eyebrow">Entraînement</span>
+      <h2>Exercices à énoncés renouvelables</h2>
+      <p>Tape ta réponse (virgule ou point acceptés), puis « Vérifier ». « Nouvel énoncé » tire d'autres nombres. Cherche d'abord au brouillon avec les notations avant d'ouvrir la correction.</p>
+    </div>
+    <div id="exos" style="display:grid; gap:18px"></div>
+  </section>
+
+  <!-- INTERRO BLANCHE -->
+  <section id="interro">
+    <div class="sec-head">
+      <span class="eyebrow">Conditions réelles</span>
+      <h2>Interro blanche</h2>
+      <p>Cinq exercices, une seule correction à la fin. Fais tout au brouillon, remplis les cases, puis corrige ta copie. Note sur 10.</p>
+    </div>
+    <div class="exam" id="exam"></div>
+  </section>
+
+  <footer>Notation <i class="v">u</i>(<i class="v">n</i>) comme dans le cours. Les résultats sont arrondis au centième si besoin.</footer>
+</div>
+
+<script>
+(function () {
+  // ---------- Outils ----------
+  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const round2 = (x) => Math.round(x * 100) / 100;
+  function fmt(x) {
+    x = round2(x); if (Object.is(x, -0)) x = 0;
+    return (x < 0 ? '−' : '') + String(Math.abs(x)).replace('.', ',');
+  }
+  function eur(x) {
+    x = round2(x);
+    return Number.isInteger(x) ? fmt(x) : (x < 0 ? '−' : '') + Math.abs(x).toFixed(2).replace('.', ',');
+  }
+  const par = (x) => (round2(x) < 0 ? '(' + fmt(x) + ')' : fmt(x));
+  const plus = (x) => (round2(x) < 0 ? ' − ' + fmt(-x) : ' + ' + fmt(x));
+  const V = (s) => '<i class="v">' + s + '</i>';
+  const T = (s, k) => '<span class="m">' + V(s) + '(' + (typeof k === 'string' ? V(k) : k) + ')</span>';
+  const M = (s) => '<span class="m">' + s + '</span>';
+  const ord = (k) => k + (k === 1 ? '<sup>er</sup>' : '<sup>e</sup>');
+  function parse(s) {
+    s = String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/€|cm|L|km|mois|h$/g, '');
+    if (s === '' || !/^[-+]?\d*\.?\d+$/.test(s)) return NaN;
+    return Number(s);
+  }
+  function pickR() {
+    if (Math.random() < 0.7) { let r = 0; while (r === 0) r = ri(-8, 12); return r; }
+    return pick([0.5, 1.5, 2.5, -0.5, -1.5, -2.5, 0.2, 1.2]);
+  }
+  const letters = ['u', 'v', 'w', 'a', 'b', 't'];
+  const names = ['Karim', 'Lina', 'Inès', 'Noah', 'Jade', 'Sacha', 'Camille', 'Yanis', 'Maëlys', 'Rayan'];
+
+  // ---------- Générateurs ----------
+  // Chaque générateur renvoie { stmt, answers: [{label, value, unit}], corr }
+
+  function genA() {
+    const s = pick(letters), u0 = ri(-15, 60), r = pickR();
+    let n, ask, extra = '';
+    if (Math.random() < 0.35) {
+      const k = ri(5, 30); n = k - 1;
+      ask = 'Calculer le ' + ord(k) + ' terme de la suite ' + V(s) + '.';
+      extra = '<p>Le 1<sup>er</sup> terme est ' + T(s, 0) + ', donc le ' + ord(k) + ' terme est ' + T(s, n) + '.</p>';
+    } else {
+      n = ri(6, 40);
+      ask = pick(['Calculer ' + T(s, n) + '.', 'Calculer le terme de rang ' + n + '.']);
+    }
+    const ans = u0 + n * r;
+    return {
+      stmt: '<p>La suite ' + V(s) + ' est arithmétique de premier terme ' + M(V(s) + '(0) = ' + fmt(u0)) + ' et de raison ' + M(fmt(r)) + '.</p><p class="q">' + ask + '</p>',
+      answers: [{ label: T(s, n) + ' =', value: ans }],
+      corr: extra + '<p>' + M(V(s) + '(' + n + ') = ' + V(s) + '(0) + ' + n + ' × ' + V('r') + ' = ' + fmt(u0) + ' + ' + n + ' × ' + par(r) + ' = ' + fmt(u0) + plus(n * r) + ' = <b>' + fmt(ans) + '</b>') + '</p>'
+    };
+  }
+
+  function genB() {
+    const s = pick(letters), u0 = ri(-10, 40), r = pickR(), N = pick([15, 20, 25, 30, 50, 100]);
+    const listVariant = Math.random() < 0.5;
+    let intro, corr1;
+    if (listVariant) {
+      const terms = [0, 1, 2, 3].map((k) => T(s, k) + ' = ' + M(fmt(u0 + k * r))).join('</span><span>');
+      intro = '<p>Voici les premiers termes d\'une suite arithmétique ' + V(s) + ' :</p><div class="terms"><span>' + terms + '</span></div>';
+      corr1 = '<p>Raison : ' + M(V('r') + ' = ' + V(s) + '(1) − ' + V(s) + '(0) = ' + fmt(u0 + r) + ' − ' + par(u0) + ' = ' + fmt(r)) + '. Premier terme : ' + M(V(s) + '(0) = ' + fmt(u0)) + '.</p>';
+    } else {
+      intro = '<p>La suite ' + V(s) + ' est arithmétique de premier terme ' + M(V(s) + '(0) = ' + fmt(u0)) + ' et de raison ' + M(fmt(r)) + '.</p>';
+      corr1 = '';
+    }
+    const ans = u0 + N * r;
+    return {
+      stmt: intro + '<p class="q">1. Compléter la formule explicite : ' + T(s, 'n') + ' = … + … × ' + V('n') + '.<br>2. En déduire ' + T(s, N) + '.</p>',
+      answers: [
+        { label: '1. ' + T(s, 'n') + ' =', value: u0 },
+        { label: '+', value: r, unit: '× ' + V('n') },
+        { label: '2. ' + T(s, N) + ' =', value: ans }
+      ],
+      corr: corr1 + '<p>1. ' + M(V(s) + '(' + V('n') + ') = ' + V(s) + '(0) + ' + V('n') + ' × ' + V('r') + ' = <b>' + fmt(u0) + ' + ' + par(r) + ' × ' + V('n') + '</b>') + '</p>' +
+        '<p>2. ' + M(V(s) + '(' + N + ') = ' + fmt(u0) + ' + ' + par(r) + ' × ' + N + ' = ' + fmt(u0) + plus(N * r) + ' = <b>' + fmt(ans) + '</b>') + '</p>'
+    };
+  }
+
+  function genC() {
+    const s = pick(letters), p = ri(2, 8), up = ri(-10, 60), r = pickR(), n = p + ri(4, 25);
+    const an = up + (n - p) * r, a0 = up - p * r;
+    return {
+      stmt: '<p>La suite ' + V(s) + ' est arithmétique de raison ' + M(fmt(r)) + ', avec ' + M(V(s) + '(' + p + ') = ' + fmt(up)) + '.</p><p class="q">Calculer ' + T(s, n) + ', puis ' + T(s, 0) + '.</p>',
+      answers: [{ label: T(s, n) + ' =', value: an }, { label: T(s, 0) + ' =', value: a0 }],
+      corr: '<p>De ' + T(s, p) + ' à ' + T(s, n) + ', on ajoute ' + (n - p) + ' fois la raison :<br>' +
+        M(V(s) + '(' + n + ') = ' + V(s) + '(' + p + ') + (' + n + ' − ' + p + ') × ' + V('r') + ' = ' + fmt(up) + ' + ' + (n - p) + ' × ' + par(r) + ' = ' + fmt(up) + plus((n - p) * r) + ' = <b>' + fmt(an) + '</b>') + '</p>' +
+        '<p>De ' + T(s, 0) + ' à ' + T(s, p) + ', on a ajouté ' + p + ' fois la raison, donc on la retire ' + p + ' fois :<br>' +
+        M(V(s) + '(0) = ' + V(s) + '(' + p + ') − ' + p + ' × ' + V('r') + ' = ' + fmt(up) + ' − ' + p + ' × ' + par(r) + ' = ' + fmt(up) + plus(-p * r) + ' = <b>' + fmt(a0) + '</b>') + '</p>'
+    };
+  }
+
+  function genD() {
+    const s = pick(letters), p = ri(1, 6), q = p + ri(2, 8);
+    let r = Math.random() < 0.8 ? 0 : pick([0.5, -0.5, 1.5, -1.5]);
+    while (r === 0) r = ri(-9, 12);
+    const u0 = ri(-10, 40), up = u0 + p * r, uq = u0 + q * r, k = q - p;
+    return {
+      stmt: '<p>La suite ' + V(s) + ' est arithmétique, avec ' + M(V(s) + '(' + p + ') = ' + fmt(up)) + ' et ' + M(V(s) + '(' + q + ') = ' + fmt(uq)) + '.</p><p class="q">Déterminer sa raison ' + V('r') + ', puis ' + T(s, 0) + '.</p>',
+      answers: [{ label: V('r') + ' =', value: r }, { label: T(s, 0) + ' =', value: u0 }],
+      corr: '<p>De ' + T(s, p) + ' à ' + T(s, q) + ', on ajoute ' + k + ' fois la raison : ' + M(V(s) + '(' + q + ') = ' + V(s) + '(' + p + ') + ' + k + V('r')) + '.<br>' +
+        M(fmt(uq) + ' = ' + fmt(up) + ' + ' + k + V('r')) + ', donc ' + M(k + V('r') + ' = ' + fmt(uq) + ' − ' + par(up) + ' = ' + fmt(uq - up)) + ' et ' + M(V('r') + ' = ' + fmt(uq - up) + ' ÷ ' + k + ' = <b>' + fmt(r) + '</b>') + '.</p>' +
+        '<p>' + M(V(s) + '(0) = ' + V(s) + '(' + p + ') − ' + p + ' × ' + V('r') + ' = ' + fmt(up) + ' − ' + p + ' × ' + par(r) + ' = <b>' + fmt(u0) + '</b>') + '</p>'
+    };
+  }
+
+  function genE() {
+    const s = pick(letters), u0 = ri(-20, 80);
+    let r = 0; while (r === 0) r = ri(-9, 12);
+    const n = ri(8, 60), target = u0 + n * r;
+    return {
+      stmt: '<p>La suite ' + V(s) + ' est arithmétique de premier terme ' + M(V(s) + '(0) = ' + fmt(u0)) + ' et de raison ' + M(fmt(r)) + '.</p><p class="q">Déterminer le rang ' + V('n') + ' tel que ' + M(V(s) + '(' + V('n') + ') = ' + fmt(target)) + '.</p>',
+      answers: [{ label: V('n') + ' =', value: n }],
+      corr: '<p>' + M(V(s) + '(' + V('n') + ') = ' + fmt(u0) + ' + ' + par(r) + V('n')) + '. On résout :</p><p>' +
+        M(fmt(u0) + ' + ' + par(r) + V('n') + ' = ' + fmt(target)) + '<br>' +
+        M(par(r) + V('n') + ' = ' + fmt(target) + ' − ' + par(u0) + ' = ' + fmt(target - u0)) + '<br>' +
+        M(V('n') + ' = ' + fmt(target - u0) + ' ÷ ' + par(r) + ' = <b>' + n + '</b>') + '</p>'
+    };
+  }
+
+  // Problèmes en contexte
+  const contexts = [
+    function epargne() {
+      const nm = pick(names), s0 = ri(5, 30) * 10, d = pick([15, 20, 25, 30, 40, 50]), Y = pick([1, 2, 3]), n = 12 * Y, m = ri(8, 40), Tt = s0 + m * d;
+      return {
+        stmt: '<p>' + nm + ' a ' + s0 + ' € sur un livret et y dépose ' + d + ' € chaque mois. On note ' + T('s', 'n') + ' la somme, en euros, sur le livret après ' + V('n') + ' mois. Ainsi ' + M(V('s') + '(0) = ' + s0) + '.</p>' +
+          '<p class="q">1. Quelle somme y aura-t-il sur le livret au bout de ' + Y + ' an' + (Y > 1 ? 's' : '') + ' ?<br>2. Au bout de combien de mois le livret contiendra-t-il ' + Tt + ' € ?</p>',
+        answers: [{ label: '1.', value: s0 + n * d, unit: '€' }, { label: '2.', value: m, unit: 'mois' }],
+        corr: '<p>Chaque mois on ajoute ' + d + ' € : ' + V('s') + ' est arithmétique de raison ' + d + ', donc ' + M(V('s') + '(' + V('n') + ') = ' + s0 + ' + ' + d + V('n')) + '.</p>' +
+          '<p>1. ' + Y + ' an' + (Y > 1 ? 's' : '') + ' = ' + n + ' mois : ' + M(V('s') + '(' + n + ') = ' + s0 + ' + ' + d + ' × ' + n + ' = <b>' + (s0 + n * d) + ' €</b>') + '.</p>' +
+          '<p>2. ' + M(s0 + ' + ' + d + V('n') + ' = ' + Tt) + ' donc ' + M(d + V('n') + ' = ' + (Tt - s0)) + ' et ' + M(V('n') + ' = ' + (Tt - s0) + ' ÷ ' + d + ' = <b>' + m + '</b>') + ' mois.</p>'
+      };
+    },
+    function bougie() {
+      const [h0, d] = pick([[18, 1.5], [20, 2.5], [24, 1.5], [30, 2.5], [15, 1.5], [24, 3], [20, 2], [30, 2], [21, 1.5], [25, 2.5]]);
+      const N = Math.round(h0 / d), k = ri(2, N - 1);
+      return {
+        stmt: '<p>Une bougie mesure ' + h0 + ' cm. Une fois allumée, elle perd ' + fmt(d) + ' cm par heure. On note ' + T('h', 'n') + ' sa hauteur, en cm, après ' + V('n') + ' heures.</p>' +
+          '<p class="q">1. Quelle est la hauteur de la bougie après ' + k + ' heures ?<br>2. Au bout de combien d\'heures la bougie est-elle entièrement consumée ?</p>',
+        answers: [{ label: '1.', value: h0 - k * d, unit: 'cm' }, { label: '2.', value: N, unit: 'h' }],
+        corr: '<p>' + V('h') + ' est arithmétique de premier terme ' + M(V('h') + '(0) = ' + h0) + ' et de raison ' + M(fmt(-d)) + ' : ' + M(V('h') + '(' + V('n') + ') = ' + h0 + ' − ' + fmt(d) + V('n')) + '.</p>' +
+          '<p>1. ' + M(V('h') + '(' + k + ') = ' + h0 + ' − ' + fmt(d) + ' × ' + k + ' = ' + h0 + ' − ' + fmt(d * k) + ' = <b>' + fmt(h0 - k * d) + ' cm</b>') + '.</p>' +
+          '<p>2. ' + M(h0 + ' − ' + fmt(d) + V('n') + ' = 0') + ' donc ' + M(fmt(d) + V('n') + ' = ' + h0) + ' et ' + M(V('n') + ' = ' + h0 + ' ÷ ' + fmt(d) + ' = <b>' + N + '</b>') + ' heures.</p>'
+      };
+    },
+    function taxi() {
+      const pc = pick([2.5, 3, 4, 4.5]), p = pick([1.2, 1.5, 1.8, 2]), km = ri(5, 25), k2 = ri(6, 30), B = round2(pc + p * k2);
+      return {
+        stmt: '<p>Un taxi facture ' + eur(pc) + ' € de prise en charge, puis ' + eur(p) + ' € par kilomètre. On note ' + T('t', 'n') + ' le prix, en euros, d\'une course de ' + V('n') + ' km.</p>' +
+          '<p class="q">1. Combien coûte une course de ' + km + ' km ?<br>2. Avec ' + eur(B) + ' €, combien de kilomètres peut-on parcourir ?</p>',
+        answers: [{ label: '1.', value: pc + p * km, unit: '€' }, { label: '2.', value: k2, unit: 'km' }],
+        corr: '<p>' + V('t') + ' est arithmétique de premier terme ' + M(V('t') + '(0) = ' + fmt(pc)) + ' et de raison ' + fmt(p) + ' : ' + M(V('t') + '(' + V('n') + ') = ' + fmt(pc) + ' + ' + fmt(p) + V('n')) + '.</p>' +
+          '<p>1. ' + M(V('t') + '(' + km + ') = ' + fmt(pc) + ' + ' + fmt(p) + ' × ' + km + ' = <b>' + eur(pc + p * km) + ' €</b>') + '.</p>' +
+          '<p>2. ' + M(fmt(pc) + ' + ' + fmt(p) + V('n') + ' = ' + fmt(B)) + ' donc ' + M(fmt(p) + V('n') + ' = ' + fmt(B - pc)) + ' et ' + M(V('n') + ' = <b>' + k2 + '</b>') + ' km.</p>'
+      };
+    },
+    function village() {
+      const P = ri(8, 40) * 50, g = ri(15, 90), Y = ri(2027, 2045), n = Y - 2020, k = ri(10, 40), X = P + g * k;
+      return {
+        stmt: '<p>En 2020, un village comptait ' + P + ' habitants. Chaque année, sa population augmente de ' + g + ' habitants. On note ' + T('p', 'n') + ' la population l\'année 2020 + ' + V('n') + '.</p>' +
+          '<p class="q">1. Quelle sera la population en ' + Y + ' ?<br>2. En quelle année la population atteindra-t-elle ' + X + ' habitants ?</p>',
+        answers: [{ label: '1.', value: P + g * n, unit: 'hab.' }, { label: '2. En', value: 2020 + k }],
+        corr: '<p>' + M(V('p') + '(' + V('n') + ') = ' + P + ' + ' + g + V('n')) + '. L\'année ' + Y + ' correspond à ' + M(V('n') + ' = ' + Y + ' − 2020 = ' + n) + '.</p>' +
+          '<p>1. ' + M(V('p') + '(' + n + ') = ' + P + ' + ' + g + ' × ' + n + ' = <b>' + (P + g * n) + '</b>') + ' habitants.</p>' +
+          '<p>2. ' + M(P + ' + ' + g + V('n') + ' = ' + X) + ' donc ' + M(g + V('n') + ' = ' + (X - P)) + ' et ' + M(V('n') + ' = ' + k) + ' : en <b>' + (2020 + k) + '</b>.</p>'
+      };
+    },
+    function cuve() {
+      const l = pick([20, 25, 40, 50, 60, 75]), D = ri(12, 40), V0 = l * D, k = ri(3, D - 2);
+      return {
+        stmt: '<p>Une cuve de récupération d\'eau contient ' + V0 + ' L. Pour arroser un potager, on prélève ' + l + ' L par jour. On note ' + T('c', 'n') + ' le volume, en litres, après ' + V('n') + ' jours.</p>' +
+          '<p class="q">1. Quel volume reste-t-il après ' + k + ' jours ?<br>2. Au bout de combien de jours la cuve sera-t-elle vide ?</p>',
+        answers: [{ label: '1.', value: V0 - l * k, unit: 'L' }, { label: '2.', value: D, unit: 'jours' }],
+        corr: '<p>' + V('c') + ' est arithmétique de raison ' + M('−' + l) + ' : ' + M(V('c') + '(' + V('n') + ') = ' + V0 + ' − ' + l + V('n')) + '.</p>' +
+          '<p>1. ' + M(V('c') + '(' + k + ') = ' + V0 + ' − ' + l + ' × ' + k + ' = <b>' + (V0 - l * k) + ' L</b>') + '.</p>' +
+          '<p>2. ' + M(V0 + ' − ' + l + V('n') + ' = 0') + ' donc ' + M(V('n') + ' = ' + V0 + ' ÷ ' + l + ' = <b>' + D + '</b>') + ' jours.</p>'
+      };
+    }
+  ];
+  const genF = () => pick(contexts)();
+
+  // ---------- Rendu d'un exercice ----------
+  function mountExo(parent, opts) {
+    const box = document.createElement('div');
+    box.className = 'exo';
+    box.innerHTML =
+      '<div class="exo-top"><span class="num">' + opts.num + '</span>' + (opts.exam ? '' : '<span class="score"></span>') + '</div>' +
+      '<h3>' + opts.title + '</h3>' +
+      '<div class="stmt"></div><div class="answers"></div>' +
+      (opts.exam ? '' : '<div class="actions"><button class="primary" data-a="check">Vérifier</button><button class="ghost" data-a="corr">Voir la correction</button><button class="redo" data-a="new">Nouvel énoncé</button></div><p class="msg" aria-live="polite"></p>') +
+      '<div class="corr" hidden><span class="t">Correction</span><div class="corr-body"></div></div>';
+    parent.appendChild(box);
+    const st = { ok: 0, tried: 0, ex: null, counted: false };
+    const $ = (s) => box.querySelector(s);
+
+    function render() {
+      st.ex = opts.gen(); st.counted = false;
+      $('.stmt').innerHTML = st.ex.stmt;
+      $('.answers').innerHTML = st.ex.answers.map((a, i) =>
+        '<label class="ans" for="' + opts.id + '-' + i + '"><span class="lab">' + a.label + '</span><input type="text" id="' + opts.id + '-' + i + '" inputmode="decimal" autocomplete="off" spellcheck="false">' + (a.unit ? '<span>' + a.unit + '</span>' : '') + '</label>'
+      ).join('');
+      $('.corr-body').innerHTML = st.ex.corr;
+      $('.corr').hidden = true;
+      if ($('.msg')) { $('.msg').textContent = ''; $('.msg').className = 'msg'; }
+      if ($('[data-a="corr"]')) $('[data-a="corr"]').textContent = 'Voir la correction';
+      box.querySelectorAll('input').forEach((inp) => inp.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !opts.exam) check(); }));
+      updScore();
+    }
+    function grade() {
+      let good = 0;
+      st.ex.answers.forEach((a, i) => {
+        const inp = $('#' + CSS.escape(opts.id + '-' + i));
+        const v = parse(inp.value);
+        const ok = !Number.isNaN(v) && Math.abs(round2(v) - round2(a.value)) < 0.006;
+        inp.classList.toggle('good', ok); inp.classList.toggle('bad', !ok);
+        if (ok) good++;
+      });
+      return good;
+    }
+    function check() {
+      const good = grade(), total = st.ex.answers.length, msg = $('.msg');
+      if (!st.counted) { st.tried++; if (good === total) st.ok++; st.counted = true; }
+      if (good === total) { msg.textContent = 'Bravo, tout est juste ! Compare ta rédaction avec la correction.'; msg.className = 'msg good'; }
+      else { msg.textContent = good + ' réponse' + (good > 1 ? 's' : '') + ' juste' + (good > 1 ? 's' : '') + ' sur ' + total + '. Corrige les cases en rouge ou ouvre la correction.'; msg.className = 'msg bad'; }
+      updScore();
+    }
+    function updScore() { const sc = $('.score'); if (sc) sc.textContent = st.ok + ' réussi' + (st.ok > 1 ? 's' : '') + ' / ' + st.tried + ' essayé' + (st.tried > 1 ? 's' : ''); }
+    box.addEventListener('click', (e) => {
+      const a = e.target.closest('button') && e.target.closest('button').dataset.a;
+      if (a === 'check') check();
+      if (a === 'new') render();
+      if (a === 'corr') { const c = $('.corr'); c.hidden = !c.hidden; e.target.textContent = c.hidden ? 'Voir la correction' : 'Masquer la correction'; }
+    });
+    render();
+    return { grade, total: () => st.ex.answers.length, showCorr: () => { $('.corr').hidden = false; } };
+  }
+
+  const exoDefs = [
+    { id: 'eA', title: 'Calculer un terme à partir de u(0)', gen: genA },
+    { id: 'eB', title: 'Écrire la formule explicite', gen: genB },
+    { id: 'eC', title: 'Partir d\'un autre terme que u(0)', gen: genC },
+    { id: 'eD', title: 'Retrouver la raison à partir de deux termes', gen: genD },
+    { id: 'eE', title: 'Trouver le rang n', gen: genE },
+    { id: 'eF', title: 'Problème en situation', gen: genF }
+  ];
+  const exosEl = document.getElementById('exos');
+  exoDefs.forEach((d, i) => mountExo(exosEl, Object.assign({ num: 'Exercice ' + (i + 1) }, d)));
+
+  // ---------- Interro blanche ----------
+  const examEl = document.getElementById('exam');
+  function buildExam() {
+    examEl.innerHTML = '';
+    const list = [genA, genC, genD, genE, genF];
+    const titles = ['Calculer un terme', 'Partir d\'un autre terme', 'Retrouver la raison', 'Trouver le rang', 'Problème'];
+    const mounted = list.map((g, i) => mountExo(examEl, { id: 'x' + i, num: 'Exercice ' + (i + 1), title: titles[i], gen: g, exam: true }));
+    const foot = document.createElement('div');
+    foot.style.cssText = 'display:grid; gap:10px';
+    foot.innerHTML = '<div class="actions"><button class="primary" id="exam-go">Corriger ma copie</button><button class="redo" id="exam-new">Nouveau sujet</button></div><p class="note" aria-live="polite" id="exam-note"></p>';
+    examEl.appendChild(foot);
+    document.getElementById('exam-go').addEventListener('click', () => {
+      let good = 0, total = 0;
+      mounted.forEach((m) => { good += m.grade(); total += m.total(); m.showCorr(); });
+      const note = Math.round((good / total) * 10 * 2) / 2;
+      document.getElementById('exam-note').textContent = 'Note : ' + fmt(note) + ' / 10  (' + good + ' réponses justes sur ' + total + ')';
+    });
+    document.getElementById('exam-new').addEventListener('click', () => { buildExam(); examEl.scrollIntoView({ block: 'start' }); });
+  }
+  buildExam();
+
+  // ---------- QCM pièges ----------
+  const qcm = [
+    { q: 'La suite ' + V('u') + ' est arithmétique avec ' + M(V('u') + '(0) = 5') + ' et ' + M(V('r') + ' = 2') + '. Son 4<sup>e</sup> terme vaut :',
+      o: ['13', '11', '8'], a: 1, why: 'Le 1<sup>er</sup> terme est ' + T('u', 0) + ', donc le 4<sup>e</sup> est ' + M(V('u') + '(3) = 5 + 3 × 2 = 11') + '.' },
+    { q: M(V('u') + '(0) = 10') + ' et ' + M(V('r') + ' = −3') + '. Alors ' + T('u', 20) + ' vaut :',
+      o: ['140', '70', '−50'], a: 2, why: M(V('u') + '(20) = 10 + 20 × (−3) = 10 − 60 = −50') + '. Attention : on multiplie seulement la raison par 20.' },
+    { q: M(V('u') + '(4) = 7') + ' et ' + M(V('r') + ' = 2') + '. Alors ' + T('u', 10) + ' vaut :',
+      o: ['27', '19', '15'], a: 1, why: 'De ' + T('u', 4) + ' à ' + T('u', 10) + ' il y a 6 bonds : ' + M(V('u') + '(10) = 7 + 6 × 2 = 19') + '.' },
+    { q: M(V('u') + '(2) = 8') + ' et ' + M(V('u') + '(6) = 20') + '. La raison vaut :',
+      o: ['12', '3', '2'], a: 1, why: 'Entre les rangs 2 et 6 il y a 4 bonds : ' + M('8 + 4' + V('r') + ' = 20') + ', donc ' + M('4' + V('r') + ' = 12') + ' et ' + M(V('r') + ' = 3') + '.' },
+    { q: 'Une population augmente de 3 % par an. Les populations successives forment-elles une suite arithmétique ?',
+      o: ['Oui, de raison 3', 'Non'], a: 1, why: 'Une évolution en pourcentage revient à multiplier, pas à ajouter le même nombre. Ce sera la croissance exponentielle.' },
+    { q: 'Avec ' + M(V('h') + '(' + V('n') + ') = 18 − 1,5' + V('n')) + ', le premier terme et la raison sont :',
+      o: [M(V('h') + '(0) = 18') + ' et ' + M(V('r') + ' = −1,5'), M(V('h') + '(0) = 1,5') + ' et ' + M(V('r') + ' = 18'), M(V('h') + '(0) = 18') + ' et ' + M(V('r') + ' = 1,5')], a: 0, why: 'Le nombre seul est ' + T('h', 0) + ' ; le nombre devant ' + V('n') + ', avec son signe, est la raison.' }
+  ];
+  const qEl = document.getElementById('qcm');
+  qcm.forEach((item, i) => {
+    const d = document.createElement('div');
+    d.className = 'qitem';
+    d.innerHTML = '<p><strong>' + (i + 1) + '.</strong> ' + item.q + '</p><div class="opts">' + item.o.map((o, j) => '<button data-j="' + j + '">' + o + '</button>').join('') + '</div><p class="why" hidden>' + item.why + '</p>';
+    d.addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      const j = Number(b.dataset.j);
+      d.querySelectorAll('.opts button').forEach((x) => x.classList.remove('wrong'));
+      if (j === item.a) b.classList.add('right'); else b.classList.add('wrong');
+      if (j === item.a) d.querySelector('.why').hidden = false;
+    });
+    qEl.appendChild(d);
+  });
+
+  // ---------- Explorateur ----------
+  const eu0 = document.getElementById('ex-u0'), er = document.getElementById('ex-r'), en = document.getElementById('ex-n');
+  function drawExplorer() {
+    const u0 = parse(eu0.value), r = parse(er.value), n = Math.round(parse(en.value));
+    const live = document.getElementById('ex-live'), plot = document.getElementById('ex-plot');
+    if ([u0, r, n].some(Number.isNaN) || n < 0) { live.textContent = 'Saisis des nombres (le rang n est un entier positif).'; plot.innerHTML = ''; return; }
+    const val = u0 + n * r;
+    live.innerHTML = V('u') + '(' + n + ') = ' + V('u') + '(0) + ' + n + ' × ' + V('r') + ' = ' + fmt(u0) + ' + ' + n + ' × ' + par(r) + ' = ' + fmt(u0) + plus(n * r) + ' = <b style="color:var(--red)">' + fmt(val) + '</b>';
+    const Nmax = Math.min(Math.max(n, 8), 30);
+    const pts = []; for (let k = 0; k <= Nmax; k++) pts.push([k, u0 + k * r]);
+    const ys = pts.map((p) => p[1]).concat([0]);
+    let y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+    if (y0 === y1) { y0 -= 1; y1 += 1; }
+    const W = 620, H = 260, L = 50, R = 16, Tp = 16, B = 34;
+    const X = (k) => L + (k / Nmax) * (W - L - R), Y = (y) => Tp + (1 - (y - y0) / (y1 - y0)) * (H - Tp - B);
+    const step = (() => { const raw = (y1 - y0) / 5, p = Math.pow(10, Math.floor(Math.log10(raw))); return [1, 2, 5, 10].map((m) => m * p).find((s) => s >= raw); })();
+    let g = '';
+    for (let y = Math.ceil(y0 / step) * step; y <= y1 + 1e-9; y += step) g += '<line class="gridl" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(y) + '" y2="' + Y(y) + '"/><text x="' + (L - 8) + '" y="' + (Y(y) + 4) + '" text-anchor="end">' + fmt(y) + '</text>';
+    const xs = Nmax <= 12 ? 1 : 5;
+    for (let k = 0; k <= Nmax; k += xs) g += '<text x="' + X(k) + '" y="' + (H - B + 18) + '" text-anchor="middle">' + k + '</text>';
+    g += '<line class="axis" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(0) + '" y2="' + Y(0) + '"/><line class="axis" x1="' + L + '" x2="' + L + '" y1="' + Tp + '" y2="' + (H - B) + '"/>';
+    g += '<line class="fit" x1="' + X(0) + '" y1="' + Y(u0) + '" x2="' + X(Nmax) + '" y2="' + Y(u0 + Nmax * r) + '"/>';
+    pts.forEach(([k, y]) => { g += '<circle class="' + (k === n ? 'hl' : 'pt') + '" cx="' + X(k) + '" cy="' + Y(y) + '" r="' + (k === n ? 6 : 4) + '"/>'; });
+    if (n <= Nmax) g += '<text class="hlt" x="' + X(n) + '" y="' + (Y(val) - 10) + '" text-anchor="middle">u(' + n + ')</text>';
+    g += '<text x="' + (W - R) + '" y="' + (H - 4) + '" text-anchor="end">n</text>';
+    plot.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Nuage de points de la suite">' + g + '</svg>' + (n > Nmax ? '<p class="why">Le graphique s\'arrête au rang 30.</p>' : '');
+  }
+  [eu0, er, en].forEach((el) => el.addEventListener('input', drawExplorer));
+  drawExplorer();
+})();
+</script>
+</body>
+</html>
