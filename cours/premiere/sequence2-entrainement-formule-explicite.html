@@ -127,7 +127,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
   <header>
     <span class="eyebrow">1TC · Séquence 2 · Croissances linéaires</span>
     <h1>Suites arithmétiques : la formule explicite</h1>
-    <p class="lead">Pour aller de <span class="m"><i class="v">u</i>(0)</span> à <span class="m"><i class="v">u</i>(<i class="v">n</i>)</span>, on se décale de <i class="v">n</i> cases : on ajoute <i class="v">n</i> fois la raison.</p>
+    <p class="lead">Pour aller de <span class="m"><i class="v">u</i>(0)</span> à <span class="m"><i class="v">u</i>(<i class="v">n</i>)</span>, on se décale de <i class="v">n</i> rangs : on ajoute <i class="v">n</i> fois la raison.</p>
   </header>
 
   <!-- RAPPEL -->
@@ -150,7 +150,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
       <p class="q">Combien Karim aura-t-il après 5 mois ?</p>
       <div class="chain" id="schema-ex1"></div>
       <div class="calc m">
-        <span>On se décale de 5 cases, donc on ajoute 5 fois 25 :</span>
+        <span>On se décale de 5 rangs, donc on ajoute 5 fois 25 :</span>
         <span><i class="v">u</i>(5) = <i class="v">u</i>(0) + 5 × <i class="v">r</i></span>
         <span><i class="v">u</i>(5) = 150 + 5 × 25 = 150 + 125 = <b>275 €</b></span>
       </div>
@@ -166,7 +166,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
       <p class="q">Quelle est sa hauteur après 10 heures ?</p>
       <div class="chain" id="schema-ex2"></div>
       <div class="calc m">
-        <span>On se décale de 10 cases, donc on ajoute 10 fois −1,5 :</span>
+        <span>On se décale de 10 rangs, donc on ajoute 10 fois −1,5 :</span>
         <span><i class="v">h</i>(10) = <i class="v">h</i>(0) + 10 × <i class="v">r</i></span>
         <span><i class="v">h</i>(10) = 18 + 10 × (−1,5) = 18 − 15 = <b>3 cm</b></span>
       </div>
@@ -186,7 +186,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
     <span class="eyebrow">Généralisation</span>
     <h2>Exprimer <span class="m"><i class="v">u</i>(<i class="v">n</i>)</span> en fonction de <i class="v">n</i></h2>
     <div class="card">
-      <p>Reprenons le livret de Karim. Après 5 mois, on a ajouté 5 fois 25 ; après 10 mois, 10 fois 25. Après <i class="v">n</i> mois, on se décale de <i class="v">n</i> cases, donc on ajoute <i class="v">n</i> fois 25 :</p>
+      <p>Reprenons le livret de Karim. Après 5 mois, on a ajouté 5 fois 25 ; après 10 mois, 10 fois 25. Après <i class="v">n</i> mois, on se décale de <i class="v">n</i> rangs, donc on ajoute <i class="v">n</i> fois 25 :</p>
       <div class="chain" id="schema-gen-ex"></div>
       <div class="calc m">
         <span><i class="v">u</i>(<i class="v">n</i>) = <i class="v">u</i>(0) + <i class="v">n</i> × <i class="v">r</i> = 150 + <i class="v">n</i> × 25, donc <b><i class="v">u</i>(<i class="v">n</i>) = 150 + 25<i class="v">n</i></b></span>
@@ -279,7 +279,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
     return {
       stmt: '<p>La suite ' + V(s) + ' est arithmétique, avec ' + M(V(s) + '(0) = ' + fmt(u0)) + ' et ' + M(V('r') + ' = ' + fmt(r)) + '.</p><p class="q">Calculer ' + M(V(s) + '(' + n + ')') + '.</p>',
       answers: [{ label: M(V(s) + '(' + n + ') ='), value: ans }],
-      corr: '<p>On se décale de ' + n + ' cases : on ajoute ' + n + ' fois ' + par(r) + '.</p><div class="chain">' + chain(s, 0, n, r, u0) + '</div>' +
+      corr: '<p>On se décale de ' + n + ' rangs : on ajoute ' + n + ' fois ' + par(r) + '.</p><div class="chain">' + chain(s, 0, n, r, u0) + '</div>' +
         '<p class="calc">' + M(V(s) + '(' + n + ') = ' + V(s) + '(0) + ' + n + ' × ' + V('r') + ' = ' + fmt(u0) + ' + ' + n + ' × ' + par(r) + ' = ' + fmt(u0) + plus(n * r) + ' = <b>' + fmt(ans) + '</b>') + '</p>'
     };
   }
@@ -307,7 +307,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
     return {
       stmt: '<p>' + c.txt + '</p><p class="q">' + c.q + '</p>',
       answers: [{ label: M(V(c.s) + '(' + c.n + ') ='), value: ans, unit: c.unit }],
-      corr: '<p>' + M(V(c.s) + '(0) = ' + fmt(c.u0)) + ' et ' + M(V('r') + ' = ' + fmt(c.r)) + (c.r < 0 ? ' (ça diminue)' : '') + '. On se décale de ' + c.n + ' cases.</p><div class="chain">' + chain(c.s, 0, c.n, c.r, c.u0) + '</div>' +
+      corr: '<p>' + M(V(c.s) + '(0) = ' + fmt(c.u0)) + ' et ' + M(V('r') + ' = ' + fmt(c.r)) + (c.r < 0 ? ' (ça diminue)' : '') + '. On se décale de ' + c.n + ' rangs.</p><div class="chain">' + chain(c.s, 0, c.n, c.r, c.u0) + '</div>' +
         '<p class="calc">' + M(V(c.s) + '(' + c.n + ') = ' + V(c.s) + '(0) + ' + c.n + ' × ' + V('r') + ' = ' + fmt(c.u0) + ' + ' + c.n + ' × ' + par(c.r) + ' = ' + fmt(c.u0) + plus(c.n * c.r) + ' = <b>' + fmt(ans) + ' ' + c.unit + '</b>') + '</p>'
     };
   }
@@ -322,7 +322,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
         { label: '+', value: r, unit: '× ' + V('n') },
         { label: '2. ' + M(V(s) + '(' + N + ') ='), value: u0 + N * r }
       ],
-      corr: '<p>On se décale de ' + V('n') + ' cases : on ajoute ' + V('n') + ' fois ' + par(r) + '.</p><div class="chain">' + chain(s, 0, 5, 0, null, { symbolic: true, rlabel: (r < 0 ? fmt(r) : '+' + fmt(r)), big: '+ n × ' + par(r) }) + '</div>' +
+      corr: '<p>On se décale de ' + V('n') + ' rangs : on ajoute ' + V('n') + ' fois ' + par(r) + '.</p><div class="chain">' + chain(s, 0, 5, 0, null, { symbolic: true, rlabel: (r < 0 ? fmt(r) : '+' + fmt(r)), big: '+ n × ' + par(r) }) + '</div>' +
         '<p class="calc">1. ' + M(V(s) + '(' + V('n') + ') = ' + V(s) + '(0) + ' + V('n') + ' × ' + V('r') + ' = ' + fmt(u0) + ' + ' + V('n') + ' × ' + par(r) + ', donc <b>' + V(s) + '(' + V('n') + ') = ' + fmt(u0) + rn + '</b>') + '</p>' +
         '<p class="calc">2. ' + M(V(s) + '(' + N + ') = ' + fmt(u0) + ' + ' + par(r) + ' × ' + N + ' = ' + fmt(u0) + plus(N * r) + ' = <b>' + fmt(u0 + N * r) + '</b>') + '</p>' +
         '<p style="color:var(--muted)">Pour un ' + V('r') + ' négatif, tape le signe moins dans la 2<sup>e</sup> case (par exemple −3).</p>'
