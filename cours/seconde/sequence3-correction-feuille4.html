@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feuille 4 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Même habillage que la page de remédiation DS1 : une colonne de lecture, thème clair fixe (projection en classe). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs de la feuille */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons d'exercices */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.green.on { background: var(--green); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .item .resline { display: block; }
+.qfig { overflow-x: auto; }
+.qfig svg, .fig svg { display: block; max-width: none; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Feuille d’exercices n°4 — Corrigé</b><span>Transformer une expression littérale</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" id="exnav" aria-label="Exercices"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] } },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<script>
+'use strict';
+const R = String.raw;
+
+/* =====================================================================
+   Outils de calcul littéral
+   Un terme est un couple [coefficient, degré] ; une expression écrite
+   est une liste de termes dans l'ordre d'écriture.
+   ===================================================================== */
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; };
+const distinct = (n, a, b) => { const s = new Set(); while (s.size < n) s.add(ri(a, b)); return [...s]; };
+
+// Couleurs (modèle rgb de MathJax) : une couleur par « famille » de termes
+const RGB = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => (v / 255).toFixed(3)).join(','); };
+const col = (hex, s) => `{\\color[rgb]{${RGB(hex)}}{${s}}}`;
+const FAM = { 3: '#0C8599', 2: '#7048E8', 1: '#1C7ED6', 0: '#D9480F' };
+const KC = '#C2255C';          // facteur distribué ou facteur commun
+const AC = '#0C8599', BC = '#D9480F';   // a et b dans les identités remarquables
+const famName = (d, v) => d === 0 ? 'des nombres' : d === 1 ? `des \\(${v}\\)` : `des \\(${v}^{${d}}\\)`;
+
+// Terme sans son signe : 3x, x², 12…
+function body(c, d, v = 'x') {
+  const a = Math.abs(c);
+  if (d === 0) return String(a);
+  return (a === 1 ? '' : a) + (d === 1 ? v : `${v}^{${d}}`);
+}
+const mono = (c, d, v = 'x') => (c < 0 ? '-' : '') + body(c, d, v);
+// Facteur dans un produit : parenthèses si négatif (sauf en tête d'écriture)
+const fac = (c, d, v = 'x', lead = false) => (c < 0 && !lead ? `(${mono(c, d, v)})` : mono(c, d, v));
+// Suite de termes : 3x^2-x+5 ; colorFn(t) renvoie une couleur ou null
+function seq(terms, v = 'x', colorFn = null) {
+  if (!terms.length) return '0';
+  return terms.map(([c, d], i) => {
+    const sign = c < 0 ? '-' : (i ? '+' : '');
+    const b = body(c, d, v), k = colorFn && colorFn([c, d], i);
+    return sign + (k ? col(k, b) : b);
+  }).join('');
+}
+// Polynôme réduit (termes ordonnés par degrés décroissants)
+function reduce(terms) {
+  const p = {};
+  terms.forEach(([c, d]) => { p[d] = (p[d] || 0) + c; });
+  return Object.keys(p).map(Number).sort((a, b) => b - a).filter(d => p[d] !== 0).map(d => [p[d], d]);
+}
+const ptex = (terms, v = 'x') => seq(reduce(terms), v);
+const mul = ([c1, d1], [c2, d2]) => [c1 * c2, d1 + d2];
+const neg = terms => terms.map(([c, d]) => [-c, d]);
+const scale = (terms, k) => terms.map(([c, d]) => [c * k, d]);
+const same = (a, b) => a.replace(/\s/g, '') === b.replace(/\s/g, '');
+const par = (terms, v = 'x') => terms.length > 1 || terms[0][0] < 0 ? `(${seq(terms, v)})` : seq(terms, v);
+
+/* Réduction « famille par famille » : liste d'étapes à partir de termes écrits.
+   Renvoie aussi le résultat. Les étapes inutiles sont omises. */
+function reduceSteps(terms, v = 'x') {
+  const steps = [], fin = reduce(terms);
+  const degs = [...new Set(terms.map(t => t[1]))].sort((a, b) => b - a);
+  const like = degs.filter(d => terms.filter(t => t[1] === d).length > 1);
+  const colorFn = t => FAM[t[1]] || null;
+  if (like.length) {
+    const grouped = degs.flatMap(d => terms.filter(t => t[1] === d));
+    if (!same(seq(grouped, v), seq(terms, v))) {
+      steps.push({ m: seq(grouped, v, colorFn), x: `On regroupe les termes de la même famille : ${like.map(d => famName(d, v)).join(', ')}${degs.length > like.length ? ' (les autres termes restent seuls)' : ''}.` });
+    }
+    // somme des coefficients, famille par famille
+    const parts = degs.map((d, i) => {
+      const ts = terms.filter(t => t[1] === d);
+      if (ts.length === 1) { const [c] = ts[0]; return (c < 0 ? '-' : (i ? '+' : '')) + col(FAM[d], body(c, d, v)); }
+      const cs = ts.map(t => t[0]).map((c, j) => (c < 0 ? '-' : (j ? '+' : '')) + Math.abs(c)).join('');
+      if (d === 0) return (i ? '+' : '') + col(FAM[d], `(${cs})`);
+      return (i ? '+' : '') + col(FAM[d], `(${cs})${d === 1 ? v : `${v}^{${d}}`}`);
+    });
+    const zero = like.filter(d => terms.filter(t => t[1] === d).reduce((s, t) => s + t[0], 0) === 0);
+    steps.push({ m: parts.join(''), x: `On additionne les coefficients de chaque famille${zero.length ? ` ; ici ${zero.map(d => (d === 0 ? 'les nombres' : `les termes en ${famName(d, v).slice(4)}`)).join(' et ')} s’éliminent (la somme fait 0)` : ''}.` });
+    steps.push({ m: seq(fin, v), x: 'On écrit le résultat réduit, du plus grand exposant au plus petit.' });
+  } else if (!same(seq(fin, v), seq(terms, v))) {
+    steps.push({ m: seq(fin, v), x: 'On ordonne : du plus grand exposant au plus petit.' });
+  }
+  return { steps, fin };
+}
+
+/* =====================================================================
+   Constructeurs d'items : { l, q, res, steps:[{m|e|h|svg, x}], piege? }
+   m : « L = … » ; e : égalité complète ; h : texte ; svg : figure.
+   ===================================================================== */
+
+// Exercice 1 : réduire une somme
+function itReduce(l, terms, v = 'x') {
+  const { steps, fin } = reduceSteps(terms, v);
+  return { l, q: seq(terms, v), res: seq(fin, v), steps };
+}
+// Exercice 1 : produit de deux monômes
+function itProd(l, t1, t2, v = 'x') {
+  const r = mul(t1, t2);
+  return { l, q: `${fac(...t1, v, true)}\\times${fac(...t2, v)}`, res: mono(...r, v), steps: [
+    { m: `${col(FAM[0], fac(t1[0], 0, v, true))}\\times${col(FAM[0], fac(t2[0], 0, v))}\\times${col(FAM[1], v)}\\times${col(FAM[1], v)}`, x: 'On multiplie les nombres entre eux et les lettres entre elles.' },
+    { m: mono(...r, v), x: `\\(${fac(t1[0], 0, v, true)}\\times${fac(t2[0], 0, v)}=${r[0]}\\) et \\(${v}\\times ${v}=${v}^2\\).` }
+  ] };
+}
+
+// Exercice 2 : simple distributivité. parts = [{k:[c,d], f:[termes]}]
+function partTex(p, i, v) {
+  const [c, d] = p.k;
+  let k = c === 1 && d === 0 ? '' : c === -1 && d === 0 ? '-' : mono(c, d, v);
+  if (i && c > 0) k = '+' + k;
+  return `${k}(${seq(p.f, v)})`;
+}
+function itDist(l, parts, v = 'x') {
+  const q = parts.map((p, i) => partTex(p, i, v)).join('');
+  const prods = [], dev = [];
+  const onlyMinus = parts.length === 1 && parts[0].k[0] === -1 && parts[0].k[1] === 0;
+  parts.forEach((p, i) => p.f.forEach((t, j) => {
+    const lead = i === 0 && j === 0;
+    const kt = col(KC, fac(...p.k, v, lead));
+    prods.push((lead ? '' : '+') + `${kt}\\times${fac(...t, v)}`);
+    dev.push(mul(p.k, t));
+  }));
+  const steps = [];
+  if (onlyMinus) {
+    steps.push({ m: seq(dev, v), x: 'Un signe \\(-\\) devant une parenthèse : on la supprime en changeant le signe de chaque terme (c’est multiplier par \\(-1\\)).' });
+  } else {
+    steps.push({ m: prods.join(''), x: parts.length > 1 ? 'On distribue chaque facteur (en couleur) à chaque terme de sa parenthèse.' : 'On distribue le facteur (en couleur) à chaque terme de la parenthèse.' });
+    steps.push({ m: seq(dev, v), x: 'On calcule chaque produit en appliquant la règle des signes.' });
+  }
+  const r = reduceSteps(dev, v);
+  return { l, q, res: seq(r.fin, v), steps: steps.concat(r.steps) };
+}
+
+// Exercice 3 : factoriser par un facteur commun (monôme)
+function itFacto(l, terms, v = 'x') {
+  const g = terms.reduce((s, t) => gcd(s, t[0]), 0), m = Math.min(...terms.map(t => t[1]));
+  const s = terms[0][0] < 0 ? -1 : 1, k = [s * g, m];
+  const inner = terms.map(([c, d]) => [c / (s * g), d - m]);
+  const kt = mono(...k, v);
+  const rew = inner.map((t, i) => {
+    const K = col(KC, i ? fac(...k, v) : mono(...k, v));
+    if (k[0] > 0 && t[0] < 0) return `-${K}\\times${body(...t, v)}`;
+    return (i ? '+' : '') + `${K}\\times${fac(...t, v)}`;
+  }).join('');
+  const why = [];
+  if (g > 1) why.push(`\\(${g}\\) divise ${terms.map(t => `\\(${Math.abs(t[0])}\\)`).join(' et ')}`);
+  if (m > 0) why.push(`\\(${m === 1 ? v : `${v}^{${m}}`}\\) est dans chaque terme`);
+  if (s < 0) why.push('on met aussi le signe \\(-\\) en facteur pour que la parenthèse commence par un terme positif');
+  const res = `${kt === '-1' ? '-' : kt}(${seq(inner, v)})`;
+  return { l, q: seq(terms, v), res, steps: [
+    { m: rew, x: `Le facteur commun est \\(${kt}\\) : ${why.join(' ; ')}. On écrit chaque terme comme un produit par \\(${kt}\\).` },
+    { m: res, x: 'On met le facteur commun devant, et dans la parenthèse ce qui reste de chaque terme.' },
+    { h: `<span class="x">Vérification : en redéveloppant \\(${res}\\), on retrouve bien \\(${seq(terms, v)}\\).</span>` }
+  ] };
+}
+
+// Exercice 3 (plus loin) : facteur commun entre parenthèses.
+// A : termes du facteur commun ; parts : [{s:±1, B:termes, form:'AB'|'kA'|'A2'}]
+function itFactoBin(l, A, parts, v = 'x') {
+  const At = `(${seq(A, v)})`, Ac = col(KC, At);
+  const q = parts.map((p, i) => {
+    const sg = p.s < 0 ? '-' : (i ? '+' : '');
+    if (p.form === 'A2') return `${sg}${At}^2`;
+    if (p.form === 'kA') return `${sg}${seq(p.B, v)}${At}`;
+    return `${sg}${At}(${seq(p.B, v)})`;
+  }).join('');
+  const rew = parts.map((p, i) => {
+    const sg = p.s < 0 ? '-' : (i ? '+' : '');
+    if (p.form === 'A2') return `${sg}${Ac}\\times${At}`;
+    if (p.form === 'kA') return `${sg}${Ac}\\times${seq(p.B, v)}`;
+    return `${sg}${Ac}\\times(${seq(p.B, v)})`;
+  }).join('');
+  const Bs = parts.map(p => (p.form === 'A2' ? A : p.B));
+  const brack = Bs.map((B, i) => (parts[i].s < 0 ? '-' : (i ? '+' : '')) + (B.length > 1 ? `(${seq(B, v)})` : seq(B, v))).join('');
+  const flat = Bs.flatMap((B, i) => (parts[i].s < 0 ? neg(B) : B));
+  const red = reduce(flat);
+  const steps = [
+    { m: rew, x: `Le facteur commun est \\(${At}\\)${parts.some(p => p.form === 'A2') ? ` (on écrit \\(${At}^2=${At}\\times${At}\\))` : ''}.` },
+    { m: `${At}\\big[${brack}\\big]`, x: 'On met le facteur commun devant ; dans le crochet, on écrit ce qui reste de chaque terme.' }
+  ];
+  if (parts.some(p => p.s < 0)) steps.push({ m: `${At}(${seq(flat, v)})`, x: 'On supprime les parenthèses dans le crochet : le signe \\(-\\) change le signe de chaque terme de la parenthèse qui suit.' });
+  steps.push({ m: `${At}(${seq(red, v)})`, x: 'On réduit ce qu’il y a dans la seconde parenthèse.' });
+  let res = `${At}(${seq(red, v)})`;
+  const g = red.reduce((s, t) => gcd(s, t[0]), 0);
+  if (g > 1 && red.length > 1) {
+    const r2 = scale(red, 1 / g);
+    steps.push({ m: `${g}${At}(${seq(r2, v)})`, x: `Pour aller encore plus loin : \\(${g}\\) est un facteur commun dans \\(${seq(red, v)}\\).` });
+    res += `=${g}${At}(${seq(r2, v)})`;
+  }
+  return { l, q, res, steps };
+}
+
+// Développement d'un produit de deux parenthèses (renvoie étapes + termes)
+const DCOL = ['#7048E8', '#D9480F', '#0C8599'];
+function prodDev(F1, F2, v = 'x') {
+  const prods = [], dev = [];
+  F1.forEach((a, i) => F2.forEach((b, j) => {
+    const lead = i === 0 && j === 0;
+    prods.push((lead ? '' : '+') + `${col(DCOL[i % 3], fac(...a, v, lead))}\\times${fac(...b, v)}`);
+    dev.push(mul(a, b));
+  }));
+  return { prods: prods.join(''), dev };
+}
+// Identité remarquable : a, b termes positifs ; kind '+', '-', 'diff'
+function idTex(a, b, kind, v = 'x', swap = false) {
+  const A = mono(...a, v), B = mono(...b, v);
+  if (kind === '+') return `(${A}+${B})^2`;
+  if (kind === '-') return `(${A}-${B})^2`;
+  return swap ? `(${A}-${B})(${A}+${B})` : `(${A}+${B})(${A}-${B})`;
+}
+const sqTex = (t, v = 'x') => (t[1] === 0 ? `${t[0]}^2` : t[0] === 1 && t[1] === 1 ? `${v}^2` : `(${mono(...t, v)})^2`);
+function idDev(a, b, kind) {
+  const a2 = mul(a, a), b2 = mul(b, b), ab = mul([2 * a[0], a[1]], b);
+  if (kind === 'diff') return [a2, neg([b2])[0]];
+  return [a2, kind === '+' ? ab : neg([ab])[0], b2];
+}
+const ID_NAME = { '+': '(a+b)^2=a^2+2ab+b^2', '-': '(a-b)^2=a^2-2ab+b^2', diff: '(a+b)(a-b)=a^2-b^2' };
+function idSubst(a, b, kind, v = 'x') {
+  const A = col(AC, mono(...a, v)), B = col(BC, mono(...b, v));
+  const sA = col(AC, sqTex(a, v)), sB = col(BC, sqTex(b, v));
+  if (kind === 'diff') return `${sA}-${sB}`;
+  return `${sA}${kind === '+' ? '+' : '-'}2\\times${A}\\times${B}+${sB}`;
+}
+const abText = (a, b, v = 'x') => `\\(a=${col(AC, mono(...a, v))}\\) et \\(b=${col(BC, mono(...b, v))}\\)`;
+
+// Exercice 4 : double distributivité
+function itDouble(l, F1, F2, v = 'x') {
+  const { prods, dev } = prodDev(F1, F2, v);
+  const r = reduceSteps(dev, v);
+  return { l, q: `(${seq(F1, v)})(${seq(F2, v)})`, res: seq(r.fin, v), steps: [
+    { m: prods, x: 'On multiplie chaque terme de la première parenthèse (en couleur) par chaque terme de la seconde.' },
+    { m: seq(dev, v), x: 'On calcule chaque produit (règle des signes ; \\(x\\times x=x^2\\)).' }
+  ].concat(r.steps) };
+}
+
+// Exercice 7 : développer avec une identité remarquable
+function itId(l, a, b, kind, v = 'x', swap = false) {
+  const dev = idDev(a, b, kind), fin = reduce(dev);
+  const steps = [
+    { h: `On reconnaît \\(${ID_NAME[kind]}\\) avec ${abText(a, b, v)}.` },
+    { m: idSubst(a, b, kind, v), x: `On remplace \\(a\\) et \\(b\\) dans \\(${ID_NAME[kind].split('=')[1]}\\).` },
+    { m: seq(dev, v), x: 'On calcule : attention, le carré porte sur le nombre <em>et</em> sur la lettre.' }
+  ];
+  if (!same(seq(fin, v), seq(dev, v))) steps.push({ m: seq(fin, v), x: 'On ordonne : du plus grand exposant au plus petit.' });
+  return { l, q: idTex(a, b, kind, v, swap), res: seq(fin, v), steps,
+    piege: kind !== 'diff' ? `\\(${idTex(a, b, kind, v)}\\neq ${sqTex(a, v)}${kind === '+' ? '+' : '-'}${sqTex(b, v)}\\) : il ne faut pas oublier le double produit.` : null };
+}
+
+// Exercices 4 et 7 (plus loin) : somme de produits. parts : [{s, k, type:'prod'|'id', ...}]
+function partDev(p) { return p.type === 'prod' ? prodDev(p.F1, p.F2).dev : idDev(p.a, p.b, p.kind); }
+function partQ(p, i, v = 'x') {
+  const sg = p.s < 0 ? '-' : (i ? '+' : '');
+  const k = p.k && p.k !== 1 ? p.k : '';
+  return sg + k + (p.type === 'prod' ? `(${seq(p.F1, v)})(${seq(p.F2, v)})` : idTex(p.a, p.b, p.kind, v, p.swap));
+}
+function itSum(l, parts, v = 'x') {
+  const q = parts.map((p, i) => partQ(p, i, v)).join('');
+  const devs = parts.map(p => reduce(partDev(p)));
+  const notes = parts.map((p, i) => `\\(${partQ(Object.assign({}, p, { s: 1, k: 1 }), 0, v)}=${seq(devs[i], v)}\\)`);
+  const keep = p => p.s < 0 || (p.k && p.k !== 1);
+  const line = parts.map((p, i) => {
+    const sg = p.s < 0 ? '-' : (i ? '+' : '');
+    const k = p.k && p.k !== 1 ? p.k : '';
+    return keep(p) ? `${sg}${k}(${seq(devs[i], v)})` : sg + seq(devs[i], v);
+  }).join('');
+  const flat = parts.flatMap((p, i) => scale(devs[i], (p.s < 0 ? -1 : 1) * (p.k || 1)));
+  const steps = [{ m: line, x: `On développe chaque morceau séparément, <em>en gardant les parenthèses</em> quand il y a un signe \\(-\\) ou un nombre devant : ${notes.join(' ; ')}.` }];
+  if (parts.some(keep)) steps.push({ m: seq(flat, v), x: parts.some(p => p.k && p.k !== 1) ? 'On supprime les parenthèses en distribuant le nombre (avec son signe) à chaque terme.' : 'On supprime les parenthèses précédées d’un signe \\(-\\) : on change le signe de chaque terme.' });
+  const r = reduceSteps(flat, v);
+  return { l, q, res: seq(r.fin, v), steps: steps.concat(r.steps),
+    piege: parts.some(p => p.s < 0) ? 'Les parenthèses sont indispensables : le signe \\(-\\) s’applique à <em>tout</em> le développement, pas seulement au premier terme.' : null };
+}
+
+// Exercice 6 : reconnaître (forme développée non demandée)
+const FORM6 = { '+': '(a+b)^2', '-': '(a-b)^2', diff: '(a+b)(a-b)' };
+function itRecoProd(a, b, kind, swap = false, v = 'x') {
+  const why = kind === 'diff' ? 'C’est un produit de deux parenthèses qui contiennent les <em>mêmes</em> termes, l’une avec \\(+\\), l’autre avec \\(-\\).'
+    : `C’est le carré d’une ${kind === '+' ? 'somme' : 'différence'}.`;
+  return { l: '', q: idTex(a, b, kind, v, swap), res: `\\(${FORM6[kind]}\\) ; \\(a=${mono(...a, v)}\\) ; \\(b=${mono(...b, v)}\\)`, resHTML: true, steps: [
+    { h: `${why} On coche \\(${FORM6[kind]}\\).` },
+    { h: `${kind === 'diff' ? 'Le terme commun aux deux parenthèses est \\(a\\), celui qui change de signe est \\(b\\)' : 'Le premier terme est \\(a\\), le second est \\(b\\)'} : ${abText(a, b, v)}.` }
+  ] };
+}
+
+// Exercices 8 et 9 : reconnaître une forme développée. terms : ordre d'écriture
+const FORM8 = { '+': 'a^2+2ab+b^2', '-': 'a^2-2ab+b^2', diff: 'a^2-b^2' };
+function sqWhy(t, v = 'x') {
+  const sq = mul(t, t), s = mono(...sq, v);
+  if (t[1] === 0) return `\\(${s}=${t[0]}^2\\)`;
+  if (t[0] === 1) return `\\(${s}\\) est le carré de \\(${v}\\)`;
+  return `\\(${s}=(${mono(...t, v)})^2\\)`;
+}
+function recoSteps(terms, a, b, kind, v = 'x') {
+  const steps = [];
+  if (kind === 'diff') {
+    steps.push({ h: `Deux termes séparés par un signe \\(-\\), et ce sont deux carrés : ${sqWhy(a, v)} et ${sqWhy(b, v)}. C’est la forme \\(${FORM8.diff}\\).` });
+  } else {
+    const ab = mul([2 * a[0], a[1]], b);
+    steps.push({ h: `Trois termes, dont deux carrés : ${sqWhy(a, v)} et ${sqWhy(b, v)}.` });
+    steps.push({ h: `On vérifie le double produit : \\(2\\times${fac(...a, v)}\\times${fac(...b, v)}=${mono(...ab, v)}\\), et il est précédé du signe \\(${kind}\\). C’est la forme \\(${FORM8[kind]}\\).` });
+  }
+  return steps;
+}
+function itReco8(terms, a, b, kind, v = 'x') {
+  const steps = recoSteps(terms, a, b, kind, v);
+  const swapNote = kind === '+' && a[1] === 0 && b[1] > 0 ? ` (on peut aussi prendre \\(a=${mono(...b, v)}\\) et \\(b=${mono(...a, v)}\\))` : '';
+  steps.push({ h: `Donc ${abText(a, b, v)}${swapNote}.` });
+  return { l: '', q: seq(terms, v), res: `\\(${FORM8[kind]}\\) ; \\(a=${mono(...a, v)}\\) ; \\(b=${mono(...b, v)}\\)`, resHTML: true, steps };
+}
+function itFactoId(l, terms, a, b, kind, v = 'x') {
+  const steps = recoSteps(terms, a, b, kind, v);
+  steps.push({ m: idSubst(a, b, kind, v), x: `On écrit l’expression sous la forme \\(${FORM8[kind]}\\) avec ${abText(a, b, v)}.` });
+  const A = mono(...a, v), B = mono(...b, v);
+  const res = kind === 'diff' ? `(${A}+${B})(${A}-${B})` : `(${A}${kind}${B})^2`;
+  steps.push({ m: res, x: `On applique \\(${FORM8[kind]}=${kind === 'diff' ? '(a+b)(a-b)' : `(a${kind}b)^2`}\\).` });
+  let extra = '';
+  if (kind === '-' && a[1] === 0 && b[1] > 0) extra = `=(${B}-${A})^2`;
+  if (extra) steps.push({ h: `<span class="x">On peut aussi écrire \\(${res}${extra}\\) : un carré ne change pas quand on change le signe de ce qui est entre parenthèses.</span>` });
+  return { l, q: seq(terms, v), res: res + extra, steps };
+}
+// Exercice 9 (plus loin) : A² − B² avec A, B des expressions
+function itDiffSq(l, A, B, qTex, Bnum, v = 'x') {
+  const At = A.length > 1 ? `(${seq(A, v)})` : seq(A, v), Bt = B.length > 1 ? `(${seq(B, v)})` : seq(B, v);
+  const sum = reduce(A.concat(B)), dif = reduce(A.concat(neg(B)));
+  const steps = [];
+  if (Bnum) steps.push({ m: `${At}^2-${Bt}^2`, x: `\\(${Bnum}=${Bt}^2\\) : on reconnaît \\(a^2-b^2\\) avec \\(a=${col(AC, At)}\\) et \\(b=${col(BC, Bt)}\\).` });
+  else steps.push({ h: `On reconnaît \\(a^2-b^2\\) avec \\(a=${col(AC, At)}\\) et \\(b=${col(BC, Bt)}\\).` });
+  steps.push({ m: `\\big[${col(AC, At)}+${col(BC, Bt)}\\big]\\big[${col(AC, At)}-${col(BC, Bt)}\\big]`, x: 'On applique \\(a^2-b^2=(a+b)(a-b)\\), en gardant les parenthèses.' });
+  steps.push({ m: `(${seq(A.concat(B), v)})(${seq(A.concat(neg(B)), v)})`, x: B.length > 1 ? 'On supprime les parenthèses : le signe \\(-\\) change le signe de chaque terme de \\(b\\).' : 'On supprime les parenthèses.' });
+  steps.push({ m: `(${seq(sum, v)})(${seq(dif, v)})`, x: 'On réduit chaque parenthèse.' });
+  return { l, q: qTex, res: `(${seq(sum, v)})(${seq(dif, v)})`, steps,
+    piege: B.length > 1 ? 'Dans le second facteur, le \\(-\\) porte sur <em>tous</em> les termes de \\(b\\).' : null };
+}
+function itFactoK(l, k, m, v = 'x') {   // k x² − k m²
+  return { l, q: `${k}${v}^2-${k * m * m}`, res: `${k}(${v}+${m})(${v}-${m})`, steps: [
+    { m: `${col(KC, k)}(${v}^2-${m * m})`, x: `On commence par le facteur commun \\(${k}\\) : \\(${k * m * m}=${k}\\times${m * m}\\).` },
+    { m: `${k}(${col(AC, `${v}^2`)}-${col(BC, `${m}^2`)})`, x: `Dans la parenthèse, on reconnaît \\(a^2-b^2\\) avec \\(a=${col(AC, v)}\\) et \\(b=${col(BC, m)}\\).` },
+    { m: `${k}(${v}+${m})(${v}-${m})`, x: 'On applique \\(a^2-b^2=(a+b)(a-b)\\), et on garde le facteur \\(' + k + '\\) devant.' }
+  ] };
+}
+
+/* =====================================================================
+   Figures de l'exercice 5 (mêmes couleurs que la feuille LaTeX)
+   ===================================================================== */
+const FC = { A1: '#008080', A4: '#E6FFFF', B1: '#99003D', B4: '#FFF2F2', C1: '#800080', C4: '#F2DAF2', G1: '#00A86B', G4: '#E6FFF2', gris: '#CCCCCC' };
+// Texte mathématique simple dans le SVG : x en italique, ^2 en exposant
+function st(s) {
+  return String(s).replace(/−/g, '-').split(/(\^2|x|-)/).filter(Boolean).map(p =>
+    p === '^2' ? '<tspan dy="-6" font-size="70%">2</tspan><tspan dy="6"> </tspan>' : p === 'x' ? '<tspan font-style="italic">x</tspan>' : p === '-' ? ' − ' : p.replace(/\+/g, ' + ')).join('');
+}
+const U = 22;
+function svgWrap(w, h, inner, ox = 40, oy = 30) {
+  return `<svg width="${w}" height="${h}" viewBox="${-ox} ${-oy} ${w} ${h}" font-family="Source Sans 3, Arial, sans-serif" font-size="15" fill="#1D2733">${inner}</svg>`;
+}
+function rect(x, y, w, h, fill, stroke, dash) { return `<rect x="${x * U}" y="${y * U}" width="${w * U}" height="${h * U}" fill="${fill}" stroke="${stroke}" stroke-width="2.6"${dash ? ' stroke-dasharray="5 4"' : ''}/>`; }
+function txt(x, y, s, anchor = 'middle', extra = '') { return `<text x="${x * U}" y="${y * U}" text-anchor="${anchor}" dominant-baseline="middle"${extra}>${st(s)}</text>`; }
+function cote(x1, y1, x2, y2, s, side) {
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  const lx = side === 'left' ? mx - 0.35 : side === 'right' ? mx + 0.35 : mx;
+  const ly = side === 'above' ? my - 0.55 : side === 'below' ? my + 0.6 : my;
+  const an = side === 'left' ? 'end' : side === 'right' ? 'start' : 'middle';
+  return `<line x1="${x1 * U}" y1="${y1 * U}" x2="${x2 * U}" y2="${y2 * U}" stroke="#1D2733" stroke-width="1" marker-start="url(#ar)" marker-end="url(#ar)"/>` + txt(lx, ly, s, an);
+}
+const DEFS = '<defs><marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M10 1 L2 5 L10 9" fill="none" stroke="#1D2733" stroke-width="1.6"/></marker></defs>';
+// Carré (a+b)² : y vers le bas, le grand carré a² en haut à gauche
+function figSomme(a, b, areas) {
+  let s = DEFS + rect(0, 0, 7, 7, FC.A4, FC.A1) + rect(7, 0, 3, 7, FC.G4, FC.G1) + rect(0, 7, 7, 3, FC.G4, FC.G1) + rect(7, 7, 3, 3, FC.B4, FC.B1);
+  s += cote(0, -0.6, 7, -0.6, a, 'above') + cote(7, -0.6, 10, -0.6, b, 'above') + cote(-0.6, 0, -0.6, 7, a, 'left') + cote(-0.6, 7, -0.6, 10, b, 'left');
+  if (areas) s += txt(3.5, 3.5, areas[0], 'middle', ' font-size="17"') + txt(8.5, 3.5, areas[1]) + txt(3.5, 8.5, areas[2]) + txt(8.5, 8.5, areas[3]);
+  return svgWrap(10 * U + 90, 10 * U + 50, s, 70, 34);
+}
+// Carré de côté a privé de deux bandes de largeur b ; le carré gris (a−b)² en bas à gauche
+function figDiff(a, b, gray, areas) {
+  let s = DEFS + rect(0, 3, 7, 7, FC.gris, '#666') + rect(7, 0, 3, 10, FC.G4, FC.G1) + rect(0, 0, 10, 3, FC.G4, FC.G1) + rect(7, 0, 3, 3, FC.B4, FC.B1);
+  s += cote(0, -0.6, 10, -0.6, a, 'above') + cote(7, 10.6, 10, 10.6, b, 'below') + cote(-0.6, 0, -0.6, 3, b, 'left') + cote(0, 10.6, 7, 10.6, gray || '……', 'below');
+  if (areas) s += txt(3.5, 6.5, areas[0], 'middle', ' font-size="17"') + txt(8.5, 6.5, areas[1]) + txt(3.5, 1.5, areas[2]) + txt(8.5, 1.5, areas[3]);
+  return svgWrap(10 * U + 90, 10 * U + 64, s, 70, 34);
+}
+// Carré a privé du carré b×b, puis rectangle (a+b)×(a−b)
+function figL(a, b, dims, areas) {
+  let s = DEFS + rect(0, 3, 10, 7, FC.A4, FC.A1) + rect(0, 0, 7, 3, FC.C4, FC.C1) + rect(7, 0, 3, 3, 'none', FC.B1, true);
+  s += txt(5, 6.5, areas ? `① ${areas[0]}` : '①') + txt(3.5, 1.5, areas ? `② ${areas[1]}` : '②');
+  s += cote(0, 10.6, 10, 10.6, a, 'below') + cote(7, -0.6, 10, -0.6, b, 'above') + cote(10.6, 0, 10.6, 3, b, 'right');
+  s += `<line x1="${12.6 * U}" y1="${6.5 * U}" x2="${15.6 * U}" y2="${6.5 * U}" stroke="#1D2733" stroke-width="2" marker-end="url(#ar)"/>`;
+  const X = 17.5;
+  s += rect(X, 3, 10, 7, FC.A4, FC.A1) + rect(X + 10, 3, 3, 7, FC.C4, FC.C1) + txt(X + 5, 6.5, '①') + txt(X + 11.5, 6.5, '②');
+  s += cote(X, 10.6, X + 13, 10.6, dims ? dims[0] : '……', 'below') + cote(X + 13.6, 3, X + 13.6, 10, dims ? dims[1] : '……', 'right');
+  return svgWrap(32 * U + 60, 11.5 * U + 30, s, 20, 6);
+}
+const lin = (k, s) => (k === 1 ? '' : k) + s;   // 2x, x
+function itFig1(l, k, b) {     // (kx + b)²
+  const a = lin(k, 'x'), a2 = k === 1 ? 'x^2' : `${k * k}x^2`, ab = `${k * b}x`, b2 = String(b * b);
+  return { l, fig: figSomme(a, b), q: '', res: `(${a}+${b})^2=${a2}+${2 * k * b}x+${b2}`, steps: [
+    { svg: figSomme(a, b, [a2, ab, ab, b2]), x: `Aire de chaque zone = longueur × largeur : \\(${k === 1 ? 'x\\times x' : `${a}\\times ${a}`}=${a2}\\), \\(${a}\\times${b}=${ab}\\) (deux fois) et \\(${b}\\times${b}=${b2}\\).` },
+    { e: `(${a}+${b})^2=${a2}+${ab}+${ab}+${b2}`, x: `Le grand carré a pour côté \\(${a}+${b}\\) : son aire est la somme des aires des quatre zones.` },
+    { e: `(${a}+${b})^2=${a2}+${2 * k * b}x+${b2}`, x: `On réduit : \\(${ab}+${ab}=${2 * k * b}x\\).` }
+  ] };
+}
+function itFig3(l, b) {        // (x − b)²
+  const ab = `${b}x`, b2 = String(b * b);
+  return { l, fig: figDiff('x', b), q: '', res: `(x-${b})^2=x^2-${2 * b}x+${b2}`, steps: [
+    { svg: figDiff('x', b, `x−${b}`), x: `Le côté du carré gris est \\(x-${b}\\) : on enlève \\(${b}\\) à \\(x\\).` },
+    { svg: figDiff('x', b, `x−${b}`, ['(x−' + b + ')^2', ab, ab, b2]), x: `Le grand carré a pour aire \\(x^2\\). Chaque bande a pour aire \\(x\\times${b}=${ab}\\). Le petit carré du coin a pour aire \\(${b2}\\).` },
+    { e: `(x-${b})^2=x^2-${ab}-${ab}+${b2}`, x: `On enlève les deux bandes, mais le petit carré du coin a alors été enlevé <em>deux fois</em> : on le rajoute une fois.` },
+    { e: `(x-${b})^2=x^2-${2 * b}x+${b2}`, x: 'On réduit.' }
+  ] };
+}
+function itFig4(l, b) {        // x² − b² = (x+b)(x−b)
+  return { l, fig: figL('x', b), q: '', res: `x^2-${b * b}=(x+${b})(x-${b})`, steps: [
+    { x: `On part d’un carré d’aire \\(x^2\\) et on retire le petit carré d’aire \\(${b}^2=${b * b}\\) : il reste \\(x^2-${b * b}\\).` },
+    { svg: figL('x', b, [`x+${b}`, `x−${b}`]), x: `Après déplacement du morceau ②, on obtient un rectangle de longueur \\(x+${b}\\) et de largeur \\(x-${b}\\).` },
+    { e: `x^2-${b * b}=(x+${b})(x-${b})`, x: 'L’aire n’a pas changé : on a deux écritures de la même aire.' }
+  ] };
+}
+
+/* =====================================================================
+   Énoncés : valeurs de la feuille (fresh = false) ou nouvelles valeurs
+   ===================================================================== */
+const S1 = '<span style="color:var(--star-green)">★</span><span style="color:#C5CCD3">☆☆</span>';
+const S2 = '<span style="color:var(--star-blue)">★★</span><span style="color:#C5CCD3">☆</span>';
+const S3 = '<span style="color:var(--star-red)">★★★</span>';
+const nz = (a, b) => { let n; do n = ri(a, b); while (n === 0); return n; };
+const sg = () => pick([1, -1]);
+
+const EX = [
+{ n: 1, obj: [1, 'Réduire une expression littérale'], stars: S1, comp: 'Calculer', consigne: 'Réduire les expressions suivantes.',
+  rappel: [
+    { t: 'Réduire', h: R`<p>Réduire, c’est écrire l’expression avec le moins de termes possible : on compte <b>famille par famille</b> (les \(x^2\), les \(x\), les nombres).</p><p>\(5x+3x=(5+3)x=8x\)</p>` },
+    { t: 'Multiplier', h: R`<p>On multiplie les nombres entre eux et les lettres entre elles.</p><p>\(3x\times4x=3\times4\times x\times x=12x^2\)</p>` }
+  ],
+  att: R`<p>Deux familles différentes ne se mélangent pas : \(x^2+x\) ne se réduit pas.</p><p>\(x+x=2x\) mais \(x\times x=x^2\).</p>`,
+  build(f) {
+    if (!f) return { main: [
+      itReduce('A', [[5, 1], [3, 1]]), itReduce('B', [[7, 1], [-9, 1]], 'a'), itReduce('C', [[4, 1], [5, 0], [-1, 1], [2, 0]]),
+      itReduce('D', [[-2, 1], [7, 0], [-5, 1], [-10, 0]], 'y'), itReduce('E', [[3, 2], [2, 1], [-1, 2], [5, 1]]),
+      itReduce('F', [[6, 2], [-4, 1], [1, 0], [-1, 2], [4, 1], [-8, 0]]), itProd('G', [3, 1], [4, 1]), itProd('H', [-2, 1], [5, 1], 'a'),
+      itReduce('I', [[1, 2], [1, 1], [1, 2], [-3, 0], [1, 1]])] };
+    const [p, q] = distinct(2, 2, 9), q4 = ri(2, 9);
+    return { main: [
+      itReduce('A', [[ri(2, 9), 1], [ri(2, 9), 1]]), itReduce('B', [[p, 1], [-q, 1]], 'a'),
+      itReduce('C', [[ri(2, 9), 1], [nz(-9, 9), 0], [-1, 1], [nz(-9, 9), 0]]),
+      itReduce('D', [[-ri(2, 9), 1], [ri(1, 9), 0], [-ri(2, 9), 1], [-ri(1, 12), 0]], 'y'),
+      itReduce('E', [[ri(2, 9), 2], [ri(1, 9), 1], [-ri(1, 3), 2], [nz(-9, 9), 1]]),
+      itReduce('F', [[ri(2, 9), 2], [-q4, 1], [ri(1, 9), 0], [-1, 2], [q4, 1], [-ri(1, 9), 0]]),
+      itProd('G', [ri(2, 9), 1], [ri(2, 9), 1]), itProd('H', [-ri(2, 9), 1], [sg() * ri(2, 9), 1], 'a'),
+      itReduce('I', [[1, 2], [sg() * ri(1, 3), 1], [1, 2], [-ri(1, 9), 0], [1, 1]])] };
+  } },
+
+{ n: 2, obj: [2, 'Développer et factoriser avec la simple distributivité'], stars: S1, comp: 'Calculer', consigne: 'Développer puis réduire les expressions suivantes.', more: S2,
+  rappel: [
+    { t: 'Simple distributivité', h: R`<p>\(k(a+b)=ka+kb\) et \(k(a-b)=ka-kb\)</p><p>Le facteur \(k\) multiplie <b>chaque</b> terme de la parenthèse.</p>` },
+    { t: 'Règle des signes', h: R`<p>\((-)\times(+)=(-)\) et \((-)\times(-)=(+)\)</p><p>\(-(a+b)=-a-b\) : un signe \(-\) devant une parenthèse change le signe de chaque terme.</p>` }
+  ],
+  att: R`<p>\(-5(2x-1)=-10x\,{\color{red}+}\,5\) : on n’oublie pas \((-5)\times(-1)=+5\).</p><p>\(x(x+6)=x^2+6x\) : \(x\times x=x^2\).</p>`,
+  build(f) {
+    if (!f) return {
+      main: [itDist('A', [{ k: [4, 0], f: [[1, 1], [3, 0]] }]), itDist('B', [{ k: [-5, 0], f: [[2, 1], [-1, 0]] }]), itDist('C', [{ k: [1, 1], f: [[1, 1], [6, 0]] }]),
+        itDist('D', [{ k: [3, 1], f: [[2, 1], [-7, 0]] }]), itDist('E', [{ k: [-1, 0], f: [[4, 0], [-3, 1]] }]), itDist('F', [{ k: [-2, 1], f: [[5, 1], [1, 0]] }])],
+      more: [itDist('G', [{ k: [3, 0], f: [[1, 1], [2, 0]] }, { k: [4, 0], f: [[2, 1], [-1, 0]] }]),
+        itDist('H', [{ k: [5, 0], f: [[2, 1], [-3, 0]] }, { k: [-2, 0], f: [[1, 1], [-4, 0]] }]),
+        itDist('I', [{ k: [1, 1], f: [[1, 1], [1, 0]] }, { k: [-3, 0], f: [[1, 2], [-2, 1]] }])] };
+    return {
+      main: [itDist('A', [{ k: [ri(2, 9), 0], f: [[1, 1], [ri(1, 9), 0]] }]), itDist('B', [{ k: [-ri(2, 9), 0], f: [[ri(2, 5), 1], [-ri(1, 9), 0]] }]),
+        itDist('C', [{ k: [1, 1], f: [[1, 1], [nz(-9, 9), 0]] }]), itDist('D', [{ k: [ri(2, 6), 1], f: [[ri(2, 5), 1], [-ri(1, 9), 0]] }]),
+        itDist('E', [{ k: [-1, 0], f: [[ri(1, 9), 0], [-ri(2, 9), 1]] }]), itDist('F', [{ k: [-ri(2, 6), 1], f: [[ri(2, 6), 1], [1, 0]] }])],
+      more: [itDist('G', [{ k: [ri(2, 6), 0], f: [[1, 1], [ri(1, 9), 0]] }, { k: [ri(2, 6), 0], f: [[ri(2, 4), 1], [-ri(1, 9), 0]] }]),
+        itDist('H', [{ k: [ri(2, 6), 0], f: [[ri(2, 4), 1], [-ri(1, 9), 0]] }, { k: [-ri(2, 6), 0], f: [[1, 1], [-ri(1, 9), 0]] }]),
+        itDist('I', [{ k: [1, 1], f: [[1, 1], [ri(1, 9), 0]] }, { k: [-ri(2, 5), 0], f: [[1, 2], [-ri(2, 6), 1]] }])] };
+  } },
+
+{ n: 3, obj: null, stars: S1, comp: 'Calculer', consigne: 'Factoriser les expressions suivantes en repérant un facteur commun.', more: S2,
+  rappel: [
+    { t: 'Factoriser', h: R`<p>Factoriser, c’est transformer une somme en un <b>produit</b>.</p><p>\(ka+kb=k(a+b)\) et \(ka-kb=k(a-b)\)</p>` },
+    { t: 'Méthode', h: R`<p>1. On cherche le facteur commun : le plus grand nombre qui divise tous les coefficients, et la lettre si elle est dans chaque terme.</p><p>2. On écrit chaque terme comme un produit par ce facteur.</p><p>3. On vérifie en redéveloppant.</p>` }
+  ],
+  att: R`<p>\(5x+5=5(x+1)\) : quand on factorise un terme entier, il reste \(1\), pas \(0\).</p><p>Le facteur commun peut être une parenthèse : \((x+2)(3x-1)+4(x+2)\).</p>`,
+  build(f) {
+    if (!f) return {
+      main: [itFacto('A', [[5, 1], [20, 0]]), itFacto('B', [[12, 1], [-18, 0]]), itFacto('C', [[1, 2], [9, 1]]),
+        itFacto('D', [[6, 2], [-15, 1]]), itFacto('E', [[14, 2], [7, 1]], 'a'), itFacto('F', [[-8, 1], [-4, 0]])],
+      more: [itFactoBin('G', [[1, 1], [2, 0]], [{ s: 1, B: [[3, 1], [-1, 0]], form: 'AB' }, { s: 1, B: [[4, 0]], form: 'kA' }]),
+        itFactoBin('H', [[2, 1], [5, 0]], [{ s: 1, B: [[1, 1], [-3, 0]], form: 'AB' }, { s: -1, B: [[4, 1], [1, 0]], form: 'AB' }]),
+        itFactoBin('I', [[1, 1], [-1, 0]], [{ s: 1, B: null, form: 'A2' }, { s: 1, B: [[2, 1], [3, 0]], form: 'AB' }])] };
+    const cop = (amin, amax, bmin, bmax) => { let a, b; do { a = ri(amin, amax); b = ri(bmin, bmax); } while (gcd(a, b) !== 1); return [a, b]; };
+    const [b1, b2] = cop(2, 5, 1, 9), [d1, d2] = cop(2, 5, 1, 9), [e1] = cop(2, 5, 1, 1), [f1] = [ri(2, 5)];
+    const A2 = [[ri(2, 3), 1], [nz(-7, 7), 0]], m = ri(1, 7);
+    return {
+      main: [(() => { const k = ri(2, 9), c = ri(2, 9); return itFacto('A', [[k, 1], [k * c, 0]]); })(),
+        (() => { const g = ri(2, 7); return itFacto('B', [[g * b1, 1], [-g * b2, 0]]); })(),
+        itFacto('C', [[1, 2], [sg() * ri(2, 9), 1]]),
+        (() => { const g = ri(2, 5); return itFacto('D', [[g * d1, 2], [-g * d2, 1]]); })(),
+        (() => { const g = ri(2, 9); return itFacto('E', [[g * e1, 2], [g, 1]], 'a'); })(),
+        (() => { const g = ri(2, 6); return itFacto('F', [[-g * f1, 1], [-g, 0]]); })()],
+      more: [itFactoBin('G', [[1, 1], [ri(1, 9), 0]], [{ s: 1, B: [[ri(2, 5), 1], [nz(-6, 6), 0]], form: 'AB' }, { s: 1, B: [[ri(2, 9), 0]], form: 'kA' }]),
+        itFactoBin('H', A2, [{ s: 1, B: [[1, 1], [nz(-6, 6), 0]], form: 'AB' }, { s: -1, B: [[ri(2, 5), 1], [nz(-6, 6), 0]], form: 'AB' }]),
+        itFactoBin('I', [[1, 1], [-m, 0]], [{ s: 1, B: null, form: 'A2' }, { s: 1, B: [[ri(2, 4), 1], [nz(-6, 6), 0]], form: 'AB' }])] };
+  } },
+
+{ n: 4, obj: [3, 'Développer avec la double distributivité'], stars: S2, comp: 'Calculer', consigne: 'Développer puis réduire les expressions suivantes.', more: S3,
+  rappel: [
+    { t: 'Double distributivité', h: R`<p>\((a+b)(c+d)=ac+ad+bc+bd\)</p><p>Chaque terme de la première parenthèse multiplie chaque terme de la seconde : on obtient <b>4 produits</b> (puis on réduit).</p>` },
+    { t: 'Exemple', h: R`<p>\((x+3)(x+5)=x^2+5x+3x+15\)</p><p>\(\phantom{(x+3)(x+5)}=x^2+8x+15\)</p>` }
+  ],
+  att: R`<p>Devant un produit précédé d’un signe \(-\), on développe d’abord <b>entre parenthèses</b> :</p><p>\(-(x-3)(x+4)=-(x^2+x-12)=-x^2-x+12\)</p>`,
+  build(f) {
+    if (!f) return {
+      main: [itDouble('A', [[1, 1], [3, 0]], [[1, 1], [5, 0]]), itDouble('B', [[1, 1], [-2, 0]], [[1, 1], [7, 0]]), itDouble('C', [[2, 1], [1, 0]], [[3, 1], [4, 0]]),
+        itDouble('D', [[3, 1], [-2, 0]], [[1, 1], [-5, 0]]), itDouble('E', [[-1, 1], [4, 0]], [[2, 1], [3, 0]]), itDouble('F', [[5, 0], [-2, 1]], [[1, 0], [-3, 1]])],
+      more: [itSum('G', [{ s: 1, type: 'prod', F1: [[1, 1], [1, 0]], F2: [[1, 1], [2, 0]] }, { s: -1, type: 'prod', F1: [[1, 1], [-3, 0]], F2: [[1, 1], [4, 0]] }]),
+        itDouble('H', [[2, 1], [-1, 0]], [[1, 2], [1, 1], [3, 0]])] };
+    return {
+      main: [itDouble('A', [[1, 1], [ri(1, 9), 0]], [[1, 1], [ri(1, 9), 0]]), itDouble('B', [[1, 1], [-ri(1, 9), 0]], [[1, 1], [ri(1, 9), 0]]),
+        itDouble('C', [[ri(2, 5), 1], [ri(1, 7), 0]], [[ri(2, 5), 1], [ri(1, 7), 0]]), itDouble('D', [[ri(2, 5), 1], [-ri(1, 7), 0]], [[1, 1], [-ri(1, 9), 0]]),
+        itDouble('E', [[-1, 1], [ri(1, 9), 0]], [[ri(2, 5), 1], [ri(1, 7), 0]]), itDouble('F', [[ri(2, 9), 0], [-ri(2, 5), 1]], [[ri(1, 5), 0], [-ri(2, 5), 1]])],
+      more: [itSum('G', [{ s: 1, type: 'prod', F1: [[1, 1], [ri(1, 6), 0]], F2: [[1, 1], [ri(1, 6), 0]] }, { s: -1, type: 'prod', F1: [[1, 1], [-ri(1, 6), 0]], F2: [[1, 1], [ri(1, 6), 0]] }]),
+        itDouble('H', [[ri(2, 4), 1], [-ri(1, 5), 0]], [[1, 2], [sg() * ri(1, 3), 1], [ri(1, 6), 0]])] };
+  } },
+
+{ n: 5, obj: [4, 'Reconnaître une identité remarquable'], stars: S1, comp: 'Représenter', consigne: 'Pour chaque figure, compléter les longueurs manquantes et écrire l’aire de chaque zone, puis compléter l’égalité.',
+  rappel: [
+    { t: 'Aire', h: R`<p>Aire d’un carré de côté \(c\) : \(c\times c=c^2\).</p><p>Aire d’un rectangle : longueur \(\times\) largeur.</p>` },
+    { t: 'Ce que montrent les figures', h: R`<p>\((a+b)^2=a^2+2ab+b^2\)</p><p>\((a-b)^2=a^2-2ab+b^2\)</p><p>\(a^2-b^2=(a+b)(a-b)\)</p>` }
+  ],
+  att: R`<p>Le carré de côté \(a+b\) contient <b>deux</b> rectangles \(a\times b\) : c’est le double produit \(2ab\).</p><p>\((x+5)^2\neq x^2+25\).</p>`,
+  build(f) {
+    if (!f) return { main: [itFig1('①', 1, 5), itFig1('②', 2, 1), itFig3('③', 3), itFig4('④', 4)] };
+    return { main: [itFig1('①', 1, ri(2, 9)), itFig1('②', ri(2, 3), ri(1, 5)), itFig3('③', ri(2, 9)), itFig4('④', ri(2, 9))] };
+  } },
+
+{ n: 6, obj: null, stars: S2, comp: 'Chercher', consigne: 'Cocher l’identité remarquable reconnue, puis donner les valeurs de \\(a\\) et de \\(b\\) (on ne demande pas de développer).',
+  rappel: [
+    { t: 'Les trois identités', h: R`<p>\((a+b)^2\) : carré d’une somme.</p><p>\((a-b)^2\) : carré d’une différence.</p><p>\((a+b)(a-b)\) : produit d’une somme par une différence des <b>mêmes</b> termes.</p>` },
+    { t: 'Trouver a et b', h: R`<p>Dans \((3x+2)^2\) : \(a=3x\) et \(b=2\).</p><p>\(a\) et \(b\) peuvent contenir des lettres et des nombres.</p>` }
+  ],
+  att: R`<p>Dans \((1-8x)^2\), c’est \(a=1\) et \(b=8x\) : le signe \(-\) appartient à la formule, pas à \(b\).</p>`,
+  build(f) {
+    if (!f) return { main: [itRecoProd([1, 1], [9, 0], 'diff'), itRecoProd([3, 1], [2, 0], '+'), itRecoProd([1, 0], [8, 1], '-'), itRecoProd([6, 0], [5, 1], 'diff', true)] };
+    const rows = [() => itRecoProd([1, 1], [ri(2, 12), 0], 'diff', Math.random() < .5), () => itRecoProd([ri(2, 9), 1], [ri(1, 9), 0], '+'),
+      () => itRecoProd([ri(1, 9), 0], [ri(2, 9), 1], '-'), () => itRecoProd([ri(2, 9), 0], [ri(2, 9), 1], 'diff', Math.random() < .5),
+      () => itRecoProd([1, 1], [ri(2, 9), 0], '-'), () => itRecoProd([ri(1, 9), 0], [1, 1], '+')];
+    return { main: rows.sort(() => Math.random() - .5).slice(0, 4).map(g => g()) };
+  } },
+
+{ n: 7, obj: null, stars: S1, comp: 'Calculer', consigne: 'Développer puis réduire les expressions suivantes à l’aide d’une identité remarquable.', more: S2,
+  rappel: [
+    { t: 'Identités remarquables', h: R`<p>\((a+b)^2=a^2+2ab+b^2\)</p><p>\((a-b)^2=a^2-2ab+b^2\)</p><p>\((a+b)(a-b)=a^2-b^2\)</p>` },
+    { t: 'Méthode', h: R`<p>1. On reconnaît l’identité et on écrit \(a\) et \(b\).</p><p>2. On remplace dans la formule.</p><p>3. On calcule : \((3x)^2=9x^2\) et \(2\times3x\times2=12x\).</p>` }
+  ],
+  att: R`<p>\((x+4)^2\neq x^2+16\) : il manque le double produit \(8x\).</p><p>\((3x)^2=9x^2\) et non \(3x^2\).</p>`,
+  build(f) {
+    if (!f) return {
+      main: [itId('A', [1, 1], [4, 0], '+'), itId('B', [1, 1], [7, 0], '-'), itId('C', [1, 1], [5, 0], 'diff'), itId('D', [3, 1], [2, 0], '+'), itId('E', [2, 1], [5, 0], '-'),
+        itId('F', [4, 1], [3, 0], 'diff'), itId('G', [1, 0], [6, 1], '-'), itId('H', [5, 0], [2, 1], '+'), itId('I', [7, 1], [1, 0], 'diff', 'x', true)],
+      more: [itSum('J', [{ s: 1, type: 'id', a: [1, 1], b: [1, 0], kind: '+' }, { s: 1, type: 'id', a: [1, 1], b: [1, 0], kind: '-' }]),
+        itSum('K', [{ s: 1, type: 'id', a: [2, 1], b: [3, 0], kind: '+' }, { s: -1, type: 'id', a: [1, 1], b: [2, 0], kind: 'diff', swap: true }]),
+        itSum('L', [{ s: 1, type: 'id', a: [3, 1], b: [1, 0], kind: '-' }, { s: -1, k: 2, type: 'id', a: [1, 1], b: [4, 0], kind: '+' }])] };
+    const c = ri(1, 9);
+    return {
+      main: [itId('A', [1, 1], [ri(2, 9), 0], '+'), itId('B', [1, 1], [ri(2, 9), 0], '-'), itId('C', [1, 1], [ri(2, 12), 0], 'diff'), itId('D', [ri(2, 6), 1], [ri(1, 7), 0], '+'),
+        itId('E', [ri(2, 6), 1], [ri(1, 7), 0], '-'), itId('F', [ri(2, 9), 1], [ri(1, 9), 0], 'diff'), itId('G', [ri(1, 5), 0], [ri(2, 7), 1], '-'),
+        itId('H', [ri(2, 9), 0], [ri(2, 5), 1], '+'), itId('I', [ri(2, 9), 1], [1, 0], 'diff', 'x', true)],
+      more: [itSum('J', [{ s: 1, type: 'id', a: [1, 1], b: [c, 0], kind: '+' }, { s: 1, type: 'id', a: [1, 1], b: [c, 0], kind: '-' }]),
+        itSum('K', [{ s: 1, type: 'id', a: [ri(2, 4), 1], b: [ri(1, 6), 0], kind: '+' }, { s: -1, type: 'id', a: [1, 1], b: [ri(1, 6), 0], kind: 'diff', swap: true }]),
+        itSum('L', [{ s: 1, type: 'id', a: [ri(2, 4), 1], b: [1, 0], kind: '-' }, { s: -1, k: ri(2, 3), type: 'id', a: [1, 1], b: [ri(1, 5), 0], kind: '+' }])] };
+  } },
+
+{ n: 8, obj: [5, 'Factoriser avec une identité remarquable'], stars: S2, comp: 'Chercher', consigne: 'Cocher la forme d’identité remarquable reconnue, puis donner les valeurs de \\(a\\) et de \\(b\\) (on ne demande pas de factoriser).',
+  rappel: [
+    { t: 'Les trois formes développées', h: R`<p>\(a^2+2ab+b^2\) : trois termes, deux carrés et un double produit précédé de \(+\).</p><p>\(a^2-2ab+b^2\) : même chose, double produit précédé de \(-\).</p><p>\(a^2-b^2\) : deux carrés séparés par \(-\).</p>` },
+    { t: 'Méthode', h: R`<p>1. On repère les carrés : \(25x^2=(5x)^2\), \(9=3^2\).</p><p>2. On vérifie le double produit : \(2\times5x\times3=30x\).</p>` }
+  ],
+  att: R`<p>Les termes ne sont pas toujours dans l’ordre : \(49+14x+x^2\) est de la forme \(a^2+2ab+b^2\).</p><p>\(x^2+49\) n’est <b>pas</b> une identité remarquable (il faut un \(-\)).</p>`,
+  build(f) {
+    if (!f) return { main: [itReco8([[1, 2], [-49, 0]], [1, 1], [7, 0], 'diff'), itReco8([[1, 2], [-12, 1], [36, 0]], [1, 1], [6, 0], '-'),
+      itReco8([[25, 2], [-30, 1], [9, 0]], [5, 1], [3, 0], '-'), itReco8([[1, 0], [-16, 2]], [1, 0], [4, 1], 'diff'), itReco8([[49, 0], [14, 1], [1, 2]], [7, 0], [1, 1], '+')] };
+    const A = ri(2, 12), B = ri(2, 9), [p, q] = [ri(2, 7), ri(1, 7)], r = ri(2, 9), s = ri(2, 9);
+    return { main: [itReco8([[1, 2], [-A * A, 0]], [1, 1], [A, 0], 'diff'), itReco8([[1, 2], [-2 * B, 1], [B * B, 0]], [1, 1], [B, 0], '-'),
+      itReco8([[p * p, 2], [2 * p * q, 1], [q * q, 0]], [p, 1], [q, 0], '+'), itReco8([[1, 0], [-r * r, 2]], [1, 0], [r, 1], 'diff'),
+      itReco8([[s * s, 0], [-2 * s, 1], [1, 2]], [s, 0], [1, 1], '-')].sort(() => Math.random() - .5) };
+  } },
+
+{ n: 9, obj: null, stars: S2, comp: 'Calculer', consigne: 'Factoriser les expressions suivantes à l’aide d’une identité remarquable.', more: S3,
+  rappel: [
+    { t: 'Factoriser avec les identités', h: R`<p>\(a^2+2ab+b^2=(a+b)^2\)</p><p>\(a^2-2ab+b^2=(a-b)^2\)</p><p>\(a^2-b^2=(a+b)(a-b)\)</p>` },
+    { t: 'Méthode', h: R`<p>1. On repère les carrés et on trouve \(a\) et \(b\).</p><p>2. S’il y a trois termes, on vérifie le double produit \(2ab\).</p><p>3. On écrit le produit. On peut vérifier en redéveloppant.</p>` }
+  ],
+  att: R`<p>\(16-9x^2=(4+3x)(4-3x)\) : \(a\) est le terme positif, \(b\) celui qui est soustrait.</p><p>Penser d’abord à un facteur commun : \(3x^2-12=3(x^2-4)\).</p>`,
+  build(f) {
+    if (!f) return {
+      main: [itFactoId('A', [[1, 2], [8, 1], [16, 0]], [1, 1], [4, 0], '+'), itFactoId('B', [[1, 2], [-64, 0]], [1, 1], [8, 0], 'diff'), itFactoId('C', [[1, 2], [-14, 1], [49, 0]], [1, 1], [7, 0], '-'),
+        itFactoId('D', [[9, 2], [12, 1], [4, 0]], [3, 1], [2, 0], '+'), itFactoId('E', [[4, 2], [-81, 0]], [2, 1], [9, 0], 'diff'), itFactoId('F', [[16, 2], [-40, 1], [25, 0]], [4, 1], [5, 0], '-'),
+        itFactoId('G', [[100, 0], [-9, 2]], [10, 0], [3, 1], 'diff'), itFactoId('H', [[36, 2], [60, 1], [25, 0]], [6, 1], [5, 0], '+'), itFactoId('I', [[1, 0], [-2, 1], [1, 2]], [1, 0], [1, 1], '-')],
+      more: [itDiffSq('J', [[1, 1], [3, 0]], [[4, 0]], '(x+3)^2-16', 16), itDiffSq('K', [[2, 1], [-1, 0]], [[1, 1], [5, 0]], '(2x-1)^2-(x+5)^2'), itFactoK('L', 3, 2)] };
+    const sq = (a, b, kind) => kind === 'diff' ? [mul(a, a), neg([mul(b, b)])[0]] : [mul(a, a), kind === '+' ? mul([2 * a[0], a[1]], b) : neg([mul([2 * a[0], a[1]], b)])[0], mul(b, b)];
+    const F = (l, a, b, kind) => itFactoId(l, sq(a, b, kind), a, b, kind);
+    const [p, q] = distinct(2, 1, 8);
+    const [a1, b1] = [ri(2, 4), nz(-5, 5)], [c1, d1] = [1, ri(1, 6)];
+    const J = [[1, 1], [p, 0]];
+    return {
+      main: [F('A', [1, 1], [ri(2, 9), 0], '+'), F('B', [1, 1], [ri(2, 12), 0], 'diff'), F('C', [1, 1], [ri(2, 9), 0], '-'), F('D', [ri(2, 5), 1], [ri(1, 7), 0], '+'),
+        F('E', [ri(2, 7), 1], [ri(1, 9), 0], 'diff'), F('F', [ri(2, 6), 1], [ri(1, 7), 0], '-'), F('G', [ri(2, 12), 0], [ri(2, 9), 1], 'diff'), F('H', [ri(2, 7), 1], [ri(1, 9), 0], '+'),
+        F('I', [ri(1, 9), 0], [1, 1], '-')],
+      more: [itDiffSq('J', J, [[q, 0]], `(${seq(J)})^2-${q * q}`, q * q),
+        itDiffSq('K', [[a1, 1], [b1, 0]], [[c1, 1], [d1, 0]], `(${seq([[a1, 1], [b1, 0]])})^2-(${seq([[c1, 1], [d1, 0]])})^2`), itFactoK('L', ri(2, 7), ri(1, 6))] };
+  } }
+];
+
+/* =====================================================================
+   Affichage
+   ===================================================================== */
+const $ = (s, el = document) => el.querySelector(s);
+const app = $('#app'), nav = $('#exnav');
+function typeset(el) {
+  if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+    MathJax.startup.promise.then(() => MathJax.typesetPromise([el])).catch(() => {});
+  }
+}
+
+function itemHTML(it, id) {
+  const label = it.l ? (/^[A-Z]$/.test(it.l) ? `\\(${it.l}=\\)` : `<b>${it.l}</b>`) : '';
+  const q = it.q ? `<span class="q">${label} \\(${it.q}\\)</span>` : `<span class="q">${label}</span>`;
+  const res = it.resHTML ? it.res : `\\(${/^[A-Z]$/.test(it.l) ? it.l + '=' : ''}${it.res}\\)`;
+  return `<div class="item" data-id="${id}">
+    <div class="row">${q}<button type="button" class="btn sm" data-open>Correction détaillée</button></div>
+    ${it.fig ? `<div class="qfig">${it.fig}</div>` : ''}
+    <div class="resline">Réponse : <span class="res">${res}</span></div>
+    <div class="corr" hidden><ol class="steps"></ol>
+      <div class="step-ctrl"><button type="button" class="btn solid sm" data-next>Étape suivante</button><button type="button" class="btn ghost sm" data-all>Tout afficher</button><button type="button" class="btn ghost sm" data-reset hidden>Recommencer</button></div>
+      <div class="end" hidden><div class="concl">Résultat : ${res}</div>${it.piege ? `<div class="piege" style="margin-top:8px"><b>Erreur à éviter :</b> ${it.piege}</div>` : ''}</div>
+    </div></div>`;
+}
+function stepHTML(it, st, k) {
+  const L = /^[A-Z]$/.test(it.l) ? it.l : '';
+  let inner = '';
+  if (st.svg) inner += `<div class="fig">${st.svg}</div>`;
+  if (st.m) inner += `<div class="m">\\[${L ? L + '=' : '='}${st.m}\\]</div>`;
+  if (st.e) inner += `<div class="m">\\[${st.e}\\]</div>`;
+  if (st.h) inner += `<div class="h">${st.h}</div>`;
+  if (st.x) inner += `<div class="x">${st.x}</div>`;
+  return `<span class="n">${k}</span><div>${inner}</div>`;
+}
+function wireItem(el, it) {
+  const corr = $('.corr', el), ol = $('.steps', corr), end = $('.end', corr);
+  const bN = $('[data-next]', corr), bA = $('[data-all]', corr), bR = $('[data-reset]', corr);
+  let k = 0;
+  const add = () => { const li = document.createElement('li'); li.className = 'step'; li.innerHTML = stepHTML(it, it.steps[k], k + 1); k++; ol.appendChild(li); typeset(li); };
+  const sync = () => { const fin = k >= it.steps.length; bN.hidden = fin; bA.hidden = fin; bR.hidden = !fin; end.hidden = !fin; if (fin) typeset(end); };
+  $('[data-open]', el).addEventListener('click', e => {
+    const open = corr.hidden;
+    corr.hidden = !open; el.classList.toggle('open', open);
+    e.currentTarget.textContent = open ? 'Masquer la correction' : 'Correction détaillée';
+    if (open && k === 0) { add(); sync(); }
+  });
+  bN.addEventListener('click', () => { add(); sync(); });
+  bA.addEventListener('click', () => { while (k < it.steps.length) add(); sync(); });
+  bR.addEventListener('click', () => { ol.innerHTML = ''; k = 0; add(); sync(); });
+}
+function itemsBlock(set, pre, ex) {
+  let h = `<div class="items">${set.main.map((it, i) => itemHTML(it, `${pre}m${i}`)).join('')}</div>`;
+  if (set.more) h += `<h2 class="part">Pour aller plus loin <span class="stars">${ex.more}</span></h2><div class="items">${set.more.map((it, i) => itemHTML(it, `${pre}p${i}`)).join('')}</div>`;
+  return h;
+}
+function wireBlock(root, set, pre) {
+  set.main.forEach((it, i) => wireItem($(`[data-id="${pre}m${i}"]`, root), it));
+  (set.more || []).forEach((it, i) => wireItem($(`[data-id="${pre}p${i}"]`, root), it));
+}
+
+const sheet = {};      // valeurs de la feuille, calculées une fois
+let train = 0;
+function render(n) {
+  const ex = EX.find(e => e.n === n) || EX[0];
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.n === ex.n));
+  const set = sheet[ex.n] || (sheet[ex.n] = ex.build(false));
+  const objTitle = ex.obj || EX.slice().reverse().find(e => e.n < ex.n && e.obj).obj;
+  app.innerHTML = `
+    <p class="obj"><b>Objectif ${objTitle[0]} :</b> ${objTitle[1]}</p>
+    <article class="exo">
+      <div class="exo-h"><span class="pill">Exercice ${ex.n}</span><span class="stars">${ex.stars}</span><span class="comp">${ex.comp}</span></div>
+      <div class="exo-b">
+        <p class="consigne">${ex.consigne}</p>
+        <div class="tools">
+          <button type="button" class="btn" data-rappel>Rappel</button>
+          <button type="button" class="btn ghost" data-res>Réponses seules</button>
+          <button type="button" class="btn green" data-train>↻ Nouvelles valeurs pour s’entraîner</button>
+        </div>
+        <div class="rappel" hidden>${ex.rappel.map(b => `<div><h3>${b.t}</h3>${b.h}</div>`).join('')}<div class="att"><h3>Attention !</h3>${ex.att}</div></div>
+        <div class="sheet"><h2 class="part">Corrigé de la feuille <small>clique sur « Correction détaillée » pour la suivre étape par étape</small></h2>${itemsBlock(set, 's', ex)}</div>
+        <div class="train" hidden></div>
+      </div>
+    </article>
+    <nav class="foot">${ex.n > 1 ? `<button type="button" class="btn ghost" data-go="${ex.n - 1}">← Exercice ${ex.n - 1}</button>` : '<span></span>'}${ex.n < EX.length ? `<button type="button" class="btn ghost" data-go="${ex.n + 1}">Exercice ${ex.n + 1} →</button>` : ''}</nav>`;
+  wireBlock($('.sheet', app), set, 's');
+  const rap = $('.rappel', app), bRap = $('[data-rappel]', app);
+  bRap.addEventListener('click', () => { rap.hidden = !rap.hidden; bRap.classList.toggle('on', !rap.hidden); if (!rap.hidden) typeset(rap); });
+  const bRes = $('[data-res]', app), body = $('.exo-b', app);
+  bRes.addEventListener('click', () => { body.classList.toggle('showres'); bRes.classList.toggle('on'); });
+  const tr = $('.train', app);
+  $('[data-train]', app).addEventListener('click', () => {
+    const fresh = ex.build(true), pre = `t${++train}`;
+    tr.hidden = false;
+    tr.innerHTML = `<h2 class="part">Entraînement : nouvelles valeurs <small>cherche sur ton cahier, puis ouvre la correction</small></h2>${itemsBlock(fresh, pre, ex)}`;
+    wireBlock(tr, fresh, pre);
+    typeset(tr);
+    tr.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  app.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.go; }));
+  typeset(app);
+  window.scrollTo(0, 0);
+}
+nav.innerHTML = EX.map(e => `<button type="button" data-n="${e.n}">Exercice ${e.n}</button>`).join('');
+nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.n; }));
+const route = () => render(+(location.hash.match(/^#ex(\d+)$/) || [])[1] || 1);
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
