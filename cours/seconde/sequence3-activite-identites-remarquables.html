@@ -1,0 +1,1104 @@
+<title>Identités remarquables</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap">
+<!-- KaTeX_Math = italique mathématique de LaTeX (Computer Modern), pour les lettres. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+  :root{
+    --bg:#eef3f0;
+    --surface:#ffffff;
+    --panel:#e3ede7;
+    --ink:#0f1b16;
+    --ink-dim:#51665c;
+    --line:#c3d3cb;
+    --brand:#3f7d34;
+    --brand-contrast:#ffffff;
+    --brand-soft:#dcefd6;
+    --accent:#c81e34;
+    --answer:#c45a00;   /* J1 du polycopié (couleur de complétion), assombri pour la projection */
+    --callout-bg:#fff6df;
+    --callout-border:#c9a227;
+    --shadow:0 10px 30px -12px rgba(15,27,22,.25);
+  }
+  /* Fond volontairement clair et fixe (visibilité en vidéoprojection) : pas de variante sombre. */
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Source Sans 3",system-ui,sans-serif;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    padding-inline:16px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; animation:none !important;}
+  }
+
+  .stage{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    max-width:1180px;
+    width:100%;
+    margin:0 auto;
+    padding-block:14px 10px;
+    gap:12px;
+    min-height:0;
+  }
+
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .crumb{
+    font-size:.85rem;
+    font-weight:600;
+    color:var(--brand);
+  }
+  .progress{
+    font-variant-numeric:tabular-nums;
+    font-size:.85rem;
+    color:var(--ink-dim);
+    white-space:nowrap;
+    margin-left:auto;
+  }
+
+  /* Deux colonnes : consignes (et correction) à gauche, schéma toujours au même endroit à droite. */
+  .slide{
+    flex:1;
+    min-height:0;
+    position:relative;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);
+    gap:18px;
+  }
+
+  .left{
+    position:relative;
+    min-height:0;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:.75em;
+    padding:2px 8px 14px 2px;
+    scrollbar-width:thin;
+  }
+  /* Écriture mathématique en prose : jamais coupée ; lettres en italique « rond »
+     comme en LaTeX (police KaTeX_Math = Computer Modern), pas l'italique de Source Sans. */
+  .math{white-space:nowrap;}
+  .math i{font-family:"KaTeX_Math","Latin Modern Math","Cambria Math",serif; font-style:italic; font-weight:normal; font-size:1.12em; padding-right:.03em;}
+
+  /* Numéro de zone ou de morceau (\Zone{} du polycopié). */
+  .zone{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:1.3em;
+    height:1.3em;
+    border:1.5px solid currentColor;
+    border-radius:4px;
+    background:var(--surface);
+    color:var(--ink);
+    font-weight:700;
+    font-size:.78em;
+    font-style:normal;
+    vertical-align:.12em;
+  }
+
+  .left > *{flex:none;}   /* sinon les consignes tronquées sont écrasées à hauteur nulle */
+  .part-title{
+    font-size:.8rem;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--brand);
+  }
+  .ctx{
+    margin:0;
+    font-size:clamp(1rem,1.45vw,1.2rem);
+    line-height:1.4;
+    color:var(--ink);
+    text-wrap:pretty;
+  }
+  .item{display:flex; gap:.6em; align-items:baseline;}
+  .item .num{
+    flex:none;
+    min-width:2.3em;
+    text-align:center;
+    font-size:.8rem;
+    font-weight:700;
+    color:var(--brand);
+    border:1.5px solid currentColor;
+    border-radius:999px;
+    padding:.05em .5em;
+  }
+  .item .txt{min-width:0; text-wrap:pretty;}
+  /* Consignes déjà vues : petites, grisées, deux lignes au plus. */
+  .ctx.past, .item.past{font-size:.92rem; line-height:1.3; color:var(--ink-dim);}
+  .item.past .num{color:var(--ink-dim);}
+  .ctx.past, .item.past .txt{max-height:2.6em; overflow:hidden;}
+  /* Consigne en cours : en gros. */
+  .item.current .txt{
+    font-size:clamp(1.25rem,2.3vw,1.85rem);
+    font-weight:500;
+    line-height:1.3;
+    color:var(--ink);
+  }
+  .item.current .num{
+    background:var(--brand);
+    border-color:var(--brand);
+    color:var(--brand-contrast);
+    font-size:.9rem;
+  }
+
+  .figpanel{
+    min-height:0;
+    background:var(--panel);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .figpanel svg{width:100%; height:100%; max-width:100%; max-height:100%;}
+  .figpanel{position:relative;}
+  .zones-btn{
+    position:absolute;
+    left:50%;
+    bottom:12px;
+    transform:translateX(-50%);
+    width:22px;
+    height:22px;
+    padding:0;
+    border-radius:50%;
+    border:1.5px solid var(--line);
+    background:transparent;
+    opacity:.55;
+  }
+  .zones-btn:hover{opacity:1;}
+  .zones-btn[aria-pressed="true"]{background:var(--line);}
+
+  .gridline{stroke:var(--line); stroke-width:.03; fill:none; stroke-linecap:round;}
+  .zl{font-family:"Source Sans 3"; font-weight:600; font-size:.85px; fill:var(--ink);
+      paint-order:stroke; stroke:#fff; stroke-width:.16px; stroke-linejoin:round;}   /* lisible sur les hachures */
+  .cl{font-family:"Source Sans 3"; font-weight:500; font-size:.72px; fill:var(--ink);}
+  .zb{font-family:"Source Sans 3"; font-weight:700; font-size:.6px; fill:var(--ink);}
+  .zl.j,.cl.j{fill:var(--answer);}
+  .halo{animation:pulse 1.4s ease-in-out infinite alternate;}
+  @keyframes pulse{from{opacity:.45;} to{opacity:1;}}
+
+  .work{
+    background:var(--surface);
+    border-radius:12px;
+    padding:.8em 1.1em;
+    box-shadow:0 6px 18px -12px rgba(15,27,22,.35);
+  }
+  .work ul{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:.5em;
+    font-size:clamp(1rem,1.7vw,1.35rem);
+    line-height:1.35;
+  }
+  .work li{color:var(--ink);}
+  .work li.cont{padding-left:1.4em;}
+  .work li.new{color:var(--answer); font-weight:600; animation:appear .35s ease;}
+  @keyframes appear{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+  /* Sans figure (bilan, défi) : les calculs prennent la place du schéma, en grand. */
+  .figpanel .work{width:100%; max-height:100%; overflow:auto; display:flex; justify-content:center;}
+  .figpanel .work ul{font-size:clamp(1.15rem,2.4vw,2rem); gap:.7em;}
+  .figpanel .work.bilan{background:var(--callout-bg); border:1.5px solid var(--callout-border);}
+
+  .callout{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    background:rgba(15,27,22,.12);
+    backdrop-filter:blur(1.5px);
+    opacity:1;
+    transition:opacity .3s ease, background-color .3s ease;
+  }
+  .callout.hidden{
+    opacity:0;
+    background:transparent;
+    pointer-events:none;
+  }
+  .callout-card{
+    max-width:min(92%,46em);
+    background:var(--callout-bg);
+    border:1.5px solid var(--callout-border);
+    border-radius:14px;
+    padding:.85em 1.3em;
+    font-weight:600;
+    font-size:clamp(.95rem,2vw,1.3rem);
+    line-height:1.35;
+    color:var(--ink);
+    text-align:center;
+    box-shadow:0 22px 45px -16px rgba(15,27,22,.4);
+    transform:scale(.9) translateY(6px);
+    transition:transform .3s cubic-bezier(.2,.8,.3,1.2);
+  }
+  .callout:not(.hidden) .callout-card{transform:scale(1) translateY(0);}
+  .callout-card .id-title{
+    font-size:.75em;
+    font-weight:600;
+    color:var(--ink-dim);
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    margin-bottom:.3em;
+  }
+  .callout-card .id-formula{font-size:1.7em; font-weight:600;}
+  .callout-card .big{font-size:1.45em; line-height:1.3;}
+  .callout-card .then{margin-top:.8em; font-size:1.1em; color:var(--ink-dim);}
+
+  .controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding-block:6px 2px;
+    flex-wrap:nowrap;
+  }
+  button{
+    font-family:"Source Sans 3";
+    font-weight:600;
+    font-size:.9rem;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink);
+    border-radius:10px;
+    padding:.55em 1.1em;
+    cursor:pointer;
+  }
+  button:hover{border-color:var(--brand);}
+  button:focus-visible{outline:2px solid var(--brand); outline-offset:2px;}
+  button:disabled{opacity:.45; cursor:default;}
+  button.primary{
+    background:var(--brand);
+    color:var(--brand-contrast);
+    border-color:var(--brand);
+  }
+  button.icon{padding:.55em .7em;}
+  .controls > button{flex:none; white-space:nowrap;}
+  .dots{
+    display:flex;
+    gap:3px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-inline:auto;
+  }
+  /* Une pastille par question (et non par diapositive), pour sauter directement à une question. */
+  .dot{
+    font-size:.66rem;
+    font-weight:600;
+    padding:.2em .38em;
+    border-radius:999px;
+    background:transparent;
+    color:var(--ink-dim);
+    border:1px solid var(--line);
+    font-variant-numeric:tabular-nums;
+  }
+  .dot[data-current="true"]{background:var(--brand); border-color:var(--brand); color:var(--brand-contrast);}
+  .hint{
+    font-size:.75rem;
+    color:var(--ink-dim);
+    white-space:nowrap;
+  }
+
+  @media (max-width:760px){
+    .slide{grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(240px,1fr);}
+    .left{overflow:visible;}
+    .hint{display:none;}
+  }
+</style>
+
+<div class="stage" id="stage">
+  <div class="topbar">
+    <span class="crumb" id="crumb"></span>
+    <span class="progress" id="progressLabel"></span>
+    <span class="hint">← → ou clic pour naviguer</span>
+    <button id="fullscreenBtn" class="icon" aria-label="Plein écran" title="Plein écran">⛶</button>
+  </div>
+
+  <div class="slide">
+    <div class="left" id="left"></div>
+    <div class="figpanel" id="fig"></div>
+    <div class="callout hidden" id="calloutBox"><div class="callout-card" id="calloutCard"></div></div>
+  </div>
+
+  <div class="controls">
+    <button id="prevBtn" aria-label="Diapositive précédente">◀ Précédent</button>
+    <div class="dots" id="dots"></div>
+    <button id="nextBtn" class="primary" aria-label="Diapositive suivante">Suivant ▶</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Écriture mathématique ----------
+  // Une seule passe sur la chaîne : les lettres a, b, x passent en italique,
+  // "-" devient le vrai signe moins et "*" le signe ×. À n'utiliser que sur
+  // des morceaux purement mathématiques (pas sur des mots comme "bande").
+  function M(s){
+    return '<span class="math">' + s.replace(/[abx]|-|\*/g, function(c){
+      return c==='-' ? '−' : (c==='*' ? '×' : '<i>'+c+'</i>');
+    }) + '</span>';
+  }
+  // Même chose pour les textes du SVG.
+  function Ms(s){
+    return s.replace(/[abx]|-|\*/g, function(c){
+      return c==='-' ? '−' : (c==='*' ? '×' : '<tspan font-style="italic" font-family="KaTeX_Math, \'Latin Modern Math\', \'Cambria Math\', serif" font-weight="normal" font-size="1.12em">'+c+'</tspan>');
+    });
+  }
+  function Z(n){ return '<span class="zone">'+n+'</span>'; }
+
+  // ---------- Couleurs des figures (mêmes teintes que le cours, CLT2627.sty) ----------
+  // Traits = niveau 1, remplissages = niveau 3 (le niveau 4 du PDF est trop pâle
+  // au vidéoprojecteur). G1 est assombri : le vert pur #00ff80 bave à l'écran.
+  var COL = {
+    A1:"#008080", A3:"#aaf2f2",
+    B1:"#99003d", B3:"#f2c2ce",
+    C1:"#800080", C3:"#f2aaf2",
+    G1:"#00b864", G3:"#ccffe5",
+    gris:"#cccccc", grisTrait:"#8a8a8a",
+    ink:"#0f1b16", accent:"#c81e34", J:"#c45a00"
+  };
+
+  // ---------- Outils SVG (1 unité = 1 carreau ; y vers le haut comme en maths) ----------
+  var TOP = 10;
+  function fy(y){ return TOP - y; }
+
+  function svgOpen(vb){
+    // Pointe de flèche ouverte, comme tracée au crayon.
+    var mk = function(id,col){
+      return '<marker id="'+id+'" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">'+
+        '<path d="M1.5,1.2 L9,5 L1.2,8.6" fill="none" stroke="'+col+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>';
+    };
+    return '<svg viewBox="'+vb+'" xmlns="http://www.w3.org/2000/svg"><defs>'+mk('mk',COL.ink)+mk('mkj',COL.J)+
+      // Hachures (zone enlevée deux fois, partie B).
+      '<pattern id="hach" patternUnits="userSpaceOnUse" width="0.5" height="0.5" patternTransform="rotate(45)">'+
+      '<line x1="0.25" y1="0" x2="0.25" y2="0.5" stroke="'+COL.B1+'" stroke-width="0.07"/></pattern></defs>';
+  }
+
+  // ---------- Tracé « à main levée » ----------
+  // Coins légèrement décalés, bords un peu bombés, crayon qui dépasse aux coins.
+  // L'aléa est déterministe (graine = coordonnées) : un même trait est redessiné
+  // à l'identique d'une diapositive à l'autre, et deux zones voisines partagent
+  // exactement le même bord.
+  function rng(key){
+    var h = 2166136261;
+    for(var i=0; i<key.length; i++){ h ^= key.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return function(){
+      h = (h + 0x6D2B79F5) | 0;
+      var t = Math.imul(h ^ (h >>> 15), 1 | h);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return (((t ^ (t >>> 14)) >>> 0) / 4294967296) * 2 - 1;   // dans [-1 ; 1]
+    };
+  }
+  function P(p){ return (Math.round(p[0]*1000)/1000)+','+(Math.round(p[1]*1000)/1000); }
+
+  // Point (x, y) des maths, légèrement déplacé, en coordonnées SVG.
+  function wp(x,y,amp){
+    var r = rng('p'+x+','+y+','+amp);
+    return [x + amp*r(), fy(y) + amp*r()];
+  }
+
+  // Bord entre deux points (clés ka, kb) : courbe de Bézier légèrement bombée,
+  // calculée dans un sens canonique pour être identique quel que soit le sens demandé.
+  function bord(a,b,ka,kb,bow){
+    var rev = ka > kb, t;
+    if(rev){ t=a; a=b; b=t; t=ka; ka=kb; kb=t; }
+    var r = rng('b'+ka+'|'+kb+'|'+bow);
+    var dx = b[0]-a[0], dy = b[1]-a[1], L = Math.hypot(dx,dy)||1;
+    var px = -dy/L, py = dx/L, m = Math.min(bow, 0.013*L+0.03);
+    var o1 = m*r(), o2 = m*r();
+    var c = [a, [a[0]+dx/3+px*o1, a[1]+dy/3+py*o1], [a[0]+2*dx/3+px*o2, a[1]+2*dy/3+py*o2], b];
+    return rev ? c.reverse() : c;
+  }
+  function C(c){ return ' C'+P(c[1])+' '+P(c[2])+' '+P(c[3]); }
+
+  // Trait seul : la courbe, prolongée un peu aux deux bouts (ov = dépassement max).
+  function trait(c,ov,key){
+    if(!ov) return 'M'+P(c[0])+C(c);
+    var r = rng('o'+key), dx = c[3][0]-c[0][0], dy = c[3][1]-c[0][1], L = Math.hypot(dx,dy)||1;
+    var ux = dx/L, uy = dy/L, a0 = ov*(0.6+0.4*r()), a1 = ov*(0.6+0.4*r());
+    return 'M'+P([c[0][0]-ux*a0, c[0][1]-uy*a0])+' L'+P(c[0])+C(c)+' L'+P([c[3][0]+ux*a1, c[3][1]+uy*a1]);
+  }
+
+  // Rectangle à main levée : le remplissage et le contour suivent les mêmes bords.
+  function rough(x1,y1,x2,y2,amp,bow,ov){
+    var K = [[x1,y1],[x2,y1],[x2,y2],[x1,y2]];
+    var keys = K.map(function(k){ return k[0]+','+k[1]; });
+    var pts = K.map(function(k){ return wp(k[0],k[1],amp); });
+    var edges = [0,1,2,3].map(function(i){ var j=(i+1)%4; return bord(pts[i],pts[j],keys[i],keys[j],bow); });
+    return {
+      fill: 'M'+P(pts[0])+edges.map(C).join('')+' Z',
+      stroke: edges.map(function(e,i){ return trait(e, ov, keys[i]+'>'+keys[(i+1)%4]+amp); }).join(' ')
+    };
+  }
+
+  function R(x1,y1,x2,y2,fill,stroke,o){
+    o = o||{};
+    var g = rough(x1,y1,x2,y2,0.07,0.15,0.16), s = '';
+    if(fill && fill!=='none')
+      s += '<path d="'+g.fill+'" fill="'+fill+'"'+(o.op ? ' fill-opacity="'+o.op+'"' : '')+'/>';
+    if(stroke && stroke!=='none')
+      s += '<path d="'+g.stroke+'" fill="none" stroke="'+stroke+'" stroke-width="'+(o.sw||0.13)+'"'+
+        (o.so ? ' stroke-opacity="'+o.so+'"' : '')+
+        (o.dash ? ' stroke-dasharray="0.35 0.25"' : '')+
+        ' stroke-linecap="round" stroke-linejoin="round"/>';
+    return s;
+  }
+
+  // Zone entourée « au feutre ».
+  function halo(x1,y1,x2,y2){
+    var g = rough(x1,y1,x2,y2,0.12,0.18,0.2);
+    return '<g class="halo"><path d="'+g.fill+'" fill="'+COL.accent+'" fill-opacity="0.14"/>'+
+      '<path d="'+g.stroke+'" fill="none" stroke="'+COL.accent+'" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round"/></g>';
+  }
+
+  function badge(x,y,n){
+    var g = rough(x-0.45,y-0.45,x+0.45,y+0.45,0.04,0.05,0.07);
+    return '<path d="'+g.fill+'" fill="#fff"/>'+
+      '<path d="'+g.stroke+'" fill="none" stroke="'+COL.ink+'" stroke-width="0.06" stroke-linecap="round"/>'+
+      '<text class="zb" x="'+x+'" y="'+fy(y)+'" text-anchor="middle" dominant-baseline="central">'+n+'</text>';
+  }
+
+  // Étiquette de zone : "#2" = numéro de zone encadré, "!…" = réponse (couleur de complétion).
+  function label(x,y,t){
+    if(!t) return '';
+    if(t.charAt(0)==='#') return badge(x,y,t.slice(1));
+    var j = t.charAt(0)==='!';
+    if(j) t = t.slice(1);
+    return '<text class="zl'+(j?' j':'')+'" x="'+x+'" y="'+fy(y)+'" text-anchor="middle" dominant-baseline="central">'+Ms(t)+'</text>';
+  }
+
+  // Flèche de cote (\Cote{} du polycopié), étiquette placée en above/below/left/right.
+  function cote(x1,y1,x2,y2,lab,pos){
+    if(!lab) return '';
+    var j = lab.charAt(0)==='!';
+    if(j) lab = lab.slice(1);
+    var col = j ? COL.J : COL.ink, mk = j ? 'mkj' : 'mk';
+    var c = bord(wp(x1,y1,0.04), wp(x2,y2,0.04), 'c'+x1+','+y1, 'c'+x2+','+y2, 0.08);
+    var s = '<path d="'+trait(c,0)+'" fill="none" stroke="'+col+'" stroke-width="0.06" stroke-linecap="round"'+
+      ' marker-start="url(#'+mk+')" marker-end="url(#'+mk+')"/>';
+    var tx = (x1+x2)/2, ty = fy((y1+y2)/2), anchor = 'middle';
+    if(pos==='above') ty -= 0.45;
+    else if(pos==='below') ty += 0.5;
+    else if(pos==='left'){ tx -= 0.3; anchor = 'end'; }
+    else { tx += 0.3; anchor = 'start'; }
+    s += '<text class="cl'+(j?' j':'')+'" x="'+tx+'" y="'+ty+'" text-anchor="'+anchor+'" dominant-baseline="central">'+Ms(lab)+'</text>';
+    return s;
+  }
+
+  function hiList(h){ return [].concat(h===undefined ? [] : h); }
+
+  // ---------- Figure A : carré agrandi (\FigSomme, proportions 7 / 3) ----------
+  // o.a, o.b : cotes ; o.z : textes des 4 zones (haut-g, haut-d, bas-g, bas-d) ;
+  // o.total : cote du côté entier ; o.hi : zones entourées ; o.only : carré de départ seul ;
+  // o.plain : agrandissement sans le découpage en 4 zones ; o.dashes : ce découpage en pointillés.
+  function figSomme(o){
+    var s = svgOpen('-2.6 -1.7 14.2 13.6');
+    if(o.only){
+      s += R(0,3,7,10,COL.A3,COL.A1);
+      s += cote(0,10.6,7,10.6,o.a,'above') + cote(-0.6,3,-0.6,10,o.a,'left');
+      return s+'</svg>';
+    }
+    if(o.plain){
+      s += R(0,0,10,10,COL.G3,COL.G1) + R(0,3,7,10,COL.A3,COL.A1);
+      if(o.dashes) [[7,3,10,3],[7,3,7,0]].forEach(function(l){
+        var c = bord(wp(l[0],l[1],0.04), wp(l[2],l[3],0.04), 'd'+l[0]+','+l[1], 'd'+l[2]+','+l[3], 0.08);
+        s += '<path d="'+trait(c,0)+'" fill="none" stroke="'+COL.ink+'" stroke-width="0.08" stroke-dasharray="0.3 0.22" stroke-linecap="round"/>';
+      });
+      s += cote(0,10.6,7,10.6,o.a,'above') + cote(7,10.6,10,10.6,o.b,'above') +
+           cote(-0.6,3,-0.6,10,o.a,'left') + cote(-0.6,0,-0.6,3,o.b,'left');
+      if(o.total) s += cote(0,-0.6,10,-0.6,o.total,'below');
+      return s+'</svg>';
+    }
+    var ZR = [[0,3,7,10],[7,3,10,10],[0,0,7,3],[7,0,10,3]];
+    var ZC = [[3.5,6.5],[8.5,6.5],[3.5,1.5],[8.5,1.5]];
+    s += R(0,3,7,10,COL.A3,COL.A1) + R(7,3,10,10,COL.G3,COL.G1) +
+         R(0,0,7,3,COL.G3,COL.G1) + R(7,0,10,3,COL.B3,COL.B1);
+    hiList(o.hi).forEach(function(i){ s += halo.apply(null, ZR[i]); });
+    (o.z||[]).forEach(function(t,i){ s += label(ZC[i][0], ZC[i][1], t); });
+    s += cote(0,10.6,7,10.6,o.a,'above') + cote(7,10.6,10,10.6,o.b,'above') +
+         cote(-0.6,3,-0.6,10,o.a,'left') + cote(-0.6,0,-0.6,3,o.b,'left');
+    if(o.total) s += cote(0,-0.6,10,-0.6,o.total,'below');
+    return s+'</svg>';
+  }
+
+  // ---------- Figure B : carré rétréci (\FigDiff, proportions 10 / 3) ----------
+  // Les deux bandes se chevauchent dans le coin en haut à droite.
+  // o.amb : cote du côté gris ; o.grey, o.band, o.corner : textes ;
+  // o.distinct : coin en couleur b² ; o.hi : 'plaque','band','top','corner','grey' ; o.stage : voir ci-dessous.
+  function figDiff(o){
+    var s = svgOpen('-2.6 -1.7 14.2 13.6');
+    var HR = {plaque:[0,0,10,10], band:[7,0,10,10], top:[0,7,10,10], corner:[7,7,10,10], grey:[0,0,7,7]};
+    // o.stage : 'plaque' = plaque de départ seule ; 'bandes' = bandes tracées, carré gris pas encore grisé.
+    if(o.stage==='plaque'){
+      s += R(0,0,10,10,'#ffffff',COL.grisTrait) + cote(0,10.6,10,10.6,o.a,'above');
+      return s+'</svg>';
+    }
+    s += R(0,0,7,7, o.stage==='bandes' ? '#ffffff' : COL.gris,'none',{sw:0});
+    s += R(7,0,10,10,COL.G3,'none',{op:0.8,sw:0}) + R(0,7,10,10,COL.G3,'none',{op:0.8,sw:0});
+    s += R(7,0,10,10,'none',COL.G1) + R(0,7,10,10,'none',COL.G1);
+    if(o.distinct) s += o.hatch ? R(7,7,10,10,'#ffffff','none') + R(7,7,10,10,'url(#hach)',COL.B1)
+                                : R(7,7,10,10,COL.B3,COL.B1);
+    s += R(0,0,7,7,'none',COL.grisTrait);
+    hiList(o.hi).forEach(function(k){ s += halo.apply(null, HR[k]); });
+    s += label(3.5,3.5,o.grey) + label(8.5,8.5,o.corner) + label(8.5,3.5,o.band);
+    s += cote(0,10.6,10,10.6,o.a,'above') + cote(7,-0.6,10,-0.6,o.b,'below') +
+         cote(-0.6,7,-0.6,10,o.b,'left') + cote(0,-0.6,7,-0.6,o.amb,'below');
+    return s+'</svg>';
+  }
+
+  // ---------- Figure C : découper et recoller (\FigL) ----------
+  // Morceau ① = (0,0)-(10,7), morceau ② = (0,7)-(7,10), coin retiré (7,7)-(10,10).
+  // Le morceau ② tourne d'un quart de tour pour venir en (10,0)-(13,7).
+  // o.d1 : largeur de ① ; o.d2 : [longueur, largeur] de ② ; o.move : 0, 'anim' ou 1 ;
+  // o.rect : [longueur, largeur] du rectangle obtenu ; o.hi : 'big','corner','p1','p2','rect'.
+  function pieceT(e){
+    var p0 = {x:3.5, y:fy(8.5)}, c = {x:12.2, y:fy(10.5)}, p1 = {x:11.5, y:fy(3.5)};
+    var u = 1-e;
+    var cx = u*u*p0.x + 2*u*e*c.x + e*e*p1.x;
+    var cy = u*u*p0.y + 2*u*e*c.y + e*e*p1.y;
+    return {
+      g:'translate('+cx+' '+cy+') rotate('+(90*e)+') translate('+(-p0.x)+' '+(-p0.y)+')',
+      b:'translate('+(cx-p0.x)+' '+(cy-p0.y)+')'
+    };
+  }
+
+  function figL(o){
+    var s = svgOpen('-3.4 -1.7 18.6 13.6');
+    var HR = {big:[0,0,10,10], corner:[7,7,10,10], p1:[0,0,10,7], p2:[0,7,7,10], rect:[0,0,13,7]};
+    var moved = !!o.move;
+    if(o.grid){
+      var gl = function(xa,ya,xb,yb){
+        var c = bord(wp(xa,ya,0.04), wp(xb,yb,0.04), 'g'+xa+','+ya, 'g'+xb+','+yb, 0.07);
+        return '<path class="gridline" d="'+trait(c,0)+'"/>';
+      };
+      for(var gx=0; gx<=14; gx++) s += gl(gx,0,gx,10);
+      for(var gy=0; gy<=10; gy++) s += gl(0,gy,14,gy);
+    }
+    s += R(7,7,10,10,'none',COL.B1,{dash:true,sw:0.07});
+    if(moved) s += R(0,7,7,10,'none',COL.C1,{dash:true,sw:0.07,so:0.45});
+    s += R(0,0,10,7,COL.A3,COL.A1);
+    var t = pieceT(o.move===1 ? 1 : 0);
+    s += '<g id="p2" transform="'+t.g+'">'+R(0,7,7,10,COL.C3,COL.C1)+'</g>';
+    hiList(o.hi).forEach(function(k){ s += halo.apply(null, HR[k]); });
+    s += badge(5,3.5,'1');
+    s += '<g id="p2b" transform="'+t.b+'">'+badge(3.5,8.5,'2')+'</g>';
+    if(!o.rect) s += cote(0,-0.6,10,-0.6,o.a,'below');
+    if(!moved) s += cote(7,10.6,10,10.6,o.b,'above') + cote(10.6,7,10.6,10,o.b,'right');
+    if(o.d1 && !o.rect) s += cote(-0.6,0,-0.6,7,o.d1,'left');
+    if(o.d2 && !moved) s += cote(0,10.6,7,10.6,o.d2[0],'above') + cote(-0.6,7,-0.6,10,o.d2[1],'left');
+    if(o.rect) s += cote(0,-0.6,13,-0.6,o.rect[0],'below') + cote(-0.6,0,-0.6,7,o.rect[1],'left');
+    return s+'</svg>';
+  }
+
+  var FIG = {somme:figSomme, diff:figDiff, L:figL};
+
+  // Copie d'une figure avec quelques réglages changés.
+  function F(base,extra){
+    var o = {}, k;
+    for(k in base) o[k] = base[k];
+    for(k in extra) o[k] = extra[k];
+    return o;
+  }
+
+  function identity(title, formula){
+    return '<div class="id-title">'+title+'</div><div class="id-formula">'+M(formula)+'</div>';
+  }
+
+  // ---------- Construction des diapositives ----------
+  // Chaque question donne des étapes où la figure et le tableau de calcul se
+  // complètent un geste à la fois. Les lignes de calcul s'accumulent ; celles
+  // de l'étape en cours sont en orange. À gauche, les consignes de la partie
+  // restent affichées (les anciennes en petit), à droite le schéma ne bouge pas.
+  var PARTS = {
+    A:'Partie A — Agrandir un carré',
+    B:'Partie B — Rétrécir un carré',
+    C:'Partie C — Découper et recoller',
+    D:'Partie D — Bilan'
+  };
+  var SLIDES = [], DOTS = [], QS = [];
+
+  // opt.ctx : texte de mise en situation commun à plusieurs questions (affiché une fois au-dessus).
+  // Une étape {f:false} laisse le cadre du schéma vide.
+  // opt.fresh : à partir de cette question, les consignes précédentes de la partie sont effacées.
+  function Q(part, num, text, steps, opt){
+    opt = opt||{};
+    var qi = QS.length;
+    QS.push({part:part, num:num, text:text, ctx:opt.ctx||'', fresh:!!opt.fresh});
+    DOTS.push({i:SLIDES.length, label: num==='Défi' ? 'Défi' : part+num});
+    // Première diapositive : la consigne seule, avec le schéma de départ, sans correction.
+    if(steps[0].w || steps[0].c) steps = [{}].concat(steps);
+    var nofig = steps.every(function(st){ return !st.f; });
+    var fig = null, work = [];
+    for(var k=0; k<steps.length; k++) if(steps[k].f){ fig = steps[k].f; break; }
+    steps.forEach(function(st){
+      if(st.f !== undefined && st.f !== null) fig = st.f;
+      var added = st.w || [];
+      work = work.concat(added);
+      SLIDES.push({q:qi, fig:fig, nofig:nofig, work:work.slice(), nNew:added.length, callout:st.c, box:opt.box,
+        zones: !!(fig && fig.plain)});
+    });
+  }
+
+  // ----- Partie A -----
+  var SA  = {t:'somme', a:'7 m', b:'3 m', z:['#1','#2','#3','#4']};
+  var SAa = F(SA, {z:['!49 m²','!21 m²','!21 m²','!9 m²']});
+  var SP  = F(SA, {plain:true});
+  var ST  = F(SA, {total:'!10 m'});
+  var ctxA = 'Le potager de Mme Leroy est un carré de 7 m de côté. Pour augmenter sa production, elle décide de l’agrandir de 3 m vers la droite et de 3 m vers le bas.';
+
+  Q('A','1', 'Fais un schéma.', [
+    {f:false},
+    {f:F(SA,{only:true})},
+    {f:SP}
+  ], {ctx:ctxA});
+
+  // Correction : d'abord le grand carré (10 × 10), ensuite seulement le découpage en 4 zones.
+  Q('A','2', 'Calcule l’aire du nouveau potager de deux façons différentes.', [
+    {f:SP},
+    {f:F(SP,{total:'!10 m'}), w:['<b>1<sup>re</sup> façon.</b> Côté du nouveau potager : '+M('7 + 3 = 10')+' m']},
+    {w:['Aire : '+M('10 * 10 = 100')+' m²']},
+    {f:ST, w:['<b>2<sup>e</sup> façon.</b> On découpe le potager en 4 zones :']},
+    {f:F(ST,{z:['!49 m²','#2','#3','#4'], hi:0}), w:[Z(1)+' : '+M('7 * 7 = 49')+' m²']},
+    {f:F(ST,{z:['!49 m²','!21 m²','#3','#4'], hi:1}), w:[Z(2)+' : '+M('3 * 7 = 21')+' m²']},
+    {f:F(ST,{z:['!49 m²','!21 m²','!21 m²','#4'], hi:2}), w:[Z(3)+' : '+M('7 * 3 = 21')+' m²']},
+    {f:F(ST,{z:['!49 m²','!21 m²','!21 m²','!9 m²'], hi:3}), w:[Z(4)+' : '+M('3 * 3 = 9')+' m²']},
+    {f:F(SAa,{total:'!10 m'}), w:['Somme : '+M('49 + 21 + 21 + 9 = 100')+' m²']},
+    {c:'<div class="big">On retrouve bien 100 m² !<br>C’est la même aire, calculée de deux façons.</div>'},
+    {c:'<div class="big">On retrouve bien 100 m² !<br>C’est la même aire, calculée de deux façons.</div>'+
+       '<div class="then">On a donc :</div><div class="id-formula">'+M('(7 + 3)² = 7² + 3 * 7 + 7 * 3 + 3²')+'</div>'}
+  ]);
+
+  Q('A','3', 'Son voisin avait calculé que le nouveau potager mesure 58 m². <br>Retrouve le calcul qu’il a fait et explique en quoi c’est faux.', [
+    {f:SAa},
+    {f:F(SAa,{hi:[0,3]}), w:['Le calcul du voisin : '+M('7² + 3² = 49 + 9 = 58')+' m²']},
+    {w:['Il n’a compté que les deux carrés '+Z(1)+' et '+Z(4)+'.']},
+    {f:F(SAa,{hi:[1,2]}), w:['C’est faux : il a oublié les deux rectangles '+Z(2)+' et '+Z(3)+', soit '+M('2 * 21 = 42')+' m²', 'On appelle ça le <b>double produit</b> !']},
+    {f:SAa, w:[M('58 + 2 * 21 = 100')+' m² ✔']},
+    {c:'Attention : '+M('(7 + 3)²')+' n’est pas égal à '+M('7² + 3²')+' !'}
+  ]);
+
+  var SX  = {t:'somme', a:'7', b:'x', z:['','','','']};
+  var SXa = F(SX, {z:['!49','!7x','!7x','!x²']});
+  var avecX = '<b>Avec '+M('x')+'.</b> ';
+  var ctxAX = avecX+'Le potager de départ mesure toujours 7 m de côté, mais on l’agrandit maintenant de '+M('x')+' mètres vers la droite et de '+M('x')+' mètres vers le bas (avec '+M('x > 0')+').';
+
+  Q('A','4a', 'Fais un nouveau schéma.', [
+    {f:F(SX,{only:true})},
+    {f:F(SX,{plain:true})}
+  ], {ctx:ctxAX, fresh:true});
+
+  Q('A','4b', 'Représente les 4 zones comme précédemment et inscris à l’intérieur de chacune son aire en fonction de '+M('x')+'.', [
+    {f:F(SX,{plain:true})},
+    {f:SX},
+    {f:F(SX,{z:['!49','','',''], hi:0}), w:[Z(1)+' : '+M('7 * 7 = 49')]},
+    {f:F(SX,{z:['!49','!7x','',''], hi:1}), w:[Z(2)+' : '+M('x * 7 = 7x')]},
+    {f:F(SX,{z:['!49','!7x','!7x',''], hi:2}), w:[Z(3)+' : '+M('7 * x = 7x')]},
+    {f:F(SXa,{hi:3}), w:[Z(4)+' : '+M('x * x = x²')]}
+  ], {ctx:ctxAX});
+
+  Q('A','4c', 'Propose deux façons de calculer l’aire du potager.', [
+    {f:SXa},
+    {w:['<b>1<sup>re</sup> façon.</b> Somme des quatre zones :', M('49 + 7x + 7x + x² = 49 + 14x + x²')]},
+    {f:F(SXa,{total:'!7 + x'}), w:['<b>2<sup>e</sup> façon.</b>', 'On a un carré dont le côté mesure '+M('7 + x'), 'donc son aire est : '+M('(7 + x)²')]},
+    {c:identity('Les deux calculs donnent la même aire','(7 + x)² = 49 + 14x + x²')}
+  ], {ctx:ctxAX});
+
+  Q('A','4d', 'Vérifie ce résultat en développant '+M('(7 + x)(7 + x)')+' avec la double distributivité.', [
+    {f:F(SXa,{total:'!7 + x'})},
+    {w:[M('(7 + x)(7 + x) = 7 * 7 + 7 * x + x * 7 + x * x')]},
+    {w:[M('= 49 + 7x + 7x + x²')]},
+    {w:[M('= 49 + 14x + x²')+' ✔']}
+  ], {ctx:ctxAX});
+
+  var SAB = {t:'somme', a:'a', b:'b', z:['','','','']};
+  var SABa = F(SAB, {z:['!a²','!ab','!ab','!b²']});
+  Q('A','5', '<b>Avec '+M('a')+' et '+M('b')+'.</b> On considère maintenant un carré de côté '+M('a')+' agrandi de '+M('b')+' (avec '+M('a')+' et '+M('b')+' positifs). <br>Écris l’aire de chaque zone sur la figure, puis complète : '+M('(a + b)² = ……'), [
+    {f:SAB},
+    {f:F(SAB,{z:['!a²','','',''], hi:0})},
+    {f:F(SAB,{z:['!a²','!ab','',''], hi:1})},
+    {f:F(SAB,{z:['!a²','!ab','!ab',''], hi:2})},
+    {f:F(SABa,{hi:3})},
+    {f:F(SABa,{total:'!a + b'}), w:['Côté : '+M('a + b')+', donc aire : '+M('(a + b)²')]},
+    {w:[M('(a + b)² = a² + ab + ab + b²')]},
+    {w:[M('(a + b)² = a² + 2ab + b²')]},
+    {c:identity('Première identité remarquable','(a + b)² = a² + 2ab + b²')}
+  ], {fresh:true});
+
+  // ----- Partie B -----
+  var DB  = {t:'diff', a:'10 cm', b:'3 cm', amb:'?'};
+  var DB1 = F(DB, {amb:'!7 cm', grey:'!49 cm²'});
+  var DB2 = F(DB1, {distinct:true, hatch:true, corner:'!9 cm²'});
+  var ctxB = 'Une plaque carrée mesure 10 cm de côté. On découpe une bande de 3 cm de large le long du bord du haut, et une bande de 3 cm de large le long du bord de droite.';
+
+  var DB0 = F(DB, {amb:''});
+  Q('B','1', 'Fais un schéma et colorie la plaque ainsi obtenue.', [
+    {f:false},
+    {f:F(DB0,{stage:'plaque'})},
+    {f:F(DB0,{stage:'bandes'})},
+    {f:DB0}
+  ], {ctx:ctxB});
+
+  Q('B','2', 'Quelle est la longueur du côté du carré gris ? Déduis-en son aire.', [
+    {f:DB},
+    {f:F(DB,{amb:'!7 cm', hi:'grey'}), w:['Côté du carré gris : '+M('10 - 3 = 7')+' cm']},
+    {f:DB1, w:['Aire : '+M('7² = 49')+' cm²']}
+  ]);
+
+  Q('B','3', 'Quelle est l’aire de la plaque de départ ? <br>Quelle est l’aire d’une bande entière (10 cm sur 3 cm) ?', [
+    {f:DB1},
+    {f:F(DB1,{hi:'plaque'}), w:['Plaque : '+M('10² = 100')+' cm²']},
+    {f:F(DB1,{hi:'band', band:'!30 cm²'}), w:['Une bande entière : '+M('10 * 3 = 30')+' cm²']}
+  ]);
+
+  var lina = 'Lina calcule l’aire du carré gris ainsi : '+M('100 - 30 - 30 = 40')+' cm². Elle trouve un résultat différent de celui de la question 2.';
+  Q('B','4a', 'Hachure sur la figure la zone qui a été enlevée deux fois.', [
+    {f:DB1},
+    {f:F(DB1,{hi:'top'}), w:['Lina enlève la bande du haut : '+M('100 - 30')]},
+    {f:F(DB1,{hi:'band'}), w:['… puis la bande de droite : '+M('100 - 30 - 30')]},
+    {f:F(DB2,{hi:'corner'}), w:['Le petit coin de '+M('3 * 3 = 9')+' cm² est dans les deux bandes : il a été enlevé deux fois !']}
+  ], {ctx:lina});
+
+  Q('B','4b', 'Corrige le calcul de Lina.', [
+    {f:DB2},
+    {f:F(DB2,{hi:'corner'}), w:['Il faut rajouter une fois le petit coin :']},
+    {f:DB2, w:[M('100 - 30 - 30 + 9 = 49')+' cm² ✔']},
+    {c:'On retrouve bien 49 cm², l’aire du carré gris.'}
+  ], {ctx:lina});
+
+  var DX  = {t:'diff', a:'x', b:'3', amb:'……', distinct:true};
+  var DXa = F(DX, {amb:'!x - 3'});
+  var DXb = F(DXa, {grey:'!(x - 3)²', band:'!3x', corner:'!9'});
+  var ctxBX = avecX+'La plaque a maintenant un côté de '+M('x')+' cm (avec '+M('x > 3')+'), et les bandes ont toujours 3 cm de large.';
+
+  Q('B','5a', 'Complète la longueur manquante sur la figure.', [
+    {f:DX},
+    {f:DXa, w:['Longueur manquante : '+M('x - 3')]}
+  ], {ctx:ctxBX, fresh:true});
+
+  Q('B','5b', 'Exprime l’aire du carré gris de deux façons.', [
+    {f:DXa},
+    {f:F(DXa,{grey:'!(x - 3)²', hi:'grey'}), w:['Côté '+M('x - 3')+', donc aire du carré gris : '+M('(x - 3)²')]},
+    {f:F(DXa,{grey:'!(x - 3)²', hi:'plaque'}), w:['Plaque : '+M('x²')]},
+    {f:F(DXa,{grey:'!(x - 3)²', band:'!3x', hi:'band'}), w:['On enlève deux bandes de '+M('3 * x = 3x')]},
+    {f:F(DXb,{hi:'corner'}), w:['… et on rajoute le coin enlevé deux fois : '+M('3² = 9')]},
+    {f:DXb, w:['Aire du carré gris : '+M('x² - 3x - 3x + 9 = x² - 6x + 9')]},
+    {c:identity('Les deux calculs donnent la même aire','(x - 3)² = x² - 6x + 9')}
+  ], {ctx:ctxBX});
+
+  Q('B','5c', 'Vérifie ce résultat en développant '+M('(x - 3)(x - 3)')+'.', [
+    {f:DXb},
+    {w:[M('(x - 3)(x - 3) = x * x - x * 3 - 3 * x + 3 * 3')]},
+    {w:[M('= x² - 3x - 3x + 9')]},
+    {w:[M('= x² - 6x + 9')+' ✔']}
+  ], {ctx:ctxBX});
+
+  var DAB  = {t:'diff', a:'a', b:'b', amb:'……', distinct:true};
+  var DABa = F(DAB, {amb:'!a - b'});
+  Q('B','6', '<b>Avec '+M('a')+' et '+M('b')+'.</b> On part d’un carré de côté '+M('a')+' et on enlève deux bandes de largeur '+M('b')+' (avec 0 &lt; '+M('b')+' &lt; '+M('a')+'). <br>Complète la longueur manquante. Écris l’aire du carré de départ, celle d’une bande entière et celle du petit coin, puis complète : '+M('(a - b)² = ……'), [
+    {f:DAB},
+    {f:DABa, w:['Longueur manquante : '+M('a - b')]},
+    {f:F(DABa,{hi:'plaque'}), w:['Carré de départ : '+M('a²')]},
+    {f:F(DABa,{band:'!ab', hi:'band'}), w:['Une bande entière : '+M('a * b = ab')]},
+    {f:F(DABa,{band:'!ab', corner:'!b²', hi:'corner'}), w:['Petit coin : '+M('b²')]},
+    {f:F(DABa,{band:'!ab', corner:'!b²', grey:'!(a - b)²'}), w:[M('(a - b)² = a² - ab - ab + b²')]},
+    {w:[M('(a - b)² = a² - 2ab + b²')]},
+    {c:identity('Deuxième identité remarquable','(a - b)² = a² - 2ab + b²')}
+  ], {fresh:true});
+
+  // ----- Partie C -----
+  var LC  = {t:'L', a:'10 cm', b:'3 cm', grid:true};
+  var LCm = F(LC, {move:1, rect:['!13 cm','!7 cm']});
+  var ctxC = 'Dans un carré de 10 cm de côté, on retire le petit carré de 3 cm de côté situé dans un coin. On découpe ce qui reste en deux morceaux '+Z(1)+' et '+Z(2)+'. (Un carreau représente 1 cm.)';
+
+  Q('C','', ctxC, [
+    {f:LC}
+  ]);
+
+  Q('C','1', 'Calcule l’aire de la figure formée par les morceaux '+Z(1)+' et '+Z(2)+'.', [
+    {f:LC},
+    {f:F(LC,{hi:'big'}), w:['Grand carré : '+M('10² = 100')+' cm²']},
+    {f:F(LC,{hi:'corner'}), w:['Petit carré retiré : '+M('3² = 9')+' cm²']},
+    {f:LC, w:['Aire de la figure : '+M('100 - 9 = 91')+' cm²']}
+  ]);
+
+  Q('C','2', 'Donne les dimensions du morceau '+Z(1)+', puis celles du morceau '+Z(2)+'.', [
+    {f:LC},
+    {f:F(LC,{d1:'!7 cm', hi:'p1'}), w:[Z(1)+' : rectangle de 10 cm sur 7 cm']},
+    {f:F(LC,{d1:'!7 cm', d2:['!7 cm','!3 cm'], hi:'p2'}), w:[Z(2)+' : rectangle de 7 cm sur 3 cm']}
+  ]);
+
+  Q('C','3', 'On tourne le morceau '+Z(2)+' et on le recolle contre le morceau '+Z(1)+' pour obtenir un rectangle. <br>Dessine ce rectangle dans le quadrillage, puis donne sa longueur et sa largeur.', [
+    {f:LC},
+    {f:F(LC,{move:'anim'})},
+    {f:LCm, w:['Rectangle de '+M('10 + 3 = 13')+' cm sur 7 cm']}
+  ]);
+
+  Q('C','4', 'Calcule l’aire de ce rectangle. Que remarques-tu ?', [
+    {f:LCm},
+    {f:F(LCm,{hi:'rect'}), w:['Aire du rectangle : '+M('13 * 7 = 91')+' cm²']},
+    {f:LCm, w:['C’est la même aire que la figure de départ !']},
+    {c:M('10² - 3² = (10 + 3) * (10 - 3)')}
+  ]);
+
+  var LX  = {t:'L', a:'x', b:'3'};
+  var LXd = F(LX, {d1:'!x - 3', d2:['!x - 3','!3']});
+  var LXm = F(LX, {move:1, rect:['!x + 3','!x - 3']});
+  var ctxCX = avecX+'On recommence avec un carré de côté '+M('x')+' cm (avec '+M('x > 3')+').';
+
+  Q('C','5a', 'Exprime l’aire de la figure de départ en fonction de '+M('x')+'.', [
+    {f:LX},
+    {f:F(LX,{hi:'big'}), w:['Grand carré : '+M('x * x = x²')]},
+    {f:F(LX,{hi:'corner'}), w:['Petit carré retiré : '+M('3² = 9')]},
+    {f:LX, w:['Aire de la figure : '+M('x² - 9')]}
+  ], {ctx:ctxCX, fresh:true});
+
+  Q('C','5b', 'Donne les dimensions des morceaux '+Z(1)+' et '+Z(2)+', puis celles du rectangle obtenu en les recollant.', [
+    {f:LX},
+    {f:F(LXd,{hi:'p1'}), w:[Z(1)+' : '+M('x')+' sur '+M('x - 3')]},
+    {f:F(LXd,{hi:'p2'}), w:[Z(2)+' : '+M('x - 3')+' sur 3']},
+    {f:F(LX,{move:'anim'})},
+    {f:LXm, w:['Rectangle : '+M('x + 3')+' sur '+M('x - 3')]}
+  ], {ctx:ctxCX});
+
+  Q('C','5c', 'Exprime l’aire du rectangle, puis complète : '+M('x² - 9 = (……)(……)')+'.', [
+    {f:LXm},
+    {f:F(LXm,{hi:'rect'}), w:['Aire du rectangle : '+M('(x + 3)(x - 3)')]},
+    {f:LXm, w:['C’est la même aire que la figure de départ, donc :', M('x² - 9 = (x + 3)(x - 3)')]}
+  ], {ctx:ctxCX});
+
+  Q('C','5d', 'Vérifie ce résultat en développant le membre de droite.', [
+    {f:LXm},
+    {w:[M('(x + 3)(x - 3) = x * x - x * 3 + 3 * x - 3 * 3')]},
+    {w:[M('= x² - 3x + 3x - 9')]},
+    {w:[M('= x² - 9')+' ✔']}
+  ], {ctx:ctxCX});
+
+  var LAB  = {t:'L', a:'a', b:'b'};
+  var LABd = F(LAB, {d1:'!a - b', d2:['!a - b','!b']});
+  var LABm = F(LAB, {move:1, rect:['!a + b','!a - b']});
+  var ctxCAB = '<b>Avec '+M('a')+' et '+M('b')+'.</b> On recommence avec un carré de côté '+M('a')+', dont on retire un petit carré de côté '+M('b')+' (avec 0 &lt; '+M('b')+' &lt; '+M('a')+').';
+
+  Q('C','6a', 'Exprime l’aire de la figure de départ en fonction de '+M('a')+' et '+M('b')+'.', [
+    {f:LAB},
+    {f:F(LAB,{hi:'big'}), w:['Grand carré : '+M('a²')]},
+    {f:F(LAB,{hi:'corner'}), w:['Petit carré retiré : '+M('b²')]},
+    {f:LAB, w:['Aire de la figure : '+M('a² - b²')]}
+  ], {ctx:ctxCAB, fresh:true});
+
+  Q('C','6b', 'Donne les dimensions des morceaux '+Z(1)+' et '+Z(2)+', puis celles du rectangle obtenu en les recollant.', [
+    {f:LAB},
+    {f:F(LABd,{hi:'p1'}), w:[Z(1)+' : '+M('a')+' sur '+M('a - b')]},
+    {f:F(LABd,{hi:'p2'}), w:[Z(2)+' : '+M('a - b')+' sur '+M('b')]},
+    {f:F(LAB,{move:'anim'})},
+    {f:LABm, w:['Rectangle : '+M('a + b')+' sur '+M('a - b')]}
+  ], {ctx:ctxCAB});
+
+  Q('C','6c', 'Exprime l’aire du rectangle, puis complète : '+M('a² - b² = (……)(……)')+'.', [
+    {f:LABm},
+    {f:F(LABm,{hi:'rect'}), w:['Aire du rectangle : '+M('(a + b)(a - b)')]},
+    {f:LABm, w:['C’est la même aire que la figure de départ, donc :', M('a² - b² = (a + b)(a - b)')]},
+    {c:identity('Troisième identité remarquable','(a + b)(a - b) = a² - b²')}
+  ], {ctx:ctxCAB});
+
+  // ----- Partie D -----
+  Q('D','', 'Pour tous nombres '+M('a')+' et '+M('b')+' :', [
+    {f:null},
+    {w:[M('(a + b)² = a² + 2ab + b²')]},
+    {w:[M('(a - b)² = a² - 2ab + b²')]},
+    {w:[M('(a + b)(a - b) = a² - b²')]}
+  ], {box:'bilan'});
+
+  Q('D','Défi', '<b>Défi calcul mental</b> : sans calculatrice, calcule '+M('51²')+', '+M('19²')+' et '+M('21 * 19')+'.', [
+    {f:null},
+    {w:[M('51² = (50 + 1)² = 50² + 2 * 50 * 1 + 1²')]},
+    {w:[M('= 2 500 + 100 + 1 = 2 601')]},
+    {w:[M('19² = (20 - 1)² = 20² - 2 * 20 * 1 + 1²')]},
+    {w:[M('= 400 - 40 + 1 = 361')]},
+    {w:[M('21 * 19 = (20 + 1)(20 - 1) = 20² - 1²')]},
+    {w:[M('= 400 - 1 = 399')]}
+  ]);
+
+  // ---------- Affichage ----------
+  var leftEl = document.getElementById('left');
+  var figEl = document.getElementById('fig');
+  var calloutBox = document.getElementById('calloutBox');
+  var calloutCard = document.getElementById('calloutCard');
+  var crumb = document.getElementById('crumb');
+  var progressLabel = document.getElementById('progressLabel');
+  var dotsEl = document.getElementById('dots');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var fullscreenBtn = document.getElementById('fullscreenBtn');
+
+  var current = 0;
+  var animToken = 0;
+
+  function buildDots(){
+    dotsEl.innerHTML = '';
+    DOTS.forEach(function(d){
+      var b = document.createElement('button');
+      b.className = 'dot';
+      b.textContent = d.label;
+      b.title = 'Aller à : ' + d.label;
+      b.addEventListener('click', function(){ goto(d.i); });
+      dotsEl.appendChild(b);
+    });
+  }
+
+  // Quart de tour du morceau ② : on part de la position d'origine et on glisse
+  // le long d'un arc qui passe au-dessus du morceau ①.
+  function animatePiece(){
+    var token = ++animToken;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var t0 = null, dur = 1600;
+    function frameStep(ts){
+      if(token !== animToken) return;
+      var g = document.getElementById('p2'), bd = document.getElementById('p2b');
+      if(!g || !bd) return;
+      if(t0 === null) t0 = ts;
+      var t = reduce ? 1 : Math.min(1, (ts-t0)/dur);
+      var e = t < .5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
+      var tr = pieceT(e);
+      g.setAttribute('transform', tr.g);
+      bd.setAttribute('transform', tr.b);
+      if(t < 1) requestAnimationFrame(frameStep);
+    }
+    setTimeout(function(){ if(token === animToken) requestAnimationFrame(frameStep); }, 350);
+  }
+
+  function workHTML(sl){
+    if(!sl.work.length) return '';
+    var firstNew = sl.work.length - sl.nNew;
+    return '<div class="work'+(sl.box ? ' '+sl.box : '')+'"><ul>' + sl.work.map(function(l,i){
+      var cls = [];
+      if(i >= firstNew) cls.push('new');
+      if(l.indexOf('<span class="math">=') === 0) cls.push('cont');
+      return '<li' + (cls.length ? ' class="'+cls.join(' ')+'"' : '') + '>' + l + '</li>';
+    }).join('') + '</ul></div>';
+  }
+
+  // Schéma de droite. Sous chaque potager agrandi (sans découpage), un bouton discret
+  // affiche le découpage en pointillés ; ils restent sur les schémas suivants
+  // jusqu'à ce qu'on reclique sur le bouton.
+  var showZones = false;
+  function drawFig(sl){
+    var f = sl.zones && showZones ? F(sl.fig, {dashes:true}) : sl.fig;
+    figEl.innerHTML = sl.nofig ? workHTML(sl) : (f ? FIG[f.t](f) : '');
+    if(sl.zones){
+      var b = document.createElement('button');
+      b.className = 'zones-btn';
+      b.setAttribute('aria-label', showZones ? 'Masquer les zones' : 'Afficher les zones');
+      b.setAttribute('aria-pressed', showZones ? 'true' : 'false');
+      b.addEventListener('click', function(){ showZones = !showZones; drawFig(sl); });
+      figEl.appendChild(b);
+    }
+  }
+
+  function render(){
+    var sl = SLIDES[current], q = QS[sl.q];
+    animToken++;
+    crumb.textContent = PARTS[q.part] + (q.num ? ' · ' + (q.num==='Défi' ? 'Défi' : 'Question ' + q.num) : '');
+
+    // Colonne de gauche : les consignes de la partie jusqu'à la question en cours.
+    // Un contexte commun à plusieurs questions n'est écrit qu'une fois.
+    var h = '<div class="part-title">'+PARTS[q.part]+'</div>', lastCtx = '', start = 0;
+    for(var k=0; k<=sl.q; k++) if(QS[k].part === q.part && QS[k].fresh) start = k;
+    for(k=start; k<=sl.q; k++){
+      var p = QS[k];
+      if(p.part !== q.part) continue;
+      var cur = (k === sl.q);
+      if(p.ctx && p.ctx !== lastCtx)
+        h += '<p class="ctx'+(p.ctx === q.ctx ? ' now' : ' past')+'">'+p.ctx+'</p>';
+      lastCtx = p.ctx;
+      h += '<div class="item '+(cur ? 'current' : 'past')+'">'+
+        (p.num ? '<span class="num">'+p.num+'</span>' : '')+'<div class="txt">'+p.text+'</div></div>';
+      if(cur && !sl.nofig) h += workHTML(sl);
+    }
+    leftEl.innerHTML = h;
+
+    // Colonne de droite : le schéma (ou, sans schéma, les calculs en grand).
+    drawFig(sl);
+    if(!sl.nofig && sl.fig && sl.fig.move === 'anim') animatePiece();
+
+    // On garde visibles la consigne en cours (avec son contexte si possible) et la correction.
+    var item = leftEl.querySelector('.item.current'), ctxNow = leftEl.querySelector('.ctx.now');
+    var bottom = leftEl.scrollHeight - leftEl.clientHeight;
+    var top = ctxNow ? ctxNow.offsetTop - 10 : item.offsetTop - 10;
+    if(top < bottom) top = item.offsetTop - 10;
+    leftEl.scrollTop = Math.max(0, Math.min(top, bottom));
+
+    if(sl.callout){
+      calloutCard.innerHTML = sl.callout;
+      calloutBox.classList.remove('hidden');
+    } else {
+      calloutBox.classList.add('hidden');
+    }
+
+    progressLabel.textContent = (current+1) + ' / ' + SLIDES.length;
+
+    var activeDot = 0;
+    DOTS.forEach(function(d,k){ if(d.i <= current) activeDot = k; });
+    Array.prototype.forEach.call(dotsEl.children, function(d,k){
+      d.dataset.current = (k === activeDot) ? 'true' : 'false';
+    });
+
+    prevBtn.disabled = (current === 0);
+    nextBtn.disabled = (current === SLIDES.length-1);
+  }
+
+  function goto(i){
+    current = Math.max(0, Math.min(SLIDES.length-1, i));
+    render();
+  }
+  function next(){ goto(current+1); }
+  function prev(){ goto(current-1); }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+  fullscreenBtn.addEventListener('click', function(){
+    try{
+      if(!document.fullscreenElement){ document.documentElement.requestFullscreen(); }
+      else { document.exitFullscreen(); }
+    }catch(e){ /* plein écran indisponible dans ce contexte */ }
+  });
+
+  document.querySelector('.slide').addEventListener('click', function(e){
+    if(e.target.closest('button')) return;
+    next();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(['ArrowRight','ArrowDown','PageDown',' '].indexOf(e.key) >= 0){ e.preventDefault(); next(); }
+    else if(['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key) >= 0){ e.preventDefault(); prev(); }
+    else if(e.key === 'Home'){ e.preventDefault(); goto(0); }
+    else if(e.key === 'End'){ e.preventDefault(); goto(SLIDES.length-1); }
+  });
+
+  buildDots();
+  // "…Diaporama.html#12" ouvre directement la 12e diapositive.
+  var startAt = parseInt(location.hash.slice(1), 10);
+  current = (startAt >= 1 && startAt <= SLIDES.length) ? startAt-1 : 0;
+  render();
+})();
+</script>
