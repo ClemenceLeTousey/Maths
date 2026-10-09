@@ -103,6 +103,8 @@ button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .score { font: 500 0.85rem var(--mono); color: var(--muted); }
 .stmt { display: grid; gap: 8px; min-width: 0; }
 .q { font-weight: 700; }
+.answers { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+.row-break { flex-basis: 100%; height: 0; }
 .ans { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .ans .lab { font-weight: 700; }
 .msg { font-weight: 700; min-height: 1.4em; }
@@ -282,13 +284,50 @@ footer { color: var(--muted); font-size: 0.9rem; }
   const letters = ['u', 'v', 'w'];
   function intR() { let r = 0; while (r === 0) r = ri(-6, 9); return r; }
 
+  // Deux suites de noms différents (u et v, ou v et w…)
+  function twoLetters() { const a = pick(letters); return [a, pick(letters.filter((l) => l !== a))]; }
+  function randR() { return Math.random() < 0.8 ? intR() : pick([0.5, 1.5, -0.5, 2.5, -1.5]); }
+  const given = (s, u0, r) => 'La suite ' + V(s) + ' est arithmétique, avec ' + M(V(s) + '(0) = ' + fmt(u0)) + ' et ' + M(V('r') + ' = ' + fmt(r)) + '.';
+  const termCalc = (s, u0, r, n) => M(V(s) + '(' + n + ') = ' + V(s) + '(0) + ' + n + ' × ' + V('r') + ' = ' + fmt(u0) + ' + ' + n + ' × ' + par(r) + ' = ' + fmt(u0) + plus(n * r) + ' = <b>' + fmt(u0 + n * r) + '</b>');
+  const rn = (r) => (round2(r) < 0 ? ' − ' + fmt(-r) : ' + ' + fmt(r)) + V('n');
+
   function genA() {
-    const s = pick(letters), u0 = ri(-5, 40), r = Math.random() < 0.8 ? intR() : pick([0.5, 1.5, -0.5, 2.5]), n = ri(3, 10), ans = u0 + n * r;
+    const [s1, s2] = twoLetters();
+    const A = { s: s1, u0: ri(-5, 40), r: randR(), n: ri(3, 10) };
+    const B = { s: s2, u0: ri(-5, 40), r: randR(), n: ri(3, 10) };
+    while (B.n === A.n) B.n = ri(3, 10);
+    const part = (k, X) => '<p class="calc">' + k + '. ' + shift(X.n, X.r) + '</p><div class="chain">' + chain(X.s, 0, X.n, X.r, X.u0) + '</div><p class="calc">' + termCalc(X.s, X.u0, X.r, X.n) + '</p>';
     return {
-      stmt: '<p>La suite ' + V(s) + ' est arithmétique, avec ' + M(V(s) + '(0) = ' + fmt(u0)) + ' et ' + M(V('r') + ' = ' + fmt(r)) + '.</p><p class="q">Calculer ' + M(V(s) + '(' + n + ')') + '.</p>',
-      answers: [{ label: M(V(s) + '(' + n + ') ='), value: ans }],
-      corr: '<p>' + shift(n, r) + '</p><div class="chain">' + chain(s, 0, n, r, u0) + '</div>' +
-        '<p class="calc">' + M(V(s) + '(' + n + ') = ' + V(s) + '(0) + ' + n + ' × ' + V('r') + ' = ' + fmt(u0) + ' + ' + n + ' × ' + par(r) + ' = ' + fmt(u0) + plus(n * r) + ' = <b>' + fmt(ans) + '</b>') + '</p>'
+      stmt: '<p><strong>1.</strong> ' + given(A.s, A.u0, A.r) + ' <span class="q">Calculer ' + M(V(A.s) + '(' + A.n + ')') + '.</span></p>' +
+        '<p><strong>2.</strong> ' + given(B.s, B.u0, B.r) + ' <span class="q">Calculer ' + M(V(B.s) + '(' + B.n + ')') + '.</span></p>',
+      answers: [
+        { label: '1. ' + M(V(A.s) + '(' + A.n + ') ='), value: A.u0 + A.n * A.r },
+        { label: '2. ' + M(V(B.s) + '(' + B.n + ') ='), value: B.u0 + B.n * B.r }
+      ],
+      corr: part(1, A) + part(2, B)
+    };
+  }
+
+  function genE() {
+    const [s1, s2] = twoLetters();
+    const A = { s: s1, u0: ri(-5, 40), r: randR(), n: ri(8, 30) };
+    const B = { s: s2, u0: ri(-5, 40), r: randR(), n: ri(8, 30) };
+    return {
+      stmt: '<p>' + given(A.s, A.u0, A.r) + '<br>' + given(B.s, B.u0, B.r) + '</p>' +
+        '<p class="q">1. Calculer ' + M(V(A.s) + '(' + A.n + ')') + ' et ' + M(V(B.s) + '(' + B.n + ')') + '.<br>' +
+        '2. Exprimer ' + M(V(A.s) + '(' + V('n') + ')') + ' et ' + M(V(B.s) + '(' + V('n') + ')') + ' en fonction de ' + V('n') + '.</p>',
+      answers: [
+        { label: '1. ' + M(V(A.s) + '(' + A.n + ') ='), value: A.u0 + A.n * A.r },
+        { label: M(V(B.s) + '(' + B.n + ') ='), value: B.u0 + B.n * B.r },
+        { label: '2. ' + M(V(A.s) + '(' + V('n') + ') ='), value: A.u0, row: true },
+        { label: '+', value: A.r, unit: '× ' + V('n') },
+        { label: M(V(B.s) + '(' + V('n') + ') ='), value: B.u0, row: true },
+        { label: '+', value: B.r, unit: '× ' + V('n') }
+      ],
+      corr: '<p class="calc">1. ' + termCalc(A.s, A.u0, A.r, A.n) + '</p><p class="calc">' + termCalc(B.s, B.u0, B.r, B.n) + '</p>' +
+        '<p class="calc">2. On se décale de ' + V('n') + ' rangs : on ajoute ' + V('n') + ' fois la raison.</p>' +
+        [A, B].map((X) => '<p class="calc">' + M(V(X.s) + '(' + V('n') + ') = ' + V(X.s) + '(0) + ' + V('n') + ' × ' + V('r') + ' = ' + fmt(X.u0) + ' + ' + V('n') + ' × ' + par(X.r) + ', donc <b>' + V(X.s) + '(' + V('n') + ') = ' + fmt(X.u0) + rn(X.r) + '</b>') + '</p>').join('') +
+        '<p style="color:var(--muted)">Pour une raison négative, tape le signe moins dans la case devant × ' + V('n') + ' (par exemple −3).</p>'
     };
   }
 
@@ -351,7 +390,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
     function render() {
       st.ex = o.gen(); st.counted = false;
       $('.stmt').innerHTML = st.ex.stmt;
-      $('.answers').innerHTML = st.ex.answers.map((a, i) =>
+      $('.answers').innerHTML = st.ex.answers.map((a, i) => (a.row ? '<span class="row-break"></span>' : '') +
         '<label class="ans" for="' + o.id + '-' + i + '"><span class="lab">' + a.label + '</span><input type="text" id="' + o.id + '-' + i + '" inputmode="decimal" autocomplete="off" spellcheck="false">' + (a.unit ? '<span>' + a.unit + '</span>' : '') + '</label>').join('');
       $('.corr-body').innerHTML = st.ex.corr;
       $('.corr').hidden = true;
@@ -411,9 +450,10 @@ footer { color: var(--muted); font-size: 0.9rem; }
 
   const exos = document.getElementById('exos');
   [
-    { id: 'e1', title: 'Calculer un terme à partir de u(0)', gen: genA },
+    { id: 'e1', title: 'Calculer un terme de deux suites', gen: genA },
+    { id: 'e2', title: 'Calculer un terme, puis exprimer u(n) en fonction de n', gen: genE },
     { id: 'e3', title: 'Problème concret', gen: genC },
-    { id: 'e4', title: 'Exprimer u(n) en fonction de n', gen: genD }
+    { id: 'e5', title: 'Exprimer u(n) en fonction de n', gen: genD }
   ].forEach((d, i) => mountExo(exos, Object.assign({ num: 'Exercice ' + (i + 1) }, d)));
 })();
 </script>
