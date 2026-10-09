@@ -29,6 +29,14 @@
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
+/* Navigation par étapes */
+.steps { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 8px; padding-block: 10px; background: var(--paper); border-bottom: 1px solid var(--line); }
+.steps button { display: inline-flex; align-items: center; gap: 8px; background: var(--card); color: var(--blue); border: 1.5px solid var(--line); border-radius: 999px; padding: 6px 14px 6px 6px; font-weight: 700; }
+.steps button span { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--soft); color: var(--blue); font: 800 0.85rem var(--display); }
+.steps button[aria-current="step"] { background: var(--blue); border-color: var(--blue); color: var(--card); }
+.steps button[aria-current="step"] span { background: var(--card); color: var(--blue); }
+.step-nav { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding-top: 8px; }
+.step-nav .next { margin-left: auto; }
 body {
   margin: 0;
   background-color: var(--paper);
@@ -39,7 +47,7 @@ body {
   color: var(--ink);
   font: 17px/1.55 var(--body);
 }
-.wrap { max-width: 860px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 40px; }
+.wrap { max-width: 860px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 24px; }
 h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
 h1 { font-size: clamp(2rem, 6vw, 2.8rem); font-weight: 800; }
 h2 { font-size: 1.5rem; font-weight: 800; }
@@ -120,8 +128,16 @@ footer { color: var(--muted); font-size: 0.9rem; }
     <p class="lead">Pour aller de <span class="m"><i class="v">u</i>(0)</span> à <span class="m"><i class="v">u</i>(<i class="v">n</i>)</span>, on se décale de <i class="v">n</i> rangs : on ajoute <i class="v">n</i> fois la raison.</p>
   </header>
 
+  <nav class="steps" aria-label="Étapes">
+    <button type="button" data-go="rappel"><span>1</span>Rappel</button>
+    <button type="button" data-go="exemple1"><span>2</span>Exemple <i class="v">u</i>(5)</button>
+    <button type="button" data-go="exemple2"><span>3</span>Exemple <i class="v">u</i>(10)</button>
+    <button type="button" data-go="generalisation"><span>4</span>Généralisation</button>
+    <button type="button" data-go="exercices"><span>5</span>Exercices</button>
+  </nav>
+
   <!-- RAPPEL -->
-  <section>
+  <section class="step" id="rappel">
     <span class="eyebrow">Rappel</span>
     <div class="card prop">
       <span class="tag">Suite arithmétique</span>
@@ -132,7 +148,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
   </section>
 
   <!-- EXEMPLE 1 : u(5) -->
-  <section>
+  <section class="step" id="exemple1">
     <span class="eyebrow">Exemple 1</span>
     <h2>Calculer <span class="m"><i class="v">u</i>(5)</span> : on répète 5 fois +<i class="v">r</i></h2>
     <div class="card">
@@ -148,7 +164,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
   </section>
 
   <!-- EXEMPLE 2 : u(10) -->
-  <section>
+  <section class="step" id="exemple2">
     <span class="eyebrow">Exemple 2</span>
     <h2>Calculer <span class="m"><i class="v">u</i>(10)</span> : on se décale 10 fois</h2>
     <div class="card">
@@ -172,7 +188,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
   </section>
 
   <!-- GÉNÉRALISATION -->
-  <section>
+  <section class="step" id="generalisation">
     <span class="eyebrow">Généralisation</span>
     <h2>Exprimer <span class="m"><i class="v">u</i>(<i class="v">n</i>)</span> en fonction de <i class="v">n</i></h2>
     <div class="card">
@@ -194,7 +210,7 @@ footer { color: var(--muted); font-size: 0.9rem; }
   </section>
 
   <!-- EXERCICES -->
-  <section>
+  <section class="step" id="exercices">
     <span class="eyebrow">À toi</span>
     <h2>Exercices</h2>
     <p style="color:var(--muted)">Fais le schéma au brouillon, écris le calcul avec les notations, puis tape ta réponse. « Nouvel énoncé » change les nombres.</p>
@@ -366,6 +382,32 @@ footer { color: var(--muted); font-size: 0.9rem; }
     });
     render();
   }
+
+  // ---------- Étapes ----------
+  const stepEls = Array.from(document.querySelectorAll('.step'));
+  const stepIds = stepEls.map((el) => el.id);
+  const stepNames = Array.from(document.querySelectorAll('.steps button')).map((b) => b.textContent.replace(/^\d+/, ''));
+  stepEls.forEach((el, i) => {
+    const nav = document.createElement('div');
+    nav.className = 'step-nav';
+    nav.innerHTML = (i > 0 ? '<button type="button" class="ghost" data-go="' + stepIds[i - 1] + '">← ' + stepNames[i - 1] + '</button>' : '') +
+      (i < stepEls.length - 1 ? '<button type="button" class="primary next" data-go="' + stepIds[i + 1] + '">Étape suivante : ' + stepNames[i + 1] + ' →</button>' : '');
+    el.appendChild(nav);
+  });
+  function show(id, scroll) {
+    if (stepIds.indexOf(id) < 0) id = stepIds[0];
+    stepEls.forEach((el) => { el.hidden = el.id !== id; });
+    document.querySelectorAll('.steps button').forEach((b) => {
+      if (b.dataset.go === id) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+    });
+    try { history.replaceState(null, '', '#' + id); } catch (e) {}
+    if (scroll) window.scrollTo({ top: 0 });
+  }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-go]');
+    if (b) show(b.dataset.go, true);
+  });
+  show(location.hash.slice(1), false);
 
   const exos = document.getElementById('exos');
   [
