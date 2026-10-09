@@ -312,21 +312,20 @@ footer { color: var(--muted); font-size: 0.9rem; }
     const [s1, s2] = twoLetters();
     const A = { s: s1, u0: ri(-5, 40), r: randR(), n: ri(8, 30) };
     const B = { s: s2, u0: ri(-5, 40), r: randR(), n: ri(8, 30) };
+    const q = (k, X) => '<p><strong>' + k + '.</strong> ' + given(X.s, X.u0, X.r) + '</p>' +
+      '<p class="q" style="padding-left:1.2em">a) Calculer ' + M(V(X.s) + '(' + X.n + ')') + '.<br>b) Exprimer ' + M(V(X.s) + '(' + V('n') + ')') + ' en fonction de ' + V('n') + '.</p>';
+    const ans = (k, X) => [
+      { label: k + ' a) ' + M(V(X.s) + '(' + X.n + ') ='), value: X.u0 + X.n * X.r, row: k > 1 },
+      { label: k + ' b) ' + M(V(X.s) + '(' + V('n') + ') ='), value: X.u0, row: true },
+      { label: '+', value: X.r, unit: '× ' + V('n') }
+    ];
+    const corr = (k, X) => '<p class="calc"><strong>' + k + '.</strong> a) ' + termCalc(X.s, X.u0, X.r, X.n) + '</p>' +
+      '<p class="calc" style="padding-left:1.2em">b) On se décale de ' + V('n') + ' rangs : on ajoute ' + V('n') + ' fois la raison.<br>' +
+      M(V(X.s) + '(' + V('n') + ') = ' + V(X.s) + '(0) + ' + V('n') + ' × ' + V('r') + ' = ' + fmt(X.u0) + ' + ' + V('n') + ' × ' + par(X.r) + ', donc <b>' + V(X.s) + '(' + V('n') + ') = ' + fmt(X.u0) + rn(X.r) + '</b>') + '</p>';
     return {
-      stmt: '<p>' + given(A.s, A.u0, A.r) + '<br>' + given(B.s, B.u0, B.r) + '</p>' +
-        '<p class="q">1. Calculer ' + M(V(A.s) + '(' + A.n + ')') + ' et ' + M(V(B.s) + '(' + B.n + ')') + '.<br>' +
-        '2. Exprimer ' + M(V(A.s) + '(' + V('n') + ')') + ' et ' + M(V(B.s) + '(' + V('n') + ')') + ' en fonction de ' + V('n') + '.</p>',
-      answers: [
-        { label: '1. ' + M(V(A.s) + '(' + A.n + ') ='), value: A.u0 + A.n * A.r },
-        { label: M(V(B.s) + '(' + B.n + ') ='), value: B.u0 + B.n * B.r },
-        { label: '2. ' + M(V(A.s) + '(' + V('n') + ') ='), value: A.u0, row: true },
-        { label: '+', value: A.r, unit: '× ' + V('n') },
-        { label: M(V(B.s) + '(' + V('n') + ') ='), value: B.u0, row: true },
-        { label: '+', value: B.r, unit: '× ' + V('n') }
-      ],
-      corr: '<p class="calc">1. ' + termCalc(A.s, A.u0, A.r, A.n) + '</p><p class="calc">' + termCalc(B.s, B.u0, B.r, B.n) + '</p>' +
-        '<p class="calc">2. On se décale de ' + V('n') + ' rangs : on ajoute ' + V('n') + ' fois la raison.</p>' +
-        [A, B].map((X) => '<p class="calc">' + M(V(X.s) + '(' + V('n') + ') = ' + V(X.s) + '(0) + ' + V('n') + ' × ' + V('r') + ' = ' + fmt(X.u0) + ' + ' + V('n') + ' × ' + par(X.r) + ', donc <b>' + V(X.s) + '(' + V('n') + ') = ' + fmt(X.u0) + rn(X.r) + '</b>') + '</p>').join('') +
+      stmt: q(1, A) + q(2, B),
+      answers: ans(1, A).concat(ans(2, B)),
+      corr: corr(1, A) + corr(2, B) +
         '<p style="color:var(--muted)">Pour une raison négative, tape le signe moins dans la case devant × ' + V('n') + ' (par exemple −3).</p>'
     };
   }
