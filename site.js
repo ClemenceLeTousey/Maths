@@ -204,7 +204,7 @@ document.addEventListener('click', function (e) {
         })(debut);
     }
 
-    /* Violet : mode « déglingo » — tout passe en vert terminal avec une pluie de caractères */
+    /* Violet : mode « déglingo » — tout passe en vert terminal avec une pluie de chiffres et de symboles maths */
     var pluie = null;
     function matrix() {
         var racine = document.documentElement;
@@ -214,7 +214,7 @@ document.addEventListener('click', function (e) {
             document.body.appendChild(c);
             var ctx = c.getContext('2d');
             var taille = 16, colonnes, gouttes;
-            var car = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789πΣ√∞∫Δ±≠≈';
+            var car = '01234567890123456789+−×÷=≠≈<>≤≥±πΣ√∞∫Δ∂θλφ∈∀∃ℝℕ%';
             function dimension() {
                 c.width = innerWidth; c.height = innerHeight;
                 colonnes = Math.ceil(innerWidth / taille);
@@ -252,6 +252,8 @@ document.addEventListener('click', function (e) {
         var b = e.target.closest && e.target.closest('.logo-ligne button');
         if (!b) return;
         var effet = b.dataset.effet;
+        // en mode déglingo, le bleu ou le vert ramènent le site normal avant leur effet
+        if (effet !== 'matrix' && document.documentElement.classList.contains('matrix')) matrix();
         if (effet === 'ecrire') reecrire();
         if (effet === 'symboles') symboles(b);
         if (effet === 'matrix') matrix();
