@@ -16,6 +16,7 @@
     --line: #e3e7ef;
     --pending: #a7afc0;
     --badge-text: #ffffff;
+    --bleu-doux: #edf3ff;
 
     /* Une couleur par classe */
     --c-seconde: #2f6fdf;
@@ -41,6 +42,7 @@
     --c-premiere: #34c79c;
     --c-tst2s: #b58cff;
     --badge-text: #0b1222;
+    --bleu-doux: #1a2742;
     color-scheme: dark;
 }
 
@@ -58,6 +60,7 @@
         --c-premiere: #34c79c;
         --c-tst2s: #b58cff;
         --badge-text: #0b1222;
+    --bleu-doux: #1a2742;
         color-scheme: dark;
     }
 }
@@ -106,17 +109,6 @@ a { color: inherit; }
     text-decoration: none;
 }
 
-.logo-mark {
-    display: grid;
-    place-items: center;
-    width: 26px;
-    height: 26px;
-    border-radius: 7px;
-    background: var(--orange);
-    color: #fff;
-    font-size: 0.9rem;
-    font-weight: 700;
-}
 
 .nav-links {
     list-style: none;
@@ -498,57 +490,58 @@ li:last-child { margin-bottom: 0; }
 .annexe .sequence-title { font-size: 0.95rem; }
 
 /* ==========================================================================
-   6. RESSOURCES : ÉTIQUETTE DE TYPE + TITRE
+   6. RESSOURCES : SURTITRE ORANGE (TYPE) + TITRE + CORRIGÉS BLEUS
    ========================================================================== */
 li.res {
-    display: grid;
-    grid-template-columns: 6.6em minmax(0, 1fr);
-    gap: 8px;
-    align-items: baseline;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding-left: 12px;
+    border-left: 2px solid var(--orange);
     font-size: 0.92rem;
+    margin-bottom: 12px;
 }
 
+li.res:last-child { margin-bottom: 0; }
+
+/* Type de document : petit surtitre orange */
 .type {
     font-family: var(--f-mono);
     font-size: 0.66rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: var(--muted);
-    border: 1px solid var(--orange);
-    border-radius: 4px;
-    padding: 1px 0;
-    text-align: center;
+    color: var(--orange);
+    line-height: 1.4;
 }
 
-.type:empty { visibility: hidden; }
+.type:empty { display: none; }
 
 .res-body { min-width: 0; }
 
-/* Corrigés : boutons côte à côte, sur toute la largeur, sous l'étiquette */
+/* Corrigés : pastilles bleues côte à côte sous le titre */
 .corriges {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(0, 1fr);
-    gap: 6px;
-    margin-top: 2px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 5px;
 }
 
 .class-card .corriges a {
-    display: block;
-    text-align: center;
     text-decoration: none;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     font-weight: 500;
-    padding: 3px 8px;
-    border: 1px solid var(--line);
-    border-left: 3px solid var(--c, var(--orange));
-    border-radius: 5px;
-    background: var(--bg);
+    color: var(--c-seconde);
+    background: var(--bleu-doux);
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 1px 8px;
+    white-space: nowrap;
 }
 
-.class-card .corriges a:hover { border-color: var(--c, var(--orange)); }
+.class-card .corriges a::before { content: "✓ "; }
+
+.class-card .corriges a:hover { border-color: var(--c-seconde); }
 
 /* Ressource pas encore disponible : grisée, non cliquable */
 .pending-link,
@@ -556,7 +549,7 @@ li.res {
     color: var(--pending);
 }
 
-.pending-link .type { opacity: 0.6; }
+li.res.pending-link { border-left-color: var(--line); }
 
 .pending-tag {
     font-style: italic;
