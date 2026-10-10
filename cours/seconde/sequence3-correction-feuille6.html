@@ -161,6 +161,14 @@ h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
 .ans-row label .lab { white-space: nowrap; }
 .ans-row label.wide { flex-basis: 320px; }
 .choices.yn { margin: 0; }
+/* Exercices ouverts : une question, puis une carte par méthode */
+.grp { display: grid; gap: 10px; }
+.grp + .grp { margin-top: 10px; }
+.grp-q { font-size: 17px; font-weight: 500; }
+.grp > .resline { display: none; }
+.showres .sheet .grp > .resline { display: block; }
+.meth { flex: none; background: var(--calc-soft); color: var(--calc); border-radius: 4px; padding: 0 8px; font-size: 14px; font-weight: 600; margin-right: 8px; }
+.ouvert { margin: 0; font-size: 15px; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -238,7 +246,7 @@ function solveLin(a, b, rel, c, d, v = 'x') {
   const D = r6(d - b);
   if (b !== 0) steps.push({ e: EQV + `${mono(A, v)}${R0}${fmt(D)}`,
     x: b > 0 ? `On soustrait \\(${fmt(b)}\\) aux deux membres.` : `On ajoute \\(${fmt(-b)}\\) aux deux membres.` });
-  const val = r6(D / A), relF = A < 0 ? FLIP[rel] : rel;
+  const val = D / A, relF = A < 0 ? FLIP[rel] : rel;
   if (A !== 1) {
     let x = `On divise les deux membres par \\(${fmt(A)}\\)`;
     if (ineq) x += A > 0 ? ', qui est positif : le sens de l’inégalité ne change pas.' : `, qui est <b>négatif</b> : on <b>change le sens</b> de l’inégalité.`;
@@ -272,15 +280,14 @@ function figPyth(c, d) {
   <text x="132" y="62"><tspan font-style="italic">x</tspan> + ${d}</text></svg>`;
 }
 function figRect(L, h) {
-  return `<svg width="300" height="190" viewBox="0 0 300 190" ${SVGS} role="img" aria-label="Rectangle ABCD et point M sur [AB]">
+  return `<svg width="300" height="170" viewBox="0 0 300 170" ${SVGS} role="img" aria-label="Rectangle ABCD et point M sur [AB]">
   <polygon points="110,140 260,140 260,30" fill="#D0E7FB"/>
   <rect x="40" y="30" width="220" height="110" fill="none" stroke="#1D2733" stroke-width="1.6"/>
   <line x1="110" y1="140" x2="260" y2="30" stroke="#1D2733" stroke-width="1.6"/>
   <circle cx="110" cy="140" r="2.5"/>
   <text x="30" y="156">A</text><text x="262" y="156">B</text><text x="262" y="24">C</text><text x="28" y="24">D</text><text x="105" y="158">M</text>
   <text x="150" y="22" text-anchor="middle">${L} cm</text><text x="34" y="90" text-anchor="end">${h} cm</text>
-  <line x1="40" y1="172" x2="110" y2="172" stroke="#1D2733"/><polyline points="46,168 40,172 46,176" fill="none" stroke="#1D2733"/><polyline points="104,168 110,172 104,176" fill="none" stroke="#1D2733"/>
-  <text x="75" y="188" text-anchor="middle" font-style="italic">x</text></svg>`;
+</svg>`;
 }
 
 /* =====================================================================
@@ -554,83 +561,126 @@ const EX = [
       ] };
   } },
 
-{ n: 10, stars: S2, comp: 'Modéliser',
-  rappel: [{ t: 'Moyenne pondérée', h: R`<p>On multiplie chaque note par son coefficient, on additionne, puis on divise par la <b>somme des coefficients</b>.</p>` }, RAP.sens, RAP.ineq],
-  att: R`<p>Le dernier devoir compte deux fois : on écrit \(2x\) au numérateur et on divise par \(1+1+1+2=5\).</p>`,
+{ n: 10, stars: S3, comp: 'Chercher', open: true,
+  rappel: [{ t: 'Moyenne pondérée', h: R`<p>On multiplie chaque note par son coefficient, on additionne, puis on divise par la <b>somme des coefficients</b>.</p>` }, RAP.meth, RAP.ineq],
+  att: R`<p>Plusieurs inconnues sont possibles : la note, le nombre de points, l’écart à la moyenne visée… Choisis-en une et écris clairement « soit … ».</p><p>Le dernier devoir compte <b>deux fois</b>.</p>`,
   build(f) {
     let N = [12, 9, 14], m = 12, m2 = 15;
-    if (f) [N, m, m2] = draw(() => [[ri(5, 17), ri(5, 17), ri(5, 17)], ri(10, 13), 0], ([n, mm]) => { const t = (5 * mm - n[0] - n[1] - n[2]) / 2; return t > 2 && t < 19; });
+    if (f) { [N, m] = draw(() => [[ri(5, 17), ri(5, 17), ri(5, 17)], ri(10, 13)], ([n, mm]) => { const t = (5 * mm - n[0] - n[1] - n[2]) / 2; return t > 2 && t < 19; }); m2 = m + ri(2, 4); }
     const S = N[0] + N[1] + N[2];
-    if (f) m2 = m + ri(2, 4);
-    const t1 = (5 * m - S) / 2, t2 = (5 * m2 - S) / 2;
-    const r2 = solveLin(2, S, 'ge', 0, 5 * m), r3 = solveLin(2, S, 'ge', 0, 5 * m2);
-    const ok = t2 < 20 ? `oui, s’il obtient au moins \\(${texNum(t2)}\\) sur 20.` : t2 === 20 ? 'oui, mais seulement avec 20 sur 20.' : `non : il faudrait plus de 20 sur 20 (\\(x\\geq ${texNum(t2)}\\)), c’est impossible.`;
+    const meths = mm => {
+      const t = (5 * mm - S) / 2, E = S - 3 * mm, ec = N.map(v => v - mm);
+      const sg = v => (v > 0 ? '+' : '') + v;
+      const r1 = solveLin(2, S, 'ge', 0, 5 * mm), r2 = solveLin(1, S, 'ge', 0, 5 * mm, 'p'), r3 = solveLin(2, E, 'ge', 0, 0, 'e');
+      const res = `au moins \\(${texNum(t)}\\) sur 20`;
+      return { t, res, items: [
+        { meth: 'Méthode 1', q: 'Inconnue : la note \\(x\\) du devoir (sur 20).', res,
+          steps: [{ e: `\\text{moyenne}=\\dfrac{${N[0]}+${N[1]}+${N[2]}+2x}{1+1+1+2}=\\dfrac{${S}+2x}{5}`, x: 'Moyenne pondérée : la note du devoir compte deux fois.' },
+            { e: `\\dfrac{${S}+2x}{5}\\geq ${mm}`, x: `« Au moins ${mm} » : \\(\\geq\\).` },
+            { e: EQV + `${S}+2x\\geq ${5 * mm}`, x: 'On multiplie les deux membres par \\(5\\), qui est positif.' }, ...r1.steps] },
+        { meth: 'Méthode 2', q: 'On raisonne sur le total de points.', res,
+          steps: [{ h: `Pour avoir ${mm} de moyenne avec 5 coefficients, il faut au moins \\(${mm}\\times 5=${5 * mm}\\) points. Hugo en a déjà \\(${N.join('+')}=${S}\\).` },
+            { h: 'Soit \\(p\\) le nombre de points apportés par le devoir (\\(p\\) = 2 fois la note).' },
+            { e: `${S}+p\\geq ${5 * mm}` }, ...r2.steps,
+            { h: `La note doit donc valoir au moins \\(\\dfrac{${5 * mm - S}}{2}=${texNum(t)}\\).` }] },
+        { meth: 'Méthode 3', q: `On raisonne sur les écarts à ${mm}.`, res,
+          steps: [{ h: `Écarts des trois notes à ${mm} : \\(${ec.map(sg).join('\\), \\(')}\\) ; au total \\(${E}\\).` },
+            { h: `Soit \\(e\\) l’écart de la nouvelle note à ${mm} ; il compte deux fois. Pour atteindre ${mm} de moyenne, la somme des écarts (avec coefficients) doit être positive ou nulle.` },
+            { e: `${lin(2, E, 'e')}\\geq 0` }, ...r3.steps,
+            { h: `La note doit valoir au moins \\(${mm}${-E / 2 < 0 ? '' : '+'}${texNum(-E / 2)}=${texNum(t)}\\).` }] }
+      ] };
+    };
+    const A = meths(m), B = meths(m2);
+    const ok = B.t < 20 ? `oui, avec au moins \\(${texNum(B.t)}\\) sur 20` : B.t === 20 ? 'oui, mais seulement avec 20 sur 20' : `non : il faudrait au moins \\(${texNum(B.t)}\\) sur 20, c’est impossible`;
+    B.items.forEach(it => { it.res = ok; });
     return {
-      enonce: `<p>Hugo a obtenu ${N[0]}, ${N[1]} et ${N[2]} sur 20 à trois devoirs de coefficient 1. Le prochain devoir est de coefficient 2. On note \\(x\\) la note (sur 20) qu’il obtiendra à ce devoir.</p>`,
-      main: [
-        { q: `Montrer que la moyenne d’Hugo après ce devoir sera égale à \\(\\dfrac{${S}+2x}{5}\\).`, res: 'voir la correction détaillée',
-          steps: [{ e: `\\text{moyenne}=\\dfrac{${N[0]}+${N[1]}+${N[2]}+2x}{1+1+1+2}`, x: 'Chaque note est multipliée par son coefficient ; on divise par la somme des coefficients.' }, { e: `=\\dfrac{${S}+2x}{5}` }] },
-        { q: `Quelle note Hugo doit-il obtenir au minimum pour avoir une moyenne supérieure ou égale à ${m} ?`, res: `\\(x\\geq ${texNum(t1)}\\) : au moins ${ft(t1)}.`,
-          ans: { items: [{ lab: 'Note minimale :', v: t1 }] },
-          steps: [{ e: `\\dfrac{${S}+2x}{5}\\geq ${m}` }, { e: EQV + `${S}+2x\\geq ${5 * m}`, x: 'On multiplie les deux membres par \\(5\\), qui est positif : le sens ne change pas.' }, ...r2.steps,
-            concl(`Hugo doit obtenir au moins \\(${texNum(t1)}\\) sur 20.`)] },
-        { q: `Peut-il encore obtenir une moyenne supérieure ou égale à ${m2} ? Justifier.`, res: (t2 <= 20 ? 'Oui' : 'Non') + ` (il faudrait \\(x\\geq ${texNum(t2)}\\)).`,
-          ans: { items: [{ lab: 'Réponse :', yn: t2 <= 20 }] },
-          steps: [{ e: `\\dfrac{${S}+2x}{5}\\geq ${m2}` }, { e: EQV + `${S}+2x\\geq ${5 * m2}`, x: 'On multiplie par \\(5\\).' }, ...r3.steps,
-            concl(ok)] }
+      enonce: `<p>Hugo a obtenu ${N[0]}, ${N[1]} et ${N[2]} sur 20 à trois devoirs de coefficient 1. Le prochain devoir est de coefficient 2.</p>`,
+      groups: [
+        { q: `Quelle note Hugo doit-il obtenir, au minimum, à ce devoir pour avoir une moyenne d’au moins ${m} ?`, res: `Hugo doit obtenir ${A.res}.`, ans: { items: [{ lab: 'Note minimale :', v: A.t }] }, items: A.items },
+        { q: `Peut-il encore espérer une moyenne d’au moins ${m2} ? Justifier.`, res: ok.charAt(0).toUpperCase() + ok.slice(1) + '.', ans: { items: [{ lab: 'Réponse :', yn: B.t <= 20 }] }, items: B.items }
       ] };
   } },
 
-{ n: 11, stars: S2, comp: 'Modéliser',
-  rappel: [{ t: 'Bénéfice', h: R`<p>Bénéfice = recette − coût.</p><p>La recette est la somme encaissée par la vente.</p>` }, RAP.sens, RAP.ineq],
-  att: R`<p>\(35x-(1\,200+15x)\) : le signe \(-\) devant la parenthèse change le signe de <b>chaque</b> terme : \(-1\,200-15x\).</p>`,
+{ n: 11, stars: S3, comp: 'Chercher', open: true,
+  rappel: [{ t: 'Bénéfice', h: R`<p>Bénéfice = recette − coût.</p><p>« Réaliser un bénéfice » : le bénéfice est <b>strictement</b> positif.</p>` }, RAP.sens, RAP.ineq],
+  att: R`<p>Le nombre de bols est un nombre <b>entier</b> : « \(x>60\) » donne « au moins 61 bols ».</p>`,
   build(f) {
     let c = 15, mg = 20, k = 60, xg = 135;
     if (f) { c = ri(5, 30); mg = pick([10, 15, 20, 25]); k = ri(30, 120); xg = k + ri(20, 100); }
     const p = c + mg, F = mg * k, G = mg * xg - F;
-    const r3 = solveLin(mg, -F, '>', 0, 0), r4 = solveLin(mg, -F, 'ge', 0, G);
+    const res1 = `il doit vendre au moins ${k + 1} bols`, res2 = `il doit vendre au moins ${xg} bols`;
     return {
-      enonce: `<p>Un artisan fabrique des bols en céramique. Chaque mois, il a \\(${fmt(F)}\\) euros de frais fixes (loyer de l’atelier, électricité…) et chaque bol lui coûte ${c} euros à fabriquer. Il vend chaque bol ${p} euros. On note \\(x\\) le nombre de bols fabriqués et vendus en un mois.</p>`,
-      main: [
-        { q: 'Exprimer en fonction de \\(x\\) le coût total de fabrication, puis la recette.', res: `Coût : \\(${fmt(F)}+${c}x\\) ; recette : \\(${p}x\\).`,
-          ans: { items: [{ lab: 'Coût :', f: t => F + c * t }, { lab: 'Recette :', f: t => p * t }] },
-          steps: [{ h: `Coût : les frais fixes plus ${c} euros par bol : \\(${fmt(F)}+${c}x\\).` }, { h: `Recette : ${p} euros par bol vendu : \\(${p}x\\).` }] },
-        { q: `Montrer que le bénéfice mensuel de l’artisan est égal à \\(${mg}x-${fmt(F)}\\).`, res: 'voir la correction détaillée',
-          steps: [{ e: `\\text{bénéfice}=\\text{recette}-\\text{coût}=${p}x-(${fmt(F)}+${c}x)` }, { e: `=${p}x-${fmt(F)}-${c}x`, x: 'Le signe \\(-\\) devant la parenthèse change le signe de chaque terme.' }, { e: `=${mg}x-${fmt(F)}`, x: 'On réduit.' }] },
-        { q: 'Combien de bols doit-il vendre dans le mois pour que son bénéfice soit strictement positif ?', res: `\\(x>${k}\\) : au moins ${k + 1} bols.`, ans: { items: [{ lab: 'Nombre minimal de bols :', v: k + 1 }] },
-          steps: [{ e: `${mg}x-${fmt(F)}>0`, x: '« Strictement positif » : \\(>0\\).' }, ...r3.steps, concl(`\\(x\\) est un nombre entier et \\(x>${k}\\) : il doit vendre au moins ${k + 1} bols.`)] },
-        { q: `Il souhaite gagner au moins \\(${fmt(G)}\\) euros par mois. Combien de bols doit-il vendre ?`, res: `\\(x\\geq ${xg}\\) : au moins ${xg} bols.`, ans: { items: [{ lab: 'Nombre minimal de bols :', v: xg }] },
-          steps: [{ e: `${mg}x-${fmt(F)}\\geq ${fmt(G)}`, x: '« Au moins » : \\(\\geq\\).' }, ...r4.steps, concl(`il doit vendre au moins ${xg} bols.`)] }
+      enonce: `<p>Un artisan fabrique des bols en céramique. Chaque mois, il a \\(${fmt(F)}\\) euros de frais fixes (loyer de l’atelier, électricité…) et chaque bol lui coûte ${c} euros à fabriquer. Il vend chaque bol ${p} euros.</p>`,
+      groups: [
+        { q: 'Combien de bols doit-il vendre dans le mois pour réaliser un bénéfice ?', res: res1.charAt(0).toUpperCase() + res1.slice(1) + '.', ans: { items: [{ lab: 'Nombre minimal de bols :', v: k + 1 }] }, items: [
+          { meth: 'Méthode 1', q: 'Inconnue : le nombre \\(x\\) de bols vendus ; on calcule le bénéfice.', res: res1,
+            steps: [{ h: `Coût : \\(${fmt(F)}+${c}x\\) ; recette : \\(${p}x\\).` },
+              { e: `\\text{bénéfice}=${p}x-(${fmt(F)}+${c}x)=${mg}x-${fmt(F)}`, x: 'Bénéfice = recette − coût ; le signe \\(-\\) change le signe de chaque terme de la parenthèse.' },
+              { e: `${mg}x-${fmt(F)}>0`, x: '« Réaliser un bénéfice » : bénéfice strictement positif.' }, ...solveLin(mg, -F, '>', 0, 0).steps,
+              { h: `\\(x\\) est un nombre entier : le plus petit entier strictement supérieur à ${k} est ${k + 1}.` },
+              { h: `<span class="x">Remarque : pour seulement « ne pas perdre d’argent » (bénéfice \\(\\geq 0\\)), on trouve \\(x\\geq ${k}\\) : ${k} bols suffisent, avec un bénéfice nul.</span>` }] },
+          { meth: 'Méthode 2', q: 'Même inconnue, mais on compare directement la recette et le coût.', res: res1,
+            steps: [{ e: `${p}x>${fmt(F)}+${c}x`, x: 'Il y a bénéfice quand la recette dépasse le coût.' }, ...solveLin(p, 0, '>', c, F).steps,
+              { h: `\\(x\\) est entier, donc au moins ${k + 1} bols.` }] },
+          { meth: 'Méthode 3', q: 'On raisonne sur la marge par bol.', res: res1,
+            steps: [{ h: `Chaque bol rapporte \\(${p}-${c}=${mg}\\) euros de plus qu’il ne coûte : c’est la marge par bol.` },
+              { h: `Les marges doivent dépasser les frais fixes : \\(${mg}x>${fmt(F)}\\).` }, ...solveLin(mg, 0, '>', 0, F).steps,
+              { h: `(Calcul direct : \\(${fmt(F)}\\div ${mg}=${k}\\) bols remboursent juste les frais ; il en faut donc au moins ${k + 1}.)` }] }
+        ] },
+        { q: `Combien doit-il en vendre pour gagner au moins \\(${fmt(G)}\\) euros dans le mois ?`, res: res2.charAt(0).toUpperCase() + res2.slice(1) + '.', ans: { items: [{ lab: 'Nombre minimal de bols :', v: xg }] }, items: [
+          { meth: 'Méthode 1', q: 'Inconnue : le nombre \\(x\\) de bols ; bénéfice au moins égal à l’objectif.', res: res2,
+            steps: [{ e: `${mg}x-${fmt(F)}\\geq ${fmt(G)}`, x: '« Au moins » : \\(\\geq\\).' }, ...solveLin(mg, -F, 'ge', 0, G).steps] },
+          { meth: 'Méthode 2', q: 'Recette au moins égale au coût plus l’objectif.', res: res2,
+            steps: [{ e: `${p}x\\geq ${fmt(F)}+${c}x+${fmt(G)}` }, ...solveLin(p, 0, 'ge', c, F + G).steps] },
+          { meth: 'Méthode 3', q: 'Les marges doivent couvrir les frais fixes et l’objectif.', res: res2,
+            steps: [{ e: `${mg}x\\geq ${fmt(F)}+${fmt(G)}=${fmt(F + G)}` }, ...solveLin(mg, 0, 'ge', 0, F + G).steps] },
+          { meth: 'Méthode 4', q: `Inconnue : le nombre \\(y\\) de bols vendus <em>en plus</em> des ${k} premiers.`, res: res2,
+            steps: [{ h: `Les ${k} premiers bols paient exactement les frais fixes ; chaque bol suivant rapporte ${mg} euros de bénéfice.` },
+              { e: `${mg}y\\geq ${fmt(G)}` }, ...solveLin(mg, 0, 'ge', 0, G, 'y').steps,
+              { h: `Au total : \\(${k}+${xg - k}=${xg}\\) bols.` }] }
+        ] }
       ] };
   } },
 
-{ n: 12, stars: S3, comp: 'Chercher',
-  rappel: [{ t: 'Aires', h: R`<p>Triangle rectangle : \(\dfrac{\text{produit des côtés de l’angle droit}}{2}\).</p><p>Rectangle : longueur \(\times\) largeur.</p>` }, RAP.eq, RAP.ineq],
-  att: R`<p>\(x\) est une longueur sur \([\text{AB}]\) : la réponse doit rester entre 0 et \(\text{AB}\).</p>`,
+{ n: 12, stars: S3, comp: 'Chercher', open: true,
+  rappel: [{ t: 'Aires', h: R`<p>Triangle rectangle : \(\dfrac{\text{produit des côtés de l’angle droit}}{2}\).</p><p>Trapèze : \(\dfrac{(\text{petite base}+\text{grande base})\times\text{hauteur}}{2}\).</p>` }, RAP.meth, RAP.ineq],
+  att: R`<p>Le trapèze et le triangle se partagent le rectangle : leurs aires ont pour somme l’aire du rectangle.</p><p>M est sur \([\text{AB}]\) : la longueur trouvée doit rester entre 0 et AB.</p>`,
   build(f) {
     let L = 10, h = 6, k4 = 2, k5 = 3;
     if (f) { L = pick([6, 8, 10, 12]); h = pick([4, 6, 8, 10]); k4 = pick([2, 3]); k5 = pick([3, 4]); }
-    const H = h / 2, HL = H * L, x4 = L * (k4 - 1) / (k4 + 1), x5 = L * (k5 - 1) / (k5 + 1);
+    const H = h / 2, HL = H * L, Rr = L * h;
     const W = { 2: 'le double', 3: 'le triple', 4: 'le quadruple' };
-    const r4 = solveLin(H, HL, '=', -k4 * H, k4 * HL), r5 = solveLin(H, HL, 'ge', -k5 * H, k5 * HL);
+    const Hx = mono(H, 'x'), Hy = mono(H, 'y');
+    const tri = `${H === 1 ? '' : H}(${L}-x)`;
+    const intro1 = { h: `MB \\(=${L}-x\\) et BC \\(=${h}\\) : aire de MBC \\(=\\dfrac{${h}(${L}-x)}{2}=${HL}-${Hx}\\). Aire de AMCD \\(=${Rr}-(${HL}-${Hx})=${HL}+${Hx}\\) <span class="x">(ou avec la formule du trapèze : \\(\\dfrac{(x+${L})\\times ${h}}{2}\\))</span>.` };
+    const intro2 = { h: `Aire de MBC \\(=\\dfrac{${h}y}{2}=${Hy}\\) ; aire de AMCD \\(=${Rr}-${Hy}\\) (le rectangle moins le triangle).` };
+    const intro3 = { h: `Aire de AMCD \\(=${Rr}-a\\) (le rectangle a pour aire \\(${L}\\times ${h}=${Rr}\\)). Et \\(a=\\dfrac{${h}\\times\\text{MB}}{2}\\), donc \\(\\text{MB}=\\dfrac{a}{${H}}\\).` };
+    const q = (k, rel) => {
+      const x0 = L * (k - 1) / (k + 1), y0 = 2 * L / (k + 1), a0 = Rr / (k + 1);
+      const R0 = REL[rel], rx = solveLin(H, HL, rel, -k * H, k * HL), ry = solveLin(-H, Rr, rel, k * H, 0, 'y'), ra = solveLin(-1, Rr, rel, k, 0, 'a');
+      return { x0, items: [
+        { meth: 'Méthode 1', q: 'Inconnue : \\(x=\\text{AM}\\), avec \\(0\\leq x\\leq ' + L + '\\).', steps: [intro1, { e: `${HL}+${Hx}${R0}${k}(${HL}-${Hx})` }, { e: EQV + `${HL}+${Hx}${R0}${k * HL}-${mono(k * H, 'x')}`, x: 'On développe.' }, ...rx.steps] },
+        { meth: 'Méthode 2', q: 'Inconnue : \\(y=\\text{MB}\\), avec \\(0\\leq y\\leq ' + L + '\\).', steps: [intro2, { e: `${Rr}-${Hy}${R0}${k}\\times ${Hy}` }, ...ry.steps, { h: `Donc \\(\\text{AM}=${L}-\\text{MB}\\), et \\(${L}-${texNum(y0)}=${texNum(x0)}\\).` }] },
+        { meth: 'Méthode 3', q: 'Inconnue : l’aire \\(a\\) du triangle MBC.', steps: [intro3, { e: `${Rr}-a${R0}${k}a` }, ...ra.steps, { h: `Avec \\(a=${texNum(a0)}\\) : \\(\\text{MB}=${texNum(y0)}\\) et \\(\\text{AM}=${texNum(x0)}\\).` }] }
+      ] };
+    };
+    const Q1 = q(k4, '='), Q2 = q(k5, 'ge');
+    const res1 = `M sur [AB] avec \\(\\text{AM}=${texNum(Q1.x0)}\\) cm${Number.isInteger(Q1.x0) ? '' : ` (environ ${ft(Math.round(Q1.x0 * 100) / 100)} cm)`}`;
+    const res2 = `\\(\\text{AM}\\) compris entre \\(${texNum(Q2.x0)}\\) et \\(${L}\\) cm`;
+    Q1.items.forEach(it => { it.res = res1; }); Q2.items.forEach(it => { it.res = res2; });
+    const res3 = 'seulement si M est en A ; mais alors AMCD n’est plus un trapèze (c’est le triangle ACD). Pour un vrai trapèze : impossible';
     return {
-      enonce: `<p>ABCD est un rectangle tel que \\(\\text{AB}=${L}\\) cm et \\(\\text{AD}=${h}\\) cm. M est un point du segment \\([\\text{AB}]\\) et on note \\(x\\) la longueur AM, en cm.</p><div class="efig">${figRect(L, h)}</div>`,
-      main: [
-        { q: 'Quelles valeurs le nombre \\(x\\) peut-il prendre ?', res: `\\(0\\leq x\\leq ${L}\\)`,
-          steps: [{ h: `M est sur le segment \\([\\text{AB}]\\), qui mesure ${L} cm : \\(x\\) est compris entre \\(0\\) (M en A) et \\(${L}\\) (M en B), donc \\(0\\leq x\\leq ${L}\\).` }] },
-        { q: `Montrer que l’aire du triangle MBC est égale à \\(${HL}-${mono(H, 'x')}\\).`, res: 'voir la correction détaillée',
-          steps: [{ h: `MBC est rectangle en B, avec \\(\\text{MB}=\\text{AB}-\\text{AM}=${L}-x\\) et \\(\\text{BC}=\\text{AD}=${h}\\).` },
-            { e: `\\mathcal{A}_{\\text{MBC}}=\\dfrac{\\text{MB}\\times\\text{BC}}{2}=\\dfrac{${h}(${L}-x)}{2}=${H === 1 ? '' : H}(${L}-x)=${HL}-${mono(H, 'x')}` }] },
-        { q: 'En déduire l’aire du trapèze AMCD en fonction de \\(x\\).', res: `\\(${HL}+${mono(H, 'x')}\\)`, ans: { items: [{ lab: 'Aire :', f: t => HL + H * t }] },
-          steps: [{ h: 'Le trapèze AMCD, c’est le rectangle ABCD sans le triangle MBC.' },
-            { e: `\\mathcal{A}_{\\text{AMCD}}=${L}\\times ${h}-(${HL}-${mono(H, 'x')})=${L * h}-${HL}+${mono(H, 'x')}=${HL}+${mono(H, 'x')}`, x: 'Le signe \\(-\\) devant la parenthèse change le signe de chaque terme.' }] },
-        { q: `Pour quelle valeur de \\(x\\) l’aire du trapèze AMCD est-elle ${W[k4]} de celle du triangle MBC ?`, res: `\\(x=${texNum(x4)}\\)`, ans: { items: [{ lab: R`\(x=\)`, v: x4 }] },
-          steps: [{ e: `${HL}+${mono(H, 'x')}=${k4}(${HL}-${mono(H, 'x')})` }, { e: EQV + `${HL}+${mono(H, 'x')}=${k4 * HL}-${mono(k4 * H, 'x')}`, x: 'On développe.' }, ...r4.steps,
-            concl(`\\(x=${texNum(x4)}\\) cm${Number.isInteger(x4) ? '' : ` (environ ${ft(Math.round(x4 * 100) / 100)} cm)`}, qui est bien entre 0 et ${L}.`)] },
-        { q: `Pour quelles valeurs de \\(x\\) l’aire du trapèze AMCD est-elle au moins ${W[k5]} de celle du triangle MBC ?`, res: `\\(x\\geq ${texNum(x5)}\\), et \\(x\\leq ${L}\\).`,
-          ans: { items: [{ lab: 'Solutions :', rel: ['ge', x5], wide: true }] },
-          steps: [{ e: `${HL}+${mono(H, 'x')}\\geq ${k5}(${HL}-${mono(H, 'x')})`, x: '« Au moins » : \\(\\geq\\).' }, { e: EQV + `${HL}+${mono(H, 'x')}\\geq ${k5 * HL}-${mono(k5 * H, 'x')}`, x: 'On développe.' }, ...r5.steps,
-            concl(`comme \\(x\\leq ${L}\\), il faut que \\(x\\) soit compris entre \\(${texNum(x5)}\\) et \\(${L}\\).`)] }
+      enonce: `<p>ABCD est un rectangle tel que \\(\\text{AB}=${L}\\) cm et \\(\\text{AD}=${h}\\) cm. M est un point du segment \\([\\text{AB}]\\).</p><div class="efig">${figRect(L, h)}</div>`,
+      groups: [
+        { q: `Où faut-il placer le point M pour que l’aire du trapèze AMCD soit ${W[k4]} de celle du triangle MBC ?`, res: res1 + '.', ans: { items: [{ lab: 'AM (cm) :', v: Q1.x0 }] }, items: Q1.items },
+        { q: `Où peut-on placer le point M pour que l’aire du trapèze AMCD soit au moins ${W[k5]} de celle du triangle MBC ?`, res: res2 + '.', ans: { items: [{ lab: 'AM minimal (cm) :', v: Q2.x0 }] }, items: Q2.items },
+        { q: 'Peut-on placer le point M pour que le trapèze AMCD et le triangle MBC aient la même aire ?', res: res3.charAt(0).toUpperCase() + res3.slice(1) + '.', ans: { items: [{ lab: 'AM (cm) :', v: 0 }] }, items: [
+          { meth: 'Méthode 1', q: 'Avec \\(x=\\text{AM}\\).', res: res3, steps: [intro1, { e: `${HL}+${Hx}=${HL}-${Hx}` }, ...solveLin(H, HL, '=', -H, HL).steps, { h: 'M est donc en A.' }] },
+          { meth: 'Méthode 2', q: 'Avec \\(y=\\text{MB}\\).', res: res3, steps: [intro2, { e: `${Rr}-${Hy}=${Hy}` }, ...solveLin(-H, Rr, '=', H, 0, 'y').steps, { h: `MB \\(=${L}=\\text{AB}\\) : M est en A.` }] },
+          { meth: 'Méthode 3', q: 'Avec l’aire \\(a\\) du triangle.', res: res3, steps: [intro3, { e: `${Rr}-a=a` }, ...solveLin(-1, Rr, '=', 1, 0, 'a').steps, { h: `Le triangle occupe la moitié du rectangle : MB \\(=${L}\\), M est en A.` }] },
+          { meth: 'Méthode 4', q: 'Sans calcul.', res: res3, steps: [{ h: `L’aire du trapèze vaut \\(${HL}+${Hx}\\geq ${HL}\\) et celle du triangle \\(${HL}-${Hx}\\leq ${HL}\\) : elles ne peuvent être égales que si elles valent toutes deux \\(${HL}\\), c’est-à-dire pour \\(x=0\\).` },
+            { h: `Alors « AMCD » est le triangle ACD : ACD et ABC ont bien la même aire (\\(${HL}\\) cm², chacun est la moitié du rectangle).` }] }
+        ] }
       ] };
   } }
 ];
@@ -750,7 +800,7 @@ function wireAnswer(el, it) {
    ===================================================================== */
 function itemHTML(it, id, k, ans) {
   return `<div class="item" data-id="${id}">
-    <div class="row"><span class="q txt"><span class="nl">${k}</span>${it.q}</span><button type="button" class="btn sm" data-open>Correction détaillée</button></div>
+    <div class="row"><span class="q txt">${it.meth ? `<span class="meth">${it.meth}</span>` : `<span class="nl">${k}</span>`}${it.q}</span><button type="button" class="btn sm" data-open>Correction détaillée</button></div>
     ${it.fig ? `<div class="qfig">${it.fig}</div>` : ''}
     ${ans && it.ans ? answerHTML(it, id) : ''}
     <div class="resline">Réponse : <span class="res">${it.res}</span></div>
@@ -783,12 +833,29 @@ function wireItem(el, it, ans) {
   bA.addEventListener('click', () => { while (k < it.steps.length) add(); sync(); });
   bR.addEventListener('click', () => { ol.innerHTML = ''; k = 0; add(); sync(); });
 }
+function groupsBlock(set, pre, ans) {
+  return set.groups.map((g, gi) => `<div class="grp" data-g="${pre}g${gi}">
+    <div class="grp-q"><span class="nl">${gi + 1}</span>${g.q}</div>
+    ${ans && g.ans ? answerHTML(g, `${pre}g${gi}`) : ''}
+    <div class="resline">Réponse : <span class="res">${g.res}</span></div>
+    <p class="ouvert">${g.items.length} méthodes possibles :</p>
+    <div class="items">${g.items.map((it, i) => itemHTML(it, `${pre}g${gi}m${i}`, null, false)).join('')}</div></div>`).join('');
+}
 function itemsBlock(set, pre, ex, ans) {
+  if (set.groups) return groupsBlock(set, pre, ans);
   let h = `<div class="items">${set.main.map((it, i) => itemHTML(it, `${pre}m${i}`, i + 1, ans)).join('')}</div>`;
   if (set.more) h += `<h2 class="part">Pour aller plus loin <span class="stars">${ex.more}</span></h2><div class="items">${set.more.map((it, i) => itemHTML(it, `${pre}p${i}`, '+', ans)).join('')}</div>`;
   return h;
 }
 function wireBlock(root, set, pre, ans) {
+  if (set.groups) {
+    set.groups.forEach((g, gi) => {
+      const el = $(`[data-g="${pre}g${gi}"]`, root);
+      if (ans && g.ans) wireAnswer(el, g);
+      g.items.forEach((it, i) => wireItem($(`[data-id="${pre}g${gi}m${i}"]`, root), it, false));
+    });
+    return;
+  }
   set.main.forEach((it, i) => wireItem($(`[data-id="${pre}m${i}"]`, root), it, ans));
   (set.more || []).forEach((it, i) => wireItem($(`[data-id="${pre}p${i}"]`, root), it, ans));
 }
