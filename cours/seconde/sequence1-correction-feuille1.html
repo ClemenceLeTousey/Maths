@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feuille 1 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Même habillage que la page de remédiation DS1 : une colonne de lecture, thème clair fixe (projection en classe). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs de la feuille */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* sinon display:grid (rappel, entraînement) l’emporte sur hidden */
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons d'exercices */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.green.on { background: var(--green); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .item .resline { display: block; }
+.qfig { overflow-x: auto; }
+.qfig svg, .fig svg { display: block; max-width: none; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+/* Vrai / faux, figures de l'énoncé */
+.ok { color: var(--green); font-weight: 600; }
+.ko { color: var(--red); font-weight: 600; }
+.setfig { overflow-x: auto; display: flex; justify-content: center; padding: 4px 0; }
+.setfig svg, .qfig svg { display: block; max-width: none; }
+.qfig { display: flex; justify-content: flex-start; }
+.item .q .qt { font-size: 17px; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Feuille d’exercices n°1 — Corrigé</b><span>Calculs numériques</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" id="exnav" aria-label="Exercices"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] },
+    macros: { V: ['\\overrightarrow{#1}', 1] } },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<script>
+'use strict';
+const R = String.raw;
+
+/* =====================================================================
+   Outils communs : hasard, couleurs, fractions, figures
+   ===================================================================== */
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; };
+const lcm = (a, b) => a / gcd(a, b) * b;
+const distinct = (n, a, b) => { const s = new Set(); while (s.size < n) s.add(ri(a, b)); return [...s]; };
+const nz = (a, b) => { let n; do n = ri(a, b); while (n === 0); return n; };
+const sg = () => pick([1, -1]);
+const shuffle = arr => arr.map(v => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map(p => p[1]);
+
+// Couleurs (modèle rgb de MathJax)
+const RGB = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => (v / 255).toFixed(3)).join(','); };
+const col = (hex, s) => `{\\color[rgb]{${RGB(hex)}}{${s}}}`;
+const KC = '#C2255C', BL = '#1C7ED6', OR = '#D9480F', VI = '#7048E8', TE = '#0C8599', GR = '#2F9E44', RE = '#E03131', INK = '#1D2733';
+const VRAI = '<b class="ok">VRAI</b>', FAUX = '<b class="ko">FAUX</b>';
+
+const S1 = '<span style="color:var(--star-green)">★</span><span style="color:#C5CCD3">☆☆</span>';
+const S2 = '<span style="color:var(--star-blue)">★★</span><span style="color:#C5CCD3">☆</span>';
+const S3 = '<span style="color:var(--star-red)">★★★</span>';
+
+/* ---------- Fractions : [numérateur, dénominateur] ---------- */
+const F = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g, d / g]; };
+// écriture telle quelle (sans simplifier), signe devant
+const fx = ([n, d]) => d === 1 ? String(n) : (n < 0 ? '-' : '') + `\\dfrac{${Math.abs(n)}}{${d}}`;
+const ft = ([n, d]) => fx(F(n, d));
+const feq = (a, b) => a[0] * b[1] === b[0] * a[1];
+const fmul = (a, b) => F(a[0] * b[0], a[1] * b[1]);
+const fadd = (a, b) => F(a[0] * b[1] + b[0] * a[1], a[1] * b[1]);
+const seqF = ts => ts.map((t, i) => (t[0] < 0 ? '-' : (i ? '+' : '')) + fx([Math.abs(t[0]), t[1]])).join('');
+
+// Simplification d'une fraction écrite : une étape (ou aucune)
+function simpSteps([n, d]) {
+  const g = gcd(n, d);
+  if (g <= 1 || d === 0) return [];
+  const p = Math.abs(n) / g, q = d / g, s = n < 0 ? '-' : '';
+  return [{ m: `${s}\\dfrac{${p}\\times${col(KC, g)}}{${q}\\times${col(KC, g)}}=${fx([n < 0 ? -p : p, q])}`, x: `On simplifie par \\(${g}\\) (on divise le numérateur et le dénominateur par \\(${g}\\)).` }];
+}
+// Somme algébrique de fractions écrites (le signe est porté par le numérateur)
+function sumSteps(ts) {
+  const L = ts.reduce((s, t) => lcm(s, t[1]), 1), steps = [];
+  if (ts.some(t => t[1] !== L)) {
+    const w = ts.map((t, i) => {
+      const k = L / t[1], s = t[0] < 0 ? '-' : (i ? '+' : ''), a = Math.abs(t[0]);
+      return s + (k === 1 ? fx([a, t[1]]) : `\\dfrac{${a}\\times${col(KC, k)}}{${t[1]}\\times${col(KC, k)}}`);
+    }).join('');
+    steps.push({ m: w, x: `On met au même dénominateur \\(${L}\\) : on multiplie le numérateur <em>et</em> le dénominateur par le même nombre (en couleur).` });
+    steps.push({ m: seqF(ts.map(t => [t[0] * L / t[1], L])), x: 'On effectue les produits.' });
+  }
+  const N = ts.reduce((s, t) => s + t[0] * L / t[1], 0);
+  const nums = ts.map((t, i) => { const v = t[0] * L / t[1]; return (v < 0 ? '-' : (i ? '+' : '')) + Math.abs(v); }).join('');
+  steps.push({ m: `\\dfrac{${nums}}{${L}}=${fx([N, L])}`, x: 'On additionne (ou on soustrait) les numérateurs, et on garde le dénominateur commun.' });
+  return { steps: steps.concat(simpSteps([N, L])), val: F(N, L) };
+}
+
+/* ---------- Racines carrées ---------- */
+function sqf(n) { let a = 1; for (let k = 2; k * k <= n; k++) while (n % (k * k) === 0) { n /= k * k; a *= k; } return [a, n]; }
+const rt = (a, b) => b === 1 ? String(a) : (a === 1 ? '' : a === -1 ? '-' : a) + `\\sqrt{${b}}`;
+
+/* ---------- Écritures diverses ---------- */
+const pw = (b, e) => `${typeof b === 'number' && b < 0 ? `(${b})` : b}^{${e}}`;
+const pe = e => e < 0 ? `(${e})` : String(e);                   // exposant entre parenthèses si négatif
+const sgn = (v, first) => v < 0 ? '-' : first ? '' : '+';
+// a x + b (ou a n + b) ; constFirst : b + a x
+function lin(a, b, v = 'x', constFirst = false) {
+  const tx = a === 0 ? '' : (a === 1 ? '' : a === -1 ? '-' : a) + v;
+  if (constFirst && b !== 0) return a === 0 ? String(b) : `${b}${a > 0 ? '+' : ''}${tx}`;
+  if (b === 0) return tx || '0';
+  return tx ? `${tx}${b > 0 ? '+' : ''}${b}` : String(b);
+}
+
+/* =====================================================================
+   Figures SVG : repère à quadrillage (base éventuellement oblique)
+   o = { x0, y0, x1, y1, u, grid, basis, items }
+   items : {pt, l, pos, c} | {v:[a,b], c, l, lpos, dash, w} | {s:[a,b], c, dash, w}
+           {poly:[...], c, fill, w} | {t:[x,y], s, c, size} | {circ:[x,y], s}
+   ===================================================================== */
+const POS = { n: [0, -9, 'middle'], s: [0, 19, 'middle'], e: [9, 5, 'start'], w: [-9, 5, 'end'], ne: [7, -7, 'start'], nw: [-7, -7, 'end'], se: [7, 17, 'start'], sw: [-7, 17, 'end'], c: [0, 5, 'middle'] };
+function ptLabel(x, y, l, pos = 'n', c = INK) {
+  const [dx, dy, an] = POS[pos];
+  const [base, sub] = String(l).split('_');
+  return `<text x="${x + dx}" y="${y + dy}" text-anchor="${an}" fill="${c}" font-weight="500">${base}${sub ? `<tspan dy="4" font-size="70%">${sub}</tspan>` : ''}</text>`;
+}
+// nom de vecteur (u, v, w_1…) surmonté d'une flèche
+function vecLabel(x, y, l, c) {
+  const [base, sub] = String(l).split('_');
+  const w = 8 + (sub ? 6 : 0);
+  return `<g fill="${c}" stroke="${c}"><text x="${x}" y="${y}" text-anchor="middle" font-style="italic" font-weight="600" stroke="none">${base}${sub ? `<tspan dy="4" font-size="70%">${sub}</tspan>` : ''}</text>` +
+    `<line x1="${x - w / 2}" y1="${y - 13}" x2="${x + w / 2}" y2="${y - 13}" stroke-width="1.3"/><path d="M${x + w / 2 - 3} ${y - 16} L${x + w / 2} ${y - 13} L${x + w / 2 - 3} ${y - 10}" fill="none" stroke-width="1.3"/></g>`;
+}
+function arrow(p, q, c, w = 2.4, dash = false) {
+  const dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
+  const h = 10, hw = 4.5, bx = q[0] - ux * h, by = q[1] - uy * h;
+  return `<line x1="${p[0]}" y1="${p[1]}" x2="${bx + ux * 2}" y2="${by + uy * 2}" stroke="${c}" stroke-width="${w}"${dash ? ' stroke-dasharray="5 4"' : ''}/>` +
+    `<path d="M${q[0]} ${q[1]} L${bx - uy * hw} ${by + ux * hw} L${bx + uy * hw} ${by - ux * hw} Z" fill="${c}"/>`;
+}
+function plane(o) {
+  const u = o.u || 26, B = o.basis || [[1, 0], [0, 1]];
+  const P = ([x, y]) => [+((x * B[0][0] + y * B[1][0]) * u).toFixed(1), +(-(x * B[0][1] + y * B[1][1]) * u).toFixed(1)];
+  const corners = [[o.x0, o.y0], [o.x1, o.y0], [o.x0, o.y1], [o.x1, o.y1]].map(P);
+  const pad = o.pad == null ? 22 : o.pad;
+  const minX = Math.min(...corners.map(c => c[0])) - pad, maxX = Math.max(...corners.map(c => c[0])) + pad;
+  const minY = Math.min(...corners.map(c => c[1])) - pad, maxY = Math.max(...corners.map(c => c[1])) + pad;
+  let s = '';
+  if (o.grid !== false) {
+    const gc = o.gridColor || '#D5DCE4';
+    for (let i = Math.ceil(o.x0); i <= o.x1; i++) { const a = P([i, o.y0]), b = P([i, o.y1]); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${gc}" stroke-width="1"/>`; }
+    for (let j = Math.ceil(o.y0); j <= o.y1; j++) { const a = P([o.x0, j]), b = P([o.x1, j]); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${gc}" stroke-width="1"/>`; }
+  }
+  const top = [];
+  (o.items || []).forEach(it => {
+    if (!it) return;
+    if (it.poly) {
+      const pts = it.poly.map(P).map(p => p.join(',')).join(' ');
+      s += `<polygon points="${pts}" fill="${it.fill || 'none'}" stroke="${it.c || INK}" stroke-width="${it.w || 1.6}"${it.dash ? ' stroke-dasharray="5 4"' : ''}/>`;
+    } else if (it.s && !it.t && !it.circ) {
+      const [a, b] = it.s.map(P);
+      s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${it.c || INK}" stroke-width="${it.w || 1.6}"${it.dash ? ' stroke-dasharray="5 4"' : ''}/>`;
+    } else if (it.v) {
+      const [a, b] = it.v.map(P);
+      s += arrow(a, b, it.c || INK, it.w || 2.4, it.dash);
+      if (it.l) {
+        // étiquette décalée perpendiculairement à la flèche, du côté indiqué par lpos
+        const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+        let nx = -(b[1] - a[1]) / L, ny = (b[0] - a[0]) / L;
+        const D = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], ne: [1, -1], nw: [-1, -1], se: [1, 1], sw: [-1, 1] }[it.lpos || 'n'];
+        if (nx * D[0] + ny * D[1] < 0) { nx = -nx; ny = -ny; }
+        const r = 15 + 5 * Math.abs(ny);
+        top.push(vecLabel(m[0] + nx * r, m[1] + ny * r + 6, it.l, it.c || INK));
+      }
+    } else if (it.pt) {
+      const [x, y] = P(it.pt), c = it.c || INK, r = 4.5;
+      top.push(`<path d="M${x - r} ${y - r} L${x + r} ${y + r} M${x - r} ${y + r} L${x + r} ${y - r}" stroke="${c}" stroke-width="2"/>`);
+      if (it.l) top.push(ptLabel(x, y, it.l, it.pos, c));
+    } else if (it.t) {
+      const [x, y] = P(it.t);
+      top.push(`<text x="${x}" y="${y + 5}" text-anchor="middle" fill="${it.c || INK}" font-size="${it.size || 15}"${it.bold ? ' font-weight="600"' : ''}>${it.s}</text>`);
+    } else if (it.circ) {
+      const [x, y] = P(it.circ);
+      top.push(`<circle cx="${x}" cy="${y}" r="10" fill="${it.fill || '#fff'}" stroke="${it.c || INK}" stroke-width="1.3"/><text x="${x}" y="${y + 5}" text-anchor="middle" font-size="14" fill="${it.c || INK}">${it.s}</text>`);
+    }
+  });
+  return `<svg width="${(maxX - minX).toFixed(0)}" height="${(maxY - minY).toFixed(0)}" viewBox="${minX.toFixed(1)} ${minY.toFixed(1)} ${(maxX - minX).toFixed(1)} ${(maxY - minY).toFixed(1)}" font-family="Source Sans 3, Arial, sans-serif" font-size="16">${s}${top.join('')}</svg>`;
+}
+// Déplacement en carreaux : chemin pointillé « horizontal puis vertical »
+function walk(p, d, c = '#868E96') {
+  const out = [];
+  if (d[0]) out.push({ v: [p, [p[0] + d[0], p[1]]], c, w: 1.6, dash: true });
+  if (d[1]) out.push({ v: [[p[0] + d[0], p[1]], [p[0] + d[0], p[1] + d[1]]], c, w: 1.6, dash: true });
+  return out;
+}
+function moveText(d, one = 'carreau', many = 'carreaux') {
+  const pl = n => `${Math.abs(n)} ${Math.abs(n) > 1 ? many : one}`;
+  const parts = [];
+  if (d[0]) parts.push(`${pl(d[0])} vers la ${d[0] > 0 ? 'droite' : 'gauche'}`);
+  if (d[1]) parts.push(`${pl(d[1])} vers le ${d[1] > 0 ? 'haut' : 'bas'}`);
+  return parts.join(' et ') || 'aucun déplacement';
+}
+const add = (p, d, k = 1) => [p[0] + k * d[0], p[1] + k * d[1]];
+const sub = (p, q) => [p[0] - q[0], p[1] - q[1]];
+const same2 = (p, q) => Math.abs(p[0] - q[0]) < 1e-9 && Math.abs(p[1] - q[1]) < 1e-9;
+
+/* =====================================================================
+   Feuille 1 — Calculs numériques
+   ===================================================================== */
+const nf = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+const mono = (a, v = 'x') => (a === 1 ? '' : a === -1 ? '-' : a) + v;
+const xp = (e, v = 'x') => e === 1 ? v : `${v}^{${e}}`;
+
+/* ---------- Objectif 1 : vrai / faux ---------- */
+function vf(l, lhs, steps, val, prop, piege) {
+  const ok = feq(val, prop);
+  steps = steps.concat([{ h: ok ? `On trouve bien \\(${fx(prop)}\\) : l’égalité est ${VRAI}.` : `On trouve \\(${ft(val)}\\) et \\(${ft(val)}\\neq ${fx(prop)}\\) : l’égalité est ${FAUX}.` }]);
+  return { l, lhs, q: `${lhs}=${fx(prop)}`, res: ok ? VRAI : `${FAUX} : \\(${lhs}=${ft(val)}\\)`, resHTML: true, steps, piege: ok ? null : piege };
+}
+function vfSum(l, a, b, c, d, prop) {
+  const r = sumSteps([[a, b], [c, d]]);
+  return vf(l, `${fx([a, b])}+${fx([c, d])}`, r.steps, r.val, prop, 'On n’additionne pas les dénominateurs entre eux : on met d’abord les fractions au même dénominateur.');
+}
+function vfProd(l, a, b, c, d, e, f, prop) {
+  const steps = [{ m: `\\dfrac{${a}\\times${c}}{${b}\\times${d}}-${fx([e, f])}`, x: 'Priorité : on commence par la multiplication (numérateur × numérateur, dénominateur × dénominateur).' }];
+  let p = [a * c, b * d];
+  steps.push({ m: `${fx(p)}-${fx([e, f])}`, x: 'On effectue les produits.' });
+  const g = gcd(...p);
+  if (g > 1) { p = [p[0] / g, p[1] / g]; steps.push({ m: `${fx(p)}-${fx([e, f])}`, x: `On simplifie la première fraction par \\(${g}\\).` }); }
+  const r = sumSteps([p, [-e, f]]);
+  return vf(l, `${fx([a, b])}\\times${fx([c, d])}-${fx([e, f])}`, steps.concat(r.steps), r.val, prop, 'La multiplication est prioritaire sur la soustraction.');
+}
+function vfDiv(l, a, b, c, d, prop) {
+  const steps = [{ m: `${fx([a, b])}\\times${col(KC, fx([d, c]))}`, x: `Diviser par \\(${fx([c, d])}\\), c’est multiplier par son inverse \\(${fx([d, c])}\\).` },
+    { m: `\\dfrac{${a}\\times${d}}{${b}\\times${c}}=${fx([a * d, b * c])}`, x: 'On multiplie les numérateurs entre eux et les dénominateurs entre eux.' }];
+  const val = F(a * d, b * c);
+  return vf(l, `${fx([a, b])}\\div${fx([c, d])}`, steps.concat(simpSteps([a * d, b * c])), val, prop, 'Pour diviser, on multiplie par l’<em>inverse</em> de la seconde fraction (on la retourne).');
+}
+function vfCent(l, a, b, k, c, prop) {
+  const steps = [{ m: `${fx([a, b])}-\\dfrac{${k}\\times${c}}{100}`, x: `Priorité : on commence par \\(${k}\\times${fx([c, 100])}\\) (on multiplie seulement le numérateur par \\(${k}\\)).` }];
+  const p = [k * c, 100];
+  const r = sumSteps([[a, b], [-p[0], 100]]);
+  return vf(l, `${fx([a, b])}-${k}\\times${fx([c, 100])}`, steps.concat(r.steps), r.val, prop, 'La multiplication est prioritaire sur la soustraction.');
+}
+
+/* ---------- Objectif 2 : fractions égales ---------- */
+const frT = f => `${f.neg ? '-' : ''}\\dfrac{${f.n}}{${f.d}}`;
+function normSteps(f) {
+  const steps = [], k = (f.neg ? 1 : 0) + (f.n < 0 ? 1 : 0) + (f.d < 0 ? 1 : 0);
+  const s = k % 2 ? '-' : '', a = Math.abs(f.n), b = Math.abs(f.d);
+  const cur = `${s}\\dfrac{${a}}{${b}}`;
+  if (f.n < 0 || f.d < 0) steps.push({ e: `${frT(f)}=${cur}`, x: k % 2 ? 'Un seul signe \\(-\\) : la fraction est négative.' : 'Deux signes \\(-\\) : ils se compensent, la fraction est positive.' });
+  const g = gcd(a, b);
+  if (g > 1) steps.push({ e: `${cur}=${s}\\dfrac{${a / g}\\times${col(KC, g)}}{${b / g}\\times${col(KC, g)}}=${s}${fx([a / g, b / g])}`, x: `On simplifie par \\(${g}\\).` });
+  return { steps, v: F((k % 2 ? -1 : 1) * a, b) };
+}
+function cmpSteps(f1, f2) {
+  const A = normSteps(f1), B = normSteps(f2), v1 = A.v, v2 = B.v, steps = A.steps.concat(B.steps);
+  let eq = feq(v1, v2);
+  if (eq) steps.push({ h: `Les deux fractions s’écrivent \\(${fx(v1)}\\) : elles sont égales.` });
+  else if (v1[0] * v2[0] < 0) steps.push({ h: `L’une est négative, l’autre est positive : elles ne sont pas égales.` });
+  else {
+    const L = lcm(v1[1], v2[1]);
+    const w = v => v[1] === L ? fx(v) : `${fx(v)}=${fx([v[0] * L / v[1], L])}`;
+    steps.push({ h: `On les écrit avec le même dénominateur \\(${L}\\) : \\(${w(v1)}\\) et \\(${w(v2)}\\).` });
+    steps.push({ h: `\\(${fx([v1[0] * L / v1[1], L])}\\neq ${fx([v2[0] * L / v2[1], L])}\\) : elles ne sont pas égales.` });
+  }
+  return { steps, eq };
+}
+function itPair(l, f1, f2) {
+  const r = cmpSteps(f1, f2);
+  return { l, q: `${frT(f1)}\\text{ et }${frT(f2)}`, res: r.eq ? '<b class="ok">égales</b>' : '<b class="ko">non égales</b>', resHTML: true, steps: r.steps };
+}
+function itEqVF(l, f1, f2) {
+  const r = cmpSteps(f1, f2);
+  r.steps.push({ h: `L’égalité est ${r.eq ? VRAI : FAUX}.` });
+  return { l, q: `${frT(f1)}=${frT(f2)}`, res: r.eq ? VRAI : FAUX, resHTML: true, steps: r.steps };
+}
+
+/* ---------- Objectif 3 : calcul littéral avec des fractions ---------- */
+function itSimpLin(l, a, b, d) {
+  const g = gcd(gcd(a, b), d), N = lin(a / g, b / g), D = d / g;
+  const num = b ? `${col(KC, g)}\\times(${N})` : `${col(KC, g)}\\times ${N}`;
+  const res = D === 1 ? N : `\\dfrac{${N}}{${D}}`;
+  return { l, lhs: `\\dfrac{${lin(a, b)}}{${d}}`, q: `\\dfrac{${lin(a, b)}}{${d}}`, res, steps: [
+    { m: `\\dfrac{${num}}{${col(KC, g)}\\times${D}}`, x: b ? `On factorise le numérateur par \\(${g}\\) : \\(${lin(a, b)}=${g}(${N})\\), et \\(${d}=${g}\\times${D}\\).` : `\\(${a}=${g}\\times${a / g}\\) et \\(${d}=${g}\\times${D}\\) : \\(${g}\\) est un facteur commun.` },
+    { m: res, x: `On simplifie par \\(${g}\\).` }],
+    piege: b ? `On ne simplifie jamais un seul terme : il faut diviser <em>tous</em> les termes du numérateur par \\(${g}\\).` : null };
+}
+
+/* ---------- Objectif 4 et 5 : puissances ---------- */
+const pow3 = { 3: 1, 9: 2, 27: 3, 81: 4 };
+const tb = ([b, e]) => e === 1 ? String(b) : `${b}^{${e}}`;
+function itPow3(l, num, den) {
+  const q = den.length ? `\\dfrac{${num.map(tb).join('\\times')}}{${den.map(tb).join('\\times')}}` : num.map(tb).join('\\times');
+  const re = ([b, e]) => { const k = pow3[b]; return k === 1 ? `3^{${e}}` : e === 1 ? `3^{${k}}` : `(3^{${k}})^{${e}}`; };
+  const ex = ([b, e]) => pow3[b] * e;
+  const wrap = (n, d) => d ? `\\dfrac{${n}}{${d}}` : n;
+  const steps = [{ m: wrap(num.map(re).join('\\times'), den.map(re).join('\\times')), x: 'On écrit chaque nombre comme une puissance de \\(3\\) : \\(9=3^2\\), \\(27=3^3\\), \\(81=3^4\\).' }];
+  steps.push({ m: wrap(num.map(t => `3^{${ex(t)}}`).join('\\times'), den.map(t => `3^{${ex(t)}}`).join('\\times')), x: '\\((a^m)^p=a^{m\\times p}\\).' });
+  const N = num.reduce((s, t) => s + ex(t), 0), D = den.reduce((s, t) => s + ex(t), 0);
+  if (num.length > 1) {
+    steps.push({ m: wrap(`3^{${num.map(ex).map((e, i) => i ? (e < 0 ? `(${e})` : e) : e).join('+')}}`, den.length ? `3^{${D}}` : ''), x: '\\(a^m\\times a^p=a^{m+p}\\).' });
+    steps.push({ m: wrap(`3^{${N}}`, den.length ? `3^{${D}}` : '') });
+    if (!den.length) steps.pop();
+  }
+  if (den.length) steps.push({ m: `3^{${N}-${pe(D)}}=3^{${N - D}}`, x: '\\(\\dfrac{a^m}{a^p}=a^{m-p}\\).' });
+  else steps[steps.length - 1].m += num.length > 1 ? `=3^{${N}}` : '';
+  return { l, lhs: q, q, res: `3^{${N - D}}`, steps };
+}
+
+/* ---------- Objectif 6 : racines carrées ---------- */
+function itRacine(l, n) {
+  const [s, r] = sqf(n);
+  return { l, lhs: `\\sqrt{${n}}`, q: `\\sqrt{${n}}`, res: rt(s, r), steps: [
+    { m: `\\sqrt{${col(KC, s * s)}\\times${r}}`, x: `On cherche le plus grand carré parfait qui divise \\(${n}\\) : c’est \\(${s * s}=${s}^2\\).` },
+    { m: `\\sqrt{${s * s}}\\times\\sqrt{${r}}`, x: '\\(\\sqrt{a\\times b}=\\sqrt a\\times\\sqrt b\\).' },
+    { m: rt(s, r), x: `\\(\\sqrt{${s * s}}=${s}\\).` }] };
+}
+function itRacProd(l, a, b, c, d) {
+  const q = `${rt(a, b)}\\times${c < 0 ? `(${rt(c, d)})` : rt(c, d)}`, p = a * c, n = b * d, [s, r] = sqf(n);
+  const steps = [{ m: `${a}\\times${pe(c)}\\times\\sqrt{${b}\\times${d}}`, x: 'On regroupe les nombres d’un côté et les racines de l’autre : \\(\\sqrt a\\times\\sqrt b=\\sqrt{ab}\\).' },
+    { m: `${p}\\sqrt{${n}}` }];
+  if (s > 1 && r === 1) {
+    steps.push({ m: `${p}\\times${s}`, x: `\\(\\sqrt{${n}}=${s}\\).` });
+    steps.push({ m: String(p * s) });
+  } else if (s > 1) {
+    steps.push({ m: `${p}\\sqrt{${col(KC, s * s)}\\times${r}}`, x: `\\(${s * s}=${s}^2\\) est le plus grand carré qui divise \\(${n}\\).` });
+    steps.push({ m: `${p}\\times${s}\\sqrt{${r}}` });
+    steps.push({ m: rt(p * s, r) });
+  }
+  return { l, lhs: q, q, res: rt(p * s, r), steps };
+}
+function itRacSum(l, terms) {   // terms : [coef, radicande] ; même racine simplifiée
+  const q = terms.map(([c, n], i) => (c < 0 ? '-' : (i ? '+' : '')) + rt(Math.abs(c), n)).join('');
+  const simp = terms.map(([c, n]) => [c, ...sqf(n)]);
+  const r = simp[0][2];
+  const notes = terms.filter(([, n]) => sqf(n)[0] > 1).map(([, n]) => { const [s, rr] = sqf(n); return `\\(\\sqrt{${n}}=\\sqrt{${s * s}\\times${rr}}=${s}\\sqrt{${rr}}\\)`; });
+  const tot = simp.reduce((t, [c, s]) => t + c * s, 0);
+  return { l, lhs: q, q, res: rt(tot, r), steps: [
+    { m: simp.map(([c, s, rr], i) => (c < 0 ? '-' : (i ? '+' : '')) + (s > 1 ? `${Math.abs(c) === 1 ? '' : Math.abs(c) + '\\times'}${s}\\sqrt{${rr}}` : rt(Math.abs(c), rr))).join(''), x: `On simplifie chaque racine : ${notes.join(' ; ')}.` },
+    { m: simp.map(([c, s], i) => (c * s < 0 ? '-' : (i ? '+' : '')) + rt(Math.abs(c * s), r)).join(''), x: 'On effectue les produits.' },
+    { m: `(${simp.map(([c, s], i) => (c * s < 0 ? '-' : (i ? '+' : '')) + Math.abs(c * s)).join('')})\\sqrt{${r}}`, x: `On factorise par \\(\\sqrt{${r}}\\) (comme \\(5x+20x-12x\\)).` },
+    { m: rt(tot, r) }],
+    piege: '\\(\\sqrt a+\\sqrt b\\neq\\sqrt{a+b}\\) : on ne peut additionner que des racines identiques.' };
+}
+function itRacQuot(l, p, q1, q2) {
+  const n = p / (q1 * q2), [s, r] = sqf(n);
+  const steps = [{ m: `\\dfrac{\\sqrt{${p}}}{\\sqrt{${q1}\\times${q2}}}`, x: '\\(\\sqrt a\\times\\sqrt b=\\sqrt{ab}\\).' },
+    { m: `\\sqrt{\\dfrac{${p}}{${q1 * q2}}}`, x: '\\(\\dfrac{\\sqrt a}{\\sqrt b}=\\sqrt{\\dfrac ab}\\).' },
+    { m: `\\sqrt{${n}}` }];
+  if (s > 1) steps.push({ m: `\\sqrt{${s * s}\\times${r}}=${rt(s, r)}`, x: `\\(${s * s}=${s}^2\\).` });
+  return { l, lhs: `\\dfrac{\\sqrt{${p}}}{\\sqrt{${q1}}\\times\\sqrt{${q2}}}`, q: `\\dfrac{\\sqrt{${p}}}{\\sqrt{${q1}}\\times\\sqrt{${q2}}}`, res: rt(s, r), steps };
+}
+function itRadDen(l, k, b) {
+  const g = gcd(k, b), N = k / g, D = b / g, res = D === 1 ? rt(N, b) : `\\dfrac{${rt(N, b)}}{${D}}`;
+  const steps = [{ m: `\\dfrac{${k}\\times${col(KC, `\\sqrt{${b}}`)}}{\\sqrt{${b}}\\times${col(KC, `\\sqrt{${b}}`)}}`, x: `On multiplie le numérateur et le dénominateur par \\(\\sqrt{${b}}\\).` },
+    { m: `\\dfrac{${k}\\sqrt{${b}}}{${b}}`, x: `\\(\\sqrt{${b}}\\times\\sqrt{${b}}=${b}\\) : le dénominateur est un entier.` }];
+  if (g > 1) steps.push({ m: res, x: `On simplifie par \\(${g}\\).` });
+  return { l, q: `\\dfrac{${k}}{\\sqrt{${b}}}`, res, steps };
+}
+function itConj(l, k, a, b) {
+  const den = a * a - b, g = gcd(gcd(k * a, k), den), s = den < 0 ? -1 : 1;
+  const n1 = s * k * a / g, n2 = s * k / g, D = Math.abs(den) / g;
+  const numT = `${n1}${n2 < 0 ? '-' : '+'}${rt(Math.abs(n2), b)}`;
+  const res = D === 1 ? numT : `\\dfrac{${numT}}{${D}}`;
+  const steps = [{ m: `\\dfrac{${k}${col(KC, `(${a}+\\sqrt{${b}})`)}}{(${a}-\\sqrt{${b}})${col(KC, `(${a}+\\sqrt{${b}})`)}}`, x: `On multiplie en haut et en bas par \\(${a}+\\sqrt{${b}}\\) (on change le signe devant la racine).` },
+    { m: `\\dfrac{${k}(${a}+\\sqrt{${b}})}{${a}^2-(\\sqrt{${b}})^2}`, x: 'Au dénominateur, on reconnaît \\((a-b)(a+b)=a^2-b^2\\).' },
+    { m: `\\dfrac{${k}(${a}+\\sqrt{${b}})}{${den}}`, x: `\\(${a}^2-(\\sqrt{${b}})^2=${a * a}-${b}=${den}\\) : la racine a disparu du dénominateur.` },
+    { m: `\\dfrac{${k * a}+${rt(k, b)}}{${den}}`, x: 'On développe le numérateur.' }];
+  if (g > 1 || s < 0) steps.push({ m: res, x: g > 1 ? `On simplifie par \\(${g * s}\\).` : 'On met le signe moins au numérateur.' });
+  return { l, q: `\\dfrac{${k}}{${a}-\\sqrt{${b}}}`, res, steps };
+}
+
+/* ---------- Rappels ---------- */
+const RAP1 = [
+  { t: 'Additionner, soustraire', h: R`<p>On met les fractions au <b>même dénominateur</b>, puis on additionne les numérateurs.</p><p>\(\dfrac13+\dfrac56=\dfrac{2}{6}+\dfrac56=\dfrac76\)</p>` },
+  { t: 'Multiplier, diviser', h: R`<p>\(\dfrac ab\times\dfrac cd=\dfrac{a\times c}{b\times d}\)</p><p>Diviser, c’est multiplier par l’inverse : \(\dfrac ab\div\dfrac cd=\dfrac ab\times\dfrac dc\).</p>` }];
+const ATT1 = R`<p>\(\dfrac12+\dfrac13\neq\dfrac25\) : on n’additionne jamais les dénominateurs.</p><p>Priorités : la multiplication et la division passent avant l’addition et la soustraction.</p>`;
+const RAP2 = [
+  { t: 'Fractions égales', h: R`<p>Une fraction ne change pas si on multiplie (ou divise) le numérateur <b>et</b> le dénominateur par le même nombre non nul.</p><p>\(\dfrac{9}{12}=\dfrac{3\times3}{4\times3}=\dfrac34\)</p>` },
+  { t: 'Signes', h: R`<p>\(\dfrac{-a}{b}=\dfrac{a}{-b}=-\dfrac ab\)</p><p>\(\dfrac{-a}{-b}=\dfrac ab\)</p>` }];
+const ATT2 = R`<p>\(\dfrac{2}{5}\neq\dfrac{2+1}{5+1}\) : ajouter le même nombre en haut et en bas change la fraction.</p>`;
+const RAP3 = [
+  { t: 'Simplifier', h: R`<p>On factorise le numérateur, puis on simplifie par le facteur commun.</p><p>\(\dfrac{3x+9}{3}=\dfrac{3(x+3)}{3}=x+3\)</p>` },
+  { t: 'Même dénominateur', h: R`<p>Comme avec les nombres : \(\dfrac5x-\dfrac1{2x}=\dfrac{10}{2x}-\dfrac1{2x}=\dfrac9{2x}\).</p><p>Un nombre entier est une fraction : \(1=\dfrac{x-2}{x-2}\).</p>` }];
+const ATT3 = R`<p>\(\dfrac{3x+9}{3}\neq x+9\) : on divise <b>tous</b> les termes du numérateur.</p><p>\(2\times\dfrac{3x}{5}=\dfrac{6x}{5}\) : on ne multiplie que le numérateur.</p>`;
+const RAP4 = [
+  { t: 'Règles de calcul', h: R`<p>\(a^m\times a^p=a^{m+p}\)</p><p>\(\dfrac{a^m}{a^p}=a^{m-p}\)</p><p>\((a^m)^p=a^{m\times p}\)</p>` },
+  { t: 'Même exposant', h: R`<p>\(a^n\times b^n=(ab)^n\)</p><p>\(\dfrac{a^n}{b^n}=\left(\dfrac ab\right)^n\)</p><p>\(a^{-n}=\dfrac1{a^n}\) et \(a^0=1\)</p>` }];
+const ATT4 = R`<p>\(3^2\times3^4=3^6\) et non \(9^6\) : on garde la base.</p><p>\(-3^2=-9\) mais \((-3)^2=9\) : la parenthèse compte !</p>`;
+const RAP6 = [
+  { t: 'Propriétés', h: R`<p>\((\sqrt a)^2=a\) et \(\sqrt{a^2}=a\) si \(a\geqslant0\)</p><p>\(\sqrt{ab}=\sqrt a\times\sqrt b\) et \(\sqrt{\dfrac ab}=\dfrac{\sqrt a}{\sqrt b}\)</p>` },
+  { t: 'Simplifier une racine', h: R`<p>On fait apparaître le plus grand carré parfait :</p><p>\(\sqrt{50}=\sqrt{25\times2}=5\sqrt2\)</p>` }];
+const ATT6 = R`<p>\(\sqrt{9+16}=\sqrt{25}=5\) mais \(\sqrt9+\sqrt{16}=7\) : \(\sqrt{a+b}\neq\sqrt a+\sqrt b\).</p>`;
+
+/* =====================================================================
+   Énoncés : valeurs de la feuille (fresh = false) ou nouvelles valeurs
+   ===================================================================== */
+const coprime = (a, b) => gcd(a, b) === 1;
+function rndFrac(dmin, dmax, nmax) { let n, d; do { d = ri(dmin, dmax); n = ri(1, nmax || d * 3); } while (!coprime(n, d) || n === d); return [n, d]; }
+
+const EX = [
+{ n: 1, obj: [1, 'Effectuer des calculs numériques avec des fractions'], stars: S1, comp: 'Calculer', consigne: 'Pour chaque égalité, dire si elle est vraie ou fausse.', rappel: RAP1, att: ATT1,
+  build(f) {
+    if (!f) return { main: [vfSum('1.', 50, 3, 7, 12, [57, 15]), vfProd('2.', 3, 4, 6, 8, 1, 4, [5, 16]), vfDiv('3.', 35, 9, 7, 5, [49, 9]), vfCent('4.', 7, 4, 8, 3, [151, 100])] };
+    const t = () => Math.random() < .5;
+    const it1 = (() => { const [a, b] = rndFrac(2, 7, 30), k = ri(2, 4), d = b * k; let c; do c = ri(1, d - 1); while (!coprime(c, d)); const v = fadd([a, b], [c, d]); const w = [a + c, b + d]; return vfSum('1.', a, b, c, d, t() || feq(v, w) ? v : w); })();
+    const it2 = (() => { const [a, b] = rndFrac(2, 9, 9), [c, d] = rndFrac(2, 9, 9), [e, ff] = rndFrac(2, 8, 5); const v = fadd(fmul([a, b], [c, d]), [-e, ff]); const w = fmul([a, b], fadd([c, d], [-e, ff])); return vfProd('2.', a, b, c, d, e, ff, t() || feq(v, w) ? v : w); })();
+    const it3 = (() => { const c = ri(2, 9), a = c * ri(2, 7), b = ri(2, 11), d = ri(2, 9); const v = F(a * d, b * c), w = F(a * c, b * d); return vfDiv('3.', a, b, c, d, t() || feq(v, w) ? v : w); })();
+    const it4 = (() => { const b = pick([2, 4, 5, 10, 20, 25]), a = ri(1, 3 * b), k = ri(2, 9), c = ri(1, 9); const v = fadd([a, b], [-k * c, 100]); const w = fmul(fadd([a, b], [-k, 1]), [c, 100]); return vfCent('4.', a, b, k, c, t() || feq(v, w) ? v : w); })();
+    return { main: [it1, it2, it3, it4] };
+  } },
+
+{ n: 2, obj: null, stars: S2, comp: 'Modéliser', consigne: 'Un adulte partage son temps entre différentes activités. Quelle fraction de son temps lui reste-t-il pour ses loisirs ?', rappel: RAP1, att: R`<p>La totalité du temps correspond à \(1\), c’est-à-dire \(\dfrac{36}{36}\) si l’on travaille en trente-sixièmes.</p>`,
+  build(f) {
+    const NAMES = ['travailler', 'dormir', 'gérer le quotidien', 'manger'];
+    const mk = fr => {
+      const r = sumSteps(fr), S = r.val, rest = F(S[1] - S[0], S[1]);
+      const intro = `Il passe ${fr.map((t, i) => `\\(${fx(t)}\\) de son temps à ${NAMES[i]}`).join(', ')}.`;
+      const steps = r.steps.concat([{ e: `1-${fx(S)}=\\dfrac{${S[1]}}{${S[1]}}-${fx(S)}=${fx([S[1] - S[0], S[1]])}${gcd(S[1] - S[0], S[1]) > 1 ? '=' + fx(rest) : ''}`, x: 'La totalité du temps vaut \\(1\\) : on enlève la part déjà occupée.' }]);
+      return { intro, main: [{ l: 'Loisirs', lhs: fr.map(fx).join('+'), qt: 'Part du temps déjà occupée, puis part restante.', res: `\\(${fx(rest)}\\) du temps`, resHTML: true, steps }] };
+    };
+    if (!f) return mk([[1, 4], [1, 3], [1, 12], [5, 36]]);
+    let fr, S;
+    do {
+      const D = pick([24, 36, 48, 60]), divs = []; for (let d = 2; d < D; d++) if (D % d === 0) divs.push(d);
+      fr = [0, 0, 0, 0].map(() => { const d = pick(divs.filter(x => x >= 3)); let n; do n = ri(1, 3); while (!coprime(n, d) || n >= d); return [n, d]; });
+      S = fr.reduce((s, t) => fadd(s, t), [0, 1]);
+    } while (S[0] >= S[1] || S[0] / S[1] < 0.55);
+    return mk(fr);
+  } },
+
+{ n: 3, obj: null, stars: S2, comp: 'Raisonner', consigne: 'Indiquer si les affirmations suivantes sont vraies ou fausses, puis justifier.', rappel: [
+    { t: 'Inverse', h: R`<p>L’inverse de \(\dfrac ab\) est \(\dfrac ba\) : on échange le numérateur et le dénominateur.</p><p>Leur produit vaut \(1\).</p>` }, RAP1[0]],
+  att: R`<p>L’inverse d’une somme n’est pas la somme des inverses : il faut d’abord calculer la somme.</p>`,
+  build(f) {
+    const inv1 = (l, a, b) => ({ l, qt: `L’inverse de \\(\\dfrac{1}{${a}}+${b}\\) est \\(\\dfrac{1}{${b}}+${a}\\).`, res: FAUX, resHTML: true, steps: [
+      { e: `\\dfrac1{${a}}+${b}=\\dfrac1{${a}}+\\dfrac{${a * b}}{${a}}=\\dfrac{${1 + a * b}}{${a}}`, x: 'On commence par calculer la somme.' },
+      { h: `Son inverse est \\(\\dfrac{${a}}{${1 + a * b}}\\) (on échange numérateur et dénominateur).` },
+      { e: `\\dfrac1{${b}}+${a}=\\dfrac{${1 + a * b}}{${b}}`, x: 'On calcule le nombre proposé.' },
+      { h: `\\(\\dfrac{${1 + a * b}}{${b}}\\neq\\dfrac{${a}}{${1 + a * b}}\\) : l’affirmation est ${FAUX}.` }],
+      piege: 'On n’obtient pas l’inverse d’une somme en prenant l’inverse de chaque terme.' });
+    const inv2 = (l, a, b, good) => {
+      const r = sumSteps([[1, a], [1, b]]), S = r.val, I = [S[1], S[0]], c = good ? I : [a + b, 1];
+      return { l, lhs: `\\dfrac1{${a}}+\\dfrac1{${b}}`, qt: `L’inverse de \\(\\dfrac1{${a}}+\\dfrac1{${b}}\\) est \\(${fx(c)}\\).`, res: feq(I, c) ? VRAI : FAUX, resHTML: true,
+        steps: r.steps.concat([{ h: `L’inverse de \\(${fx(S)}\\) est \\(${fx(I)}\\) : l’affirmation est ${feq(I, c) ? VRAI : FAUX}.` }]) };
+    };
+    if (!f) return { main: [inv1('1.', 3, 2), inv2('2.', 3, 4, true)] };
+    const [a, b] = distinct(2, 2, 9), [c, d] = distinct(2, 2, 9);
+    return { main: [inv1('1.', a, b), inv2('2.', c, d, Math.random() < .6)] };
+  } },
+
+{ n: 4, obj: [2, 'Reconnaître des fractions égales'], stars: S1, comp: 'Raisonner', consigne: 'Les fractions suivantes sont-elles égales ? Justifier sans calculatrice.', rappel: RAP2, att: ATT2,
+  build(f) {
+    if (!f) return { main: [itPair('1.', { n: 3, d: 4 }, { n: 9, d: 12 }), itPair('2.', { n: 2, d: 5 }, { n: 6, d: 20 }), itPair('3.', { n: 5, d: 8 }, { n: 15, d: 24 }), itPair('4.', { n: 4, d: 6, neg: true }, { n: 10, d: 15 })] };
+    const mk = (l, neg) => { const [p, q] = rndFrac(2, 9, 12), k = ri(2, 6), off = Math.random() < .5 ? 0 : sg(); const A = { n: p, d: q }, B = { n: k * p + off, d: k * q }; if (neg) A.neg = true; return Math.random() < .5 ? itPair(l, A, B) : itPair(l, B, A); };
+    return { main: [mk('1.'), mk('2.'), mk('3.'), mk('4.', Math.random() < .6)] };
+  } },
+
+{ n: 5, obj: null, stars: S2, comp: 'Raisonner', consigne: 'Pour chaque égalité, dire si elle est vraie ou fausse, en justifiant sans calculatrice.', rappel: RAP2, att: R`<p>\(\dfrac{-5}{-15}\) est <b>positive</b> : deux signes moins se compensent.</p>`,
+  build(f) {
+    if (!f) return { main: [itEqVF('1.', { n: -14, d: 21 }, { n: -2, d: 3 }), itEqVF('2.', { n: 18, d: -24 }, { n: -4, d: 3 }), itEqVF('3.', { n: -5, d: -15 }, { n: 1, d: 3 }), itEqVF('4.', { n: 9, d: -12 }, { n: -3, d: 4 })] };
+    const mk = l => {
+      const [p, q] = rndFrac(2, 9, 9), k = ri(2, 7), mode = ri(0, 2);
+      const A = mode === 0 ? { n: -k * p, d: k * q } : mode === 1 ? { n: k * p, d: -k * q } : { n: -k * p, d: -k * q };
+      const negV = mode !== 2, err = ri(0, 2);
+      let B = { n: negV ? -p : p, d: q };
+      if (err === 1) B = { n: negV ? -q : q, d: p };
+      if (err === 2) B = { n: negV ? p : -p, d: q };
+      return itEqVF(l, A, B);
+    };
+    return { main: ['1.', '2.', '3.', '4.'].map(mk) };
+  } },
+
+{ n: 6, obj: null, stars: S3, comp: 'Raisonner', consigne: 'Justifier si les affirmations suivantes sont vraies ou fausses (pour tout nombre \\(x\\)).', rappel: RAP3, att: R`<p>Pour montrer qu’une affirmation « pour tout \(x\) » est fausse, <b>un seul contre-exemple</b> suffit.</p>`,
+  build(f) {
+    const a1 = (l, k, a, b) => ({ l, q: `\\dfrac{${mono(k * a)}}{${k * b}}=\\dfrac{${mono(a)}}{${b}}`, res: VRAI, resHTML: true, steps: [
+      { e: `\\dfrac{${mono(k * a)}}{${k * b}}=\\dfrac{${col(KC, k)}\\times ${mono(a)}}{${col(KC, k)}\\times${b}}=\\dfrac{${mono(a)}}{${b}}`, x: `On simplifie par \\(${k}\\).` },
+      { h: `L’égalité est vraie pour tout \\(x\\) : ${VRAI}.` }] });
+    const a2 = (l, m, a, b) => ({ l, q: `${m}\\times\\dfrac{${mono(a)}}{${b}}=\\dfrac{${mono(m * a)}}{${m * b}}`, res: FAUX, resHTML: true, steps: [
+      { e: `${m}\\times\\dfrac{${mono(a)}}{${b}}=\\dfrac{${m}\\times${mono(a)}}{${b}}=\\dfrac{${mono(m * a)}}{${b}}`, x: 'On multiplie seulement le numérateur par le nombre.' },
+      { h: `Or \\(\\dfrac{${mono(m * a)}}{${m * b}}=\\dfrac{${mono(a)}}{${b}}\\), ce n’est pas la même chose. Contre-exemple avec \\(x=1\\) : \\(${fx([m * a, b])}\\neq ${fx([m * a, m * b])}\\).` },
+      { h: `L’affirmation est ${FAUX}.` }], piege: 'On ne multiplie pas le dénominateur : \\(k\\times\\dfrac ab=\\dfrac{k\\times a}{b}\\).' });
+    const a3 = (l, a, d, c) => { const A = 2 * a - 1; return { l, q: `\\dfrac{${mono(a)}}{${d}}+\\dfrac{${c}-x}{${2 * d}}=\\dfrac{${lin(A, c)}}{${d}}`, res: FAUX, resHTML: true, steps: [
+      { e: `\\dfrac{${mono(a)}}{${d}}+\\dfrac{${c}-x}{${2 * d}}=\\dfrac{${mono(a)}\\times${col(KC, 2)}}{${d}\\times${col(KC, 2)}}+\\dfrac{${c}-x}{${2 * d}}`, x: `On met au même dénominateur \\(${2 * d}\\).` },
+      { e: `=\\dfrac{${mono(2 * a)}+${c}-x}{${2 * d}}=\\dfrac{${lin(A, c)}}{${2 * d}}`, x: 'On additionne les numérateurs puis on réduit.' },
+      { h: `Le dénominateur est \\(${2 * d}\\) et non \\(${d}\\). Contre-exemple avec \\(x=1\\) : \\(${ft([A + c, 2 * d])}\\neq ${ft([A + c, d])}\\).` },
+      { h: `L’affirmation est ${FAUX}.` }] }; };
+    if (!f) return { main: [a1('1.', 5, 1, 3), a2('2.', 2, 3, 5), a3('3.', 3, 2, 1)] };
+    const [a, b] = rndFrac(2, 9, 9);
+    return { main: [a1('1.', ri(2, 7), a, b), a2('2.', ri(2, 5), ri(2, 7), ri(3, 9)), a3('3.', ri(2, 5), ri(2, 5), ri(1, 7))] };
+  } },
+
+{ n: 7, obj: [3, 'Effectuer des calculs littéraux avec des fractions'], stars: S1, comp: 'Calculer', consigne: 'Simplifier les écritures fractionnaires suivantes.', rappel: RAP3, att: ATT3,
+  build(f) {
+    if (!f) return { main: [itSimpLin('1.', 6, 0, 2), itSimpLin('2.', 2, 0, 8), itSimpLin('3.', 3, 9, 3), itSimpLin('4.', 8, 12, 6)] };
+    const g1 = ri(2, 6), g2 = ri(2, 5), g3 = ri(2, 6), g4 = ri(2, 3);
+    const [p, q] = (() => { let p, q; do { p = ri(2, 5); q = ri(2, 7); } while (gcd(p, q) !== 1); return [p, q]; })();
+    let a4, b4, c4; do { a4 = ri(2, 7); b4 = ri(1, 7); c4 = ri(2, 5); } while (gcd(gcd(a4, b4), c4) !== 1);
+    return { main: [itSimpLin('1.', g1 * ri(2, 7), 0, g1), itSimpLin('2.', g2 * p, 0, g2 * q), itSimpLin('3.', g3, g3 * nz(-9, 9), g3), itSimpLin('4.', g4 * a4, g4 * b4, g4 * c4)] };
+  } },
+
+{ n: 8, obj: null, stars: S2, comp: 'Calculer', consigne: 'Soit \\(x\\) une valeur pour laquelle chaque expression a un sens. Écrire chaque expression sous la forme d’une écriture fractionnaire.', rappel: RAP3, att: R`<p>\(\dfrac{5}{x}-\dfrac{1}{2x}\) : le dénominateur commun est \(2x\), pas \(x\times2x\).</p>`,
+  build(f) {
+    const e1 = (l, a, b) => ({ l, lhs: `\\dfrac{${a}}{x}-\\dfrac{${b}}{x}`, q: `\\dfrac{${a}}{x}-\\dfrac{${b}}{x}`, res: `\\dfrac{${a - b}}{x}`, steps: [
+      { m: `\\dfrac{${a}-${b}}{x}`, x: 'Même dénominateur \\(x\\) : on soustrait les numérateurs.' }, { m: `\\dfrac{${a - b}}{x}` }] });
+    const e2 = (l, a, b) => ({ l, lhs: `\\dfrac{${a}}{x}-\\dfrac{${b}}{2x}`, q: `\\dfrac{${a}}{x}-\\dfrac{${b}}{2x}`, res: `\\dfrac{${2 * a - b}}{2x}`, steps: [
+      { m: `\\dfrac{${a}\\times${col(KC, 2)}}{x\\times${col(KC, 2)}}-\\dfrac{${b}}{2x}`, x: 'Le dénominateur commun est \\(2x\\) : on multiplie la première fraction par \\(2\\) en haut et en bas.' },
+      { m: `\\dfrac{${2 * a}}{2x}-\\dfrac{${b}}{2x}` }, { m: `\\dfrac{${2 * a}-${b}}{2x}=\\dfrac{${2 * a - b}}{2x}`, x: 'On soustrait les numérateurs.' }] });
+    const e3 = (l, k) => ({ l, lhs: `\\dfrac{1}{x}+${k}\\times\\dfrac{1}{x}`, q: `\\dfrac{1}{x}+${k}\\times\\dfrac{1}{x}`, res: `\\dfrac{${k + 1}}{x}`, steps: [
+      { m: `\\dfrac{1}{x}+\\dfrac{${k}}{x}`, x: `Priorité à la multiplication : \\(${k}\\times\\dfrac1x=\\dfrac{${k}}{x}\\).` }, { m: `\\dfrac{1+${k}}{x}=\\dfrac{${k + 1}}{x}` }] });
+    const e4 = (l, a, b) => ({ l, lhs: `${a}x+\\dfrac{x}{${b}}`, q: `${a}x+\\dfrac{x}{${b}}`, res: `\\dfrac{${a * b + 1}x}{${b}}`, steps: [
+      { m: `\\dfrac{${a}x\\times${col(KC, b)}}{${col(KC, b)}}+\\dfrac{x}{${b}}`, x: `On écrit \\(${a}x\\) comme une fraction de dénominateur \\(${b}\\).` },
+      { m: `\\dfrac{${a * b}x}{${b}}+\\dfrac{x}{${b}}` }, { m: `\\dfrac{${a * b}x+x}{${b}}=\\dfrac{${a * b + 1}x}{${b}}`, x: 'On additionne les numérateurs.' }] });
+    const e5 = (l, a, b) => ({ l, lhs: `1+\\dfrac{${b}}{x-${a}}`, q: `1+\\dfrac{${b}}{x-${a}}`, res: `\\dfrac{${lin(1, b - a)}}{x-${a}}`, steps: [
+      { m: `\\dfrac{x-${a}}{x-${a}}+\\dfrac{${b}}{x-${a}}`, x: `\\(1=\\dfrac{x-${a}}{x-${a}}\\) : on écrit \\(1\\) avec le dénominateur \\(x-${a}\\).` },
+      { m: `\\dfrac{x-${a}+${b}}{x-${a}}`, x: 'On additionne les numérateurs.' }, { m: `\\dfrac{${lin(1, b - a)}}{x-${a}}`, x: 'On réduit le numérateur.' }] });
+    const e6 = (l, a, b, k) => { const g = gcd(a, b * k), N = mono(a / g), D = b * k / g; return { l, lhs: `\\dfrac{${a}x}{${b}}\\div${k}`, q: `\\dfrac{${a}x}{${b}}\\div${k}`, res: D === 1 ? N : `\\dfrac{${N}}{${D}}`, steps: [
+      { m: `\\dfrac{${a}x}{${b}}\\times\\dfrac{1}{${k}}`, x: `Diviser par \\(${k}\\), c’est multiplier par \\(\\dfrac1{${k}}\\).` },
+      { m: `\\dfrac{${a}x}{${b * k}}` }].concat(g > 1 ? [{ m: D === 1 ? N : `\\dfrac{${N}}{${D}}`, x: `On simplifie par \\(${g}\\).` }] : []) }; };
+    if (!f) return { main: [e1('1.', 20, 1), e2('2.', 5, 1), e3('3.', 5), e4('4.', 2, 5), e5('5.', 2, 2), e6('6.', 5, 20, 2)] };
+    let b2; const a2 = ri(2, 9); do b2 = ri(1, 9); while (b2 % 2 === 0);
+    return { main: [e1('1.', ri(10, 30), ri(1, 9)), e2('2.', a2, b2), e3('3.', ri(2, 9)), e4('4.', ri(2, 6), ri(2, 9)), e5('5.', ri(1, 9), ri(1, 9)), e6('6.', ri(2, 9), ri(2, 20), ri(2, 5))] };
+  } },
+
+{ n: 9, obj: [4, 'Effectuer des calculs numériques avec des puissances'], stars: S1, comp: 'Chercher', consigne: 'Problème du Papyrus Rhind : combien de grains de blé y a-t-il en tout ?', rappel: RAP4, att: R`<p>\(7\times7\times7\times7\times7=7^5\), et non \(7\times5\).</p>`,
+  build(f) {
+    const k = f ? ri(3, 9) : 7;
+    const lv = ['cabanes', 'chats', 'souris', 'épis', 'grains'];
+    return { intro: `Dans chacune des \\(${k}\\) cabanes, il y a \\(${k}\\) chats. Chaque chat surveille \\(${k}\\) souris. Chaque souris a \\(${k}\\) épis de blé. Chaque épi est composé de \\(${k}\\) grains.`,
+      main: [{ l: 'Grains', qt: 'Nombre total de grains de blé', res: `\\(${k}^5=${nf(k ** 5)}\\) grains`, resHTML: true, steps: lv.map((w, i) => ({ h: `Nombre de ${w} : \\(${Array(i + 1).fill(k).join('\\times')}${i ? `=${k}^{${i + 1}}` : ''}=${nf(k ** (i + 1))}\\).`, x: i ? `Chacun des ${lv[i - 1]} en compte \\(${k}\\) : on multiplie encore par \\(${k}\\).` : '' })) }] };
+  } },
+
+{ n: 10, obj: null, stars: S2, comp: 'Modéliser', consigne: 'Un coffre-fort a une combinaison à chiffres, chacun compris entre \\(0\\) et \\(9\\).', rappel: RAP4, att: R`<p>Pour chaque chiffre il y a <b>10</b> possibilités (de \(0\) à \(9\)), pas \(9\).</p>`,
+  build(f) {
+    const n = f ? ri(3, 6) : 4, r = f ? pick([5, 10, 20, 25, 50]) : 10, N = 10 ** n, m = N / r;
+    const h = Math.floor(m / 60), mn = m % 60, j = Math.floor(h / 24), hh = h % 24;
+    const dur = h === 0 ? `${m} min` : (j ? `${j} j ` : '') + `${j ? hh : h} h ${mn ? mn + ' min' : ''}`.trim();
+    return { intro: `La combinaison comporte \\(${n}\\) chiffres. Il faut une minute pour tester \\(${r}\\) combinaisons.`, main: [
+      { l: '1.', qt: 'Nombre de combinaisons possibles', res: `\\(10^{${n}}=${nf(N)}\\) combinaisons`, resHTML: true, steps: [
+        { h: 'Chaque chiffre peut prendre \\(10\\) valeurs (de \\(0\\) à \\(9\\)).' },
+        { h: `Pour \\(${n}\\) chiffres : \\(${Array(n).fill(10).join('\\times')}=10^{${n}}=${nf(N)}\\) combinaisons.`, x: 'Chaque nouveau chiffre multiplie le nombre de possibilités par \\(10\\).' }] },
+      { l: '2.', qt: 'Temps pour toutes les tester', res: `\\(${nf(m)}\\) minutes, soit ${dur}`, resHTML: true, steps: [
+        { h: `En une minute on teste \\(${r}\\) combinaisons : il faut \\(${nf(N)}\\div${r}=${nf(m)}\\) minutes.` },
+        { h: `\\(${nf(m)}\\div60\\) : ${h ? `\\(${nf(m)}=60\\times${h}+${mn}\\), donc ${h} h ${mn} min` : `moins d’une heure`}${j ? `, soit ${j} jour${j > 1 ? 's' : ''} et ${hh} h ${mn} min` : ''}.`, x: '1 h = 60 min ; 1 jour = 24 h.' }] }] };
+  } },
+
+{ n: 11, obj: null, stars: S1, comp: 'Calculer', consigne: 'Écrire les expressions suivantes sous la forme \\(a^n\\) avec \\(a\\) un nombre réel et \\(n\\) un entier relatif.', rappel: RAP4, att: ATT4,
+  build(f) {
+    const P1 = (l, a, b, n) => ({ l, lhs: `${a}^{${n}}\\times${b}^{${n}}`, q: `${a}^{${n}}\\times${b}^{${n}}`, res: `${a * b}^{${n}}`, steps: [
+      { m: `(${a}\\times${b})^{${n}}`, x: 'Même exposant : \\(a^n\\times b^n=(a\\times b)^n\\).' }, { m: `${a * b}^{${n}}` }] });
+    const P2 = (l, a, m, p) => ({ l, lhs: `\\dfrac{${pw(a, m)}}{${pw(a, p)}}`, q: `\\dfrac{${pw(a, m)}}{${pw(a, p)}}`, res: pw(a, m - p), steps: [
+      { m: pw(a, `${m}-${pe(p)}`), x: '\\(\\dfrac{a^m}{a^p}=a^{m-p}\\).' }, { m: pw(a, m - p) }] });
+    const P3 = (l, a, m, p) => ({ l, lhs: `\\left(${pw(a, m)}\\right)^{${p}}`, q: `\\left(${pw(a, m)}\\right)^{${p}}`, res: pw(a, m * p), steps: [
+      { m: pw(a, `${m}\\times${pe(p)}`), x: '\\((a^m)^p=a^{m\\times p}\\).' }, { m: pw(a, m * p) }] });
+    const P4 = (l, a, m, p) => ({ l, lhs: `${pw(a, m)}\\times${pw(a, p)}`, q: `${pw(a, m)}\\times${pw(a, p)}`, res: pw(a, m + p), steps: [
+      { m: pw(a, `${m}+${pe(p)}`), x: '\\(a^m\\times a^p=a^{m+p}\\).' }, { m: pw(a, m + p) }] });
+    const P5 = (l, a, b, n) => ({ l, lhs: `\\dfrac{${a}^{${n}}}{${b}^{${n}}}`, q: `\\dfrac{${a}^{${n}}}{${b}^{${n}}}`, res: `${a / b}^{${n}}`, steps: [
+      { m: `\\left(\\dfrac{${a}}{${b}}\\right)^{${n}}`, x: 'Même exposant : \\(\\dfrac{a^n}{b^n}=\\left(\\dfrac ab\\right)^n\\).' }, { m: `${a / b}^{${n}}`, x: `\\(\\dfrac{${a}}{${b}}=${a / b}\\).` }] });
+    const P6 = (l, a, m, p, b, c) => { const e = m * p; return { l, lhs: `\\dfrac{\\left(${a}^{${m}}\\right)^{${p}}}{${b}^{${e}}\\times${c}^{${e}}}`, q: `\\dfrac{\\left(${a}^{${m}}\\right)^{${p}}}{${b}^{${e}}\\times${c}^{${e}}}`, res: `\\left(${fx(F(a, b * c))}\\right)^{${e}}`, steps: [
+      { m: `\\dfrac{${a}^{${e}}}{(${b}\\times${c})^{${e}}}`, x: `En haut : \\((a^m)^p=a^{m\\times p}\\). En bas : même exposant \\(${e}\\), donc \\(b^n\\times c^n=(bc)^n\\).` },
+      { m: `\\dfrac{${a}^{${e}}}{${b * c}^{${e}}}` }, { m: `\\left(\\dfrac{${a}}{${b * c}}\\right)^{${e}}`, x: '\\(\\dfrac{a^n}{b^n}=\\left(\\dfrac ab\\right)^n\\).' }] }; };
+    if (!f) return { main: [P1('1.', 3, 5, 4), P2('2.', 2, 3, -2), P3('3.', 5, 3, -2), P4('4.', -7, 3, -5), P5('5.', 6, 2, 5), P6('6.', 3, 4, 7, 2, 5)] };
+    const [a, b] = distinct(2, 2, 7), q = ri(2, 4);
+    return { main: [P1('1.', a, b, ri(2, 9)), P2('2.', ri(2, 9), nz(-6, 9), nz(-6, 6)), P3('3.', ri(2, 9), nz(-5, 5), nz(-4, 4)), P4('4.', -ri(2, 9), nz(-6, 6), nz(-6, 6)),
+      P5('5.', q * ri(2, 4), q, ri(2, 9)), P6('6.', pick([7, 11, 13]), ri(2, 5), ri(2, 7), ...distinct(2, 2, 5))] };
+  } },
+
+{ n: 12, obj: null, stars: S2, comp: 'Chercher', consigne: 'Cocher l’intrus dans chaque série.', rappel: RAP4, att: R`<p>\((-4)^3=-64\) car l’exposant est impair ; \(-4^3=-64\) aussi, mais \(4^3=64\).</p>`, train: false,
+  build() {
+    return { main: [
+      { l: '1.', q: R`3{,}5\times10^4\quad;\quad35\,000\quad;\quad\dfrac{35}{10^{-3}}\quad;\quad0{,}035\times10^{-2}`, res: R`intrus : \(0{,}035\times10^{-2}\)`, resHTML: true, steps: [
+        { e: R`3{,}5\times10^4=35\,000`, x: 'Multiplier par \\(10^4\\), c’est décaler la virgule de 4 rangs vers la droite.' },
+        { e: R`\dfrac{35}{10^{-3}}=35\times10^{3}=35\,000`, x: 'Diviser par \\(10^{-3}\\), c’est multiplier par \\(10^3\\).' },
+        { e: R`0{,}035\times10^{-2}=0{,}000\,35`, x: 'Multiplier par \\(10^{-2}\\), c’est décaler la virgule de 2 rangs vers la gauche.' },
+        { h: R`Trois nombres valent \(35\,000\) : l’intrus est \(0{,}035\times10^{-2}\).` }] },
+      { l: '2.', q: R`(-4)^3\quad;\quad4^3\quad;\quad\dfrac{-4^5\times4^6}{(4^2)^4}\quad;\quad\dfrac{4^{-8}}{(-4)^{-11}}`, res: R`intrus : \(4^3\)`, resHTML: true, steps: [
+        { e: R`(-4)^3=-64\qquad 4^3=64`, x: 'Exposant impair : le signe moins reste.' },
+        { e: R`\dfrac{-4^5\times4^6}{(4^2)^4}=\dfrac{-4^{11}}{4^{8}}=-4^{3}=-64`, x: 'Attention : dans \\(-4^5\\), le signe moins n’est pas élevé à la puissance.' },
+        { e: R`(-4)^{-11}=-4^{-11}\quad\text{donc}\quad\dfrac{4^{-8}}{(-4)^{-11}}=-\dfrac{4^{-8}}{4^{-11}}=-4^{-8+11}=-4^3=-64`, x: 'Exposant impair : \\((-4)^{-11}\\) est négatif.' },
+        { h: R`Trois nombres valent \(-64\) : l’intrus est \(4^3=64\).` }] },
+      { l: '3.', q: R`(2\times3)^{-1}\quad;\quad\dfrac{6^{10}}{6^7\times6^4}\quad;\quad6\quad;\quad6^5\times\dfrac{6^{-4}}{6^2}`, res: R`intrus : \(6\)`, resHTML: true, steps: [
+        { e: R`(2\times3)^{-1}=6^{-1}=\dfrac16` },
+        { e: R`\dfrac{6^{10}}{6^7\times6^4}=\dfrac{6^{10}}{6^{11}}=6^{-1}=\dfrac16`, x: '\\(a^m\\times a^p=a^{m+p}\\) puis \\(\\dfrac{a^m}{a^p}=a^{m-p}\\).' },
+        { e: R`6^5\times\dfrac{6^{-4}}{6^2}=6^{5+(-4)-2}=6^{-1}=\dfrac16` },
+        { h: R`Trois nombres valent \(\dfrac16\) : l’intrus est \(6\).` }] }] };
+  } },
+
+{ n: 13, obj: null, stars: S2, comp: 'Calculer', consigne: 'Cocher la (ou les) réponse(s) exacte(s).', rappel: RAP4, att: R`<p>Plusieurs réponses peuvent être exactes : une écriture intermédiaire juste compte aussi !</p>`, train: false,
+  build() {
+    return { main: [
+      { l: '1.', lhs: R`5^7\times(5^3)^2`, qt: R`\(5^7\times(5^3)^2\) : \(5^7\times5^5\) ; \(5^7\times5^6\) ; \(5^{12}\) ; \(5^{13}\)`, res: R`\(5^7\times5^6\) et \(5^{13}\)`, resHTML: true, steps: [
+        { m: R`5^7\times5^{6}`, x: '\\((5^3)^2=5^{3\\times2}=5^6\\).' }, { m: R`5^{7+6}=5^{13}`, x: '\\(a^m\\times a^p=a^{m+p}\\).' },
+        { h: 'Deux réponses sont exactes : \\(5^7\\times5^6\\) et \\(5^{13}\\).' }], piege: '\\((5^3)^2\\neq5^5\\) : on multiplie les exposants.' },
+      { l: '2.', lhs: R`\dfrac{(-3)^5}{3^7\times3}`, qt: R`\(\dfrac{(-3)^5}{3^7\times3}\) : \(-3^{-3}\) ; \(3^{-3}\) ; \(-\dfrac{1}{3^2}\) ; \(-\dfrac{1}{3^3}\)`, res: R`\(-3^{-3}\) et \(-\dfrac1{3^3}\)`, resHTML: true, steps: [
+        { m: R`\dfrac{-3^5}{3^{8}}`, x: 'Exposant impair : \\((-3)^5=-3^5\\). En bas : \\(3^7\\times3^1=3^8\\).' }, { m: R`-3^{5-8}=-3^{-3}` }, { m: R`-\dfrac{1}{3^3}`, x: '\\(a^{-n}=\\dfrac1{a^n}\\).' },
+        { h: 'Deux réponses sont exactes : \\(-3^{-3}\\) et \\(-\\dfrac1{3^3}\\).' }] },
+      { l: '3.', lhs: R`\dfrac{ab^6}{(ab)^4}`, qt: R`\(\dfrac{ab^6}{(ab)^4}\) : \(\dfrac{1}{a^2b^2}\) ; \((ab)^2\) ; \(a^{-4}b^2\) ; \(a^{-3}b^2\)`, res: R`\(a^{-3}b^2\)`, resHTML: true, steps: [
+        { m: R`\dfrac{a^1\times b^6}{a^4\times b^4}`, x: '\\((ab)^4=a^4b^4\\) et \\(a=a^1\\).' }, { m: R`a^{1-4}\times b^{6-4}`, x: 'On traite chaque lettre séparément.' }, { m: R`a^{-3}b^2` }] }] };
+  } },
+
+{ n: 14, obj: null, stars: S2, comp: 'Calculer', consigne: 'Écrire chacun des nombres suivants sous la forme \\(3^p\\), où \\(p\\) est un entier relatif.', rappel: RAP4, att: R`<p>\(9^5=(3^2)^5=3^{10}\) et non \(3^7\).</p>`,
+  build(f) {
+    if (!f) return { main: [itPow3('1.', [[27, 1], [9, 5]], []), itPow3('2.', [[81, 4], [9, -2]], [[27, -3]]), itPow3('3.', [[9, -3], [81, 2]], [])] };
+    const B = [9, 27, 81];
+    return { main: [itPow3('1.', [[pick(B), 1], [pick(B), ri(2, 6)]], []), itPow3('2.', [[pick(B), ri(2, 5)], [pick(B), -ri(1, 4)]], [[pick(B), -ri(1, 4)]]), itPow3('3.', [[pick(B), -ri(1, 4)], [pick(B), ri(1, 4)]], [])] };
+  } },
+
+{ n: 15, obj: null, stars: S2, comp: 'Calculer', consigne: 'Calculer \\(A\\) et \\(B\\) sous la forme d’un produit de puissances de \\(2\\), de \\(3\\) et de \\(5\\).', rappel: RAP4, att: R`<p>\(10=2\times5\) et \(12=2^2\times3\) : on décompose les nombres en facteurs premiers.</p>`, train: false,
+  build() {
+    return { main: [
+      { l: 'A', q: R`\dfrac{5^7\times10^{-4}\times3^9}{10^{-5}\times3^7\times5^{10}}`, res: R`2\times3^2\times5^{-2}`, steps: [
+        { m: R`\dfrac{5^7}{5^{10}}\times\dfrac{10^{-4}}{10^{-5}}\times\dfrac{3^9}{3^7}`, x: 'On regroupe les puissances de même base.' },
+        { m: R`5^{-3}\times10^{1}\times3^{2}`, x: '\\(\\dfrac{a^m}{a^p}=a^{m-p}\\) : \\(7-10=-3\\), \\(-4-(-5)=1\\), \\(9-7=2\\).' },
+        { m: R`5^{-3}\times2\times5\times3^2`, x: '\\(10=2\\times5\\).' },
+        { m: R`2\times3^2\times5^{-2}`, x: '\\(5^{-3}\\times5^1=5^{-2}\\).' }] },
+      { l: 'B', q: R`\dfrac{(-6)^4\times15^4\times(-16)^3}{25\times12^3}`, res: R`-2^{10}\times3^5\times5^2`, steps: [
+        { h: R`On décompose : \((-6)^4=6^4=2^4\times3^4\) (exposant pair) ; \(15^4=3^4\times5^4\) ; \((-16)^3=-(2^4)^3=-2^{12}\) (exposant impair) ; \(25=5^2\) ; \(12^3=(2^2\times3)^3=2^6\times3^3\).` },
+        { m: R`-\dfrac{2^4\times3^4\times3^4\times5^4\times2^{12}}{5^2\times2^6\times3^3}` },
+        { m: R`-\dfrac{2^{16}\times3^{8}\times5^{4}}{2^{6}\times3^{3}\times5^{2}}`, x: 'On regroupe les puissances de même base au numérateur.' },
+        { m: R`-2^{10}\times3^5\times5^2`, x: '\\(16-6=10\\), \\(8-3=5\\), \\(4-2=2\\).' }] }] };
+  } },
+
+{ n: 16, obj: [5, 'Effectuer des calculs littéraux avec des puissances'], stars: S1, comp: 'Calculer', consigne: 'Simplifier les expressions suivantes (résultats sous la forme \\(x^n\\)).', rappel: RAP4, att: R`<p>\(x^3\times x^5=x^8\) (on additionne) mais \((x^3)^5=x^{15}\) (on multiplie).</p>`,
+  build(f) {
+    const a = (l, m, p) => ({ l, lhs: `x^{${m}}\\times x^{${p}}`, q: `x^{${m}}\\times x^{${p}}`, res: `x^{${m + p}}`, steps: [{ m: `x^{${m}+${p}}`, x: '\\(a^m\\times a^p=a^{m+p}\\).' }, { m: `x^{${m + p}}` }] });
+    const b = (l, m, p) => ({ l, lhs: `\\dfrac{x^{${m}}}{x^{${p}}}`, q: `\\dfrac{x^{${m}}}{x^{${p}}}`, res: `x^{${m - p}}`, steps: [{ m: `x^{${m}-${p}}`, x: '\\(\\dfrac{a^m}{a^p}=a^{m-p}\\).' }, { m: `x^{${m - p}}` }] });
+    const c = (l, m, p) => ({ l, lhs: `\\left(x^{${m}}\\right)^{${p}}`, q: `\\left(x^{${m}}\\right)^{${p}}`, res: `x^{${m * p}}`, steps: [{ m: `x^{${m}\\times${p}}`, x: '\\((a^m)^p=a^{m\\times p}\\).' }, { m: `x^{${m * p}}` }] });
+    if (!f) return { main: [a('1.', 3, 5), b('2.', 7, 2), c('3.', 3, 2)] };
+    return { main: [a('1.', ri(2, 9), ri(2, 9)), b('2.', ri(6, 12), ri(2, 5)), c('3.', ri(2, 6), ri(2, 5))] };
+  } },
+
+{ n: 17, obj: null, stars: S2, comp: 'Calculer', consigne: 'Écrire chacune des expressions sous la forme \\(x^n\\), où \\(x\\) est un réel non nul et \\(n\\) un entier relatif.', rappel: RAP4, att: R`<p>Avec les exposants négatifs, on met des parenthèses : \(x^{-2}\div x^{-9}=x^{-2-(-9)}=x^7\).</p>`,
+  build(f) {
+    const A = (a, b, c) => ({ l: 'A', q: `x^{${a}}\\times x^{${b}}\\times x^{${c}}`, res: `x^{${a + b + c}}`, steps: [{ m: `x^{${a}+${pe(b)}+${pe(c)}}`, x: '\\(a^m\\times a^p=a^{m+p}\\).' }, { m: `x^{${a + b + c}}`, x: a + b + c === 0 ? 'Et \\(x^0=1\\).' : '' }] });
+    const B = (a, b, c) => ({ l: 'B', q: `\\dfrac{\\left(x^{${a}}\\right)^{${b}}}{x^{${c}}}`, res: `x^{${a * b - c}}`, steps: [{ m: `\\dfrac{x^{${a * b}}}{x^{${c}}}`, x: `\\((x^{${a}})^{${b}}=x^{${a}\\times${pe(b)}}=x^{${a * b}}\\).` }, { m: `x^{${a * b}-${pe(c)}}`, x: '\\(\\dfrac{a^m}{a^p}=a^{m-p}\\).' }, { m: `x^{${a * b - c}}` }] });
+    const C = (a, b, c) => ({ l: 'C', q: `\\left(x^{${a}}\\times x^{${b}}\\right)^{${c}}`, res: `x^{${(a + b) * c}}`, steps: [{ m: `\\left(x^{${a}+${pe(b)}}\\right)^{${c}}=\\left(x^{${a + b}}\\right)^{${c}}`, x: 'D’abord la parenthèse.' }, { m: `x^{${pe(a + b)}\\times${c}}=x^{${(a + b) * c}}`, x: '\\((a^m)^p=a^{m\\times p}\\).' }] });
+    if (!f) return { main: [A(4, -7, 3), B(-2, 3, -9), C(2, -5, 3)] };
+    return { main: [A(ri(2, 8), -ri(2, 9), ri(1, 6)), B(-ri(1, 4), ri(2, 4), -ri(2, 12)), C(ri(1, 5), -ri(2, 8), ri(2, 4))] };
+  } },
+
+{ n: 18, obj: null, stars: S3, comp: 'Calculer', consigne: 'Écrire \\(A\\) et \\(B\\) sous la forme \\(x^n\\), puis \\(C\\) sous la forme \\(a^p\\times b^q\\).', rappel: RAP4, att: R`<p>\(\left(\dfrac ab\right)^3=\dfrac{a^3}{b^3}=a^3\times b^{-3}\).</p>`,
+  build(f) {
+    const A = (a, b, c, d) => ({ l: 'A', q: `x^{${a}}\\times\\left(x^{${b}}\\right)^{${c}}\\times x^{${d}}`, res: `x^{${a + b * c + d}}`, steps: [{ m: `x^{${a}}\\times x^{${b * c}}\\times x^{${d}}`, x: `\\((x^{${b}})^{${c}}=x^{${b * c}}\\).` }, { m: `x^{${a}+${pe(b * c)}+${pe(d)}}=x^{${a + b * c + d}}` }] });
+    const B = (a, b, c) => ({ l: 'B', q: `\\dfrac{x^{${a}}}{x^{${b}}\\times x^{${c}}}`, res: `x^{${a - b - c}}`, steps: [{ m: `\\dfrac{x^{${a}}}{x^{${b + c}}}`, x: `En bas : \\(x^{${b}}\\times x^{${c}}=x^{${b}+${pe(c)}}=x^{${b + c}}\\).` }, { m: `x^{${a}-${pe(b + c)}}=x^{${a - b - c}}` }] });
+    const C = (n, m) => { const p = n + m, P = p === 1 ? 'a' : `a^{${p}}`; return { l: 'C', q: `\\left(\\dfrac{a}{b}\\right)^{${n}}\\times a^{${m}}`, res: `${P}\\times b^{${-n}}`, steps: [{ m: `\\dfrac{a^{${n}}}{b^{${n}}}\\times a^{${m}}`, x: '\\(\\left(\\dfrac ab\\right)^n=\\dfrac{a^n}{b^n}\\).' }, { m: `a^{${n}}\\times b^{${-n}}\\times a^{${m}}`, x: `\\(\\dfrac1{b^{${n}}}=b^{${-n}}\\).` }, { m: `a^{${n}+${pe(m)}}\\times b^{${-n}}=${P}\\times b^{${-n}}` }] }; };
+    if (!f) return { main: [A(4, -2, 3, 5), B(7, 8, -5), C(3, -2)] };
+    return { main: [A(ri(2, 6), -ri(1, 4), ri(2, 3), ri(1, 6)), B(ri(2, 9), ri(2, 9), -ri(1, 6)), C(ri(2, 5), -ri(1, 4))] };
+  } },
+
+{ n: 19, obj: null, stars: S3, comp: 'Calculer', consigne: 'Soit \\(n\\) un entier relatif. Écrire chaque expression sous la forme \\(2^p\\) où \\(p\\) est un entier relatif.', rappel: RAP4, att: R`<p>Les exposants sont des expressions : on les écrit entre parenthèses avant de réduire, \(2^{(3-n)+(n+2)}=2^5\).</p>`,
+  build(f) {
+    const L = (a, b, cf) => lin(a, b, 'n', cf);
+    const i1 = (a1, b1, a2, b2) => ({ l: '1.', lhs: `2^{${L(a1, b1)}}\\times2^{${L(a2, b2)}}`, q: `2^{${L(a1, b1)}}\\times2^{${L(a2, b2)}}`, res: `2^{${L(a1 + a2, b1 + b2)}}`, steps: [
+      { m: `2^{(${L(a1, b1)})+(${L(a2, b2)})}`, x: '\\(a^m\\times a^p=a^{m+p}\\).' }, { m: `2^{${L(a1 + a2, b1 + b2)}}`, x: 'On réduit l’exposant.' }] });
+    const i2 = (a1, b1, a2, b2, a3, b3) => { const s = [a1 + a2, b1 + b2]; return { l: '2.', lhs: `\\dfrac{2^{${L(a1, b1, true)}}\\times2^{${L(a2, b2)}}}{2^{${L(a3, b3)}}}`, q: `\\dfrac{2^{${L(a1, b1, true)}}\\times2^{${L(a2, b2)}}}{2^{${L(a3, b3)}}}`, res: `2^{${L(s[0] - a3, s[1] - b3)}}`, steps: [
+      { m: `\\dfrac{2^{(${L(a1, b1, true)})+(${L(a2, b2)})}}{2^{${L(a3, b3)}}}=\\dfrac{2^{${L(...s)}}}{2^{${L(a3, b3)}}}`, x: 'Au numérateur : \\(a^m\\times a^p=a^{m+p}\\).' },
+      { m: `2^{${L(...s)}-(${L(a3, b3)})}`, x: '\\(\\dfrac{a^m}{a^p}=a^{m-p}\\) : on met des parenthèses.' }, { m: `2^{${L(s[0] - a3, s[1] - b3)}}`, x: 'Le signe \\(-\\) change le signe de chaque terme de la parenthèse.' }] }; };
+    const i3 = (a1, b1, k, a2, b2) => ({ l: '3.', lhs: `\\left(2^{${L(a1, b1)}}\\right)^{${k}}\\times2^{${L(a2, b2)}}`, q: `\\left(2^{${L(a1, b1)}}\\right)^{${k}}\\times2^{${L(a2, b2)}}`, res: `2^{${L(k * a1 + a2, k * b1 + b2)}}`, steps: [
+      { m: `2^{${k}(${L(a1, b1)})}\\times2^{${L(a2, b2)}}=2^{${L(k * a1, k * b1)}}\\times2^{${L(a2, b2)}}`, x: '\\((a^m)^p=a^{m\\times p}\\) : on développe.' },
+      { m: `2^{${L(k * a1, k * b1)}+(${L(a2, b2)})}`, x: '\\(a^m\\times a^p=a^{m+p}\\).' }, { m: `2^{${L(k * a1 + a2, k * b1 + b2)}}` }] });
+    if (!f) return { main: [i1(1, 0, 1, -1), i2(-1, 3, 1, 2, -4, 0), i3(1, -1, 3, -1, 0)] };
+    return { main: [i1(ri(1, 3), nz(-4, 4), ri(1, 3), nz(-4, 4)), i2(-1, ri(1, 5), 1, ri(1, 5), -ri(2, 5), 0), i3(1, nz(-3, 3), ri(2, 4), -ri(1, 2), nz(-3, 3))] };
+  } },
+
+{ n: 20, obj: [6, 'Effectuer des calculs numériques avec des racines carrées'], stars: S1, comp: 'Calculer', consigne: 'Calculer les carrés suivants.', rappel: RAP6, att: R`<p>\((3\sqrt5)^2=3^2\times(\sqrt5)^2=45\), et non \(3\times5\).</p>`,
+  build(f) {
+    const it = (l, a, b) => ({ l, lhs: `\\left(${a}\\sqrt{${b}}\\right)^2`, q: `\\left(${a}\\sqrt{${b}}\\right)^2`, res: `${a * a * b}`, steps: [
+      { m: `${a}^2\\times\\left(\\sqrt{${b}}\\right)^2`, x: '\\((ab)^2=a^2\\times b^2\\).' }, { m: `${a * a}\\times${b}`, x: `\\((\\sqrt{${b}})^2=${b}\\).` }, { m: `${a * a * b}` }] });
+    if (!f) return { main: [it('1.', 3, 5), it('2.', 2, 3), it('3.', 4, 2)] };
+    return { main: ['1.', '2.', '3.'].map(l => it(l, ri(2, 9), pick([2, 3, 5, 6, 7, 10, 11]))) };
+  } },
+
+{ n: 21, obj: null, stars: S1, comp: 'Chercher', consigne: 'Parmi les nombres suivants, regrouper ceux qui sont égaux entre eux : \\(\\sqrt{25}\\), \\(\\sqrt{12}\\), \\(100\\), \\(\\sqrt{90}\\), \\(\\sqrt{117}\\), \\(2\\sqrt3\\), \\(10\\), \\(9\\sqrt{10}\\), \\(5\\), \\(3\\sqrt{13}\\), \\(\\sqrt{(-10)^2}\\), \\(3\\sqrt{10}\\).', rappel: RAP6, att: R`<p>\(\sqrt{(-10)^2}=\sqrt{100}=10\) : une racine carrée n’est jamais négative.</p>`, train: false,
+  build() {
+    return { main: [{ l: 'Groupes', qt: 'On simplifie chaque racine, puis on compare.', res: R`\(\{\sqrt{25};5\}\), \(\{\sqrt{12};2\sqrt3\}\), \(\{\sqrt{90};3\sqrt{10}\}\), \(\{\sqrt{117};3\sqrt{13}\}\), \(\{\sqrt{(-10)^2};10\}\) ; \(100\) et \(9\sqrt{10}\) restent seuls`, resHTML: true, steps: [
+      { e: R`\sqrt{25}=5` }, { e: R`\sqrt{12}=\sqrt{4\times3}=2\sqrt3` }, { e: R`\sqrt{90}=\sqrt{9\times10}=3\sqrt{10}` }, { e: R`\sqrt{117}=\sqrt{9\times13}=3\sqrt{13}` },
+      { e: R`\sqrt{(-10)^2}=\sqrt{100}=10`, x: 'On calcule d’abord le carré : \\((-10)^2=100\\).' },
+      { h: R`Groupes : \(\{\sqrt{25};5\}\), \(\{\sqrt{12};2\sqrt3\}\), \(\{\sqrt{90};3\sqrt{10}\}\), \(\{\sqrt{117};3\sqrt{13}\}\), \(\{\sqrt{(-10)^2};10\}\). Les nombres \(100\) et \(9\sqrt{10}\) restent seuls.` }] }] };
+  } },
+
+{ n: 22, obj: null, stars: S2, comp: 'Chercher', consigne: 'On considère un quotient avec une racine carrée au dénominateur.', rappel: RAP6, att: R`<p>On multiplie <b>en haut et en bas</b> par la même quantité, sinon le nombre change.</p>`,
+  build(f) {
+    let k, b; if (!f) { k = 2; b = 6; } else { do { k = ri(2, 9); b = pick([2, 3, 5, 6, 7, 10, 14, 15]); } while (gcd(k, b) === 1 || k % b === 0); }
+    const g = gcd(k, b), N = k / g, D = b / g, res = D === 1 ? rt(N, b) : `\\dfrac{${rt(N, b)}}{${D}}`;
+    return { intro: `\\(A=\\dfrac{${k}}{\\sqrt{${b}}}\\)`, main: [
+      { l: '1.', qt: 'Par quelle quantité multiplier le numérateur et le dénominateur ?', res: `par \\(\\sqrt{${b}}\\)`, resHTML: true, steps: [{ h: `\\(\\sqrt{${b}}\\times\\sqrt{${b}}=${b}\\) : en multipliant par \\(\\sqrt{${b}}\\), le dénominateur devient l’entier \\(${b}\\).` }] },
+      { l: 'A', q: `\\dfrac{${k}}{\\sqrt{${b}}}`, res, steps: [
+        { m: `\\dfrac{${k}\\times\\sqrt{${b}}}{\\sqrt{${b}}\\times\\sqrt{${b}}}=\\dfrac{${k}\\sqrt{${b}}}{${b}}`, x: 'On multiplie en haut et en bas par \\(\\sqrt{' + b + '}\\).' },
+        { m: res, x: `On simplifie par \\(${g}\\).` }] }] };
+  } },
+
+{ n: 23, obj: null, stars: S2, comp: 'Calculer', consigne: 'Écrire chaque quotient sans radical au dénominateur.', rappel: [RAP6[0], { t: 'Quantité conjuguée', h: R`<p>\((a-\sqrt b)(a+\sqrt b)=a^2-b\) : la racine disparaît.</p>` }], att: R`<p>Pour \(\dfrac{10}{6-\sqrt3}\), multiplier par \(\sqrt3\) ne suffit pas : on utilise \(6+\sqrt3\).</p>`,
+  build(f) {
+    if (!f) return { main: [itRadDen('A', 2, 2), itRadDen('B', 21, 7), itRadDen('C', 9, 3), itConj('D', 10, 6, 3)] };
+    const m = b => b * ri(1, 4);
+    const b1 = pick([2, 3, 5]), b2 = pick([3, 5, 7, 11]), b3 = pick([2, 3, 5, 6]);
+    let a, b; do { a = ri(2, 7); b = pick([2, 3, 5, 7]); } while (a * a === b);
+    return { main: [itRadDen('A', m(b1), b1), itRadDen('B', b2 * ri(2, 5), b2), itRadDen('C', ri(2, 9), b3), itConj('D', ri(2, 12), a, b)] };
+  } },
+
+{ n: 24, obj: null, stars: S2, comp: 'Calculer', consigne: 'Écrire ces nombres sous la forme \\(a\\sqrt b\\) avec \\(a\\) et \\(b\\) entiers et \\(b\\) le plus petit possible.', rappel: RAP6, att: ATT6,
+  build(f) {
+    if (!f) return { main: [itRacine('1.', 1300), itRacine('2.', 250), itRacProd('3.', 3, 2, -4, 10), itRacSum('4.', [[5, 3], [4, 75], [-3, 48]]), itRacProd('5.', 2, 63, 3, 21), itRacQuot('6.', 480, 2, 20)] };
+    const r = pick([2, 3, 5, 6, 7]), s1 = ri(2, 5), s2 = ri(2, 5);
+    const q1 = ri(2, 5), q2 = ri(2, 6), k = pick([8, 12, 18, 20, 27, 45, 50]);
+    return { main: [itRacine('1.', ri(2, 12) ** 2 * pick([2, 3, 5, 7, 10, 13])), itRacine('2.', ri(2, 7) ** 2 * pick([2, 3, 6, 10, 11])),
+      itRacProd('3.', ri(2, 5), pick([2, 3, 5]), -ri(2, 5), pick([6, 10, 15, 2, 3])), itRacSum('4.', [[ri(1, 6), r], [ri(2, 5), s1 * s1 * r], [-ri(2, 4), s2 * s2 * r]]),
+      itRacProd('5.', ri(2, 4), pick([12, 18, 20, 28]), ri(2, 4), pick([3, 5, 7, 2])), itRacQuot('6.', q1 * q2 * k, q1, q2)] };
+  } },
+
+{ n: 25, obj: null, stars: S3, comp: 'Raisonner', consigne: 'Démontrer les résultats suivants.', rappel: RAP6, att: R`<p>Pour montrer qu’une égalité est vraie, on part d’un membre et on calcule jusqu’à obtenir l’autre.</p>`, train: false,
+  build() {
+    return { main: [
+      { l: '1.', qt: R`Montrer que \(\sqrt{117}+\sqrt{13}=\sqrt{208}\).`, lhs: R`\sqrt{117}+\sqrt{13}`, res: R`\(\sqrt{117}+\sqrt{13}=4\sqrt{13}=\sqrt{208}\)`, resHTML: true, steps: [
+        { m: R`3\sqrt{13}+\sqrt{13}`, x: '\\(\\sqrt{117}=\\sqrt{9\\times13}=3\\sqrt{13}\\).' }, { m: R`4\sqrt{13}`, x: 'On additionne des racines identiques.' },
+        { e: R`\sqrt{208}=\sqrt{16\times13}=4\sqrt{13}`, x: 'On simplifie aussi l’autre membre.' }, { h: 'Les deux membres valent \\(4\\sqrt{13}\\) : l’égalité est démontrée.' }],
+        piege: '\\(\\sqrt{117}+\\sqrt{13}\\neq\\sqrt{130}\\).' },
+      { l: '2.', qt: R`Montrer que \(\dfrac{1}{\sqrt2-1}-\dfrac{1}{\sqrt2+1}\) est un entier.`, lhs: R`\dfrac{1}{\sqrt2-1}-\dfrac{1}{\sqrt2+1}`, res: R`\(2\), qui est un entier`, resHTML: true, steps: [
+        { m: R`\dfrac{\sqrt2+1}{(\sqrt2-1)(\sqrt2+1)}-\dfrac{\sqrt2-1}{(\sqrt2+1)(\sqrt2-1)}`, x: 'On met au même dénominateur \\((\\sqrt2-1)(\\sqrt2+1)\\).' },
+        { m: R`\dfrac{(\sqrt2+1)-(\sqrt2-1)}{(\sqrt2)^2-1^2}`, x: '\\((a-b)(a+b)=a^2-b^2\\).' },
+        { m: R`\dfrac{\sqrt2+1-\sqrt2+1}{2-1}`, x: 'Le signe \\(-\\) change les signes de la seconde parenthèse.' }, { m: R`\dfrac{2}{1}=2` },
+        { h: 'On obtient \\(2\\), qui est bien un entier.' }] }] };
+  } }
+];
+
+/* =====================================================================
+   Affichage
+   Item : { l, q, qt?, lhs?, fig?, res, resHTML?, steps:[{m|e|h|svg, x}], piege? }
+   m : « L = … » (ou « = … ») ; e : égalité complète ; h : texte ; svg : figure.
+   ===================================================================== */
+const $ = (s, el = document) => el.querySelector(s);
+const app = $('#app'), nav = $('#exnav');
+function typeset(el) {
+  if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+    MathJax.startup.promise.then(() => MathJax.typesetPromise([el])).catch(() => {});
+  }
+}
+const isL = l => /^[A-Z]$/.test(l || '');
+
+function itemHTML(it, id) {
+  const label = it.l ? (isL(it.l) ? `\\(${it.l}=\\)` : `<b>${it.l}</b>`) : '';
+  const body = it.qt ? `<span class="qt">${it.qt}</span>` : it.q ? `\\(${it.q}\\)` : '';
+  const q = `<span class="q">${label} ${body}</span>`;
+  const res = it.resHTML ? it.res : `\\(${isL(it.l) ? it.l + '=' : ''}${it.res}\\)`;
+  return `<div class="item" data-id="${id}">
+    <div class="row">${q}<button type="button" class="btn sm" data-open>Correction détaillée</button></div>
+    ${it.fig ? `<div class="qfig">${it.fig}</div>` : ''}
+    <div class="resline">Réponse : <span class="res">${res}</span></div>
+    <div class="corr" hidden><ol class="steps"></ol>
+      <div class="step-ctrl"><button type="button" class="btn solid sm" data-next>Étape suivante</button><button type="button" class="btn ghost sm" data-all>Tout afficher</button><button type="button" class="btn ghost sm" data-reset hidden>Recommencer</button></div>
+      <div class="end" hidden><div class="concl">Résultat : ${res}</div>${it.piege ? `<div class="piege" style="margin-top:8px"><b>Erreur à éviter :</b> ${it.piege}</div>` : ''}</div>
+    </div></div>`;
+}
+function stepHTML(it, st, k) {
+  const L = isL(it.l) ? it.l : '';
+  let inner = '';
+  if (st.svg) inner += `<div class="fig">${st.svg}</div>`;
+  if (st.m) {
+    const head = L ? L + '=' : (it.lhs && it.steps.findIndex(s => s.m) === k - 1 ? it.lhs + '=' : '=');
+    inner += `<div class="m">\\[${head}${st.m}\\]</div>`;
+  }
+  if (st.e) inner += `<div class="m">\\[${st.e}\\]</div>`;
+  if (st.h) inner += `<div class="h">${st.h}</div>`;
+  if (st.x) inner += `<div class="x">${st.x}</div>`;
+  return `<span class="n">${k}</span><div>${inner}</div>`;
+}
+function wireItem(el, it) {
+  const corr = $('.corr', el), ol = $('.steps', corr), end = $('.end', corr);
+  const bN = $('[data-next]', corr), bA = $('[data-all]', corr), bR = $('[data-reset]', corr);
+  let k = 0;
+  const add = () => { const li = document.createElement('li'); li.className = 'step'; li.innerHTML = stepHTML(it, it.steps[k], k + 1); k++; ol.appendChild(li); typeset(li); };
+  const sync = () => { const fin = k >= it.steps.length; bN.hidden = fin; bA.hidden = fin; bR.hidden = !fin; end.hidden = !fin; if (fin) typeset(end); };
+  $('[data-open]', el).addEventListener('click', e => {
+    const open = corr.hidden;
+    corr.hidden = !open; el.classList.toggle('open', open);
+    e.currentTarget.textContent = open ? 'Masquer la correction' : 'Correction détaillée';
+    if (open && k === 0) { add(); sync(); }
+  });
+  bN.addEventListener('click', () => { add(); sync(); });
+  bA.addEventListener('click', () => { while (k < it.steps.length) add(); sync(); });
+  bR.addEventListener('click', () => { ol.innerHTML = ''; k = 0; add(); sync(); });
+}
+function itemsBlock(set, pre, ex) {
+  let h = set.fig ? `<div class="setfig">${set.fig}</div>` : '';
+  if (set.intro) h += `<p class="consigne">${set.intro}</p>`;
+  h += `<div class="items">${set.main.map((it, i) => itemHTML(it, `${pre}m${i}`)).join('')}</div>`;
+  if (set.more) h += `<h2 class="part">Pour aller plus loin <span class="stars">${ex.more}</span></h2><div class="items">${set.more.map((it, i) => itemHTML(it, `${pre}p${i}`)).join('')}</div>`;
+  return h;
+}
+function wireBlock(root, set, pre) {
+  set.main.forEach((it, i) => wireItem($(`[data-id="${pre}m${i}"]`, root), it));
+  (set.more || []).forEach((it, i) => wireItem($(`[data-id="${pre}p${i}"]`, root), it));
+}
+
+const sheet = {};      // valeurs de la feuille, calculées une fois
+let train = 0;
+function render(n) {
+  const ex = EX.find(e => e.n === n) || EX[0];
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.n === ex.n));
+  const set = sheet[ex.n] || (sheet[ex.n] = ex.build(false));
+  const objTitle = ex.obj || EX.slice().reverse().find(e => e.n < ex.n && e.obj).obj;
+  const canTrain = ex.train !== false;
+  app.innerHTML = `
+    <p class="obj"><b>Objectif ${objTitle[0]} :</b> ${objTitle[1]}</p>
+    <article class="exo">
+      <div class="exo-h"><span class="pill">Exercice ${ex.n}</span><span class="stars">${ex.stars}</span><span class="comp">${ex.comp}</span></div>
+      <div class="exo-b">
+        <p class="consigne">${ex.consigne}</p>
+        <div class="tools">
+          <button type="button" class="btn" data-rappel>Rappel</button>
+          <button type="button" class="btn ghost" data-res>Réponses seules</button>
+          ${canTrain ? '<button type="button" class="btn green" data-train>↻ Nouvelles valeurs pour s’entraîner</button>' : ''}
+        </div>
+        <div class="rappel" hidden>${ex.rappel.map(b => `<div><h3>${b.t}</h3>${b.h}</div>`).join('')}<div class="att"><h3>Attention !</h3>${ex.att}</div></div>
+        <div class="sheet"><h2 class="part">Corrigé de la feuille <small>clique sur « Correction détaillée » pour la suivre étape par étape</small></h2>${itemsBlock(set, 's', ex)}</div>
+        <div class="train" hidden></div>
+      </div>
+    </article>
+    <nav class="foot">${ex.n > 1 ? `<button type="button" class="btn ghost" data-go="${ex.n - 1}">← Exercice ${ex.n - 1}</button>` : '<span></span>'}${ex.n < EX.length ? `<button type="button" class="btn ghost" data-go="${ex.n + 1}">Exercice ${ex.n + 1} →</button>` : ''}</nav>`;
+  wireBlock($('.sheet', app), set, 's');
+  const rap = $('.rappel', app), bRap = $('[data-rappel]', app);
+  bRap.addEventListener('click', () => { rap.hidden = !rap.hidden; bRap.classList.toggle('on', !rap.hidden); if (!rap.hidden) typeset(rap); });
+  const bRes = $('[data-res]', app), body = $('.exo-b', app);
+  bRes.addEventListener('click', () => { body.classList.toggle('showres'); bRes.classList.toggle('on'); });
+  const tr = $('.train', app);
+  if (canTrain) $('[data-train]', app).addEventListener('click', () => {
+    const fresh = ex.build(true), pre = `t${++train}`;
+    tr.hidden = false;
+    tr.innerHTML = `<h2 class="part">Entraînement : nouvelles valeurs <small>cherche sur ton cahier, puis ouvre la correction</small></h2>${itemsBlock(fresh, pre, ex)}`;
+    wireBlock(tr, fresh, pre);
+    typeset(tr);
+    tr.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  app.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.go; }));
+  typeset(app);
+  window.scrollTo(0, 0);
+}
+nav.innerHTML = EX.map(e => `<button type="button" data-n="${e.n}">${EX.length > 12 ? 'Ex.' : 'Exercice'} ${e.n}</button>`).join('');
+nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.n; }));
+const route = () => render(+(location.hash.match(/^#ex(\d+)$/) || [])[1] || 1);
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>

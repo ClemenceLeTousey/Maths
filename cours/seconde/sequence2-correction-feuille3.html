@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feuille 3 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Même habillage que la page de remédiation DS1 : une colonne de lecture, thème clair fixe (projection en classe). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs de la feuille */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* sinon display:grid (rappel, entraînement) l’emporte sur hidden */
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons d'exercices */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.green.on { background: var(--green); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .item .resline { display: block; }
+.qfig { overflow-x: auto; }
+.qfig svg, .fig svg { display: block; max-width: none; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+/* Vrai / faux, figures de l'énoncé */
+.ok { color: var(--green); font-weight: 600; }
+.ko { color: var(--red); font-weight: 600; }
+.setfig { overflow-x: auto; display: flex; justify-content: center; padding: 4px 0; }
+.setfig svg, .qfig svg { display: block; max-width: none; }
+.qfig { display: flex; justify-content: flex-start; }
+.item .q .qt { font-size: 17px; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Feuille d’exercices n°3 — Corrigé</b><span>Produit par un réel, décomposition</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" id="exnav" aria-label="Exercices"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] },
+    macros: { V: ['\\overrightarrow{#1}', 1] } },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<script>
+'use strict';
+const R = String.raw;
+
+/* =====================================================================
+   Outils communs : hasard, couleurs, fractions, figures
+   ===================================================================== */
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; };
+const lcm = (a, b) => a / gcd(a, b) * b;
+const distinct = (n, a, b) => { const s = new Set(); while (s.size < n) s.add(ri(a, b)); return [...s]; };
+const nz = (a, b) => { let n; do n = ri(a, b); while (n === 0); return n; };
+const sg = () => pick([1, -1]);
+const shuffle = arr => arr.map(v => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map(p => p[1]);
+
+// Couleurs (modèle rgb de MathJax)
+const RGB = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => (v / 255).toFixed(3)).join(','); };
+const col = (hex, s) => `{\\color[rgb]{${RGB(hex)}}{${s}}}`;
+const KC = '#C2255C', BL = '#1C7ED6', OR = '#D9480F', VI = '#7048E8', TE = '#0C8599', GR = '#2F9E44', RE = '#E03131', INK = '#1D2733';
+const VRAI = '<b class="ok">VRAI</b>', FAUX = '<b class="ko">FAUX</b>';
+
+const S1 = '<span style="color:var(--star-green)">★</span><span style="color:#C5CCD3">☆☆</span>';
+const S2 = '<span style="color:var(--star-blue)">★★</span><span style="color:#C5CCD3">☆</span>';
+const S3 = '<span style="color:var(--star-red)">★★★</span>';
+
+/* ---------- Fractions : [numérateur, dénominateur] ---------- */
+const F = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g, d / g]; };
+// écriture telle quelle (sans simplifier), signe devant
+const fx = ([n, d]) => d === 1 ? String(n) : (n < 0 ? '-' : '') + `\\dfrac{${Math.abs(n)}}{${d}}`;
+const ft = ([n, d]) => fx(F(n, d));
+const feq = (a, b) => a[0] * b[1] === b[0] * a[1];
+const fmul = (a, b) => F(a[0] * b[0], a[1] * b[1]);
+const fadd = (a, b) => F(a[0] * b[1] + b[0] * a[1], a[1] * b[1]);
+const seqF = ts => ts.map((t, i) => (t[0] < 0 ? '-' : (i ? '+' : '')) + fx([Math.abs(t[0]), t[1]])).join('');
+
+// Simplification d'une fraction écrite : une étape (ou aucune)
+function simpSteps([n, d]) {
+  const g = gcd(n, d);
+  if (g <= 1 || d === 0) return [];
+  const p = Math.abs(n) / g, q = d / g, s = n < 0 ? '-' : '';
+  return [{ m: `${s}\\dfrac{${p}\\times${col(KC, g)}}{${q}\\times${col(KC, g)}}=${fx([n < 0 ? -p : p, q])}`, x: `On simplifie par \\(${g}\\) (on divise le numérateur et le dénominateur par \\(${g}\\)).` }];
+}
+// Somme algébrique de fractions écrites (le signe est porté par le numérateur)
+function sumSteps(ts) {
+  const L = ts.reduce((s, t) => lcm(s, t[1]), 1), steps = [];
+  if (ts.some(t => t[1] !== L)) {
+    const w = ts.map((t, i) => {
+      const k = L / t[1], s = t[0] < 0 ? '-' : (i ? '+' : ''), a = Math.abs(t[0]);
+      return s + (k === 1 ? fx([a, t[1]]) : `\\dfrac{${a}\\times${col(KC, k)}}{${t[1]}\\times${col(KC, k)}}`);
+    }).join('');
+    steps.push({ m: w, x: `On met au même dénominateur \\(${L}\\) : on multiplie le numérateur <em>et</em> le dénominateur par le même nombre (en couleur).` });
+    steps.push({ m: seqF(ts.map(t => [t[0] * L / t[1], L])), x: 'On effectue les produits.' });
+  }
+  const N = ts.reduce((s, t) => s + t[0] * L / t[1], 0);
+  const nums = ts.map((t, i) => { const v = t[0] * L / t[1]; return (v < 0 ? '-' : (i ? '+' : '')) + Math.abs(v); }).join('');
+  steps.push({ m: `\\dfrac{${nums}}{${L}}=${fx([N, L])}`, x: 'On additionne (ou on soustrait) les numérateurs, et on garde le dénominateur commun.' });
+  return { steps: steps.concat(simpSteps([N, L])), val: F(N, L) };
+}
+
+/* ---------- Racines carrées ---------- */
+function sqf(n) { let a = 1; for (let k = 2; k * k <= n; k++) while (n % (k * k) === 0) { n /= k * k; a *= k; } return [a, n]; }
+const rt = (a, b) => b === 1 ? String(a) : (a === 1 ? '' : a === -1 ? '-' : a) + `\\sqrt{${b}}`;
+
+/* ---------- Écritures diverses ---------- */
+const pw = (b, e) => `${typeof b === 'number' && b < 0 ? `(${b})` : b}^{${e}}`;
+const pe = e => e < 0 ? `(${e})` : String(e);                   // exposant entre parenthèses si négatif
+const sgn = (v, first) => v < 0 ? '-' : first ? '' : '+';
+// a x + b (ou a n + b) ; constFirst : b + a x
+function lin(a, b, v = 'x', constFirst = false) {
+  const tx = a === 0 ? '' : (a === 1 ? '' : a === -1 ? '-' : a) + v;
+  if (constFirst && b !== 0) return a === 0 ? String(b) : `${b}${a > 0 ? '+' : ''}${tx}`;
+  if (b === 0) return tx || '0';
+  return tx ? `${tx}${b > 0 ? '+' : ''}${b}` : String(b);
+}
+
+/* =====================================================================
+   Figures SVG : repère à quadrillage (base éventuellement oblique)
+   o = { x0, y0, x1, y1, u, grid, basis, items }
+   items : {pt, l, pos, c} | {v:[a,b], c, l, lpos, dash, w} | {s:[a,b], c, dash, w}
+           {poly:[...], c, fill, w} | {t:[x,y], s, c, size} | {circ:[x,y], s}
+   ===================================================================== */
+const POS = { n: [0, -9, 'middle'], s: [0, 19, 'middle'], e: [9, 5, 'start'], w: [-9, 5, 'end'], ne: [7, -7, 'start'], nw: [-7, -7, 'end'], se: [7, 17, 'start'], sw: [-7, 17, 'end'], c: [0, 5, 'middle'] };
+function ptLabel(x, y, l, pos = 'n', c = INK) {
+  const [dx, dy, an] = POS[pos];
+  const [base, sub] = String(l).split('_');
+  return `<text x="${x + dx}" y="${y + dy}" text-anchor="${an}" fill="${c}" font-weight="500">${base}${sub ? `<tspan dy="4" font-size="70%">${sub}</tspan>` : ''}</text>`;
+}
+// nom de vecteur (u, v, w_1…) surmonté d'une flèche
+function vecLabel(x, y, l, c) {
+  const [base, sub] = String(l).split('_');
+  const w = 8 + (sub ? 6 : 0);
+  return `<g fill="${c}" stroke="${c}"><text x="${x}" y="${y}" text-anchor="middle" font-style="italic" font-weight="600" stroke="none">${base}${sub ? `<tspan dy="4" font-size="70%">${sub}</tspan>` : ''}</text>` +
+    `<line x1="${x - w / 2}" y1="${y - 13}" x2="${x + w / 2}" y2="${y - 13}" stroke-width="1.3"/><path d="M${x + w / 2 - 3} ${y - 16} L${x + w / 2} ${y - 13} L${x + w / 2 - 3} ${y - 10}" fill="none" stroke-width="1.3"/></g>`;
+}
+function arrow(p, q, c, w = 2.4, dash = false) {
+  const dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
+  const h = 10, hw = 4.5, bx = q[0] - ux * h, by = q[1] - uy * h;
+  return `<line x1="${p[0]}" y1="${p[1]}" x2="${bx + ux * 2}" y2="${by + uy * 2}" stroke="${c}" stroke-width="${w}"${dash ? ' stroke-dasharray="5 4"' : ''}/>` +
+    `<path d="M${q[0]} ${q[1]} L${bx - uy * hw} ${by + ux * hw} L${bx + uy * hw} ${by - ux * hw} Z" fill="${c}"/>`;
+}
+function plane(o) {
+  const u = o.u || 26, B = o.basis || [[1, 0], [0, 1]];
+  const P = ([x, y]) => [+((x * B[0][0] + y * B[1][0]) * u).toFixed(1), +(-(x * B[0][1] + y * B[1][1]) * u).toFixed(1)];
+  const corners = [[o.x0, o.y0], [o.x1, o.y0], [o.x0, o.y1], [o.x1, o.y1]].map(P);
+  const pad = o.pad == null ? 22 : o.pad;
+  const minX = Math.min(...corners.map(c => c[0])) - pad, maxX = Math.max(...corners.map(c => c[0])) + pad;
+  const minY = Math.min(...corners.map(c => c[1])) - pad, maxY = Math.max(...corners.map(c => c[1])) + pad;
+  let s = '';
+  if (o.grid !== false) {
+    const gc = o.gridColor || '#D5DCE4';
+    for (let i = Math.ceil(o.x0); i <= o.x1; i++) { const a = P([i, o.y0]), b = P([i, o.y1]); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${gc}" stroke-width="1"/>`; }
+    for (let j = Math.ceil(o.y0); j <= o.y1; j++) { const a = P([o.x0, j]), b = P([o.x1, j]); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${gc}" stroke-width="1"/>`; }
+  }
+  const top = [];
+  (o.items || []).forEach(it => {
+    if (!it) return;
+    if (it.poly) {
+      const pts = it.poly.map(P).map(p => p.join(',')).join(' ');
+      s += `<polygon points="${pts}" fill="${it.fill || 'none'}" stroke="${it.c || INK}" stroke-width="${it.w || 1.6}"${it.dash ? ' stroke-dasharray="5 4"' : ''}/>`;
+    } else if (it.s && !it.t && !it.circ) {
+      const [a, b] = it.s.map(P);
+      s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${it.c || INK}" stroke-width="${it.w || 1.6}"${it.dash ? ' stroke-dasharray="5 4"' : ''}/>`;
+    } else if (it.v) {
+      const [a, b] = it.v.map(P);
+      s += arrow(a, b, it.c || INK, it.w || 2.4, it.dash);
+      if (it.l) {
+        // étiquette décalée perpendiculairement à la flèche, du côté indiqué par lpos
+        const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+        let nx = -(b[1] - a[1]) / L, ny = (b[0] - a[0]) / L;
+        const D = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], ne: [1, -1], nw: [-1, -1], se: [1, 1], sw: [-1, 1] }[it.lpos || 'n'];
+        if (nx * D[0] + ny * D[1] < 0) { nx = -nx; ny = -ny; }
+        const r = 15 + 5 * Math.abs(ny);
+        top.push(vecLabel(m[0] + nx * r, m[1] + ny * r + 6, it.l, it.c || INK));
+      }
+    } else if (it.pt) {
+      const [x, y] = P(it.pt), c = it.c || INK, r = 4.5;
+      top.push(`<path d="M${x - r} ${y - r} L${x + r} ${y + r} M${x - r} ${y + r} L${x + r} ${y - r}" stroke="${c}" stroke-width="2"/>`);
+      if (it.l) top.push(ptLabel(x, y, it.l, it.pos, c));
+    } else if (it.t) {
+      const [x, y] = P(it.t);
+      top.push(`<text x="${x}" y="${y + 5}" text-anchor="middle" fill="${it.c || INK}" font-size="${it.size || 15}"${it.bold ? ' font-weight="600"' : ''}>${it.s}</text>`);
+    } else if (it.circ) {
+      const [x, y] = P(it.circ);
+      top.push(`<circle cx="${x}" cy="${y}" r="10" fill="${it.fill || '#fff'}" stroke="${it.c || INK}" stroke-width="1.3"/><text x="${x}" y="${y + 5}" text-anchor="middle" font-size="14" fill="${it.c || INK}">${it.s}</text>`);
+    }
+  });
+  return `<svg width="${(maxX - minX).toFixed(0)}" height="${(maxY - minY).toFixed(0)}" viewBox="${minX.toFixed(1)} ${minY.toFixed(1)} ${(maxX - minX).toFixed(1)} ${(maxY - minY).toFixed(1)}" font-family="Source Sans 3, Arial, sans-serif" font-size="16">${s}${top.join('')}</svg>`;
+}
+// Déplacement en carreaux : chemin pointillé « horizontal puis vertical »
+function walk(p, d, c = '#868E96') {
+  const out = [];
+  if (d[0]) out.push({ v: [p, [p[0] + d[0], p[1]]], c, w: 1.6, dash: true });
+  if (d[1]) out.push({ v: [[p[0] + d[0], p[1]], [p[0] + d[0], p[1] + d[1]]], c, w: 1.6, dash: true });
+  return out;
+}
+function moveText(d, one = 'carreau', many = 'carreaux') {
+  const pl = n => `${Math.abs(n)} ${Math.abs(n) > 1 ? many : one}`;
+  const parts = [];
+  if (d[0]) parts.push(`${pl(d[0])} vers la ${d[0] > 0 ? 'droite' : 'gauche'}`);
+  if (d[1]) parts.push(`${pl(d[1])} vers le ${d[1] > 0 ? 'haut' : 'bas'}`);
+  return parts.join(' et ') || 'aucun déplacement';
+}
+const add = (p, d, k = 1) => [p[0] + k * d[0], p[1] + k * d[1]];
+const sub = (p, q) => [p[0] - q[0], p[1] - q[1]];
+const same2 = (p, q) => Math.abs(p[0] - q[0]) < 1e-9 && Math.abs(p[1] - q[1]) < 1e-9;
+
+/* =====================================================================
+   Feuille 3 — Vecteurs : produit par un réel, décomposition
+   ===================================================================== */
+const VV = n => `\\V{${n}}`;
+const pts = (P, names, pos = {}) => names.map(n => ({ pt: P[n], l: n, pos: pos[n] || 'nw' }));
+const ar = (P, a, b, c = KC, dash) => ({ v: [P[a], P[b]], c, dash });
+function mv(d) {
+  const parts = [];
+  if (d[0]) parts.push(`${Math.abs(d[0])} carreau${Math.abs(d[0]) > 1 ? 'x' : ''} vers la ${d[0] > 0 ? 'droite' : 'gauche'}`);
+  if (d[1]) parts.push(`${Math.abs(d[1])} carreau${Math.abs(d[1]) > 1 ? 'x' : ''} vers le ${d[1] > 0 ? 'haut' : 'bas'}`);
+  return parts.join(' et ');
+}
+// coefficient devant un vecteur : 1 → '', −1 → '−', fraction sinon
+const kT = k => { const f = F(...k); return f[1] === 1 && f[0] === 1 ? '' : f[1] === 1 && f[0] === -1 ? '-' : ft(f); };
+// a·u + b·v
+function comb(a, b, u = '\\vec u', v = '\\vec v') {
+  const t = (k, s, first) => k === 0 ? '' : (k < 0 ? '-' : first ? '' : '+') + (Math.abs(k) === 1 ? '' : Math.abs(k)) + s;
+  const r = t(a, u, true) + t(b, v, a === 0);
+  return r || '\\vec 0';
+}
+
+/* ---------- Axes gradués (unité : la graduation) ---------- */
+function axis(lo, hi, P, extra = []) {
+  return plane({ x0: lo, y0: -1.9, x1: hi, y1: 1.7, u: 28, grid: false, pad: 14, items: [
+    { s: [[lo, 0], [hi, 0]], w: 1.4 },
+    ...Array.from({ length: hi - lo + 1 }, (_, i) => ({ s: [[lo + i, -0.18], [lo + i, 0.18]], w: 1 })),
+    ...extra, ...Object.keys(P).map(n => ({ pt: [P[n], 0], l: n, pos: n === 'C' ? 's' : 'n', c: n === 'C' ? KC : INK }))] });
+}
+const brace = (a, b, y, txt, c) => [{ s: [[a, y], [b, y]], c, w: 1.4 }, { s: [[a, y - 0.15], [a, y + 0.15]], c, w: 1.4 }, { s: [[b, y - 0.15], [b, y + 0.15]], c, w: 1.4 }, { t: [(a + b) / 2, y + (y > 0 ? 0.45 : -0.55)], s: txt, c, size: 13 }];
+
+function ex1It(l, A, B, C) {
+  const lo = Math.min(A, B, C) - 1, hi = Math.max(A, B, C) + 1;
+  const P = { A, B, C }, ab = Math.abs(B - A), ac = Math.abs(C - A), same = (B - A) * (C - A) > 0;
+  const k = F((same ? 1 : -1) * ac, ab);
+  const ar2 = [{ v: [[A, 1.15], [B, 1.15]], c: BL }, { v: [[A, -1.2], [C, -1.2]], c: KC }];
+  const res = `${VV('AC')}=${kT(k)}${VV('AB')}`;
+  return { l, fig: axis(lo, hi, P), q: '', res, steps: [
+    { svg: axis(lo, hi, P, ar2), h: `\\(${VV('AC')}\\) et \\(${VV('AB')}\\) ont la même direction et sont de ${same ? '<b>même sens</b>' : '<b>sens opposé</b>'}.`, x: same ? 'Le coefficient sera positif.' : 'Le coefficient sera négatif.' },
+    { svg: axis(lo, hi, P, [...brace(Math.min(A, B), Math.max(A, B), 1.1, `${ab} grad.`, BL), ...brace(Math.min(A, C), Math.max(A, C), -1.2, `${ac} grad.`, KC)]), h: `On compte les graduations : \\(AC=${ac}\\) et \\(AB=${ab}\\).` },
+    { h: `La longueur \\(AC\\) vaut \\(${fx([ac, ab])}${F(ac, ab)[1] !== ab ? `=${ft([ac, ab])}` : ''}\\) de celle de \\(AB\\).` },
+    { e: res, x: same ? 'Même sens : on garde le signe \\(+\\).' : 'Sens opposé : on met un signe \\(-\\).' }] };
+}
+function ex2It(l, A, B, k) {   // k = [n, d]
+  const ab = Math.abs(B - A), ac = Math.abs(k[0]) * ab / k[1], dir = Math.sign(B - A) * Math.sign(k[0]), C = A + dir * ac;
+  const lo = Math.min(A, B, C) - 2, hi = Math.max(A, B, C) + 2, P = { A, B };
+  return { l, q: `${VV('AC')}=${kT(k)}${VV('AB')}`, fig: axis(lo, hi, P), res: `\\(C\\) est à \\(${ac}\\) graduation${ac > 1 ? 's' : ''} de \\(A\\), ${k[0] > 0 ? 'du même côté que' : 'à l’opposé de'} \\(B\\)`, resHTML: true, steps: [
+    { h: `\\(${ft(k)}${k[0] > 0 ? '>' : '<'}0\\) : \\(${VV('AC')}\\) et \\(${VV('AB')}\\) sont de ${k[0] > 0 ? '<b>même sens</b>' : '<b>sens opposé</b>'}.` },
+    { svg: axis(lo, hi, P, brace(Math.min(A, B), Math.max(A, B), 1.1, `${ab} grad.`, BL)), h: `\\(AB=${ab}\\) graduations, donc \\(AC=${ft([Math.abs(k[0]), k[1]])}\\times${ab}=${ac}\\) graduations.` },
+    { svg: axis(lo, hi, { A, B, C }, [{ v: [[A, 1.15], [B, 1.15]], c: BL }, { v: [[A, -1.2], [C, -1.2]], c: KC }]), h: `On place \\(C\\) à \\(${ac}\\) graduations de \\(A\\), ${k[0] > 0 ? 'du côté de \\(B\\)' : 'du côté opposé à \\(B\\)'}.` }] };
+}
+
+/* ---------- Exercice 3 ---------- */
+function ex3It(l, name, kind, a, b) {   // a, b : fractions [n, d]
+  const coef = x => kT(x);
+  let q, steps, res;
+  if (kind === 'sum') {
+    const s = fadd(a, b);
+    q = `${coef(a)}${VV('AB')}+${coef(b)}${VV('AB')}`;
+    steps = [{ m: `\\left(${ft(a)}+${ft(b)}\\right)${VV('AB')}`, x: '\\(a\\vec u+b\\vec u=(a+b)\\vec u\\) : on additionne les coefficients.' }, { m: `${coef(s)}${VV('AB')}` }]; res = s;
+  } else if (kind === 'prod') {
+    const p = fmul(a, b);
+    q = `${ft(a)}\\left(${coef(b)}${VV('BA')}\\right)`;
+    steps = [{ m: `${coef(p)}${VV('BA')}`, x: '\\(a(b\\vec u)=(ab)\\vec u\\).' }, { m: `${coef([-p[0], p[1]])}${VV('AB')}`, x: `\\(${VV('BA')}=-${VV('AB')}\\).` }]; res = [-p[0], p[1]];
+  } else if (kind === 'minusBA') {
+    const s = fadd(a, b);
+    q = `${coef(a)}${VV('AB')}-${coef(b)}${VV('BA')}`;
+    steps = [{ m: `${coef(a)}${VV('AB')}+${coef(b)}${VV('AB')}`, x: `\\(-${VV('BA')}=${VV('AB')}\\).` }, { m: `${coef(s)}${VV('AB')}`, x: 'On additionne les coefficients.' }]; res = s;
+  } else {
+    const s = fadd(a, b);
+    q = `${coef(a)}${VV('BA')}-${coef(b)}${VV('AB')}`;
+    steps = [{ m: `${coef([-a[0], a[1]])}${VV('AB')}-${coef(b)}${VV('AB')}`, x: `\\(${VV('BA')}=-${VV('AB')}\\).` }, { m: `${coef([-s[0], s[1]])}${VV('AB')}`, x: 'On additionne les coefficients.' }]; res = [-s[0], s[1]];
+  }
+  steps.push({ h: `Donc \\(${name}=${ft(res)}\\).` });
+  return { l, lhs: q, q: `${q}=${name}${VV('AB')}`, res: `\\(${name}=${ft(res)}\\)`, resHTML: true, steps };
+}
+
+/* ---------- Exercice 4 : constructions ---------- */
+function ex4(U, Vv, S, items, H = 6) {
+  const disp = [{ v: [U[0], add(U[0], U[1])], c: BL, l: 'u', lpos: 'n' }, { v: [Vv[0], add(Vv[0], Vv[1])], c: RE, l: 'v', lpos: 'se' }];
+  const base = extra => plane({ x0: 0, y0: 0, x1: 11, y1: H, u: 34, items: [...disp, ...Object.keys(S).map(k => ({ pt: S[k], l: k, pos: 's' })), ...extra] });
+  const it = (l, P, Q, a, b) => {
+    const segs = [], cs = [];
+    let p = S[P];
+    for (let i = 0; i < Math.abs(a); i++) { const q = add(p, U[1], Math.sign(a)); segs.push({ v: [p, q], c: BL, dash: true }); p = q; }
+    const mid = segs.length;
+    for (let i = 0; i < Math.abs(b); i++) { const q = add(p, Vv[1], Math.sign(b)); segs.push({ v: [p, q], c: RE, dash: true }); p = q; }
+    const say = (k, n) => `${Math.abs(k) === 1 ? 'une fois' : Math.abs(k) + ' fois'} ${k < 0 ? `le vecteur \\(-\\vec ${n}\\) (sens contraire de \\(\\vec ${n}\\))` : `le vecteur \\(\\vec ${n}\\)`}`;
+    return { l, qt: `le point \\(${Q}\\) tel que \\(${VV(P + Q)}=${comb(a, b)}\\)`, res: `\\(${VV(P + Q)}\\) : ${mv(sub(p, S[P]))}`, resHTML: true, steps: [
+      { svg: base(segs.slice(0, mid)), h: `À partir de \\(${P}\\), on trace ${say(a, 'u')}.` },
+      { svg: base(segs), h: `Puis, bout à bout, ${say(b, 'v')}.` },
+      { svg: base([...segs, { v: [S[P], p], c: KC }, { pt: p, l: Q, pos: 'ne', c: KC }]), h: `\\(${Q}\\) est l’extrémité du chemin : \\(${VV(P + Q)}=${comb(a, b)}\\).` }] };
+  };
+  return { fig: base([]), main: items.map(([l, P, Q, a, b]) => it(l, P, Q, a, b)) };
+}
+function ex4Rand() {
+  for (;;) {
+    let u, v; do { u = [ri(-2, 2), ri(-1, 1)]; v = [ri(-1, 1), ri(-1, 2)]; } while (u[0] * v[1] - u[1] * v[0] === 0 || (!u[0] && !u[1]) || (!v[0] && !v[1]));
+    const co = () => { let a, b; do { a = ri(-2, 3); b = ri(-2, 3); } while (!a || !b || (Math.abs(a) === 1 && Math.abs(b) === 1)); return [a, b]; };
+    const S = { A: [ri(1, 3), ri(1, 3)], B: [ri(4, 6), ri(2, 4)], C: [ri(8, 10), ri(1, 3)] }, H = 8;
+    const its = [['(a)', 'A', 'M', ...co()], ['(b)', 'B', 'N', ...co()], ['(c)', 'C', 'R', ...co()]];
+    const ok = its.every(([, P, , a, b]) => { const e = add(add(S[P], u, a), v, b), m = add(S[P], u, a); return [e, m].every(p => p[0] >= 0 && p[0] <= 11 && p[1] >= 0 && p[1] <= 5); });
+    const disp = [[1, 7], add([1, 7], u), [5, 7], add([5, 7], v)];
+    if (ok && disp.every(p => p[1] <= H && p[1] >= 5.5)) return ex4([[1, 7], u], [[5, 7], v], S, its, H);
+  }
+}
+
+/* ---------- Exercice 5 ---------- */
+function ex5(W) {
+  const C = { 'w_1': BL, 'w_2': RE, 'w_3': TE };
+  const base = (extra = [], hide) => plane({ x0: -1.5, y0: -1.5, x1: 3.5, y1: 3.5, u: 46, items: [{ v: [[0, 0], [1, 0]], l: 'u', lpos: 's' }, { v: [[0, 0], [0, 1]], l: 'v', lpos: 'w' }, ...Object.keys(W).filter(k => k !== hide).map(k => ({ v: [[0, 0], W[k]], c: C[k], l: k, lpos: W[k][1] < 0 ? 's' : W[k][0] < 0 ? 'w' : 'n' })), ...extra] });
+  return { fig: base(), main: Object.keys(W).map(k => {
+    const [a, b] = W[k];
+    const path = [];
+    for (let i = 0; i < Math.abs(a); i++) path.push({ v: [[Math.sign(a) * i, 0], [Math.sign(a) * (i + 1), 0]], c: OR, w: 2.6 });
+    for (let j = 0; j < Math.abs(b); j++) path.push({ v: [[a, Math.sign(b) * j], [a, Math.sign(b) * (j + 1)]], c: VI, w: 2.6 });
+    const nm = `\\vec{${k.replace('_', '_')}}`;
+    return { l: '', q: nm, res: `\\(${nm}=${comb(a, b)}\\)`, resHTML: true, steps: [
+      { svg: base([{ v: [[0, 0], W[k]], c: C[k] }, ...path], k), h: `Pour aller de l’origine à l’extrémité de \\(${nm}\\) : ${Math.abs(a)} fois ${a < 0 ? '\\(-\\vec u\\)' : '\\(\\vec u\\)'} (en orange), puis ${Math.abs(b)} fois ${b < 0 ? '\\(-\\vec v\\)' : '\\(\\vec v\\)'} (en violet).` },
+      { e: `${nm}=${comb(a, b)}` }] };
+  }) };
+}
+
+/* ---------- Exercice 6 : pavage ---------- */
+const BAS6 = [[1.2, 0], [0.5, 0.95]];
+function ex6(P, its) {
+  const base = extra => plane({ x0: 0, y0: 0, x1: 5, y1: 4, u: 46, pad: 34, basis: BAS6, items: [{ v: [[0, 0], [1, 0]], c: BL, l: 'u', lpos: 's' }, { v: [[0, 0], [0, 1]], c: RE, l: 'v', lpos: 'w' }, ...Object.keys(P).map(n => ({ pt: P[n], l: n, pos: { A: 'sw', "A'": 's', "A''": 'nw' }[n] || 'ne' })), ...extra] });
+  return { fig: base([]), main: its.map(([a, b]) => {
+    const d = sub(P[b], P[a]);
+    return { l: '', q: VV(a + b), res: `\\(${VV(a + b)}=${comb(...d)}\\)`, resHTML: true, steps: [
+      { svg: base([...(d[0] ? [{ v: [P[a], [P[a][0] + d[0], P[a][1]]], c: BL, dash: true }] : []), ...(d[1] ? [{ v: [[P[a][0] + d[0], P[a][1]], P[b]], c: RE, dash: true }] : []), { v: [P[a], P[b]], c: KC }]), h: `De \\(${a}\\) à \\(${b}\\) : ${Math.abs(d[0])} parallélogramme${Math.abs(d[0]) > 1 ? 's' : ''} dans la direction de \\(${d[0] < 0 ? '-' : ''}\\vec u\\), puis ${Math.abs(d[1])} dans la direction de \\(${d[1] < 0 ? '-' : ''}\\vec v\\).` },
+      { e: `${VV(a + b)}=${comb(...d)}` }] };
+  }) };
+}
+
+/* ---------- Hexagone (exercice 8) ---------- */
+const H3 = Math.sqrt(3);
+const PH = { A: [2, 0], B: [1, H3], C: [-1, H3], D: [-2, 0], E: [-1, -H3], F: [1, -H3], O: [0, 0] };
+function hexF(extra = []) { return plane({ x0: -2.3, y0: -H3 - 0.2, x1: 2.3, y1: H3 + 0.2, u: 50, grid: false, items: [{ poly: ['A', 'B', 'C', 'D', 'E', 'F'].map(n => PH[n]) }, { s: [PH.A, PH.D], c: '#ADB5BD', w: 1 }, { s: [PH.B, PH.E], c: '#ADB5BD', w: 1 }, { s: [PH.C, PH.F], c: '#ADB5BD', w: 1 }, { v: [PH.O, PH.A], c: BL, l: 'u', lpos: 's' }, { v: [PH.O, PH.B], c: RE, l: 'v', lpos: 'w' }, ...pts(PH, Object.keys(PH), { A: 'e', B: 'ne', C: 'nw', D: 'w', E: 'sw', F: 'se', O: 'sw' }), ...extra] }); }
+
+/* ---------- Rappels ---------- */
+const RAPK = [
+  { t: 'Produit par un réel', h: R`<p>\(k\vec u\) a la même direction que \(\vec u\) ;</p><p>le même sens si \(k>0\), le sens contraire si \(k<0\) ;</p><p>une norme \(|k|\) fois celle de \(\vec u\).</p>` },
+  { t: 'Exemple', h: R`<p>Si \(C\) est à 3 graduations de \(A\), à l’opposé de \(B\), et \(AB=4\) graduations, alors \(\V{AC}=-\dfrac34\V{AB}\).</p>` }];
+const RAPD = [
+  { t: 'Décomposition', h: R`<p>Si \(\vec u\) et \(\vec v\) ne sont pas colinéaires, tout vecteur \(\vec w\) s’écrit \(\vec w=a\vec u+b\vec v\).</p><p>Sur un quadrillage : \(a\) = nombre de pas selon \(\vec u\), \(b\) = nombre de pas selon \(\vec v\).</p>` },
+  { t: 'Règles de calcul', h: R`<p>\(a\vec u+b\vec u=(a+b)\vec u\)</p><p>\(k(\vec u+\vec v)=k\vec u+k\vec v\)</p><p>\(\V{BA}=-\V{AB}\)</p>` }];
+
+/* =====================================================================
+   Énoncés
+   ===================================================================== */
+const EX = [
+{ n: 1, obj: [5, 'Produit d’un vecteur par un nombre réel et colinéarité'], stars: S2, comp: 'Calculer', consigne: 'Exprimer le vecteur \\(' + VV('AC') + '\\) en fonction du vecteur \\(' + VV('AB') + '\\) dans chacun des cas.', rappel: RAPK, att: R`<p>On compare d’abord les <b>sens</b> (pour le signe), puis les <b>longueurs</b> (pour le nombre).</p><p>Le rapport est \(\dfrac{AC}{AB}\), et non \(\dfrac{AB}{AC}\).</p>`,
+  build(f) {
+    const L = ['①', '②', '③', '④', '⑤', '⑥'];
+    if (!f) return { main: [[0, 4, -3], [0, 1, 4], [0, 1, -3], [0, 2, -1], [0, 7, 2], [0, 6, 1]].map((c, i) => ex1It(L[i], ...c)) };
+    return { main: L.map(l => { let B, C; do { B = nz(-7, 7); C = nz(-7, 7); } while (B === C); return ex1It(l, 0, B, C); }) };
+  } },
+
+{ n: 2, obj: null, stars: S2, comp: 'Représenter', consigne: 'Dans chacun des cas, placer le point \\(C\\) tel que l’égalité soit vérifiée.', rappel: RAPK, att: R`<p>Un coefficient négatif : \(C\) est <b>de l’autre côté</b> de \(A\) par rapport à \(B\).</p>`,
+  build(f) {
+    const L = ['①', '②', '③', '④', '⑤', '⑥'];
+    if (!f) return { main: [[0, 2, [-3, 2]], [-1, 7, [7, 8]], [0, 4, [1, 4]], [0, 6, [-1, 2]], [0, 3, [2, 3]], [4, 10, [-4, 3]]].map((c, i) => ex2It(L[i], ...c)) };
+    return { main: L.map(l => { const d = ri(2, 5), m = ri(1, 2), n = sg() * ri(1, 2 * d - 1); return ex2It(l, 0, sg() * d * m, F(n, d)); }) };
+  } },
+
+{ n: 3, obj: null, stars: S2, comp: 'Calculer', consigne: 'Soient deux points \\(A\\) et \\(B\\). Déterminer la valeur des réels \\(m\\), \\(n\\), \\(p\\) et \\(q\\).', rappel: RAPD.slice().reverse(), att: R`<p>\(2\V{AB}-\V{BA}=2\V{AB}+\V{AB}\) : le « moins » et l’inversion des lettres se compensent.</p>`,
+  build(f) {
+    if (!f) return { main: [ex3It('(a)', 'm', 'sum', [3, 1], [1, 2]), ex3It('(b)', 'n', 'prod', [2, 1], [3, 1]), ex3It('(c)', 'p', 'minusBA', [2, 1], [1, 1]), ex3It('(d)', 'q', 'minusAB', [3, 1], [4, 1])] };
+    return { main: [ex3It('(a)', 'm', 'sum', [ri(2, 6), 1], [1, ri(2, 5)]), ex3It('(b)', 'n', 'prod', [ri(2, 5), 1], [sg() * ri(2, 5), 1]), ex3It('(c)', 'p', 'minusBA', [ri(2, 7), 1], [ri(1, 5), 1]), ex3It('(d)', 'q', 'minusAB', [ri(2, 7), 1], [ri(1, 6), 1])] };
+  } },
+
+{ n: 4, obj: [6, 'Décomposition d’un vecteur en fonction de deux vecteurs non colinéaires'], stars: S2, comp: 'Représenter', consigne: 'Les vecteurs \\(\\vec u\\) et \\(\\vec v\\) sont donnés sur le quadrillage. Construire les points demandés.', rappel: RAPD, att: R`<p>\(-\vec u\) : même direction et même longueur que \(\vec u\), mais dans l’autre sens.</p>`,
+  build(f) { return f ? ex4Rand() : ex4([[1, 5], [2, 0]], [[5, 5], [1, 1]], { A: [1, 1], B: [4, 4], C: [9, 1] }, [['(a)', 'A', 'M', 1, 2], ['(b)', 'B', 'N', 2, -1], ['(c)', 'C', 'R', -1, 3]]); } },
+
+{ n: 5, obj: null, stars: S1, comp: 'Représenter', consigne: 'Exprimer les vecteurs \\(\\vec{w_1}\\), \\(\\vec{w_2}\\) et \\(\\vec{w_3}\\) en fonction de \\(\\vec u\\) et \\(\\vec v\\).', rappel: RAPD, att: R`<p>Vers la gauche ou vers le bas : le coefficient est <b>négatif</b>.</p>`,
+  build(f) {
+    if (!f) return ex5({ 'w_1': [3, 2], 'w_2': [-1, 3], 'w_3': [2, -1] });
+    const W = {}; const used = new Set();
+    ['w_1', 'w_2', 'w_3'].forEach(k => { let w; do w = [ri(-1, 3), ri(-1, 3)]; while (!w[0] || !w[1] || used.has(w.join()) || (Math.abs(w[0]) === 1 && Math.abs(w[1]) === 1)); used.add(w.join()); W[k] = w; });
+    return ex5(W);
+  } },
+
+{ n: 6, obj: null, stars: S2, comp: 'Représenter', consigne: 'Le pavage est formé de parallélogrammes identiques. On pose \\(\\vec u=' + VV("AA'") + '\\) et \\(\\vec v=' + VV("AA''") + '\\). Exprimer les vecteurs en fonction de \\(\\vec u\\) et \\(\\vec v\\).', rappel: RAPD, att: R`<p>Le quadrillage est « penché » : on compte les pas le long des côtés des parallélogrammes, pas à l’horizontale.</p>`,
+  build(f) {
+    const base = { A: [0, 0], "A'": [1, 0], "A''": [0, 1] };
+    if (!f) return ex6({ ...base, B: [3, 1], C: [1, 3], D: [4, 2], E: [0, 2] }, [['A', 'B'], ['A', 'C'], ['B', 'D'], ['D', 'C'], ['E', 'B']]);
+    for (;;) {
+      const P = { ...base, B: [ri(1, 5), ri(0, 4)], C: [ri(0, 5), ri(1, 4)], D: [ri(1, 5), ri(1, 4)], E: [ri(0, 5), ri(0, 4)] };
+      const keys = Object.keys(P);
+      if (new Set(keys.map(k => P[k].join())).size !== keys.length) continue;
+      const its = [['A', 'B'], ['A', 'C'], ['B', 'D'], ['D', 'C'], ['E', 'B']];
+      if (its.some(([a, b]) => { const d = sub(P[b], P[a]); return !d[0] || !d[1]; })) continue;
+      return ex6(P, its);
+    }
+  } },
+
+{ n: 7, obj: null, stars: S2, comp: 'Raisonner', consigne: '\\(ABCD\\) est un parallélogramme et \\(I\\) est le milieu de \\([CD]\\). On pose \\(\\vec u=' + VV('AB') + '\\) et \\(\\vec v=' + VV('AD') + '\\). Exprimer \\(' + VV('AI') + '\\) en fonction de \\(\\vec u\\) et \\(\\vec v\\).', rappel: RAPD, att: R`<p>On passe par un point intermédiaire bien choisi (ici \(D\)) grâce à la relation de Chasles.</p>`, train: false,
+  build() {
+    const P = { A: [0, 0], B: [3, 0], D: [0.8, 2], C: [3.8, 2], I: [2.3, 2] };
+    const fig = (extra = []) => plane({ x0: -0.2, y0: -0.4, x1: 4, y1: 2.4, u: 70, grid: false, items: [{ poly: [P.A, P.B, P.C, P.D] }, { s: [P.A, P.I], dash: true, c: '#868E96' }, ar(P, 'A', 'B', BL), ar(P, 'A', 'D', RE), ...pts(P, Object.keys(P), { A: 's', B: 's', D: 'n', C: 'n', I: 'n' }), ...extra] });
+    return { fig: fig(), main: [{ l: '', q: VV('AI'), lhs: VV('AI'), res: `\\(${VV('AI')}=\\vec v+\\dfrac12\\vec u\\)`, resHTML: true, steps: [
+      { svg: fig([ar(P, 'D', 'I')]), m: `${VV('AD')}+${VV('DI')}`, x: 'Relation de Chasles : on passe par \\(D\\).' },
+      { m: `${VV('AD')}+\\dfrac12${VV('DC')}`, x: `\\(I\\) est le milieu de \\([DC]\\), donc \\(${VV('DI')}=\\dfrac12${VV('DC')}\\).` },
+      { m: `\\vec v+\\dfrac12\\vec u`, x: `\\(ABCD\\) est un parallélogramme, donc \\(${VV('DC')}=${VV('AB')}=\\vec u\\) ; et \\(${VV('AD')}=\\vec v\\).` }] }] };
+  } },
+
+{ n: 8, obj: null, stars: S3, comp: 'Raisonner', consigne: '\\(ABCDEF\\) est un hexagone régulier de centre \\(O\\). On pose \\(\\vec u=' + VV('OA') + '\\) et \\(\\vec v=' + VV('OB') + '\\).', rappel: [RAPD[0], { t: 'Dans l’hexagone', h: R`<p>\(O\) est le milieu de \([AD]\), \([BE]\) et \([CF]\).</p><p>Les quadrilatères comme \(OABC\) sont des losanges (deux triangles équilatéraux).</p>` }], att: R`<p>Exemple de l’énoncé : \(\V{DB}=\V{DO}+\V{OB}=\vec u+\vec v\) car \(\V{DO}=\V{OA}\).</p>`, train: false,
+  build() {
+    const it = (l, n, res, steps) => ({ l, lhs: VV(n), q: VV(n), res: `${VV(n)}=${res}`, steps });
+    return { fig: hexF(), main: [
+      it('1.', 'OD', '-\\vec u', [{ svg: hexF([ar(PH, 'O', 'D')]), m: `-${VV('OA')}=-\\vec u`, x: '\\(D\\) est le symétrique de \\(A\\) par rapport à \\(O\\).' }]),
+      it('1.', 'OE', '-\\vec v', [{ svg: hexF([ar(PH, 'O', 'E')]), m: `-${VV('OB')}=-\\vec v`, x: '\\(E\\) est le symétrique de \\(B\\) par rapport à \\(O\\).' }]),
+      it('1.', 'OC', '-\\vec u+\\vec v', [{ svg: hexF([ar(PH, 'O', 'C'), ar(PH, 'A', 'B', VI, true)]), m: VV('AB'), x: '\\(OABC\\) est un losange, donc un parallélogramme : \\(' + VV('OC') + '=' + VV('AB') + '\\).' }, { m: `${VV('AO')}+${VV('OB')}`, x: 'Relation de Chasles.' }, { m: '-\\vec u+\\vec v' }]),
+      it('1.', 'OF', '\\vec u-\\vec v', [{ svg: hexF([ar(PH, 'O', 'F')]), m: `-${VV('OC')}`, x: '\\(F\\) est le symétrique de \\(C\\) par rapport à \\(O\\).' }, { m: '-(-\\vec u+\\vec v)=\\vec u-\\vec v' }]),
+      it('2.', 'CB', '\\vec u', [{ svg: hexF([ar(PH, 'C', 'B')]), m: `${VV('CO')}+${VV('OB')}`, x: 'Relation de Chasles en passant par \\(O\\).' }, { m: '-(-\\vec u+\\vec v)+\\vec v', x: `\\(${VV('CO')}=-${VV('OC')}\\).` }, { m: '\\vec u' }]),
+      it('2.', 'AB', '-\\vec u+\\vec v', [{ svg: hexF([ar(PH, 'A', 'B')]), m: `${VV('AO')}+${VV('OB')}=-\\vec u+\\vec v` }]),
+      it('2.', 'DF', '2\\vec u-\\vec v', [{ svg: hexF([ar(PH, 'D', 'F')]), m: `${VV('DO')}+${VV('OF')}`, x: 'Relation de Chasles en passant par \\(O\\).' }, { m: '\\vec u+(\\vec u-\\vec v)', x: `\\(${VV('DO')}=${VV('OA')}=\\vec u\\).` }, { m: '2\\vec u-\\vec v' }]),
+      it('2.', 'CD', '-\\vec v', [{ svg: hexF([ar(PH, 'C', 'D')]), m: `${VV('CO')}+${VV('OD')}`, x: 'Relation de Chasles en passant par \\(O\\).' }, { m: '(\\vec u-\\vec v)+(-\\vec u)', x: `\\(${VV('CO')}=${VV('OF')}=\\vec u-\\vec v\\).` }, { m: '-\\vec v' }])] };
+  } }
+];
+
+/* =====================================================================
+   Affichage
+   Item : { l, q, qt?, lhs?, fig?, res, resHTML?, steps:[{m|e|h|svg, x}], piege? }
+   m : « L = … » (ou « = … ») ; e : égalité complète ; h : texte ; svg : figure.
+   ===================================================================== */
+const $ = (s, el = document) => el.querySelector(s);
+const app = $('#app'), nav = $('#exnav');
+function typeset(el) {
+  if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+    MathJax.startup.promise.then(() => MathJax.typesetPromise([el])).catch(() => {});
+  }
+}
+const isL = l => /^[A-Z]$/.test(l || '');
+
+function itemHTML(it, id) {
+  const label = it.l ? (isL(it.l) ? `\\(${it.l}=\\)` : `<b>${it.l}</b>`) : '';
+  const body = it.qt ? `<span class="qt">${it.qt}</span>` : it.q ? `\\(${it.q}\\)` : '';
+  const q = `<span class="q">${label} ${body}</span>`;
+  const res = it.resHTML ? it.res : `\\(${isL(it.l) ? it.l + '=' : ''}${it.res}\\)`;
+  return `<div class="item" data-id="${id}">
+    <div class="row">${q}<button type="button" class="btn sm" data-open>Correction détaillée</button></div>
+    ${it.fig ? `<div class="qfig">${it.fig}</div>` : ''}
+    <div class="resline">Réponse : <span class="res">${res}</span></div>
+    <div class="corr" hidden><ol class="steps"></ol>
+      <div class="step-ctrl"><button type="button" class="btn solid sm" data-next>Étape suivante</button><button type="button" class="btn ghost sm" data-all>Tout afficher</button><button type="button" class="btn ghost sm" data-reset hidden>Recommencer</button></div>
+      <div class="end" hidden><div class="concl">Résultat : ${res}</div>${it.piege ? `<div class="piege" style="margin-top:8px"><b>Erreur à éviter :</b> ${it.piege}</div>` : ''}</div>
+    </div></div>`;
+}
+function stepHTML(it, st, k) {
+  const L = isL(it.l) ? it.l : '';
+  let inner = '';
+  if (st.svg) inner += `<div class="fig">${st.svg}</div>`;
+  if (st.m) {
+    const head = L ? L + '=' : (it.lhs && it.steps.findIndex(s => s.m) === k - 1 ? it.lhs + '=' : '=');
+    inner += `<div class="m">\\[${head}${st.m}\\]</div>`;
+  }
+  if (st.e) inner += `<div class="m">\\[${st.e}\\]</div>`;
+  if (st.h) inner += `<div class="h">${st.h}</div>`;
+  if (st.x) inner += `<div class="x">${st.x}</div>`;
+  return `<span class="n">${k}</span><div>${inner}</div>`;
+}
+function wireItem(el, it) {
+  const corr = $('.corr', el), ol = $('.steps', corr), end = $('.end', corr);
+  const bN = $('[data-next]', corr), bA = $('[data-all]', corr), bR = $('[data-reset]', corr);
+  let k = 0;
+  const add = () => { const li = document.createElement('li'); li.className = 'step'; li.innerHTML = stepHTML(it, it.steps[k], k + 1); k++; ol.appendChild(li); typeset(li); };
+  const sync = () => { const fin = k >= it.steps.length; bN.hidden = fin; bA.hidden = fin; bR.hidden = !fin; end.hidden = !fin; if (fin) typeset(end); };
+  $('[data-open]', el).addEventListener('click', e => {
+    const open = corr.hidden;
+    corr.hidden = !open; el.classList.toggle('open', open);
+    e.currentTarget.textContent = open ? 'Masquer la correction' : 'Correction détaillée';
+    if (open && k === 0) { add(); sync(); }
+  });
+  bN.addEventListener('click', () => { add(); sync(); });
+  bA.addEventListener('click', () => { while (k < it.steps.length) add(); sync(); });
+  bR.addEventListener('click', () => { ol.innerHTML = ''; k = 0; add(); sync(); });
+}
+function itemsBlock(set, pre, ex) {
+  let h = set.fig ? `<div class="setfig">${set.fig}</div>` : '';
+  if (set.intro) h += `<p class="consigne">${set.intro}</p>`;
+  h += `<div class="items">${set.main.map((it, i) => itemHTML(it, `${pre}m${i}`)).join('')}</div>`;
+  if (set.more) h += `<h2 class="part">Pour aller plus loin <span class="stars">${ex.more}</span></h2><div class="items">${set.more.map((it, i) => itemHTML(it, `${pre}p${i}`)).join('')}</div>`;
+  return h;
+}
+function wireBlock(root, set, pre) {
+  set.main.forEach((it, i) => wireItem($(`[data-id="${pre}m${i}"]`, root), it));
+  (set.more || []).forEach((it, i) => wireItem($(`[data-id="${pre}p${i}"]`, root), it));
+}
+
+const sheet = {};      // valeurs de la feuille, calculées une fois
+let train = 0;
+function render(n) {
+  const ex = EX.find(e => e.n === n) || EX[0];
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.n === ex.n));
+  const set = sheet[ex.n] || (sheet[ex.n] = ex.build(false));
+  const objTitle = ex.obj || EX.slice().reverse().find(e => e.n < ex.n && e.obj).obj;
+  const canTrain = ex.train !== false;
+  app.innerHTML = `
+    <p class="obj"><b>Objectif ${objTitle[0]} :</b> ${objTitle[1]}</p>
+    <article class="exo">
+      <div class="exo-h"><span class="pill">Exercice ${ex.n}</span><span class="stars">${ex.stars}</span><span class="comp">${ex.comp}</span></div>
+      <div class="exo-b">
+        <p class="consigne">${ex.consigne}</p>
+        <div class="tools">
+          <button type="button" class="btn" data-rappel>Rappel</button>
+          <button type="button" class="btn ghost" data-res>Réponses seules</button>
+          ${canTrain ? '<button type="button" class="btn green" data-train>↻ Nouvelles valeurs pour s’entraîner</button>' : ''}
+        </div>
+        <div class="rappel" hidden>${ex.rappel.map(b => `<div><h3>${b.t}</h3>${b.h}</div>`).join('')}<div class="att"><h3>Attention !</h3>${ex.att}</div></div>
+        <div class="sheet"><h2 class="part">Corrigé de la feuille <small>clique sur « Correction détaillée » pour la suivre étape par étape</small></h2>${itemsBlock(set, 's', ex)}</div>
+        <div class="train" hidden></div>
+      </div>
+    </article>
+    <nav class="foot">${ex.n > 1 ? `<button type="button" class="btn ghost" data-go="${ex.n - 1}">← Exercice ${ex.n - 1}</button>` : '<span></span>'}${ex.n < EX.length ? `<button type="button" class="btn ghost" data-go="${ex.n + 1}">Exercice ${ex.n + 1} →</button>` : ''}</nav>`;
+  wireBlock($('.sheet', app), set, 's');
+  const rap = $('.rappel', app), bRap = $('[data-rappel]', app);
+  bRap.addEventListener('click', () => { rap.hidden = !rap.hidden; bRap.classList.toggle('on', !rap.hidden); if (!rap.hidden) typeset(rap); });
+  const bRes = $('[data-res]', app), body = $('.exo-b', app);
+  bRes.addEventListener('click', () => { body.classList.toggle('showres'); bRes.classList.toggle('on'); });
+  const tr = $('.train', app);
+  if (canTrain) $('[data-train]', app).addEventListener('click', () => {
+    const fresh = ex.build(true), pre = `t${++train}`;
+    tr.hidden = false;
+    tr.innerHTML = `<h2 class="part">Entraînement : nouvelles valeurs <small>cherche sur ton cahier, puis ouvre la correction</small></h2>${itemsBlock(fresh, pre, ex)}`;
+    wireBlock(tr, fresh, pre);
+    typeset(tr);
+    tr.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  app.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.go; }));
+  typeset(app);
+  window.scrollTo(0, 0);
+}
+nav.innerHTML = EX.map(e => `<button type="button" data-n="${e.n}">${EX.length > 12 ? 'Ex.' : 'Exercice'} ${e.n}</button>`).join('');
+nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.n; }));
+const route = () => render(+(location.hash.match(/^#ex(\d+)$/) || [])[1] || 1);
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
