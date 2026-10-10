@@ -15,6 +15,7 @@
     --muted: #66708a;
     --line: #e3e7ef;
     --pending: #a7afc0;
+    --badge-text: #ffffff;
 
     /* Une couleur par classe */
     --c-seconde: #2f6fdf;
@@ -25,7 +26,25 @@
     --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
+/* Thème sombre : bouton « Sombre » sur ordinateur (data-theme),
+   réglage du téléphone sur les écrans tactiles. Par défaut : clair. */
+:root[data-theme="dark"] {
+    --nuit: #0b1222;
+    --orange: #ff8a4d;
+    --bg: #10141c;
+    --surface: #171c26;
+    --text: #e6eaf2;
+    --muted: #98a2b6;
+    --line: #283042;
+    --pending: #5f687c;
+    --c-seconde: #6e9fff;
+    --c-premiere: #34c79c;
+    --c-tst2s: #b58cff;
+    --badge-text: #0b1222;
+    color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) and (hover: none) and (pointer: coarse) {
     :root {
         --nuit: #0b1222;
         --orange: #ff8a4d;
@@ -38,6 +57,7 @@
         --c-seconde: #6e9fff;
         --c-premiere: #34c79c;
         --c-tst2s: #b58cff;
+        --badge-text: #0b1222;
         color-scheme: dark;
     }
 }
@@ -169,6 +189,25 @@ a { color: inherit; }
     background: var(--bg);
 }
 
+.theme-toggle {
+    margin: 9px 0 9px 8px;
+    padding: 4px 12px;
+    font: inherit;
+    font-size: 0.85rem;
+    color: #cfd6e6;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+    color: #fff;
+    border-color: var(--orange);
+    outline: none;
+}
+
 /* Ouverture au survol (souris) et au toucher / clavier (focus) */
 .dropdown:hover .dropdown-menu,
 .dropdown:focus-within .dropdown-menu {
@@ -266,15 +305,11 @@ footer {
 
 .class-title .badge {
     background: var(--c, var(--orange));
-    color: #fff;
+    color: var(--badge-text);
     font-size: 0.8rem;
     font-weight: 700;
     border-radius: 6px;
     padding: 2px 9px;
-}
-
-@media (prefers-color-scheme: dark) {
-    .class-title .badge { color: #0b1222; }
 }
 
 .class-title small {
@@ -490,18 +525,30 @@ li.res {
 
 .res-body { min-width: 0; }
 
-.corrige-note {
-    font-size: 0.85em;
-    color: var(--muted);
-}
-
-.corrige-note a { font-weight: 400; }
-
-/* Corrigés (PDF + interactif) affichés sous la feuille d'exercices */
-.corrige-sous {
-    display: block;
+/* Corrigés : boutons côte à côte, sur toute la largeur, sous l'étiquette */
+.corriges {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 6px;
     margin-top: 2px;
 }
+
+.class-card .corriges a {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 3px 8px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--c, var(--orange));
+    border-radius: 5px;
+    background: var(--bg);
+}
+
+.class-card .corriges a:hover { border-color: var(--c, var(--orange)); }
 
 /* Ressource pas encore disponible : grisée, non cliquable */
 .pending-link,
@@ -594,3 +641,23 @@ li.res {
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; }
 }
+
+/* Étiquette « Cours » : Maj + clic ouvre la version élève (site.js), sans sélectionner de texte */
+.type-cours { user-select: none; -webkit-user-select: none; }
+
+/* ==========================================================================
+   9. ARCHIVES (pleine largeur, sous les classes)
+   ========================================================================== */
+.classe-archive { --c: var(--muted); }
+
+.archives {
+    margin-top: 24px;
+}
+
+.archives ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+    gap: 8px 24px;
+}
+
+.archives li { margin-bottom: 0; }

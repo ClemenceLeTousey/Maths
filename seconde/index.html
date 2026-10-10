@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mathématiques — Secondes</title>
     <link rel="stylesheet" href="../style.css">
+    <script src="../site.js"></script>
     <style>
         #contenu-seconde {
             max-width: 700px;
@@ -64,6 +65,9 @@
                     const attr = el.hasAttribute('href') ? 'href' : 'src';
                     const v = el.getAttribute(attr);
                     if (v && !/^(#|[a-z]+:)/i.test(v)) el.setAttribute(attr, new URL(v, accueil).href);
+                });
+                carte.querySelectorAll('[data-eleve]').forEach(el => {
+                    el.dataset.eleve = new URL(el.dataset.eleve, accueil).href;
                 });
                 carte.querySelectorAll('select.choix-semaine option[value]').forEach(o => {
                     if (o.value) o.value = new URL(o.value, accueil).href;
