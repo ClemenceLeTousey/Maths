@@ -421,9 +421,10 @@ const EX = [
   } },
 
 { n: 5, stars: S2, comp: 'Représenter', rappel: [RAP.meth, RAP.ineq],
-  att: R`<p>Le périmètre du triangle est \(3(x+2)\) : chacun des trois côtés mesure \(x+2\).</p>`,
+  att: R`<p>Le périmètre du triangle est \(3(x+2)\) : chacun des trois côtés mesure \(x+2\).</p><p>Une question qui ressemble à la précédente n’a pas forcément la même réponse : on relit bien ce qui est comparé.</p>`,
   build(f) {
-    const a = f ? pick([1, 3, 4, 5, 6]) : 2, r2 = solveLin(4, 0, '=', 3, 3 * a), r3 = solveLin(4, 0, '>', 3, 3 * a);
+    const a = f ? pick([1, 3, 4, 5, 6]) : 2, m = f ? ri(3, 12) : 7, T = 7 * m + 3 * a;
+    const r2 = solveLin(4, 0, '=', 3, 3 * a), r3 = solveLin(7, 3 * a, 'le', 0, T);
     return {
       enonce: `<p>On considère un carré de côté \\(x\\) et un triangle équilatéral de côté \\(x+${a}\\) (en cm), où \\(x\\) est un nombre positif.</p><div class="efig">${figPerim(a)}</div>`,
       main: [
@@ -432,8 +433,10 @@ const EX = [
           steps: [{ h: 'Le carré a 4 côtés de longueur \\(x\\) : son périmètre est \\(4x\\).' }, { h: `Le triangle équilatéral a 3 côtés de longueur \\(x+${a}\\) : son périmètre est \\(3(x+${a})=3x+${3 * a}\\).` }] },
         { q: 'Pour quelle valeur de \\(x\\) les deux figures ont-elles le même périmètre ?', res: `\\(x=${3 * a}\\)`, ans: { items: [{ lab: R`\(x=\)`, v: 3 * a }] },
           steps: [{ e: `4x=3x+${3 * a}` }, ...r2.steps, concl(`les deux périmètres sont égaux pour \\(x=${3 * a}\\) cm (ils valent alors \\(${12 * a}\\) cm).`)] },
-        { q: 'Pour quelles valeurs de \\(x\\) le périmètre du carré est-il strictement plus grand que celui du triangle ?', res: `Pour \\(x>${3 * a}\\).`, ans: { v: 'x', items: [{ lab: 'Solutions :', rel: ['>', 3 * a], wide: true }] },
-          steps: [{ e: `4x>3x+${3 * a}` }, ...r3.steps, concl(`le périmètre du carré est plus grand pour \\(x>${3 * a}\\).`)] }
+        { q: `Pour quelles valeurs de \\(x\\) la somme des deux périmètres est-elle inférieure ou égale à ${T} cm ?`, res: `Pour \\(x\\leq ${m}\\) (et \\(x\\geq 0\\)).`, ans: { v: 'x', items: [{ lab: 'Solutions :', rel: ['le', m], wide: true }] },
+          steps: [{ e: `4x+(3x+${3 * a})\\leq ${T}`, x: '« Inférieure ou égale » : \\(\\leq\\). On additionne les deux périmètres de la question 1.' },
+            { e: EQV + `7x+${3 * a}\\leq ${T}`, x: 'On réduit : \\(4x+3x=7x\\).' }, ...r3.steps,
+            concl(`\\(x\\) est une longueur, donc positive : la somme des périmètres est au plus ${T} cm pour \\(x\\) compris entre \\(0\\) et \\(${m}\\).`)] }
       ] };
   } },
 
