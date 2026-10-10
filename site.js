@@ -146,7 +146,7 @@ document.addEventListener('click', function (e) {
 })();
 
 /* Effets cachés dans le logo (les trois ronds de la ligne) :
-   bleu = le titre se réécrit, vert = mode terminal, violet = mode Matrix. */
+   bleu = le titre se réécrit, vert = mode Matrix, violet = mode terminal. */
 (function () {
     var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -158,7 +158,7 @@ document.addEventListener('click', function (e) {
         });
     }
 
-    /* Violet : mode Matrix — tout passe en vert terminal avec une pluie de chiffres et de symboles maths */
+    /* Vert : mode Matrix — tout passe en vert terminal avec une pluie de chiffres et de symboles maths */
     var pluie = null;
     function matrix() {
         var racine = document.documentElement;
@@ -202,7 +202,7 @@ document.addEventListener('click', function (e) {
         }
     }
 
-    /* Terminal : vieil écran cathodique noir et blanc, qui s'allume comme une vieille télé */
+    /* Violet : mode terminal, vieil écran cathodique noir et blanc, qui s'allume comme une vieille télé */
     function terminal() {
         var racine = document.documentElement;
         if (racine.classList.toggle('terminal') && !calme) {
