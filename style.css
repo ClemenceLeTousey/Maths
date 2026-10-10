@@ -801,7 +801,7 @@ li.res.pending-link { border-left-color: var(--line); }
 .archives li { margin-bottom: 0; }
 
 /* ==========================================================================
-   10. EFFETS DU LOGO (site.js) : symboles qui volent, mode Matrix
+   10. EFFETS DU LOGO (site.js) : mode terminal, mode Matrix
    ========================================================================== */
 .effet-canvas {
     position: fixed;
@@ -810,8 +810,6 @@ li.res.pending-link { border-left-color: var(--line); }
     height: 100%;
     pointer-events: none;
 }
-
-.effet-symboles { z-index: 2000; }
 
 /* Mode Matrix : tout passe en vert terminal, une pluie de caractères tombe derrière */
 :root.matrix {
@@ -865,66 +863,6 @@ li.res.pending-link { border-left-color: var(--line); }
     95% { transform: translate(-2px, 1px) rotate(-0.4deg); }
     97% { transform: translate(2px, -1px) rotate(0.3deg); }
 }
-
-/* --------------------------------------------------------------------------
-   Mode « tableau noir » : ardoise verte, craie, cadres tracés à la main
-   -------------------------------------------------------------------------- */
-:root.tableau {
-    --nuit: #1b2a24;
-    --orange: #f6c177;
-    --bg: #22362e;
-    --surface: transparent;
-    --text: #f2f2ea;
-    --muted: #b8c7bf;
-    --line: rgba(242, 242, 234, 0.35);
-    --pending: #7f978b;
-    --c-seconde: #9fd3f5;
-    --c-premiere: #f6e27a;
-    --c-tst2s: #f5a3c0;
-    --badge-text: #22362e;
-    --bic: #f2f2ea;
-    --bleu-doux: rgba(159, 211, 245, 0.12);
-    --f-texte: "Architects Daughter", "Comic Sans MS", cursive;
-    --f-mono: "Architects Daughter", "Comic Sans MS", cursive;
-    color-scheme: dark;
-    background:
-        radial-gradient(ellipse 60% 40% at 25% 30%, rgba(255, 255, 255, 0.05), transparent 70%),
-        radial-gradient(ellipse 50% 25% at 75% 70%, rgba(255, 255, 255, 0.04), transparent 70%),
-        #22362e;
-}
-
-:root.tableau body {
-    background: transparent;
-    border-bottom: 18px solid #7a5230;      /* l'auget du tableau */
-}
-
-/* traces d'effaceur */
-:root.tableau body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-        linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.035) 30%, transparent 42%),
-        linear-gradient(80deg, transparent 55%, rgba(255, 255, 255, 0.03) 63%, transparent 75%);
-}
-
-:root.tableau .navbar { background: #1b2a24; border-bottom: 2px solid var(--line); }
-:root.tableau header { background: transparent; border-bottom: 0; }
-:root.tableau .navbar,
-:root.tableau header,
-:root.tableau .container { filter: url(#craie); }
-
-:root.tableau .class-card {
-    border: 2px solid rgba(242, 242, 234, 0.6);
-    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-}
-
-:root.tableau .titre-stylo svg { stroke: var(--orange); }
-:root.tableau .class-title .badge { border-radius: 3px; }
-:root.tableau li.res { border-left-style: dashed; }
-:root.tableau .effet-poussiere { z-index: 1500; }
 
 /* --------------------------------------------------------------------------
    Mode « terminal » : vieil écran cathodique, fond noir, texte blanc, police pixel

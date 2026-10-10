@@ -146,7 +146,7 @@ document.addEventListener('click', function (e) {
 })();
 
 /* Effets cachés dans le logo (les trois ronds de la ligne) :
-   bleu = le titre se réécrit, vert = pluie de symboles maths, violet = mode Matrix. */
+   bleu = le titre se réécrit, vert = mode terminal, violet = mode Matrix. */
 (function () {
     var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -156,52 +156,6 @@ document.addEventListener('click', function (e) {
             void h.offsetWidth;              // relance l'animation
             h.classList.add('ecrit');
         });
-    }
-
-    function couleur(nom) {
-        return getComputedStyle(document.documentElement).getPropertyValue(nom).trim() || '#ff6f26';
-    }
-
-    /* Vert : une gerbe de symboles mathématiques jaillit du logo puis retombe */
-    function symboles(depuis) {
-        if (calme) return;
-        var c = document.createElement('canvas');
-        c.className = 'effet-canvas effet-symboles';
-        document.body.appendChild(c);
-        var dpr = window.devicePixelRatio || 1;
-        c.width = innerWidth * dpr; c.height = innerHeight * dpr;
-        var ctx = c.getContext('2d');
-        ctx.scale(dpr, dpr);
-        var r = depuis.getBoundingClientRect();
-        var x0 = r.left + r.width / 2, y0 = r.top + r.height / 2;
-        var glyphes = ['π', '√', '∞', '∑', '∫', 'Δ', '≈', '÷', '×', '½', 'x²', '≠', '∈', 'θ', '%', '∀', 'ℝ', '±'];
-        var teintes = [couleur('--c-seconde'), couleur('--c-premiere'), couleur('--c-tst2s'), couleur('--orange')];
-        var parts = [];
-        for (var i = 0; i < 70; i++) {
-            var a = Math.random() * Math.PI * 0.9 + Math.PI * 0.05;   // vers le bas et les côtés
-            var v = 4 + Math.random() * 9;
-            parts.push({
-                x: x0, y: y0, vx: Math.cos(a) * v * (Math.random() < 0.5 ? -1 : 1) * 1.4, vy: Math.sin(a) * v * 0.6 - 4,
-                g: glyphes[i % glyphes.length], c: teintes[i % teintes.length],
-                t: 14 + Math.random() * 18, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3
-            });
-        }
-        var debut = performance.now();
-        (function image(now) {
-            var dt = now - debut;
-            ctx.clearRect(0, 0, innerWidth, innerHeight);
-            parts.forEach(function (p) {
-                p.vy += 0.25; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.vx *= 0.99;
-                ctx.save();
-                ctx.globalAlpha = Math.max(0, 1 - dt / 2600);
-                ctx.translate(p.x, p.y); ctx.rotate(p.rot);
-                ctx.fillStyle = p.c;
-                ctx.font = '700 ' + p.t + 'px "JetBrains Mono", monospace';
-                ctx.fillText(p.g, 0, 0);
-                ctx.restore();
-            });
-            if (dt < 2600) requestAnimationFrame(image); else c.remove();
-        })(debut);
     }
 
     /* Violet : mode Matrix — tout passe en vert terminal avec une pluie de chiffres et de symboles maths */
@@ -248,61 +202,6 @@ document.addEventListener('click', function (e) {
         }
     }
 
-    /* Tableau noir : ardoise verte, tout à la craie, poussière de craie qui flotte */
-    var poussiere = null;
-    function filtreCraie() {
-        if (document.getElementById('craie')) return;
-        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.setAttribute('aria-hidden', 'true');
-        svg.style.position = 'absolute';
-        svg.innerHTML =
-            '<filter id="craie" x="-2%" y="-10%" width="104%" height="120%">' +
-            '<feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="5" result="b"/>' +
-            '<feDisplacementMap in="SourceGraphic" in2="b" scale="1.6" xChannelSelector="R" yChannelSelector="G" result="t"/>' +
-            '<feTurbulence type="fractalNoise" baseFrequency="1.1 1.9" numOctaves="2" seed="8" result="g"/>' +
-            '<feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3 0 0 0 -0.6" result="m"/>' +
-            '<feComposite in="t" in2="m" operator="in"/>' +
-            '</filter>';
-        document.body.appendChild(svg);
-    }
-    function tableau() {
-        var racine = document.documentElement;
-        if (racine.classList.toggle('tableau')) {
-            filtreCraie();
-            if (calme) return;
-            var c = document.createElement('canvas');
-            c.className = 'effet-canvas effet-poussiere';
-            document.body.appendChild(c);
-            var ctx = c.getContext('2d');
-            var grains = [];
-            function dimension() {
-                c.width = innerWidth; c.height = innerHeight;
-                grains = Array.from({ length: 70 }, function () {
-                    return { x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: Math.random() * 1.6 + 0.4,
-                             vx: (Math.random() - 0.5) * 0.25, vy: Math.random() * 0.3 + 0.05, a: Math.random() * 0.35 + 0.1 };
-                });
-            }
-            dimension();
-            window.addEventListener('resize', dimension);
-            (function image() {
-                if (!racine.classList.contains('tableau')) return;
-                poussiere = requestAnimationFrame(image);
-                ctx.clearRect(0, 0, c.width, c.height);
-                grains.forEach(function (g) {
-                    g.x += g.vx + Math.sin(g.y / 40) * 0.1; g.y += g.vy;
-                    if (g.y > c.height) { g.y = -4; g.x = Math.random() * c.width; }
-                    ctx.globalAlpha = g.a;
-                    ctx.fillStyle = '#f4f4ec';
-                    ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, 6.3); ctx.fill();
-                });
-            })();
-            c._quitter = function () { window.removeEventListener('resize', dimension); };
-        } else {
-            cancelAnimationFrame(poussiere);
-            document.querySelectorAll('.effet-poussiere').forEach(function (c) { if (c._quitter) c._quitter(); c.remove(); });
-        }
-    }
-
     /* Terminal : vieil écran cathodique noir et blanc, qui s'allume comme une vieille télé */
     function terminal() {
         var racine = document.documentElement;
@@ -312,7 +211,7 @@ document.addEventListener('click', function (e) {
         }
     }
 
-    var MODES = { matrix: matrix, tableau: tableau, terminal: terminal };
+    var MODES = { matrix: matrix, terminal: terminal };
     function modeActif() {
         return Object.keys(MODES).filter(function (m) { return document.documentElement.classList.contains(m); })[0];
     }
@@ -329,10 +228,9 @@ document.addEventListener('click', function (e) {
         if (!b) return;
         var effet = b.dataset.effet;
         if (MODES[effet]) { basculer(effet); return; }
-        // le bleu ou le vert ramènent d'abord le site normal
+        // le bleu ramène d'abord le site normal
         if (modeActif()) basculer(null);
         if (effet === 'ecrire') reecrire();
-        if (effet === 'symboles') symboles(b);
     });
 
     document.addEventListener('keydown', function (e) {
