@@ -209,6 +209,12 @@ li:last-child {
     font-weight: 400;
 }
 
+/* Corrigés (PDF + interactif) affichés sous la feuille d'exercices */
+.corrige-sous {
+    display: block;
+    margin: 2px 0 0 1.6em;
+}
+
 /* Liens spécifiques aux listes de cours */
 .class-card a {
     color: var(--accent);
