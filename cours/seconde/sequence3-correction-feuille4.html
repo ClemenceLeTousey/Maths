@@ -395,7 +395,7 @@ const sgn = (t, first, v = 'x') => (t[0] > 0 && !first ? '+' : '') + mono(...t, 
 function tableDD(F1, F2, v = 'x') {
   const head = F1.map((a, i) => `<th>\\(${col(DCOL[i % 3], sgn(a, i === 0, v))}\\)</th>`).join('');
   const rows = F2.map((b, j) => `<tr><th>\\(${sgn(b, j === 0, v)}\\)</th>` +
-    F1.map((a, i) => `<td>\\(${col(DCOL[i % 3], sgn(mul(a, b), false, v))}\\)</td>`).join('') + '</tr>').join('');
+    F1.map((a, i) => `<td>\\(${col(DCOL[i % 3], sgn(mul(a, b), i === 0 && j === 0, v))}\\)</td>`).join('') + '</tr>').join('');
   return `<table class="tdd"><tr><th class="coin">\\(\\times\\)</th>${head}</tr>${rows}</table>`;
 }
 function itDouble(l, F1, F2, v = 'x') {
