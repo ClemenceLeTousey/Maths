@@ -3,458 +3,513 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Entraînement formule explicite</title>
+<title>Formule explicite – Entraînement</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
 <style>
-/* Cahier à petits carreaux : une colonne, encre bleue, flèches et corrections au stylo rouge. Thème clair fixe. */
+/* Même habillage que les corrigés de Seconde : une colonne de lecture, thème clair fixe (projection en classe). */
 :root {
   color-scheme: light;
-  --paper: #f5f7fb;
-  --grid: #e3e9f3;
-  --card: #ffffff;
-  --ink: #1b2747;
-  --muted: #5b6784;
-  --line: #cfd8e7;
-  --blue: #2c55c9;
-  --soft: #e9effb;
-  --red: #c8352a;
-  --red-soft: #fbe9e7;
-  --ok: #1d7f47;
-  --ok-soft: #e3f4ea;
-  --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
-  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
 }
 * { box-sizing: border-box; }
-[hidden] { display: none !important; }
-/* Navigation par étapes */
-.steps { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 8px; padding-block: 10px; background: var(--paper); border-bottom: 1px solid var(--line); }
-.steps button { display: inline-flex; align-items: center; gap: 8px; background: var(--card); color: var(--blue); border: 1.5px solid var(--line); border-radius: 999px; padding: 6px 14px 6px 6px; font-weight: 700; }
-.steps button span { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--soft); color: var(--blue); font: 800 0.85rem var(--display); }
-.steps button[aria-current="step"] { background: var(--blue); border-color: var(--blue); color: var(--card); }
-.steps button[aria-current="step"] span { background: var(--card); color: var(--blue); }
-.step-nav { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding-top: 8px; }
-.step-nav .next { margin-left: auto; }
-body {
-  margin: 0;
-  background-color: var(--paper);
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 22px 22px;
-  color: var(--ink);
-  font: 17px/1.55 var(--body);
-}
-.wrap { max-width: 860px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 24px; }
-h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
-h1 { font-size: clamp(2rem, 6vw, 2.8rem); font-weight: 800; }
-h2 { font-size: 1.5rem; font-weight: 800; }
-h3 { font-size: 1.15rem; font-weight: 600; }
+[hidden] { display: none !important; }   /* sinon display:grid (rappel, correction) l’emporte sur hidden */
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
 p { margin: 0; }
-a.back { color: var(--blue); font-size: 0.92rem; }
-.eyebrow { font: 700 0.78rem var(--body); letter-spacing: 0.09em; text-transform: uppercase; color: var(--red); }
-i.v { font-style: italic; }
-.m { font-variant-numeric: tabular-nums; white-space: nowrap; }
-header { display: grid; gap: 10px; }
-header .lead { color: var(--muted); max-width: 62ch; }
-section { display: grid; gap: 16px; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
 
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 18px 20px; display: grid; gap: 12px; }
-.prop { border: 2px solid var(--blue); }
-.prop .tag { font: 700 0.8rem var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue); }
-.formula { font-size: 1.35rem; text-align: center; padding: 10px; background: var(--soft); border-radius: 4px; }
-.calc { font-size: 1.15rem; display: grid; gap: 4px; }
-.calc b { color: var(--red); }
+/* En-tête collant : titre + boutons des étapes */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+.exnav .sep { flex: none; width: 1px; background: var(--line); margin: 2px 4px; }
+
+/* Carte */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.pill.lesson { background: var(--calc); }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+.rappel.one { grid-template-columns: minmax(0, 1fr); }
+.formula { text-align: center; font-size: 19px; padding: 6px 0; }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.intro { min-width: 0; overflow-x: auto; }
+.parts { display: grid; gap: 18px; }
+.part-block { display: grid; gap: 10px; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.ansrow { display: flex; gap: 8px 16px; align-items: center; flex-wrap: wrap; }
+.ans { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.ans input { font: inherit; width: 7.5rem; padding: 3px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); }
+.ans input.good { border-color: var(--green); background: var(--green-soft); }
+.ans input.bad { border-color: var(--red); background: var(--red-soft); }
+.fb { font-size: 15px; }
+.fb.good { color: var(--green); }
+.fb.bad { color: var(--red); }
+
+.corr { display: grid; gap: 8px; }
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.end { display: grid; gap: 8px; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+.piege ul { margin: 4px 0 0; padding-left: 1.2em; }
 
 /* Schéma de flèches */
-.chain { overflow-x: auto; padding-bottom: 4px; }
-.chain svg { display: block; margin: 0 auto; height: auto; }
-.chain .lab { fill: var(--ink); font: 16px var(--body); }
-.chain .val { fill: var(--blue); font: 700 15px var(--mono); }
-.chain .arc { stroke: var(--red); fill: none; stroke-width: 2; }
-.chain .arch { fill: var(--red); }
-.chain .step { fill: var(--red); font: 700 13px var(--body); }
-.chain .big { stroke: var(--blue); fill: none; stroke-width: 2.5; }
-.chain .bigh { fill: var(--blue); }
-.chain .bigt { fill: var(--blue); font: 700 16px var(--body); }
-.chain .cnt { fill: var(--muted); font: 12px var(--body); }
+.fig svg, .chain svg { display: block; max-width: none; }
+.chain { overflow-x: auto; }
+svg .lab { fill: var(--ink); font: 16px var(--f-body); }
+svg .val { fill: var(--calc); font: 600 15px var(--f-body); }
+svg .arc { stroke: var(--red); fill: none; stroke-width: 2; }
+svg .arch { fill: var(--red); }
+svg .step-t { fill: var(--red); font: 600 13px var(--f-body); }
+svg .big { stroke: var(--calc); fill: none; stroke-width: 2.5; }
+svg .bigh { fill: var(--calc); }
+svg .bigt { fill: var(--calc); font: 600 16px var(--f-body); }
+svg .cnt { fill: var(--muted); font: 12px var(--f-body); }
 
-.warn { border-left: 4px solid var(--red); background: var(--red-soft); padding: 12px 16px; border-radius: 0 6px 6px 0; display: grid; gap: 6px; }
-.warn ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
-
-/* Exercices */
-input[type="text"] {
-  font: 500 1rem var(--mono); color: var(--ink); background: var(--paper);
-  border: 1.5px solid var(--line); border-radius: 4px; padding: 6px 8px; width: 8rem;
-}
-input[type="text"]:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color: var(--blue); }
-input.good { border-color: var(--ok); background: var(--ok-soft); }
-input.bad { border-color: var(--red); background: var(--red-soft); }
-button { font: 700 0.95rem var(--body); border-radius: 4px; padding: 8px 14px; cursor: pointer; border: 1.5px solid var(--blue); }
-button.primary { background: var(--blue); color: var(--card); }
-button.ghost { background: transparent; color: var(--blue); }
-button.redo { background: transparent; color: var(--red); border-color: var(--red); }
-button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-.actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.exo-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: baseline; }
-.num { font: 800 0.85rem var(--display); color: var(--red); letter-spacing: 0.06em; text-transform: uppercase; }
-.score { font: 500 0.85rem var(--mono); color: var(--muted); }
-.stmt { display: grid; gap: 8px; min-width: 0; }
-.q { font-weight: 700; }
-.answers { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
-.row-break { flex-basis: 100%; height: 0; }
-.ans { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.ans .lab { font-weight: 700; }
-.msg { font-weight: 700; min-height: 1.4em; }
-.msg.good { color: var(--ok); }
-.msg.bad { color: var(--red); }
-.corr { border-top: 2px dashed var(--red); padding-top: 12px; display: grid; gap: 8px; min-width: 0; }
-.corr .t { font: 700 0.8rem var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--red); }
-footer { color: var(--muted); font-size: 0.9rem; }
-@media (max-width: 520px) {
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
   body { font-size: 16px; }
-  .card { padding: 14px; }
-  .formula { font-size: 1.1rem; }
-  .calc { font-size: 1rem; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
 }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <a class="back" href="../../index.html">← Retour au site</a>
-  <header>
-    <span class="eyebrow">1TC · Séquence 2 · Croissances linéaires</span>
-    <h1>Suites arithmétiques : la formule explicite</h1>
-    <p class="lead">Pour aller de <span class="m"><i class="v">u</i>(0)</span> à <span class="m"><i class="v">u</i>(<i class="v">n</i>)</span>, on se décale de <i class="v">n</i> rangs : on ajoute <i class="v">n</i> fois la raison.</p>
-  </header>
 
-  <nav class="steps" aria-label="Étapes">
-    <button type="button" data-go="rappel"><span>1</span>Rappel</button>
-    <button type="button" data-go="exemple1"><span>2</span>Exemple <i class="v">u</i>(5)</button>
-    <button type="button" data-go="exemple2"><span>3</span>Exemple <i class="v">u</i>(10)</button>
-    <button type="button" data-go="generalisation"><span>4</span>Généralisation</button>
-    <button type="button" data-go="exercices"><span>5</span>Exercices</button>
-  </nav>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Suites arithmétiques — Formule explicite</b><span>Séquence 2 · Croissances linéaires</span><a href="../../index.html">Retour au site</a></div>
+    <nav class="exnav" id="exnav" aria-label="Étapes"></nav>
+  </div>
+</header>
 
-  <!-- RAPPEL -->
-  <section class="step" id="rappel">
-    <span class="eyebrow">Rappel</span>
-    <div class="card prop">
-      <span class="tag">Suite arithmétique</span>
-      <p>Dans une suite arithmétique de raison <i class="v">r</i>, on passe d'un terme au suivant en ajoutant toujours <i class="v">r</i>.<br><em>Chaque flèche matérialise l'ajout de <i class="v">r</i>.</em></p>
-      <div class="chain" id="schema-rappel"></div>
-      <p>Pour calculer un terme éloigné, on compte le nombre de fois où l'on a ajouté la raison <i class="v">r</i>, c'est-à-dire le nombre de rangs dont on se décale dans la liste.</p>
-    </div>
-  </section>
-
-  <!-- EXEMPLE 1 : u(5) -->
-  <section class="step" id="exemple1">
-    <span class="eyebrow">Exemple 1</span>
-    <h2>Calculer <span class="m"><i class="v">u</i>(5)</span> : on répète 5 fois +<i class="v">r</i></h2>
-    <div class="card">
-      <p>Karim a 150 € sur son livret. Chaque mois, il ajoute 25 €. On note <span class="m"><i class="v">u</i>(<i class="v">n</i>)</span> la somme après <i class="v">n</i> mois : <span class="m"><i class="v">u</i>(0) = 150</span> et <span class="m"><i class="v">r</i> = 25</span>.</p>
-      <p class="q">Combien Karim aura-t-il après 5 mois ?</p>
-      <div class="chain" id="schema-ex1"></div>
-      <div class="calc m">
-        <span>On se décale de 5 rangs, donc on ajoute 5 fois 25 :</span>
-        <span><i class="v">u</i>(5) = <i class="v">u</i>(0) + 5 × <i class="v">r</i></span>
-        <span><i class="v">u</i>(5) = 150 + 5 × 25 = 150 + 125 = <b>275 €</b></span>
-      </div>
-    </div>
-  </section>
-
-  <!-- EXEMPLE 2 : u(10) -->
-  <section class="step" id="exemple2">
-    <span class="eyebrow">Exemple 2</span>
-    <h2>Calculer <span class="m"><i class="v">u</i>(10)</span> : on se décale 10 fois</h2>
-    <div class="card">
-      <p>Une bougie mesure 18 cm. Elle perd 1,5 cm par heure. On note <span class="m"><i class="v">h</i>(<i class="v">n</i>)</span> sa hauteur après <i class="v">n</i> heures : <span class="m"><i class="v">h</i>(0) = 18</span> et <span class="m"><i class="v">r</i> = −1,5</span> (elle diminue).</p>
-      <p class="q">Quelle est sa hauteur après 10 heures ?</p>
-      <div class="chain" id="schema-ex2"></div>
-      <div class="calc m">
-        <span>On se décale de 10 rangs, on retire 10 fois 1,5, ou on ajoute 10 fois −1,5 :</span>
-        <span><i class="v">h</i>(10) = <i class="v">h</i>(0) + 10 × <i class="v">r</i></span>
-        <span><i class="v">h</i>(10) = 18 + 10 × (−1,5) = 18 − 15 = <b>3 cm</b></span>
-      </div>
-    </div>
-    <div class="warn">
-      <strong>À retenir</strong>
-      <ul>
-        <li>Le nombre de flèches, c'est le rang qu'on cherche : pour <span class="m"><i class="v">u</i>(5)</span>, 5 flèches ; pour <span class="m"><i class="v">u</i>(10)</span>, 10 flèches.</li>
-        <li>Raison négative : on met des parenthèses, <span class="m">10 × (−1,5) = −15</span>.</li>
-        <li>On ne multiplie que la raison : <span class="m">18 + 10 × (−1,5)</span>, et pas <span class="m">(18 − 1,5) × 10</span>.</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- GÉNÉRALISATION -->
-  <section class="step" id="generalisation">
-    <span class="eyebrow">Généralisation</span>
-    <h2>Exprimer <span class="m"><i class="v">u</i>(<i class="v">n</i>)</span> en fonction de <i class="v">n</i></h2>
-    <div class="card">
-      <p>Reprenons le livret de Karim. Après 5 mois, on a ajouté 5 fois 25 ; après 10 mois, 10 fois 25. Après <i class="v">n</i> mois, on se décale de <i class="v">n</i> rangs, donc on ajoute <i class="v">n</i> fois 25 :</p>
-      <div class="chain" id="schema-gen-ex"></div>
-      <div class="calc m">
-        <span><i class="v">u</i>(<i class="v">n</i>) = <i class="v">u</i>(0) + <i class="v">n</i> × <i class="v">r</i> = 150 + <i class="v">n</i> × 25, donc <b><i class="v">u</i>(<i class="v">n</i>) = 150 + 25<i class="v">n</i></b></span>
-      </div>
-      <p>De même pour la bougie : <span class="m"><i class="v">h</i>(<i class="v">n</i>) = 18 + <i class="v">n</i> × (−1,5)</span>, donc <span class="m"><b style="color:var(--red)"><i class="v">h</i>(<i class="v">n</i>) = 18 − 1,5<i class="v">n</i></b></span>.</p>
-      <p>Avec cette formule, on calcule n'importe quel terme d'un seul coup : <span class="m"><i class="v">u</i>(24) = 150 + 25 × 24 = 750</span> (Karim au bout de 2 ans).</p>
-    </div>
-    <div class="card prop">
-      <span class="tag">Propriété · Formule explicite</span>
-      <p>Si <i class="v">u</i> est une suite arithmétique de premier terme <span class="m"><i class="v">u</i>(0)</span> et de raison <i class="v">r</i>, de <span class="m"><i class="v">u</i>(0)</span> à <span class="m"><i class="v">u</i>(<i class="v">n</i>)</span> il y a <i class="v">n</i> flèches :</p>
-      <div class="chain" id="schema-general"></div>
-      <div class="formula m"><b><i class="v">u</i>(<i class="v">n</i>) = <i class="v">u</i>(0) + <i class="v">n</i> × <i class="v">r</i></b></div>
-      <p style="color:var(--muted)">Le nombre seul est le premier terme <span class="m"><i class="v">u</i>(0)</span> ; le nombre devant <i class="v">n</i>, avec son signe, est la raison <i class="v">r</i>.</p>
-    </div>
-  </section>
-
-  <!-- EXERCICES -->
-  <section class="step" id="exercices">
-    <span class="eyebrow">À toi</span>
-    <h2>Exercices</h2>
-    <p style="color:var(--muted)">Fais le schéma au brouillon, écris le calcul avec les notations, puis tape ta réponse. « Nouvel énoncé » change les nombres.</p>
-    <div id="exos" style="display:grid; gap:18px"></div>
-  </section>
-
-  <footer>Notation <i class="v">u</i>(<i class="v">n</i>) comme dans le cours.</footer>
-</div>
+<main class="wrap" id="app"></main>
 
 <script>
-(function () {
-  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
-  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  const round2 = (x) => Math.round(x * 100) / 100;
-  function fmt(x) {
-    x = round2(x); if (Object.is(x, -0)) x = 0;
-    return (x < 0 ? '−' : '') + String(Math.abs(x)).replace('.', ',');
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<script>
+'use strict';
+const R = String.raw;
+
+/* =====================================================================
+   Outils
+   ===================================================================== */
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const round2 = x => Math.round(x * 100) / 100;
+// Nombre en TeX (virgule décimale) ; entre parenthèses s'il est négatif ; avec son signe
+const tn = x => { x = round2(x); if (Object.is(x, -0)) x = 0; return (x < 0 ? '-' : '') + String(Math.abs(x)).replace('.', '{,}'); };
+const tp = x => (round2(x) < 0 ? '(' + tn(x) + ')' : tn(x));
+const tpl = x => (round2(x) < 0 ? '-' + tn(-x) : '+' + tn(x));
+// « + 25n », « − 3n », « + n »
+const coefN = r => { const a = Math.abs(round2(r)); return (round2(r) < 0 ? '-' : '+') + (a === 1 ? '' : tn(a)) + 'n'; };
+// Nombre en texte (pour les schémas SVG)
+const fmt = x => { x = round2(x); if (Object.is(x, -0)) x = 0; return (x < 0 ? '−' : '') + String(Math.abs(x)).replace('.', ','); };
+function parse(s) {
+  s = String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/(€|cm|L)$/, '');
+  if (s === '' || !/^[-+]?\d*\.?\d+$/.test(s)) return NaN;
+  return Number(s);
+}
+const intR = () => { let r = 0; while (r === 0) r = ri(-6, 9); return r; };
+const randR = () => (Math.random() < 0.8 ? intR() : pick([0.5, 1.5, -0.5, 2.5, -1.5]));
+const letters = ['u', 'v', 'w'];
+const twoLetters = () => { const a = pick(letters); return [a, pick(letters.filter(l => l !== a))]; };
+
+// « On se décale de n rangs : on ajoute n fois r » (ou on retire, si r est négatif)
+const shiftX = (n, r) => R`On se décale de \(${n}\) rangs : ` + (round2(r) < 0
+  ? R`on retire \(${n}\) fois \(${tn(-r)}\), ou on ajoute \(${n}\) fois \(${tn(r)}\).`
+  : R`on ajoute \(${n}\) fois \(${tn(r)}\).`);
+
+/* Schéma : de s(p) à s(n), une flèche par rang, puis une grande flèche « + n × r ».
+   start = valeur de s(p) (null : pas de valeurs) ; symbolic : u(0), u(1), u(2), …, u(n−1), u(n). */
+function chain(s, p, n, r, start, opts) {
+  opts = opts || {};
+  const k = n - p, step = 74, L = 44, W = L * 2 + k * step, H = start === null ? 150 : 172;
+  const yLab = 80, yVal = 104, yBig = start === null ? 96 : 118;
+  const X = i => L + i * step;
+  let g = '';
+  for (let i = 0; i <= k; i++) {
+    const idx = opts.symbolic ? (i === 0 ? '0' : i === k ? 'n' : i === k - 1 ? 'n−1' : (i <= 2 ? String(i) : '')) : String(p + i);
+    if (opts.symbolic && idx === '') { g += '<text class="lab" x="' + X(i) + '" y="' + yLab + '" text-anchor="middle">…</text>'; continue; }
+    const idxSvg = idx === 'n' || idx === 'n−1' ? '<tspan font-style="italic">n</tspan>' + (idx === 'n−1' ? '−1' : '') : idx;
+    g += '<text class="lab" x="' + X(i) + '" y="' + yLab + '" text-anchor="middle"><tspan font-style="italic">' + s + '</tspan>(' + idxSvg + ')</text>';
+    if (start !== null) g += '<text class="val" x="' + X(i) + '" y="' + yVal + '" text-anchor="middle">' + fmt(start + i * r) + '</text>';
   }
-  const par = (x) => (round2(x) < 0 ? '(' + fmt(x) + ')' : fmt(x));
-  const plus = (x) => (round2(x) < 0 ? ' − ' + fmt(-x) : ' + ' + fmt(x));
-  const V = (s) => '<i class="v">' + s + '</i>';
-  // « On se décale de n rangs : on ajoute n fois r » (ou on retire, si r est négatif)
-  const shift = (n, r) => 'On se décale de ' + n + ' rangs : ' + (round2(r) < 0 ? 'on retire ' + n + ' fois ' + fmt(-r) + ', ou on ajoute ' + n + ' fois ' + par(r) : 'on ajoute ' + n + ' fois ' + fmt(r)) + '.';
-  const M = (s) => '<span class="m">' + s + '</span>';
-  function parse(s) {
-    s = String(s).trim().replace(/\s/g, '').replace(',', '.').replace(/[−–]/g, '-').replace(/(€|cm|L)$/, '');
-    if (s === '' || !/^[-+]?\d*\.?\d+$/.test(s)) return NaN;
-    return Number(s);
+  const rTxt = opts.rlabel ? opts.rlabel : opts.symbolic ? '+r' : (r < 0 ? fmt(r) : '+' + fmt(r));
+  for (let i = 0; i < k; i++) {
+    if (opts.symbolic && i === 3) continue;
+    const a = X(i) + 12, b = X(i + 1) - 12, mid = (a + b) / 2;
+    g += '<path class="arc" d="M' + a + ' 62 Q' + mid + ' 26 ' + b + ' 62"/>';
+    g += '<path class="arch" d="M' + b + ' 63 l-8 -4 l3 9 z"/>';
+    g += '<text class="step-t" x="' + mid + '" y="34" text-anchor="middle">' + rTxt + '</text>';
+    if (!opts.symbolic && k > 3) g += '<text class="cnt" x="' + mid + '" y="16" text-anchor="middle">' + (i + 1) + '</text>';
   }
+  const x0 = X(0), x1 = X(k), depth = yBig + 34;
+  g += '<path class="big" d="M' + x0 + ' ' + yBig + ' Q' + ((x0 + x1) / 2) + ' ' + (depth + 18) + ' ' + x1 + ' ' + yBig + '"/>';
+  g += '<path class="bigh" d="M' + x1 + ' ' + yBig + ' l-12 4 l8 7 z"/>';
+  const big = opts.big ? opts.big : opts.symbolic ? '+ n × r' : '+ ' + k + ' × ' + (r < 0 ? '(' + fmt(r) + ')' : fmt(r));
+  g += '<text class="bigt" x="' + ((x0 + x1) / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + big + '</text>';
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" role="img" aria-label="Schéma : ' + k + ' flèches, chacune ajoute la raison">' + g + '</svg>';
+}
 
-  // Schéma : de s(p) à s(n), une flèche +r par case, puis une grande flèche « + (n−p) × r ».
-  // start = valeur de s(p) ; si start est null, on n'affiche pas les valeurs.
-  function chain(s, p, n, r, start, opts) {
-    opts = opts || {};
-    const k = n - p, step = 74, L = 44, W = L * 2 + k * step, H = start === null ? 150 : 172;
-    const yLab = 80, yVal = 104, yBig = start === null ? 96 : 118;
-    const X = (i) => L + i * step;
-    let g = '';
-    for (let i = 0; i <= k; i++) {
-      const idx = opts.symbolic ? (i === 0 ? '0' : i === k ? 'n' : i === k - 1 ? 'n−1' : (i <= 2 ? String(i) : '')) : String(p + i);
-      if (opts.symbolic && idx === '' ) { g += '<text class="lab" x="' + X(i) + '" y="' + yLab + '" text-anchor="middle">…</text>'; continue; }
-      g += '<text class="lab" x="' + X(i) + '" y="' + yLab + '" text-anchor="middle"><tspan font-style="italic">' + s + '</tspan>(' + (idx === 'n' || idx === 'n−1' ? '<tspan font-style="italic">n</tspan>' + (idx === 'n−1' ? '−1' : '') : idx) + ')</text>';
-      if (start !== null) g += '<text class="val" x="' + X(i) + '" y="' + yVal + '" text-anchor="middle">' + fmt(start + i * r) + '</text>';
-    }
-    const rTxt = opts.rlabel ? opts.rlabel : opts.symbolic ? '+r' : (r < 0 ? fmt(r) : '+' + fmt(r));
-    for (let i = 0; i < k; i++) {
-      if (opts.symbolic && i === 3) continue;
-      const a = X(i) + 12, b = X(i + 1) - 12, mid = (a + b) / 2;
-      g += '<path class="arc" d="M' + a + ' 62 Q' + mid + ' 26 ' + b + ' 62"/>';
-      g += '<path class="arch" d="M' + b + ' 63 l-8 -4 l3 9 z"/>';
-      g += '<text class="step" x="' + mid + '" y="34" text-anchor="middle">' + rTxt + '</text>';
-      if (!opts.symbolic && k > 3) g += '<text class="cnt" x="' + mid + '" y="16" text-anchor="middle">' + (i + 1) + '</text>';
-    }
-    const x0 = X(0), x1 = X(k), depth = yBig + 34;
-    g += '<path class="big" d="M' + x0 + ' ' + yBig + ' Q' + ((x0 + x1) / 2) + ' ' + (depth + 18) + ' ' + x1 + ' ' + yBig + '"/>';
-    g += '<path class="bigh" d="M' + x1 + ' ' + yBig + ' l-12 4 l8 7 z"/>';
-    const big = opts.big ? opts.big : opts.symbolic ? '+ n × r' : '+ ' + k + ' × ' + (r < 0 ? '(' + fmt(r) + ')' : fmt(r));
-    g += '<text class="bigt" x="' + ((x0 + x1) / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + big + '</text>';
-    return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" role="img" aria-label="Schéma : ' + k + ' flèches, chacune ajoute la raison">' + g + '</svg>';
-  }
+/* =====================================================================
+   Questions types
+   Une question : { l, q, answers: [{label, value, unit}], steps: [{x, e, svg}], res, piege }
+   ===================================================================== */
+const given = (s, u0, r) => R`La suite \(${s}\) est arithmétique de premier terme \(${s}(0)=${tn(u0)}\) et de raison \(r=${tn(r)}\).`;
+const PIEGE_NEG = R`la raison est négative : on écrit les parenthèses, \(n\times(-3)\), et on ne multiplie que la raison.`;
 
-  document.getElementById('schema-rappel').innerHTML = chain('u', 0, 3, 0, null, { rlabel: '+r', big: '+ 3 × r' });
-  document.getElementById('schema-gen-ex').innerHTML = chain('u', 0, 5, 0, null, { symbolic: true, rlabel: '+25', big: '+ n × 25' });
-  document.getElementById('schema-general').innerHTML = chain('u', 0, 5, 0, null, { symbolic: true });
-  document.getElementById('schema-ex1').innerHTML = chain('u', 0, 5, 25, 150);
-  document.getElementById('schema-ex2').innerHTML = chain('h', 0, 10, -1.5, 18);
-
-  // ---------- Générateurs ----------
-  const letters = ['u', 'v', 'w'];
-  function intR() { let r = 0; while (r === 0) r = ri(-6, 9); return r; }
-
-  // Deux suites de noms différents (u et v, ou v et w…)
-  function twoLetters() { const a = pick(letters); return [a, pick(letters.filter((l) => l !== a))]; }
-  function randR() { return Math.random() < 0.8 ? intR() : pick([0.5, 1.5, -0.5, 2.5, -1.5]); }
-  const given = (s, u0, r) => 'La suite ' + V(s) + ' est arithmétique, avec ' + M(V(s) + '(0) = ' + fmt(u0)) + ' et ' + M(V('r') + ' = ' + fmt(r)) + '.';
-  const termCalc = (s, u0, r, n) => M(V(s) + '(' + n + ') = ' + V(s) + '(0) + ' + n + ' × ' + V('r') + ' = ' + fmt(u0) + ' + ' + n + ' × ' + par(r) + ' = ' + fmt(u0) + plus(n * r) + ' = <b>' + fmt(u0 + n * r) + '</b>');
-  const rn = (r) => (round2(r) < 0 ? ' − ' + fmt(-r) : ' + ' + fmt(r)) + V('n');
-
-  function genA() {
-    const [s1, s2] = twoLetters();
-    const A = { s: s1, u0: ri(-5, 40), r: randR(), n: ri(3, 10) };
-    const B = { s: s2, u0: ri(-5, 40), r: randR(), n: ri(3, 10) };
-    while (B.n === A.n) B.n = ri(3, 10);
-    const part = (k, X) => '<p class="calc">' + k + '. ' + shift(X.n, X.r) + '</p><div class="chain">' + chain(X.s, 0, X.n, X.r, X.u0) + '</div><p class="calc">' + termCalc(X.s, X.u0, X.r, X.n) + '</p>';
-    return {
-      stmt: '<p><strong>1.</strong> ' + given(A.s, A.u0, A.r) + ' <span class="q">Calculer ' + M(V(A.s) + '(' + A.n + ')') + '.</span></p>' +
-        '<p><strong>2.</strong> ' + given(B.s, B.u0, B.r) + ' <span class="q">Calculer ' + M(V(B.s) + '(' + B.n + ')') + '.</span></p>',
-      answers: [
-        { label: '1. ' + M(V(A.s) + '(' + A.n + ') ='), value: A.u0 + A.n * A.r },
-        { label: '2. ' + M(V(B.s) + '(' + B.n + ') ='), value: B.u0 + B.n * B.r }
-      ],
-      corr: part(1, A) + part(2, B)
-    };
-  }
-
-  function genE() {
-    const [s1, s2] = twoLetters();
-    const A = { s: s1, u0: ri(-5, 40), r: randR(), n: ri(8, 30) };
-    const B = { s: s2, u0: ri(-5, 40), r: randR(), n: ri(8, 30) };
-    const q = (k, X) => '<p><strong>' + k + '.</strong> ' + given(X.s, X.u0, X.r) + '</p>' +
-      '<p class="q" style="padding-left:1.2em">a) Calculer ' + M(V(X.s) + '(' + X.n + ')') + '.<br>b) Exprimer ' + M(V(X.s) + '(' + V('n') + ')') + ' en fonction de ' + V('n') + '.</p>';
-    const ans = (k, X) => [
-      { label: k + ' a) ' + M(V(X.s) + '(' + X.n + ') ='), value: X.u0 + X.n * X.r, row: k > 1 },
-      { label: k + ' b) ' + M(V(X.s) + '(' + V('n') + ') ='), value: X.u0, row: true },
-      { label: '+', value: X.r, unit: '× ' + V('n') }
-    ];
-    const corr = (k, X) => '<p class="calc"><strong>' + k + '.</strong> a) ' + termCalc(X.s, X.u0, X.r, X.n) + '</p>' +
-      '<p class="calc" style="padding-left:1.2em">b) On se décale de ' + V('n') + ' rangs : on ajoute ' + V('n') + ' fois la raison.<br>' +
-      M(V(X.s) + '(' + V('n') + ') = ' + V(X.s) + '(0) + ' + V('n') + ' × ' + V('r') + ' = ' + fmt(X.u0) + ' + ' + V('n') + ' × ' + par(X.r) + ', donc <b>' + V(X.s) + '(' + V('n') + ') = ' + fmt(X.u0) + rn(X.r) + '</b>') + '</p>';
-    return {
-      stmt: q(1, A) + q(2, B),
-      answers: ans(1, A).concat(ans(2, B)),
-      corr: corr(1, A) + corr(2, B) +
-        '<p style="color:var(--muted)">Pour une raison négative, tape le signe moins dans la case devant × ' + V('n') + ' (par exemple −3).</p>'
-    };
-  }
-
-  const contexts = [
-    () => { const s0 = ri(5, 20) * 10, d = pick([10, 15, 20, 25, 30]), n = ri(4, 10);
-      return { s: 's', u0: s0, r: d, n, unit: '€',
-        txt: 'Lina a ' + s0 + ' € dans sa tirelire. Chaque mois, elle y ajoute ' + d + ' €. On note ' + M(V('s') + '(' + V('n') + ')') + ' la somme après ' + V('n') + ' mois.',
-        q: 'Quelle somme aura-t-elle après ' + n + ' mois ?' }; },
-    () => { const [h0, d] = pick([[18, 1.5], [20, 2], [24, 2], [30, 2.5], [25, 2]]), n = ri(3, Math.min(10, Math.round(h0 / d) - 1));
-      return { s: 'h', u0: h0, r: -d, n, unit: 'cm',
-        txt: 'Une bougie mesure ' + h0 + ' cm. Elle perd ' + fmt(d) + ' cm par heure. On note ' + M(V('h') + '(' + V('n') + ')') + ' sa hauteur après ' + V('n') + ' heures.',
-        q: 'Quelle est sa hauteur après ' + n + ' heures ?' }; },
-    () => { const a0 = ri(20, 150), g = ri(5, 30), n = ri(4, 10);
-      return { s: 'a', u0: a0, r: g, n, unit: 'abonnés',
-        txt: 'Une chaîne vidéo a ' + a0 + ' abonnés. Elle gagne ' + g + ' abonnés par semaine. On note ' + M(V('a') + '(' + V('n') + ')') + ' le nombre d\'abonnés après ' + V('n') + ' semaines.',
-        q: 'Combien d\'abonnés aura-t-elle après ' + n + ' semaines ?' }; },
-    () => { const l = pick([20, 25, 40, 50]), n = ri(4, 10), V0 = l * ri(n + 2, 30);
-      return { s: 'c', u0: V0, r: -l, n, unit: 'L',
-        txt: 'Une cuve contient ' + V0 + ' L d\'eau. On en utilise ' + l + ' L par jour pour arroser. On note ' + M(V('c') + '(' + V('n') + ')') + ' le volume après ' + V('n') + ' jours.',
-        q: 'Quel volume reste-t-il après ' + n + ' jours ?' }; }
+function termItem(l, s, u0, r, n) {
+  const ans = u0 + n * r, steps = [
+    { x: R`On part de \(${s}(0)=${tn(u0)}\) et on cherche \(${s}(${n})\) : on se décale de \(${n}\) rangs dans la liste.` }
   ];
-  function genC() {
-    const c = pick(contexts)(), ans = c.u0 + c.n * c.r;
-    return {
-      stmt: '<p>' + c.txt + '</p><p class="q">' + c.q + '</p>',
-      answers: [{ label: M(V(c.s) + '(' + c.n + ') ='), value: ans, unit: c.unit }],
-      corr: '<p>' + M(V(c.s) + '(0) = ' + fmt(c.u0)) + ' et ' + M(V('r') + ' = ' + fmt(c.r)) + (c.r < 0 ? ' (ça diminue)' : '') + '. ' + shift(c.n, c.r) + '</p><div class="chain">' + chain(c.s, 0, c.n, c.r, c.u0) + '</div>' +
-        '<p class="calc">' + M(V(c.s) + '(' + c.n + ') = ' + V(c.s) + '(0) + ' + c.n + ' × ' + V('r') + ' = ' + fmt(c.u0) + ' + ' + c.n + ' × ' + par(c.r) + ' = ' + fmt(c.u0) + plus(c.n * c.r) + ' = <b>' + fmt(ans) + ' ' + c.unit + '</b>') + '</p>'
-    };
-  }
+  if (n <= 12) steps.push({ svg: chain(s, 0, n, r, u0), x: shiftX(n, r) });
+  steps.push(
+    { e: R`${s}(${n})=${s}(0)+${n}\times r`, x: R`On a ajouté \(${n}\) fois la raison : c'est la formule explicite.` },
+    { e: R`${s}(${n})=${tn(u0)}+${n}\times ${tp(r)}`, x: 'On remplace par les valeurs.' },
+    { e: R`${s}(${n})=${tn(u0)}${tpl(n * r)}=${tn(ans)}`, x: 'On calcule.' }
+  );
+  return { l, q: R`Calculer \(${s}(${n})\).`, answers: [{ label: R`\(${s}(${n})=\)`, value: ans }], steps, res: R`${s}(${n})=${tn(ans)}`, piege: r < 0 ? PIEGE_NEG : null };
+}
 
-  function genD() {
-    const s = pick(letters), u0 = ri(-5, 40), r = Math.random() < 0.8 ? intR() : pick([0.5, 1.5, -0.5, -2.5]), N = pick([10, 12, 15, 20, 30]);
-    const rn = round2(r) < 0 ? ' − ' + fmt(-r) + V('n') : ' + ' + fmt(r) + V('n');
-    return {
-      stmt: '<p>La suite ' + V(s) + ' est arithmétique, avec ' + M(V(s) + '(0) = ' + fmt(u0)) + ' et ' + M(V('r') + ' = ' + fmt(r)) + '.</p><p class="q">1. Exprimer ' + M(V(s) + '(' + V('n') + ')') + ' en fonction de ' + V('n') + ' en complétant : ' + M(V(s) + '(' + V('n') + ') = … + … × ' + V('n')) + '.<br>2. En déduire ' + M(V(s) + '(' + N + ')') + '.</p>',
-      answers: [
-        { label: '1. ' + M(V(s) + '(' + V('n') + ') ='), value: u0 },
-        { label: '+', value: r, unit: '× ' + V('n') },
-        { label: '2. ' + M(V(s) + '(' + N + ') ='), value: u0 + N * r }
-      ],
-      corr: '<p>' + shift(V('n'), r) + '</p><div class="chain">' + chain(s, 0, 5, 0, null, { symbolic: true, rlabel: (r < 0 ? fmt(r) : '+' + fmt(r)), big: '+ n × ' + par(r) }) + '</div>' +
-        '<p class="calc">1. ' + M(V(s) + '(' + V('n') + ') = ' + V(s) + '(0) + ' + V('n') + ' × ' + V('r') + ' = ' + fmt(u0) + ' + ' + V('n') + ' × ' + par(r) + ', donc <b>' + V(s) + '(' + V('n') + ') = ' + fmt(u0) + rn + '</b>') + '</p>' +
-        '<p class="calc">2. ' + M(V(s) + '(' + N + ') = ' + fmt(u0) + ' + ' + par(r) + ' × ' + N + ' = ' + fmt(u0) + plus(N * r) + ' = <b>' + fmt(u0 + N * r) + '</b>') + '</p>' +
-        '<p style="color:var(--muted)">Pour un ' + V('r') + ' négatif, tape le signe moins dans la 2<sup>e</sup> case (par exemple −3).</p>'
-    };
-  }
+function exprItem(l, s, u0, r) {
+  return {
+    l, q: R`Exprimer \(${s}(n)\) en fonction de \(n\).`,
+    answers: [{ label: R`\(${s}(n)=\)`, value: u0 }, { label: R`\(+\)`, value: r, unit: R`\(\times n\)` }],
+    steps: [
+      { svg: chain(s, 0, 5, 0, null, { symbolic: true, rlabel: (r < 0 ? fmt(r) : '+' + fmt(r)), big: '+ n × ' + (r < 0 ? '(' + fmt(r) + ')' : fmt(r)) }),
+        x: R`De \(${s}(0)\) à \(${s}(n)\), on se décale de \(n\) rangs : on ajoute \(n\) fois la raison.` },
+      { e: R`${s}(n)=${s}(0)+n\times r`, x: 'On écrit la formule explicite.' },
+      { e: R`${s}(n)=${tn(u0)}+n\times ${tp(r)}`, x: 'On remplace par les valeurs.' },
+      { e: R`${s}(n)=${tn(u0)}${coefN(r)}`, x: R`On simplifie l'écriture : le nombre seul est \(${s}(0)\), le nombre devant \(n\) est la raison.` }
+    ],
+    res: R`${s}(n)=${tn(u0)}${coefN(r)}`,
+    piege: r < 0 ? R`la raison est négative : dans la 2<sup>e</sup> case, tape le signe moins (par exemple \(-3\)).` : null
+  };
+}
 
-  // ---------- Rendu ----------
-  function mountExo(parent, o) {
-    const box = document.createElement('div');
-    box.className = 'card';
-    box.innerHTML = '<div class="exo-top"><span class="num">' + o.num + '</span><span class="score"></span></div><h3>' + o.title + '</h3>' +
-      '<div class="stmt"></div><div class="answers"></div>' +
-      '<div class="actions"><button class="primary" data-a="check">Vérifier</button><button class="ghost" data-a="corr">Voir la correction</button><button class="redo" data-a="new">Nouvel énoncé</button></div>' +
-      '<p class="msg" aria-live="polite"></p><div class="corr" hidden><span class="t">Correction</span><div class="corr-body"></div></div>';
-    parent.appendChild(box);
-    const st = { ok: 0, tried: 0, ex: null, counted: false };
-    const $ = (s) => box.querySelector(s);
-    function render() {
-      st.ex = o.gen(); st.counted = false;
-      $('.stmt').innerHTML = st.ex.stmt;
-      $('.answers').innerHTML = st.ex.answers.map((a, i) => (a.row ? '<span class="row-break"></span>' : '') +
-        '<label class="ans" for="' + o.id + '-' + i + '"><span class="lab">' + a.label + '</span><input type="text" id="' + o.id + '-' + i + '" inputmode="decimal" autocomplete="off" spellcheck="false">' + (a.unit ? '<span>' + a.unit + '</span>' : '') + '</label>').join('');
-      $('.corr-body').innerHTML = st.ex.corr;
-      $('.corr').hidden = true;
-      $('[data-a="corr"]').textContent = 'Voir la correction';
-      $('.msg').textContent = ''; $('.msg').className = 'msg';
-      box.querySelectorAll('input').forEach((inp) => inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') check(); }));
-      score();
-    }
-    function check() {
-      let good = 0;
-      st.ex.answers.forEach((a, i) => {
-        const inp = $('#' + o.id + '-' + i), v = parse(inp.value);
-        const ok = !Number.isNaN(v) && Math.abs(round2(v) - round2(a.value)) < 0.006;
-        inp.classList.toggle('good', ok); inp.classList.toggle('bad', !ok); if (ok) good++;
-      });
-      const all = good === st.ex.answers.length;
-      if (!st.counted) { st.tried++; if (all) st.ok++; st.counted = true; }
-      $('.msg').textContent = all ? 'Bravo, c\'est juste ! Compare ton schéma avec la correction.' : 'Pas encore. Compte bien les flèches, ou ouvre la correction.';
-      $('.msg').className = 'msg ' + (all ? 'good' : 'bad');
-      score();
-    }
-    function score() { $('.score').textContent = st.ok + ' réussi' + (st.ok > 1 ? 's' : '') + ' / ' + st.tried + ' essayé' + (st.tried > 1 ? 's' : ''); }
-    box.addEventListener('click', (e) => {
-      const b = e.target.closest('button'); if (!b) return;
-      if (b.dataset.a === 'check') check();
-      if (b.dataset.a === 'new') render();
-      if (b.dataset.a === 'corr') { const c = $('.corr'); c.hidden = !c.hidden; b.textContent = c.hidden ? 'Voir la correction' : 'Masquer la correction'; }
-    });
-    render();
-  }
+function termFromExprItem(l, s, u0, r, N) {
+  const ans = u0 + N * r;
+  return {
+    l, q: R`En déduire \(${s}(${N})\).`, answers: [{ label: R`\(${s}(${N})=\)`, value: ans }],
+    steps: [
+      { e: R`${s}(n)=${tn(u0)}${coefN(r)}`, x: 'On reprend l’expression de la question précédente.' },
+      { e: R`${s}(${N})=${tn(u0)}+${tp(r)}\times ${N}`, x: R`On remplace \(n\) par \(${N}\).` },
+      { e: R`${s}(${N})=${tn(u0)}${tpl(N * r)}=${tn(ans)}`, x: 'On calcule.' }
+    ],
+    res: R`${s}(${N})=${tn(ans)}`, piege: null
+  };
+}
 
-  // ---------- Étapes ----------
-  const stepEls = Array.from(document.querySelectorAll('.step'));
-  const stepIds = stepEls.map((el) => el.id);
-  const stepNames = Array.from(document.querySelectorAll('.steps button')).map((b) => b.textContent.replace(/^\d+/, ''));
-  stepEls.forEach((el, i) => {
-    const nav = document.createElement('div');
-    nav.className = 'step-nav';
-    nav.innerHTML = (i > 0 ? '<button type="button" class="ghost" data-go="' + stepIds[i - 1] + '">← ' + stepNames[i - 1] + '</button>' : '') +
-      (i < stepEls.length - 1 ? '<button type="button" class="primary next" data-go="' + stepIds[i + 1] + '">Étape suivante : ' + stepNames[i + 1] + ' →</button>' : '');
-    el.appendChild(nav);
+// Problèmes concrets
+const contexts = [
+  () => { const s0 = ri(5, 20) * 10, d = pick([10, 15, 20, 25, 30]), n = ri(4, 10);
+    return { s: 's', u0: s0, r: d, n, unit: '€', intro: R`Lina a ${s0} € dans sa tirelire. Chaque mois, elle y ajoute ${d} €. On note \(s(n)\) la somme, en euros, après \(n\) mois.`,
+      q: R`Quelle somme aura-t-elle après ${n} mois ?`, r0: R`Au départ, \(s(0)=${s0}\). Chaque mois on ajoute ${d} € : \(s\) est arithmétique de raison \(r=${d}\).` }; },
+  () => { const [h0, d] = pick([[18, 1.5], [20, 2], [24, 2], [30, 2.5], [25, 2]]), n = ri(3, Math.min(10, Math.round(h0 / d) - 1));
+    return { s: 'h', u0: h0, r: -d, n, unit: 'cm', intro: R`Une bougie mesure ${h0} cm. Elle perd \(${tn(d)}\) cm par heure. On note \(h(n)\) sa hauteur, en cm, après \(n\) heures.`,
+      q: R`Quelle est sa hauteur après ${n} heures ?`, r0: R`Au départ, \(h(0)=${h0}\). Chaque heure on retire \(${tn(d)}\) : \(h\) est arithmétique de raison \(r=${tn(-d)}\) (elle diminue).` }; },
+  () => { const a0 = ri(20, 150), g = ri(5, 30), n = ri(4, 10);
+    return { s: 'a', u0: a0, r: g, n, unit: 'abonnés', intro: R`Une chaîne vidéo a ${a0} abonnés. Elle gagne ${g} abonnés par semaine. On note \(a(n)\) le nombre d'abonnés après \(n\) semaines.`,
+      q: R`Combien d'abonnés aura-t-elle après ${n} semaines ?`, r0: R`Au départ, \(a(0)=${a0}\). Chaque semaine on ajoute ${g} : \(a\) est arithmétique de raison \(r=${g}\).` }; },
+  () => { const l = pick([20, 25, 40, 50]), n = ri(4, 10), V0 = l * ri(n + 2, 30);
+    return { s: 'c', u0: V0, r: -l, n, unit: 'L', intro: R`Une cuve contient ${V0} L d'eau. On en utilise ${l} L par jour pour arroser. On note \(c(n)\) le volume, en litres, après \(n\) jours.`,
+      q: R`Quel volume reste-t-il après ${n} jours ?`, r0: R`Au départ, \(c(0)=${V0}\). Chaque jour on retire ${l} : \(c\) est arithmétique de raison \(r=${-l}\) (elle diminue).` }; }
+];
+
+/* =====================================================================
+   Étapes de la page
+   ===================================================================== */
+const S1 = '<span style="color:var(--star-green)">★</span><span style="color:#C5CCD3">☆☆</span>';
+const S2 = '<span style="color:var(--star-blue)">★★</span><span style="color:#C5CCD3">☆</span>';
+const OBJ1 = [1, 'Calculer un terme d’une suite arithmétique'];
+const OBJ2 = [2, R`Exprimer \(u(n)\) en fonction de \(n\)`];
+const OBJ3 = [3, 'Utiliser une suite arithmétique dans une situation concrète'];
+
+const RAPPEL_EXO = [
+  { t: 'Formule explicite', h: R`<p class="formula">\(u(n)=u(0)+n\times r\)</p><p>On part de \(u(0)\) et on se décale de \(n\) rangs : on ajoute \(n\) fois la raison \(r\).</p>` },
+  { t: 'Exemple', h: R`<p>\(u(0)=150\) et \(r=25\) :</p><p>\(u(5)=150+5\times 25=275\)</p><p>\(u(n)=150+25n\)</p>` }
+];
+const ATT_EXO = R`<p>Raison négative : on met des parenthèses, \(18+10\times(-1{,}5)=18-15=3\).</p><p>On ne multiplie que la raison, pas le premier terme.</p>`;
+
+const PAGES = [
+  { id: 'rappel', nav: 'Rappel', obj: OBJ1, pill: 'Rappel', kind: 'lesson',
+    html: () => R`<div class="rappel one"><div>
+        <h3>Suite arithmétique</h3>
+        <p>Dans une suite arithmétique de raison \(r\), on passe d'un terme au suivant en ajoutant toujours \(r\).<br><em>Chaque flèche matérialise l'ajout de \(r\).</em></p>
+        <div class="chain">${chain('u', 0, 3, 0, null, { rlabel: '+r', big: '+ 3 × r' })}</div>
+        <p>Pour calculer un terme éloigné, on compte le nombre de fois où l'on a ajouté la raison \(r\), c'est-à-dire le nombre de rangs dont on se décale dans la liste.</p>
+      </div></div>` },
+
+  { id: 'exemple1', nav: 'Exemple 1', obj: OBJ1, pill: 'Exemple 1', kind: 'example',
+    title: R`Calculer \(u(5)\) : on répète 5 fois \(+r\)`,
+    intro: R`Karim a 150 € sur son livret. Chaque mois, il ajoute 25 €. On note \(u(n)\) la somme, en euros, après \(n\) mois.`,
+    question: 'Combien Karim aura-t-il après 5 mois ?',
+    steps: [
+      { x: R`Au départ, Karim a 150 € : \(u(0)=150\). Chaque mois il ajoute 25 € : la raison est \(r=25\).` },
+      { svg: chain('u', 0, 5, 25, 150), x: R`De \(u(0)\) à \(u(5)\), on se décale de 5 rangs : on répète 5 fois \(+25\).` },
+      { e: R`u(5)=u(0)+5\times r`, x: 'On a ajouté 5 fois la raison.' },
+      { e: R`u(5)=150+5\times 25=150+125=275`, x: 'On remplace et on calcule.' }
+    ],
+    concl: 'Après 5 mois, Karim aura 275 €.' },
+
+  { id: 'exemple2', nav: 'Exemple 2', obj: OBJ1, pill: 'Exemple 2', kind: 'example',
+    title: R`Calculer \(h(10)\) : on se décale 10 fois`,
+    intro: R`Une bougie mesure 18 cm. Elle perd 1,5 cm par heure. On note \(h(n)\) sa hauteur, en cm, après \(n\) heures.`,
+    question: 'Quelle est sa hauteur après 10 heures ?',
+    steps: [
+      { x: R`Au départ, \(h(0)=18\). Chaque heure, on retire 1,5 cm : la raison est \(r=-1{,}5\) (elle diminue).` },
+      { svg: chain('h', 0, 10, -1.5, 18), x: R`On se décale de 10 rangs, on retire 10 fois \(1{,}5\), ou on ajoute 10 fois \(-1{,}5\).` },
+      { e: R`h(10)=h(0)+10\times r`, x: 'On a ajouté 10 fois la raison.' },
+      { e: R`h(10)=18+10\times(-1{,}5)=18-15=3`, x: 'On remplace et on calcule.' }
+    ],
+    concl: 'Après 10 heures, la bougie mesure 3 cm.',
+    piege: R`<b>À retenir :</b><ul>
+      <li>Le nombre de flèches, c'est le rang cherché : pour \(u(5)\), 5 flèches ; pour \(u(10)\), 10 flèches.</li>
+      <li>Raison négative : on met des parenthèses, \(10\times(-1{,}5)=-15\).</li>
+      <li>On ne multiplie que la raison : \(18+10\times(-1{,}5)\), et pas \((18-1{,}5)\times 10\).</li></ul>` },
+
+  { id: 'generalisation', nav: 'Généralisation', obj: OBJ2, pill: 'Généralisation', kind: 'example',
+    title: R`Exprimer \(u(n)\) en fonction de \(n\)`,
+    intro: R`On reprend le livret de Karim : \(u(0)=150\) et \(r=25\).`,
+    question: R`Combien Karim aura-t-il après \(n\) mois ?`,
+    steps: [
+      { x: R`Après 5 mois, on a ajouté 5 fois 25 : \(u(5)=150+5\times 25\). Après 10 mois, 10 fois 25 : \(u(10)=150+10\times 25\).` },
+      { svg: chain('u', 0, 5, 0, null, { symbolic: true, rlabel: '+25', big: '+ n × 25' }), x: R`Après \(n\) mois, on se décale de \(n\) rangs : on ajoute \(n\) fois 25.` },
+      { e: R`u(n)=u(0)+n\times r=150+n\times 25`, x: 'On écrit la formule explicite et on remplace.' },
+      { e: R`u(n)=150+25n`, x: R`On simplifie l'écriture.` },
+      { e: R`h(n)=18+n\times(-1{,}5)=18-1{,}5n`, x: 'De même pour la bougie de l’exemple 2.' },
+      { e: R`u(24)=150+25\times 24=750`, x: 'Avec cette formule, on calcule n’importe quel terme d’un seul coup : Karim au bout de 2 ans (24 mois).' }
+    ],
+    concl: R`<b>Propriété (formule explicite).</b> Si \(u\) est une suite arithmétique de premier terme \(u(0)\) et de raison \(r\), alors pour tout entier naturel \(n\) :
+      \[u(n)=u(0)+n\times r\]
+      Le nombre seul est le premier terme \(u(0)\) ; le nombre devant \(n\), avec son signe, est la raison \(r\).` },
+
+  { id: 'ex1', nav: 'Exercice 1', obj: OBJ1, pill: 'Exercice 1', kind: 'exo', stars: S1, comp: 'Calculer',
+    consigne: 'Calculer le terme demandé pour chacune des deux suites.',
+    build: () => {
+      const [s1, s2] = twoLetters();
+      const A = { s: s1, u0: ri(-5, 40), r: randR(), n: ri(3, 10) }, B = { s: s2, u0: ri(-5, 40), r: randR(), n: ri(3, 10) };
+      while (B.n === A.n) B.n = ri(3, 10);
+      return [A, B].map((X, i) => ({ title: (i + 1) + '.', intro: given(X.s, X.u0, X.r), items: [termItem('', X.s, X.u0, X.r, X.n)] }));
+    } },
+
+  { id: 'ex2', nav: 'Exercice 2', obj: OBJ2, pill: 'Exercice 2', kind: 'exo', stars: S2, comp: 'Calculer',
+    consigne: R`Pour chaque suite : calculer le terme demandé, puis exprimer le terme général en fonction de \(n\).`,
+    build: () => {
+      const [s1, s2] = twoLetters();
+      const A = { s: s1, u0: ri(-5, 40), r: randR(), n: ri(8, 30) }, B = { s: s2, u0: ri(-5, 40), r: randR(), n: ri(8, 30) };
+      return [A, B].map((X, i) => ({ title: (i + 1) + '.', intro: given(X.s, X.u0, X.r),
+        items: [termItem('a)', X.s, X.u0, X.r, X.n), exprItem('b)', X.s, X.u0, X.r)] }));
+    } },
+
+  { id: 'ex3', nav: 'Exercice 3', obj: OBJ3, pill: 'Exercice 3', kind: 'exo', stars: S2, comp: 'Modéliser',
+    consigne: 'Reconnaître la suite arithmétique (premier terme et raison), puis répondre à la question.',
+    build: () => {
+      const c = pick(contexts)(), it = termItem('', c.s, c.u0, c.r, c.n);
+      it.q = c.q;
+      it.answers[0].unit = c.unit;
+      it.steps[0] = { x: c.r0 };
+      it.res += R`\text{ ${c.unit}}`;
+      return [{ intro: c.intro, items: [it] }];
+    } },
+
+  { id: 'ex4', nav: 'Exercice 4', obj: OBJ2, pill: 'Exercice 4', kind: 'exo', stars: S2, comp: 'Calculer',
+    consigne: R`Exprimer le terme général en fonction de \(n\), puis l’utiliser pour calculer un terme éloigné.`,
+    build: () => {
+      const s = pick(letters), u0 = ri(-5, 40), r = randR(), N = pick([15, 20, 25, 30, 50, 100]);
+      return [{ intro: given(s, u0, r), items: [exprItem('1.', s, u0, r), termFromExprItem('2.', s, u0, r, N)] }];
+    } }
+];
+
+/* =====================================================================
+   Affichage
+   ===================================================================== */
+const $ = (s, el = document) => el.querySelector(s);
+const app = $('#app'), nav = $('#exnav');
+function typeset(el) {
+  if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+    MathJax.startup.promise.then(() => MathJax.typesetPromise([el])).catch(() => {});
+  }
+}
+
+function stepHTML(st, k) {
+  let inner = '';
+  if (st.svg) inner += `<div class="fig">${st.svg}</div>`;
+  if (st.e) inner += `<div class="m">\\[${st.e}\\]</div>`;
+  if (st.h) inner += `<div class="h">${st.h}</div>`;
+  if (st.x) inner += `<div class="x">${st.x}</div>`;
+  return `<span class="n">${k}</span><div>${inner}</div>`;
+}
+const stepsBlock = (concl, piege) => `<ol class="steps"></ol>
+  <div class="step-ctrl"><button type="button" class="btn solid sm" data-next>Étape suivante</button><button type="button" class="btn ghost sm" data-all>Tout afficher</button><button type="button" class="btn ghost sm" data-reset hidden>Recommencer</button></div>
+  <div class="end" hidden><div class="concl">${concl}</div>${piege ? `<div class="piege">${piege}</div>` : ''}</div>`;
+
+// Déroulé étape par étape dans root (qui contient stepsBlock) ; renvoie start()
+function wireSteps(root, steps) {
+  const ol = $('.steps', root), end = $('.end', root);
+  const bN = $('[data-next]', root), bA = $('[data-all]', root), bR = $('[data-reset]', root);
+  let k = 0;
+  const add = () => { const li = document.createElement('li'); li.className = 'step'; li.innerHTML = stepHTML(steps[k], k + 1); k++; ol.appendChild(li); typeset(li); };
+  const sync = () => { const fin = k >= steps.length; bN.hidden = fin; bA.hidden = fin; bR.hidden = !fin; end.hidden = !fin; if (fin) typeset(end); };
+  bN.addEventListener('click', () => { add(); sync(); });
+  bA.addEventListener('click', () => { while (k < steps.length) add(); sync(); });
+  bR.addEventListener('click', () => { ol.innerHTML = ''; k = 0; add(); sync(); });
+  return () => { if (k === 0) { add(); sync(); } };
+}
+
+function itemHTML(it, id) {
+  return `<div class="item" data-id="${id}">
+    <div class="row"><span class="q">${it.l ? `<b>${it.l}</b> ` : ''}${it.q}</span><button type="button" class="btn sm" data-open>Correction détaillée</button></div>
+    <div class="ansrow">${it.answers.map((a, i) => `<label class="ans" for="${id}-${i}"><span>${a.label}</span><input type="text" id="${id}-${i}" inputmode="decimal" autocomplete="off" spellcheck="false">${a.unit ? `<span>${a.unit}</span>` : ''}</label>`).join('')}
+      <button type="button" class="btn solid sm" data-check>Vérifier</button><span class="fb" aria-live="polite"></span></div>
+    <div class="corr" hidden>${stepsBlock(`Résultat : \\(${it.res}\\)`, it.piege ? `<b>Erreur à éviter :</b> ${it.piege}` : '')}</div>
+  </div>`;
+}
+function wireItem(el, it) {
+  const corr = $('.corr', el), start = wireSteps(corr, it.steps), fb = $('.fb', el);
+  $('[data-open]', el).addEventListener('click', e => {
+    const open = corr.hidden;
+    corr.hidden = !open; el.classList.toggle('open', open);
+    e.currentTarget.textContent = open ? 'Masquer la correction' : 'Correction détaillée';
+    if (open) start();
   });
-  function show(id, scroll) {
-    if (stepIds.indexOf(id) < 0) id = stepIds[0];
-    stepEls.forEach((el) => { el.hidden = el.id !== id; });
-    document.querySelectorAll('.steps button').forEach((b) => {
-      if (b.dataset.go === id) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+  const check = () => {
+    let good = 0;
+    it.answers.forEach((a, i) => {
+      const inp = $(`#${el.dataset.id}-${i}`, el), v = parse(inp.value);
+      const ok = !Number.isNaN(v) && Math.abs(round2(v) - round2(a.value)) < 0.006;
+      inp.classList.toggle('good', ok); inp.classList.toggle('bad', !ok); if (ok) good++;
     });
-    try { history.replaceState(null, '', '#' + id); } catch (e) {}
-    if (scroll) window.scrollTo({ top: 0 });
-  }
-  document.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-go]');
-    if (b) show(b.dataset.go, true);
-  });
-  show(location.hash.slice(1), false);
+    const all = good === it.answers.length;
+    fb.textContent = all ? '✓ Juste !' : '✗ Pas encore : compte bien les rangs, ou ouvre la correction détaillée.';
+    fb.className = 'fb ' + (all ? 'good' : 'bad');
+  };
+  $('[data-check]', el).addEventListener('click', check);
+  el.querySelectorAll('input').forEach(inp => inp.addEventListener('keydown', e => { if (e.key === 'Enter') check(); }));
+}
 
-  const exos = document.getElementById('exos');
-  [
-    { id: 'e1', title: 'Calculer un terme de deux suites', gen: genA },
-    { id: 'e2', title: 'Calculer un terme, puis exprimer u(n) en fonction de n', gen: genE },
-    { id: 'e3', title: 'Problème concret', gen: genC },
-    { id: 'e5', title: 'Exprimer u(n) en fonction de n', gen: genD }
-  ].forEach((d, i) => mountExo(exos, Object.assign({ num: 'Exercice ' + (i + 1) }, d)));
-})();
+function renderParts(box, page) {
+  const parts = page.build();
+  box.innerHTML = parts.map((p, pi) => `<div class="part-block">
+      ${p.title || p.intro ? `<p class="intro">${p.title ? `<b>${p.title}</b> ` : ''}${p.intro || ''}</p>` : ''}
+      <div class="items">${p.items.map((it, ii) => itemHTML(it, `${page.id}p${pi}i${ii}`)).join('')}</div></div>`).join('');
+  parts.forEach((p, pi) => p.items.forEach((it, ii) => wireItem($(`[data-id="${page.id}p${pi}i${ii}"]`, box), it)));
+  typeset(box);
+}
+
+function render(id) {
+  const i = Math.max(0, PAGES.findIndex(p => p.id === id)), page = PAGES[i];
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.id === page.id));
+  let head = `<span class="pill${page.kind === 'exo' ? '' : ' lesson'}">${page.pill}</span>`;
+  if (page.stars) head += `<span class="stars">${page.stars}</span>`;
+  if (page.comp) head += `<span class="comp">${page.comp}</span>`;
+  let body = '';
+  if (page.kind === 'lesson') body = page.html();
+  if (page.kind === 'example') body = `<h2 class="part">${page.title}</h2><p class="intro">${page.intro}</p><p class="q"><b>${page.question}</b></p>
+      <div class="corr">${stepsBlock(page.concl, page.piege)}</div>`;
+  if (page.kind === 'exo') body = `<p class="consigne">${page.consigne}</p>
+      <div class="tools"><button type="button" class="btn" data-rappel>Rappel</button><button type="button" class="btn green" data-train>↻ Nouvelles valeurs pour s’entraîner</button></div>
+      <div class="rappel" hidden>${RAPPEL_EXO.map(b => `<div><h3>${b.t}</h3>${b.h}</div>`).join('')}<div class="att"><h3>Attention !</h3>${ATT_EXO}</div></div>
+      <h2 class="part">À toi de jouer <small>cherche sur ton cahier, tape ta réponse, puis ouvre la correction détaillée</small></h2>
+      <div class="parts"></div>`;
+  const prev = PAGES[i - 1], next = PAGES[i + 1];
+  app.innerHTML = `
+    <p class="obj"><b>Objectif ${page.obj[0]} :</b> ${page.obj[1]}</p>
+    <article class="exo"><div class="exo-h">${head}</div><div class="exo-b">${body}</div></article>
+    <nav class="foot">${prev ? `<button type="button" class="btn ghost" data-go="${prev.id}">← ${prev.nav}</button>` : '<span></span>'}${next ? `<button type="button" class="btn solid" data-go="${next.id}">${next.nav} →</button>` : ''}</nav>`;
+  if (page.kind === 'example') wireSteps($('.corr', app), page.steps)();
+  if (page.kind === 'exo') {
+    const parts = $('.parts', app);
+    renderParts(parts, page);
+    const rap = $('.rappel', app), bRap = $('[data-rappel]', app);
+    bRap.addEventListener('click', () => { rap.hidden = !rap.hidden; bRap.classList.toggle('on', !rap.hidden); if (!rap.hidden) typeset(rap); });
+    $('[data-train]', app).addEventListener('click', () => { renderParts(parts, page); parts.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  }
+  app.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { location.hash = b.dataset.go; }));
+  typeset(app);
+  window.scrollTo(0, 0);
+}
+
+nav.innerHTML = PAGES.map((p, i) => (p.kind === 'exo' && PAGES[i - 1].kind !== 'exo' ? '<span class="sep"></span>' : '') +
+  `<button type="button" data-id="${p.id}">${p.nav}</button>`).join('');
+nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { location.hash = b.dataset.id; }));
+const route = () => render(location.hash.slice(1));
+window.addEventListener('hashchange', route);
+route();
 </script>
 </body>
 </html>
