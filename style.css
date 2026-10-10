@@ -481,8 +481,8 @@ li:last-child { margin-bottom: 0; }
     margin-left: 8px;
     padding: 1px 6px;
     border-radius: 3px;
-    background: var(--orange);
-    color: #fff;
+    background: var(--c, var(--orange));
+    color: var(--badge-text);
     font-weight: 700;
     letter-spacing: 0.04em;
 }
@@ -515,7 +515,7 @@ li.res {
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--muted);
-    border: 1px solid var(--line);
+    border: 1px solid var(--orange);
     border-radius: 4px;
     padding: 1px 0;
     text-align: center;
@@ -555,6 +555,8 @@ li.res {
 .pending-link .type {
     color: var(--pending);
 }
+
+.pending-link .type { opacity: 0.6; }
 
 .pending-tag {
     font-style: italic;
