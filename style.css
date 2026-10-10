@@ -1,7 +1,7 @@
 /* ==========================================================================
    DA « Plan de lignes » : chaque classe est une ligne, chaque séquence une station.
    ========================================================================== */
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Architects+Daughter&display=swap");
 
 /* ==========================================================================
    1. VARIABLES (thème clair, puis thème sombre automatique)
@@ -16,6 +16,7 @@
     --line: #e3e7ef;
     --pending: #a7afc0;
     --badge-text: #ffffff;
+    --bic: #1f3aa6;             /* encre de stylo bille bleu */
     --bleu-doux: #edf3ff;
 
     /* Une couleur par classe */
@@ -42,6 +43,7 @@
     --c-premiere: #34c79c;
     --c-tst2s: #b58cff;
     --badge-text: #0b1222;
+    --bic: #8ea6ff;
     --bleu-doux: #1a2742;
     color-scheme: dark;
 }
@@ -60,6 +62,7 @@
         --c-premiere: #34c79c;
         --c-tst2s: #b58cff;
         --badge-text: #0b1222;
+        --bic: #8ea6ff;
     --bleu-doux: #1a2742;
         color-scheme: dark;
     }
@@ -86,7 +89,8 @@ a { color: inherit; }
    2. BARRE DE NAVIGATION & MENU DÉROULANT
    ========================================================================== */
 .navbar {
-    background-color: var(--nuit);
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--line);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -103,12 +107,45 @@ a { color: inherit; }
     align-items: center;
     gap: 10px;
     padding: 12px 0;
-    color: #fff;
+    color: var(--text);
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;
 }
 
+
+/* Logo : trois stations reliées, aux couleurs des classes */
+.logo-ligne {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    width: 42px;
+    height: 12px;
+}
+
+.logo-ligne::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    top: 5px;
+    height: 2px;
+    background: var(--text);
+}
+
+.logo-ligne i {
+    position: absolute;
+    top: 1px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2.5px solid;
+    background: var(--surface);
+}
+
+.logo-ligne i:nth-child(1) { left: 0;    border-color: var(--c-seconde);  background: var(--c-seconde); }
+.logo-ligne i:nth-child(2) { left: 16px; border-color: var(--c-premiere); background: var(--c-premiere); }
+.logo-ligne i:nth-child(3) { left: 32px; border-color: var(--c-tst2s); }
 
 .nav-links {
     list-style: none;
@@ -126,7 +163,7 @@ a { color: inherit; }
 .nav-links a {
     display: block;
     padding: 14px 14px;
-    color: #cfd6e6;
+    color: var(--muted);
     font-size: 0.9rem;
     font-weight: 500;
     text-decoration: none;
@@ -135,14 +172,14 @@ a { color: inherit; }
 
 .nav-links a:hover,
 .nav-links a:focus-visible {
-    color: #fff;
+    color: var(--text);
     outline: none;
-    box-shadow: inset 0 -3px 0 rgba(255, 255, 255, 0.35);
+    box-shadow: inset 0 -2px 0 var(--line);
 }
 
 .nav-links a.active {
-    color: #fff;
-    box-shadow: inset 0 -3px 0 var(--orange);
+    color: var(--text);
+    box-shadow: inset 0 -2px 0 var(--text);
 }
 
 .nav-icon {
@@ -186,16 +223,16 @@ a { color: inherit; }
     padding: 4px 12px;
     font: inherit;
     font-size: 0.85rem;
-    color: #cfd6e6;
+    color: var(--muted);
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid var(--line);
     border-radius: 999px;
     cursor: pointer;
 }
 
 .theme-toggle:hover,
 .theme-toggle:focus-visible {
-    color: #fff;
+    color: var(--text);
     border-color: var(--orange);
     outline: none;
 }
@@ -239,6 +276,89 @@ header p {
     margin-bottom: 0;
     color: var(--muted);
     font-size: 1.02rem;
+}
+
+/* Titre au stylo bille bleu (lettres découpées, vecteur sur le É et écriture animée par site.js) */
+header h1.titre-stylo {
+    font-family: "Architects Daughter", "Comic Sans MS", cursive;
+    font-weight: 400;
+    font-size: clamp(2rem, 6vw, 3rem);
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+    color: var(--bic);
+    filter: url(#stylo);
+}
+
+.titre-stylo .l {
+    position: relative;
+    display: inline-block;
+    white-space: pre;
+}
+
+.titre-stylo .base {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    vertical-align: baseline;
+}
+
+.titre-stylo svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: visible;
+    fill: none;
+    stroke: var(--orange);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+}
+
+/* Les lettres s'écrivent l'une après l'autre, de gauche à droite */
+@media (prefers-reduced-motion: no-preference) {
+    .titre-stylo .l {
+        animation: ecrire 0.16s ease-out backwards;
+    }
+}
+
+@keyframes ecrire {
+    from { clip-path: inset(-20% 100% -20% 0); }
+    to   { clip-path: inset(-20% -10% -20% 0); }
+}
+
+/* Pastilles vers les pages des classes, façon « arrêts » de ligne */
+.raccourcis-classes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.raccourcis-classes a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 12px 3px 8px;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color 0.15s;
+}
+
+.raccourcis-classes a b {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 2.5px solid var(--c);
+}
+
+.raccourcis-classes a:hover,
+.raccourcis-classes a:focus-visible {
+    border-color: var(--c);
+    outline: none;
 }
 
 footer {
@@ -480,6 +600,9 @@ li:last-child { margin-bottom: 0; }
 }
 
 /* Rubriques hors séquences (automatismes, évaluations, remédiation…) */
+/* Sur l'accueil, seules les séquences s'affichent : les rubriques sont sur la page dédiée */
+.grid-classes .annexe { display: none; }
+
 .annexe {
     border-top: 1px solid var(--line);
     padding: 10px 0;
