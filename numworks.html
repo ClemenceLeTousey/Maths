@@ -10,25 +10,29 @@
 </head>
 <body> 
 
+    <!-- Barre de navigation -->
     <nav class="navbar">
+        <a class="logo" href="index.html"><span class="logo-mark">∑</span>Année 2026-2027 - Lycée Lebrun</a>
         <ul class="nav-links">
-            <li class="nav-home"><a href="index.html">🏠 Accueil</a></li>
+            <li><a href="index.html">Accueil</a></li>
             <li class="dropdown">
-                <a href="#" class="dropdown-trigger">Python ▾</a>
+                <a href="#" class="dropdown-trigger"><img src="img/python-logo.png" alt="" class="nav-icon"> Python ▾</a>
                 <ul class="dropdown-menu">
                     <li><a href="consolepython.html">Console en ligne</a></li>
                     <li><a href="algo-coursTD.html">Cours et TD</a></li>
                 </ul>
             </li>
-            <li><a href="numworks.html" style="background-color: #ff6f26; border-radius: 4px; color: white !important;">Numworks</a></li>
+            <li><a href="numworks.html" class="active">Numworks</a></li>
         </ul>
     </nav>
 
     <header>
-        <h1 style="color: #f1c40f; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);">Calculatrice NumWorks</h1>
-        <p style="max-width: 500px; margin: 10px auto 0; padding: 10px 15px; background: #fff8e1; border: 1px solid #f1c40f; border-radius: 6px; font-size: 0.9em; color: #555;">
+        <div class="header-inner">
+            <h1>Calculatrice NumWorks</h1>
+        <p class="avertissement">
             ⚠️ Si l'écran de la calculatrice reste blanc, désactivez votre bloqueur de publicités (AdBlock, uBlock...) sur ce site, ou ajoutez <strong>numworks.com</strong> à sa liste blanche.
         </p>
+        </div>
     </header>
 
     <main class="container">

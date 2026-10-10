@@ -6,36 +6,37 @@
     <title>Soutien — Seconde</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        #inscription { background: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); padding: 1.5rem; }
+        #inscription { background: var(--surface); border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); padding: 1.5rem; }
         #inscription h2 { margin-top: 0.5rem; }
         .identite { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
         .identite label { display: flex; flex-direction: column; font-weight: 600; gap: 0.3rem; }
-        .identite input, .identite select { padding: 0.5rem; font-size: 1rem; border: 1px solid #bbb; border-radius: 4px; }
-        .semaine { background: #f7f9fc; border: 1px solid #ddd; border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 1rem; }
+        .identite input, .identite select { padding: 0.5rem; font-size: 1rem; border: 1px solid var(--line); border-radius: 4px; font-family: inherit; }
+        .semaine { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 1rem; }
         .semaine h3 { margin: 0 0 0.5rem; font-size: 1.1rem; }
-        .semaine .type { font-weight: normal; color: #666; font-size: 0.95rem; }
+        .semaine .type { font-weight: normal; color: var(--muted); font-size: 0.95rem; }
         .creneau { display: flex; align-items: center; gap: 0.6rem; padding: 0.35rem 0; cursor: pointer; }
         .creneau input { width: 1.2rem; height: 1.2rem; }
-        .note { font-size: 0.95rem; color: #555; }
-        .envoyer { font-size: 1.05rem; padding: 0.7rem 1.4rem; border: 0; border-radius: 6px; background: #2c5aa0; color: #fff; cursor: pointer; }
+        .note { font-size: 0.95rem; color: var(--muted); }
+        .envoyer { font-size: 1.05rem; padding: 0.7rem 1.4rem; border: 0; border-radius: 6px; background: var(--c-seconde); color: #fff; font-family: inherit; cursor: pointer; }
         .erreur { color: #b00020; font-weight: 600; }
-        #recap { white-space: pre-wrap; background: #f4f4f4; border-radius: 6px; padding: 0.8rem; display: none; }
+        #recap { white-space: pre-wrap; background: var(--bg); border-radius: 6px; padding: 0.8rem; display: none; }
     </style>
 </head>
 <body>
 
-    <!-- Barre de Navigation Supérieure -->
+    <!-- Barre de navigation -->
     <nav class="navbar">
+        <a class="logo" href="index.html"><span class="logo-mark">∑</span>Année 2026-2027 - Lycée Lebrun</a>
         <ul class="nav-links">
-            <li class="nav-home"><a href="index.html">🏠 Accueil</a></li>
+            <li><a href="index.html">Accueil</a></li>
             <li class="dropdown">
-                <a href="#" class="dropdown-trigger">Python ▾</a>
+                <a href="#" class="dropdown-trigger"><img src="img/python-logo.png" alt="" class="nav-icon"> Python ▾</a>
                 <ul class="dropdown-menu">
                     <li><a href="consolepython.html">Console en ligne</a></li>
                     <li><a href="algo-coursTD.html">Cours et TD</a></li>
                 </ul>
             </li>
-             <li class="nav-home"><a href="numworks.html"> Numworks </a></li>
+            <li><a href="numworks.html">Numworks</a></li>
         </ul>
     </nav>
 

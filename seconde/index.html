@@ -6,9 +6,6 @@
     <title>Mathématiques — Secondes</title>
     <link rel="stylesheet" href="../style.css">
     <style>
-        body {
-            background-color: #f5f0e6;
-        }
         #contenu-seconde {
             max-width: 700px;
             margin: 0 auto;
@@ -17,18 +14,19 @@
 </head>
 <body>
 
-    <!-- Barre de Navigation Supérieure -->
+    <!-- Barre de navigation -->
     <nav class="navbar">
+        <a class="logo" href="../index.html"><span class="logo-mark">∑</span>Année 2026-2027 - Lycée Lebrun</a>
         <ul class="nav-links">
-            <li class="nav-home"><a href="../index.html" style="background-color: #ff6f26; border-radius: 4px; color: white !important;">🏠 Accueil</a></li>
+            <li><a href="../index.html">Accueil</a></li>
             <li class="dropdown">
-                <a href="#" class="dropdown-trigger"><img src="../img/python-logo.png" alt="" style="height: 1em; width: auto; vertical-align: -0.15em; margin-right: 4px;"> Python ▾</a>
+                <a href="#" class="dropdown-trigger"><img src="../img/python-logo.png" alt="" class="nav-icon"> Python ▾</a>
                 <ul class="dropdown-menu">
                     <li><a href="../consolepython.html">Console en ligne</a></li>
                     <li><a href="../algo-coursTD.html">Cours et TD</a></li>
                 </ul>
             </li>
-            <li class="nav-home"><a href="../numworks.html">🖩 Numworks</a></li>
+            <li><a href="../numworks.html">Numworks</a></li>
         </ul>
     </nav>
 
@@ -40,7 +38,7 @@
     <main class="container">
         <!-- Le contenu est repris automatiquement du bloc « Secondes » de la page d'accueil
              (une seule source à mettre à jour : ../index.html). -->
-        <div id="contenu-seconde" class="class-card">
+        <div id="contenu-seconde" class="class-card classe-seconde">
             <p>Chargement… Si rien ne s'affiche, <a href="../index.html">ouvre la page d'accueil</a>.</p>
         </div>
     </main>
@@ -58,8 +56,8 @@
                 const doc = new DOMParser().parseFromString(html, 'text/html');
                 const carte = doc.querySelector('.grid-classes .class-column .class-card');
                 if (!carte) throw new Error('bloc Secondes introuvable');
-                // On retire le badge « Secondes » (déjà dans le titre de la page)
-                const badge = carte.querySelector(':scope > span');
+                // On retire le titre « Secondes » (déjà dans le titre de la page)
+                const badge = carte.querySelector(':scope > .class-title');
                 if (badge) badge.remove();
                 // Liens relatifs : on les rend relatifs à la page d'accueil
                 carte.querySelectorAll('[href], [src]').forEach(el => {
