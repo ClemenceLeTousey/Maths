@@ -125,7 +125,7 @@ document.addEventListener('click', function (e) {
                 b.className = 'base';
                 l.appendChild(b);
                 m.appendChild(l);
-                if (ch === 'É') accents.push(l);
+                if (ch === 'É') { accents.push(l); l.classList.add('e-accent'); }
             });
             h.appendChild(m);
         });
@@ -146,7 +146,7 @@ document.addEventListener('click', function (e) {
 })();
 
 /* Effets cachés dans le logo (les trois ronds de la ligne) :
-   bleu = le titre se réécrit, vert = pluie de symboles maths, violet = mode « déglingo » façon Matrix. */
+   bleu = le titre se réécrit, vert = pluie de symboles maths, violet = mode Matrix. */
 (function () {
     var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -204,7 +204,7 @@ document.addEventListener('click', function (e) {
         })(debut);
     }
 
-    /* Violet : mode « déglingo » — tout passe en vert terminal avec une pluie de chiffres et de symboles maths */
+    /* Violet : mode Matrix — tout passe en vert terminal avec une pluie de chiffres et de symboles maths */
     var pluie = null;
     function matrix() {
         var racine = document.documentElement;
@@ -248,18 +248,94 @@ document.addEventListener('click', function (e) {
         }
     }
 
+    /* Tableau noir : ardoise verte, tout à la craie, poussière de craie qui flotte */
+    var poussiere = null;
+    function filtreCraie() {
+        if (document.getElementById('craie')) return;
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.setAttribute('aria-hidden', 'true');
+        svg.style.position = 'absolute';
+        svg.innerHTML =
+            '<filter id="craie" x="-2%" y="-10%" width="104%" height="120%">' +
+            '<feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="5" result="b"/>' +
+            '<feDisplacementMap in="SourceGraphic" in2="b" scale="1.6" xChannelSelector="R" yChannelSelector="G" result="t"/>' +
+            '<feTurbulence type="fractalNoise" baseFrequency="1.1 1.9" numOctaves="2" seed="8" result="g"/>' +
+            '<feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3 0 0 0 -0.6" result="m"/>' +
+            '<feComposite in="t" in2="m" operator="in"/>' +
+            '</filter>';
+        document.body.appendChild(svg);
+    }
+    function tableau() {
+        var racine = document.documentElement;
+        if (racine.classList.toggle('tableau')) {
+            filtreCraie();
+            if (calme) return;
+            var c = document.createElement('canvas');
+            c.className = 'effet-canvas effet-poussiere';
+            document.body.appendChild(c);
+            var ctx = c.getContext('2d');
+            var grains = [];
+            function dimension() {
+                c.width = innerWidth; c.height = innerHeight;
+                grains = Array.from({ length: 70 }, function () {
+                    return { x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: Math.random() * 1.6 + 0.4,
+                             vx: (Math.random() - 0.5) * 0.25, vy: Math.random() * 0.3 + 0.05, a: Math.random() * 0.35 + 0.1 };
+                });
+            }
+            dimension();
+            window.addEventListener('resize', dimension);
+            (function image() {
+                if (!racine.classList.contains('tableau')) return;
+                poussiere = requestAnimationFrame(image);
+                ctx.clearRect(0, 0, c.width, c.height);
+                grains.forEach(function (g) {
+                    g.x += g.vx + Math.sin(g.y / 40) * 0.1; g.y += g.vy;
+                    if (g.y > c.height) { g.y = -4; g.x = Math.random() * c.width; }
+                    ctx.globalAlpha = g.a;
+                    ctx.fillStyle = '#f4f4ec';
+                    ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, 6.3); ctx.fill();
+                });
+            })();
+            c._quitter = function () { window.removeEventListener('resize', dimension); };
+        } else {
+            cancelAnimationFrame(poussiere);
+            document.querySelectorAll('.effet-poussiere').forEach(function (c) { if (c._quitter) c._quitter(); c.remove(); });
+        }
+    }
+
+    /* Terminal : vieil écran cathodique noir et blanc, qui s'allume comme une vieille télé */
+    function terminal() {
+        var racine = document.documentElement;
+        if (racine.classList.toggle('terminal') && !calme) {
+            racine.classList.add('term-allumage');
+            setTimeout(function () { racine.classList.remove('term-allumage'); }, 800);
+        }
+    }
+
+    var MODES = { matrix: matrix, tableau: tableau, terminal: terminal };
+    function modeActif() {
+        return Object.keys(MODES).filter(function (m) { return document.documentElement.classList.contains(m); })[0];
+    }
+    // active un mode (ou le coupe s'il est déjà actif) ; un seul mode à la fois
+    function basculer(nom) {
+        var actif = modeActif();
+        if (actif) MODES[actif]();
+        if (nom && nom !== actif) MODES[nom]();
+    }
+    window.modesSite = { basculer: basculer, actif: modeActif };
+
     document.addEventListener('click', function (e) {
         var b = e.target.closest && e.target.closest('.logo-ligne button');
         if (!b) return;
         var effet = b.dataset.effet;
-        // en mode déglingo, le bleu ou le vert ramènent le site normal avant leur effet
-        if (effet !== 'matrix' && document.documentElement.classList.contains('matrix')) matrix();
+        if (MODES[effet]) { basculer(effet); return; }
+        // le bleu ou le vert ramènent d'abord le site normal
+        if (modeActif()) basculer(null);
         if (effet === 'ecrire') reecrire();
         if (effet === 'symboles') symboles(b);
-        if (effet === 'matrix') matrix();
     });
 
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && document.documentElement.classList.contains('matrix')) matrix();
+        if (e.key === 'Escape' && modeActif()) basculer(null);
     });
 })();
