@@ -125,6 +125,11 @@ h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
 .step .x em { font-style: normal; color: var(--ink); }
 .step .h { min-width: 0; overflow-x: auto; }
 .step .fig { overflow-x: auto; margin: 2px 0 6px; }
+/* Tableau de double distributivité (Ex. 4) : termes de la 1re parenthèse en colonnes, de la 2de en lignes */
+.tdd { border-collapse: collapse; margin: 4px 0 6px; }
+.tdd th, .tdd td { border: 1px solid var(--line); padding: 4px 14px; text-align: center; min-width: 56px; }
+.tdd th { background: var(--bg); font-weight: 400; }
+.tdd th.coin { color: var(--muted); }
 .step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
 .concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
 .piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
@@ -257,9 +262,9 @@ function itReduce(l, terms, v = 'x') {
 // Exercice 1 : produit de deux monômes
 function itProd(l, t1, t2, v = 'x') {
   const r = mul(t1, t2);
-  return { l, q: `${fac(...t1, v, true)}\\times${fac(...t2, v)}`, res: mono(...r, v), steps: [
-    { m: `${col(FAM[0], fac(t1[0], 0, v, true))}\\times${col(FAM[0], fac(t2[0], 0, v))}\\times${col(FAM[1], v)}\\times${col(FAM[1], v)}`, x: 'On multiplie les nombres entre eux et les lettres entre elles.' },
-    { m: mono(...r, v), x: `\\(${fac(t1[0], 0, v, true)}\\times${fac(t2[0], 0, v)}=${r[0]}\\) et \\(${v}\\times ${v}=${v}^2\\).` }
+  return { l, q: `${fac(...t1, v, true)}\\times ${fac(...t2, v)}`, res: mono(...r, v), steps: [
+    { m: `${col(FAM[0], fac(t1[0], 0, v, true))}\\times ${col(FAM[0], fac(t2[0], 0, v))}\\times ${col(FAM[1], v)}\\times ${col(FAM[1], v)}`, x: 'On multiplie les nombres entre eux et les lettres entre elles.' },
+    { m: mono(...r, v), x: `\\(${fac(t1[0], 0, v, true)}\\times ${fac(t2[0], 0, v)}=${r[0]}\\) et \\(${v}\\times ${v}=${v}^2\\).` }
   ] };
 }
 
@@ -277,7 +282,7 @@ function itDist(l, parts, v = 'x') {
   parts.forEach((p, i) => p.f.forEach((t, j) => {
     const lead = i === 0 && j === 0;
     const kt = col(KC, fac(...p.k, v, lead));
-    prods.push((lead ? '' : '+') + `${kt}\\times${fac(...t, v)}`);
+    prods.push((lead ? '' : '+') + `${kt}\\times ${fac(...t, v)}`);
     dev.push(mul(p.k, t));
   }));
   const steps = [];
@@ -299,8 +304,8 @@ function itFacto(l, terms, v = 'x') {
   const kt = mono(...k, v);
   const rew = inner.map((t, i) => {
     const K = col(KC, i ? fac(...k, v) : mono(...k, v));
-    if (k[0] > 0 && t[0] < 0) return `-${K}\\times${body(...t, v)}`;
-    return (i ? '+' : '') + `${K}\\times${fac(...t, v)}`;
+    if (k[0] > 0 && t[0] < 0) return `-${K}\\times ${body(...t, v)}`;
+    return (i ? '+' : '') + `${K}\\times ${fac(...t, v)}`;
   }).join('');
   const why = [];
   if (g > 1) why.push(`\\(${g}\\) divise ${terms.map(t => `\\(${Math.abs(t[0])}\\)`).join(' et ')}`);
@@ -326,8 +331,8 @@ function itFactoBin(l, A, parts, v = 'x') {
   }).join('');
   const rew = parts.map((p, i) => {
     const sg = p.s < 0 ? '-' : (i ? '+' : '');
-    if (p.form === 'A2') return `${sg}${Ac}\\times${At}`;
-    if (p.form === 'kA') return `${sg}${Ac}\\times${seq(p.B, v)}`;
+    if (p.form === 'A2') return `${sg}${Ac}\\times ${At}`;
+    if (p.form === 'kA') return `${sg}${Ac}\\times ${seq(p.B, v)}`;
     return `${sg}${Ac}\\times(${seq(p.B, v)})`;
   }).join('');
   const Bs = parts.map(p => (p.form === 'A2' ? A : p.B));
@@ -335,7 +340,7 @@ function itFactoBin(l, A, parts, v = 'x') {
   const flat = Bs.flatMap((B, i) => (parts[i].s < 0 ? neg(B) : B));
   const red = reduce(flat);
   const steps = [
-    { m: rew, x: `Le facteur commun est \\(${At}\\)${parts.some(p => p.form === 'A2') ? ` (on écrit \\(${At}^2=${At}\\times${At}\\))` : ''}.` },
+    { m: rew, x: `Le facteur commun est \\(${At}\\)${parts.some(p => p.form === 'A2') ? ` (on écrit \\(${At}^2=${At}\\times ${At}\\))` : ''}.` },
     { m: `${At}\\big[${brack}\\big]`, x: 'On met le facteur commun devant ; dans le crochet, on écrit ce qui reste de chaque terme.' }
   ];
   if (parts.some(p => p.s < 0)) steps.push({ m: `${At}(${seq(flat, v)})`, x: 'On supprime les parenthèses dans le crochet : le signe \\(-\\) change le signe de chaque terme de la parenthèse qui suit.' });
@@ -356,7 +361,7 @@ function prodDev(F1, F2, v = 'x') {
   const prods = [], dev = [];
   F1.forEach((a, i) => F2.forEach((b, j) => {
     const lead = i === 0 && j === 0;
-    prods.push((lead ? '' : '+') + `${col(DCOL[i % 3], fac(...a, v, lead))}\\times${fac(...b, v)}`);
+    prods.push((lead ? '' : '+') + `${col(DCOL[i % 3], fac(...a, v, lead))}\\times ${fac(...b, v)}`);
     dev.push(mul(a, b));
   }));
   return { prods: prods.join(''), dev };
@@ -379,15 +384,25 @@ function idSubst(a, b, kind, v = 'x') {
   const A = col(AC, mono(...a, v)), B = col(BC, mono(...b, v));
   const sA = col(AC, sqTex(a, v)), sB = col(BC, sqTex(b, v));
   if (kind === 'diff') return `${sA}-${sB}`;
-  return `${sA}${kind === '+' ? '+' : '-'}2\\times${A}\\times${B}+${sB}`;
+  return `${sA}${kind === '+' ? '+' : '-'}2\\times ${A}\\times ${B}+${sB}`;
 }
 const abText = (a, b, v = 'x') => `\\(a=${col(AC, mono(...a, v))}\\) et \\(b=${col(BC, mono(...b, v))}\\)`;
 
 // Exercice 4 : double distributivité
+// Tableau de double distributivité : colonnes = termes de F1 (couleurs DCOL),
+// lignes = termes de F2, case = produit ligne × colonne (même convention que le cours)
+const sgn = (t, first, v = 'x') => (t[0] > 0 && !first ? '+' : '') + mono(...t, v);
+function tableDD(F1, F2, v = 'x') {
+  const head = F1.map((a, i) => `<th>\\(${col(DCOL[i % 3], sgn(a, i === 0, v))}\\)</th>`).join('');
+  const rows = F2.map((b, j) => `<tr><th>\\(${sgn(b, j === 0, v)}\\)</th>` +
+    F1.map((a, i) => `<td>\\(${col(DCOL[i % 3], sgn(mul(a, b), false, v))}\\)</td>`).join('') + '</tr>').join('');
+  return `<table class="tdd"><tr><th class="coin">\\(\\times\\)</th>${head}</tr>${rows}</table>`;
+}
 function itDouble(l, F1, F2, v = 'x') {
   const { prods, dev } = prodDev(F1, F2, v);
   const r = reduceSteps(dev, v);
   return { l, q: `(${seq(F1, v)})(${seq(F2, v)})`, res: seq(r.fin, v), steps: [
+    { h: tableDD(F1, F2, v), x: 'On place les termes de la première parenthèse en colonnes et ceux de la seconde en lignes : chaque case contient le produit du terme de sa ligne par le terme de sa colonne (règle des signes ; \\(x\\times x=x^2\\)).' },
     { m: prods, x: 'On multiplie chaque terme de la première parenthèse (en couleur) par chaque terme de la seconde.' },
     { m: seq(dev, v), x: 'On calcule chaque produit (règle des signes ; \\(x\\times x=x^2\\)).' }
   ].concat(r.steps) };
@@ -457,7 +472,7 @@ function recoSteps(terms, a, b, kind, v = 'x') {
   } else {
     const ab = mul([2 * a[0], a[1]], b);
     steps.push({ h: `Trois termes, dont deux carrés : ${sqWhy(a, v)} et ${sqWhy(b, v)}.` });
-    steps.push({ h: `On vérifie le double produit : \\(2\\times${fac(...a, v)}\\times${fac(...b, v)}=${mono(...ab, v)}\\), et il est précédé du signe \\(${kind}\\). C’est la forme \\(${FORM8[kind]}\\).` });
+    steps.push({ h: `On vérifie le double produit : \\(2\\times ${fac(...a, v)}\\times ${fac(...b, v)}=${mono(...ab, v)}\\), et il est précédé du signe \\(${kind}\\). C’est la forme \\(${FORM8[kind]}\\).` });
   }
   return steps;
 }
@@ -493,7 +508,7 @@ function itDiffSq(l, A, B, qTex, Bnum, v = 'x') {
 }
 function itFactoK(l, k, m, v = 'x') {   // k x² − k m²
   return { l, q: `${k}${v}^2-${k * m * m}`, res: `${k}(${v}+${m})(${v}-${m})`, steps: [
-    { m: `${col(KC, k)}(${v}^2-${m * m})`, x: `On commence par le facteur commun \\(${k}\\) : \\(${k * m * m}=${k}\\times${m * m}\\).` },
+    { m: `${col(KC, k)}(${v}^2-${m * m})`, x: `On commence par le facteur commun \\(${k}\\) : \\(${k * m * m}=${k}\\times ${m * m}\\).` },
     { m: `${k}(${col(AC, `${v}^2`)}-${col(BC, `${m}^2`)})`, x: `Dans la parenthèse, on reconnaît \\(a^2-b^2\\) avec \\(a=${col(AC, v)}\\) et \\(b=${col(BC, m)}\\).` },
     { m: `${k}(${v}+${m})(${v}-${m})`, x: 'On applique \\(a^2-b^2=(a+b)(a-b)\\), et on garde le facteur \\(' + k + '\\) devant.' }
   ] };
@@ -709,7 +724,7 @@ const lin = (k, s) => (k === 1 ? '' : k) + s;   // 2x, x
 function itFig1(l, k, b) {     // (kx + b)²
   const a = lin(k, 'x'), a2 = k === 1 ? 'x^2' : `${k * k}x^2`, ab = `${k * b}x`, b2 = String(b * b);
   return { l, fig: figSomme(a, b), q: '', mode: 'dev', ansQ: `(${a}+${b})^2`, res: `(${a}+${b})^2=${a2}+${2 * k * b}x+${b2}`, steps: [
-    { svg: figSomme(a, b, [a2, ab, ab, b2]), x: `Aire de chaque zone = longueur × largeur : \\(${k === 1 ? 'x\\times x' : `${a}\\times ${a}`}=${a2}\\), \\(${a}\\times${b}=${ab}\\) (deux fois) et \\(${b}\\times${b}=${b2}\\).` },
+    { svg: figSomme(a, b, [a2, ab, ab, b2]), x: `Aire de chaque zone = longueur × largeur : \\(${k === 1 ? 'x\\times x' : `${a}\\times ${a}`}=${a2}\\), \\(${a}\\times ${b}=${ab}\\) (deux fois) et \\(${b}\\times ${b}=${b2}\\).` },
     { e: `(${a}+${b})^2=${a2}+${ab}+${ab}+${b2}`, x: `Le grand carré a pour côté \\(${a}+${b}\\) : son aire est la somme des aires des quatre zones.` },
     { e: `(${a}+${b})^2=${a2}+${2 * k * b}x+${b2}`, x: `On réduit : \\(${ab}+${ab}=${2 * k * b}x\\).` }
   ] };
@@ -718,7 +733,7 @@ function itFig3(l, b) {        // (x − b)²
   const ab = `${b}x`, b2 = String(b * b);
   return { l, fig: figDiff('x', b), q: '', mode: 'dev', ansQ: `(x-${b})^2`, res: `(x-${b})^2=x^2-${2 * b}x+${b2}`, steps: [
     { svg: figDiff('x', b, `x−${b}`), x: `Le côté du carré gris est \\(x-${b}\\) : on enlève \\(${b}\\) à \\(x\\).` },
-    { svg: figDiff('x', b, `x−${b}`, ['(x−' + b + ')^2', ab, ab, b2]), x: `Le grand carré a pour aire \\(x^2\\). Chaque bande a pour aire \\(x\\times${b}=${ab}\\). Le petit carré du coin a pour aire \\(${b2}\\).` },
+    { svg: figDiff('x', b, `x−${b}`, ['(x−' + b + ')^2', ab, ab, b2]), x: `Le grand carré a pour aire \\(x^2\\). Chaque bande a pour aire \\(x\\times ${b}=${ab}\\). Le petit carré du coin a pour aire \\(${b2}\\).` },
     { e: `(x-${b})^2=x^2-${ab}-${ab}+${b2}`, x: `On enlève les deux bandes, mais le petit carré du coin a alors été enlevé <em>deux fois</em> : on le rajoute une fois.` },
     { e: `(x-${b})^2=x^2-${2 * b}x+${b2}`, x: 'On réduit.' }
   ] };
