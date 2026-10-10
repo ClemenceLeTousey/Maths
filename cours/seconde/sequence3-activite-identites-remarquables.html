@@ -724,13 +724,6 @@
     {c:identity('Les deux calculs donnent la même aire','(7 + x)² = 49 + 14x + x²')}
   ], {ctx:ctxAX});
 
-  Q('A','4d', 'Vérifie ce résultat en développant '+M('(7 + x)(7 + x)')+' avec la double distributivité.', [
-    {f:F(SXa,{total:'!7 + x'})},
-    {w:[M('(7 + x)(7 + x) = 7 * 7 + 7 * x + x * 7 + x * x')]},
-    {w:[M('= 49 + 7x + 7x + x²')]},
-    {w:[M('= 49 + 14x + x²')+' ✔']}
-  ], {ctx:ctxAX});
-
   var SAB = {t:'somme', a:'a', b:'b', z:['','','','']};
   var SABa = F(SAB, {z:['!a²','!ab','!ab','!b²']});
   Q('A','5', '<b>Avec '+M('a')+' et '+M('b')+'.</b> On considère maintenant un carré de côté '+M('a')+' agrandi de '+M('b')+' (avec '+M('a')+' et '+M('b')+' positifs). <br>Écris l’aire de chaque zone sur la figure, puis complète : '+M('(a + b)² = ……'), [
