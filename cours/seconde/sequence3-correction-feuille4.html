@@ -92,7 +92,27 @@ h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
 .item .row .btn { margin-left: auto; }
 .res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
 .item .resline { display: none; }
-.showres .item .resline { display: block; }
+.showres .sheet .item .resline, .item.raw .resline { display: block; }
+
+/* Réponse de l'élève (entraînement avec nouvelles valeurs) */
+.aide { margin: 0; font-size: 15px; color: var(--muted); }
+.aide code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.answer { display: grid; gap: 6px; min-width: 0; }
+.ans-row, .ab { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; min-width: 0; }
+.ans-row label, .ab label { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 260px; max-width: 480px; }
+.ab label { flex: 0 1 180px; }
+.answer input[type="text"] { font: inherit; font-size: 17px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); min-width: 0; width: 100%; }
+.answer input[type="text"]:focus { outline: none; border-color: var(--calc); box-shadow: 0 0 0 2px var(--calc-soft); }
+.ans-prev { min-height: 1.5em; color: var(--muted); font-size: 15px; overflow-x: auto; }
+.choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.choices label { display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; background: var(--paper); }
+.choices label:has(input:checked) { border-color: var(--calc); background: var(--calc-soft); }
+.ans-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb { border-radius: 4px; padding: 6px 12px; font-size: 15px; overflow-x: auto; }
+.fb.ok { background: var(--green-soft); border-left: 3px solid var(--green); }
+.fb.warn { background: var(--amber-soft); border-left: 3px solid #F59F00; }
+.fb.ko { background: var(--red-soft); border-left: 3px solid var(--red); }
+.train .item.good { border-color: var(--green); }
 .qfig { overflow-x: auto; }
 .qfig svg, .fig svg { display: block; max-width: none; }
 
@@ -416,7 +436,7 @@ const FORM6 = { '+': '(a+b)^2', '-': '(a-b)^2', diff: '(a+b)(a-b)' };
 function itRecoProd(a, b, kind, swap = false, v = 'x') {
   const why = kind === 'diff' ? 'C’est un produit de deux parenthèses qui contiennent les <em>mêmes</em> termes, l’une avec \\(+\\), l’autre avec \\(-\\).'
     : `C’est le carré d’une ${kind === '+' ? 'somme' : 'différence'}.`;
-  return { l: '', q: idTex(a, b, kind, v, swap), res: `\\(${FORM6[kind]}\\) ; \\(a=${mono(...a, v)}\\) ; \\(b=${mono(...b, v)}\\)`, resHTML: true, steps: [
+  return { l: '', q: idTex(a, b, kind, v, swap), reco: { a, b, kind, forms: FORM6, swap: kind === '+' }, res: `\\(${FORM6[kind]}\\) ; \\(a=${mono(...a, v)}\\) ; \\(b=${mono(...b, v)}\\)`, resHTML: true, steps: [
     { h: `${why} On coche \\(${FORM6[kind]}\\).` },
     { h: `${kind === 'diff' ? 'Le terme commun aux deux parenthèses est \\(a\\), celui qui change de signe est \\(b\\)' : 'Le premier terme est \\(a\\), le second est \\(b\\)'} : ${abText(a, b, v)}.` }
   ] };
@@ -445,7 +465,7 @@ function itReco8(terms, a, b, kind, v = 'x') {
   const steps = recoSteps(terms, a, b, kind, v);
   const swapNote = kind === '+' && a[1] === 0 && b[1] > 0 ? ` (on peut aussi prendre \\(a=${mono(...b, v)}\\) et \\(b=${mono(...a, v)}\\))` : '';
   steps.push({ h: `Donc ${abText(a, b, v)}${swapNote}.` });
-  return { l: '', q: seq(terms, v), res: `\\(${FORM8[kind]}\\) ; \\(a=${mono(...a, v)}\\) ; \\(b=${mono(...b, v)}\\)`, resHTML: true, steps };
+  return { l: '', q: seq(terms, v), reco: { a, b, kind, forms: FORM8, swap: kind !== 'diff' }, res: `\\(${FORM8[kind]}\\) ; \\(a=${mono(...a, v)}\\) ; \\(b=${mono(...b, v)}\\)`, resHTML: true, steps };
 }
 function itFactoId(l, terms, a, b, kind, v = 'x') {
   const steps = recoSteps(terms, a, b, kind, v);
@@ -478,6 +498,164 @@ function itFactoK(l, k, m, v = 'x') {   // k x² − k m²
     { m: `${k}(${v}+${m})(${v}-${m})`, x: 'On applique \\(a^2-b^2=(a+b)(a-b)\\), et on garde le facteur \\(' + k + '\\) devant.' }
   ] };
 }
+
+/* =====================================================================
+   Réponse de l'élève : lecture de ce qu'il tape, puis comparaison exacte
+   avec l'expression de départ (sous forme de polynôme) et contrôle de la
+   forme demandée (réduite, ou produit).
+   ===================================================================== */
+function tokenize(s) {
+  s = s.replace(/\\times|\\cdot|[×·∙]/g, '*').replace(/[−–]/g, '-').replace(/\\left|\\right|\\big|\\Big/g, '')
+    .replace(/,/g, '.').replace(/²/g, '^2').replace(/³/g, '^3');
+  const out = [];
+  for (let i = 0; i < s.length;) {
+    const c = s[i];
+    if (/\s/.test(c)) { i++; continue; }
+    if (/\d/.test(c) || (c === '.' && /\d/.test(s[i + 1] || ''))) {
+      let j = i; while (j < s.length && /[\d.]/.test(s[j])) j++;
+      const v = Number(s.slice(i, j));
+      if (Number.isNaN(v)) throw new Error(`nombre mal écrit « ${s.slice(i, j)} »`);
+      out.push({ t: 'n', v }); i = j; continue;
+    }
+    if (/[a-z]/.test(c)) { out.push({ t: 'v', v: c }); i++; continue; }
+    if ('+-*/^()[]{}'.includes(c)) { out.push({ t: c }); i++; continue; }
+    throw new Error(`caractère non reconnu « ${c} »`);
+  }
+  if (!out.length) throw new Error('la réponse est vide');
+  return out;
+}
+const CLOSE = { '(': ')', '[': ']', '{': '}' };
+function parseExpr(s) {
+  const tk = tokenize(s);
+  let p = 0;
+  const peek = () => tk[p], eat = t => (tk[p] && tk[p].t === t ? tk[p++] : null);
+  function sum() {
+    const terms = [];
+    let sg = 1;
+    if (eat('-')) sg = -1; else eat('+');
+    terms.push({ s: sg, n: prod() });
+    while (peek() && (peek().t === '+' || peek().t === '-')) { sg = tk[p++].t === '-' ? -1 : 1; terms.push({ s: sg, n: prod() }); }
+    return terms.length === 1 && terms[0].s === 1 ? terms[0].n : { t: 'add', terms };
+  }
+  function prod() {
+    const f = [power()];
+    for (let k = peek(); k; k = peek()) {
+      if (k.t === '*' || k.t === '/') { p++; const n = power(); f.push(k.t === '/' ? { t: 'inv', n } : n); }
+      else if (k.t === 'n' || k.t === 'v' || k.t in CLOSE) f.push(power());   // multiplication sous-entendue : 3x, 2(x+1)
+      else break;
+    }
+    return f.length === 1 ? f[0] : { t: 'mul', f };
+  }
+  function power() {
+    let b = atom();
+    while (eat('^')) b = { t: 'pow', b, e: atom() };
+    return b;
+  }
+  function atom() {
+    const k = tk[p++];
+    if (!k) throw new Error('il manque quelque chose à la fin');
+    if (k.t === 'n') return { t: 'num', v: k.v };
+    if (k.t === 'v') return { t: 'var', v: k.v };
+    if (k.t === '-') return { t: 'neg', n: power() };
+    if (k.t in CLOSE) {
+      const n = sum();
+      if (!eat(CLOSE[k.t])) throw new Error('une parenthèse n’est pas fermée');
+      return k.t === '{' ? n : { t: 'par', n, o: k.t };
+    }
+    throw new Error(`« ${k.t} » mal placé`);
+  }
+  const r = sum();
+  if (p < tk.length) throw new Error(`« ${tk[p].t === 'n' || tk[p].t === 'v' ? tk[p].v : tk[p].t} » mal placé`);
+  return r;
+}
+// Polynôme : { degré: coefficient }
+const P = {
+  c: k => ({ 0: k }),
+  add(a, b, s = 1) { const r = Object.assign({}, a); for (const d in b) r[d] = (r[d] || 0) + s * b[d]; return r; },
+  mul(a, b) { const r = {}; for (const i in a) for (const j in b) { const d = +i + +j; r[d] = (r[d] || 0) + a[i] * b[j]; } return r; },
+  eq(a, b) { return [...new Set([...Object.keys(a), ...Object.keys(b)])].every(d => Math.abs((a[d] || 0) - (b[d] || 0)) < 1e-9); },
+  isConst: a => Object.keys(a).every(d => +d === 0 || Math.abs(a[d]) < 1e-12)
+};
+function toPoly(n, v) {
+  switch (n.t) {
+    case 'num': return P.c(n.v);
+    case 'var': if (n.v !== v) throw new Error(`utilise la lettre \\(${v}\\) (et pas \\(${n.v}\\))`); return { 1: 1 };
+    case 'neg': return P.mul(P.c(-1), toPoly(n.n, v));
+    case 'par': return toPoly(n.n, v);
+    case 'add': return n.terms.reduce((r, t) => P.add(r, toPoly(t.n, v), t.s), {});
+    case 'mul': return n.f.reduce((r, f) => P.mul(r, toPoly(f, v)), P.c(1));
+    case 'inv': {
+      const q = toPoly(n.n, v);
+      if (!P.isConst(q) || !q[0]) throw new Error('on ne peut diviser que par un nombre non nul');
+      return P.c(1 / q[0]);
+    }
+    case 'pow': {
+      const e = toPoly(n.e, v), k = e[0] || 0, b = toPoly(n.b, v);
+      if (!P.isConst(e) || !Number.isInteger(k) || k < 0 || k > 9) throw new Error('l’exposant doit être un nombre entier');
+      let r = P.c(1);
+      for (let i = 0; i < k; i++) r = P.mul(r, b);
+      return r;
+    }
+  }
+  throw new Error('expression mal écrite');
+}
+const monoP = ([c, d]) => ({ [d]: c });
+// Écriture TeX de ce que tape l'élève (aperçu)
+function astTex(n) {
+  switch (n.t) {
+    case 'num': return String(n.v).replace('.', '{,}');
+    case 'var': return n.v;
+    case 'neg': return '-' + astTex(n.n);
+    case 'par': return n.o === '[' ? `\\big[${astTex(n.n)}\\big]` : `(${astTex(n.n)})`;
+    case 'add': return n.terms.map((t, i) => (t.s < 0 ? '-' : i ? '+' : '') + astTex(t.n)).join('');
+    case 'mul': return n.f.map((f, i) => {
+      if (f.t === 'inv') return `\\div ${astTex(f.n)}`;
+      const s = astTex(f);
+      return i && (f.t === 'num' || f.t === 'neg' || (f.t === 'pow' && f.b.t === 'num')) ? `\\times ${s}` : s;
+    }).join('');
+    case 'pow': return `${n.b.t === 'add' || n.b.t === 'mul' || n.b.t === 'neg' ? `(${astTex(n.b)})` : astTex(n.b)}^{${astTex(n.e)}}`;
+  }
+  return '';
+}
+// Forme réduite : somme de monômes sans parenthèses, au plus un par degré
+function monoDeg(n) {
+  if (n.t === 'num') return 0;
+  if (n.t === 'var') return 1;
+  if (n.t === 'pow' && n.b.t === 'var' && n.e.t === 'num') return n.e.v;
+  if (n.t === 'mul' && n.f.length === 2 && n.f[0].t === 'num') { const d = monoDeg(n.f[1]); return d > 0 ? d : null; }
+  return null;
+}
+function isReduced(n) {
+  const ds = [];
+  for (let t of n.t === 'add' ? n.terms.map(u => u.n) : [n]) {
+    if (t.t === 'neg') t = t.n;
+    const d = monoDeg(t);
+    if (d === null) return false;
+    ds.push(d);
+  }
+  return new Set(ds).size === ds.length;
+}
+// Forme factorisée : un produit (avec au moins une parenthèse) qui ne se réduit pas à 1 × (…)
+function isFactored(n, v) {
+  if (n.t === 'add' && n.terms.length === 1) n = n.terms[0].n;
+  if (n.t === 'neg') n = n.n;
+  let nc = 0, k = 1, paren = false;
+  for (const f of n.t === 'mul' ? n.f : [n]) {
+    if (f.t === 'inv') return false;
+    if (f.t === 'par' || (f.t === 'pow' && f.b.t === 'par')) paren = true;
+    const q = toPoly(f, v);
+    if (P.isConst(q)) k *= q[0] || 0;
+    else nc += f.t === 'pow' ? (toPoly(f.e, v)[0] || 0) : 1;
+  }
+  return paren && (nc >= 2 || (nc === 1 && Math.abs(k) !== 1));
+}
+// Ce que tape l'élève : on enlève « A = » ou le membre de gauche s'il le recopie
+function cleanInput(s) {
+  s = s.trim().replace(/^[A-Z]\s*=/, '');
+  if (s.includes('=')) s = s.slice(s.lastIndexOf('=') + 1);
+  return s.toLowerCase();
+}
+const itemVar = it => ((it.ansQ || it.q || '').replace(/\\[a-zA-Z]+/g, '').match(/[a-z]/) || ['x'])[0];
 
 /* =====================================================================
    Figures de l'exercice 5 (mêmes couleurs que la feuille LaTeX)
@@ -530,7 +708,7 @@ function figL(a, b, dims, areas) {
 const lin = (k, s) => (k === 1 ? '' : k) + s;   // 2x, x
 function itFig1(l, k, b) {     // (kx + b)²
   const a = lin(k, 'x'), a2 = k === 1 ? 'x^2' : `${k * k}x^2`, ab = `${k * b}x`, b2 = String(b * b);
-  return { l, fig: figSomme(a, b), q: '', res: `(${a}+${b})^2=${a2}+${2 * k * b}x+${b2}`, steps: [
+  return { l, fig: figSomme(a, b), q: '', mode: 'dev', ansQ: `(${a}+${b})^2`, res: `(${a}+${b})^2=${a2}+${2 * k * b}x+${b2}`, steps: [
     { svg: figSomme(a, b, [a2, ab, ab, b2]), x: `Aire de chaque zone = longueur × largeur : \\(${k === 1 ? 'x\\times x' : `${a}\\times ${a}`}=${a2}\\), \\(${a}\\times${b}=${ab}\\) (deux fois) et \\(${b}\\times${b}=${b2}\\).` },
     { e: `(${a}+${b})^2=${a2}+${ab}+${ab}+${b2}`, x: `Le grand carré a pour côté \\(${a}+${b}\\) : son aire est la somme des aires des quatre zones.` },
     { e: `(${a}+${b})^2=${a2}+${2 * k * b}x+${b2}`, x: `On réduit : \\(${ab}+${ab}=${2 * k * b}x\\).` }
@@ -538,7 +716,7 @@ function itFig1(l, k, b) {     // (kx + b)²
 }
 function itFig3(l, b) {        // (x − b)²
   const ab = `${b}x`, b2 = String(b * b);
-  return { l, fig: figDiff('x', b), q: '', res: `(x-${b})^2=x^2-${2 * b}x+${b2}`, steps: [
+  return { l, fig: figDiff('x', b), q: '', mode: 'dev', ansQ: `(x-${b})^2`, res: `(x-${b})^2=x^2-${2 * b}x+${b2}`, steps: [
     { svg: figDiff('x', b, `x−${b}`), x: `Le côté du carré gris est \\(x-${b}\\) : on enlève \\(${b}\\) à \\(x\\).` },
     { svg: figDiff('x', b, `x−${b}`, ['(x−' + b + ')^2', ab, ab, b2]), x: `Le grand carré a pour aire \\(x^2\\). Chaque bande a pour aire \\(x\\times${b}=${ab}\\). Le petit carré du coin a pour aire \\(${b2}\\).` },
     { e: `(x-${b})^2=x^2-${ab}-${ab}+${b2}`, x: `On enlève les deux bandes, mais le petit carré du coin a alors été enlevé <em>deux fois</em> : on le rajoute une fois.` },
@@ -546,7 +724,7 @@ function itFig3(l, b) {        // (x − b)²
   ] };
 }
 function itFig4(l, b) {        // x² − b² = (x+b)(x−b)
-  return { l, fig: figL('x', b), q: '', res: `x^2-${b * b}=(x+${b})(x-${b})`, steps: [
+  return { l, fig: figL('x', b), q: '', mode: 'fact', ansQ: `x^2-${b * b}`, res: `x^2-${b * b}=(x+${b})(x-${b})`, steps: [
     { x: `On part d’un carré d’aire \\(x^2\\) et on retire le petit carré d’aire \\(${b}^2=${b * b}\\) : il reste \\(x^2-${b * b}\\).` },
     { svg: figL('x', b, [`x+${b}`, `x−${b}`]), x: `Après déplacement du morceau ②, on obtient un rectangle de longueur \\(x+${b}\\) et de largeur \\(x-${b}\\).` },
     { e: `x^2-${b * b}=(x+${b})(x-${b})`, x: 'L’aire n’a pas changé : on a deux écritures de la même aire.' }
@@ -563,7 +741,7 @@ const nz = (a, b) => { let n; do n = ri(a, b); while (n === 0); return n; };
 const sg = () => pick([1, -1]);
 
 const EX = [
-{ n: 1, obj: [1, 'Réduire une expression littérale'], stars: S1, comp: 'Calculer', consigne: 'Réduire les expressions suivantes.',
+{ n: 1, mode: 'dev', obj: [1, 'Réduire une expression littérale'], stars: S1, comp: 'Calculer', consigne: 'Réduire les expressions suivantes.',
   rappel: [
     { t: 'Réduire', h: R`<p>Réduire, c’est écrire l’expression avec le moins de termes possible : on compte <b>famille par famille</b> (les \(x^2\), les \(x\), les nombres).</p><p>\(5x+3x=(5+3)x=8x\)</p>` },
     { t: 'Multiplier', h: R`<p>On multiplie les nombres entre eux et les lettres entre elles.</p><p>\(3x\times4x=3\times4\times x\times x=12x^2\)</p>` }
@@ -586,7 +764,7 @@ const EX = [
       itReduce('I', [[1, 2], [sg() * ri(1, 3), 1], [1, 2], [-ri(1, 9), 0], [1, 1]])] };
   } },
 
-{ n: 2, obj: [2, 'Développer et factoriser avec la simple distributivité'], stars: S1, comp: 'Calculer', consigne: 'Développer puis réduire les expressions suivantes.', more: S2,
+{ n: 2, mode: 'dev', obj: [2, 'Développer et factoriser avec la simple distributivité'], stars: S1, comp: 'Calculer', consigne: 'Développer puis réduire les expressions suivantes.', more: S2,
   rappel: [
     { t: 'Simple distributivité', h: R`<p>\(k(a+b)=ka+kb\) et \(k(a-b)=ka-kb\)</p><p>Le facteur \(k\) multiplie <b>chaque</b> terme de la parenthèse.</p>` },
     { t: 'Règle des signes', h: R`<p>\((-)\times(+)=(-)\) et \((-)\times(-)=(+)\)</p><p>\(-(a+b)=-a-b\) : un signe \(-\) devant une parenthèse change le signe de chaque terme.</p>` }
@@ -608,7 +786,7 @@ const EX = [
         itDist('I', [{ k: [1, 1], f: [[1, 1], [ri(1, 9), 0]] }, { k: [-ri(2, 5), 0], f: [[1, 2], [-ri(2, 6), 1]] }])] };
   } },
 
-{ n: 3, obj: null, stars: S1, comp: 'Calculer', consigne: 'Factoriser les expressions suivantes en repérant un facteur commun.', more: S2,
+{ n: 3, mode: 'fact', obj: null, stars: S1, comp: 'Calculer', consigne: 'Factoriser les expressions suivantes en repérant un facteur commun.', more: S2,
   rappel: [
     { t: 'Factoriser', h: R`<p>Factoriser, c’est transformer une somme en un <b>produit</b>.</p><p>\(ka+kb=k(a+b)\) et \(ka-kb=k(a-b)\)</p>` },
     { t: 'Méthode', h: R`<p>1. On cherche le facteur commun : le plus grand nombre qui divise tous les coefficients, et la lettre si elle est dans chaque terme.</p><p>2. On écrit chaque terme comme un produit par ce facteur.</p><p>3. On vérifie en redéveloppant.</p>` }
@@ -636,7 +814,7 @@ const EX = [
         itFactoBin('I', [[1, 1], [-m, 0]], [{ s: 1, B: null, form: 'A2' }, { s: 1, B: [[ri(2, 4), 1], [nz(-6, 6), 0]], form: 'AB' }])] };
   } },
 
-{ n: 4, obj: [3, 'Développer avec la double distributivité'], stars: S2, comp: 'Calculer', consigne: 'Développer puis réduire les expressions suivantes.', more: S3,
+{ n: 4, mode: 'dev', obj: [3, 'Développer avec la double distributivité'], stars: S2, comp: 'Calculer', consigne: 'Développer puis réduire les expressions suivantes.', more: S3,
   rappel: [
     { t: 'Double distributivité', h: R`<p>\((a+b)(c+d)=ac+ad+bc+bd\)</p><p>Chaque terme de la première parenthèse multiplie chaque terme de la seconde : on obtient <b>4 produits</b> (puis on réduit).</p>` },
     { t: 'Exemple', h: R`<p>\((x+3)(x+5)=x^2+5x+3x+15\)</p><p>\(\phantom{(x+3)(x+5)}=x^2+8x+15\)</p>` }
@@ -681,7 +859,7 @@ const EX = [
     return { main: rows.sort(() => Math.random() - .5).slice(0, 4).map(g => g()) };
   } },
 
-{ n: 7, obj: null, stars: S1, comp: 'Calculer', consigne: 'Développer puis réduire les expressions suivantes à l’aide d’une identité remarquable.', more: S2,
+{ n: 7, mode: 'dev', obj: null, stars: S1, comp: 'Calculer', consigne: 'Développer puis réduire les expressions suivantes à l’aide d’une identité remarquable.', more: S2,
   rappel: [
     { t: 'Identités remarquables', h: R`<p>\((a+b)^2=a^2+2ab+b^2\)</p><p>\((a-b)^2=a^2-2ab+b^2\)</p><p>\((a+b)(a-b)=a^2-b^2\)</p>` },
     { t: 'Méthode', h: R`<p>1. On reconnaît l’identité et on écrit \(a\) et \(b\).</p><p>2. On remplace dans la formule.</p><p>3. On calcule : \((3x)^2=9x^2\) et \(2\times3x\times2=12x\).</p>` }
@@ -719,7 +897,7 @@ const EX = [
       itReco8([[s * s, 0], [-2 * s, 1], [1, 2]], [s, 0], [1, 1], '-')].sort(() => Math.random() - .5) };
   } },
 
-{ n: 9, obj: null, stars: S2, comp: 'Calculer', consigne: 'Factoriser les expressions suivantes à l’aide d’une identité remarquable.', more: S3,
+{ n: 9, mode: 'fact', obj: null, stars: S2, comp: 'Calculer', consigne: 'Factoriser les expressions suivantes à l’aide d’une identité remarquable.', more: S3,
   rappel: [
     { t: 'Factoriser avec les identités', h: R`<p>\(a^2+2ab+b^2=(a+b)^2\)</p><p>\(a^2-2ab+b^2=(a-b)^2\)</p><p>\(a^2-b^2=(a+b)(a-b)\)</p>` },
     { t: 'Méthode', h: R`<p>1. On repère les carrés et on trouve \(a\) et \(b\).</p><p>2. S’il y a trois termes, on vérifie le double produit \(2ab\).</p><p>3. On écrit le produit. On peut vérifier en redéveloppant.</p>` }
@@ -756,18 +934,106 @@ function typeset(el) {
   }
 }
 
-function itemHTML(it, id) {
+// Zone de réponse (entraînement) : champ libre, ou cases + a et b pour les exercices 6 et 8
+function answerHTML(it, id) {
+  if (it.reco) {
+    return `<div class="answer">
+      <div class="choices" role="radiogroup" aria-label="Identité reconnue">${Object.keys(it.reco.forms).map(k => `<label><input type="radio" name="${id}-k" value="${k}"> \\(${it.reco.forms[k]}\\)</label>`).join('')}</div>
+      <div class="ab"><label>\\(a=\\)<input type="text" data-a autocomplete="off" autocapitalize="off" spellcheck="false"></label><label>\\(b=\\)<input type="text" data-b autocomplete="off" autocapitalize="off" spellcheck="false"></label></div>
+      <div class="ans-btns"><button type="button" class="btn solid sm" data-check>Vérifier</button><button type="button" class="btn ghost sm" data-raw>Réponse brute</button></div>
+      <div class="fb" hidden></div></div>`;
+  }
+  const v = itemVar(it);
+  const label = it.ansQ ? `\\(${it.ansQ}=\\)` : /^[A-Z]$/.test(it.l) ? `\\(${it.l}=\\)` : '';
+  return `<div class="answer">
+    <div class="ans-row"><label>${label}<input type="text" data-in placeholder="${it.mode === 'fact' ? `ex. : 2(${v}+3)(${v}-1)` : `ex. : 3${v}^2-5${v}+2`}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Ta réponse"></label></div>
+    <div class="ans-prev" aria-live="polite"></div>
+    <div class="ans-btns"><button type="button" class="btn solid sm" data-check>Vérifier</button><button type="button" class="btn ghost sm" data-raw>Réponse brute</button></div>
+    <div class="fb" hidden></div></div>`;
+}
+function itemHTML(it, id, ans) {
   const label = it.l ? (/^[A-Z]$/.test(it.l) ? `\\(${it.l}=\\)` : `<b>${it.l}</b>`) : '';
   const q = it.q ? `<span class="q">${label} \\(${it.q}\\)</span>` : `<span class="q">${label}</span>`;
   const res = it.resHTML ? it.res : `\\(${/^[A-Z]$/.test(it.l) ? it.l + '=' : ''}${it.res}\\)`;
   return `<div class="item" data-id="${id}">
     <div class="row">${q}<button type="button" class="btn sm" data-open>Correction détaillée</button></div>
     ${it.fig ? `<div class="qfig">${it.fig}</div>` : ''}
+    ${ans ? answerHTML(it, id) : ''}
     <div class="resline">Réponse : <span class="res">${res}</span></div>
     <div class="corr" hidden><ol class="steps"></ol>
       <div class="step-ctrl"><button type="button" class="btn solid sm" data-next>Étape suivante</button><button type="button" class="btn ghost sm" data-all>Tout afficher</button><button type="button" class="btn ghost sm" data-reset hidden>Recommencer</button></div>
       <div class="end" hidden><div class="concl">Résultat : ${res}</div>${it.piege ? `<div class="piege" style="margin-top:8px"><b>Erreur à éviter :</b> ${it.piege}</div>` : ''}</div>
     </div></div>`;
+}
+function retypeset(el) {
+  if (window.MathJax && MathJax.typesetClear) { try { MathJax.typesetClear([el]); } catch (e) { /* rien */ } }
+  typeset(el);
+}
+// Vérification d'une réponse libre : 'ok' | 'form' | 'ko' (ou une erreur de lecture)
+function checkFree(it, mode, str) {
+  const v = itemVar(it);
+  const ast = parseExpr(cleanInput(str));
+  const got = toPoly(ast, v), want = toPoly(parseExpr(it.ansQ || it.q), v);
+  if (!P.eq(got, want)) return 'ko';
+  return (mode === 'fact' ? isFactored(ast, v) : isReduced(ast)) ? 'ok' : 'form';
+}
+function checkReco(it, kind, sa, sb) {
+  const { a, b, kind: k0, swap } = it.reco;
+  const pa = toPoly(parseExpr(cleanInput(sa)), itemVar(it)), pb = toPoly(parseExpr(cleanInput(sb)), itemVar(it));
+  const A = monoP(a), B = monoP(b);
+  const ab = (P.eq(pa, A) && P.eq(pb, B)) || (swap && P.eq(pa, B) && P.eq(pb, A));
+  return { kind: kind === k0, ab };
+}
+function wireAnswer(el, it, mode) {
+  const fb = $('.fb', el), bRaw = $('[data-raw]', el), bChk = $('[data-check]', el);
+  const say = (cls, html) => { fb.hidden = false; fb.className = 'fb ' + cls; fb.innerHTML = html; retypeset(fb); el.classList.toggle('good', cls === 'ok'); };
+  bRaw.addEventListener('click', () => {
+    const on = el.classList.toggle('raw');
+    bRaw.textContent = on ? 'Masquer la réponse' : 'Réponse brute';
+    bRaw.classList.toggle('on', on);
+  });
+  if (it.reco) {
+    const iA = $('[data-a]', el), iB = $('[data-b]', el);
+    const run = () => {
+      const r = el.querySelector('input[type="radio"]:checked');
+      if (!r) return say('ko', 'Coche d’abord l’identité que tu reconnais.');
+      if (!iA.value.trim() || !iB.value.trim()) return say('ko', 'Donne aussi les valeurs de \\(a\\) et de \\(b\\).');
+      let c;
+      try { c = checkReco(it, r.value, iA.value, iB.value); } catch (e) { return say('ko', `Je n’arrive pas à lire ta réponse : ${e.message}.`); }
+      if (c.kind && c.ab) say('ok', '✓ Bravo, c’est juste !');
+      else if (c.kind) say('warn', 'La forme cochée est la bonne, mais vérifie \\(a\\) et \\(b\\).');
+      else if (c.ab) say('ko', '\\(a\\) et \\(b\\) sont bons, mais ce n’est pas la bonne forme : relis les signes et compte les termes.');
+      else say('ko', '✗ Ce n’est pas ça. Relis le rappel, puis regarde la réponse brute ou la correction détaillée.');
+    };
+    bChk.addEventListener('click', run);
+    [iA, iB].forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') run(); }));
+    return;
+  }
+  const inp = $('[data-in]', el), prev = $('.ans-prev', el);
+  let tmr = null;
+  inp.addEventListener('input', () => {
+    clearTimeout(tmr);
+    tmr = setTimeout(() => {
+      const s = cleanInput(inp.value);
+      if (!s) { prev.innerHTML = ''; return; }
+      let tex = null;
+      try { tex = astTex(parseExpr(s)); } catch (e) { /* écriture en cours */ }
+      prev.innerHTML = tex ? `Tu as écrit : \\(${tex}\\)` : 'Tu as écrit : …';
+      retypeset(prev);
+    }, 250);
+  });
+  const run = () => {
+    if (!inp.value.trim()) return say('ko', 'Écris ta réponse dans la case.');
+    let r;
+    try { r = checkFree(it, mode, inp.value); } catch (e) { return say('ko', `Je n’arrive pas à lire ta réponse : ${e.message}.`); }
+    if (r === 'ok') say('ok', '✓ Bravo, c’est juste !');
+    else if (r === 'form') say('warn', mode === 'fact'
+      ? 'Ton expression est bien égale, mais ce n’est pas une forme factorisée : il faut écrire un <b>produit</b>.'
+      : 'Ton expression est bien égale, mais elle n’est pas complètement développée et réduite (il reste des parenthèses, des produits, ou plusieurs termes de la même famille).');
+    else say('ko', '✗ Ce n’est pas le bon résultat. Vérifie tes calculs, puis regarde la réponse brute ou la correction détaillée.');
+  };
+  bChk.addEventListener('click', run);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
 }
 function stepHTML(it, st, k) {
   const L = /^[A-Z]$/.test(it.l) ? it.l : '';
@@ -779,7 +1045,8 @@ function stepHTML(it, st, k) {
   if (st.x) inner += `<div class="x">${st.x}</div>`;
   return `<span class="n">${k}</span><div>${inner}</div>`;
 }
-function wireItem(el, it) {
+function wireItem(el, it, mode) {
+  if ($('.answer', el)) wireAnswer(el, it, it.mode || mode);
   const corr = $('.corr', el), ol = $('.steps', corr), end = $('.end', corr);
   const bN = $('[data-next]', corr), bA = $('[data-all]', corr), bR = $('[data-reset]', corr);
   let k = 0;
@@ -795,14 +1062,14 @@ function wireItem(el, it) {
   bA.addEventListener('click', () => { while (k < it.steps.length) add(); sync(); });
   bR.addEventListener('click', () => { ol.innerHTML = ''; k = 0; add(); sync(); });
 }
-function itemsBlock(set, pre, ex) {
-  let h = `<div class="items">${set.main.map((it, i) => itemHTML(it, `${pre}m${i}`)).join('')}</div>`;
-  if (set.more) h += `<h2 class="part">Pour aller plus loin <span class="stars">${ex.more}</span></h2><div class="items">${set.more.map((it, i) => itemHTML(it, `${pre}p${i}`)).join('')}</div>`;
+function itemsBlock(set, pre, ex, ans) {
+  let h = `<div class="items">${set.main.map((it, i) => itemHTML(it, `${pre}m${i}`, ans)).join('')}</div>`;
+  if (set.more) h += `<h2 class="part">Pour aller plus loin <span class="stars">${ex.more}</span></h2><div class="items">${set.more.map((it, i) => itemHTML(it, `${pre}p${i}`, ans)).join('')}</div>`;
   return h;
 }
-function wireBlock(root, set, pre) {
-  set.main.forEach((it, i) => wireItem($(`[data-id="${pre}m${i}"]`, root), it));
-  (set.more || []).forEach((it, i) => wireItem($(`[data-id="${pre}p${i}"]`, root), it));
+function wireBlock(root, set, pre, mode) {
+  set.main.forEach((it, i) => wireItem($(`[data-id="${pre}m${i}"]`, root), it, mode));
+  (set.more || []).forEach((it, i) => wireItem($(`[data-id="${pre}p${i}"]`, root), it, mode));
 }
 
 const sheet = {};      // valeurs de la feuille, calculées une fois
@@ -838,8 +1105,12 @@ function render(n) {
   $('[data-train]', app).addEventListener('click', () => {
     const fresh = ex.build(true), pre = `t${++train}`;
     tr.hidden = false;
-    tr.innerHTML = `<h2 class="part">Entraînement : nouvelles valeurs <small>cherche sur ton cahier, puis ouvre la correction</small></h2>${itemsBlock(fresh, pre, ex)}`;
-    wireBlock(tr, fresh, pre);
+    const aide = ex.mode
+      ? `<p class="aide">Écris ta réponse dans la case puis clique sur « Vérifier » (ou appuie sur Entrée). Pour \\(x^2\\), tape <code>x^2</code> ; le signe \\(\\times\\) peut s’écrire <code>*</code> ou être sous-entendu : <code>3x^2-5x+2</code>, <code>2(x+3)(x-1)</code>.</p>`
+      : (ex.n === 5 ? `<p class="aide">Écris le résultat de l’égalité dans la case (pour \\(x^2\\), tape <code>x^2</code>), puis clique sur « Vérifier ».</p>`
+      : `<p class="aide">Coche l’identité reconnue, écris \\(a\\) et \\(b\\) (par exemple <code>3x</code> et <code>2</code>), puis clique sur « Vérifier ».</p>`);
+    tr.innerHTML = `<h2 class="part">Entraînement : nouvelles valeurs <small>cherche sur ton cahier, écris ta réponse, puis vérifie</small></h2>${aide}${itemsBlock(fresh, pre, ex, true)}`;
+    wireBlock(tr, fresh, pre, ex.mode);
     typeset(tr);
     tr.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
