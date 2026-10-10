@@ -110,6 +110,10 @@ a { color: inherit; }
     color: var(--text);
     font-weight: 600;
     font-size: 0.95rem;
+}
+
+.logo a {
+    color: inherit;
     text-decoration: none;
 }
 
@@ -133,19 +137,35 @@ a { color: inherit; }
     background: var(--text);
 }
 
-.logo-ligne i {
+.logo-ligne button {
     position: absolute;
     top: 1px;
     width: 10px;
     height: 10px;
+    padding: 0;
     border-radius: 50%;
     border: 2.5px solid;
     background: var(--surface);
+    cursor: pointer;
+    transition: transform 0.15s;
 }
 
-.logo-ligne i:nth-child(1) { left: 0;    border-color: var(--c-seconde);  background: var(--c-seconde); }
-.logo-ligne i:nth-child(2) { left: 16px; border-color: var(--c-premiere); background: var(--c-premiere); }
-.logo-ligne i:nth-child(3) { left: 32px; border-color: var(--c-tst2s); }
+/* zone de clic plus grande que le rond */
+.logo-ligne button::after {
+    content: "";
+    position: absolute;
+    inset: -7px -4px;
+}
+
+.logo-ligne button:hover,
+.logo-ligne button:focus-visible {
+    transform: scale(1.35);
+    outline: none;
+}
+
+.logo-ligne button:nth-child(1) { left: 0;    border-color: var(--c-seconde);  background: var(--c-seconde); }
+.logo-ligne button:nth-child(2) { left: 16px; border-color: var(--c-premiere); background: var(--c-premiere); }
+.logo-ligne button:nth-child(3) { left: 32px; border-color: var(--c-tst2s); }
 
 .nav-links {
     list-style: none;
@@ -316,7 +336,7 @@ header h1.titre-stylo {
 
 /* Les lettres s'écrivent l'une après l'autre, de gauche à droite */
 @media (prefers-reduced-motion: no-preference) {
-    .titre-stylo .l {
+    .titre-stylo.ecrit .l {
         animation: ecrire 0.16s ease-out backwards;
     }
 }
@@ -779,3 +799,69 @@ li.res.pending-link { border-left-color: var(--line); }
 }
 
 .archives li { margin-bottom: 0; }
+
+/* ==========================================================================
+   10. EFFETS DU LOGO (site.js) : symboles qui volent, mode « déglingo »
+   ========================================================================== */
+.effet-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.effet-symboles { z-index: 2000; }
+
+/* Mode déglingo : tout passe en vert terminal, une pluie de caractères tombe derrière */
+:root.matrix {
+    --nuit: #000;
+    --orange: #7dff9b;
+    --bg: #000;
+    --surface: rgba(0, 12, 2, 0.86);
+    --text: #39ff6a;
+    --muted: #1fb04a;
+    --line: #0e4a1d;
+    --pending: #13652a;
+    --c-seconde: #39ff6a;
+    --c-premiere: #a6ffbf;
+    --c-tst2s: #00c853;
+    --badge-text: #000;
+    --bic: #39ff6a;
+    --bleu-doux: #002b0b;
+    --f-texte: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    color-scheme: dark;
+    background: #000;
+}
+
+:root.matrix body { background: transparent; }
+
+.effet-matrix { z-index: -1; }
+
+:root.matrix .navbar { background: rgba(0, 0, 0, 0.9); }
+
+:root.matrix .titre-stylo { text-shadow: 0 0 8px rgba(57, 255, 106, 0.7); }
+
+@media (prefers-reduced-motion: no-preference) {
+    :root.matrix h1,
+    :root.matrix .sequence-subtitle,
+    :root.matrix .class-title {
+        animation: glitch 3.2s steps(1) infinite;
+    }
+
+    :root.matrix .class-card:nth-child(2n) { animation: tremble 4.5s steps(1) infinite; }
+}
+
+@keyframes glitch {
+    0%, 86%, 100% { transform: none; text-shadow: none; }
+    87% { transform: translate(2px, -1px) skewX(-8deg); text-shadow: -2px 0 #ff00c8, 2px 0 #00e5ff; }
+    89% { transform: translate(-3px, 1px); text-shadow: 3px 0 #ff00c8, -3px 0 #00e5ff; }
+    91% { transform: translate(1px, 0) skewX(6deg); }
+    93% { transform: none; text-shadow: -1px 0 #00e5ff; }
+}
+
+@keyframes tremble {
+    0%, 94%, 100% { transform: none; }
+    95% { transform: translate(-2px, 1px) rotate(-0.4deg); }
+    97% { transform: translate(2px, -1px) rotate(0.3deg); }
+}

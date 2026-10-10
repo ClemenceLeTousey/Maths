@@ -108,7 +108,7 @@ document.addEventListener('click', function (e) {
     function crayonner(h) {
         var texte = h.textContent.trim().toUpperCase();
         h.setAttribute('aria-label', h.textContent.trim());
-        h.classList.add('titre-stylo');
+        h.classList.add('titre-stylo', 'ecrit');
         h.textContent = '';
         var accents = [], rang = 0;
         texte.split(' ').forEach(function (mot, i) {
@@ -142,5 +142,122 @@ document.addEventListener('click', function (e) {
         if (!titres.length) return;
         filtreStylo();
         titres.forEach(crayonner);
+    });
+})();
+
+/* Effets cachés dans le logo (les trois ronds de la ligne) :
+   bleu = le titre se réécrit, vert = pluie de symboles maths, violet = mode « déglingo » façon Matrix. */
+(function () {
+    var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function reecrire() {
+        document.querySelectorAll('.titre-stylo').forEach(function (h) {
+            h.classList.remove('ecrit');
+            void h.offsetWidth;              // relance l'animation
+            h.classList.add('ecrit');
+        });
+    }
+
+    function couleur(nom) {
+        return getComputedStyle(document.documentElement).getPropertyValue(nom).trim() || '#ff6f26';
+    }
+
+    /* Vert : une gerbe de symboles mathématiques jaillit du logo puis retombe */
+    function symboles(depuis) {
+        if (calme) return;
+        var c = document.createElement('canvas');
+        c.className = 'effet-canvas effet-symboles';
+        document.body.appendChild(c);
+        var dpr = window.devicePixelRatio || 1;
+        c.width = innerWidth * dpr; c.height = innerHeight * dpr;
+        var ctx = c.getContext('2d');
+        ctx.scale(dpr, dpr);
+        var r = depuis.getBoundingClientRect();
+        var x0 = r.left + r.width / 2, y0 = r.top + r.height / 2;
+        var glyphes = ['π', '√', '∞', '∑', '∫', 'Δ', '≈', '÷', '×', '½', 'x²', '≠', '∈', 'θ', '%', '∀', 'ℝ', '±'];
+        var teintes = [couleur('--c-seconde'), couleur('--c-premiere'), couleur('--c-tst2s'), couleur('--orange')];
+        var parts = [];
+        for (var i = 0; i < 70; i++) {
+            var a = Math.random() * Math.PI * 0.9 + Math.PI * 0.05;   // vers le bas et les côtés
+            var v = 4 + Math.random() * 9;
+            parts.push({
+                x: x0, y: y0, vx: Math.cos(a) * v * (Math.random() < 0.5 ? -1 : 1) * 1.4, vy: Math.sin(a) * v * 0.6 - 4,
+                g: glyphes[i % glyphes.length], c: teintes[i % teintes.length],
+                t: 14 + Math.random() * 18, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3
+            });
+        }
+        var debut = performance.now();
+        (function image(now) {
+            var dt = now - debut;
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            parts.forEach(function (p) {
+                p.vy += 0.25; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.vx *= 0.99;
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, 1 - dt / 2600);
+                ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+                ctx.fillStyle = p.c;
+                ctx.font = '700 ' + p.t + 'px "JetBrains Mono", monospace';
+                ctx.fillText(p.g, 0, 0);
+                ctx.restore();
+            });
+            if (dt < 2600) requestAnimationFrame(image); else c.remove();
+        })(debut);
+    }
+
+    /* Violet : mode « déglingo » — tout passe en vert terminal avec une pluie de caractères */
+    var pluie = null;
+    function matrix() {
+        var racine = document.documentElement;
+        if (racine.classList.toggle('matrix')) {
+            var c = document.createElement('canvas');
+            c.className = 'effet-canvas effet-matrix';
+            document.body.appendChild(c);
+            var ctx = c.getContext('2d');
+            var taille = 16, colonnes, gouttes;
+            var car = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789πΣ√∞∫Δ±≠≈';
+            function dimension() {
+                c.width = innerWidth; c.height = innerHeight;
+                colonnes = Math.ceil(innerWidth / taille);
+                gouttes = Array.from({ length: colonnes }, function () { return Math.random() * innerHeight / taille; });
+                ctx.fillStyle = '#000'; ctx.fillRect(0, 0, c.width, c.height);
+            }
+            dimension();
+            window.addEventListener('resize', dimension);
+            var dernier = 0;
+            function image(now) {
+                if (!racine.classList.contains('matrix')) return;
+                pluie = requestAnimationFrame(image);
+                if (now - dernier < 50) return;
+                dernier = now;
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+                ctx.fillRect(0, 0, c.width, c.height);
+                ctx.font = taille + 'px "JetBrains Mono", monospace';
+                for (var i = 0; i < colonnes; i++) {
+                    var y = gouttes[i] * taille;
+                    ctx.fillStyle = Math.random() < 0.06 ? '#d8ffe2' : '#1fe05a';
+                    ctx.fillText(car[Math.floor(Math.random() * car.length)], i * taille, y);
+                    if (y > c.height && Math.random() > 0.975) gouttes[i] = 0;
+                    gouttes[i]++;
+                }
+            }
+            if (!calme) pluie = requestAnimationFrame(image);
+            c._quitter = function () { window.removeEventListener('resize', dimension); };
+        } else {
+            cancelAnimationFrame(pluie);
+            document.querySelectorAll('.effet-matrix').forEach(function (c) { if (c._quitter) c._quitter(); c.remove(); });
+        }
+    }
+
+    document.addEventListener('click', function (e) {
+        var b = e.target.closest && e.target.closest('.logo-ligne button');
+        if (!b) return;
+        var effet = b.dataset.effet;
+        if (effet === 'ecrire') reecrire();
+        if (effet === 'symboles') symboles(b);
+        if (effet === 'matrix') matrix();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && document.documentElement.classList.contains('matrix')) matrix();
     });
 })();
