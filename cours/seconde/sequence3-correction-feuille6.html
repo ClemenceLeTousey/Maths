@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feuille 6 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Même habillage que la page de remédiation DS1 : une colonne de lecture, thème clair fixe (projection en classe). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs de la feuille */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* sinon display:grid (rappel, entraînement) l’emporte sur hidden */
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons d'exercices */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.green.on { background: var(--green); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .sheet .item .resline, .item.raw .resline { display: block; }
+
+/* Réponse de l'élève (entraînement avec nouvelles valeurs) */
+.aide { margin: 0; font-size: 15px; color: var(--muted); }
+.aide code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.answer { display: grid; gap: 6px; min-width: 0; }
+.ans-row, .ab { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; min-width: 0; }
+.ans-row label, .ab label { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 260px; max-width: 480px; }
+.ab label { flex: 0 1 180px; }
+.answer input[type="text"] { font: inherit; font-size: 17px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); min-width: 0; width: 100%; }
+.answer input[type="text"]:focus { outline: none; border-color: var(--calc); box-shadow: 0 0 0 2px var(--calc-soft); }
+.ans-prev { min-height: 1.5em; color: var(--muted); font-size: 15px; overflow-x: auto; }
+.choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.choices label { display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; background: var(--paper); }
+.choices label:has(input:checked) { border-color: var(--calc); background: var(--calc-soft); }
+.ans-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb { border-radius: 4px; padding: 6px 12px; font-size: 15px; overflow-x: auto; }
+.fb.ok { background: var(--green-soft); border-left: 3px solid var(--green); }
+.fb.warn { background: var(--amber-soft); border-left: 3px solid #F59F00; }
+.fb.ko { background: var(--red-soft); border-left: 3px solid var(--red); }
+.train .item.good { border-color: var(--green); }
+.qfig { overflow-x: auto; }
+.qfig svg, .fig svg { display: block; max-width: none; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+/* Tableau de double distributivité (Ex. 4) : termes de la 1re parenthèse en colonnes, de la 2de en lignes */
+.tdd { border-collapse: collapse; margin: 4px 0 6px; }
+.tdd th, .tdd td { border: 1px solid var(--line); padding: 4px 14px; text-align: center; min-width: 56px; }
+.tdd th { background: var(--bg); font-weight: 400; }
+.tdd th.coin { color: var(--muted); }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+/* Feuille 6 : énoncé d'exercice, figures, réponses à plusieurs cases */
+.enonce { margin: 0; }
+.enonce p { margin: 0 0 6px; }
+.enonce ul { margin: 4px 0 0; padding-left: 22px; }
+.efig { overflow-x: auto; }
+.efig svg { display: block; max-width: none; margin-top: 4px; }
+.progs { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
+.prog { border: 1px solid var(--sky); border-radius: 6px; overflow: hidden; min-width: 190px; background: var(--paper); }
+.prog b { display: block; background: var(--sky); color: #fff; padding: 2px 10px; font-weight: 500; }
+.prog div { padding: 4px 10px; font-size: 16px; }
+.nl { flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; border: 1.5px solid var(--ink); border-radius: 50%; font-size: 13px; font-weight: 600; margin-right: 6px; vertical-align: 1px; }
+.item .q.txt { font-size: 17px; }
+.ans-row label .lab { white-space: nowrap; }
+.ans-row label.wide { flex-basis: 320px; }
+.choices.yn { margin: 0; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Feuille d’exercices n°6 — Corrigé</b><span>Résolution de problèmes</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" id="exnav" aria-label="Exercices"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] } },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<script>
+'use strict';
+const R = String.raw;
+const $ = (s, el = document) => el.querySelector(s);
+const app = $('#app'), nav = $('#exnav');
+
+/* =====================================================================
+   Outils : tirages, écriture des nombres, résolution pas à pas
+   ===================================================================== */
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; };
+const r6 = n => Math.round(n * 1e6) / 1e6;
+// Tire des valeurs jusqu'à ce que la condition soit remplie
+function draw(gen, ok) { for (let i = 0; i < 2000; i++) { const v = gen(); if (ok(v)) return v; } throw new Error('tirage impossible'); }
+
+// Nombre en LaTeX : virgule décimale, espace fine pour les milliers
+function fmt(n) {
+  n = r6(n);
+  let [i, d] = Math.abs(n).toString().split('.');
+  if (i.length > 3) i = i.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+  return (n < 0 ? '-' : '') + i + (d ? '{,}' + d : '');
+}
+// Prix en LaTeX : deux décimales si besoin (9,50)
+const eur = n => (Number.isInteger(r6(n)) ? fmt(n) : fmt(n).replace(/\{,\}(\d)$/, (m, d) => '{,}' + d + '0'));
+// Nombre hors formule : 1 200 ; 12,5
+const ft = n => fmt(n).replace(/\\,/g, '\u202f').replace('{,}', ',');
+// Écriture fractionnaire si le nombre n'est pas décimal « simple »
+function toFrac(x) { for (let q = 1; q <= 1000; q++) { const p = x * q; if (Math.abs(p - Math.round(p)) < 1e-7) return [Math.round(p), q]; } return null; }
+function texNum(x) {
+  const f = toFrac(x);
+  if (!f || f[1] === 1 || [2, 4, 5, 10, 20, 25, 50, 100].includes(f[1])) return fmt(x);
+  return `${f[0] < 0 ? '-' : ''}\\dfrac{${Math.abs(f[0])}}{${f[1]}}`;
+}
+// Terme en v : 3x, -x, 1{,}5d
+const mono = (a, v) => (a === 1 ? v : a === -1 ? '-' + v : fmt(a) + v);
+// ax+b
+function lin(a, b, v = 'x') {
+  a = r6(a); b = r6(b);
+  if (a === 0) return fmt(b);
+  return mono(a, v) + (b === 0 ? '' : (b > 0 ? '+' : '') + fmt(b));
+}
+const REL = { '=': '=', '<': '<', '>': '>', le: '\\leq ', ge: '\\geq ' };
+const FLIP = { '=': '=', '<': '>', '>': '<', le: 'ge', ge: 'le' };
+const EQV = '\\Longleftrightarrow\\ ';
+
+/* ax+b REL cx+d : on regroupe les termes en v à gauche, les nombres à droite,
+   puis on divise par le coefficient de v. Renvoie les étapes et la solution. */
+function solveLin(a, b, rel, c, d, v = 'x') {
+  const steps = [], R0 = REL[rel], ineq = rel !== '=';
+  const A = r6(a - c);
+  if (c !== 0) steps.push({ e: EQV + `${lin(A, b, v)}${R0}${fmt(d)}`,
+    x: c > 0 ? `On soustrait \\(${mono(c, v)}\\) aux deux membres.` : `On ajoute \\(${mono(-c, v)}\\) aux deux membres.` });
+  const D = r6(d - b);
+  if (b !== 0) steps.push({ e: EQV + `${mono(A, v)}${R0}${fmt(D)}`,
+    x: b > 0 ? `On soustrait \\(${fmt(b)}\\) aux deux membres.` : `On ajoute \\(${fmt(-b)}\\) aux deux membres.` });
+  const val = r6(D / A), relF = A < 0 ? FLIP[rel] : rel;
+  if (A !== 1) {
+    let x = `On divise les deux membres par \\(${fmt(A)}\\)`;
+    if (ineq) x += A > 0 ? ', qui est positif : le sens de l’inégalité ne change pas.' : `, qui est <b>négatif</b> : on <b>change le sens</b> de l’inégalité.`;
+    else x += '.';
+    steps.push({ e: EQV + `${v}${REL[relF]}${texNum(val)}`, x });
+  }
+  return { steps, val, rel: relF, tex: `${v}${REL[relF]}${texNum(val)}` };
+}
+
+const MULT = { 2: 'double', 3: 'triple', 4: 'quadruple', 5: 'quintuple' };
+const concl = h => ({ h: `<b>Conclusion :</b> ${h}` });
+
+/* =====================================================================
+   Figures (SVG)
+   ===================================================================== */
+const SVGS = 'font-family="Source Sans 3, Arial, sans-serif" font-size="15" fill="#1D2733"';
+function figPerim(a) {
+  return `<svg width="250" height="130" viewBox="0 0 250 130" ${SVGS} role="img" aria-label="Carré de côté x et triangle équilatéral de côté x plus ${a}">
+  <rect x="10" y="20" width="80" height="80" fill="#EAF3FC" stroke="#1D2733" stroke-width="1.6"/>
+  <text x="50" y="120" text-anchor="middle" font-style="italic">x</text>
+  <polygon points="130,100 230,100 180,13.4" fill="#FEF0E6" stroke="#1D2733" stroke-width="1.6"/>
+  <text x="180" y="120" text-anchor="middle"><tspan font-style="italic">x</tspan> + ${a}</text></svg>`;
+}
+function figPyth(c, d) {
+  return `<svg width="250" height="150" viewBox="0 0 250 150" ${SVGS} role="img" aria-label="Triangle ABC rectangle en A">
+  <polygon points="30,120 220,120 30,20" fill="#EAF3FC" stroke="#1D2733" stroke-width="1.6"/>
+  <polyline points="30,108 42,108 42,120" fill="none" stroke="#1D2733"/>
+  <text x="20" y="136">A</text><text x="224" y="136">B</text><text x="22" y="14">C</text>
+  <text x="125" y="138" text-anchor="middle" font-style="italic">x</text>
+  <text x="24" y="74" text-anchor="end">${c} cm</text>
+  <text x="132" y="62"><tspan font-style="italic">x</tspan> + ${d}</text></svg>`;
+}
+function figRect(L, h) {
+  return `<svg width="300" height="190" viewBox="0 0 300 190" ${SVGS} role="img" aria-label="Rectangle ABCD et point M sur [AB]">
+  <polygon points="110,140 260,140 260,30" fill="#D0E7FB"/>
+  <rect x="40" y="30" width="220" height="110" fill="none" stroke="#1D2733" stroke-width="1.6"/>
+  <line x1="110" y1="140" x2="260" y2="30" stroke="#1D2733" stroke-width="1.6"/>
+  <circle cx="110" cy="140" r="2.5"/>
+  <text x="30" y="156">A</text><text x="262" y="156">B</text><text x="262" y="24">C</text><text x="28" y="24">D</text><text x="105" y="158">M</text>
+  <text x="150" y="22" text-anchor="middle">${L} cm</text><text x="34" y="90" text-anchor="end">${h} cm</text>
+  <line x1="40" y1="172" x2="110" y2="172" stroke="#1D2733"/><polyline points="46,168 40,172 46,176" fill="none" stroke="#1D2733"/><polyline points="104,168 110,172 104,176" fill="none" stroke="#1D2733"/>
+  <text x="75" y="188" text-anchor="middle" font-style="italic">x</text></svg>`;
+}
+
+/* =====================================================================
+   Rappels communs
+   ===================================================================== */
+const RAP = {
+  meth: { t: 'Mettre un problème en équation', h: R`<p>① Choisir l’inconnue et la nommer (\(x\) = …).<br>② Traduire l’énoncé par une équation.<br>③ Résoudre l’équation.<br>④ Vérifier, puis conclure par une phrase (avec l’unité).</p>` },
+  eq: { t: 'Résoudre une équation', h: R`<p>On garde une équation équivalente si on <b>ajoute ou soustrait</b> un même nombre (ou un même terme en \(x\)) aux deux membres, ou si on <b>multiplie ou divise</b> les deux membres par un même nombre non nul.</p>` },
+  ineq: { t: 'Résoudre une inéquation', h: R`<p>Mêmes règles que pour une équation, <b>sauf</b> : si on multiplie ou divise par un nombre <b>négatif</b>, on <b>change le sens</b> de l’inégalité.</p><p>\(-2x<6\Longleftrightarrow x>-3\)</p>` },
+  voc: { t: 'Traduire en langage mathématique', h: R`<p>Le double, le triple de \(x\) : \(2x\), \(3x\). La moitié, le tiers : \(\dfrac{x}{2}\), \(\dfrac{x}{3}\).</p><p>« Augmenté de 5 » : \(+5\) ; « diminué de 3 », « retrancher 3 » : \(-3\).</p>` },
+  id: { t: 'Identités remarquables', h: R`<p>\((a+b)^2=a^2+2ab+b^2\)<br>\((a-b)^2=a^2-2ab+b^2\)<br>\((a+b)(a-b)=a^2-b^2\)</p>` },
+  pyth: { t: 'Théorème de Pythagore', h: R`<p>Si ABC est rectangle en A, alors \(\text{BC}^2=\text{AB}^2+\text{AC}^2\) ([BC] est l’hypoténuse, le côté opposé à l’angle droit).</p>` },
+  sens: { t: 'Lire la question', h: R`<p>« Au moins » : \(\geq\) ; « au plus », « au maximum » : \(\leq\) ; « plus que », « strictement » : \(>\) ou \(<\).</p><p>Si l’inconnue est un nombre entier (séances, objets), on conclut avec le premier entier qui convient.</p>` }
+};
+const S1 = '<span style="color:var(--star-green)">★</span><span style="color:#ADB5BD">☆☆</span>';
+const S2 = '<span style="color:var(--star-blue)">★★</span><span style="color:#ADB5BD">☆</span>';
+const S3 = '<span style="color:var(--star-red)">★★★</span>';
+
+/* =====================================================================
+   Les exercices. build(f) : f = false → valeurs de la feuille ;
+   f = true → nouvelles valeurs. Renvoie { enonce, main:[items], more? }.
+   Item : { q, res, steps:[{e|h, x}], ans?, piege? }
+   ans : { items:[{ lab, v (nombre) | f (expression) | rel (inéquation) | yn }], v: lettre }
+   ===================================================================== */
+const EX = [
+{ n: 1, obj: [9, 'Mettre un problème en équation'], stars: S1, comp: 'Modéliser', more: S2,
+  rappel: [RAP.voc, RAP.meth, RAP.eq],
+  att: R`<p>« Le double de la somme de \(x\) et de 4 » : \(2(x+4)\), avec des parenthèses. Sans elles, \(2x+4\) est « le double de \(x\), augmenté de 4 ».</p>`,
+  build(f) {
+    let k1 = 3, b1 = 5, s1 = 7, k2 = 2, b2 = 4, s2 = 5, k3 = 4, k3b = 2, b3 = 7, s3 = 8, b4 = 3, n0 = 28;
+    if (f) {
+      k1 = ri(2, 5); s1 = ri(2, 15); b1 = ri(1, 12); k2 = ri(2, 5); s2 = ri(1, 12); b2 = ri(1, 9);
+      [k3, k3b, b3, s3] = draw(() => { const k = ri(3, 5); return [k, ri(2, k - 1), ri(1, 9), ri(3, 15)]; }, ([k, kb, b, s]) => (k - kb) * s - b > 0);
+      b4 = ri(1, 9); n0 = ri(5, 60);
+    }
+    const c1 = k1 * s1 + b1, c2 = k2 * (s2 + b2), d3 = (k3 - k3b) * s3 - b3, S = 3 * n0 + 3;
+    const r1 = solveLin(k1, b1, '=', 0, c1), r2 = solveLin(k2, k2 * b2, '=', 0, c2), r3 = solveLin(k3, -b3, '=', k3b, d3), r4 = solveLin(3, -6 * b4, '=', 2, 0), r5 = solveLin(3, 3, '=', 0, S, 'n');
+    const ans = v => ({ items: [{ lab: R`\(x=\)`, v }] });
+    return {
+      enonce: R`<p>Pour chaque phrase, on note \(x\) le nombre cherché. Traduire la phrase par une équation, puis la résoudre.</p>`,
+      main: [
+        { q: `Le ${MULT[k1]} d’un nombre, augmenté de ${b1}, est égal à ${c1}.`, res: `\\(${k1}x+${b1}=${c1}\\), donc \\(x=${s1}\\).`, ans: ans(s1),
+          steps: [{ e: `${k1}x+${b1}=${c1}`, x: `« Le ${MULT[k1]} de \\(x\\) » s’écrit \\(${k1}x\\) ; « augmenté de ${b1} » : on ajoute ${b1}.` }, ...r1.steps,
+            { h: `Vérification : \\(${k1}\\times ${s1}+${b1}=${c1}\\). La solution est \\(${s1}\\).` }] },
+        { q: `Le ${MULT[k2]} de la somme d’un nombre et de ${b2} vaut ${c2}.`, res: `\\(${k2}(x+${b2})=${c2}\\), donc \\(x=${s2}\\).`, ans: ans(s2),
+          steps: [{ e: `${k2}(x+${b2})=${c2}`, x: `La somme d’un nombre et de ${b2} s’écrit \\(x+${b2}\\) ; on prend le ${MULT[k2]} de <em>toute</em> la somme : parenthèses indispensables.` },
+            { e: EQV + `${k2}x+${k2 * b2}=${c2}`, x: 'On développe.' }, ...r2.steps,
+            { h: `Vérification : \\(${k2}\\times(${s2}+${b2})=${c2}\\). La solution est \\(${s2}\\).` }],
+          piege: `Écrire \\(${k2}x+${b2}=${c2}\\) : c’est toute la somme \\(x+${b2}\\) qu’il faut multiplier par ${k2}.` },
+        { q: `Si on retranche ${b3} au ${MULT[k3]} d’un nombre, on obtient le ${MULT[k3b]} de ce nombre augmenté de ${d3}.`, res: `\\(${k3}x-${b3}=${k3b}x+${d3}\\), donc \\(x=${s3}\\).`, ans: ans(s3),
+          steps: [{ e: `${k3}x-${b3}=${k3b}x+${d3}`, x: `« Retrancher ${b3} au ${MULT[k3]} » : \\(${k3}x-${b3}\\). « Le ${MULT[k3b]} de ce nombre augmenté de ${d3} » : \\(${k3b}x+${d3}\\).` }, ...r3.steps,
+            { h: `Vérification : \\(${k3}\\times ${s3}-${b3}=${k3 * s3 - b3}\\) et \\(${k3b}\\times ${s3}+${d3}=${k3b * s3 + d3}\\). La solution est \\(${s3}\\).` }] },
+        { q: `La moitié d’un nombre, diminuée de ${b4}, est égale au tiers de ce nombre.`, res: `\\(\\dfrac{x}{2}-${b4}=\\dfrac{x}{3}\\), donc \\(x=${6 * b4}\\).`, ans: ans(6 * b4),
+          steps: [{ e: `\\dfrac{x}{2}-${b4}=\\dfrac{x}{3}`, x: 'La moitié de \\(x\\) : \\(\\dfrac{x}{2}\\) ; le tiers de \\(x\\) : \\(\\dfrac{x}{3}\\).' },
+            { e: EQV + `3x-${6 * b4}=2x`, x: 'On multiplie les deux membres par \\(6\\) pour supprimer les fractions : \\(6\\times\\dfrac{x}{2}=3x\\), \\(6\\times ' + b4 + '=' + 6 * b4 + '\\) et \\(6\\times\\dfrac{x}{3}=2x\\).' }, ...r4.steps,
+            { h: `Vérification : \\(\\dfrac{${6 * b4}}{2}-${b4}=${2 * b4}\\) et \\(\\dfrac{${6 * b4}}{3}=${2 * b4}\\). La solution est \\(${6 * b4}\\).` }],
+          piege: `En multipliant par 6, on n’oublie pas de multiplier aussi le ${b4} : \\(6\\times\\left(\\dfrac{x}{2}-${b4}\\right)=3x-${6 * b4}\\).` }
+      ],
+      more: [
+        { q: `La somme de trois nombres entiers consécutifs vaut ${S}. Quels sont ces trois nombres ?`, res: `\\(${n0}\\), \\(${n0 + 1}\\) et \\(${n0 + 2}\\).`,
+          ans: { items: [{ lab: '1<sup>er</sup> :', v: n0 }, { lab: '2<sup>e</sup> :', v: n0 + 1 }, { lab: '3<sup>e</sup> :', v: n0 + 2 }] },
+          steps: [{ h: 'On note \\(n\\) le plus petit des trois nombres : les deux suivants sont \\(n+1\\) et \\(n+2\\).' },
+            { e: `n+(n+1)+(n+2)=${S}`, x: 'On traduit « la somme des trois nombres ».' }, { e: EQV + `3n+3=${S}`, x: 'On réduit.' }, ...r5.steps,
+            concl(`les trois nombres sont \\(${n0}\\), \\(${n0 + 1}\\) et \\(${n0 + 2}\\) (et \\(${n0}+${n0 + 1}+${n0 + 2}=${S}\\)).`)] }
+      ] };
+  } },
+
+{ n: 2, stars: S1, comp: 'Modéliser', rappel: [RAP.meth, RAP.eq],
+  att: R`<p>\(10(32-x)\) : les parenthèses sont indispensables, c’est le nombre de billets \(32-x\) tout entier qui est multiplié par 10.</p>`,
+  build(f) {
+    let v1 = 5, v2 = 10, N = 32, x = 18;
+    if (f) { [v1, v2] = pick([[5, 10], [10, 20], [5, 20], [10, 50], [20, 50]]); N = ri(15, 40); x = ri(3, N - 3); }
+    const T = v1 * x + v2 * (N - x), r = solveLin(v1 - v2, v2 * N, '=', 0, T);
+    return {
+      enonce: `<p>Dans sa tirelire, Inès n’a que des billets de ${v1} euros et de ${v2} euros. Elle possède ${N} billets, pour un total de \\(${fmt(T)}\\) euros. On note \\(x\\) le nombre de billets de ${v1} euros.</p>`,
+      main: [
+        { q: `Exprimer en fonction de \\(x\\) le nombre de billets de ${v2} euros.`, res: `\\(${N}-x\\)`, ans: { items: [{ lab: 'Nombre :', f: t => N - t }] },
+          steps: [{ h: `Il y a ${N} billets en tout, dont \\(x\\) billets de ${v1} euros. Les autres sont des billets de ${v2} euros : il y en a \\(${N}-x\\).` }] },
+        { q: `Montrer que \\(x\\) vérifie l’équation \\(${v1}x+${v2}(${N}-x)=${fmt(T)}\\).`, res: 'voir la correction détaillée',
+          steps: [{ h: `Les \\(x\\) billets de ${v1} euros valent \\(${v1}\\times x=${v1}x\\) euros.` },
+            { h: `Les \\(${N}-x\\) billets de ${v2} euros valent \\(${v2}\\times(${N}-x)=${v2}(${N}-x)\\) euros.` },
+            { h: `Le total vaut \\(${fmt(T)}\\) euros, donc \\(${v1}x+${v2}(${N}-x)=${fmt(T)}\\).` }] },
+        { q: 'Combien Inès a-t-elle de billets de chaque sorte ?', res: `${x} billets de ${v1} euros et ${N - x} billets de ${v2} euros.`,
+          ans: { items: [{ lab: `billets de ${v1} € :`, v: x }, { lab: `billets de ${v2} € :`, v: N - x }] },
+          steps: [{ e: `${v1}x+${v2}(${N}-x)=${fmt(T)}` }, { e: EQV + `${v1}x+${fmt(v2 * N)}-${v2}x=${fmt(T)}`, x: 'On développe.' },
+            { e: EQV + `${lin(v1 - v2, v2 * N)}=${fmt(T)}`, x: 'On réduit le membre de gauche.' }, ...r.steps,
+            concl(`Inès a ${x} billets de ${v1} euros et \\(${N}-${x}=${N - x}\\) billets de ${v2} euros.`),
+            { h: `<span class="x">Vérification : \\(${v1}\\times ${x}+${v2}\\times ${N - x}=${fmt(v1 * x)}+${fmt(v2 * (N - x))}=${fmt(T)}\\).</span>` }] }
+      ] };
+  } },
+
+{ n: 3, stars: S2, comp: 'Modéliser', rappel: [RAP.meth, RAP.eq],
+  att: R`<p>Tout le monde vieillit de la même façon : dans \(x\) années, on ajoute \(x\) à l’âge de Léa <b>et</b> à celui de sa mère.</p>`,
+  build(f) {
+    let L = 12, M = 40, k = 5;
+    if (f) [L, M, k] = draw(() => { const l = ri(6, 16); return [l, 2 * l + ri(4, 25), pick([3, 4, 5])]; },
+      ([l, m, kk]) => m <= 60 && (kk * l - m) % (kk - 1) === 0 && (kk * l - m) / (kk - 1) >= 1 && (kk * l - m) / (kk - 1) < l - 1);
+    const x = M - 2 * L, y = (k * L - M) / (k - 1);
+    const r1 = solveLin(1, M, '=', 2, 2 * L), r2 = solveLin(-1, M, '=', -k, k * L, 'y');
+    return {
+      enonce: `<p>Aujourd’hui, Léa a ${L} ans et sa mère a ${M} ans.</p>`,
+      main: [
+        { q: 'Dans combien d’années l’âge de la mère sera-t-il le double de celui de Léa ?', res: `Dans ${x} ans.`, ans: { items: [{ lab: 'Nombre d’années :', v: x }] },
+          steps: [{ h: `On note \\(x\\) le nombre d’années. Dans \\(x\\) années, Léa aura \\(${L}+x\\) ans et sa mère \\(${M}+x\\) ans.` },
+            { e: `${M}+x=2(${L}+x)`, x: 'L’âge de la mère est le double de celui de Léa.' }, { e: EQV + `${M}+x=${2 * L}+2x`, x: 'On développe.' }, ...r1.steps,
+            concl(`dans ${x} ans : Léa aura ${L + x} ans et sa mère ${M + x} ans, et \\(${M + x}=2\\times ${L + x}\\).`)],
+          piege: `Écrire \\(${M}+x=2\\times ${L}+x\\) : c’est tout l’âge de Léa, \\(${L}+x\\), qu’il faut doubler.` },
+        { q: `Il y a combien d’années l’âge de la mère était-il le ${MULT[k]} de celui de Léa ?`, res: `Il y a ${y} ans.`, ans: { items: [{ lab: 'Nombre d’années :', v: y }] },
+          steps: [{ h: `On note \\(y\\) ce nombre d’années. Il y a \\(y\\) années, Léa avait \\(${L}-y\\) ans et sa mère \\(${M}-y\\) ans.` },
+            { e: `${M}-y=${k}(${L}-y)`, x: `L’âge de la mère était le ${MULT[k]} de celui de Léa.` }, { e: EQV + `${M}-y=${k * L}-${k}y`, x: 'On développe.' }, ...r2.steps,
+            concl(`il y a ${y} ans : Léa avait ${L - y} ans et sa mère ${M - y} ans, et \\(${M - y}=${k}\\times ${L - y}\\).`)] }
+      ] };
+  } },
+
+{ n: 4, stars: S2, comp: 'Modéliser', rappel: [RAP.meth, RAP.ineq],
+  att: R`<p>« Ajouter 5, puis multiplier le résultat par 2 » : c’est \(2(x+5)\), le 2 multiplie tout le résultat.</p>`,
+  build(f) {
+    let p = 3, q = 7, r = 5, s = 2, t0 = 4;
+    if (f) { [p, s, r, q] = draw(() => { const pp = ri(3, 6), ss = ri(2, pp - 1), rr = ri(1, 6); return [pp, ss, rr, (pp - ss) * ri(5, 20) - ss * rr]; }, ([, , , qq]) => qq >= 1 && qq <= 15); t0 = ri(2, 6); }
+    const x0 = (s * r + q) / (p - s), A = p * t0 - q, B = (t0 + r) * s;
+    const r3 = solveLin(p, -q, '=', s, s * r), r4 = solveLin(p, -q, '>', s, s * r);
+    return {
+      enonce: `<p>On considère les deux programmes de calcul suivants.</p><div class="progs"><div class="prog"><b>Programme A</b><div>Choisir un nombre.<br>Le multiplier par ${p}.<br>Soustraire ${q} au résultat.</div></div><div class="prog"><b>Programme B</b><div>Choisir un nombre.<br>Lui ajouter ${r}.<br>Multiplier le résultat par ${s}.</div></div></div>`,
+      main: [
+        { q: `Calculer le résultat obtenu avec chacun des deux programmes lorsqu’on choisit le nombre ${t0}.`, res: `A : \\(${A}\\) ; B : \\(${B}\\).`,
+          ans: { items: [{ lab: 'Programme A :', v: A }, { lab: 'Programme B :', v: B }] },
+          steps: [{ h: `Programme A : \\(${t0}\\times ${p}=${t0 * p}\\), puis \\(${t0 * p}-${q}=${A}\\).` }, { h: `Programme B : \\(${t0}+${r}=${t0 + r}\\), puis \\(${t0 + r}\\times ${s}=${B}\\).` }] },
+        { q: 'On choisit un nombre quelconque, noté \\(x\\). Exprimer en fonction de \\(x\\) le résultat de chaque programme.', res: `A : \\(${p}x-${q}\\) ; B : \\(${s}(x+${r})=${s}x+${s * r}\\).`,
+          ans: { items: [{ lab: 'A :', f: t => p * t - q }, { lab: 'B :', f: t => s * (t + r) }] },
+          steps: [{ h: `Programme A : \\(x\\to ${p}x\\to ${p}x-${q}\\).` }, { h: `Programme B : \\(x\\to x+${r}\\to ${s}(x+${r})\\), c’est-à-dire \\(${s}x+${s * r}\\) en développant.` }] },
+        { q: 'Quel nombre faut-il choisir pour obtenir le même résultat avec les deux programmes ?', res: `\\(${x0}\\) (les deux programmes donnent \\(${p * x0 - q}\\)).`, ans: { items: [{ lab: R`\(x=\)`, v: x0 }] },
+          steps: [{ e: `${p}x-${q}=${s}x+${s * r}`, x: 'Les deux résultats sont égaux.' }, ...r3.steps,
+            concl(`il faut choisir \\(${x0}\\) ; les deux programmes donnent alors \\(${p * x0 - q}\\).`)] },
+        { q: 'Pour quels nombres le programme A donne-t-il un résultat strictement supérieur à celui du programme B ?', res: `Pour \\(x>${x0}\\).`, ans: { v: 'x', items: [{ lab: 'Solutions :', rel: ['>', x0], wide: true }] },
+          steps: [{ e: `${p}x-${q}>${s}x+${s * r}`, x: '« Strictement supérieur » : signe \\(>\\).' }, ...r4.steps,
+            concl(`le programme A donne un résultat plus grand pour tous les nombres strictement supérieurs à \\(${x0}\\).`)] }
+      ] };
+  } },
+
+{ n: 5, stars: S2, comp: 'Représenter', rappel: [RAP.meth, RAP.ineq],
+  att: R`<p>Le périmètre du triangle est \(3(x+2)\) : chacun des trois côtés mesure \(x+2\).</p>`,
+  build(f) {
+    const a = f ? pick([1, 3, 4, 5, 6]) : 2, r2 = solveLin(4, 0, '=', 3, 3 * a), r3 = solveLin(4, 0, '>', 3, 3 * a);
+    return {
+      enonce: `<p>On considère un carré de côté \\(x\\) et un triangle équilatéral de côté \\(x+${a}\\) (en cm), où \\(x\\) est un nombre positif.</p><div class="efig">${figPerim(a)}</div>`,
+      main: [
+        { q: 'Exprimer en fonction de \\(x\\) le périmètre de chacune des deux figures.', res: `Carré : \\(4x\\) ; triangle : \\(3(x+${a})=3x+${3 * a}\\).`,
+          ans: { items: [{ lab: 'Carré :', f: t => 4 * t }, { lab: 'Triangle :', f: t => 3 * (t + a) }] },
+          steps: [{ h: 'Le carré a 4 côtés de longueur \\(x\\) : son périmètre est \\(4x\\).' }, { h: `Le triangle équilatéral a 3 côtés de longueur \\(x+${a}\\) : son périmètre est \\(3(x+${a})=3x+${3 * a}\\).` }] },
+        { q: 'Pour quelle valeur de \\(x\\) les deux figures ont-elles le même périmètre ?', res: `\\(x=${3 * a}\\)`, ans: { items: [{ lab: R`\(x=\)`, v: 3 * a }] },
+          steps: [{ e: `4x=3x+${3 * a}` }, ...r2.steps, concl(`les deux périmètres sont égaux pour \\(x=${3 * a}\\) cm (ils valent alors \\(${12 * a}\\) cm).`)] },
+        { q: 'Pour quelles valeurs de \\(x\\) le périmètre du carré est-il strictement plus grand que celui du triangle ?', res: `Pour \\(x>${3 * a}\\).`, ans: { v: 'x', items: [{ lab: 'Solutions :', rel: ['>', 3 * a], wide: true }] },
+          steps: [{ e: `4x>3x+${3 * a}` }, ...r3.steps, concl(`le périmètre du carré est plus grand pour \\(x>${3 * a}\\).`)] }
+      ] };
+  } },
+
+{ n: 6, stars: S3, comp: 'Chercher', rappel: [RAP.id, RAP.pyth, RAP.eq],
+  att: R`<p>\((x+3)^2\neq x^2+9\) : il ne faut pas oublier le double produit \(2\times x\times 3=6x\).</p>`,
+  build(f) {
+    let a = 3, x1 = 7, T = [8, 15, 2];
+    if (f) { a = ri(1, 5); x1 = ri(3, 12); T = pick([[8, 15, 2], [5, 12, 1], [9, 40, 1], [12, 16, 4], [6, 8, 2], [7, 24, 1], [12, 5, 8], [20, 15, 10], [15, 8, 9]]); }
+    const A = 2 * a * x1 + a * a, [c, x2, d] = T;
+    const r1 = solveLin(2 * a, a * a, '=', 0, A), r2 = solveLin(2 * d, d * d, '=', 0, c * c);
+    return {
+      enonce: `<p><i>Dans cet exercice, on pourra utiliser les identités remarquables.</i></p>`,
+      main: [
+        { q: `Si on augmente de ${a} cm le côté d’un carré, son aire augmente de ${A} cm². Quel est le côté du carré de départ ? <i>(On notera \\(x\\) ce côté, en cm.)</i>`, res: `\\(x=${x1}\\) : le côté mesure ${x1} cm.`,
+          ans: { items: [{ lab: 'Côté (cm) :', v: x1 }] },
+          steps: [{ h: `Le carré de départ a pour aire \\(x^2\\). Le carré agrandi a pour côté \\(x+${a}\\), donc pour aire \\((x+${a})^2\\).` },
+            { e: `(x+${a})^2=x^2+${A}`, x: `La nouvelle aire est l’ancienne augmentée de ${A}.` },
+            { e: EQV + `x^2+${lin(2 * a, a * a)}=x^2+${A}`, x: `On développe avec \\((a+b)^2=a^2+2ab+b^2\\) : \\(2\\times x\\times ${a}=${mono(2 * a, 'x')}\\) et \\(${a}^2=${a * a}\\).` },
+            { e: EQV + `${lin(2 * a, a * a)}=${A}`, x: 'On soustrait \\(x^2\\) aux deux membres : les \\(x^2\\) s’éliminent, l’équation devient du premier degré.' }, ...r1.steps,
+            concl(`le carré de départ a pour côté ${x1} cm.`), { h: `<span class="x">Vérification : \\(${x1 + a}^2-${x1}^2=${(x1 + a) ** 2}-${x1 * x1}=${A}\\).</span>` }],
+          piege: `\\((x+${a})^2\\neq x^2+${a * a}\\) : on n’oublie pas le double produit.` },
+        { q: `Le triangle ABC ci-dessous est rectangle en A, avec \\(\\text{AC}=${c}\\) cm, \\(\\text{AB}=x\\) cm et \\(\\text{BC}=x+${d}\\) cm. Grâce au théorème de Pythagore, écrire une équation vérifiée par \\(x\\), puis déterminer les longueurs AB et BC.`,
+          fig: figPyth(c, d), res: `\\((x+${d})^2=x^2+${c}^2\\) ; AB = ${x2} cm et BC = ${x2 + d} cm.`,
+          ans: { items: [{ lab: 'AB (cm) :', v: x2 }, { lab: 'BC (cm) :', v: x2 + d }] },
+          steps: [{ h: 'ABC est rectangle en A, donc d’après le théorème de Pythagore : \\(\\text{BC}^2=\\text{AB}^2+\\text{AC}^2\\).' },
+            { e: `(x+${d})^2=x^2+${c}^2` }, { e: EQV + `x^2+${lin(2 * d, d * d)}=x^2+${c * c}`, x: 'On développe \\((x+' + d + ')^2\\) avec l’identité remarquable, et \\(' + c + '^2=' + c * c + '\\).' },
+            { e: EQV + `${lin(2 * d, d * d)}=${c * c}`, x: 'Les \\(x^2\\) s’éliminent.' }, ...r2.steps,
+            concl(`\\(\\text{AB}=${x2}\\) cm et \\(\\text{BC}=${x2}+${d}=${x2 + d}\\) cm.`),
+            { h: `<span class="x">Vérification : \\(${x2}^2+${c}^2=${x2 * x2}+${c * c}=${x2 * x2 + c * c}=${x2 + d}^2\\).</span>` }] }
+      ] };
+  } },
+
+{ n: 7, obj: [10, 'Mettre un problème en inéquation'], stars: S1, comp: 'Modéliser', rappel: [RAP.sens, RAP.ineq],
+  att: R`<p>« Pouvoir payer » : le prix doit être <b>inférieur ou égal</b> à la somme disponible, donc \(\leq\).</p>`,
+  build(f) {
+    let p = 4, k = 1.5, dm = 14;
+    if (f) { p = ri(2, 7); k = pick([1.2, 1.5, 1.6, 1.8, 2, 2.5]); dm = ri(6, 30); }
+    const B = r6(p + k * dm), r = solveLin(k, p, 'le', 0, B, 'd');
+    return {
+      enonce: `<p>Un taxi facture ${p} euros de prise en charge, puis \\(${eur(k)}\\) euro${k >= 2 ? 's' : ''} par kilomètre parcouru. On note \\(d\\) la distance parcourue, en km.</p>`,
+      main: [
+        { q: 'Exprimer en fonction de \\(d\\) le prix de la course.', res: `\\(${lin(k, p, 'd')}\\) euros.`, ans: { v: 'd', items: [{ lab: 'Prix :', f: t => p + k * t }] },
+          steps: [{ h: `Les \\(d\\) kilomètres coûtent \\(${fmt(k)}\\times d=${mono(k, 'd')}\\) euros ; on ajoute la prise en charge : \\(${lin(k, p, 'd')}\\).` }] },
+        { q: `Léo dispose de \\(${eur(B)}\\) euros. Écrire une inéquation traduisant le fait qu’il peut payer la course, puis la résoudre.`, res: `\\(${lin(k, p, 'd')}\\leq ${fmt(B)}\\Longleftrightarrow d\\leq ${fmt(dm)}\\)`,
+          ans: { v: 'd', items: [{ lab: 'Solutions :', rel: ['le', dm], wide: true }] },
+          steps: [{ e: `${lin(k, p, 'd')}\\leq ${fmt(B)}`, x: `Le prix doit être inférieur ou égal à \\(${eur(B)}\\) euros.` }, ...r.steps] },
+        { q: 'Quelle distance maximale Léo peut-il parcourir ?', res: `${dm} km.`, ans: { items: [{ lab: 'Distance (km) :', v: dm }] },
+          steps: [concl(`les solutions sont les distances \\(d\\leq ${dm}\\) : Léo peut parcourir au maximum ${dm} km.`)] }
+      ] };
+  } },
+
+{ n: 8, stars: S2, comp: 'Modéliser', rappel: [RAP.sens, RAP.ineq],
+  att: R`<p>\(n\) est un nombre <b>entier</b> de séances : « \(n>8\) » donne « à partir de 9 séances ».</p>`,
+  build(f) {
+    let a = 9.5, b = 6.5, c = 24, P = 180, n5 = 5;
+    if (f) {
+      [b, a, c] = draw(() => { const bb = pick([5, 5.5, 6, 6.5, 7]), dd = pick([2, 2.5, 3, 3.5]); return [bb, bb + dd, dd * ri(5, 12)]; }, ([, , cc]) => Number.isInteger(cc) && cc <= 45);
+      P = draw(() => c + b * ri(15, 30), v => Number.isInteger(v)); n5 = ri(3, 6);
+    }
+    const k = c / (a - b), m0 = (P - c) / b, r3 = solveLin(b, c, '<', a, 0, 'n'), r5 = solveLin(0, P, '<', b, c, 'n');
+    return {
+      enonce: `<p>Un cinéma propose deux tarifs :</p><ul><li><b>Tarif A</b> : \\(${eur(a)}\\) euros la séance ;</li><li><b>Tarif B</b> : une carte annuelle à ${c} euros, puis \\(${eur(b)}\\) euros la séance.</li></ul>`,
+      main: [
+        { q: `Calculer le prix payé pour ${n5} séances avec chacun des deux tarifs.`, res: `A : \\(${eur(n5 * a)}\\) € ; B : \\(${eur(c + n5 * b)}\\) €.`,
+          ans: { items: [{ lab: 'Tarif A (€) :', v: n5 * a }, { lab: 'Tarif B (€) :', v: c + n5 * b }] },
+          steps: [{ h: `Tarif A : \\(${n5}\\times ${eur(a)}=${eur(n5 * a)}\\) euros.` }, { h: `Tarif B : \\(${c}+${n5}\\times ${eur(b)}=${c}+${eur(n5 * b)}=${eur(c + n5 * b)}\\) euros.` }] },
+        { q: 'On note \\(n\\) le nombre de séances dans l’année. Exprimer en fonction de \\(n\\) le prix payé avec chaque tarif.', res: `A : \\(${mono(a, 'n')}\\) ; B : \\(${c}+${mono(b, 'n')}\\).`,
+          ans: { v: 'n', items: [{ lab: 'A :', f: t => a * t }, { lab: 'B :', f: t => c + b * t }] },
+          steps: [{ h: `Tarif A : \\(n\\) séances à \\(${eur(a)}\\) euros : \\(${mono(a, 'n')}\\).` }, { h: `Tarif B : la carte, plus \\(n\\) séances à \\(${eur(b)}\\) euros : \\(${c}+${mono(b, 'n')}\\).` }] },
+        { q: 'Écrire une inéquation traduisant « le tarif B est strictement plus avantageux que le tarif A », puis la résoudre.', res: `\\(${c}+${mono(b, 'n')}<${mono(a, 'n')}\\Longleftrightarrow n>${k}\\)`,
+          ans: { v: 'n', items: [{ lab: 'Solutions :', rel: ['>', k], wide: true }] },
+          steps: [{ e: `${lin(b, c, 'n')}<${mono(a, 'n')}`, x: '« Plus avantageux » : le prix avec le tarif B est plus petit.' }, ...r3.steps] },
+        { q: 'Conclure : à partir de combien de séances le tarif B est-il plus avantageux ?', res: `À partir de ${k + 1} séances.`, ans: { items: [{ lab: 'Nombre de séances :', v: k + 1 }] },
+          steps: [concl(`\\(n\\) est un nombre entier et \\(n>${k}\\) : le tarif B est plus avantageux à partir de ${k + 1} séances.`)] },
+        { q: `Le cinéma ajoute un <b>tarif C</b> : un abonnement illimité à ${P} euros par an. À partir de combien de séances le tarif C est-il plus avantageux que le tarif B ?`, res: `À partir de ${m0 + 1} séances.`,
+          ans: { items: [{ lab: 'Nombre de séances :', v: m0 + 1 }] },
+          steps: [{ e: `${P}<${lin(b, c, 'n')}`, x: 'Le prix avec le tarif C (toujours le même) est plus petit qu’avec le tarif B.' }, ...r5.steps,
+            concl(`\\(n\\) est entier et \\(n>${m0}\\) : le tarif C est plus avantageux à partir de ${m0 + 1} séances.`)] }
+      ] };
+  } },
+
+{ n: 9, stars: S2, comp: 'Modéliser', rappel: [RAP.sens, RAP.ineq],
+  att: R`<p>En divisant par un nombre négatif (ici \(-20\)), on change le sens de l’inégalité.</p>`,
+  build(f) {
+    let A0 = 500, ra = 20, B0 = 140, rb = 25, t1 = 4, tv = 15;
+    if (f) {
+      let te0;
+      [ra, rb, B0, te0] = draw(() => [pick([10, 15, 20, 25, 30]), pick([10, 15, 20, 25, 30, 40]), ri(2, 20) * 10, ri(4, 15)],
+        ([a, bb, b0, t]) => b0 + bb * t - 50 >= a);
+      A0 = B0 + (ra + rb) * te0; t1 = ri(2, te0 - 1);
+      tv = ri(te0 + 1, Math.floor((A0 - 50) / ra));
+    }
+    const te = (A0 - B0) / (ra + rb), Ve = A0 - ra * te, V = A0 - ra * tv;
+    const r3 = solveLin(-ra, A0, '=', rb, B0, 't'), r4 = solveLin(rb, B0, '>', -ra, A0, 't'), r5 = solveLin(-ra, A0, 'ge', 0, V, 't');
+    return {
+      enonce: `<p>Une cuve A contient ${ft(A0)} L d’eau et se vide à raison de ${ra} L par minute. Au même instant, une cuve B, qui contient ${B0} L, se remplit à raison de ${rb} L par minute. On note \\(t\\) le temps écoulé, en minutes.</p>`,
+      main: [
+        { q: `Quel volume d’eau contient chaque cuve au bout de ${t1} minutes ?`, res: `A : ${ft(A0 - ra * t1)} L ; B : ${ft(B0 + rb * t1)} L.`,
+          ans: { items: [{ lab: 'Cuve A (L) :', v: A0 - ra * t1 }, { lab: 'Cuve B (L) :', v: B0 + rb * t1 }] },
+          steps: [{ h: `Cuve A : \\(${fmt(A0)}-${t1}\\times ${ra}=${fmt(A0 - ra * t1)}\\) L (elle se vide : on soustrait).` }, { h: `Cuve B : \\(${B0}+${t1}\\times ${rb}=${fmt(B0 + rb * t1)}\\) L (elle se remplit : on ajoute).` }] },
+        { q: 'Exprimer en fonction de \\(t\\) le volume d’eau contenu dans chaque cuve.', res: `A : \\(${fmt(A0)}-${ra}t\\) ; B : \\(${B0}+${rb}t\\).`,
+          ans: { v: 't', items: [{ lab: 'A :', f: s => A0 - ra * s }, { lab: 'B :', f: s => B0 + rb * s }] },
+          steps: [{ h: `En \\(t\\) minutes, la cuve A perd \\(${ra}t\\) litres : \\(${fmt(A0)}-${ra}t\\).` }, { h: `En \\(t\\) minutes, la cuve B gagne \\(${rb}t\\) litres : \\(${B0}+${rb}t\\).` }] },
+        { q: 'Au bout de combien de temps les deux cuves contiennent-elles le même volume d’eau ? Quel est ce volume ?', res: `Au bout de ${te} minutes ; ${ft(Ve)} L.`,
+          ans: { items: [{ lab: 'Temps (min) :', v: te }, { lab: 'Volume (L) :', v: Ve }] },
+          steps: [{ e: `${fmt(A0)}-${ra}t=${B0}+${rb}t` }, ...r3.steps,
+            concl(`au bout de ${te} minutes, chaque cuve contient \\(${fmt(A0)}-${ra}\\times ${te}=${fmt(Ve)}\\) L.`)] },
+        { q: 'À partir de quel instant la cuve B contient-elle plus d’eau que la cuve A ?', res: `Pour \\(t>${te}\\) : après ${te} minutes.`,
+          ans: { v: 't', items: [{ lab: 'Solutions :', rel: ['>', te], wide: true }] },
+          steps: [{ e: `${B0}+${rb}t>${fmt(A0)}-${ra}t` }, ...r4.steps, concl(`la cuve B contient plus d’eau que la cuve A après ${te} minutes.`)] },
+        { q: `Pendant combien de temps la cuve A contient-elle au moins ${ft(V)} L ?`, res: `Pour \\(t\\leq ${tv}\\) : pendant les ${tv} premières minutes.`,
+          ans: { v: 't', items: [{ lab: 'Solutions :', rel: ['le', tv], wide: true }] },
+          steps: [{ e: `${fmt(A0)}-${ra}t\\geq ${fmt(V)}`, x: '« Au moins » : \\(\\geq\\).' }, ...r5.steps, concl(`la cuve A contient au moins ${ft(V)} L pendant les ${tv} premières minutes.`)],
+          piege: `Oublier de changer le sens en divisant par \\(-${ra}\\) : on trouverait \\(t\\geq ${tv}\\), ce qui est absurde (la cuve se vide !).` }
+      ] };
+  } },
+
+{ n: 10, stars: S2, comp: 'Modéliser',
+  rappel: [{ t: 'Moyenne pondérée', h: R`<p>On multiplie chaque note par son coefficient, on additionne, puis on divise par la <b>somme des coefficients</b>.</p>` }, RAP.sens, RAP.ineq],
+  att: R`<p>Le dernier devoir compte deux fois : on écrit \(2x\) au numérateur et on divise par \(1+1+1+2=5\).</p>`,
+  build(f) {
+    let N = [12, 9, 14], m = 12, m2 = 15;
+    if (f) [N, m, m2] = draw(() => [[ri(5, 17), ri(5, 17), ri(5, 17)], ri(10, 13), 0], ([n, mm]) => { const t = (5 * mm - n[0] - n[1] - n[2]) / 2; return t > 2 && t < 19; });
+    const S = N[0] + N[1] + N[2];
+    if (f) m2 = m + ri(2, 4);
+    const t1 = (5 * m - S) / 2, t2 = (5 * m2 - S) / 2;
+    const r2 = solveLin(2, S, 'ge', 0, 5 * m), r3 = solveLin(2, S, 'ge', 0, 5 * m2);
+    const ok = t2 < 20 ? `oui, s’il obtient au moins \\(${texNum(t2)}\\) sur 20.` : t2 === 20 ? 'oui, mais seulement avec 20 sur 20.' : `non : il faudrait plus de 20 sur 20 (\\(x\\geq ${texNum(t2)}\\)), c’est impossible.`;
+    return {
+      enonce: `<p>Hugo a obtenu ${N[0]}, ${N[1]} et ${N[2]} sur 20 à trois devoirs de coefficient 1. Le prochain devoir est de coefficient 2. On note \\(x\\) la note (sur 20) qu’il obtiendra à ce devoir.</p>`,
+      main: [
+        { q: `Montrer que la moyenne d’Hugo après ce devoir sera égale à \\(\\dfrac{${S}+2x}{5}\\).`, res: 'voir la correction détaillée',
+          steps: [{ e: `\\text{moyenne}=\\dfrac{${N[0]}+${N[1]}+${N[2]}+2x}{1+1+1+2}`, x: 'Chaque note est multipliée par son coefficient ; on divise par la somme des coefficients.' }, { e: `=\\dfrac{${S}+2x}{5}` }] },
+        { q: `Quelle note Hugo doit-il obtenir au minimum pour avoir une moyenne supérieure ou égale à ${m} ?`, res: `\\(x\\geq ${texNum(t1)}\\) : au moins ${ft(t1)}.`,
+          ans: { items: [{ lab: 'Note minimale :', v: t1 }] },
+          steps: [{ e: `\\dfrac{${S}+2x}{5}\\geq ${m}` }, { e: EQV + `${S}+2x\\geq ${5 * m}`, x: 'On multiplie les deux membres par \\(5\\), qui est positif : le sens ne change pas.' }, ...r2.steps,
+            concl(`Hugo doit obtenir au moins \\(${texNum(t1)}\\) sur 20.`)] },
+        { q: `Peut-il encore obtenir une moyenne supérieure ou égale à ${m2} ? Justifier.`, res: (t2 <= 20 ? 'Oui' : 'Non') + ` (il faudrait \\(x\\geq ${texNum(t2)}\\)).`,
+          ans: { items: [{ lab: 'Réponse :', yn: t2 <= 20 }] },
+          steps: [{ e: `\\dfrac{${S}+2x}{5}\\geq ${m2}` }, { e: EQV + `${S}+2x\\geq ${5 * m2}`, x: 'On multiplie par \\(5\\).' }, ...r3.steps,
+            concl(ok)] }
+      ] };
+  } },
+
+{ n: 11, stars: S2, comp: 'Modéliser',
+  rappel: [{ t: 'Bénéfice', h: R`<p>Bénéfice = recette − coût.</p><p>La recette est la somme encaissée par la vente.</p>` }, RAP.sens, RAP.ineq],
+  att: R`<p>\(35x-(1\,200+15x)\) : le signe \(-\) devant la parenthèse change le signe de <b>chaque</b> terme : \(-1\,200-15x\).</p>`,
+  build(f) {
+    let c = 15, mg = 20, k = 60, xg = 135;
+    if (f) { c = ri(5, 30); mg = pick([10, 15, 20, 25]); k = ri(30, 120); xg = k + ri(20, 100); }
+    const p = c + mg, F = mg * k, G = mg * xg - F;
+    const r3 = solveLin(mg, -F, '>', 0, 0), r4 = solveLin(mg, -F, 'ge', 0, G);
+    return {
+      enonce: `<p>Un artisan fabrique des bols en céramique. Chaque mois, il a \\(${fmt(F)}\\) euros de frais fixes (loyer de l’atelier, électricité…) et chaque bol lui coûte ${c} euros à fabriquer. Il vend chaque bol ${p} euros. On note \\(x\\) le nombre de bols fabriqués et vendus en un mois.</p>`,
+      main: [
+        { q: 'Exprimer en fonction de \\(x\\) le coût total de fabrication, puis la recette.', res: `Coût : \\(${fmt(F)}+${c}x\\) ; recette : \\(${p}x\\).`,
+          ans: { items: [{ lab: 'Coût :', f: t => F + c * t }, { lab: 'Recette :', f: t => p * t }] },
+          steps: [{ h: `Coût : les frais fixes plus ${c} euros par bol : \\(${fmt(F)}+${c}x\\).` }, { h: `Recette : ${p} euros par bol vendu : \\(${p}x\\).` }] },
+        { q: `Montrer que le bénéfice mensuel de l’artisan est égal à \\(${mg}x-${fmt(F)}\\).`, res: 'voir la correction détaillée',
+          steps: [{ e: `\\text{bénéfice}=\\text{recette}-\\text{coût}=${p}x-(${fmt(F)}+${c}x)` }, { e: `=${p}x-${fmt(F)}-${c}x`, x: 'Le signe \\(-\\) devant la parenthèse change le signe de chaque terme.' }, { e: `=${mg}x-${fmt(F)}`, x: 'On réduit.' }] },
+        { q: 'Combien de bols doit-il vendre dans le mois pour que son bénéfice soit strictement positif ?', res: `\\(x>${k}\\) : au moins ${k + 1} bols.`, ans: { items: [{ lab: 'Nombre minimal de bols :', v: k + 1 }] },
+          steps: [{ e: `${mg}x-${fmt(F)}>0`, x: '« Strictement positif » : \\(>0\\).' }, ...r3.steps, concl(`\\(x\\) est un nombre entier et \\(x>${k}\\) : il doit vendre au moins ${k + 1} bols.`)] },
+        { q: `Il souhaite gagner au moins \\(${fmt(G)}\\) euros par mois. Combien de bols doit-il vendre ?`, res: `\\(x\\geq ${xg}\\) : au moins ${xg} bols.`, ans: { items: [{ lab: 'Nombre minimal de bols :', v: xg }] },
+          steps: [{ e: `${mg}x-${fmt(F)}\\geq ${fmt(G)}`, x: '« Au moins » : \\(\\geq\\).' }, ...r4.steps, concl(`il doit vendre au moins ${xg} bols.`)] }
+      ] };
+  } },
+
+{ n: 12, stars: S3, comp: 'Chercher',
+  rappel: [{ t: 'Aires', h: R`<p>Triangle rectangle : \(\dfrac{\text{produit des côtés de l’angle droit}}{2}\).</p><p>Rectangle : longueur \(\times\) largeur.</p>` }, RAP.eq, RAP.ineq],
+  att: R`<p>\(x\) est une longueur sur \([\text{AB}]\) : la réponse doit rester entre 0 et \(\text{AB}\).</p>`,
+  build(f) {
+    let L = 10, h = 6, k4 = 2, k5 = 3;
+    if (f) { L = pick([6, 8, 10, 12]); h = pick([4, 6, 8, 10]); k4 = pick([2, 3]); k5 = pick([3, 4]); }
+    const H = h / 2, HL = H * L, x4 = L * (k4 - 1) / (k4 + 1), x5 = L * (k5 - 1) / (k5 + 1);
+    const W = { 2: 'le double', 3: 'le triple', 4: 'le quadruple' };
+    const r4 = solveLin(H, HL, '=', -k4 * H, k4 * HL), r5 = solveLin(H, HL, 'ge', -k5 * H, k5 * HL);
+    return {
+      enonce: `<p>ABCD est un rectangle tel que \\(\\text{AB}=${L}\\) cm et \\(\\text{AD}=${h}\\) cm. M est un point du segment \\([\\text{AB}]\\) et on note \\(x\\) la longueur AM, en cm.</p><div class="efig">${figRect(L, h)}</div>`,
+      main: [
+        { q: 'Quelles valeurs le nombre \\(x\\) peut-il prendre ?', res: `\\(0\\leq x\\leq ${L}\\)`,
+          steps: [{ h: `M est sur le segment \\([\\text{AB}]\\), qui mesure ${L} cm : \\(x\\) est compris entre \\(0\\) (M en A) et \\(${L}\\) (M en B), donc \\(0\\leq x\\leq ${L}\\).` }] },
+        { q: `Montrer que l’aire du triangle MBC est égale à \\(${HL}-${mono(H, 'x')}\\).`, res: 'voir la correction détaillée',
+          steps: [{ h: `MBC est rectangle en B, avec \\(\\text{MB}=\\text{AB}-\\text{AM}=${L}-x\\) et \\(\\text{BC}=\\text{AD}=${h}\\).` },
+            { e: `\\mathcal{A}_{\\text{MBC}}=\\dfrac{\\text{MB}\\times\\text{BC}}{2}=\\dfrac{${h}(${L}-x)}{2}=${H === 1 ? '' : H}(${L}-x)=${HL}-${mono(H, 'x')}` }] },
+        { q: 'En déduire l’aire du trapèze AMCD en fonction de \\(x\\).', res: `\\(${HL}+${mono(H, 'x')}\\)`, ans: { items: [{ lab: 'Aire :', f: t => HL + H * t }] },
+          steps: [{ h: 'Le trapèze AMCD, c’est le rectangle ABCD sans le triangle MBC.' },
+            { e: `\\mathcal{A}_{\\text{AMCD}}=${L}\\times ${h}-(${HL}-${mono(H, 'x')})=${L * h}-${HL}+${mono(H, 'x')}=${HL}+${mono(H, 'x')}`, x: 'Le signe \\(-\\) devant la parenthèse change le signe de chaque terme.' }] },
+        { q: `Pour quelle valeur de \\(x\\) l’aire du trapèze AMCD est-elle ${W[k4]} de celle du triangle MBC ?`, res: `\\(x=${texNum(x4)}\\)`, ans: { items: [{ lab: R`\(x=\)`, v: x4 }] },
+          steps: [{ e: `${HL}+${mono(H, 'x')}=${k4}(${HL}-${mono(H, 'x')})` }, { e: EQV + `${HL}+${mono(H, 'x')}=${k4 * HL}-${mono(k4 * H, 'x')}`, x: 'On développe.' }, ...r4.steps,
+            concl(`\\(x=${texNum(x4)}\\) cm${Number.isInteger(x4) ? '' : ` (environ ${ft(Math.round(x4 * 100) / 100)} cm)`}, qui est bien entre 0 et ${L}.`)] },
+        { q: `Pour quelles valeurs de \\(x\\) l’aire du trapèze AMCD est-elle au moins ${W[k5]} de celle du triangle MBC ?`, res: `\\(x\\geq ${texNum(x5)}\\), et \\(x\\leq ${L}\\).`,
+          ans: { items: [{ lab: 'Solutions :', rel: ['ge', x5], wide: true }] },
+          steps: [{ e: `${HL}+${mono(H, 'x')}\\geq ${k5}(${HL}-${mono(H, 'x')})`, x: '« Au moins » : \\(\\geq\\).' }, { e: EQV + `${HL}+${mono(H, 'x')}\\geq ${k5 * HL}-${mono(k5 * H, 'x')}`, x: 'On développe.' }, ...r5.steps,
+            concl(`comme \\(x\\leq ${L}\\), il faut que \\(x\\) soit compris entre \\(${texNum(x5)}\\) et \\(${L}\\).`)] }
+      ] };
+  } }
+];
+
+/* =====================================================================
+   Lecture des réponses de l'élève
+   ===================================================================== */
+// Nombre : 12 ; 12,5 ; 10/3 ; -4
+function readNum(s) {
+  s = s.replace(/[−–]/g, '-').replace(/\s/g, '').replace(/,/g, '.').replace(/[a-zA-Zéèàù€²%°]+$/g, '');
+  if (!s) throw new Error('la réponse est vide');
+  const m = s.match(/^(-?\d+(?:\.\d+)?)(?:\/(\d+(?:\.\d+)?))?$/);
+  if (!m) throw new Error(`je ne sais pas lire « ${s} » : écris un nombre comme 12 ; 12,5 ; 10/3`);
+  return m[2] ? Number(m[1]) / Number(m[2]) : Number(m[1]);
+}
+// Expression en une lettre, évaluée en un point : 3x-7 ; 2(x+5) ; 1,5d+4
+function evalExpr(src, v, val) {
+  const s = src.replace(/[−–]/g, '-').replace(/[×·]/g, '*').replace(/,/g, '.').replace(/\s/g, '');
+  if (!s) throw new Error('la réponse est vide');
+  let p = 0;
+  const peek = () => s[p];
+  function sum() {
+    let r = 0, sg = 1;
+    if (peek() === '-') { sg = -1; p++; } else if (peek() === '+') p++;
+    r = sg * prod();
+    while (peek() === '+' || peek() === '-') { const o = s[p++]; r += (o === '-' ? -1 : 1) * prod(); }
+    return r;
+  }
+  function prod() {
+    let r = power();
+    for (;;) {
+      const c = peek();
+      if (c === '*' || c === '/') { p++; const q = power(); r = c === '*' ? r * q : r / q; }
+      else if (c && /[\d.(a-z]/.test(c)) r *= power();
+      else return r;
+    }
+  }
+  function power() { let b = atom(); if (peek() === '^') { p++; b = Math.pow(b, atom()); } return b; }
+  function atom() {
+    const c = peek();
+    if (c === '(') { p++; const r = sum(); if (s[p++] !== ')') throw new Error('il manque une parenthèse fermante'); return r; }
+    if (c === '-') { p++; return -atom(); }
+    if (c && /[\d.]/.test(c)) { let j = p; while (j < s.length && /[\d.]/.test(s[j])) j++; const n = Number(s.slice(p, j)); p = j; if (Number.isNaN(n)) throw new Error('nombre mal écrit'); return n; }
+    if (c === v) { p++; return val; }
+    if (c && /[a-z]/i.test(c)) throw new Error(`la lettre est \\(${v}\\), pas « ${c} »`);
+    throw new Error(c ? `caractère non reconnu « ${c} »` : 'expression incomplète');
+  }
+  const r = sum();
+  if (p < s.length) throw new Error(`caractère non reconnu « ${s[p]} »`);
+  return r;
+}
+// Inéquation : x>17 ; t<=15 ; d ≤ 14 ; 8<n
+function readRel(src, v) {
+  const s = src.replace(/[−–]/g, '-').replace(/≤|⩽|=</g, '<=').replace(/≥|⩾|=>/g, '>=').replace(/\s/g, '');
+  const SYM = { '<=': 'le', '>=': 'ge', '<': '<', '>': '>', '=': '=' };
+  let m = s.match(new RegExp(`^${v}(<=|>=|<|>|=)(.+)$`));
+  if (m) return [SYM[m[1]], readNum(m[2])];
+  m = s.match(new RegExp(`^(.+?)(<=|>=|<|>|=)${v}$`));
+  if (m) return [FLIP[SYM[m[2]]], readNum(m[1])];
+  throw new Error(`écris l’ensemble des solutions sous la forme ${v}>3 ou ${v}<=12,5`);
+}
+
+function typeset(el) { if (window.MathJax && MathJax.typesetPromise) MathJax.startup.promise.then(() => MathJax.typesetPromise([el])).catch(() => {}); }
+function retypeset(el) { if (window.MathJax && MathJax.typesetClear) { try { MathJax.typesetClear([el]); } catch (e) { /* rien */ } } typeset(el); }
+
+function answerHTML(it, id) {
+  const fields = it.ans.items.map((a, i) => {
+    if ('yn' in a) return `<div class="choices yn" data-k="${i}"><span>${a.lab}</span><label><input type="radio" name="${id}yn" value="1"> Oui</label><label><input type="radio" name="${id}yn" value="0"> Non</label></div>`;
+    return `<label${a.wide ? ' class="wide"' : ''}><span class="lab">${a.lab}</span><input type="text" data-k="${i}" autocomplete="off" spellcheck="false" placeholder="${a.rel ? (it.ans.v || 'x') + ' > …' : ''}"></label>`;
+  }).join('');
+  return `<div class="answer"><div class="ans-row">${fields}</div><div class="ans-btns"><button type="button" class="btn green sm" data-check>Vérifier</button></div><div class="fb" hidden></div></div>`;
+}
+const near = (a, b) => Math.abs(a - b) < 1e-6;
+function checkOne(a, el, v) {
+  if ('yn' in a) { const c = el.querySelector('input:checked'); if (!c) throw new Error('coche Oui ou Non'); return (c.value === '1') === a.yn ? 'ok' : 'ko'; }
+  const s = el.value;
+  if (a.f) {
+    const pts = [1.3, 2.7, -0.9, 5.1];
+    return pts.every(t => near(evalExpr(s, v, t), a.f(t))) ? 'ok' : 'ko';
+  }
+  if (a.rel) {
+    const [rel, val] = readRel(s, v);
+    if (!near(val, a.rel[1])) return 'ko';
+    return rel === a.rel[0] ? 'ok' : 'sens';
+  }
+  const g = readNum(s);
+  if (near(g, a.v)) return 'ok';
+  return Math.abs(g - a.v) < 0.006 ? 'approx' : 'ko';
+}
+function wireAnswer(el, it) {
+  const box = $('.answer', el), fb = $('.fb', box), v = it.ans.v || 'x';
+  const go = () => {
+    let msgs = [], all = true, warn = false;
+    it.ans.items.forEach((a, i) => {
+      const f = box.querySelector(`[data-k="${i}"]`), lab = it.ans.items.length > 1 ? `${a.lab} ` : '';
+      try {
+        const r = checkOne(a, f, v);
+        if (r === 'ok') return;
+        all = false;
+        if (r === 'approx') { warn = true; msgs.push(`${lab}c’est une valeur approchée : donne la valeur exacte (une fraction, par exemple).`); }
+        else if (r === 'sens') { warn = true; msgs.push(`${lab}la valeur est bonne, mais vérifie le <b>sens</b> (ou le signe large/strict) de l’inégalité.`); }
+        else msgs.push(`${lab}ce n’est pas ça.`);
+      } catch (e) { all = false; warn = true; msgs.push(`${lab}${e.message}.`); }
+    });
+    fb.hidden = false;
+    fb.className = 'fb ' + (all ? 'ok' : warn ? 'warn' : 'ko');
+    fb.innerHTML = all ? 'Bravo, c’est juste !' : msgs.join('<br>') + (warn ? '' : ' Reprends ton calcul, ou ouvre la correction détaillée.');
+    el.classList.toggle('good', all);
+    retypeset(fb);
+  };
+  $('[data-check]', box).addEventListener('click', go);
+  box.querySelectorAll('input[type="text"]').forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') go(); }));
+}
+
+/* =====================================================================
+   Affichage
+   ===================================================================== */
+function itemHTML(it, id, k, ans) {
+  return `<div class="item" data-id="${id}">
+    <div class="row"><span class="q txt"><span class="nl">${k}</span>${it.q}</span><button type="button" class="btn sm" data-open>Correction détaillée</button></div>
+    ${it.fig ? `<div class="qfig">${it.fig}</div>` : ''}
+    ${ans && it.ans ? answerHTML(it, id) : ''}
+    <div class="resline">Réponse : <span class="res">${it.res}</span></div>
+    <div class="corr" hidden><ol class="steps"></ol>
+      <div class="step-ctrl"><button type="button" class="btn solid sm" data-next>Étape suivante</button><button type="button" class="btn ghost sm" data-all>Tout afficher</button><button type="button" class="btn ghost sm" data-reset hidden>Recommencer</button></div>
+      <div class="end" hidden><div class="concl">Réponse : ${it.res}</div>${it.piege ? `<div class="piege" style="margin-top:8px"><b>Erreur à éviter :</b> ${it.piege}</div>` : ''}</div>
+    </div></div>`;
+}
+function stepHTML(st, k) {
+  let inner = '';
+  if (st.e) inner += `<div class="m">\\[${st.e}\\]</div>`;
+  if (st.h) inner += `<div class="h">${st.h}</div>`;
+  if (st.x) inner += `<div class="x">${st.x}</div>`;
+  return `<span class="n">${k}</span><div>${inner}</div>`;
+}
+function wireItem(el, it, ans) {
+  if (ans && it.ans) wireAnswer(el, it);
+  const corr = $('.corr', el), ol = $('.steps', corr), end = $('.end', corr);
+  const bN = $('[data-next]', corr), bA = $('[data-all]', corr), bR = $('[data-reset]', corr);
+  let k = 0;
+  const add = () => { const li = document.createElement('li'); li.className = 'step'; li.innerHTML = stepHTML(it.steps[k], k + 1); k++; ol.appendChild(li); typeset(li); };
+  const sync = () => { const fin = k >= it.steps.length; bN.hidden = fin; bA.hidden = fin; bR.hidden = !fin; end.hidden = !fin; if (fin) typeset(end); };
+  $('[data-open]', el).addEventListener('click', e => {
+    const open = corr.hidden;
+    corr.hidden = !open; el.classList.toggle('open', open);
+    e.currentTarget.textContent = open ? 'Masquer la correction' : 'Correction détaillée';
+    if (open && k === 0) { add(); sync(); }
+  });
+  bN.addEventListener('click', () => { add(); sync(); });
+  bA.addEventListener('click', () => { while (k < it.steps.length) add(); sync(); });
+  bR.addEventListener('click', () => { ol.innerHTML = ''; k = 0; add(); sync(); });
+}
+function itemsBlock(set, pre, ex, ans) {
+  let h = `<div class="items">${set.main.map((it, i) => itemHTML(it, `${pre}m${i}`, i + 1, ans)).join('')}</div>`;
+  if (set.more) h += `<h2 class="part">Pour aller plus loin <span class="stars">${ex.more}</span></h2><div class="items">${set.more.map((it, i) => itemHTML(it, `${pre}p${i}`, '+', ans)).join('')}</div>`;
+  return h;
+}
+function wireBlock(root, set, pre, ans) {
+  set.main.forEach((it, i) => wireItem($(`[data-id="${pre}m${i}"]`, root), it, ans));
+  (set.more || []).forEach((it, i) => wireItem($(`[data-id="${pre}p${i}"]`, root), it, ans));
+}
+
+const sheet = {};      // valeurs de la feuille, calculées une fois
+let train = 0;
+function render(n) {
+  const ex = EX.find(e => e.n === n) || EX[0];
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.n === ex.n));
+  const set = sheet[ex.n] || (sheet[ex.n] = ex.build(false));
+  const objTitle = ex.obj || EX.slice().reverse().find(e => e.n < ex.n && e.obj).obj;
+  app.innerHTML = `
+    <p class="obj"><b>Objectif ${objTitle[0]} :</b> ${objTitle[1]}</p>
+    <article class="exo">
+      <div class="exo-h"><span class="pill">Exercice ${ex.n}</span><span class="stars">${ex.stars}</span><span class="comp">${ex.comp}</span></div>
+      <div class="exo-b">
+        <div class="enonce">${set.enonce}</div>
+        <div class="tools">
+          <button type="button" class="btn" data-rappel>Rappel</button>
+          <button type="button" class="btn ghost" data-res>Réponses seules</button>
+          <button type="button" class="btn green" data-train>↻ Nouvelles valeurs pour s’entraîner</button>
+        </div>
+        <div class="rappel" hidden>${ex.rappel.map(b => `<div><h3>${b.t}</h3>${b.h}</div>`).join('')}<div class="att"><h3>Attention !</h3>${ex.att}</div></div>
+        <div class="sheet"><h2 class="part">Corrigé de la feuille <small>clique sur « Correction détaillée » pour la suivre étape par étape</small></h2>${itemsBlock(set, 's', ex, false)}</div>
+        <div class="train" hidden></div>
+      </div>
+    </article>
+    <nav class="foot">${ex.n > 1 ? `<button type="button" class="btn ghost" data-go="${ex.n - 1}">← Exercice ${ex.n - 1}</button>` : '<span></span>'}${ex.n < EX.length ? `<button type="button" class="btn ghost" data-go="${ex.n + 1}">Exercice ${ex.n + 1} →</button>` : ''}</nav>`;
+  wireBlock($('.sheet', app), set, 's', false);
+  const rap = $('.rappel', app), bRap = $('[data-rappel]', app);
+  bRap.addEventListener('click', () => { rap.hidden = !rap.hidden; bRap.classList.toggle('on', !rap.hidden); if (!rap.hidden) typeset(rap); });
+  const bRes = $('[data-res]', app), body = $('.exo-b', app);
+  bRes.addEventListener('click', () => { body.classList.toggle('showres'); bRes.classList.toggle('on'); });
+  const tr = $('.train', app);
+  $('[data-train]', app).addEventListener('click', () => {
+    const fresh = ex.build(true), pre = `t${++train}`;
+    tr.hidden = false;
+    const aide = `<p class="aide">Cherche sur ton cahier, puis écris ta réponse et clique sur « Vérifier » (ou appuie sur Entrée). Nombres : <code>12</code>, <code>12,5</code> ou <code>10/3</code>. Expressions : <code>3x-7</code>, <code>2(x+5)</code>. Inéquations : <code>x>17</code>, <code>t<=15</code> (pour \\(\\leq\\)), <code>x>=5</code> (pour \\(\\geq\\)).</p>`;
+    tr.innerHTML = `<h2 class="part">Entraînement : nouvelles valeurs <small>même exercice, d’autres nombres</small></h2>${aide}<div class="enonce">${fresh.enonce}</div>${itemsBlock(fresh, pre, ex, true)}`;
+    wireBlock(tr, fresh, pre, true);
+    typeset(tr);
+    tr.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  app.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.go; }));
+  typeset(app);
+  window.scrollTo(0, 0);
+}
+nav.innerHTML = EX.map(e => `<button type="button" data-n="${e.n}">Exercice ${e.n}</button>`).join('');
+nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.n; }));
+const route = () => render(+(location.hash.match(/^#ex(\d+)$/) || [])[1] || 1);
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>

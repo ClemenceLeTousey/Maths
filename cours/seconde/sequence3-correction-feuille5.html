@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feuille 5 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Même habillage que la page de remédiation DS1 : une colonne de lecture, thème clair fixe (projection en classe). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs de la feuille */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* sinon display:grid (rappel, entraînement) l’emporte sur hidden */
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons d'exercices */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.green.on { background: var(--green); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .sheet .item .resline, .item.raw .resline { display: block; }
+
+/* Réponse de l'élève (entraînement avec nouvelles valeurs) */
+.aide { margin: 0; font-size: 15px; color: var(--muted); }
+.aide code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.answer { display: grid; gap: 6px; min-width: 0; }
+.ans-row, .ab { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; min-width: 0; }
+.ans-row label, .ab label { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 260px; max-width: 480px; }
+.ab label { flex: 0 1 180px; }
+.answer input[type="text"] { font: inherit; font-size: 17px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); min-width: 0; width: 100%; }
+.answer input[type="text"]:focus { outline: none; border-color: var(--calc); box-shadow: 0 0 0 2px var(--calc-soft); }
+.ans-prev { min-height: 1.5em; color: var(--muted); font-size: 15px; overflow-x: auto; }
+.choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.choices label { display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; background: var(--paper); }
+.choices label:has(input:checked) { border-color: var(--calc); background: var(--calc-soft); }
+.ans-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb { border-radius: 4px; padding: 6px 12px; font-size: 15px; overflow-x: auto; }
+.fb.ok { background: var(--green-soft); border-left: 3px solid var(--green); }
+.fb.warn { background: var(--amber-soft); border-left: 3px solid #F59F00; }
+.fb.ko { background: var(--red-soft); border-left: 3px solid var(--red); }
+.train .item.good { border-color: var(--green); }
+.qfig { overflow-x: auto; }
+.qfig svg, .fig svg { display: block; max-width: none; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+/* Tableau de double distributivité (Ex. 4) : termes de la 1re parenthèse en colonnes, de la 2de en lignes */
+.tdd { border-collapse: collapse; margin: 4px 0 6px; }
+.tdd th, .tdd td { border: 1px solid var(--line); padding: 4px 14px; text-align: center; min-width: 56px; }
+.tdd th { background: var(--bg); font-weight: 400; }
+.tdd th.coin { color: var(--muted); }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+/* Ajouts Feuille 5 : réponses avec symboles, droites graduées, copie de Tom */
+.answer select { font: inherit; font-size: 17px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); }
+.answer select:focus { outline: none; border-color: var(--calc); box-shadow: 0 0 0 2px var(--calc-soft); }
+.answer input.num { width: 96px; flex: none; }
+.ab.frame { gap: 8px; }
+.ab.frame label { flex: none; }
+.ab.test label { flex: 0 1 200px; }
+svg.droite { display: inline-block; vertical-align: middle; max-width: none; }
+.concl svg.droite { margin-left: 12px; }
+.droites { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 8px 24px; }
+.droites > div { display: flex; align-items: center; gap: 12px; }
+.copie { background: #F4F5F7; border: 1px solid #C9CED6; border-radius: 6px; padding: 8px 16px; display: flex; gap: 8px 28px; flex-wrap: wrap; align-items: center; max-width: 640px; }
+.copie > div { min-width: 0; overflow-x: auto; }
+.copie .t { color: var(--muted); font-size: 14px; }
+.hyp { margin: 0; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Feuille d’exercices n°5 — Corrigé</b><span>Équations et inéquations du premier degré</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" id="exnav" aria-label="Exercices"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] } },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<script>
+'use strict';
+const R = String.raw;
+
+/* =====================================================================
+   Outils : hasard, termes, couleurs (comme la feuille 4)
+   Un terme est un couple [coefficient, degré].
+   ===================================================================== */
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; };
+const lcm = (a, b) => a / gcd(a, b) * b;
+const nz = (a, b) => { let n; do n = ri(a, b); while (n === 0); return n; };
+const shuffle = arr => arr.map(v => [Math.random(), v]).sort((p, q) => p[0] - q[0]).map(p => p[1]);
+
+const RGB = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => (v / 255).toFixed(3)).join(','); };
+const col = (hex, s) => `{\\color[rgb]{${RGB(hex)}}{${s}}}`;
+const OPC = '#C2255C';   // opération faite sur les deux membres
+const FLC = '#E03131';   // symbole d'ordre qui change
+const opc = s => col(OPC, s);
+
+function body(c, d, v = 'x') {
+  const a = Math.abs(c);
+  if (d === 0) return String(a);
+  return (a === 1 ? '' : a) + (d === 1 ? v : `${v}^{${d}}`);
+}
+const mono = (c, d, v = 'x') => (c < 0 ? '-' : '') + body(c, d, v);
+function seq(terms, v = 'x') {
+  if (!terms.length) return '0';
+  return terms.map(([c, d], i) => (c < 0 ? '-' : (i ? '+' : '')) + body(c, d, v)).join('');
+}
+const lt = (a, b) => seq([[a, 1], [b, 0]].filter(t => t[0] !== 0));   // ax+b réduit
+const termsOf = p => Object.keys(p).map(Number).sort((a, b) => b - a).filter(d => p[d]).map(d => [p[d], d]);
+const tx = p => seq(termsOf(p));
+const pn = n => (n < 0 ? `(${n})` : String(n));   // nombre dans un produit
+
+/* Rationnels exacts { n, d } (d > 0) */
+function Q(n, d = 1) { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return { n: n / g, d: d / g }; }
+const qv = q => q.n / q.d;
+function toQ(x) { for (let d = 1; d <= 720; d++) { const n = Math.round(x * d); if (Math.abs(n - x * d) < 1e-7) return Q(n, d); } return Q(Math.round(x)); }
+const qTex = q => (q.d === 1 ? String(q.n) : `${q.n < 0 ? '-' : ''}\\dfrac{${Math.abs(q.n)}}{${q.d}}`);
+
+const REL = { '=': '=', '<': '<', '>': '>', '<=': '\\leq ', '>=': '\\geq ' };
+const FLIP = { '=': '=', '<': '>', '>': '<', '<=': '>=', '>=': '<=' };
+const RELU = { '<': '<', '<=': '≤', '>': '>', '>=': '≥' };
+const holds = (u, v, r) => (r === '=' ? Math.abs(u - v) < 1e-9 : r === '<' ? u < v - 1e-9 : r === '>' ? u > v + 1e-9 : r === '<=' ? u <= v + 1e-9 : u >= v - 1e-9);
+/* =====================================================================
+   Réponse de l'élève : lecture de ce qu'il tape, puis comparaison exacte
+   avec l'expression de départ (sous forme de polynôme) et contrôle de la
+   forme demandée (réduite, ou produit).
+   ===================================================================== */
+function tokenize(s) {
+  s = s.replace(/\\times|\\cdot|[×·∙]/g, '*').replace(/[−–]/g, '-').replace(/\\left|\\right|\\big|\\Big/g, '')
+    .replace(/,/g, '.').replace(/²/g, '^2').replace(/³/g, '^3');
+  const out = [];
+  for (let i = 0; i < s.length;) {
+    const c = s[i];
+    if (/\s/.test(c)) { i++; continue; }
+    if (/\d/.test(c) || (c === '.' && /\d/.test(s[i + 1] || ''))) {
+      let j = i; while (j < s.length && /[\d.]/.test(s[j])) j++;
+      const v = Number(s.slice(i, j));
+      if (Number.isNaN(v)) throw new Error(`nombre mal écrit « ${s.slice(i, j)} »`);
+      out.push({ t: 'n', v }); i = j; continue;
+    }
+    if (/[a-z]/.test(c)) { out.push({ t: 'v', v: c }); i++; continue; }
+    if ('+-*/^()[]{}'.includes(c)) { out.push({ t: c }); i++; continue; }
+    throw new Error(`caractère non reconnu « ${c} »`);
+  }
+  if (!out.length) throw new Error('la réponse est vide');
+  return out;
+}
+const CLOSE = { '(': ')', '[': ']', '{': '}' };
+function parseExpr(s) {
+  const tk = tokenize(s);
+  let p = 0;
+  const peek = () => tk[p], eat = t => (tk[p] && tk[p].t === t ? tk[p++] : null);
+  function sum() {
+    const terms = [];
+    let sg = 1;
+    if (eat('-')) sg = -1; else eat('+');
+    terms.push({ s: sg, n: prod() });
+    while (peek() && (peek().t === '+' || peek().t === '-')) { sg = tk[p++].t === '-' ? -1 : 1; terms.push({ s: sg, n: prod() }); }
+    return terms.length === 1 && terms[0].s === 1 ? terms[0].n : { t: 'add', terms };
+  }
+  function prod() {
+    const f = [power()];
+    for (let k = peek(); k; k = peek()) {
+      if (k.t === '*' || k.t === '/') { p++; const n = power(); f.push(k.t === '/' ? { t: 'inv', n } : n); }
+      else if (k.t === 'n' || k.t === 'v' || k.t in CLOSE) f.push(power());   // multiplication sous-entendue : 3x, 2(x+1)
+      else break;
+    }
+    return f.length === 1 ? f[0] : { t: 'mul', f };
+  }
+  function power() {
+    let b = atom();
+    while (eat('^')) b = { t: 'pow', b, e: atom() };
+    return b;
+  }
+  function atom() {
+    const k = tk[p++];
+    if (!k) throw new Error('il manque quelque chose à la fin');
+    if (k.t === 'n') return { t: 'num', v: k.v };
+    if (k.t === 'v') return { t: 'var', v: k.v };
+    if (k.t === '-') return { t: 'neg', n: power() };
+    if (k.t in CLOSE) {
+      const n = sum();
+      if (!eat(CLOSE[k.t])) throw new Error('une parenthèse n’est pas fermée');
+      return k.t === '{' ? n : { t: 'par', n, o: k.t };
+    }
+    throw new Error(`« ${k.t} » mal placé`);
+  }
+  const r = sum();
+  if (p < tk.length) throw new Error(`« ${tk[p].t === 'n' || tk[p].t === 'v' ? tk[p].v : tk[p].t} » mal placé`);
+  return r;
+}
+// Polynôme : { degré: coefficient }
+const P = {
+  c: k => ({ 0: k }),
+  add(a, b, s = 1) { const r = Object.assign({}, a); for (const d in b) r[d] = (r[d] || 0) + s * b[d]; return r; },
+  mul(a, b) { const r = {}; for (const i in a) for (const j in b) { const d = +i + +j; r[d] = (r[d] || 0) + a[i] * b[j]; } return r; },
+  eq(a, b) { return [...new Set([...Object.keys(a), ...Object.keys(b)])].every(d => Math.abs((a[d] || 0) - (b[d] || 0)) < 1e-9); },
+  isConst: a => Object.keys(a).every(d => +d === 0 || Math.abs(a[d]) < 1e-12)
+};
+function toPoly(n, v) {
+  switch (n.t) {
+    case 'num': return P.c(n.v);
+    case 'var': if (n.v !== v) throw new Error(`utilise la lettre \\(${v}\\) (et pas \\(${n.v}\\))`); return { 1: 1 };
+    case 'neg': return P.mul(P.c(-1), toPoly(n.n, v));
+    case 'par': return toPoly(n.n, v);
+    case 'add': return n.terms.reduce((r, t) => P.add(r, toPoly(t.n, v), t.s), {});
+    case 'mul': return n.f.reduce((r, f) => P.mul(r, toPoly(f, v)), P.c(1));
+    case 'inv': {
+      const q = toPoly(n.n, v);
+      if (!P.isConst(q) || !q[0]) throw new Error('on ne peut diviser que par un nombre non nul');
+      return P.c(1 / q[0]);
+    }
+    case 'pow': {
+      const e = toPoly(n.e, v), k = e[0] || 0, b = toPoly(n.b, v);
+      if (!P.isConst(e) || !Number.isInteger(k) || k < 0 || k > 9) throw new Error('l’exposant doit être un nombre entier');
+      let r = P.c(1);
+      for (let i = 0; i < k; i++) r = P.mul(r, b);
+      return r;
+    }
+  }
+  throw new Error('expression mal écrite');
+}
+const monoP = ([c, d]) => ({ [d]: c });
+// Écriture TeX de ce que tape l'élève (aperçu)
+function astTex(n) {
+  switch (n.t) {
+    case 'num': return String(n.v).replace('.', '{,}');
+    case 'var': return n.v;
+    case 'neg': return '-' + astTex(n.n);
+    case 'par': return n.o === '[' ? `\\big[${astTex(n.n)}\\big]` : `(${astTex(n.n)})`;
+    case 'add': return n.terms.map((t, i) => (t.s < 0 ? '-' : i ? '+' : '') + astTex(t.n)).join('');
+    case 'mul': return n.f.map((f, i) => {
+      if (f.t === 'inv') return `\\div ${astTex(f.n)}`;
+      const s = astTex(f);
+      return i && (f.t === 'num' || f.t === 'neg' || (f.t === 'pow' && f.b.t === 'num')) ? `\\times ${s}` : s;
+    }).join('');
+    case 'pow': return `${n.b.t === 'add' || n.b.t === 'mul' || n.b.t === 'neg' ? `(${astTex(n.b)})` : astTex(n.b)}^{${astTex(n.e)}}`;
+  }
+  return '';
+}
+// Forme réduite : somme de monômes sans parenthèses, au plus un par degré
+function monoDeg(n) {
+  if (n.t === 'num') return 0;
+  if (n.t === 'var') return 1;
+  if (n.t === 'pow' && n.b.t === 'var' && n.e.t === 'num') return n.e.v;
+  if (n.t === 'mul' && n.f.length === 2 && n.f[0].t === 'num') { const d = monoDeg(n.f[1]); return d > 0 ? d : null; }
+  return null;
+}
+function isReduced(n) {
+  const ds = [];
+  for (let t of n.t === 'add' ? n.terms.map(u => u.n) : [n]) {
+    if (t.t === 'neg') t = t.n;
+    const d = monoDeg(t);
+    if (d === null) return false;
+    ds.push(d);
+  }
+  return new Set(ds).size === ds.length;
+}
+// Forme factorisée : un produit (avec au moins une parenthèse) qui ne se réduit pas à 1 × (…)
+function isFactored(n, v) {
+  if (n.t === 'add' && n.terms.length === 1) n = n.terms[0].n;
+  if (n.t === 'neg') n = n.n;
+  let nc = 0, k = 1, paren = false;
+  for (const f of n.t === 'mul' ? n.f : [n]) {
+    if (f.t === 'inv') return false;
+    if (f.t === 'par' || (f.t === 'pow' && f.b.t === 'par')) paren = true;
+    const q = toPoly(f, v);
+    if (P.isConst(q)) k *= q[0] || 0;
+    else nc += f.t === 'pow' ? (toPoly(f.e, v)[0] || 0) : 1;
+  }
+  return paren && (nc >= 2 || (nc === 1 && Math.abs(k) !== 1));
+}
+// Ce que tape l'élève : on enlève « A = » ou le membre de gauche s'il le recopie
+function cleanInput(s) {
+  s = s.trim().replace(/^[A-Z]\s*=/, '');
+  if (s.includes('=')) s = s.slice(s.lastIndexOf('=') + 1);
+  return s.toLowerCase();
+}
+const itemVar = it => ((it.ansQ || it.q || '').replace(/\\[a-zA-Z]+/g, '').match(/[a-z]/) || ['x'])[0];
+
+/* =====================================================================
+   Polynômes exacts à partir d'une écriture « machine » (x/4, 2(x-1)…)
+   ===================================================================== */
+function polyQ(s) { const p = toPoly(parseExpr(s), 'x'), r = {}; for (const d in p) if (Math.abs(p[d]) > 1e-12) r[d] = toQ(p[d]); return r; }
+const evalQ = (p, q) => toQ(Object.keys(p).reduce((s, d) => s + qv(p[d]) * Math.pow(qv(q), +d), 0));
+// On remplace x par une valeur dans une écriture TeX (3x → 3×(−2), x^2 → (−1)^2…)
+function subst(tex, q) {
+  const v = qTex(q), neg = q.n < 0;
+  return tex.replace(/x/g, (m0, i) => {
+    const pre = tex[i - 1] || '', post = tex[i + 1] || '';
+    let s = v;
+    if (neg && ((pre !== '{' && pre !== '' && pre !== '(') || post === '^')) s = `(${v})`;
+    else if (q.d !== 1 && post === '^') s = `\\left(${v}\\right)`;
+    if (/\d/.test(pre)) s = `\\times ${s}`;
+    if (post === '(') s += '\\times ';
+    return s;
+  });
+}
+
+/* Droite graduée (non à l'échelle), comme dans le cours : point plein si la
+   valeur est solution (≤, ≥), point vide sinon (<, >). */
+function droite(q, rel, w = 230) {
+  const open = rel === '<' || rel === '>', right = rel === '>' || rel === '>=';
+  const c = w / 2, red = '#E03131', frac = q.d !== 1, h = frac ? 56 : 40;
+  const sg = q.n < 0 ? '−' : '';
+  const lab = frac
+    ? `<text x="${c - 6}" y="38" text-anchor="end">${sg}</text><text x="${c}" y="33" text-anchor="middle">${Math.abs(q.n)}</text><line x1="${c - 7}" y1="38" x2="${c + 7}" y2="38" stroke="#1D2733" stroke-width="1"/><text x="${c}" y="52" text-anchor="middle">${q.d}</text>`
+    : `<text x="${c}" y="36" text-anchor="middle">${sg}${Math.abs(q.n)}</text>`;
+  return `<svg class="droite" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" font-family="Source Sans 3, Arial, sans-serif" font-size="15" fill="#1D2733" role="img" aria-label="x ${RELU[rel]} ${sg}${Math.abs(q.n)}${frac ? '/' + q.d : ''}">
+    <line x1="6" y1="14" x2="${w - 6}" y2="14" stroke="#1D2733" stroke-width="1.4"/><path d="M${w - 13} 9 L${w - 6} 14 L${w - 13} 19" fill="none" stroke="#1D2733" stroke-width="1.4"/>
+    <line x1="${c}" y1="9" x2="${c}" y2="19" stroke="#1D2733" stroke-width="1.4"/>
+    <line x1="${c}" y1="14" x2="${right ? w - 10 : 8}" y2="14" stroke="${red}" stroke-width="4"/>
+    <circle cx="${c}" cy="14" r="5" fill="${open ? '#fff' : red}" stroke="${red}" stroke-width="2"/>${lab}</svg>`;
+}
+
+/* =====================================================================
+   Moteur de résolution d'une (in)équation du premier degré.
+   o = { qL, qR : écritures TeX ; sL, sR : écritures lisibles par toPoly ; rel }
+   Méthode de la feuille : dénominateurs, développement, x² qui s'éliminent,
+   les x à gauche, les nombres à droite, puis division par le coefficient.
+   ===================================================================== */
+function solveIt(o) {
+  const { qL, qR, sL, sR, rel } = o;
+  const ineq = rel !== '=', nom = ineq ? 'l’inéquation' : 'l’équation';
+  const PL = polyQ(sL), PR = polyQ(sR);
+  let m = 1;
+  [PL, PR].forEach(p => Object.values(p).forEach(q => { m = lcm(m, q.d); }));
+  const toInt = p => { const r = {}; for (const d in p) r[d] = p[d].n * m / p[d].d; return r; };
+  let L = toInt(PL), Rr = toInt(PR);
+  const steps = [];
+  const line = (a, b, sym = REL[rel]) => `\\Longleftrightarrow ${a}${sym}${b}`;
+  let cL = qL, cR = qR;
+  if (m > 1) {
+    const w = (q, s) => (parseExpr(s).t === 'add' ? `\\left(${q}\\right)` : q);
+    const nd = [PL, PR].reduce((n, p) => n + Object.values(p).filter(q => q.d > 1).length, 0);
+    steps.push({ e: [line(`${opc(m)}\\times ${w(qL, sL)}`, `${opc(m)}\\times ${w(qR, sR)}`), line(tx(L), tx(Rr))],
+      x: `On multiplie les deux membres par \\(${m}\\) pour supprimer ${nd > 1 ? 'les dénominateurs' : 'le dénominateur'}${ineq ? ` ; \\(${m}\\) est positif, donc l’ordre <b>ne change pas</b>` : ''}. Puis on simplifie${parseExpr(sL).t === 'add' || parseExpr(sR).t === 'add' ? ' en distribuant' : ''}.` });
+    cL = tx(L); cR = tx(Rr);
+  } else if (!isReduced(parseExpr(sL)) || !isReduced(parseExpr(sR))) {
+    steps.push({ e: [line(tx(L), tx(Rr))], x: 'On développe et on réduit chaque membre.' });
+    cL = tx(L); cR = tx(Rr);
+  }
+  if (L[2]) {
+    const k = L[2], t = (k > 0 ? '-' : '+') + body(k, 2);
+    L = Object.assign({}, L, { 2: 0 }); Rr = Object.assign({}, Rr, { 2: (Rr[2] || 0) - k });
+    steps.push({ e: [line(cL + opc(t), cR + opc(t)), line(tx(L), tx(Rr))], x: `On ${k > 0 ? 'soustrait' : 'ajoute'} \\(${body(k, 2)}\\) aux deux membres : les \\(x^2\\) disparaissent.` });
+    cL = tx(L); cR = tx(Rr);
+  }
+  let a = L[1] || 0, b = L[0] || 0, c = Rr[1] || 0, d = Rr[0] || 0;
+  if (c) {
+    const t = (c > 0 ? '-' : '+') + body(c, 1);
+    a -= c;
+    steps.push({ e: [line(cL + opc(t), cR + opc(t)), line(lt(a, b) || '0', String(d))], x: `On ${c > 0 ? 'soustrait' : 'ajoute'} \\(${body(c, 1)}\\) aux deux membres (pour regrouper les \\(x\\) à gauche), puis on réduit chaque membre.` });
+    cL = lt(a, b) || '0'; cR = String(d);
+  }
+  if (a === 0) {
+    const ok = holds(b, d, rel);
+    steps.push({ h: ok
+      ? `Il n’y a plus de \\(x\\) et \\(${b}${REL[rel]}${d}\\) est <b>toujours vrai</b>, quelle que soit la valeur de \\(x\\) : <b>tous les réels</b> sont solutions.`
+      : `Il n’y a plus de \\(x\\) et \\(${b}${REL[rel]}${d}\\) est <b>impossible</b>, quelle que soit la valeur de \\(x\\) : ${nom} n’a <b>aucune solution</b>${ineq ? '' : ', \\(S=\\varnothing\\)'}.` });
+    return { steps, sol: { kind: ok ? 'all' : 'none' } };
+  }
+  if (b) {
+    const t = (b > 0 ? '-' : '+') + Math.abs(b);
+    d -= b;
+    steps.push({ e: [line(cL + opc(t), cR + opc(t)), line(mono(a, 1), String(d))], x: `On ${b > 0 ? 'soustrait' : 'ajoute'} \\(${Math.abs(b)}\\) aux deux membres (pour isoler les \\(x\\)).` });
+  }
+  const val = Q(d, a);
+  let r = rel;
+  if (a !== 1) {
+    if (ineq && a < 0) r = FLIP[rel];
+    const sym = r !== rel ? col(FLC, REL[r]) : REL[r];
+    let x = ineq
+      ? `On divise les deux membres par \\(${a}\\), qui est ${a > 0 ? '<b>positif</b> : l’ordre <b>ne change pas</b>' : `<b>négatif</b> : on <b>change l’ordre</b> (\\(${REL[rel]}\\) devient \\(${REL[r]}\\))`}`
+      : `On divise les deux membres par \\(${a}\\), le nombre devant \\(x\\)`;
+    if (a === -1) x += ' (cela revient à changer tous les signes)';
+    if (val.d !== 1 && (gcd(d, a) > 1 || a < 0)) x += ', puis on simplifie la fraction';
+    steps.push({ e: [line(`\\dfrac{${mono(a, 1)}}{${opc(a)}}`, `\\dfrac{${d}}{${opc(a)}}`, sym), line('x', qTex(val), sym)], x: x + '.' });
+  }
+  return { steps, sol: { kind: 'one', val, rel: r } };
+}
+function solText(sol, rel) {
+  if (sol.kind === 'none') return rel === '=' ? 'aucune solution, \\(S=\\varnothing\\)' : 'aucune solution';
+  if (sol.kind === 'all') return 'tous les réels sont solutions';
+  return rel === '=' ? `\\(S=\\{${qTex(sol.val)}\\}\\)` : `\\(x${REL[sol.rel]}${qTex(sol.val)}\\)`;
+}
+
+/* =====================================================================
+   Constructeurs d'items : { l, q | qh, res, concl, steps:[{e|h, x}], ans, piege? }
+   e : liste de lignes TeX ; h : texte ; ans : réponse attendue (entraînement).
+   ===================================================================== */
+// Une (in)équation à résoudre. qL/qR : TeX ; sL/sR : écriture lisible (par défaut le TeX)
+function E(l, qL, rel, qR, sL = qL, sR = qR, opt = {}) {
+  const o = { qL, qR, sL, sR, rel };
+  const { steps, sol } = solveIt(o);
+  if (rel === '=' && sol.kind === 'one' && opt.verif !== false) {
+    const vL = evalQ(polyQ(sL), sol.val), vR = evalQ(polyQ(sR), sol.val);
+    steps.push({ h: `<span class="x"><em>Vérification :</em> \\(${subst(qL, sol.val)}=${qTex(vL)}\\) et \\(${subst(qR, sol.val)}=${qTex(vR)}\\) : les deux membres sont égaux.</span>` });
+  }
+  const res = solText(sol, rel);
+  let concl = rel === '=' ? (sol.kind === 'one' ? `La solution est ${res}.` : sol.kind === 'none' ? 'L’équation n’a aucune solution : \\(S=\\varnothing\\).' : 'Tous les réels sont solutions.') : '';
+  if (rel !== '=') concl = sol.kind === 'one' ? `Les solutions sont les réels \\(x\\) tels que ${res}. ${droite(sol.val, sol.rel)}` : (sol.kind === 'all' ? 'Tous les réels sont solutions.' : 'L’inéquation n’a aucune solution.');
+  return Object.assign({ l, q: `${qL}${REL[rel]}${qR}`, res: rel !== '=' && sol.kind === 'one' ? `${res} ${droite(sol.val, sol.rel, 190)}` : res, concl, steps,
+    ans: { t: rel === '=' ? 'eq' : 'ineq', sol } }, opt);
+}
+
+// Exercice 1 : tester si un nombre est solution
+function T1(l, qL, rel, qR, v, sL = qL, sR = qR) {
+  const q = Q(v), vL = evalQ(polyQ(sL), q), vR = evalQ(polyQ(sR), q), ok = holds(qv(vL), qv(vR), rel);
+  const hasX = s => /x/.test(s);
+  const side = (tex, s, val, nm) => hasX(s)
+    ? { e: [`${subst(tex, q)}=${qTex(val)}`], x: `Membre de ${nm} : on remplace \\(x\\) par \\(${v}\\) et on calcule.` }
+    : { e: [`${qTex(val)}`], x: `Membre de ${nm} : il ne contient pas de \\(x\\), il vaut \\(${qTex(val)}\\).` };
+  const cmp = `\\(${qTex(vL)}${REL[rel]}${qTex(vR)}\\)`;
+  const why = rel === '=' ? (ok ? 'Les deux membres sont égaux' : 'Les deux membres ne sont pas égaux')
+    : `${cmp} est ${ok ? 'vrai' : 'faux'}${!ok && qv(vL) === qv(vR) ? ` (les deux membres sont égaux, et \\(${REL[rel]}\\) est une inégalité stricte)` : ''}`;
+  return { l, qh: `\\(${qL}${REL[rel]}${qR}\\) <span class="x">pour \\(x=${v}\\)</span>`,
+    res: `gauche \\(${qTex(vL)}\\) ; droite \\(${qTex(vR)}\\) ; <b>${ok ? 'oui' : 'non'}</b>`,
+    concl: `Membre de gauche : \\(${qTex(vL)}\\) ; membre de droite : \\(${qTex(vR)}\\). \\(${v}\\) <b>${ok ? 'est' : 'n’est pas'}</b> solution.`,
+    steps: [side(qL, sL, vL, 'gauche'), side(qR, sR, vR, 'droite'), { h: `${why} : \\(${v}\\) ${ok ? '<b>est</b>' : '<b>n’est pas</b>'} solution de ${rel === '=' ? 'l’équation' : 'l’inéquation'}.` }],
+    ans: { t: 'test', vL, vR, ok } };
+}
+
+// Exercice 5 : comparer après une suite d'opérations. ops : [{t:'add'|'mul'|'div', k}]
+function O5(l, X, Y, r0, ops) {
+  let ex = X, ey = Y, r = r0;
+  const isN = typeof Y === 'number', steps = [];
+  ops.forEach((o, i) => {
+    const pre = i === 0 ? `On part de \\(${X}${REL[r0]}${Y}\\). ` : '';
+    let x, flip = false;
+    if (o.t === 'add') {
+      const s = (o.k > 0 ? '+' : '-') + Math.abs(o.k);
+      ex += s; ey = isN ? ey + o.k : ey + s;
+      x = `On ${o.k > 0 ? 'ajoute' : 'soustrait'} \\(${Math.abs(o.k)}\\) aux deux membres : l’ordre <b>ne change pas</b>.`;
+    } else if (o.t === 'div') {
+      ex = `\\dfrac{${ex}}{${o.k}}`; ey = isN ? ey / o.k : `\\dfrac{${ey}}{${o.k}}`;
+      x = `On divise les deux membres par \\(${o.k}\\), qui est positif : l’ordre <b>ne change pas</b>.`;
+    } else {
+      const k = o.k, f = s => (k === -1 ? '-' : String(k)) + s;
+      ex = f(ex); ey = isN ? k * ey : f(ey);
+      if (k < 0) { r = FLIP[r]; flip = true; }
+      x = k > 0 ? `On multiplie les deux membres par \\(${k}\\), qui est positif : l’ordre <b>ne change pas</b>.`
+        : `On ${k === -1 ? 'prend les opposés, c’est-à-dire qu’on multiplie' : 'multiplie'} les deux membres par \\(${k}\\), qui est <b>négatif</b> : l’ordre <b>change</b>.`;
+    }
+    steps.push({ e: [`${ex}${flip ? col(FLC, REL[r]) : REL[r]}${ey}`], x: pre + x });
+  });
+  const fam = r0 === '<' || r0 === '>' ? ['<', '>'] : ['<=', '>='];
+  return { l, qh: `\\(${ex}\\;\\dots\\;${ey}\\)`, res: `\\(${ex}${REL[r]}${ey}\\)`, steps,
+    ans: { t: 'choice', opts: fam.map(v => ({ v, h: `\\(${REL[v]}\\)` })), good: r } };
+}
+
+// Exercice 6 : encadrement. F = { lo, ls, hi, hs } signifie lo ls a hs hi
+const fr = (f, e) => `${f.lo}${REL[f.ls]}${e}${REL[f.hs]}${f.hi}`;
+function O6(l, F, ops, v = 'a') {
+  let ex = v, f = Object.assign({}, F);
+  const steps = [];
+  ops.forEach(o => {
+    if (o.t === 'add') {
+      const s = (o.k > 0 ? '+' : '-') + Math.abs(o.k), nx = ex + s;
+      const nf = { lo: f.lo + o.k, ls: f.ls, hi: f.hi + o.k, hs: f.hs };
+      steps.push({ e: [fr(nf, nx)], x: `On ${o.k > 0 ? 'ajoute' : 'soustrait'} \\(${Math.abs(o.k)}\\) à chaque membre : \\(${f.lo}${s}=${nf.lo}\\) et \\(${f.hi}${s}=${nf.hi}\\). L’ordre <b>ne change pas</b>.` });
+      ex = nx; f = nf;
+    } else {
+      const k = o.k, nx = (k === -1 ? '-' : k) + ex;
+      const calc = `\\(${k}\\times ${pn(f.lo)}=${k * f.lo}\\) et \\(${k}\\times ${pn(f.hi)}=${k * f.hi}\\)`;
+      if (k > 0) {
+        const nf = { lo: k * f.lo, ls: f.ls, hi: k * f.hi, hs: f.hs };
+        steps.push({ e: [fr(nf, nx)], x: `On multiplie chaque membre par \\(${k}\\), qui est positif : ${calc}. L’ordre <b>ne change pas</b>.` });
+        f = nf;
+      } else {
+        const mid = `${k * f.lo}${col(FLC, REL[FLIP[f.ls]])}${nx}${col(FLC, REL[FLIP[f.hs]])}${k * f.hi}`;
+        const nf = { lo: k * f.hi, ls: f.hs, hi: k * f.lo, hs: f.ls };
+        steps.push({ e: [mid, fr(nf, nx)], x: `On multiplie chaque membre par \\(${k}\\), qui est <b>négatif</b> : ${calc}, et l’ordre <b>change</b>. Puis on réécrit l’encadrement en commençant par le plus petit nombre.` });
+        f = nf;
+      }
+      ex = nx;
+    }
+  });
+  return { l, q: ex, res: `\\(${fr(f, ex)}\\)`, steps, ans: { t: 'frame', f, ex },
+    piege: ops.some(o => o.t === 'mul' && o.k < 0) ? 'Avec un nombre négatif, on n’oublie pas de changer <em>les deux</em> symboles, puis de remettre le plus petit nombre à gauche.' : null };
+}
+
+// Exercice 8 : associer une inéquation à sa droite
+function O8(l, qL, rel, qR, letter, sL = qL, sR = qR) {
+  const it = E(l, qL, rel, qR, sL, sR);
+  const s = it.ans.sol, open = s.rel === '<' || s.rel === '>';
+  it.steps.push({ h: `Point ${open ? 'vide' : 'plein'} en \\(${qTex(s.val)}\\) (\\(${qTex(s.val)}\\) ${open ? 'n’est pas' : 'est'} solution) et trait vers la ${s.rel[0] === '>' ? 'droite' : 'gauche'} : c’est la droite <b>(${letter})</b>.` });
+  it.res = `\\(x${REL[s.rel]}${qTex(s.val)}\\) : droite <b>(${letter})</b>`;
+  it.concl = it.res;
+  it.ans = { t: 'choice', opts: ['a', 'b', 'c', 'd'].map(v => ({ v, h: `(${v})` })), good: letter };
+  return it;
+}
+function figDroites(k) {
+  const D = [['a', '<', k], ['b', '>=', -k], ['c', '>=', k], ['d', '<', -k]];
+  return `<div class="droites">${D.map(([n, r, v]) => `<div><b>(${n})</b>${droite(Q(v), r)}</div>`).join('')}</div>`;
+}
+
+// Exercice 9 : la copie de Tom. -p x + b ≤ q x + d, Tom divise sans changer l'ordre
+function tomData(p, q, b, d) {
+  const qL = lt(-p, b), qR = lt(q, d), k = -(p + q), s = Q(d - b, k);
+  return { qL, qR, k, s, fig: `<div class="copie"><div><span class="t">Soit \\(x\\) un réel.</span>\\[\\begin{aligned}${qL}\\leq ${qR}&\\Longleftrightarrow ${lt(k, b)}\\leq ${d}\\\\&\\Longleftrightarrow ${mono(k, 1)}\\leq ${d - b}\\\\&\\Longleftrightarrow x\\leq ${qTex(s)}\\end{aligned}\\]</div><div><span class="t">Les solutions sont les réels \\(x\\) tels que \\(x\\leq ${qTex(s)}\\).</span><br>${droite(s, '<=', 200)}</div></div>` };
+}
+function tomItems(t) {
+  const z = Q(0), vL = evalQ(polyQ(t.qL), z), vR = evalQ(polyQ(t.qR), z), ok = holds(qv(vL), qv(vR), '<=');
+  const i1 = { l: '①', qh: `Le nombre \\(0\\) est-il solution de \\(${t.qL}\\leq ${t.qR}\\) ? Est-ce cohérent avec la conclusion de Tom ?`,
+    res: `<b>${ok ? 'oui' : 'non'}</b> : \\(${qTex(vL)}\\leq ${qTex(vR)}\\) est ${ok ? 'vrai' : 'faux'} ; or \\(0\\leq ${qTex(t.s)}\\) : la conclusion de Tom est fausse`,
+    steps: [
+      { e: [`${subst(t.qL, z)}=${qTex(vL)}`], x: 'Membre de gauche : on remplace \\(x\\) par \\(0\\).' },
+      { e: [`${subst(t.qR, z)}=${qTex(vR)}`], x: 'Membre de droite : on remplace \\(x\\) par \\(0\\).' },
+      { h: `\\(${qTex(vL)}\\leq ${qTex(vR)}\\) est <b>faux</b> : \\(0\\) <b>n’est pas</b> solution.` },
+      { h: `Pourtant \\(0\\leq ${qTex(t.s)}\\) : d’après la conclusion de Tom, \\(0\\) devrait être solution. Ce n’est pas cohérent, Tom s’est donc trompé.` }],
+    ans: { t: 'choice', opts: [{ v: 'oui', h: 'Oui, 0 est solution' }, { v: 'non', h: 'Non, 0 n’est pas solution' }], good: ok ? 'oui' : 'non' } };
+  i1.concl = i1.res;
+  const i2 = E('②', t.qL, '<=', t.qR);
+  i2.qh = 'Retrouver l’erreur commise par Tom, puis corriger sa résolution.';
+  i2.steps.unshift({ h: `L’erreur est à la dernière étape : Tom divise par \\(${t.k}\\), qui est <b>négatif</b>, sans changer l’ordre. On reprend la résolution :` });
+  i2.piege = 'Diviser (ou multiplier) par un nombre négatif change l’ordre : \\(\\leq\\) devient \\(\\geq\\). Tester une valeur, comme \\(0\\), permet de repérer l’erreur.';
+  return [i1, i2];
+}
+
+/* =====================================================================
+   Énoncés : valeurs de la feuille (f = false) ou nouvelles valeurs
+   ===================================================================== */
+const S1 = '<span style="color:var(--star-green)">★</span><span style="color:#C5CCD3">☆☆</span>';
+const S2 = '<span style="color:var(--star-blue)">★★</span><span style="color:#C5CCD3">☆</span>';
+const S3 = '<span style="color:var(--star-red)">★★★</span>';
+const C = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪'];
+const LET = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)'];
+// Tirage avec contrôle : on recommence tant que la solution ne convient pas
+function gen(f, wantInt = true, tries = 400) {
+  let it = null;
+  for (let i = 0; i < tries; i++) {
+    it = f();
+    const s = it.ans && it.ans.sol;
+    if (s && s.kind === 'one' && Math.abs(qv(s.val)) <= 15 && (!wantInt || s.val.d === 1)) return it;
+  }
+  return it;
+}
+const dfx = (num, den) => `\\dfrac{${num}}{${den}}`;
+
+const RAP_SOL = R`<p>Un nombre est <b>solution</b> d’une équation si, en remplaçant \(x\) par ce nombre, les deux membres sont égaux.</p><p>Pour une inéquation, il faut que l’inégalité obtenue soit vraie.</p>`;
+const RAP_EQ = R`<p>On obtient une équation équivalente (qui a les mêmes solutions) en :</p><p>• ajoutant ou soustrayant un même nombre (ou un même terme en \(x\)) aux deux membres ;</p><p>• multipliant ou divisant les deux membres par un même nombre <b>non nul</b>.</p>`;
+const RAP_METH = R`<p>1. On regroupe les \(x\) dans un membre.</p><p>2. On regroupe les nombres dans l’autre.</p><p>3. On divise par le nombre devant \(x\).</p><p>4. On peut vérifier en remplaçant \(x\) par la solution.</p>`;
+const RAP_INEQ = R`<p>On résout une inéquation comme une équation, avec une seule différence :</p><p>quand on multiplie ou divise les deux membres par un nombre <b>négatif</b>, on <b>change l’ordre</b> (\(<\) devient \(>\), \(\leq\) devient \(\geq\)).</p>`;
+const RAP_DROITE = R`<p>Point <b>plein</b> : la valeur est solution (\(\leq\), \(\geq\)).</p><p>Point <b>vide</b> : la valeur n’est pas solution (\(<\), \(>\)).</p><p>Le trait part vers la droite pour \(>\) et \(\geq\), vers la gauche pour \(<\) et \(\leq\).</p>`;
+
+const EX = [
+{ n: 1, obj: [6, 'Tester si un nombre est solution'], stars: S1, comp: 'Calculer', ans: 'test',
+  consigne: 'Pour chaque ligne, calculer séparément chacun des deux membres pour la valeur donnée, puis dire si ce nombre est solution.',
+  aide: 'Calcule chaque membre sur ton cahier, écris les deux résultats, choisis « oui » ou « non », puis clique sur « Vérifier ».',
+  rappel: [{ t: 'Solution', h: RAP_SOL }, { t: 'Méthode', h: R`<p>On calcule le membre de gauche, <b>puis</b> le membre de droite, séparément.</p><p>Exemple : \(2x+3=11\) pour \(x=4\) : \(2\times4+3=11\) et \(11\) : oui.</p>` }],
+  att: R`<p>\(11>11\) est <b>faux</b> : \(>\) est une inégalité stricte. En revanche \(1\leq 1\) est vrai.</p><p>\((-1)^2=1\) : on met des parenthèses autour d’un nombre négatif.</p>`,
+  build(f) {
+    if (!f) return { groups: [{ items: [T1(C[0], '3x-5', '=', '7', 4), T1(C[1], '2x+1', '=', '5x-8', -3), T1(C[2], 'x^2-3', '=', '2x', -1),
+      T1(C[3], '5(x-2)', '=', '3x', 4), T1(C[4], '4x-1', '>', '2x+5', 3), T1(C[5], '-2x+7', '<=', '1', 3)] }] };
+    const mk = (l, rel, lefts, withX) => {
+      const v = nz(-4, 5), left = pick(lefts)(), pL = polyQ(left), vL = qv(evalQ(pL, Q(v)));
+      const c = withX ? nz(-5, 5) : 0, off = rel === '=' ? pick([0, 0, nz(-4, 4)]) : pick([0, nz(-4, 4)]);
+      const right = lt(c, vL - c * v + off) || '0';
+      return T1(l, left, rel, right, v);
+    };
+    const A = () => lt(ri(2, 6), nz(-9, 9)), B = () => `${ri(2, 5)}(${lt(1, nz(-5, 5))})`, Cq = () => seq([[1, 2], [nz(-9, 9), 0]]), D = () => lt(-ri(2, 6), nz(-9, 9));
+    return { groups: [{ items: [mk(C[0], '=', [A], false), mk(C[1], '=', [A, D], true), mk(C[2], '=', [Cq], true), mk(C[3], '=', [B], true),
+      mk(C[4], pick(['>', '<']), [A], true), mk(C[5], pick(['<=', '>=']), [D], false)] }] };
+  } },
+
+{ n: 2, obj: [7, 'Résoudre une équation du premier degré'], stars: S1, comp: 'Communiquer', ans: 'eq',
+  consigne: 'Résoudre l’équation en indiquant à chaque étape l’opération effectuée sur les deux membres, puis vérifier.',
+  aide: 'Résous l’équation sur ton cahier (en écrivant les opérations), puis écris la solution dans la case.',
+  rappel: [{ t: 'Équations équivalentes', h: RAP_EQ }, { t: 'Méthode', h: RAP_METH }],
+  att: R`<p>\(4x=12\) donne \(x=\dfrac{12}{4}=3\) : on <b>divise</b> par \(4\), on ne soustrait pas \(4\).</p><p>Ce qu’on fait à un membre, on le fait <b>aussi</b> à l’autre.</p>`,
+  build(f) {
+    if (!f) return { groups: [{ items: [E('', '7x-4', '=', '3x+8')] }] };
+    return { groups: [{ items: [gen(() => { const a = ri(4, 9), c = ri(2, a - 1); return E('', lt(a, -ri(1, 9)), '=', lt(c, nz(1, 15))); })] }] };
+  } },
+
+{ n: 3, obj: null, stars: S1, comp: 'Calculer', ans: 'eq', consigne: 'Résoudre les équations suivantes.',
+  aide: 'Écris la solution dans la case : un nombre entier, ou une fraction comme <code>1/2</code> ou <code>-4/7</code>.',
+  rappel: [{ t: 'Équations équivalentes', h: RAP_EQ }, { t: 'Exemples', h: R`<p>\(x+7=12\Longleftrightarrow x=12-7=5\)</p><p>\(3x=-18\Longleftrightarrow x=\dfrac{-18}{3}=-6\)</p><p>\(\dfrac{x}{4}=3\Longleftrightarrow x=3\times4=12\)</p>` }],
+  att: R`<p>\(10-x=13\Longleftrightarrow -x=3\Longleftrightarrow x=-3\) : on n’oublie pas le signe \(-\) devant \(x\).</p><p>La solution peut être une fraction : \(6x=3\Longleftrightarrow x=\dfrac{3}{6}=\dfrac{1}{2}\).</p>`,
+  build(f) {
+    if (!f) return { groups: [{ items: [E(C[0], 'x+7', '=', '12'), E(C[1], 'x-4', '=', '-9'), E(C[2], '3x', '=', '-18'), E(C[3], '-5x', '=', '20'),
+      E(C[4], dfx('x', 4), '=', '3', 'x/4'), E(C[5], '2x-5', '=', '9'), E(C[6], '-4x+3', '=', '11'), E(C[7], '10-x', '=', '13'),
+      E(C[8], '6x+1', '=', '4', '6x+1', '4', { piege: 'La solution n’est pas toujours un entier : on garde la fraction simplifiée, sans arrondir.' })] }] };
+    const a3 = ri(2, 6), a4 = ri(2, 6), a5 = ri(2, 6), b8 = ri(5, 15);
+    return { groups: [{ items: [E(C[0], lt(1, ri(2, 9)), '=', String(nz(-12, 12))), E(C[1], lt(1, -ri(2, 9)), '=', String(nz(-12, 12))),
+      E(C[2], `${a3}x`, '=', String(a3 * nz(-6, 6))), E(C[3], `-${a4}x`, '=', String(a4 * nz(-6, 6))),
+      (() => { return E(C[4], dfx('x', a5), '=', String(nz(-6, 6)), `x/${a5}`); })(),
+      gen(() => E(C[5], lt(ri(2, 5), -ri(1, 9)), '=', String(nz(-12, 15)))), gen(() => E(C[6], lt(-ri(2, 5), ri(1, 9)), '=', String(nz(-12, 15)))),
+      E(C[7], `${b8}-x`, '=', String(nz(-12, 20))),
+      (() => { let a, b, c; do { a = ri(2, 9); b = nz(-6, 6); c = nz(-9, 9); } while ((c - b) % a === 0); return E(C[8], lt(a, b), '=', String(c)); })()] }] };
+  } },
+
+{ n: 4, obj: null, stars: S2, comp: 'Calculer', ans: 'eq', consigne: 'Résoudre les équations suivantes.',
+  aide: 'Écris la solution dans la case (entier ou fraction comme <code>1/2</code>). S’il n’y a aucune solution, écris <code>aucune</code> ; si tous les réels sont solutions, écris <code>tous</code>.',
+  rappel: [{ t: 'Méthode', h: RAP_METH }, { t: 'Avant de commencer', h: R`<p>S’il y a des parenthèses, on <b>développe et on réduit</b> chaque membre.</p><p>S’il y a des fractions, on multiplie les deux membres par un multiple commun des dénominateurs.</p>` }],
+  att: R`<p>\(-(x-4)=-x+4\) : le signe \(-\) change le signe de <b>chaque</b> terme.</p><p>Si les \(x\) disparaissent : \(1=6\) (faux) donne <b>aucune solution</b> ; \(6=6\) (vrai) donne <b>tous les réels</b>.</p>`,
+  build(f) {
+    if (!f) return { groups: [{ items: [E(C[0], '5x-3', '=', '2x+9'), E(C[1], '4x+7', '=', '9x-8'), E(C[2], '6-x', '=', '3x+14'), E(C[3], '3(x-2)', '=', '5x+4'),
+      E(C[4], '2(3x+1)-(x-4)', '=', '8x', '2(3x+1)-(x-4)', '8x', { piege: '\\(-(x-4)=-x+4\\) : le signe \\(-\\) devant la parenthèse change le signe de chaque terme.' }), E(C[5], '4(2x-1)', '=', '3(x+7)')] },
+      { t: 'Pour aller plus loin', stars: S3, items: [E(C[6], `${dfx('x', 2)}+1`, '=', `${dfx('x', 3)}-1`, 'x/2+1', 'x/3-1'), E(C[7], dfx('2x-1', 3), '=', dfx('x+4', 2), '(2x-1)/3', '(x+4)/2'),
+        E(C[8], '(x+3)^2', '=', '(x-1)^2'), E(C[9], '3x+1', '=', '3(x+2)'), E(C[10], '2(x+3)-x', '=', 'x+6')] }] };
+    const g4 = [
+      gen(() => { const a = ri(3, 9), c = ri(1, a - 1); return E(C[0], lt(a, nz(-9, 9)), '=', lt(c, nz(-12, 12))); }),
+      gen(() => { const a = ri(2, 6), c = ri(a + 1, 9); return E(C[1], lt(a, nz(-9, 9)), '=', lt(c, nz(-12, 12))); }),
+      gen(() => E(C[2], `${ri(2, 12)}-x`, '=', lt(ri(2, 5), nz(-15, 15)))),
+      gen(() => { const k = ri(2, 5); let c; do c = ri(2, 7); while (c === k); return E(C[3], `${k}(${lt(1, nz(-6, 6))})`, '=', lt(c, nz(-9, 9))); }),
+      gen(() => { const p = ri(2, 3), q = ri(2, 4), u = ri(2, 9); const L = `${p}(${lt(q, nz(-5, 5))})-(${lt(1, nz(-6, 6))})`; return E(C[4], L, '=', `${u}x`); }),
+      gen(() => { const k1 = ri(2, 5), a1 = ri(2, 3); let k2; do k2 = ri(2, 5); while (k2 === k1 * a1); return E(C[5], `${k1}(${lt(a1, nz(-5, 5))})`, '=', `${k2}(${lt(1, nz(-8, 8))})`); })
+    ];
+    const [p, q] = shuffle([2, 3, 4, 5]).slice(0, 2), [p2, q2] = shuffle([2, 3, 4, 5]).slice(0, 2);
+    let m9, n9; do { m9 = nz(-6, 6); n9 = nz(-6, 6); } while (m9 === n9 || m9 === -n9);
+    const k10 = ri(2, 6); let m10, n10; do { m10 = nz(-9, 9); n10 = nz(-5, 5); } while (m10 === k10 * n10);
+    const p11 = ri(2, 5), m11 = nz(-6, 6);
+    const more = [
+      gen(() => { const m = nz(-6, 6), n = ri(1, 6); return E(C[6], `${dfx('x', p)}${m > 0 ? '+' : '-'}${Math.abs(m)}`, '=', `${dfx('x', q)}-${n}`, `x/${p}+(${m})`, `x/${q}-${n}`); }),
+      gen(() => { const A = lt(ri(2, 3), nz(-5, 5)), B = lt(1, nz(-6, 6)); return E(C[7], dfx(A, p2), '=', dfx(B, q2), `(${A})/${p2}`, `(${B})/${q2}`); }),
+      E(C[8], `(${lt(1, m9)})^2`, '=', `(${lt(1, n9)})^2`),
+      E(C[9], lt(k10, m10), '=', `${k10}(${lt(1, n10)})`),
+      E(C[10], `${p11}(${lt(1, m11)})-${body(p11 - 1, 1)}`, '=', lt(1, p11 * m11))
+    ];
+    return { groups: [{ items: g4 }, { t: 'Pour aller plus loin', stars: S3, items: more }] };
+  } },
+
+{ n: 5, obj: [8, 'Résoudre une inéquation du premier degré'], stars: S1, comp: 'Raisonner', ans: 'choice',
+  consigne: 'Compléter par le bon symbole.',
+  aide: 'Choisis le bon symbole, puis clique sur « Vérifier ».',
+  rappel: [{ t: 'Ordre et opérations', h: R`<p>Si \(a<b\), alors :</p><p>• \(a+c<b+c\) et \(a-c<b-c\) : ajouter ou soustraire <b>conserve</b> l’ordre ;</p><p>• \(ka<kb\) si \(k>0\) : multiplier par un positif <b>conserve</b> l’ordre ;</p><p>• \(ka>kb\) si \(k<0\) : multiplier par un négatif <b>change</b> l’ordre.</p>` },
+    { t: 'Plusieurs opérations', h: R`<p>On fait les opérations une par une, dans l’ordre du calcul.</p><p>\(2a+1\) : on multiplie par \(2\), puis on ajoute \(1\).</p>` }],
+  att: R`<p>\(-a\), c’est \((-1)\times a\) : prendre l’opposé change l’ordre. Si \(a<b\), alors \(-a>-b\).</p><p>Diviser par \(3\) revient à multiplier par \(\dfrac{1}{3}\), qui est positif.</p>`,
+  build(f) {
+    const part1 = (ks) => [O5(LET[0], 'a', 'b', '<', [{ t: 'add', k: ks[0] }]), O5(LET[1], 'a', 'b', '<', [{ t: 'add', k: -ks[1] }]), O5(LET[2], 'a', 'b', '<', [{ t: 'mul', k: ks[2] }]),
+      O5(LET[3], 'a', 'b', '<', [{ t: 'mul', k: -ks[3] }]), O5(LET[4], 'a', 'b', '<', [{ t: 'div', k: ks[4] }]), O5(LET[5], 'a', 'b', '<', [{ t: 'mul', k: -1 }]),
+      O5(LET[6], 'a', 'b', '<', [{ t: 'mul', k: ks[5] }, { t: 'add', k: ks[6] }]), O5(LET[7], 'a', 'b', '<', [{ t: 'mul', k: -ks[7] }, { t: 'add', k: ks[8] }])];
+    const part2 = (n, r, ks) => [O5(LET[0], 'x', n, r, [{ t: 'add', k: ks[0] }]), O5(LET[1], 'x', n, r, [{ t: 'mul', k: ks[1] }]), O5(LET[2], 'x', n, r, [{ t: 'mul', k: -1 }]),
+      O5(LET[3], 'x', n, r, [{ t: 'mul', k: -ks[2] }, { t: 'add', k: ks[3] }])];
+    if (!f) return { groups: [{ c: '① Soient \\(a\\) et \\(b\\) deux réels tels que \\(a<b\\). Compléter par le symbole \\(<\\) ou \\(>\\).', items: part1([5, 3, 4, 2, 3, 2, 1, 3, 4]) },
+      { c: '② Soit \\(x\\) un réel tel que \\(x\\geq 5\\). Compléter par le symbole \\(\\leq\\) ou \\(\\geq\\).', items: part2(5, '>=', [2, 3, 2, 1]) }] };
+    const n = ri(2, 8), r = pick(['>=', '<=']);
+    return { groups: [{ c: '① Soient \\(a\\) et \\(b\\) deux réels tels que \\(a<b\\). Compléter par le symbole \\(<\\) ou \\(>\\).', items: part1([ri(2, 9), ri(2, 9), ri(2, 9), ri(2, 9), ri(2, 9), ri(2, 5), nz(-7, 7), ri(2, 5), nz(-7, 7)]) },
+      { c: `② Soit \\(x\\) un réel tel que \\(x${REL[r]} ${n}\\). Compléter par le symbole \\(\\leq\\) ou \\(\\geq\\).`, items: part2(n, r, [nz(-7, 7), ri(2, 6), ri(2, 5), nz(-7, 7)]) }] };
+  } },
+
+{ n: 6, obj: null, stars: S2, comp: 'Calculer', ans: 'frame', consigne: 'Donner un encadrement des expressions suivantes.',
+  aide: 'Complète l’encadrement : les deux nombres et les deux symboles (\\(<\\) ou \\(\\leq\\)), puis clique sur « Vérifier ».',
+  rappel: [{ t: 'Encadrer', h: R`<p>On applique la même opération aux <b>trois</b> membres de l’encadrement.</p><p>Si \(-1\leq a<4\), alors \(-1+3\leq a+3<4+3\), soit \(2\leq a+3<7\).</p>` },
+    { t: 'Nombre négatif', h: R`<p>Si on multiplie par un nombre négatif, les deux symboles changent de sens :</p><p>\(-1\leq a<4\) donne \(2\geq -2a>-8\), qu’on réécrit \(-8<-2a\leq 2\).</p>` }],
+  att: R`<p>Pour \(2a+5\), on multiplie d’abord par \(2\), puis on ajoute \(5\).</p><p>Un symbole strict reste strict : \(<\) devient \(>\), jamais \(\geq\).</p>`,
+  build(f) {
+    const mk = (F, k) => ({ c: `Soit \\(a\\) un réel tel que \\(${fr(F, 'a')}\\).`, items: [O6(C[0], F, [{ t: 'add', k: k[0] }]), O6(C[1], F, [{ t: 'add', k: -k[1] }]), O6(C[2], F, [{ t: 'mul', k: k[2] }]),
+      O6(C[3], F, [{ t: 'mul', k: -k[3] }]), O6(C[4], F, [{ t: 'mul', k: k[4] }, { t: 'add', k: k[5] }]), O6(C[5], F, [{ t: 'mul', k: -k[6] }, { t: 'add', k: k[7] }])] });
+    if (!f) return { groups: [mk({ lo: -1, ls: '<=', hi: 4, hs: '<' }, [3, 6, 3, 2, 2, 5, 3, 1])] };
+    return { groups: [mk({ lo: -ri(1, 5), ls: pick(['<', '<=']), hi: ri(1, 6), hs: pick(['<', '<=']) }, [ri(2, 9), ri(2, 9), ri(2, 5), ri(2, 5), ri(2, 4), nz(-7, 7), ri(2, 4), nz(-7, 7)])] };
+  } },
+
+{ n: 7, obj: null, stars: S1, comp: 'Communiquer', ans: 'ineq',
+  consigne: 'Résoudre les inéquations en indiquant les opérations effectuées sur les deux membres (en précisant si le nombre par lequel on divise est positif ou négatif), puis représenter les solutions sur une droite.',
+  aide: 'Choisis le symbole et écris le nombre : par exemple \\(x\\leq 5\\), puis clique sur « Vérifier ».',
+  rappel: [{ t: 'Résoudre une inéquation', h: RAP_INEQ }, { t: 'Représenter les solutions', h: RAP_DROITE }],
+  att: R`<p>Au moment de diviser, on regarde le <b>signe</b> du nombre : \(-7x>14\) donne \(x<\dfrac{14}{-7}\), soit \(x<-2\).</p>`,
+  build(f) {
+    if (!f) return { groups: [{ items: [E(C[0], '5x-4', '<=', '2x+11'), E(C[1], '3-5x', '>', '2x+17')] }] };
+    return { groups: [{ items: [gen(() => { const a = ri(3, 9), c = ri(1, a - 1); return E(C[0], lt(a, -ri(1, 9)), '<=', lt(c, ri(1, 15))); }),
+      gen(() => { const a = ri(2, 6); return E(C[1], `${ri(1, 9)}${mono(-a, 1)}`, '>', lt(ri(1, 5), nz(-15, 20))); })] }] };
+  } },
+
+{ n: 8, obj: null, stars: S2, comp: 'Représenter', ans: 'choice', consigne: 'Résoudre mentalement chaque inéquation, puis l’associer à la droite qui représente ses solutions.',
+  aide: 'Choisis la droite qui représente les solutions, puis clique sur « Vérifier ».',
+  rappel: [{ t: 'Représenter les solutions', h: RAP_DROITE }, { t: 'Résoudre', h: RAP_INEQ }],
+  att: R`<p>\(-x>3\) donne \(x<-3\) : on divise par \(-1\), l’ordre change.</p>`,
+  build(f) {
+    if (!f) return { fig: figDroites(3), groups: [{ items: [O8(C[0], 'x-1', '>=', '2', 'c'), O8(C[1], '-x', '>', '3', 'd'), O8(C[2], '2x', '<', '6', 'a'), O8(C[3], '-3x', '<=', '9', 'b')] }] };
+    const k = ri(2, 7), m = ri(1, 6), p = ri(2, 5), q = ri(2, 5);
+    const its = shuffle([s => O8(s, lt(1, -m), '>=', String(k - m), 'c'), s => O8(s, '-x', '>', String(k), 'd'), s => O8(s, `${p}x`, '<', String(p * k), 'a'), s => O8(s, `-${q}x`, '<=', String(q * k), 'b')]);
+    return { fig: figDroites(k), groups: [{ items: its.map((g, i) => g(C[i])) }] };
+  } },
+
+{ n: 9, obj: null, stars: S2, comp: 'Raisonner', ans: 'mixed', consigne: 'Tom a résolu une inéquation. Voici sa copie :',
+  aide: 'Pour ①, choisis la bonne réponse ; pour ②, écris les solutions corrigées (symbole et nombre).',
+  rappel: [{ t: 'Tester une valeur', h: R`<p>Pour contrôler une résolution, on choisit une valeur simple (comme \(0\)) et on regarde si elle vérifie l’inéquation de départ.</p><p>La réponse doit être cohérente avec la conclusion.</p>` }, { t: 'Résoudre une inéquation', h: RAP_INEQ }],
+  att: R`<p>\(-6x\leq -12\) donne \(x\geq 2\) : on divise par \(-6\), qui est négatif.</p>`,
+  build(f) {
+    const t = f ? (() => { let p, q, s; p = ri(2, 6); q = ri(1, 5); s = ri(1, 5); const b = nz(-9, 9); return tomData(p, q, b, b - (p + q) * s); })() : tomData(4, 2, 1, -11);
+    return { fig: t.fig, groups: [{ items: tomItems(t) }] };
+  } },
+
+{ n: 10, obj: null, stars: S2, comp: 'Calculer', ans: 'ineq', consigne: 'Résoudre les inéquations suivantes, puis représenter leurs solutions sur une droite.',
+  aide: 'Choisis le symbole et écris le nombre (entier ou fraction comme <code>4/7</code>), puis clique sur « Vérifier ».',
+  rappel: [{ t: 'Résoudre une inéquation', h: RAP_INEQ }, { t: 'Représenter les solutions', h: RAP_DROITE }],
+  att: R`<p>On regarde le signe du nombre par lequel on divise <b>à chaque fois</b> : \(-4x<12\) donne \(x>-3\), mais \(4x<12\) donne \(x<3\).</p><p>Multiplier par \(6\) pour supprimer les dénominateurs ne change pas l’ordre (\(6>0\)).</p>`,
+  build(f) {
+    if (!f) return { groups: [{ items: [E(C[0], 'x+4', '>', '7'), E(C[1], '3x', '<=', '-12'), E(C[2], '-2x', '>', '10'), E(C[3], dfx('x', 5), '>=', '-2', 'x/5'),
+      E(C[4], '5x-3', '>=', '2x+9'), E(C[5], '4-3x', '<', 'x+16'), E(C[6], '2(x-1)', '<=', '5x+7'), E(C[7], '-(x+6)', '>', '3(x-2)')] },
+      { t: 'Pour aller plus loin', stars: S3, items: [E(C[8], `${dfx('x', 2)}-1`, '>=', dfx('x+1', 3), 'x/2-1', '(x+1)/3'), E(C[9], '(x-2)^2', '<', 'x(x+3)')] }] };
+    const a2 = ri(2, 6), a3 = ri(2, 6), a4 = ri(2, 6), [p, q] = shuffle([2, 3, 4, 5]).slice(0, 2);
+    return { groups: [{ items: [E(C[0], lt(1, ri(1, 9)), '>', String(nz(-9, 12))), E(C[1], `${a2}x`, '<=', String(a2 * nz(-6, 6))), E(C[2], `-${a3}x`, '>', String(a3 * nz(-6, 6))),
+      E(C[3], dfx('x', a4), '>=', String(nz(-5, 5)), `x/${a4}`),
+      gen(() => { const a = ri(3, 9), c = ri(1, a - 1); return E(C[4], lt(a, nz(-9, 9)), '>=', lt(c, nz(-12, 12))); }),
+      gen(() => E(C[5], `${ri(1, 9)}${mono(-ri(2, 5), 1)}`, '<', lt(1, nz(-12, 20)))),
+      gen(() => { const k = ri(2, 4); return E(C[6], `${k}(${lt(1, nz(-5, 5))})`, '<=', lt(ri(k + 1, 7), nz(-9, 9))); }),
+      gen(() => E(C[7], `-(${lt(1, nz(-8, 8))})`, '>', `${ri(2, 5)}(${lt(1, nz(-5, 5))})`))] },
+      { t: 'Pour aller plus loin', stars: S3, items: [
+        gen(() => { const m = ri(1, 5), n = nz(-5, 5); return E(C[8], `${dfx('x', p)}-${m}`, '>=', dfx(lt(1, n), q), `x/${p}-${m}`, `(${lt(1, n)})/${q}`); }),
+        gen(() => { const m = ri(1, 5), n = nz(-5, 5); return E(C[9], `(${lt(1, -m)})^2`, '<', `x(${lt(1, n)})`); }, false)] }] };
+  } }
+];
+
+/* =====================================================================
+   Affichage
+   ===================================================================== */
+const $ = (s, el = document) => el.querySelector(s);
+const app = $('#app'), nav = $('#exnav');
+function typeset(el) {
+  if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+    MathJax.startup.promise.then(() => MathJax.typesetPromise([el])).catch(() => {});
+  }
+}
+function retypeset(el) {
+  if (window.MathJax && MathJax.typesetClear) { try { MathJax.typesetClear([el]); } catch (e) { /* rien */ } }
+  typeset(el);
+}
+const INP = 'autocomplete="off" autocapitalize="off" spellcheck="false"';
+const relSelect = (opts, attr) => `<select ${attr} aria-label="Symbole"><option value="">…</option>${opts.map(r => `<option value="${r}">${RELU[r]}</option>`).join('')}</select>`;
+
+// Zone de réponse (entraînement), selon le type attendu
+function answerHTML(it, id) {
+  const A = it.ans, btns = `<div class="ans-btns"><button type="button" class="btn solid sm" data-check>Vérifier</button><button type="button" class="btn ghost sm" data-raw>Réponse brute</button></div><div class="fb" hidden></div>`;
+  let h = '';
+  if (A.t === 'eq') h = `<div class="ans-row"><label>\\(x=\\)<input type="text" data-in placeholder="ex. : -3 ou 1/2" ${INP} aria-label="Ta réponse"></label></div><div class="ans-prev" aria-live="polite"></div>`;
+  if (A.t === 'ineq') h = `<div class="ab"><label>\\(x\\) ${relSelect(['<', '<=', '>', '>='], 'data-rel')}<input type="text" class="num" data-in placeholder="nombre" ${INP} aria-label="Nombre"></label></div><div class="ans-prev" aria-live="polite"></div>`;
+  if (A.t === 'test') h = `<div class="ab test"><label>Gauche :<input type="text" class="num" data-l ${INP}></label><label>Droite :<input type="text" class="num" data-r ${INP}></label></div>
+    <div class="choices" role="radiogroup" aria-label="Solution ?"><span>Solution ?</span><label><input type="radio" name="${id}-c" value="oui"> oui</label><label><input type="radio" name="${id}-c" value="non"> non</label></div>`;
+  if (A.t === 'choice') h = `<div class="choices" role="radiogroup">${A.opts.map(o => `<label><input type="radio" name="${id}-c" value="${o.v}"> ${o.h}</label>`).join('')}</div>`;
+  if (A.t === 'frame') h = `<div class="ab frame"><input type="text" class="num" data-lo ${INP} aria-label="Borne de gauche">${relSelect(['<', '<='], 'data-ls')}<span>\\(${A.ex}\\)</span>${relSelect(['<', '<='], 'data-hs')}<input type="text" class="num" data-hi ${INP} aria-label="Borne de droite"></div>`;
+  return `<div class="answer">${h}${btns}</div>`;
+}
+function itemHTML(it, id, ans) {
+  const label = it.l ? `<b>${it.l}</b> ` : '';
+  const q = `<span class="q">${label}${it.qh || `\\(${it.q}\\)`}</span>`;
+  return `<div class="item" data-id="${id}">
+    <div class="row">${q}<button type="button" class="btn sm" data-open>Correction détaillée</button></div>
+    ${ans ? answerHTML(it, id) : ''}
+    <div class="resline">Réponse : <span class="res">${it.res}</span></div>
+    <div class="corr" hidden><ol class="steps"></ol>
+      <div class="step-ctrl"><button type="button" class="btn solid sm" data-next>Étape suivante</button><button type="button" class="btn ghost sm" data-all>Tout afficher</button><button type="button" class="btn ghost sm" data-reset hidden>Recommencer</button></div>
+      <div class="end" hidden><div class="concl">${it.concl || it.res}</div>${it.piege ? `<div class="piege" style="margin-top:8px"><b>Erreur à éviter :</b> ${it.piege}</div>` : ''}</div>
+    </div></div>`;
+}
+
+// Lecture d'un nombre tapé par l'élève : -3, 1/2, 2,5, « x = 4 », « S = {4} »
+function readNum(s) {
+  s = String(s).trim().toLowerCase().replace(/^s\s*=\s*/, '').replace(/[{}]/g, '').replace(/^x\s*=\s*/, '');
+  if (!s) throw new Error('la case est vide');
+  const p = toPoly(parseExpr(s), 'x');
+  if (!P.isConst(p)) throw new Error('écris un nombre, sans \\(x\\)');
+  return p[0] || 0;
+}
+const same = (u, q) => Math.abs(u - qv(q)) < 1e-9;
+function wireAnswer(el, it) {
+  const A = it.ans, fb = $('.fb', el), bRaw = $('[data-raw]', el), bChk = $('[data-check]', el);
+  const say = (cls, html) => { fb.hidden = false; fb.className = 'fb ' + cls; fb.innerHTML = html; retypeset(fb); el.classList.toggle('good', cls === 'ok'); };
+  bRaw.addEventListener('click', () => {
+    const on = el.classList.toggle('raw');
+    bRaw.textContent = on ? 'Masquer la réponse' : 'Réponse brute';
+    bRaw.classList.toggle('on', on);
+  });
+  const OK = '✓ Bravo, c’est juste !';
+  const inp = $('[data-in]', el), prev = $('.ans-prev', el);
+  if (inp && prev) {
+    let tmr = null;
+    inp.addEventListener('input', () => {
+      clearTimeout(tmr);
+      tmr = setTimeout(() => {
+        const s = inp.value.trim().toLowerCase().replace(/^x\s*=\s*/, '');
+        if (!s || /[a-wyz]/.test(s)) { prev.innerHTML = ''; return; }
+        let tex = null;
+        try { tex = astTex(parseExpr(s)); } catch (e) { /* écriture en cours */ }
+        prev.innerHTML = tex ? `Tu as écrit : \\(${tex}\\)` : 'Tu as écrit : …';
+        retypeset(prev);
+      }, 250);
+    });
+  }
+  const checked = () => { const r = el.querySelector('input[type="radio"]:checked'); return r ? r.value : null; };
+  const run = () => {
+    try {
+      if (A.t === 'eq') {
+        const s = inp.value.trim().toLowerCase();
+        if (!s) return say('ko', 'Écris ta réponse dans la case.');
+        const kind = /aucun|vide|∅|pas de sol/.test(s) ? 'none' : /tous|tout|infini/.test(s) ? 'all' : 'one';
+        if (kind === 'one' && A.sol.kind === 'one') {
+          if (same(readNum(s), A.sol.val)) return say('ok', OK);
+          return say('ko', '✗ Ce n’est pas la bonne solution. Astuce : remplace \\(x\\) par ta valeur dans les deux membres pour vérifier.');
+        }
+        if (kind === A.sol.kind) return say('ok', OK);
+        if (A.sol.kind === 'one') return say('ko', '✗ Cette équation a une solution (un seul nombre). Reprends la résolution.');
+        return say('ko', '✗ Ce n’est pas ça : regarde ce qui se passe quand les \\(x\\) disparaissent.');
+      }
+      if (A.t === 'ineq') {
+        const r = $('[data-rel]', el).value;
+        if (!r) return say('ko', 'Choisis d’abord le symbole.');
+        if (!inp.value.trim()) return say('ko', 'Écris aussi le nombre.');
+        const vOk = same(readNum(inp.value), A.sol.val), rOk = r === A.sol.rel;
+        if (vOk && rOk) return say('ok', OK);
+        if (vOk && r === FLIP[A.sol.rel]) return say('warn', 'Le nombre est bon, mais le symbole est à l’envers : as-tu divisé par un nombre <b>négatif</b> sans changer l’ordre ?');
+        if (vOk) return say('warn', 'Le nombre est bon, mais pas le symbole : attention à l’inégalité stricte (\\(<\\), \\(>\\)) ou large (\\(\\leq\\), \\(\\geq\\)).');
+        if (rOk) return say('ko', 'Le symbole est bon, mais pas le nombre. Vérifie tes calculs.');
+        return say('ko', '✗ Ce n’est pas le bon résultat. Regarde la réponse brute ou la correction détaillée.');
+      }
+      if (A.t === 'test') {
+        const l = $('[data-l]', el).value, r = $('[data-r]', el).value, c = checked();
+        if (!l.trim() || !r.trim()) return say('ko', 'Écris la valeur des deux membres.');
+        if (!c) return say('ko', 'Choisis aussi « oui » ou « non ».');
+        const lOk = same(readNum(l), A.vL), rOk = same(readNum(r), A.vR), cOk = (c === 'oui') === A.ok;
+        if (lOk && rOk && cOk) return say('ok', OK);
+        if (lOk && rOk) return say('warn', 'Tes deux calculs sont justes, mais pas la conclusion : compare bien les deux membres avec le symbole de l’énoncé.');
+        return say('ko', `✗ ${!lOk && !rOk ? 'Les deux membres sont faux' : !lOk ? 'Le membre de gauche est faux' : 'Le membre de droite est faux'}. Attention aux priorités et aux signes.`);
+      }
+      if (A.t === 'choice') {
+        const c = checked();
+        if (!c) return say('ko', 'Choisis une réponse.');
+        return c === A.good ? say('ok', OK) : say('ko', '✗ Ce n’est pas ça. Relis le rappel, puis regarde la correction détaillée.');
+      }
+      if (A.t === 'frame') {
+        const lo = $('[data-lo]', el).value, hi = $('[data-hi]', el).value, ls = $('[data-ls]', el).value, hs = $('[data-hs]', el).value;
+        if (!lo.trim() || !hi.trim() || !ls || !hs) return say('ko', 'Complète les deux nombres et les deux symboles.');
+        const F = A.f, nOk = same(readNum(lo), Q(F.lo)) && same(readNum(hi), Q(F.hi)), sOk = ls === F.ls && hs === F.hs;
+        if (nOk && sOk) return say('ok', OK);
+        if (same(readNum(lo), Q(F.hi)) && same(readNum(hi), Q(F.lo))) return say('warn', 'Les nombres sont bons mais dans le mauvais ordre : le plus petit se met à gauche.');
+        if (nOk) return say('warn', 'Les nombres sont bons, mais vérifie les symboles (strict ou large, et qui va avec quel côté).');
+        return say('ko', '✗ Ce n’est pas le bon encadrement. Vérifie tes calculs et le signe du nombre par lequel tu multiplies.');
+      }
+    } catch (e) { return say('ko', `Je n’arrive pas à lire ta réponse : ${e.message}.`); }
+  };
+  bChk.addEventListener('click', run);
+  el.querySelectorAll('input[type="text"]').forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') run(); }));
+}
+function stepHTML(st, k) {
+  let inner = '';
+  if (st.e) inner += st.e.map(l => `<div class="m">\\[${l}\\]</div>`).join('');
+  if (st.h) inner += `<div class="h">${st.h}</div>`;
+  if (st.x) inner += `<div class="x">${st.x}</div>`;
+  return `<span class="n">${k}</span><div>${inner}</div>`;
+}
+function wireItem(el, it) {
+  if ($('.answer', el)) wireAnswer(el, it);
+  const corr = $('.corr', el), ol = $('.steps', corr), end = $('.end', corr);
+  const bN = $('[data-next]', corr), bA = $('[data-all]', corr), bR = $('[data-reset]', corr);
+  let k = 0;
+  const add = () => { const li = document.createElement('li'); li.className = 'step'; li.innerHTML = stepHTML(it.steps[k], k + 1); k++; ol.appendChild(li); typeset(li); };
+  const sync = () => { const fin = k >= it.steps.length; bN.hidden = fin; bA.hidden = fin; bR.hidden = !fin; end.hidden = !fin; if (fin) typeset(end); };
+  $('[data-open]', el).addEventListener('click', e => {
+    const open = corr.hidden;
+    corr.hidden = !open; el.classList.toggle('open', open);
+    e.currentTarget.textContent = open ? 'Masquer la correction' : 'Correction détaillée';
+    if (open && k === 0) { add(); sync(); }
+  });
+  bN.addEventListener('click', () => { add(); sync(); });
+  bA.addEventListener('click', () => { while (k < it.steps.length) add(); sync(); });
+  bR.addEventListener('click', () => { ol.innerHTML = ''; k = 0; add(); sync(); });
+}
+function itemsBlock(set, pre, ans) {
+  let h = set.fig ? `<div class="qfig">${set.fig}</div>` : '';
+  set.groups.forEach((g, gi) => {
+    if (g.t) h += `<h2 class="part">${g.t}${g.stars ? ` <span class="stars">${g.stars}</span>` : ''}</h2>`;
+    if (g.c) h += `<p class="hyp">${g.c}</p>`;
+    h += `<div class="items">${g.items.map((it, i) => itemHTML(it, `${pre}g${gi}i${i}`, ans)).join('')}</div>`;
+  });
+  return h;
+}
+function wireBlock(root, set, pre) {
+  set.groups.forEach((g, gi) => g.items.forEach((it, i) => wireItem($(`[data-id="${pre}g${gi}i${i}"]`, root), it)));
+}
+
+const sheet = {};      // valeurs de la feuille, calculées une fois
+let train = 0;
+function render(n) {
+  const ex = EX.find(e => e.n === n) || EX[0];
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.n === ex.n));
+  const set = sheet[ex.n] || (sheet[ex.n] = ex.build(false));
+  const objTitle = ex.obj || EX.slice().reverse().find(e => e.n < ex.n && e.obj).obj;
+  app.innerHTML = `
+    <p class="obj"><b>Objectif ${objTitle[0]} :</b> ${objTitle[1]}</p>
+    <article class="exo">
+      <div class="exo-h"><span class="pill">Exercice ${ex.n}</span><span class="stars">${ex.stars}</span><span class="comp">${ex.comp}</span></div>
+      <div class="exo-b">
+        <p class="consigne">${ex.consigne}</p>
+        <div class="tools">
+          <button type="button" class="btn" data-rappel>Rappel</button>
+          <button type="button" class="btn ghost" data-res>Réponses seules</button>
+          <button type="button" class="btn green" data-train>↻ Nouvelles valeurs pour s’entraîner</button>
+        </div>
+        <div class="rappel" hidden>${ex.rappel.map(b => `<div><h3>${b.t}</h3>${b.h}</div>`).join('')}<div class="att"><h3>Attention !</h3>${ex.att}</div></div>
+        <div class="sheet"><h2 class="part">Corrigé de la feuille <small>clique sur « Correction détaillée » pour la suivre étape par étape</small></h2>${itemsBlock(set, 's')}</div>
+        <div class="train" hidden></div>
+      </div>
+    </article>
+    <nav class="foot">${ex.n > 1 ? `<button type="button" class="btn ghost" data-go="${ex.n - 1}">← Exercice ${ex.n - 1}</button>` : '<span></span>'}${ex.n < EX.length ? `<button type="button" class="btn ghost" data-go="${ex.n + 1}">Exercice ${ex.n + 1} →</button>` : ''}</nav>`;
+  wireBlock($('.sheet', app), set, 's');
+  const rap = $('.rappel', app), bRap = $('[data-rappel]', app);
+  bRap.addEventListener('click', () => { rap.hidden = !rap.hidden; bRap.classList.toggle('on', !rap.hidden); if (!rap.hidden) typeset(rap); });
+  const bRes = $('[data-res]', app), body = $('.exo-b', app);
+  bRes.addEventListener('click', () => { body.classList.toggle('showres'); bRes.classList.toggle('on'); });
+  const tr = $('.train', app);
+  $('[data-train]', app).addEventListener('click', () => {
+    const fresh = ex.build(true), pre = `t${++train}`;
+    tr.hidden = false;
+    tr.innerHTML = `<h2 class="part">Entraînement : nouvelles valeurs <small>cherche sur ton cahier, écris ta réponse, puis vérifie</small></h2><p class="aide">${ex.aide}</p>${itemsBlock(fresh, pre, true)}`;
+    wireBlock(tr, fresh, pre);
+    typeset(tr);
+    tr.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  app.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.go; }));
+  typeset(app);
+  window.scrollTo(0, 0);
+}
+nav.innerHTML = EX.map(e => `<button type="button" data-n="${e.n}">Exercice ${e.n}</button>`).join('');
+nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.n; }));
+const route = () => render(+(location.hash.match(/^#ex(\d+)$/) || [])[1] || 1);
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
