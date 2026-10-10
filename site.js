@@ -125,7 +125,7 @@ document.addEventListener('click', function (e) {
                 b.className = 'base';
                 l.appendChild(b);
                 m.appendChild(l);
-                if (ch === 'É') { accents.push(l); l.classList.add('e-accent'); }
+                if (ch === 'É') accents.push(l);
             });
             h.appendChild(m);
         });

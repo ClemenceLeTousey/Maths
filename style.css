@@ -839,6 +839,7 @@ li.res.pending-link { border-left-color: var(--line); }
 :root.matrix .navbar { background: rgba(0, 0, 0, 0.9); }
 
 :root.matrix .titre-stylo { text-shadow: 0 0 8px rgba(57, 255, 106, 0.7); }
+:root.matrix .titre-stylo svg { stroke: #ff6f26; }   /* la flèche du É reste orange */
 
 @media (prefers-reduced-motion: no-preference) {
     :root.matrix h1,
@@ -954,16 +955,8 @@ li.res.pending-link { border-left-color: var(--line); }
 :root.terminal .seq > .sequence-summary::before { border-radius: 0; }
 :root.terminal .nav-icon { filter: grayscale(1) brightness(1.6); }
 
-/* en mode terminal, pas de vecteur : le É retrouve son accent */
+/* en mode terminal : pas de vecteur, « MATHEMATIQUES » sans accent */
 :root.terminal .titre-stylo svg { display: none; }
-:root.terminal .e-accent { color: transparent; }
-:root.terminal .e-accent::before {
-    content: "É";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    color: var(--text);
-}
 
 /* petits textes agrandis : la police pixel est petite à taille égale */
 :root.terminal .seq-num,
