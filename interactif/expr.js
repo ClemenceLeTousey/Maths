@@ -27,7 +27,7 @@
     }
 
     function lire(texte, variables) {
-        variables = variables || 'x';
+        if (variables == null) variables = 'x';
         var s = normaliser(texte);
         if (!s) throw new Error('Réponse vide');
         var j = decouper(s), p = 0;
@@ -111,7 +111,7 @@
     }
 
     function egales(a, b, variables) {
-        variables = variables || 'x';
+        if (variables == null) variables = 'x';
         var essais = 0, ok = 0;
         for (var k = 0; k < 40 && ok < 8; k++) {
             var env = {};

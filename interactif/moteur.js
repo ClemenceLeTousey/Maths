@@ -79,6 +79,14 @@
         else cible.textContent = tex;
     }
 
+    /* Texte « mixte » (HTML + maths entre $...$ ou $$...$$) -> HTML */
+    function mixte(s) {
+        return String(s).replace(/\$\$([\s\S]+?)\$\$|\$([^$]+?)\$/g, function (tout, bloc, enLigne) {
+            if (!window.katex) return tout;
+            return katex.renderToString(bloc || enLigne, { throwOnError: false, displayMode: !!bloc });
+        });
+    }
+
     var alea = {
         entier: function (a, b) { return a + Math.floor(Math.random() * (b - a + 1)); },
         nonNul: function (a, b) { var n; do { n = alea.entier(a, b); } while (n === 0); return n; },
@@ -164,59 +172,138 @@
 
             function question(q, i) {
                 var li = el('li', 'q');
+                if (q.objectif || q.niveau) {
+                    var meta = el('div', 'q-meta');
+                    if (q.niveau) {
+                        var et = el('span', 'q-niveau n' + q.niveau);
+                        et.textContent = '★★★'.slice(0, q.niveau) + '☆☆☆'.slice(0, 3 - q.niveau);
+                        et.title = 'Niveau ' + q.niveau;
+                        meta.appendChild(et);
+                    }
+                    if (q.objectif) meta.appendChild(el('span', null, q.objectif));
+                    li.appendChild(meta);
+                }
                 var tete = el('div', 'q-enonce');
                 tete.appendChild(el('span', 'q-num', String(i + 1)));
-                if (q.consigne) tete.appendChild(el('span', 'q-consigne', q.consigne + ' '));
-                var e = el('span'); maths(e, q.enonce); tete.appendChild(e);
+                if (q.texte != null) { var t = el('div', 'q-texte'); t.innerHTML = mixte(q.texte); tete.appendChild(t); }
+                else {
+                    if (q.consigne) tete.appendChild(el('span', 'q-consigne', q.consigne + ' '));
+                    var e = el('span'); maths(e, q.enonce); tete.appendChild(e);
+                }
                 li.appendChild(tete);
 
                 var saisie = el('div', 'q-saisie');
-                if (q.prefixe) { var pf = el('span', 'q-prefixe'); maths(pf, q.prefixe); saisie.appendChild(pf); }
-                var champ = el('input');
-                champ.autocomplete = 'off'; champ.spellcheck = false; champ.setAttribute('autocapitalize', 'off');
-                champ.setAttribute('aria-label', 'Réponse ' + (i + 1));
-                saisie.appendChild(champ);
-                var bouton = el('button', null, 'Valider'); bouton.type = 'button';
-                saisie.appendChild(bouton);
-                li.appendChild(saisie);
-
                 var apercu = el('div', 'q-apercu');
                 var retour = el('div', 'q-retour');
+                var bouton = el('button', null, 'Valider'); bouton.type = 'button';
+                var type = q.type || 'expr', lire, champs = [];
+
+                function champ(classe) {
+                    var c = el('input', classe);
+                    c.autocomplete = 'off'; c.spellcheck = false; c.setAttribute('autocapitalize', 'off');
+                    c.setAttribute('aria-label', 'Réponse ' + (i + 1));
+                    c.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') valider(); });
+                    c.addEventListener('input', function () { retour.textContent = ''; retour.className = 'q-retour'; });
+                    champs.push(c);
+                    return c;
+                }
+                function prefixe() {
+                    if (q.prefixe) { var pf = el('span', 'q-prefixe'); maths(pf, q.prefixe); saisie.appendChild(pf); }
+                }
+                function nombre(texte) { var v = Expr.valeur(Expr.lire(texte, ''), {}); if (!isFinite(v)) throw new Error('?'); return v; }
+                function proche(u, v) { return Math.abs(u - v) < 1e-9 * Math.max(1, Math.abs(v)); }
+
+                if (type === 'expr' || type === 'nombre') {
+                    prefixe();
+                    var c = champ(); saisie.appendChild(c);
+                    var lettres = type === 'expr' ? (q.variables || 'x') : '';
+                    var attendu = type === 'expr' ? Expr.lire(q.attendu) : null;
+                    c.addEventListener('input', function () {
+                        if (!c.value.trim()) { apercu.textContent = ''; return; }
+                        try { maths(apercu, (q.prefixe ? q.prefixe + ' ' : '') + Expr.tex(Expr.lire(c.value, lettres))); apercu.classList.remove('illisible'); }
+                        catch (x) { apercu.textContent = x.message; apercu.classList.add('illisible'); }
+                    });
+                    lire = function () {
+                        var arbre = Expr.lire(c.value, lettres);
+                        if (type === 'nombre') {
+                            if (q.decimal && /[\/]/.test(c.value)) return { attention: 'Donne l\'écriture décimale (sans fraction).' };
+                            return { ok: proche(Expr.valeur(arbre, {}), q.attendu), r: c.value };
+                        }
+                        var juste = Expr.egales(arbre, attendu, lettres);
+                        if (juste && q.forme === 'developpee' && !Expr.developpeeReduite(arbre))
+                            return { attention: 'C\'est égal, mais ce n\'est pas encore développé et réduit : continue !' };
+                        return { ok: juste, r: c.value };
+                    };
+                } else if (type === 'champs') {
+                    // gabarit : texte mixte où chaque [] devient une case ; attendus : nombres
+                    var morceaux = q.gabarit.split('[]');
+                    morceaux.forEach(function (m, k) {
+                        if (m) { var sp = el('span', 'q-gabarit'); sp.innerHTML = mixte(m); saisie.appendChild(sp); }
+                        if (k < morceaux.length - 1) saisie.appendChild(champ('court'));
+                    });
+                    lire = function () {
+                        var vals = champs.map(function (c) { return nombre(c.value); });
+                        return { ok: vals.every(function (v, k) { return proche(v, q.attendus[k]); }), r: champs.map(function (c) { return c.value; }).join(' ; ') };
+                    };
+                } else if (type === 'ordre') {
+                    var cc = champ('lettres'); cc.placeholder = 'lettres';
+                    saisie.appendChild(cc);
+                    lire = function () {
+                        var r = cc.value.toUpperCase().replace(/[^A-Z]/g, '');
+                        if (r.length !== q.attendu.length) return { attention: 'Écris les ' + q.attendu.length + ' lettres, du plus petit au plus grand.' };
+                        return { ok: r === q.attendu, r: r };
+                    };
+                } else if (type === 'qcm') {
+                    var choix = -1, groupe = el('div', 'q-qcm');
+                    q.options.forEach(function (o, k) {
+                        var b = el('button', 'q-option'); b.type = 'button';
+                        b.innerHTML = '<span class="q-lettre">' + 'ABCDEF'[k] + '</span> ' + mixte(o);
+                        b.onclick = function () {
+                            if (b.disabled) return;
+                            choix = k;
+                            groupe.querySelectorAll('.q-option').forEach(function (x) { x.classList.remove('choisie'); });
+                            b.classList.add('choisie');
+                            retour.textContent = '';
+                        };
+                        groupe.appendChild(b);
+                    });
+                    saisie.appendChild(groupe);
+                    lire = function () {
+                        if (choix < 0) return { attention: 'Choisis une réponse.' };
+                        return { ok: choix === q.bonne, r: 'ABCDEF'[choix] };
+                    };
+                }
+                saisie.appendChild(bouton);
+                li.appendChild(saisie);
                 li.appendChild(apercu); li.appendChild(retour);
-
-                var arbreAttendu = Expr.lire(q.attendu);
-
-                champ.addEventListener('input', function () {
-                    retour.textContent = ''; retour.className = 'q-retour';
-                    if (!champ.value.trim()) { apercu.textContent = ''; return; }
-                    try { maths(apercu, (q.prefixe ? q.prefixe + ' ' : '') + Expr.tex(Expr.lire(champ.value))); apercu.classList.remove('illisible'); }
-                    catch (x) { apercu.textContent = x.message; apercu.classList.add('illisible'); }
-                });
-                champ.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') valider(); });
                 bouton.onclick = valider;
 
                 function valider() {
-                    var arbre;
-                    try { arbre = Expr.lire(champ.value); }
+                    if (bouton.disabled) return;
+                    var res;
+                    try { res = lire(); }
                     catch (x) { retour.textContent = 'Corrige ta saisie avant de valider.'; retour.className = 'q-retour attention'; return; }
-                    var juste = Expr.egales(arbre, arbreAttendu);
-                    if (juste && q.forme === 'developpee' && !Expr.developpeeReduite(arbre)) {
-                        retour.textContent = 'C\'est égal, mais ce n\'est pas encore développé et réduit : continue !';
-                        retour.className = 'q-retour attention';
-                        return;
-                    }
-                    champ.disabled = true; bouton.remove();
+                    if (res.attention) { retour.textContent = res.attention; retour.className = 'q-retour attention'; return; }
+                    var juste = res.ok;
+                    bouton.disabled = true; bouton.remove();
+                    champs.forEach(function (c) { c.disabled = true; });
+                    li.querySelectorAll('.q-option').forEach(function (b, k) {
+                        b.disabled = true;
+                        if (k === q.bonne) b.classList.add('bonne');
+                    });
                     li.classList.add(juste ? 'juste' : 'faux');
                     retour.className = 'q-retour';
                     retour.textContent = juste ? '✓ Bravo !' : '✗ Ce n\'est pas ça. Correction :';
-                    if (q.correction) {
+                    if (q.correction || q.explication) {
                         var c = el('div', 'q-correction');
-                        maths(c, '\\begin{aligned}' + q.correction.join('\\\\') + '\\end{aligned}', true);
+                        if (q.correction) maths(c, '\\begin{aligned}' + q.correction.join('\\\\') + '\\end{aligned}', true);
+                        else c.innerHTML = mixte(q.explication);
                         li.appendChild(c);
                     }
                     repondues++; if (juste) score++;
-                    details[i] = { q: q.enonce, r: champ.value, ok: juste };
-                    var suivant = li.nextElementSibling && li.nextElementSibling.querySelector('input');
+                    details[i] = q.texte != null ? { t: q.texte, r: res.r, ok: juste } : { q: q.enonce, r: res.r, ok: juste };
+                    if (type === 'qcm') details[i].b = 'ABCDEF'[q.bonne];
+                    var suivant = li.nextElementSibling && li.nextElementSibling.querySelector('input, .q-option');
                     if (suivant) suivant.focus();
                     if (repondues === def.nb) terminer();
                 }
@@ -247,6 +334,6 @@
 
     window.Interactif = {
         rpc: rpc, session: session, connecter: connecter, deconnecter: deconnecter,
-        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths
+        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte
     };
 })();

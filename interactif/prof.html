@@ -169,6 +169,15 @@
             table.appendChild(pied);
         }
 
+        /* Texte venu du navigateur de l'élève : on n'accepte que <b> et les maths (KaTeX, sans HTML actif) */
+        function sur(t) {
+            return t.split(/(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/).map(function (m, k) {
+                if (k % 2) return Interactif.mixte(m);
+                return m.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                        .replace(/&lt;(\/?b)&gt;/g, '<$1>').replace(/&lt;br&gt;/g, ' ');
+            }).join('');
+        }
+
         function detail(code, id, liste) {
             var zone = document.getElementById('detail');
             zone.innerHTML = '';
@@ -193,9 +202,10 @@
                 (r.details || []).forEach(function (d) {
                     if (!d) return;
                     var li = document.createElement('li');
-                    var q = document.createElement('span'); Interactif.maths(q, d.q);
+                    var q = document.createElement('span');
+                    if (d.t != null) q.innerHTML = sur(String(d.t)); else Interactif.maths(q, String(d.q));
                     var rep = document.createElement('span'); rep.className = 'rep ' + (d.ok ? 'ok' : 'ko');
-                    rep.textContent = '  →  ' + d.r + (d.ok ? ' ✓' : ' ✗');
+                    rep.textContent = '  →  ' + d.r + (d.ok ? ' ✓' : ' ✗') + (d.b && !d.ok ? ' (bonne réponse : ' + d.b + ')' : '');
                     li.appendChild(q); li.appendChild(rep); ol.appendChild(li);
                 });
                 bloc.appendChild(ol);

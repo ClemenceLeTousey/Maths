@@ -70,3 +70,25 @@ table.res td.cliquable:hover { outline: 2px solid var(--c-seconde); outline-offs
 .n-moyen { color: var(--attention); font-weight: 600; }
 .n-faible { background: var(--ko-fond); color: var(--ko); font-weight: 600; }
 .n-tent { color: var(--muted); font-size: 0.8em; }
+
+/* Automatismes : niveau, QCM, cases courtes */
+.q-meta { display: flex; gap: 10px; align-items: baseline; font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; }
+.q-niveau { letter-spacing: 1px; font-size: 0.95rem; }
+.q-niveau.n1 { color: var(--ok); }
+.q-niveau.n2 { color: #1c7ed6; }
+.q-niveau.n3 { color: var(--ko); }
+.q-texte { flex: 1 1 0; min-width: 0; }
+.q-texte .katex-display { margin: 0.5em 0; }
+.q-qcm { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; flex: 1 1 100%; }
+.interactif button.q-option {
+    background: var(--surface); color: var(--text); border: 1px solid var(--line); text-align: left;
+    display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 1rem;
+}
+.interactif button.q-option:hover:not(:disabled) { border-color: var(--c-seconde); }
+.interactif button.q-option.choisie { border-color: var(--c-seconde); outline: 2px solid var(--c-seconde); }
+.interactif button.q-option.bonne { border-color: var(--ok); outline: 2px solid var(--ok); }
+.interactif button.q-option:disabled { cursor: default; }
+.q-lettre { font-weight: 700; color: var(--muted); }
+.q-saisie input.court { flex: 0 0 5em; width: 5em; text-align: center; }
+.q-saisie input.lettres { flex: 0 0 8em; text-transform: uppercase; letter-spacing: 2px; }
+.q-gabarit { font-size: 1.1rem; }
