@@ -115,3 +115,9 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 :root[data-theme="dark"] .pastille.n2 { background: #13263a; color: #74c0fc; }
 
 .interactif [hidden] { display: none !important; }
+.espace-prof { margin-top: 28px; text-align: right; }
+.interactif a.bouton {
+    display: inline-block; padding: 6px 14px; border-radius: 8px; text-decoration: none; font-size: 0.9rem;
+    border: 1px solid var(--line); color: var(--muted); background: var(--surface);
+}
+.interactif a.bouton:hover { border-color: var(--c-seconde); color: var(--c-seconde); }
