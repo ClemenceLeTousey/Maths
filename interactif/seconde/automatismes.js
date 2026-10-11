@@ -264,5 +264,310 @@
         return q;
     };
 
+
+    /* =====================================================================
+       Série 7 (semaine du 2 au 6 novembre)
+       ===================================================================== */
+    function pct(x) { return fr(x) + '\\,\\%'; }
+
+    /* Repère quadrillé en SVG. o = { xmin, xmax, ymin, ymax, sub (carreaux par unité), points: [{nom, x, y}] } */
+    function repere(o) {
+        var sub = o.sub || 1, c = sub === 1 ? 44 : 24, m = 24;           // c : côté d'un carreau (px)
+        var W = (o.xmax - o.xmin) * sub * c + 2 * m, H = (o.ymax - o.ymin) * sub * c + 2 * m;
+        function X(x) { return m + (x - o.xmin) * sub * c; }
+        function Y(y) { return m + (o.ymax - y) * sub * c; }
+        var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="Repère">';
+        var k;
+        for (k = 0; k <= (o.xmax - o.xmin) * sub; k++) s += '<line class="fig-grille" x1="' + (m + k * c) + '" y1="' + m + '" x2="' + (m + k * c) + '" y2="' + (H - m) + '"/>';
+        for (k = 0; k <= (o.ymax - o.ymin) * sub; k++) s += '<line class="fig-grille" x1="' + m + '" y1="' + (m + k * c) + '" x2="' + (W - m) + '" y2="' + (m + k * c) + '"/>';
+        s += '<line class="fig-axe" x1="' + (m - 8) + '" y1="' + Y(0) + '" x2="' + (W - m + 10) + '" y2="' + Y(0) + '"/>';
+        s += '<line class="fig-axe" x1="' + X(0) + '" y1="' + (H - m + 8) + '" x2="' + X(0) + '" y2="' + (m - 10) + '"/>';
+        // unités : 0, 1 sur chaque axe (comme dans les manuels), plus quelques graduations
+        for (k = o.xmin; k <= o.xmax; k++) if (k !== 0) {
+            s += '<line class="fig-axe" x1="' + X(k) + '" y1="' + (Y(0) - 4) + '" x2="' + X(k) + '" y2="' + (Y(0) + 4) + '"/>';
+            s += '<text class="fig-txt" x="' + X(k) + '" y="' + (Y(0) + 17) + '" text-anchor="middle">' + (k < 0 ? '−' + (-k) : k) + '</text>';
+        }
+        for (k = o.ymin; k <= o.ymax; k++) if (k !== 0) {
+            s += '<line class="fig-axe" x1="' + (X(0) - 4) + '" y1="' + Y(k) + '" x2="' + (X(0) + 4) + '" y2="' + Y(k) + '"/>';
+            s += '<text class="fig-txt" x="' + (X(0) - 7) + '" y="' + (Y(k) + 4) + '" text-anchor="end">' + (k < 0 ? '−' + (-k) : k) + '</text>';
+        }
+        s += '<text class="fig-txt" x="' + (X(0) - 7) + '" y="' + (Y(0) + 16) + '" text-anchor="end">0</text>';
+        (o.points || []).forEach(function (P) {
+            s += '<circle class="fig-pt" cx="' + X(P.x) + '" cy="' + Y(P.y) + '" r="4"/>';
+            s += '<text class="fig-nom" x="' + (X(P.x) + 7) + '" y="' + (Y(P.y) - 7) + '">' + P.nom + '</text>';
+        });
+        return s + '</svg>';
+    }
+    function coord(x, y) { return '(' + fr(x) + '\\ ;\\ ' + fr(y) + ')'; }
+
+    /* ===== A15 · Pourcentage ↔ coefficient multiplicateur (QCM) ===== */
+    Auto.coefMultiplicateur = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A15 · Coefficient multiplicateur' };
+        if (niveau === 1) {
+            var t = A.choix([A.entier(2, 9), A.entier(11, 45)]), hausse = Math.random() < 0.5, cm = arrondi(1 + (hausse ? t : -t) / 100);
+            q.texte = (hausse ? 'Augmenter' : 'Diminuer') + ' une valeur de $' + pct(t) + '$ revient à la multiplier par :';
+            q.explication = (hausse ? 'Hausse' : 'Baisse') + ' de $' + pct(t) + '$ : $CM=1' + (hausse ? '+' : '-') + fr(t / 100) + '=' + fr(cm) + '$.';
+            var pieges = [arrondi(1 - (hausse ? t : -t) / 100), t / 100, t < 10 ? arrondi(1 + (hausse ? t : -t) / 10) : t];
+            return qcm(q, [{ t: '$' + fr(cm) + '$', ok: true }].concat(pieges.map(function (x) { return { t: '$' + fr(x) + '$', ok: false }; })));
+        }
+        if (niveau === 2) {
+            var cm2, u;
+            do { cm2 = Math.random() < 0.5 ? A.entier(51, 98) / 100 : A.entier(102, 160) / 100; } while (cm2 * 100 % 10 === 0 && Math.random() < 0.5);
+            u = Math.round(Math.abs(cm2 - 1) * 100);
+            var sens = cm2 > 1 ? 'augmenter' : 'diminuer', autre = cm2 > 1 ? 'diminuer' : 'augmenter';
+            q.texte = 'Multiplier une valeur par $' + fr(cm2) + '$ revient à :';
+            q.explication = '$' + fr(cm2) + (cm2 > 1 ? '>' : '<') + '1$ : c\'est ' + (cm2 > 1 ? 'une hausse' : 'une baisse') + '. Taux : $' + fr(cm2) + '-1=' + fr(arrondi(cm2 - 1)) + '$, soit $' + (cm2 > 1 ? '+' : '-') + pct(u) + '$.';
+            var cent = Math.round(cm2 * 100);
+            return qcm(q, [
+                { t: sens + ' de $' + pct(u) + '$', ok: true },
+                { t: sens + ' de $' + pct(cent) + '$', ok: false },
+                { t: autre + ' de $' + pct(u) + '$', ok: false },
+                { t: sens + ' de $' + pct(arrondi(u / 100)) + '$', ok: false }
+            ]);
+        }
+        var t3 = A.choix([10, 20, 30, 40, 50]), d = t3 / 100, ordre = Math.random() < 0.5;
+        var cm3 = arrondi((1 + d) * (1 - d));
+        q.texte = 'Un prix ' + (ordre ? 'augmente' : 'baisse') + ' de $' + pct(t3) + '$, puis ' + (ordre ? 'baisse' : 'augmente') + ' de $' + pct(t3) + '$. Au total, il a été multiplié par :';
+        q.explication = '$' + (ordre ? fr(1 + d) + '\\times' + fr(1 - d) : fr(1 - d) + '\\times' + fr(1 + d)) + '=' + fr(cm3) + '$ : c\'est une baisse de $' + pct(Math.round((1 - cm3) * 100)) + '$, on ne revient pas au prix de départ.';
+        return qcm(q, [
+            { t: '$' + fr(cm3) + '$', ok: true },
+            { t: '$1$', ok: false },
+            { t: '$' + fr(arrondi(1 + d * d)) + '$', ok: false },
+            { t: '$' + fr(arrondi(1 - d)) + '$', ok: false }
+        ]);
+    };
+
+    /* ===== A13 · Calculer un pourcentage d'une quantité ===== */
+    Auto.calculPourcentage = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A13 · Proportions', type: 'nombre' };
+        var p, N;
+        if (niveau === 1) {
+            p = A.choix([10, 20, 30, 40, 60, 70, 25, 50, 75]); N = A.entier(3, 40) * 20;
+            q.texte = 'Calculer $' + pct(p) + '$ de $' + fr(N) + '$.';
+            q.attendu = p * N / 100;
+            q.explication = '$' + frac(p, 100) + '\\times' + fr(N) + '=' + fr(q.attendu) + '$' + (p % 10 === 0 ? ' ($10\\,\\%$ de $' + fr(N) + '$ font $' + fr(N / 10) + '$, et on multiplie par $' + p / 10 + '$).' : '.');
+            return q;
+        }
+        if (niveau === 2) {
+            p = A.choix([5, 15, 35, 45, 12, 85]); N = A.entier(3, 30) * (p === 12 ? 25 : 20);
+            q.texte = 'Calculer $' + pct(p) + '$ de $' + fr(N) + '$.';
+            q.attendu = arrondi(p * N / 100);
+            q.explication = '$' + fr(p / 100) + '\\times' + fr(N) + '=' + fr(q.attendu) + '$' + (p % 5 === 0 && p % 10 ? ' ($10\\,\\%$ : $' + fr(N / 10) + '$ ; $5\\,\\%$ : $' + fr(N / 20) + '$).' : '.');
+            return q;
+        }
+        p = A.choix([10, 20, 25, 30, 40, 75]); N = A.entier(4, 30) * 20;
+        var v = p * N / 100;
+        q.texte = '$' + pct(p) + '$ d\'un nombre valent $' + fr(v) + '$. Quel est ce nombre ?';
+        q.attendu = N;
+        q.explication = 'On cherche $N$ tel que $' + fr(p / 100) + '\\times N=' + fr(v) + '$, donc $N=' + frac(fr(v), fr(p / 100)) + '=' + fr(N) + '$.';
+        return q;
+    };
+
+    /* ===== A10 · Équations ax + b = cx + d ===== */
+    Auto.equationDeuxMembres = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A10 · Équations', type: 'nombre', prefixe: 'x =' };
+        var poly = Interactif.poly, a, b, c, d, x;
+        if (niveau < 3) {
+            do {
+                a = A.nonNul(-9, 9); c = A.nonNul(-9, 9); b = A.nonNul(-12, 12);
+                if (niveau === 1) { x = A.nonNul(-6, 6); d = (a - c) * x + b; }
+                else d = A.nonNul(-12, 12);
+            } while (a === c || Math.abs(d) > 30 || (niveau === 2 && (d - b) % (a - c) === 0));
+            var g = poly([a, b]), h = poly([c, d]);
+            q.texte = 'Résoudre $' + g + '=' + h + '$' + (niveau === 2 ? ' (solution exacte, sous forme de fraction si besoin).' : '.');
+            q.correction = [g + '&=' + h, poly([a - c, 0]) + '&=' + (d - b), 'x&=' + fracTex(d - b, a - c)];
+            q.attendu = (d - b) / (a - c);
+            return q;
+        }
+        var p = A.nonNul(-5, 5); x = A.nonNul(-6, 6);
+        var k = 2 * p * x + p * p;                         // (x+p)^2 = x^2 + k
+        var gauche = '(' + poly([1, p]) + ')^2', droite = poly([1, 0, k]);
+        q.texte = 'Résoudre $' + gauche + '=' + droite + '$.';
+        q.correction = [gauche + '&=' + droite, poly([1, 2 * p, p * p]) + '&=' + droite, poly([2 * p, 0]) + '&=' + (k - p * p), 'x&=' + x];
+        q.attendu = x;
+        return q;
+    };
+
+    /* ===== A20 · Lire des coordonnées dans un repère ===== */
+    Auto.lireCoordonnees = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A20 · Repère orthogonal' };
+        var x, y;
+        if (niveau === 1) {
+            do { x = A.nonNul(-3, 3); y = A.nonNul(-2, 2); } while (Math.abs(x) === Math.abs(y));
+            q.figure = repere({ xmin: -4, xmax: 4, ymin: -3, ymax: 3, points: [{ nom: 'A', x: x, y: y }] });
+            q.figureNote = 'A' + coord(x, y).replace(/\\ ;\\ /, ' ; ').replace(/\{,\}/g, ',');
+            q.texte = 'Quelles sont les coordonnées du point $A$ ?';
+            q.explication = 'On lit d\'abord l\'abscisse (axe horizontal), puis l\'ordonnée (axe vertical) : $A' + coord(x, y) + '$.';
+            return qcm(q, [
+                { t: '$A' + coord(x, y) + '$', ok: true },
+                { t: '$A' + coord(y, x) + '$', ok: false },
+                { t: '$A' + coord(-x, y) + '$', ok: false },
+                { t: '$A' + coord(x, -y) + '$', ok: false }
+            ]);
+        }
+        q.type = 'champs';
+        if (niveau === 2) {
+            do { x = A.nonNul(-7, 7) / 2; y = A.nonNul(-5, 5) / 2; } while (x % 1 === 0 && y % 1 === 0 || Math.abs(x) > 3.5 || Math.abs(y) > 2.5);
+            q.figure = repere({ xmin: -4, xmax: 4, ymin: -3, ymax: 3, sub: 2, points: [{ nom: 'B', x: x, y: y }] });
+            q.figureNote = 'B(' + fr(x).replace('{,}', ',') + ' ; ' + fr(y).replace('{,}', ',') + ')';
+            q.texte = 'Chaque unité est partagée en deux carreaux. Lire les coordonnées du point $B$ (écriture décimale).';
+            q.gabarit = '$B\\Big($ [] $;$ [] $\\Big)$';
+            q.attendus = [x, y];
+            q.explication = 'Un carreau vaut $0{,}5$. $B' + coord(x, y) + '$.';
+            return q;
+        }
+        do { x = A.nonNul(-3, 3); y = A.nonNul(-2, 2); } while (Math.abs(x) === Math.abs(y));
+        var cas = A.choix([
+            { nom: 'à l\'origine $O$', x: -x, y: -y, pourquoi: 'les deux coordonnées changent de signe' },
+            { nom: 'à l\'axe des abscisses', x: x, y: -y, pourquoi: 'l\'abscisse reste la même, l\'ordonnée change de signe' },
+            { nom: 'à l\'axe des ordonnées', x: -x, y: y, pourquoi: 'l\'ordonnée reste la même, l\'abscisse change de signe' }
+        ]);
+        q.figure = repere({ xmin: -4, xmax: 4, ymin: -3, ymax: 3, points: [{ nom: 'C', x: x, y: y }] });
+        q.figureNote = 'C(' + x + ' ; ' + y + ')';
+        q.texte = 'Donner les coordonnées du point $D$, symétrique de $C$ par rapport ' + cas.nom + '.';
+        q.gabarit = '$D\\Big($ [] $;$ [] $\\Big)$';
+        q.attendus = [cas.x, cas.y];
+        q.explication = '$C' + coord(x, y) + '$ ; ' + cas.pourquoi + ' : $D' + coord(cas.x, cas.y) + '$.';
+        return q;
+    };
+
+    /* ===== A5 · Ordre de grandeur (réponse à écrire) ===== */
+    Auto.ordreGrandeurNombre = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A5 · Encadrer, ordre de grandeur', type: 'nombre' };
+        function proche(v0, ecart) { return arrondi(v0 + A.choix([-1, 1]) * A.entier(1, ecart)); }
+        if (niveau < 3) {
+            var p0 = A.choix(niveau === 1 ? [10, 50] : [20, 25, 75]), N0 = (niveau === 1 ? A.entier(2, 9) : A.entier(4, 16) * 2) * 100 * (niveau === 1 ? A.choix([1, 10]) : 1);
+            if (niveau === 2 && p0 % 25 === 0) N0 = A.entier(2, 12) * 400;
+            var p = arrondi(p0 + A.choix([-1, 1]) * A.entier(1, 9) / 10), N = proche(N0, Math.max(2, Math.round(N0 / 100)));
+            q.texte = 'En remplaçant chaque nombre par une valeur « ronde », donner un ordre de grandeur de $' + pct(p) + '$ de $' + fr(N) + '$.';
+            q.attendu = p0 * N0 / 100;
+            q.explication = '$' + pct(p) + '\\approx' + pct(p0) + '$ et $' + fr(N) + '\\approx' + fr(N0) + '$ : environ $' + pct(p0) + '$ de $' + fr(N0) + '$, soit $' + fr(q.attendu) + '$.';
+            return q;
+        }
+        var M0 = A.entier(2, 9) * 1000, k = A.choix([0.98, 0.99, 1.01, 1.02]), M = proche(M0, 20);
+        var r0 = A.choix([10, 20]), R0 = A.entier(2, 9) * 1000, r = arrondi(r0 + A.choix([-1, 1]) * A.entier(1, 4) / 10), R = proche(R0, 15), plus = Math.random() < 0.5;
+        q.texte = 'Donner un ordre de grandeur de $' + fr(k) + '\\times' + fr(M) + (plus ? '+' : '-') + pct(r) + '$ de $' + fr(R) + '$.';
+        q.attendu = M0 + (plus ? 1 : -1) * r0 * R0 / 100;
+        q.explication = '$' + fr(k) + '\\times' + fr(M) + '\\approx1\\times' + fr(M0) + '=' + fr(M0) + '$ et $' + pct(r) + '$ de $' + fr(R) + '\\approx' + pct(r0) + '$ de $' + fr(R0) + '=' + fr(r0 * R0 / 100) + '$ : environ $' + fr(q.attendu) + '$.';
+        return q;
+    };
+
+    /* ===== A4 · Sommes de fractions décimales ===== */
+    Auto.sommeDecimale = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A4 · Écritures d\'un nombre', type: 'nombre', decimal: true };
+        if (niveau === 1) {
+            var a = A.entier(1, 9), b = A.entier(11, 99), c = A.entier(1, 9);
+            var t = [[a, 10], [b, 100], [c, 1000]];
+            q.texte = 'Écrire sous forme décimale : $A=' + t.map(function (u) { return frac(u[0], fr(u[1])); }).join('+') + '$.';
+            q.prefixe = 'A=';
+            q.attendu = arrondi(a / 10 + b / 100 + c / 1000);
+            q.explication = '$A=' + fr(a / 10) + '+' + fr(b / 100) + '+' + fr(c / 1000) + '=' + fr(q.attendu) + '$.';
+            return q;
+        }
+        if (niveau === 2) {
+            var n = A.entier(2, 15), b2 = A.entier(1, 9), c2 = A.entier(1, 9);
+            q.texte = 'Écrire sous forme décimale : $B=' + n + '-' + frac(b2, 100) + '+' + frac(c2, fr(1000)) + '$.';
+            q.prefixe = 'B=';
+            q.attendu = arrondi(n - b2 / 100 + c2 / 1000);
+            q.explication = '$B=' + n + '-' + fr(b2 / 100) + '+' + fr(c2 / 1000) + '=' + fr(arrondi(n - b2 / 100)) + '+' + fr(c2 / 1000) + '=' + fr(q.attendu) + '$.';
+            return q;
+        }
+        var cas = A.choix([[4, [1, 3]], [8, [1, 3, 5, 7]], [5, [1, 2, 3, 4]], [20, [1, 3, 7, 9]]]), d = cas[0], num = A.choix(cas[1]);
+        var m = A.entier(1, 9) * 5, e = 2;
+        q.texte = 'Écrire sous forme décimale : $C=' + m + '\\times10^{-' + e + '}+' + frac(num, d) + '$.';
+        q.prefixe = 'C=';
+        q.attendu = arrondi(m / 100 + num / d);
+        q.explication = '$' + m + '\\times10^{-2}=' + fr(m / 100) + '$ et $' + frac(num, d) + '=' + fr(num / d) + '$, donc $C=' + fr(q.attendu) + '$.';
+        return q;
+    };
+
+    /* ===== A16 · Image et antécédent par une fonction ===== */
+    Auto.imageFonction = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A16 · Images et antécédents' };
+        var poly = Interactif.poly, par = Interactif.par, a, b, c, x0;
+        if (niveau === 1) {
+            a = A.entier(2, 6) * A.signe(); b = A.nonNul(-9, 9); x0 = -A.entier(2, 6);
+            var im = a * x0 + b, vals = [im, -a * x0 + b, a * x0 - b, a + x0 + b];
+            if (!distincts(vals)) return Auto.imageFonction(1);
+            q.texte = 'On considère la fonction $f$ définie par $f(x)=' + poly([a, b]) + '$. L\'image de $' + x0 + '$ par $f$ est :';
+            q.explication = '$f(' + x0 + ')=' + a + '\\times' + par(x0) + (b > 0 ? '+' : '') + b + '=' + (a * x0) + (b > 0 ? '+' : '') + b + '=' + im + '$.';
+            return qcm(q, vals.map(function (v, k) { return { t: '$' + v + '$', ok: k === 0 }; }));
+        }
+        q.type = 'nombre';
+        if (niveau === 2) {
+            a = A.entier(1, 4) * A.signe(); b = A.nonNul(-5, 5); c = A.nonNul(-9, 9); x0 = -A.entier(1, 3);
+            var g = poly([a, b, c]);
+            q.texte = 'On considère la fonction $g$ définie par $g(x)=' + g + '$. Calculer $g(' + x0 + ')$.';
+            q.attendu = a * x0 * x0 + b * x0 + c;
+            q.explication = '$g(' + x0 + ')=' + (a === 1 ? '' : a === -1 ? '-' : a + '\\times') + par(x0) + '^2' + (b > 0 ? '+' : '') + b + '\\times' + par(x0) + (c > 0 ? '+' : '') + c + '=' + a * x0 * x0 + (b * x0 >= 0 ? '+' : '') + b * x0 + (c > 0 ? '+' : '') + c + '=' + q.attendu + '$.<br>Attention : $' + par(x0) + '^2=' + x0 * x0 + '$.';
+            return q;
+        }
+        a = A.entier(2, 6) * A.signe(); b = A.nonNul(-9, 9); x0 = A.nonNul(-6, 6);
+        var v = a * x0 + b;
+        q.texte = 'On considère la fonction $f$ définie par $f(x)=' + poly([a, b]) + '$. Déterminer l\'antécédent de $' + v + '$ par $f$.';
+        q.prefixe = 'x =';
+        q.attendu = x0;
+        q.correction = [poly([a, b]) + '&=' + v, a + 'x&=' + (v - b), 'x&=' + x0];
+        return q;
+    };
+
+    /* ===== A1 · Ranger des nombres écrits différemment (sans choix proposés) ===== */
+    Auto.rangerEcritures = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A1 · Comparer deux nombres', type: 'ordre' };
+        var vals;
+        do {
+            if (niveau === 1) {
+                var n = A.entier(1, 4), quart = A.choix([1, 3]), base = n + quart / 4;
+                vals = [ecrFraction(base, 4), ecrDecimal(arrondi(Math.round(base * 10) / 10 + A.choix([0, 0.1]))), ecrPuissance(arrondi(Math.floor(base * 10) / 10), 1)];
+            } else if (niveau === 2) {
+                var k = A.entier(3, 8);
+                vals = [ecrDecimal(arrondi(k / 100 + A.entier(1, 9) / 1000)), ecrPuissance(arrondi((k + 1) / 100), 2), ecrFraction(arrondi((2 * k + 1) / 200), 200), ecrDecimal(arrondi(k / 100 + A.entier(1, 9) / 10000))];
+            } else {
+                var p = A.entier(3, 8), f1 = p / (p + 1), f2 = (p + 1) / (p + 2);
+                vals = [{ v: f1, t: '$' + frac(p, p + 1) + '$' }, { v: f2, t: '$' + frac(p + 1, p + 2) + '$' }, ecrDecimal(arrondi(Math.round((f1 + f2) / 2 * 1000) / 1000))];
+            }
+        } while (!distincts(vals.map(function (x) { return x.v; })));
+        vals = melanger(vals);
+        var L = 'ABCD';
+        q.texte = 'Ranger dans l\'ordre croissant (écris les lettres, du plus petit au plus grand) :<br>' +
+            vals.map(function (x, k) { return '<b>' + L[k] + '</b> : ' + x.t; }).join(' &nbsp; ');
+        var ordre = vals.map(function (x, k) { return { v: x.v, l: L[k], t: x.t }; }).sort(function (u, w) { return u.v - w.v; });
+        q.attendu = ordre.map(function (o) { return o.l; }).join('');
+        q.explication = ordre.map(function (o) { return o.t === '$' + fr(o.v) + '$' ? o.t : o.t.replace(/\$$/, '') + (o.v * 1000 % 1 ? '\\approx' + fr(Math.round(o.v * 1000) / 1000) : '=' + fr(o.v)) + '$'; }).join(' $<$ ') + ', donc <b>' + q.attendu + '</b>.';
+        return q;
+    };
+
+    /* ===== A5 · Encadrer une racine carrée (automatisme final) ===== */
+    Auto.encadrerRacineFinal = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A5 · Encadrer, ordre de grandeur', type: 'champs' };
+        if (niveau === 1) {
+            var a = nonCarre(101, 399), n = Math.floor(Math.sqrt(a));
+            q.texte = 'Sans calculatrice, encadrer $\\sqrt{' + a + '}$ entre deux entiers consécutifs.';
+            q.gabarit = '[] $<\\sqrt{' + a + '}<$ []';
+            q.attendus = [n, n + 1];
+            q.explication = '$' + n * n + '<' + a + '<' + (n + 1) * (n + 1) + '$, donc $' + n + '<\\sqrt{' + a + '}<' + (n + 1) + '$.';
+            return q;
+        }
+        if (niveau === 2) {
+            var b = nonCarre(101, 399), d10 = Math.floor(Math.sqrt(b * 100));
+            while (d10 * d10 > b * 100) d10--;
+            while ((d10 + 1) * (d10 + 1) <= b * 100) d10++;
+            var d = d10 / 10, e = (d10 + 1) / 10;
+            q.texte = 'Encadrer $\\sqrt{' + b + '}$ entre deux décimaux consécutifs au dixième.';
+            q.gabarit = '[] $<\\sqrt{' + b + '}<$ []';
+            q.attendus = [d, e];
+            q.explication = '$' + fr(d) + '^2=' + fr(arrondi(d * d)) + '$ et $' + fr(e) + '^2=' + fr(arrondi(e * e)) + '$ : $' + fr(d) + '<\\sqrt{' + b + '}<' + fr(e) + '$.';
+            return q;
+        }
+        var k = A.entier(2, 5), m, kk;
+        do { m = nonCarre(2, 15); kk = k * k * m; } while (kk > 200);
+        var r = Math.floor(Math.sqrt(kk));
+        q.texte = 'Encadrer $' + k + '\\sqrt{' + m + '}$ entre deux entiers consécutifs.';
+        q.gabarit = '[] $<' + k + '\\sqrt{' + m + '}<$ []';
+        q.attendus = [r, r + 1];
+        q.explication = '$' + k + '\\sqrt{' + m + '}=\\sqrt{' + k + '^2\\times' + m + '}=\\sqrt{' + kk + '}$ et $' + r * r + '<' + kk + '<' + (r + 1) * (r + 1) + '$, donc $' + r + '<' + k + '\\sqrt{' + m + '}<' + (r + 1) + '$.';
+        return q;
+    };
+
     window.Auto = Auto;
 })();

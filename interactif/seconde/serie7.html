@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatismes Série 7</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../../img/favicon-32.png">
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../interactif.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="../../site.js"></script>
+    <script src="../config.js"></script>
+    <script src="../expr.js"></script>
+    <script src="../moteur.js"></script>
+    <script src="automatismes.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><span class="logo-ligne"><button type="button" data-effet="ecrire" title="Réécrire le titre"></button><button type="button" data-effet="matrix" title="Mode Matrix"></button><button type="button" data-effet="terminal" title="Mode terminal"></button></span><a href="../../index.html">Année 2026-2027 - Lycée Lebrun</a></div>
+        <ul class="nav-links">
+            <li><a href="../../index.html">Accueil</a></li>
+            <li><a href="../index.html">Automatismes</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1 id="titre">Série 7</h1>
+        <p>Automatismes · semaine du 2 au 6 novembre · <span id="jours"></span></p>
+    </header>
+
+    <main class="interactif">
+        <div id="bandeau"></div>
+        <p class="aide">Commence par la <span class="q-niveau n1">série verte</span>, puis clique sur « Valider mes réponses ». Tu peux alors la refaire avec d'autres nombres, ou passer à la <span class="q-niveau n2">série bleue</span>, puis à la <span class="q-niveau n3">série rouge</span>. Le score retenu est celui de ton premier essai. Pour une fraction, écris par exemple <code>-5/3</code> ; pour un décimal, <code>2,5</code>.</p>
+        <div id="exercice"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Clémence Le Tousey · Documents sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a> : réutilisation libre en citant l'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions. Hébergé avec GitHub Pages.</p>
+    </footer>
+
+    <script>
+    (function () {
+        var JOURS = {
+            1: [Auto.coefMultiplicateur, Auto.calculPourcentage, Auto.equationDeuxMembres],
+            2: [Auto.lireCoordonnees, Auto.ordreGrandeurNombre, Auto.sommeDecimale],
+            3: [Auto.imageFonction, Auto.rangerEcritures, Auto.encadrerRacineFinal]
+        };
+        var j = Number(new URLSearchParams(location.search).get('j')) || 1;
+        if (!JOURS[j]) j = 1;
+        document.getElementById('titre').textContent = 'Série 7 · Jour ' + j;
+        document.title = 'Série 7 · Jour ' + j;
+        document.getElementById('jours').innerHTML = [1, 2, 3].map(function (k) {
+            return k === j ? '<strong>Jour ' + k + '</strong>' : '<a href="?j=' + k + '">Jour ' + k + '</a>';
+        }).join(' · ');
+
+        var types = JOURS[j];
+        Interactif.exercice({
+            id: 'seconde/serie7-j' + j,
+            nb: 9,
+            parNiveau: true,
+            niveau: function (i) { return Math.floor(i / 3) + 1; },
+            // d'abord les 3 questions niveau 1, puis niveau 2, puis niveau 3
+            generer: function (i) { return types[i % 3](Math.floor(i / 3) + 1); }
+        });
+    })();
+    </script>
+</body>
+</html>

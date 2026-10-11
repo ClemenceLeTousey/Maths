@@ -123,3 +123,13 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .interactif a.bouton:hover { border-color: var(--c-seconde); color: var(--c-seconde); }
 .legende { display: block; font-weight: 400; font-size: 0.8em; }
 .legende .pastille { min-width: 0; }
+
+/* Figure d'une question (repère…) */
+.q-figure { margin: 6px 0 4px 34px; }
+.q-figure svg { max-width: 100%; height: auto; display: block; }
+.q-figure .fig-grille { stroke: var(--line); stroke-width: 1; }
+.q-figure .fig-axe { stroke: currentColor; stroke-width: 1.6; }
+.q-figure .fig-txt { fill: currentColor; font-size: 13px; font-family: system-ui, sans-serif; }
+.q-figure .fig-pt { fill: var(--c-seconde); }
+.q-figure .fig-nom { fill: var(--c-seconde); font-weight: 700; font-size: 17px; font-family: system-ui, sans-serif; paint-order: stroke; stroke: var(--surface); stroke-width: 5px; }
+.q-figure .fig-grille { stroke: var(--muted); stroke-opacity: .35; }

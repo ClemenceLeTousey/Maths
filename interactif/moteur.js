@@ -193,6 +193,8 @@
                     var e = el('span'); maths(e, q.enonce); tete.appendChild(e);
                 }
                 li.appendChild(tete);
+                // figure (SVG) : affichée sous l'énoncé, non enregistrée (seule q.figureNote l'est)
+                if (q.figure) { var fig = el('div', 'q-figure'); fig.innerHTML = q.figure; li.appendChild(fig); }
 
                 var saisie = el('div', 'q-saisie');
                 var apercu = el('div', 'q-apercu');
@@ -316,7 +318,7 @@
                         else c.innerHTML = mixte(q.explication);
                         li.appendChild(c);
                     }
-                    var d = q.texte != null ? { t: q.texte, r: res.r, ok: juste } : { q: q.enonce, r: res.r, ok: juste };
+                    var d = q.texte != null ? { t: q.texte + (q.figureNote ? ' <i>(figure : ' + q.figureNote + ')</i>' : ''), r: res.r, ok: juste } : { q: q.enonce, r: res.r, ok: juste };
                     if (type === 'qcm') d.b = 'ABCDEF'[q.bonne];
                     if (q.niveau) d.n = q.niveau;
                     if (essai > 1) {             // série refaite : gardée dans le détail, hors score
