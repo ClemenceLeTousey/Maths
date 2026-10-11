@@ -116,8 +116,11 @@
 
         /* ---------- Tableau ---------- */
         function exercices() {
-            var ids = INTERACTIF_CATALOGUE.map(function (e) { return e.id; });
-            donnees.resultats.forEach(function (r) { if (ids.indexOf(r.exercice) < 0) ids.push(r.exercice); });
+            // séries archivées et exercices retirés : pas de colonne (résultats gardés en base)
+            var masques = (window.INTERACTIF_MASQUES_PROF || []).concat(
+                INTERACTIF_CATALOGUE.filter(function (e) { return e.archive; }).map(function (e) { return e.id; }));
+            var ids = INTERACTIF_CATALOGUE.filter(function (e) { return !e.archive; }).map(function (e) { return e.id; });
+            donnees.resultats.forEach(function (r) { if (ids.indexOf(r.exercice) < 0 && masques.indexOf(r.exercice) < 0) ids.push(r.exercice); });
             return ids;
         }
         function titre(id) {
