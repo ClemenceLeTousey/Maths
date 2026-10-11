@@ -75,6 +75,7 @@
 
         function charger(s) {
             document.getElementById('contenu').hidden = !s;
+            document.querySelector('.espace-prof').hidden = !!s;   // seulement sur l'accueil, pas pour un élève connecté
             afficher(null);
             if (!s) return;
             Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(afficher, function (x) {
