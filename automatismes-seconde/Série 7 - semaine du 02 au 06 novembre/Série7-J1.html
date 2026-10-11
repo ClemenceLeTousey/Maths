@@ -473,19 +473,19 @@ const QUESTIONS = [
   {
     tier: "qcm",
     duree: 25,
-    objectif: "A15 · Évolutions : coefficient multiplicateur",
-    aim: "Associer à une hausse ou à une baisse de $t\\,\\%$ le coefficient multiplicateur $1+\\dfrac{t}{100}$ ou $1-\\dfrac{t}{100}$.",
-    question: "Augmenter une valeur de $7\\,\\%$ revient à la multiplier par :",
+    objectif: "A3 · Puissances",
+    aim: "Utiliser les règles $a^m\\times a^n=a^{m+n}$, $\\dfrac{a^m}{a^n}=a^{m-n}$ et $(a^m)^n=a^{m\\times n}$.",
+    question: "$\\dfrac{6^3}{6^7}$ est égal à :",
     options: [
-      { letter:"A", text:"$0{,}07$", correct:false },
-      { letter:"B", text:"$1{,}7$", correct:false },
-      { letter:"C", text:"$1{,}07$", correct:true },
-      { letter:"D", text:"$0{,}93$", correct:false }
+      { letter:"A", text:"$6^{4}$", correct:false },
+      { letter:"B", text:"$6^{-4}$", correct:true },
+      { letter:"C", text:"$6^{10}$", correct:false },
+      { letter:"D", text:"$1^{-4}$", correct:false }
     ],
-    explanation: "Hausse de $7\\,\\%$ : $CM=1+\\dfrac{7}{100}=1+0{,}07=1{,}07$ (réponse C).<br>Pièges : $0{,}07$ ne donne que les $7\\,\\%$ (l'augmentation seule) ; $1{,}7$ correspond à $+70\\,\\%$ ; $0{,}93$ à une baisse de $7\\,\\%$.",
+    explanation: "$\\dfrac{a^m}{a^n}=a^{m-n}$ : $\\dfrac{6^3}{6^7}=6^{3-7}=6^{-4}$ (réponse B).<br>Pièges : $6^{4}$ (soustraction dans le mauvais sens), $6^{10}$ (on a additionné), $1^{-4}$ (on ne divise pas les bases).",
     levelsPair: true,
-    niveau2: { question: "Compléter :<br>• diminuer de $3\\,\\%$ revient à multiplier par …<br>• multiplier par $1{,}25$ revient à …", explanation: "$1-0{,}03=0{,}97$ : diminuer de $3\\,\\%$, c'est multiplier par $0{,}97$.<br>$1{,}25=1+0{,}25$ : multiplier par $1{,}25$, c'est augmenter de $25\\,\\%$." },
-    niveau3: { question: "Un prix augmente de $20\\,\\%$, puis baisse de $20\\,\\%$. Par quel nombre a-t-il été multiplié au total ? Revient-il à son prix de départ ?", explanation: "$1{,}2\\times0{,}8=0{,}96$.<br>Le prix final vaut $96\\,\\%$ du prix de départ : il a baissé de $4\\,\\%$, il ne revient pas au prix de départ." }
+    niveau2: { question: "Écrire sous la forme d'une seule puissance de $2$ :$$2^5\\times2^{-3}\\times(2^2)^3$$", explanation: "$(2^2)^3=2^6$, donc $2^{5+(-3)+6}=2^{8}$." },
+    niveau3: { question: "Écrire sous la forme $3^n$ :$$A=\\dfrac{9^4\\times27}{3^5}$$", explanation: "$9^4=(3^2)^4=3^8$ et $27=3^3$.<br>$A=\\dfrac{3^8\\times3^3}{3^5}=3^{8+3-5}=3^{6}$." }
   },
   {
     tier: "question",

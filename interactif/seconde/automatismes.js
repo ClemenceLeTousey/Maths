@@ -569,5 +569,50 @@
         return q;
     };
 
+
+    /* ===== A3 · Puissances : règles de calcul ===== */
+    Auto.puissances = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A3 · Puissances' };
+        function pw(a, n) { return a + '^{' + n + '}'; }
+        if (niveau === 1) {
+            var a = A.entier(2, 9), m, n, op = A.choix(['quotient', 'produit']), r;
+            do { m = A.nonNul(-6, 8); n = A.nonNul(-6, 8); } while (m === n || Math.abs(m) === Math.abs(n) || m * n === m + n || m * n === m - n);
+            if (op === 'quotient') {
+                r = m - n;
+                q.texte = '$' + frac(pw(a, m), pw(a, n)) + '$ est égal à :';
+                q.explication = '$' + frac('a^m', 'a^n') + '=a^{m-n}$ : $' + frac(pw(a, m), pw(a, n)) + '=' + a + '^{' + m + '-' + Interactif.par(n) + '}=' + pw(a, r) + '$.';
+                var faux = [m + n, n - m, m * n];
+            } else {
+                r = m + n;
+                q.texte = '$' + pw(a, m) + '\\times' + pw(a, n) + '$ est égal à :';
+                q.explication = '$a^m\\times a^n=a^{m+n}$ : $' + pw(a, m) + '\\times' + pw(a, n) + '=' + a + '^{' + m + '+' + Interactif.par(n) + '}=' + pw(a, r) + '$.';
+                var faux = [m - n, m * n, null];
+            }
+            var opts = [{ t: '$' + pw(a, r) + '$', ok: true }];
+            faux.forEach(function (f) { if (f !== null && f !== r) opts.push({ t: '$' + pw(a, f) + '$', ok: false }); });
+            if (opts.length < 4) opts.push({ t: '$' + pw(a * a, r) + '$', ok: false });
+            opts = opts.slice(0, 4);
+            var vus = {}; opts.forEach(function (o) { vus[o.t] = 1; });
+            if (Object.keys(vus).length < 4) return Auto.puissances(1);
+            return qcm(q, opts);
+        }
+        q.type = 'nombre'; q.prefixe = 'n =';
+        if (niveau === 2) {
+            var b = A.choix([2, 3, 5, 10]), p, k, e, d;
+            do { p = A.nonNul(-5, 7); k = A.entier(2, 3); e = A.nonNul(-4, 3); d = A.nonNul(-4, 4); } while (p + k * e - d === 0);
+            var res = p + k * e - d;
+            q.texte = 'Écrire sous la forme $' + b + '^n$ : $' + frac(pw(b, p) + '\\times(' + pw(b, e) + ')^{' + k + '}', pw(b, d)) + '$. Donner $n$.';
+            q.attendu = res;
+            q.explication = '$(' + pw(b, e) + ')^{' + k + '}=' + pw(b, k * e) + '$, puis $' + p + '+' + Interactif.par(k * e) + '-' + Interactif.par(d) + '=' + res + '$ : le résultat est $' + pw(b, res) + '$.';
+            return q;
+        }
+        var cas = A.choix([[2, 4, 8], [3, 9, 27]]), base = cas[0], u = A.entier(1, 4), v = A.entier(1, 3), w = A.entier(1, 6);
+        var res3 = 2 * u + 3 * v - w;
+        q.texte = 'Écrire sous la forme $' + base + '^n$ : $' + frac(pw(cas[1], u) + '\\times' + pw(cas[2], v), pw(base, w)) + '$. Donner $n$.';
+        q.attendu = res3;
+        q.explication = '$' + cas[1] + '=' + base + '^2$ et $' + cas[2] + '=' + base + '^3$ : $' + frac(pw(base, 2 * u) + '\\times' + pw(base, 3 * v), pw(base, w)) + '=' + base + '^{' + (2 * u) + '+' + (3 * v) + '-' + w + '}=' + pw(base, res3) + '$.';
+        return q;
+    };
+
     window.Auto = Auto;
 })();
