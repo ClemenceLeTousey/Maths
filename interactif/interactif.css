@@ -121,3 +121,5 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
     border: 1px solid var(--line); color: var(--muted); background: var(--surface);
 }
 .interactif a.bouton:hover { border-color: var(--c-seconde); color: var(--c-seconde); }
+.legende { display: block; font-weight: 400; font-size: 0.8em; }
+.legende .pastille { min-width: 0; }

@@ -412,6 +412,29 @@
         lancer();
     }
 
+    /* Scores par couleur d'une série (premiers essais) : {1: {ok, tot}, 2: …, 3: …} ou null */
+    function couleurs(r) {
+        var c = {}, det = (r && r.details) || [];
+        det.forEach(function (d, k) {
+            if (!d || d.e) return;
+            var n = d.n || (/serie\d+-j/.test(r.exercice) && r.total === 9 ? Math.floor(k / 3) + 1 : 0);
+            if (!n) return;
+            c[n] = c[n] || { ok: 0, tot: 0 };
+            c[n].tot++; if (d.ok) c[n].ok++;
+        });
+        return Object.keys(c).length ? c : null;
+    }
+
+    /* Pastilles colorées « 3/3 2/3 1/3 » dans un élément */
+    function pastilles(cible, c) {
+        var NOMS = { 1: 'verte', 2: 'bleue', 3: 'rouge' };
+        Object.keys(c).forEach(function (n) {
+            var p = el('span', 'pastille n' + n, c[n].ok + '/' + c[n].tot);
+            p.title = 'Série ' + (NOMS[n] || n);
+            cible.appendChild(p);
+        });
+    }
+
     /* 2B -> seconde, 1TC -> premiere, TST2S -> terminale ; autre (TEST…) -> null = tout voir */
     function niveauClasse(classe) {
         var c = String(classe || '').toUpperCase();
@@ -423,6 +446,6 @@
 
     window.Interactif = {
         rpc: rpc, session: session, connecter: connecter, deconnecter: deconnecter,
-        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse
+        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, couleurs: couleurs, pastilles: pastilles
     };
 })();

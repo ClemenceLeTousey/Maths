@@ -127,18 +127,7 @@
         function niveau(r) { return r >= 0.75 ? 'n-bon' : r >= 0.5 ? 'n-moyen' : 'n-faible'; }
         function td(tr, texte, classe) { var c = document.createElement('td'); c.textContent = texte; if (classe) c.className = classe; tr.appendChild(c); return c; }
 
-        /* Scores par couleur (verte, bleue, rouge) d'une série, premiers essais seulement */
-        function couleurs(r) {
-            var c = {}, det = r.details || [];
-            det.forEach(function (d, k) {
-                if (!d || d.e) return;
-                var n = d.n || (/serie\d+-j/.test(r.exercice) && r.total === 9 ? Math.floor(k / 3) + 1 : 0);
-                if (!n) return;
-                c[n] = c[n] || { ok: 0, tot: 0 };
-                c[n].tot++; if (d.ok) c[n].ok++;
-            });
-            return Object.keys(c).length ? c : null;
-        }
+        var couleurs = Interactif.couleurs;
         var COULEURS = { 1: 'verte', 2: 'bleue', 3: 'rouge' };
         function texteCouleurs(c) {
             return Object.keys(c).map(function (n) { return (COULEURS[n] || n)[0].toUpperCase() + ' ' + c[n].ok + '/' + c[n].tot; }).join(', ');
