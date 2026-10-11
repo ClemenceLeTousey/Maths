@@ -20,7 +20,7 @@
         <div class="logo"><span class="logo-ligne"><button type="button" data-effet="ecrire" title="Réécrire le titre"></button><button type="button" data-effet="matrix" title="Mode Matrix"></button><button type="button" data-effet="terminal" title="Mode terminal"></button></span><a href="../../index.html">Année 2026-2027 - Lycée Lebrun</a></div>
         <ul class="nav-links">
             <li><a href="../../index.html">Accueil</a></li>
-            <li><a href="../index.html">Mes exercices</a></li>
+            <li><a href="../index.html">Automatismes Secondes</a></li>
         </ul>
     </nav>
 
@@ -31,7 +31,7 @@
 
     <main class="interactif">
         <div id="bandeau"></div>
-        <p class="aide">3 questions, chacune en 3 niveaux : <span class="q-niveau n1">★☆☆</span> puis <span class="q-niveau n2">★★☆</span> puis <span class="q-niveau n3">★★★</span>. Pour une fraction, écris par exemple <code>-5/3</code>.</p>
+        <p class="aide">Fais la <span class="q-niveau n1">série verte</span>, puis clique sur « Valider mes réponses » : la <span class="q-niveau n2">série bleue</span> s'ouvre, puis la <span class="q-niveau n3">série rouge</span>. Pour une fraction, écris par exemple <code>-5/3</code>.</p>
         <div id="exercice"></div>
     </main>
 
@@ -58,6 +58,7 @@
         Interactif.exercice({
             id: 'seconde/serie6-j' + j,
             nb: 9,
+            parNiveau: true,
             // d'abord les 3 questions niveau 1, puis niveau 2, puis niveau 3
             generer: function (i) { return types[i % 3](Math.floor(i / 3) + 1); }
         });

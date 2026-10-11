@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exercices interactifs</title>
+    <title>Automatismes Secondes</title>
     <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="interactif.css">
@@ -20,13 +20,12 @@
     </nav>
 
     <header>
-        <h1>Exercices interactifs</h1>
+        <h1>Automatismes Secondes</h1>
         <p>Connecte-toi avec l'identifiant et le mot de passe donnés en classe.</p>
     </header>
 
     <main class="interactif">
         <div id="bandeau"></div>
-        <h2>Exercices</h2>
         <div class="tableau-defile"><table class="res" id="liste"></table></div>
         <p class="aide">Tu peux refaire un exercice autant de fois que tu veux : les nombres changent à chaque fois.</p>
         <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>
@@ -46,12 +45,19 @@
                 nb[r.exercice] = (nb[r.exercice] || 0) + 1;
                 if (!meilleur[r.exercice] || r.score / r.total > meilleur[r.exercice].score / meilleur[r.exercice].total) meilleur[r.exercice] = r;
             });
-            table.innerHTML = '<tr><th>Exercice</th><th>Séquence</th><th>Meilleur score</th><th>Séries faites</th></tr>';
+            table.innerHTML = '<tr><th>Exercice</th><th>Meilleur score</th><th>Séries faites</th></tr>';
+            var groupe = null;
             INTERACTIF_CATALOGUE.forEach(function (ex) {
+                if (ex.groupe !== groupe) {
+                    groupe = ex.groupe;
+                    var tg = document.createElement('tr'), th = document.createElement('th');
+                    th.colSpan = 3; th.className = 'groupe'; th.textContent = groupe;
+                    tg.appendChild(th); table.appendChild(tg);
+                }
                 var tr = document.createElement('tr'), m = meilleur[ex.id];
                 var a = document.createElement('a'); a.href = ex.url; a.textContent = ex.titre;
                 var td = document.createElement('td'); td.appendChild(a); tr.appendChild(td);
-                [ex.classe + ' · ' + ex.sequence, m ? m.score + ' / ' + m.total : '—', nb[ex.id] || 0].forEach(function (t) {
+                [m ? m.score + ' / ' + m.total : '—', nb[ex.id] || 0].forEach(function (t) {
                     var c = document.createElement('td'); c.textContent = t; tr.appendChild(c);
                 });
                 table.appendChild(tr);

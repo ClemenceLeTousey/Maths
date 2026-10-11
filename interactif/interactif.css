@@ -92,3 +92,13 @@ table.res td.cliquable:hover { outline: 2px solid var(--c-seconde); outline-offs
 .q-saisie input.court { flex: 0 0 5em; width: 5em; text-align: center; }
 .q-saisie input.lettres { flex: 0 0 8em; text-transform: uppercase; letter-spacing: 2px; }
 .q-gabarit { font-size: 1.1rem; }
+table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var(--text); }
+
+/* Séries par niveau (verte, bleue, rouge) */
+.palier { margin-bottom: 28px; }
+.palier-titre { font-size: 1.15rem; margin: 0 0 10px; display: flex; gap: 8px; align-items: baseline; }
+.interactif button.valider-palier { margin-top: 14px; font-size: 1rem; padding: 8px 18px; }
+.palier-msg { font-weight: 600; margin: 10px 0 0; color: var(--muted); min-height: 1.2em; }
+.palier.p1 .palier-titre { color: var(--ok); }
+.palier.p2 .palier-titre { color: #1c7ed6; }
+.palier.p3 .palier-titre { color: var(--ko); }

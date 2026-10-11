@@ -122,7 +122,7 @@
         }
         function titre(id) {
             var ex = INTERACTIF_CATALOGUE.find(function (e) { return e.id === id; });
-            return ex ? ex.titre : id;
+            return ex ? (ex.court || ex.titre) : id;
         }
         function niveau(r) { return r >= 0.75 ? 'n-bon' : r >= 0.5 ? 'n-moyen' : 'n-faible'; }
         function td(tr, texte, classe) { var c = document.createElement('td'); c.textContent = texte; if (classe) c.className = classe; tr.appendChild(c); return c; }

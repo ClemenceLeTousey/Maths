@@ -6,10 +6,10 @@ window.INTERACTIF_CONFIG = {
     cle: 'sb_publishable_ryT5LKm_TWnjc9u1fxqShA_s-jmtT34'
 };
 
-/* Liste des exercices (ordre des colonnes de la page prof) */
+/* Liste des exercices : regroupés par semaine (groupe), dans l'ordre d'affichage.
+   « court » sert d'en-tête de colonne sur la page prof. */
 window.INTERACTIF_CATALOGUE = [
-    { id: 'seconde/s3-developper', classe: 'Seconde', sequence: 'Séquence 3', titre: 'Développer et réduire', url: 'seconde/s3-developper.html' },
-    { id: 'seconde/serie6-j1', classe: 'Seconde', sequence: 'Automatismes', titre: 'Série 6 · Jour 1', url: 'seconde/serie6.html?j=1' },
-    { id: 'seconde/serie6-j2', classe: 'Seconde', sequence: 'Automatismes', titre: 'Série 6 · Jour 2', url: 'seconde/serie6.html?j=2' },
-    { id: 'seconde/serie6-j3', classe: 'Seconde', sequence: 'Automatismes', titre: 'Série 6 · Jour 3', url: 'seconde/serie6.html?j=3' }
+    { id: 'seconde/serie6-j1', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 1', court: 'S6 · J1', url: 'seconde/serie6.html?j=1' },
+    { id: 'seconde/serie6-j2', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 2', court: 'S6 · J2', url: 'seconde/serie6.html?j=2' },
+    { id: 'seconde/serie6-j3', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 3', court: 'S6 · J3', url: 'seconde/serie6.html?j=3' }
 ];

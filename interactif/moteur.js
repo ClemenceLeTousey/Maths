@@ -163,7 +163,8 @@
             var liste = el('ol', 'questions');
             zone.appendChild(liste);
 
-            for (var i = 0; i < def.nb; i++) liste.appendChild(question(def.generer(i), i));
+            if (def.parNiveau) paliers();
+            else for (var i = 0; i < def.nb; i++) liste.appendChild(question(def.generer(i), i));
 
             var bilan = el('div', 'bilan');
             zone.appendChild(bilan);
@@ -202,7 +203,7 @@
                     var c = el('input', classe);
                     c.autocomplete = 'off'; c.spellcheck = false; c.setAttribute('autocapitalize', 'off');
                     c.setAttribute('aria-label', 'Réponse ' + (i + 1));
-                    c.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') valider(); });
+                    c.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' && !def.parNiveau) valider(); });
                     c.addEventListener('input', function () { retour.textContent = ''; retour.className = 'q-retour'; });
                     champs.push(c);
                     return c;
@@ -273,17 +274,31 @@
                         return { ok: choix === q.bonne, r: 'ABCDEF'[choix] };
                     };
                 }
-                saisie.appendChild(bouton);
+                if (!def.parNiveau) saisie.appendChild(bouton);
                 li.appendChild(saisie);
                 li.appendChild(apercu); li.appendChild(retour);
                 bouton.onclick = valider;
 
+                // Lit la réponse ; renvoie null (avec un message) si elle est vide ou mal écrite
+                function controler() {
+                    var res;
+                    if (champs.length && champs.some(function (c) { return !c.value.trim(); })) {
+                        retour.textContent = 'Réponse manquante.'; retour.className = 'q-retour attention'; return null;
+                    }
+                    try { res = lire(); }
+                    catch (x) { retour.textContent = 'Corrige ta saisie avant de valider.'; retour.className = 'q-retour attention'; return null; }
+                    if (res.attention) { retour.textContent = res.attention; retour.className = 'q-retour attention'; return null; }
+                    return res;
+                }
                 function valider() {
                     if (bouton.disabled) return;
-                    var res;
-                    try { res = lire(); }
-                    catch (x) { retour.textContent = 'Corrige ta saisie avant de valider.'; retour.className = 'q-retour attention'; return; }
-                    if (res.attention) { retour.textContent = res.attention; retour.className = 'q-retour attention'; return; }
+                    var res = controler();
+                    if (res) appliquer(res);
+                }
+                li.controler = controler;
+                li.appliquer = function (res) { appliquer(res); };
+
+                function appliquer(res) {
                     var juste = res.ok;
                     bouton.disabled = true; bouton.remove();
                     champs.forEach(function (c) { c.disabled = true; });
@@ -303,11 +318,56 @@
                     repondues++; if (juste) score++;
                     details[i] = q.texte != null ? { t: q.texte, r: res.r, ok: juste } : { q: q.enonce, r: res.r, ok: juste };
                     if (type === 'qcm') details[i].b = 'ABCDEF'[q.bonne];
-                    var suivant = li.nextElementSibling && li.nextElementSibling.querySelector('input, .q-option');
+                    var suivant = !def.parNiveau && li.nextElementSibling && li.nextElementSibling.querySelector('input, .q-option');
                     if (suivant) suivant.focus();
                     if (repondues === def.nb) terminer();
                 }
                 return li;
+            }
+
+            /* Mode « par niveau » : série verte, puis bleue, puis rouge ;
+               un seul bouton « Valider mes réponses » par série, la suivante s'ouvre ensuite. */
+            function paliers() {
+                var NOMS = { 1: 'Série verte', 2: 'Série bleue', 3: 'Série rouge' };
+                var groupes = {}, ordre = [];
+                for (var i = 0; i < def.nb; i++) {
+                    var q = def.generer(i), n = q.niveau || 1;
+                    if (!groupes[n]) { groupes[n] = []; ordre.push(n); }
+                    groupes[n].push(question(q, i));
+                }
+                liste.remove();
+                var blocs = ordre.map(function (n, k) {
+                    var bloc = el('section', 'palier p' + n);
+                    var titre = el('h2', 'palier-titre');
+                    titre.appendChild(el('span', 'q-niveau n' + n, '★★★'.slice(0, n) + '☆☆☆'.slice(0, 3 - n)));
+                    titre.appendChild(document.createTextNode(' ' + (NOMS[n] || 'Niveau ' + n)));
+                    bloc.appendChild(titre);
+                    var ol = el('ol', 'questions');
+                    groupes[n].forEach(function (li) { ol.appendChild(li); });
+                    bloc.appendChild(ol);
+                    var b = el('button', 'valider-palier', 'Valider mes réponses'); b.type = 'button';
+                    var msg = el('p', 'palier-msg');
+                    b.onclick = function () {
+                        var reponses = groupes[n].map(function (li) { return li.controler(); });
+                        if (reponses.some(function (r) { return !r; })) {
+                            msg.textContent = 'Réponds à toutes les questions de la série (voir les messages en orange).';
+                            return;
+                        }
+                        msg.textContent = '';
+                        groupes[n].forEach(function (li, j) { li.appliquer(reponses[j]); });
+                        b.remove();
+                        var bons = groupes[n].filter(function (li) { return li.classList.contains('juste'); }).length;
+                        msg.textContent = NOMS[n] + ' : ' + bons + ' / ' + groupes[n].length;
+                        if (blocs[k + 1]) {
+                            blocs[k + 1].hidden = false;
+                            blocs[k + 1].scrollIntoView({ behavior: 'smooth' });
+                        }
+                    };
+                    bloc.appendChild(b); bloc.appendChild(msg);
+                    if (k > 0) bloc.hidden = true;
+                    zone.appendChild(bloc);
+                    return bloc;
+                });
             }
 
             function terminer() {
