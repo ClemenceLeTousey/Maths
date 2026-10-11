@@ -123,7 +123,7 @@
         var f = el('form', 'connexion');
         f.innerHTML =
             '<p class="connexion-titre">Connecte-toi pour que tes résultats soient enregistrés</p>' +
-            '<label>Identifiant <input name="code" autocomplete="username" placeholder="2B-07" required></label>' +
+            '<label>Identifiant <input name="code" autocomplete="username" placeholder="2B-EULER" required></label>' +
             '<label>Mot de passe <input name="mdp" type="password" autocomplete="current-password" required></label>' +
             '<button type="submit">Se connecter</button><p class="erreur" aria-live="polite"></p>';
         f.onsubmit = function (e) {
