@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Python (test maison)</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+    <script src="site.js"></script>
+    <style>
+        .py { max-width: 1400px; margin: 16px auto 0; padding: 0 16px; }
+        .py-outils { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+        .py-outils button, .py-outils label.bouton {
+            font: inherit; font-size: 0.9rem; padding: 6px 14px; border-radius: 8px; cursor: pointer;
+            border: 1px solid var(--line); background: var(--surface); color: var(--text);
+        }
+        .py-outils button.lancer { background: var(--c-premiere); border-color: var(--c-premiere); color: var(--badge-text); font-weight: 600; }
+        .py-outils button:disabled { opacity: .5; cursor: wait; }
+        .py-etat { color: var(--muted); font-size: 0.85rem; margin-left: auto; }
+        .py-grille { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; height: calc(100vh - 250px); min-height: 420px; }
+        @media (max-width: 900px) { .py-grille { grid-template-columns: 1fr; height: auto; } .py-grille > * { height: 50vh; } }
+        .py-editeur, .py-console { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); display: flex; flex-direction: column; min-height: 0; }
+        .py-editeur .CodeMirror { height: 100%; font-family: var(--f-mono); font-size: 15px; background: var(--surface); color: var(--text); }
+        .py-editeur .CodeMirror-gutters { background: var(--bg); border-right: 1px solid var(--line); }
+        .py-editeur .CodeMirror-cursor { border-left-color: var(--text); }
+        :root[data-theme="dark"] .cm-s-default .cm-keyword { color: #c792ea; }
+        :root[data-theme="dark"] .cm-s-default .cm-string { color: #c3e88d; }
+        :root[data-theme="dark"] .cm-s-default .cm-number { color: #f78c6c; }
+        :root[data-theme="dark"] .cm-s-default .cm-comment { color: #7f8aa3; }
+        :root[data-theme="dark"] .cm-s-default .cm-def, :root[data-theme="dark"] .cm-s-default .cm-variable-2 { color: #82aaff; }
+        :root[data-theme="dark"] .cm-s-default .cm-builtin { color: #ffcb6b; }
+        .py-sortie { flex: 1; overflow: auto; margin: 0; padding: 10px 12px; font-family: var(--f-mono); font-size: 14px; white-space: pre-wrap; word-break: break-word; }
+        .py-sortie .err { color: #e03131; }
+        .py-sortie .cmd { color: var(--muted); }
+        .py-sortie img { max-width: 100%; background: #fff; border-radius: 6px; display: block; margin: 6px 0; }
+        .py-ligne { display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--line); padding: 6px 10px; font-family: var(--f-mono); }
+        .py-ligne span { color: var(--c-premiere); font-weight: 700; }
+        .py-ligne input { flex: 1; border: none; outline: none; background: transparent; color: var(--text); font: inherit; font-size: 14px; }
+        .py-aide { color: var(--muted); font-size: 0.85rem; margin: 8px 0 0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><span class="logo-ligne"><button type="button" data-effet="ecrire" title="Réécrire le titre"></button><button type="button" data-effet="matrix" title="Mode Matrix"></button><button type="button" data-effet="terminal" title="Mode terminal"></button></span><a href="index.html">Année 2026-2027 - Lycée Lebrun</a></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Accueil</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>Python</h1>
+        <p>Éditeur et console · Python s'exécute dans ton navigateur (version de test)</p>
+    </header>
+
+    <main class="py">
+        <div class="py-outils">
+            <button type="button" class="lancer" id="lancer" disabled>▶ Exécuter</button>
+            <button type="button" id="effacer">Effacer la console</button>
+            <button type="button" id="enregistrer">Enregistrer (.py)</button>
+            <label class="bouton">Ouvrir un .py <input type="file" id="ouvrir" accept=".py,.txt" hidden></label>
+            <span class="py-etat" id="etat">Chargement de Python…</span>
+        </div>
+        <div class="py-grille">
+            <div class="py-editeur" id="editeur"></div>
+            <div class="py-console">
+                <pre class="py-sortie" id="sortie" aria-live="polite"></pre>
+                <div class="py-ligne"><span>&gt;&gt;&gt;</span><input id="ligne" autocomplete="off" spellcheck="false" aria-label="Console Python" placeholder="tape une instruction puis Entrée" disabled></div>
+            </div>
+        </div>
+        <p class="py-aide"><kbd>Ctrl</kbd>+<kbd>Entrée</kbd> exécute le programme · dans la console, ↑ / ↓ rappellent les instructions précédentes · <code>input()</code> ouvre une petite fenêtre · <code>matplotlib</code> affiche les graphiques dans la console. Ton programme est gardé sur cet appareil.</p>
+    </main>
+
+    <script>
+    (function () {
+        var CLE = 'python-maison-code';
+        var DEPART = '# Écris ton programme ici, puis clique sur ▶ Exécuter\n\ndef carre(x):\n    return x ** 2\n\nfor i in range(1, 6):\n    print(i, carre(i))\n';
+        var code = DEPART;
+        try { code = localStorage.getItem(CLE) || DEPART; } catch (e) {}
+
+        var ed = CodeMirror(document.getElementById('editeur'), {
+            value: code, mode: 'python', lineNumbers: true, indentUnit: 4, matchBrackets: true,
+            extraKeys: {
+                'Ctrl-Enter': lancer, 'Cmd-Enter': lancer,
+                Tab: function (cm) { cm.somethingSelected() ? cm.indentSelection('add') : cm.replaceSelection('    '); }
+            }
+        });
+        ed.on('change', function () { try { localStorage.setItem(CLE, ed.getValue()); } catch (e) {} });
+
+        var sortie = document.getElementById('sortie'), etat = document.getElementById('etat');
+        var bLancer = document.getElementById('lancer'), ligne = document.getElementById('ligne');
+        function ecrire(t, classe) {
+            var s = document.createElement('span');
+            if (classe) s.className = classe;
+            s.textContent = t;
+            sortie.appendChild(s);
+            sortie.scrollTop = sortie.scrollHeight;
+        }
+        window.afficherImage = function (b64) {
+            var img = document.createElement('img'); img.src = 'data:image/png;base64,' + b64; img.alt = 'Graphique';
+            sortie.appendChild(img); sortie.scrollTop = sortie.scrollHeight;
+        };
+
+        var py = null, occupe = false, ns = null;
+        var AIDE = [
+            'import ast, sys, traceback, builtins, js',
+            'def _executer(src, ns, nom, montrer):',
+            '    try:',
+            '        t = ast.parse(src, nom)',
+            '        dernier = None',
+            '        if montrer and t.body and isinstance(t.body[-1], ast.Expr):',
+            '            dernier = ast.Expression(t.body.pop().value)',
+            '        exec(compile(t, nom, "exec"), ns)',
+            '        if dernier is not None:',
+            '            r = eval(compile(dernier, nom, "eval"), ns)',
+            '            if r is not None: print(repr(r))',
+            '    except BaseException:',
+            '        et, ev, tb = sys.exc_info()',
+            '        morceaux = traceback.format_exception(et, ev, tb)',
+            '        garde = [m for m in morceaux if not m.startswith("  File") or nom in m]',
+            '        print("".join(garde).rstrip(), file=sys.stderr)',
+            'def _input(msg=""):',
+            '    print(msg, end="")',
+            '    r = js.prompt(str(msg) or "Saisie :")',
+            '    if r is None: raise KeyboardInterrupt("saisie annulée")',
+            '    print(r)',
+            '    return r',
+            'builtins.input = _input'
+        ].join('\n');
+        var MPL = [
+            'import matplotlib',
+            'matplotlib.use("AGG")',
+            'import matplotlib.pyplot as _plt, io as _io, base64 as _b64, js as _js',
+            'def _montrer(*a, **k):',
+            '    for n in _plt.get_fignums():',
+            '        f = _plt.figure(n); b = _io.BytesIO(); f.savefig(b, format="png", bbox_inches="tight")',
+            '        _js.afficherImage(_b64.b64encode(b.getvalue()).decode())',
+            '    _plt.close("all")',
+            '_plt.show = _montrer'
+        ].join('\n');
+        var mplPret = false;
+
+        loadPyodide().then(function (p) {
+            py = p;
+            py.setStdout({ batched: function (t) { ecrire(t + '\n'); } });
+            py.setStderr({ batched: function (t) { ecrire(t + '\n', 'err'); } });
+            py.runPython(AIDE);
+            ns = py.globals.get('dict')();
+            etat.textContent = 'Python ' + py.version + ' prêt';
+            bLancer.disabled = false; ligne.disabled = false;
+        }, function (e) { etat.textContent = 'Impossible de charger Python : ' + e.message; });
+
+        async function executer(src, montrer) {
+            if (!py || occupe) return;
+            occupe = true; bLancer.disabled = true;
+            etat.textContent = /matplotlib|numpy/.test(src) && !mplPret ? 'Chargement de matplotlib (une quinzaine de secondes la première fois)…' : 'Exécution…';
+            try {
+                await py.loadPackagesFromImports(src);
+                if (!mplPret && /matplotlib/.test(src)) { py.runPython(MPL); mplPret = true; }
+                py.globals.get('_executer')(src, ns, montrer ? '<console>' : '<programme>', montrer);
+                if (mplPret && !montrer) py.runPython('_montrer()');
+            } catch (e) { ecrire(String(e.message || e) + '\n', 'err'); }
+            occupe = false; bLancer.disabled = false; etat.textContent = 'Python prêt';
+        }
+
+        function lancer() {
+            if (!py || occupe) return;
+            ns.destroy && ns.destroy();
+            ns = py.globals.get('dict')();      // chaque exécution repart de zéro
+            ecrire('>>> # exécution du programme\n', 'cmd');
+            executer(ed.getValue(), false);
+        }
+        bLancer.onclick = lancer;
+        document.getElementById('effacer').onclick = function () { sortie.textContent = ''; };
+
+        var historique = [], pos = 0;
+        ligne.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && ligne.value.trim()) {
+                var src = ligne.value;
+                historique.push(src); pos = historique.length;
+                ecrire('>>> ' + src + '\n', 'cmd');
+                ligne.value = '';
+                executer(src, true);
+            } else if (e.key === 'ArrowUp' && pos > 0) { ligne.value = historique[--pos]; e.preventDefault(); }
+            else if (e.key === 'ArrowDown') { pos = Math.min(pos + 1, historique.length); ligne.value = historique[pos] || ''; e.preventDefault(); }
+        });
+
+        document.getElementById('enregistrer').onclick = function () {
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([ed.getValue()], { type: 'text/x-python' }));
+            a.download = 'programme.py'; a.click();
+        };
+        document.getElementById('ouvrir').onchange = function (e) {
+            var f = e.target.files[0];
+            if (f) f.text().then(function (t) { ed.setValue(t); });
+        };
+    })();
+    </script>
+</body>
+</html>
