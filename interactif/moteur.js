@@ -318,6 +318,7 @@
                     }
                     var d = q.texte != null ? { t: q.texte, r: res.r, ok: juste } : { q: q.enonce, r: res.r, ok: juste };
                     if (type === 'qcm') d.b = 'ABCDEF'[q.bonne];
+                    if (q.niveau) d.n = q.niveau;
                     if (essai > 1) {             // série refaite : gardée dans le détail, hors score
                         d.e = essai;
                         if (!enregistre) reprises.push(d);

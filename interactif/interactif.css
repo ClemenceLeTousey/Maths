@@ -106,3 +106,12 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .interactif button.secondaire { background: var(--surface); color: var(--c-seconde); }
 .interactif button.suite.n2 { background: #1c7ed6; border-color: #1c7ed6; }
 .interactif button.suite.n3 { background: var(--ko); border-color: var(--ko); color: #fff; }
+
+/* Page prof : scores par couleur */
+.pastille { display: inline-block; min-width: 2.6em; padding: 1px 5px; margin: 1px 2px; border-radius: 6px; font-weight: 600; font-size: 0.85em; }
+.pastille.n1 { background: var(--ok-fond); color: var(--ok); }
+.pastille.n2 { background: #e7f5ff; color: #1c7ed6; }
+.pastille.n3 { background: var(--ko-fond); color: var(--ko); }
+:root[data-theme="dark"] .pastille.n2 { background: #13263a; color: #74c0fc; }
+
+.interactif [hidden] { display: none !important; }
