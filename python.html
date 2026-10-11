@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex">
-    <title>Python (test maison)</title>
+        <title>Maths CLT — Python</title>
     <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
@@ -21,7 +20,8 @@
             border: 1px solid var(--line); background: var(--surface); color: var(--text);
         }
         .py-outils button.lancer { background: var(--c-premiere); border-color: var(--c-premiere); color: var(--badge-text); font-weight: 600; }
-        .py-outils button:disabled { opacity: .5; cursor: wait; }
+        .py-outils button:disabled { opacity: .5; cursor: default; }
+        .py-outils button.stop:not(:disabled) { background: #e03131; border-color: #e03131; color: #fff; font-weight: 600; }
         .py-etat { color: var(--muted); font-size: 0.85rem; margin-left: auto; }
         .py-grille { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; height: calc(100vh - 250px); min-height: 420px; }
         @media (max-width: 900px) { .py-grille { grid-template-columns: 1fr; height: auto; } .py-grille > * { height: 50vh; } }
@@ -60,17 +60,20 @@
         <div class="logo"><span class="logo-ligne"><button type="button" data-effet="ecrire" title="Réécrire le titre"></button><button type="button" data-effet="matrix" title="Mode Matrix"></button><button type="button" data-effet="terminal" title="Mode terminal"></button></span><a href="index.html">Année 2026-2027 - Lycée Lebrun</a></div>
         <ul class="nav-links">
             <li><a href="index.html">Accueil</a></li>
+            <li><a href="python.html" class="active"><img src="img/python-logo.png" alt="" class="nav-icon"> Python</a></li>
+            <li><a href="numworks.html">Numworks</a></li>
         </ul>
     </nav>
 
     <header>
         <h1>Python</h1>
-        <p>Éditeur et console · Python s'exécute dans ton navigateur (version de test)</p>
+        <p>Éditeur et console · Python s'exécute dans ton navigateur, rien n'est envoyé</p>
     </header>
 
     <main class="py">
         <div class="py-outils">
             <button type="button" class="lancer" id="lancer" disabled>▶ Exécuter</button>
+            <button type="button" class="stop" id="stop" disabled>■ Stop</button>
             <button type="button" id="effacer">Effacer la console</button>
             <button type="button" id="enregistrer">Enregistrer (.py)</button>
             <label class="bouton">Ouvrir un .py <input type="file" id="ouvrir" accept=".py,.txt" hidden></label>
@@ -83,7 +86,7 @@
                 <div class="py-ligne"><span>&gt;&gt;&gt;</span><input id="ligne" autocomplete="off" spellcheck="false" aria-label="Console Python" placeholder="tape une instruction puis Entrée" disabled></div>
             </div>
         </div>
-        <p class="py-aide"><kbd>Ctrl</kbd>+<kbd>Entrée</kbd> exécute le programme · dans la console, ↑ / ↓ rappellent les instructions précédentes · <code>input()</code> ouvre une petite fenêtre · <code>matplotlib</code> affiche les graphiques dans la console. Ton programme est gardé sur cet appareil.<br>Besoin de <code>turtle</code> ? Utilise la <a href="consolepython.html">console Python Basthon</a>.</p>
+        <p class="py-aide"><kbd>Ctrl</kbd>+<kbd>Entrée</kbd> exécute le programme · dans la console, ↑ / ↓ rappellent les instructions précédentes · <b>■ Stop</b> arrête un programme qui ne s'arrête pas · <code>input()</code> ouvre une petite fenêtre (un programme avec <code>input()</code> ne peut pas être stoppé : recharge la page si besoin) · <code>matplotlib</code> affiche les graphiques dans la console. Ton programme est gardé sur cet appareil.<br>Besoin de <code>turtle</code> ? Utilise la <a href="consolepython.html">console Python Basthon</a>.</p>
     </main>
 
     <script>
@@ -116,7 +119,6 @@
             sortie.appendChild(img); sortie.scrollTop = sortie.scrollHeight;
         };
 
-        var py = null, occupe = false, ns = null;
         var AIDE = [
             'import ast, sys, traceback, builtins, js',
             'def _executer(src, ns, nom, montrer):',
@@ -153,50 +155,135 @@
             '    _plt.close("all")',
             '_plt.show = _montrer'
         ].join('\n');
-        var mplPret = false;
-
-        loadPyodide().then(function (p) {
-            py = p;
-            py.setStdout({ batched: function (t) { ecrire(t + '\n'); } });
-            py.setStderr({ batched: function (t) { ecrire(t + '\n', 'err'); } });
-            py.runPython(AIDE);
-            ns = py.globals.get('dict')();
-            etat.textContent = 'Python ' + py.version + ' prêt';
-            bLancer.disabled = false; ligne.disabled = false;
-        }, function (e) { etat.textContent = 'Impossible de charger Python : ' + e.message; });
+        var PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/';
+        var bStop = document.getElementById('stop');
+        var occupe = false, alerte = null, moteurConsole = 'worker';
 
         function turtle() {
             var s = document.createElement('span'); s.className = 'err';
             s.innerHTML = 'Le module turtle n\'est pas disponible sur cette page : utilise la <a href="consolepython.html">console Python Basthon</a>.\n';
             sortie.appendChild(s); sortie.scrollTop = sortie.scrollHeight;
         }
-
-        async function executer(src, montrer) {
-            if (!py || occupe) return;
-            if (/^\s*(import|from)\s+turtle\b/m.test(src)) { turtle(); return; }
-            var alerte = document.createElement('div');
-            alerte.className = 'py-bloque'; alerte.setAttribute('role', 'status');
-            alerte.innerHTML = '⏳ <b>Ton programme tourne depuis un moment.</b><br>S\'il ne s\'arrête pas (boucle infinie ?), <b>recharge la page</b> (touche F5, ou ⌘R sur Mac). Ton code est sauvegardé.';
-            document.body.appendChild(alerte);
-            await new Promise(function (r) { requestAnimationFrame(function () { setTimeout(r, 0); }); });   // affiché avant de bloquer
+        function debut(src, texteAlerte) {
             occupe = true; bLancer.disabled = true;
-            etat.textContent = /matplotlib|numpy/.test(src) && !mplPret ? 'Chargement de matplotlib (une quinzaine de secondes la première fois)…' : 'Exécution…';
-            try {
-                await py.loadPackagesFromImports(src);
-                if (!mplPret && /matplotlib/.test(src)) { py.runPython(MPL); mplPret = true; }
-                py.globals.get('_executer')(src, ns, montrer ? '<console>' : '<programme>', montrer);
-                if (mplPret && !montrer) py.runPython('_montrer()');
-            } catch (e) { ecrire(String(e.message || e) + '\n', 'err'); }
-            alerte.remove();
-            occupe = false; bLancer.disabled = false; etat.textContent = 'Python prêt';
+            etat.textContent = /matplotlib|numpy/.test(src) ? 'Exécution… (matplotlib : une quinzaine de secondes la première fois)' : 'Exécution…';
+            alerte = document.createElement('div');
+            alerte.className = 'py-bloque'; alerte.setAttribute('role', 'status');
+            alerte.innerHTML = texteAlerte;
+            document.body.appendChild(alerte);
+        }
+        function fin() {
+            if (alerte) { alerte.remove(); alerte = null; }
+            occupe = false; bLancer.disabled = false; bStop.disabled = true;
+            etat.textContent = 'Python prêt';
         }
 
+        /* ---------- Moteur 1 : Python dans un worker (arrêtable avec ■ Stop) ---------- */
+        var SOURCE_WORKER = [
+            'importScripts(' + JSON.stringify(PYODIDE + 'pyodide.js') + ');',
+            'var py, ns, mplPret = false;',
+            'self.afficherImage = function (b64) { postMessage({ type: "img", b64: b64 }); };',
+            'var pret = loadPyodide().then(function (p) {',
+            '  py = p;',
+            '  py.setStdout({ batched: function (t) { postMessage({ type: "out", t: t + "\\n" }); } });',
+            '  py.setStderr({ batched: function (t) { postMessage({ type: "err", t: t + "\\n" }); } });',
+            '  py.runPython(' + JSON.stringify(AIDE) + ');',
+            '  py.runPython("def _sans_input(msg=\\"\\"):\\n    raise RuntimeError(\\"input() : écris-le dans ton programme, puis clique sur Exécuter\\")\\nbuiltins.input = _sans_input");',
+            '  ns = py.globals.get("dict")();',
+            '  postMessage({ type: "pret", version: py.version });',
+            '}, function (e) { postMessage({ type: "echec", t: String(e) }); });',
+            'onmessage = async function (e) {',
+            '  var m = e.data; await pret;',
+            '  try {',
+            '    if (m.neuf) { ns.destroy(); ns = py.globals.get("dict")(); }',
+            '    await py.loadPackagesFromImports(m.src);',
+            '    if (!mplPret && /matplotlib/.test(m.src)) { py.runPython(' + JSON.stringify(MPL) + '); mplPret = true; }',
+            '    py.globals.get("_executer")(m.src, ns, m.montrer ? "<console>" : "<programme>", m.montrer);',
+            '    if (mplPret && !m.montrer) py.runPython("_montrer()");',
+            '  } catch (x) { postMessage({ type: "err", t: String(x.message || x) + "\\n" }); }',
+            '  postMessage({ type: "fin" });',
+            '};'
+        ].join('\n');
+        var urlWorker = URL.createObjectURL(new Blob([SOURCE_WORKER], { type: 'text/javascript' }));
+        var worker = null, workerPret = false;
+
+        function creerWorker() {
+            workerPret = false;
+            worker = new Worker(urlWorker);
+            worker.onmessage = function (e) {
+                var m = e.data;
+                if (m.type === 'out') ecrire(m.t);
+                else if (m.type === 'err') ecrire(m.t, 'err');
+                else if (m.type === 'img') afficherImage(m.b64);
+                else if (m.type === 'fin') fin();
+                else if (m.type === 'pret') {
+                    workerPret = true;
+                    etat.textContent = 'Python ' + m.version + ' prêt';
+                    bLancer.disabled = false; ligne.disabled = false;
+                } else if (m.type === 'echec') etat.textContent = 'Impossible de charger Python : ' + m.t;
+            };
+        }
+        creerWorker();
+
+        function executerWorker(src, montrer, neuf) {
+            if (!workerPret || occupe) return;
+            debut(src, '⏳ <b>Ton programme tourne depuis un moment.</b><br>S\'il ne s\'arrête pas (boucle infinie ?), clique sur <b>■ Stop</b>.');
+            bStop.disabled = false;
+            worker.postMessage({ src: src, montrer: montrer, neuf: neuf });
+        }
+
+        bStop.onclick = function () {
+            if (!occupe) return;
+            worker.terminate();
+            ecrire('■ Programme arrêté. Python redémarre…\n', 'err');
+            fin();
+            bLancer.disabled = true; ligne.disabled = true;
+            etat.textContent = 'Redémarrage de Python…';
+            creerWorker();
+        };
+
+        /* ---------- Moteur 2 : dans la page, seulement pour les programmes avec input() ---------- */
+        var principal = null, nsP = null, mplP = false;
+        function moteurPrincipal() {
+            if (!principal) principal = loadPyodide({ indexURL: PYODIDE }).then(function (p) {
+                p.setStdout({ batched: function (t) { ecrire(t + '\n'); } });
+                p.setStderr({ batched: function (t) { ecrire(t + '\n', 'err'); } });
+                p.runPython(AIDE);
+                nsP = p.globals.get('dict')();
+                return p;
+            });
+            return principal;
+        }
+        async function executerPrincipal(src, montrer, neuf) {
+            if (occupe) return;
+            debut(src, '⏳ <b>Ton programme tourne depuis un moment.</b><br>S\'il ne s\'arrête pas (boucle infinie ?), <b>recharge la page</b> (touche F5, ou ⌘R sur Mac). Ton code est sauvegardé.');
+            if (!principal) etat.textContent = 'Préparation de input()…';
+            await new Promise(function (r) { requestAnimationFrame(function () { setTimeout(r, 0); }); });   // message prêt avant de bloquer
+            try {
+                var p = await moteurPrincipal();
+                if (neuf) { nsP.destroy(); nsP = p.globals.get('dict')(); }
+                await p.loadPackagesFromImports(src);
+                if (!mplP && /matplotlib/.test(src)) { p.runPython(MPL); mplP = true; }
+                p.globals.get('_executer')(src, nsP, montrer ? '<console>' : '<programme>', montrer);
+                if (mplP && !montrer) p.runPython('_montrer()');
+            } catch (e) { ecrire(String(e.message || e) + '\n', 'err'); }
+            fin();
+        }
+
+        /* ---------- Exécuter / console ---------- */
+        function executer(src, montrer) {
+            if (/^\s*(import|from)\s+turtle\b/m.test(src)) { turtle(); return; }
+            if (moteurConsole === 'principal') executerPrincipal(src, montrer, false);
+            else executerWorker(src, montrer, false);
+        }
         function lancer() {
-            if (!py || occupe) return;
-            ns.destroy && ns.destroy();
-            ns = py.globals.get('dict')();      // chaque exécution repart de zéro
+            if (occupe || !workerPret) return;
+            var src = ed.getValue();
             ecrire('>>> # exécution du programme\n', 'cmd');
-            executer(ed.getValue(), false);
+            if (/^\s*(import|from)\s+turtle\b/m.test(src)) { turtle(); return; }
+            moteurConsole = /\binput\s*\(/.test(src) ? 'principal' : 'worker';
+            if (moteurConsole === 'principal') executerPrincipal(src, false, true);
+            else executerWorker(src, false, true);
         }
         bLancer.onclick = lancer;
         document.getElementById('effacer').onclick = function () { sortie.textContent = ''; };
