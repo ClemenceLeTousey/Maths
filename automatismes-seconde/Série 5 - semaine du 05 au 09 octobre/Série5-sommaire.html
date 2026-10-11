@@ -4,7 +4,7 @@
 <script>
   (function () {
     try {
-      var t = localStorage.getItem("automatismes-theme");
+      var t = localStorage.getItem("site-maths-theme") || localStorage.getItem("automatismes-theme");
       if (t !== "light" && t !== "dark") t = "light";
       document.documentElement.setAttribute("data-theme", t);
     } catch (e) {
@@ -199,7 +199,7 @@
     btn.addEventListener("click", function () {
       var next = current() === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", next);
-      try { localStorage.setItem("automatismes-theme", next); } catch (e) {}
+      try { localStorage.setItem("automatismes-theme", next); localStorage.setItem("site-maths-theme", next); } catch (e) {}
       updateIcon();
     });
   })();

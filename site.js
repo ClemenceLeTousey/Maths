@@ -19,6 +19,7 @@ document.addEventListener('click', function (e) {
 
     try {
         if (localStorage.getItem(cle) === 'dark') racine.dataset.theme = 'dark';
+        else localStorage.setItem(cle, 'light');   // les pages des séries d'automatismes suivent ce choix
     } catch (e) {}
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -161,8 +162,12 @@ document.addEventListener('click', function (e) {
     /* Vert : mode Matrix — tout passe en vert terminal avec une pluie de chiffres et de symboles maths */
     var pluie = null;
     function matrix() {
+        if (document.documentElement.classList.toggle('matrix')) demarrerPluie();
+        else arreterPluie();
+    }
+    function demarrerPluie() {
         var racine = document.documentElement;
-        if (racine.classList.toggle('matrix')) {
+        {
             var c = document.createElement('canvas');
             c.className = 'effet-canvas effet-matrix';
             document.body.appendChild(c);
@@ -196,7 +201,10 @@ document.addEventListener('click', function (e) {
             }
             if (!calme) pluie = requestAnimationFrame(image);
             c._quitter = function () { window.removeEventListener('resize', dimension); };
-        } else {
+        }
+    }
+    function arreterPluie() {
+        {
             cancelAnimationFrame(pluie);
             document.querySelectorAll('.effet-matrix').forEach(function (c) { if (c._quitter) c._quitter(); c.remove(); });
         }
@@ -220,6 +228,15 @@ document.addEventListener('click', function (e) {
         var actif = modeActif();
         if (actif) MODES[actif]();
         if (nom && nom !== actif) MODES[nom]();
+        try { localStorage.setItem(CLE_MODE, modeActif() || ''); } catch (e) {}
+    }
+
+    /* Le mode choisi reste actif d'une page à l'autre, jusqu'à ce qu'on le change */
+    var CLE_MODE = 'site-maths-mode', memorise = '';
+    try { memorise = localStorage.getItem(CLE_MODE) || ''; } catch (e) {}
+    if (MODES[memorise]) {
+        document.documentElement.classList.add(memorise);          // tout de suite, sans animation
+        if (memorise === 'matrix') document.addEventListener('DOMContentLoaded', demarrerPluie);
     }
     window.modesSite = { basculer: basculer, actif: modeActif };
 
@@ -235,5 +252,24 @@ document.addEventListener('click', function (e) {
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && modeActif()) basculer(null);
+    });
+})();
+
+/* Lien « Automatismes » dans la barre de navigation de toutes les pages (après « Accueil ») */
+(function () {
+    var script = document.currentScript;
+    var base = script ? script.src.replace(/site\.js(\?.*)?$/, '') : '';
+    document.addEventListener('DOMContentLoaded', function () {
+        var menu = document.querySelector('.nav-links');
+        if (!menu || !base) return;
+        var deja = Array.from(menu.querySelectorAll('a')).some(function (a) { return a.textContent.trim() === 'Automatismes'; });
+        if (deja) return;
+        var li = document.createElement('li'), a = document.createElement('a');
+        a.href = base + 'interactif/';
+        a.textContent = 'Automatismes';
+        if (/\/interactif\/(index\.html)?$/.test(location.pathname)) a.className = 'active';
+        li.appendChild(a);
+        var premier = menu.querySelector(':scope > li');
+        menu.insertBefore(li, premier ? premier.nextSibling : menu.firstChild);
     });
 })();
