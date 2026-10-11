@@ -31,7 +31,7 @@
 
     <main class="interactif">
         <div id="bandeau"></div>
-        <p class="aide">Fais la <span class="q-niveau n1">série verte</span>, puis clique sur « Valider mes réponses » : la <span class="q-niveau n2">série bleue</span> s'ouvre, puis la <span class="q-niveau n3">série rouge</span>. Pour une fraction, écris par exemple <code>-5/3</code>.</p>
+        <p class="aide">Commence par la <span class="q-niveau n1">série verte</span>, puis clique sur « Valider mes réponses ». Tu peux alors la refaire avec d'autres nombres, ou passer à la <span class="q-niveau n2">série bleue</span>, puis à la <span class="q-niveau n3">série rouge</span>. Le score retenu est celui de ton premier essai. Pour une fraction, écris par exemple <code>-5/3</code>.</p>
         <div id="exercice"></div>
     </main>
 
@@ -59,6 +59,7 @@
             id: 'seconde/serie6-j' + j,
             nb: 9,
             parNiveau: true,
+            niveau: function (i) { return Math.floor(i / 3) + 1; },
             // d'abord les 3 questions niveau 1, puis niveau 2, puis niveau 3
             generer: function (i) { return types[i % 3](Math.floor(i / 3) + 1); }
         });

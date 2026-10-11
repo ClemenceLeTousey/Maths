@@ -203,6 +203,7 @@
                     if (!d) return;
                     var li = document.createElement('li');
                     var q = document.createElement('span');
+                    if (d.e) li.appendChild(Object.assign(document.createElement('span'), { className: 'n-tent', textContent: '(essai ' + d.e + ') ' }));
                     if (d.t != null) q.innerHTML = sur(String(d.t)); else Interactif.maths(q, String(d.q));
                     var rep = document.createElement('span'); rep.className = 'rep ' + (d.ok ? 'ok' : 'ko');
                     rep.textContent = '  →  ' + d.r + (d.ok ? ' ✓' : ' ✗') + (d.b && !d.ok ? ' (bonne réponse : ' + d.b + ')' : '');

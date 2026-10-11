@@ -102,3 +102,7 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .palier.p1 .palier-titre { color: var(--ok); }
 .palier.p2 .palier-titre { color: #1c7ed6; }
 .palier.p3 .palier-titre { color: var(--ko); }
+.palier-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.interactif button.secondaire { background: var(--surface); color: var(--c-seconde); }
+.interactif button.suite.n2 { background: #1c7ed6; border-color: #1c7ed6; }
+.interactif button.suite.n3 { background: var(--ko); border-color: var(--ko); color: #fff; }

@@ -159,19 +159,20 @@
 
         function lancer() {
             zone.innerHTML = '';
-            var debut = Date.now(), repondues = 0, score = 0, details = [];
+            var debut = Date.now(), repondues = 0, score = 0, details = [], reprises = [], enregistre = false;
             var liste = el('ol', 'questions');
             zone.appendChild(liste);
+
+            var bilan = el('div', 'bilan');
+            zone.appendChild(bilan);
 
             if (def.parNiveau) paliers();
             else for (var i = 0; i < def.nb; i++) liste.appendChild(question(def.generer(i), i));
 
-            var bilan = el('div', 'bilan');
-            zone.appendChild(bilan);
             var premier = liste.querySelector('input');
             if (premier) premier.focus();
 
-            function question(q, i) {
+            function question(q, i, essai) {
                 var li = el('li', 'q');
                 if (q.objectif || q.niveau) {
                     var meta = el('div', 'q-meta');
@@ -315,9 +316,15 @@
                         else c.innerHTML = mixte(q.explication);
                         li.appendChild(c);
                     }
+                    var d = q.texte != null ? { t: q.texte, r: res.r, ok: juste } : { q: q.enonce, r: res.r, ok: juste };
+                    if (type === 'qcm') d.b = 'ABCDEF'[q.bonne];
+                    if (essai > 1) {             // série refaite : gardée dans le détail, hors score
+                        d.e = essai;
+                        if (!enregistre) reprises.push(d);
+                        return;
+                    }
                     repondues++; if (juste) score++;
-                    details[i] = q.texte != null ? { t: q.texte, r: res.r, ok: juste } : { q: q.enonce, r: res.r, ok: juste };
-                    if (type === 'qcm') details[i].b = 'ABCDEF'[q.bonne];
+                    details[i] = d;
                     var suivant = !def.parNiveau && li.nextElementSibling && li.nextElementSibling.querySelector('input, .q-option');
                     if (suivant) suivant.focus();
                     if (repondues === def.nb) terminer();
@@ -325,57 +332,69 @@
                 return li;
             }
 
-            /* Mode « par niveau » : série verte, puis bleue, puis rouge ;
-               un seul bouton « Valider mes réponses » par série, la suivante s'ouvre ensuite. */
+            /* Mode « par niveau » : série verte, puis bleue, puis rouge, un bouton « Valider mes réponses »
+               par série. Après validation : refaire la série avec d'autres nombres, ou passer à la suivante.
+               Le score enregistré est celui du premier essai de chaque série ; les essais suivants
+               figurent dans le détail. */
             function paliers() {
                 var NOMS = { 1: 'Série verte', 2: 'Série bleue', 3: 'Série rouge' };
-                var groupes = {}, ordre = [];
+                var indices = {}, ordre = [];
                 for (var i = 0; i < def.nb; i++) {
-                    var q = def.generer(i), n = q.niveau || 1;
-                    if (!groupes[n]) { groupes[n] = []; ordre.push(n); }
-                    groupes[n].push(question(q, i));
+                    var n = def.niveau ? def.niveau(i) : def.generer(i).niveau || 1;
+                    if (!indices[n]) { indices[n] = []; ordre.push(n); }
+                    indices[n].push(i);
                 }
                 liste.remove();
-                var blocs = ordre.map(function (n, k) {
+                ouvrir(0, 1);
+
+                function ouvrir(k, essai) {
+                    var n = ordre[k];
                     var bloc = el('section', 'palier p' + n);
                     var titre = el('h2', 'palier-titre');
                     titre.appendChild(el('span', 'q-niveau n' + n, '★★★'.slice(0, n) + '☆☆☆'.slice(0, 3 - n)));
-                    titre.appendChild(document.createTextNode(' ' + (NOMS[n] || 'Niveau ' + n)));
+                    titre.appendChild(document.createTextNode(' ' + (NOMS[n] || 'Niveau ' + n) + (essai > 1 ? ' · essai ' + essai : '')));
                     bloc.appendChild(titre);
                     var ol = el('ol', 'questions');
-                    groupes[n].forEach(function (li) { ol.appendChild(li); });
+                    var lis = indices[n].map(function (i) { var li = question(def.generer(i), i, essai); ol.appendChild(li); return li; });
                     bloc.appendChild(ol);
                     var b = el('button', 'valider-palier', 'Valider mes réponses'); b.type = 'button';
                     var msg = el('p', 'palier-msg');
+                    var actions = el('div', 'palier-actions');
                     b.onclick = function () {
-                        var reponses = groupes[n].map(function (li) { return li.controler(); });
+                        var reponses = lis.map(function (li) { return li.controler(); });
                         if (reponses.some(function (r) { return !r; })) {
                             msg.textContent = 'Réponds à toutes les questions de la série (voir les messages en orange).';
                             return;
                         }
-                        msg.textContent = '';
-                        groupes[n].forEach(function (li, j) { li.appliquer(reponses[j]); });
+                        lis.forEach(function (li, j) { li.appliquer(reponses[j]); });
                         b.remove();
-                        var bons = groupes[n].filter(function (li) { return li.classList.contains('juste'); }).length;
-                        msg.textContent = NOMS[n] + ' : ' + bons + ' / ' + groupes[n].length;
-                        if (blocs[k + 1]) {
-                            blocs[k + 1].hidden = false;
-                            blocs[k + 1].scrollIntoView({ behavior: 'smooth' });
+                        var bons = lis.filter(function (li) { return li.classList.contains('juste'); }).length;
+                        msg.textContent = (NOMS[n] || 'Niveau ' + n) + ' : ' + bons + ' / ' + lis.length +
+                            (bons === lis.length ? ' — bravo !' : '');
+                        var refaire = el('button', 'secondaire', '↻ Refaire cette série avec d\'autres nombres'); refaire.type = 'button';
+                        refaire.onclick = function () { actions.remove(); ouvrir(k, essai + 1); };
+                        actions.appendChild(refaire);
+                        if (ordre[k + 1]) {
+                            var m = ordre[k + 1];
+                            var suite = el('button', 'suite n' + m, (NOMS[m] || 'Niveau ' + m) + ' →'); suite.type = 'button';
+                            suite.onclick = function () { actions.remove(); ouvrir(k + 1, 1); };
+                            actions.appendChild(suite);
                         }
+                        bloc.appendChild(actions);
                     };
                     bloc.appendChild(b); bloc.appendChild(msg);
-                    if (k > 0) bloc.hidden = true;
-                    zone.appendChild(bloc);
-                    return bloc;
-                });
+                    zone.insertBefore(bloc, bilan);
+                    if (k > 0 || essai > 1) bloc.scrollIntoView({ behavior: 'smooth' });
+                }
             }
 
             function terminer() {
                 bilan.innerHTML = '';
-                bilan.appendChild(el('p', 'bilan-score', 'Score : ' + score + ' / ' + def.nb));
+                bilan.appendChild(el('p', 'bilan-score', (def.parNiveau ? 'Score (premiers essais) : ' : 'Score : ') + score + ' / ' + def.nb));
                 var etat = el('p', 'bilan-etat');
                 bilan.appendChild(etat);
-                var r = { exercice: def.id, score: score, total: def.nb, details: details, duree: Math.round((Date.now() - debut) / 1000) };
+                var r = { exercice: def.id, score: score, total: def.nb, details: details.concat(reprises.slice(-24)), duree: Math.round((Date.now() - debut) / 1000) };
+                enregistre = true;
                 if (session()) {
                     etat.textContent = 'Enregistrement…';
                     enregistrer(r).then(function () { etat.textContent = '✓ Résultat enregistré.'; },
