@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automatismes Secondes</title>
+    <title>Automatismes</title>
     <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="interactif.css">
@@ -20,15 +20,17 @@
     </nav>
 
     <header>
-        <h1>Automatismes Secondes</h1>
+        <h1>Automatismes</h1>
         <p>Connecte-toi avec l'identifiant et le mot de passe donnés en classe.</p>
     </header>
 
     <main class="interactif">
         <div id="bandeau"></div>
+        <div id="contenu" hidden>
         <div class="tableau-defile"><table class="res" id="liste"></table></div>
         <p class="aide">Tu peux refaire un exercice autant de fois que tu veux : les nombres changent à chaque fois.</p>
         <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>
+        </div>
         <p class="espace-prof"><a class="bouton" href="prof.html">Espace professeure</a></p>
     </main>
 
@@ -47,8 +49,14 @@
                 if (!meilleur[r.exercice] || r.score / r.total > meilleur[r.exercice].score / meilleur[r.exercice].total) meilleur[r.exercice] = r;
             });
             table.innerHTML = '<tr><th>Exercice</th><th>Meilleur score</th><th>Séries faites</th></tr>';
-            var groupe = null;
-            INTERACTIF_CATALOGUE.forEach(function (ex) {
+            var groupe = null, s = Interactif.session(), niv = s && Interactif.niveauClasse(s.classe);
+            var liste = INTERACTIF_CATALOGUE.filter(function (ex) { return !niv || ex.niveau === niv; });
+            if (!liste.length) {
+                var vide = document.createElement('tr'), c = document.createElement('td');
+                c.colSpan = 3; c.textContent = 'Pas encore d\'automatismes pour ta classe.';
+                vide.appendChild(c); table.appendChild(vide);
+            }
+            liste.forEach(function (ex) {
                 if (ex.groupe !== groupe) {
                     groupe = ex.groupe;
                     var tg = document.createElement('tr'), th = document.createElement('th');
@@ -66,6 +74,7 @@
         }
 
         function charger(s) {
+            document.getElementById('contenu').hidden = !s;
             afficher(null);
             if (!s) return;
             Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(afficher, function (x) {

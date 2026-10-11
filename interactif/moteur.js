@@ -412,8 +412,17 @@
         lancer();
     }
 
+    /* 2B -> seconde, 1TC -> premiere, TST2S -> terminale ; autre (TEST…) -> null = tout voir */
+    function niveauClasse(classe) {
+        var c = String(classe || '').toUpperCase();
+        if (/^2/.test(c)) return 'seconde';
+        if (/^1/.test(c)) return 'premiere';
+        if (/^T(?!EST)/.test(c)) return 'terminale';
+        return null;
+    }
+
     window.Interactif = {
         rpc: rpc, session: session, connecter: connecter, deconnecter: deconnecter,
-        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte
+        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse
     };
 })();
