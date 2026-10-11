@@ -1,92 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automatismes</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
-    <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="interactif.css">
-    <script src="../site.js"></script>
-    <script src="config.js"></script>
-    <script src="moteur.js"></script>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex">
+<title>Automatismes</title>
+<!-- Ancienne adresse (interactif/) : renvoie vers automatismes/ en gardant ?j=… -->
+<script>location.replace("../automatismes/" + location.search + location.hash);</script>
+<meta http-equiv="refresh" content="0; url=../automatismes/">
 </head>
-<body>
-    <nav class="navbar">
-        <div class="logo"><span class="logo-ligne"><button type="button" data-effet="ecrire" title="Réécrire le titre"></button><button type="button" data-effet="matrix" title="Mode Matrix"></button><button type="button" data-effet="terminal" title="Mode terminal"></button></span><a href="../index.html">Année 2026-2027 - Lycée Lebrun</a></div>
-        <ul class="nav-links">
-            <li><a href="../index.html">Accueil</a></li>
-        </ul>
-    </nav>
-
-    <header>
-        <h1>Automatismes</h1>
-        <p>Connecte-toi avec l'identifiant et le mot de passe donnés en classe.</p>
-    </header>
-
-    <main class="interactif">
-        <div id="bandeau"></div>
-        <div id="contenu" hidden>
-        <div class="tableau-defile"><table class="res" id="liste"></table></div>
-        <p class="aide">Tu peux refaire un exercice autant de fois que tu veux : les nombres changent à chaque fois.</p>
-        <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>
-        </div>
-        <p class="espace-prof"><a class="bouton" href="prof.html">Espace professeure</a></p>
-    </main>
-
-    <footer>
-        <p>&copy; 2026 Clémence Le Tousey · Documents sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a> : réutilisation libre en citant l'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions. Hébergé avec GitHub Pages.</p>
-    </footer>
-
-    <script>
-    (function () {
-        var table = document.getElementById('liste');
-
-        function afficher(resultats) {
-            var meilleur = {}, nb = {};
-            (resultats || []).forEach(function (r) {
-                nb[r.exercice] = (nb[r.exercice] || 0) + 1;
-                if (!meilleur[r.exercice] || r.score / r.total > meilleur[r.exercice].score / meilleur[r.exercice].total) meilleur[r.exercice] = r;
-            });
-            table.innerHTML = '<tr><th>Exercice</th><th>Meilleur score <span class="legende"><span class="pastille n1">vert</span><span class="pastille n2">bleu</span><span class="pastille n3">rouge</span></span></th><th>Séries faites</th></tr>';
-            var groupe = null, s = Interactif.session(), niv = s && Interactif.niveauClasse(s.classe);
-            var liste = INTERACTIF_CATALOGUE.filter(function (ex) { return !niv || ex.niveau === niv; });
-            if (!liste.length) {
-                var vide = document.createElement('tr'), c = document.createElement('td');
-                c.colSpan = 3; c.textContent = 'Pas encore d\'automatismes pour ta classe.';
-                vide.appendChild(c); table.appendChild(vide);
-            }
-            liste.forEach(function (ex) {
-                if (ex.groupe !== groupe) {
-                    groupe = ex.groupe;
-                    var tg = document.createElement('tr'), th = document.createElement('th');
-                    th.colSpan = 3; th.className = 'groupe'; th.textContent = groupe;
-                    tg.appendChild(th); table.appendChild(tg);
-                }
-                var tr = document.createElement('tr'), m = meilleur[ex.id];
-                var a = document.createElement('a'); a.href = ex.url; a.textContent = ex.titre;
-                var td = document.createElement('td'); td.appendChild(a); tr.appendChild(td);
-                var cs = document.createElement('td'), cl = m && Interactif.couleurs(m);
-                if (cl) Interactif.pastilles(cs, cl); else cs.textContent = m ? m.score + ' / ' + m.total : '—';
-                tr.appendChild(cs);
-                var cn = document.createElement('td'); cn.textContent = nb[ex.id] || 0; tr.appendChild(cn);
-                table.appendChild(tr);
-            });
-        }
-
-        function charger(s) {
-            document.getElementById('contenu').hidden = !s;
-            document.querySelector('.espace-prof').hidden = !!s;   // seulement sur l'accueil, pas pour un élève connecté
-            afficher(null);
-            if (!s) return;
-            Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(afficher, function (x) {
-                if (/Session/.test(x.message)) { Interactif.deconnecter(); Interactif.bandeau(document.getElementById('bandeau'), charger); }
-            });
-        }
-
-        Interactif.bandeau(document.getElementById('bandeau'), charger);
-        charger(Interactif.session());
-    })();
-    </script>
-</body>
+<body><p>Cette page a déménagé : <a href="../automatismes/">Automatismes</a>.</p></body>
 </html>

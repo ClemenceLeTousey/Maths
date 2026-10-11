@@ -265,9 +265,9 @@ document.addEventListener('click', function (e) {
         var deja = Array.from(menu.querySelectorAll('a')).some(function (a) { return a.textContent.trim() === 'Automatismes'; });
         if (deja) return;
         var li = document.createElement('li'), a = document.createElement('a');
-        a.href = base + 'interactif/';
+        a.href = base + 'automatismes/';
         a.textContent = 'Automatismes';
-        if (/\/interactif\/(index\.html)?$/.test(location.pathname)) a.className = 'active';
+        if (/\/automatismes\/(index\.html)?$/.test(location.pathname)) a.className = 'active';
         li.appendChild(a);
         var premier = menu.querySelector(':scope > li');
         menu.insertBefore(li, premier ? premier.nextSibling : menu.firstChild);
