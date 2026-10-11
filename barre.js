@@ -47,6 +47,9 @@
         'html[data-theme="dark"].matrix{filter:grayscale(1) sepia(1) hue-rotate(75deg) saturate(6) brightness(1.1);background:#000}',
         '.barre-effet{position:fixed;inset:0;pointer-events:none;z-index:9999}',
         '.barre-effet.lignes{background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0,rgba(0,0,0,.18) 1px,transparent 1px,transparent 3px)}',
+        '.barre-licence{all:initial;display:block;box-sizing:border-box;width:100%;max-width:1100px;margin:28px auto 12px;padding:0 16px;text-align:center;font:12.5px/1.5 Lexend,system-ui,sans-serif;color:#66708a}',
+        '.barre-licence a{color:inherit;text-decoration:underline}',
+        'html[data-theme="dark"] .barre-licence{color:#98a2b6}',
         '@media print{.barre-site,.barre-effet{display:none!important}html.barre-inverse,html.matrix,html.terminal{filter:none}}'
     ].join('');
     var style = document.createElement('style');
@@ -113,6 +116,14 @@
             '<li><a href="' + base + 'interactif/">Automatismes</a></li>' +
             '<li><button type="button" class="b-theme"></button></li></ul>';
         document.body.insertBefore(nav, document.body.firstChild);
+
+        // mention de licence en bas de page (visible aussi à l'impression)
+        if (!document.querySelector('footer')) {
+            var lic = document.createElement('p');
+            lic.className = 'barre-licence';
+            lic.innerHTML = '© 2026 Clémence Le Tousey · Document sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a> : réutilisation libre en citant l\'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.';
+            document.body.appendChild(lic);
+        }
 
         // pleine largeur et collée en haut, quelles que soient les marges de la page
         function caler() {
