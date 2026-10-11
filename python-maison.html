@@ -43,6 +43,16 @@
         .py-ligne span { color: var(--c-premiere); font-weight: 700; }
         .py-ligne input { flex: 1; border: none; outline: none; background: transparent; color: var(--text); font: inherit; font-size: 14px; }
         .py-aide { color: var(--muted); font-size: 0.85rem; margin: 8px 0 0; }
+        .py-aide a, .py-sortie a { color: var(--c-seconde); }
+        /* Message « boucle infinie ? » : n'apparaît qu'au bout de 3 s, même si la page est bloquée
+           (l'animation d'opacité tourne hors du fil principal) */
+        .py-bloque {
+            position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 2000;
+            max-width: min(560px, calc(100% - 32px)); padding: 12px 16px; border-radius: 10px;
+            background: #fff4e6; color: #7a3d00; border: 1px solid #ffc078; box-shadow: 0 6px 24px rgba(0,0,0,.18);
+            font-size: 0.95rem; opacity: 0; will-change: opacity; animation: py-apparait .4s ease 3s forwards; pointer-events: none;
+        }
+        @keyframes py-apparait { to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -73,7 +83,7 @@
                 <div class="py-ligne"><span>&gt;&gt;&gt;</span><input id="ligne" autocomplete="off" spellcheck="false" aria-label="Console Python" placeholder="tape une instruction puis Entrée" disabled></div>
             </div>
         </div>
-        <p class="py-aide"><kbd>Ctrl</kbd>+<kbd>Entrée</kbd> exécute le programme · dans la console, ↑ / ↓ rappellent les instructions précédentes · <code>input()</code> ouvre une petite fenêtre · <code>matplotlib</code> affiche les graphiques dans la console. Ton programme est gardé sur cet appareil.</p>
+        <p class="py-aide"><kbd>Ctrl</kbd>+<kbd>Entrée</kbd> exécute le programme · dans la console, ↑ / ↓ rappellent les instructions précédentes · <code>input()</code> ouvre une petite fenêtre · <code>matplotlib</code> affiche les graphiques dans la console. Ton programme est gardé sur cet appareil.<br>Besoin de <code>turtle</code> ? Utilise la <a href="consolepython.html">console Python Basthon</a>.</p>
     </main>
 
     <script>
@@ -155,8 +165,20 @@
             bLancer.disabled = false; ligne.disabled = false;
         }, function (e) { etat.textContent = 'Impossible de charger Python : ' + e.message; });
 
+        function turtle() {
+            var s = document.createElement('span'); s.className = 'err';
+            s.innerHTML = 'Le module turtle n\'est pas disponible sur cette page : utilise la <a href="consolepython.html">console Python Basthon</a>.\n';
+            sortie.appendChild(s); sortie.scrollTop = sortie.scrollHeight;
+        }
+
         async function executer(src, montrer) {
             if (!py || occupe) return;
+            if (/^\s*(import|from)\s+turtle\b/m.test(src)) { turtle(); return; }
+            var alerte = document.createElement('div');
+            alerte.className = 'py-bloque'; alerte.setAttribute('role', 'status');
+            alerte.innerHTML = '⏳ <b>Ton programme tourne depuis un moment.</b><br>S\'il ne s\'arrête pas (boucle infinie ?), <b>recharge la page</b> (touche F5, ou ⌘R sur Mac). Ton code est sauvegardé.';
+            document.body.appendChild(alerte);
+            await new Promise(function (r) { requestAnimationFrame(function () { setTimeout(r, 0); }); });   // affiché avant de bloquer
             occupe = true; bLancer.disabled = true;
             etat.textContent = /matplotlib|numpy/.test(src) && !mplPret ? 'Chargement de matplotlib (une quinzaine de secondes la première fois)…' : 'Exécution…';
             try {
@@ -165,6 +187,7 @@
                 py.globals.get('_executer')(src, ns, montrer ? '<console>' : '<programme>', montrer);
                 if (mplPret && !montrer) py.runPython('_montrer()');
             } catch (e) { ecrire(String(e.message || e) + '\n', 'err'); }
+            alerte.remove();
             occupe = false; bLancer.disabled = false; etat.textContent = 'Python prêt';
         }
 
