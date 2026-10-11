@@ -147,7 +147,7 @@ document.addEventListener('click', function (e) {
 })();
 
 /* Effets cachés dans le logo (les trois ronds de la ligne) :
-   bleu = le titre se réécrit, vert = mode Matrix, violet = mode terminal. */
+   bleu = le titre se réécrit, vert = mode Matrix, violet = mode Retour vers le futur. */
 (function () {
     var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -210,16 +210,84 @@ document.addEventListener('click', function (e) {
         }
     }
 
-    /* Violet : mode terminal, vieil écran cathodique noir et blanc, qui s'allume comme une vieille télé */
-    function terminal() {
-        var racine = document.documentElement;
-        if (racine.classList.toggle('terminal') && !calme) {
-            racine.classList.add('term-allumage');
-            setTimeout(function () { racine.classList.remove('term-allumage'); }, 800);
+    /* Violet : mode Retour vers le futur — tableau de bord en inox et « time circuits » sous le titre.
+       Au démarrage, le compteur monte à 88, éclair, puis deux traînées de feu. */
+    var MOIS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    var horloge = null;
+
+    function date88(d) {
+        var deux = function (n) { return (n < 10 ? '0' : '') + n; };
+        return MOIS[d.getMonth()] + ' ' + deux(d.getDate()) + ' ' + d.getFullYear() + ' ' + deux(d.getHours()) + ':' + deux(d.getMinutes());
+    }
+
+    function futur() {
+        if (document.documentElement.classList.toggle('futur')) {
+            afficherCircuits();
+            if (!calme) demarrer88();
+        } else {
+            clearInterval(horloge);
+            document.querySelectorAll('.circuits, .effet-futur').forEach(function (e) { e.remove(); });
         }
     }
 
-    var MODES = { matrix: matrix, terminal: terminal };
+    // « Last time departed » = la visite précédente du site (gardée le temps de la visite en cours)
+    function dernierDepart() {
+        var depart = null;
+        try {
+            depart = sessionStorage.getItem('site-maths-depart');
+            if (depart === null) {
+                depart = localStorage.getItem('site-maths-derniere-visite') || '';
+                sessionStorage.setItem('site-maths-depart', depart);
+            }
+            localStorage.setItem('site-maths-derniere-visite', new Date().toISOString());
+        } catch (e) {}
+        return depart ? new Date(depart) : null;
+    }
+
+    function afficherCircuits() {
+        var header = document.querySelector('header');
+        if (!header || header.querySelector('.circuits')) return;
+        var maintenant = new Date(), depart = dernierDepart();
+        // destination : 30 ans plus tard, comme Marty (1985 → 2015)
+        var destination = new Date(maintenant);
+        destination.setFullYear(destination.getFullYear() + 30);
+        var lignes = [
+            ['destination', 'Destination time', date88(destination)],
+            ['present', 'Present time', date88(maintenant)],
+            ['depart', 'Last time departed', depart ? date88(depart) : '--- -- ---- --:--']
+        ];
+        var bloc = document.createElement('div');
+        bloc.className = 'circuits';
+        bloc.setAttribute('aria-hidden', 'true');
+        lignes.forEach(function (l) {
+            var c = document.createElement('div');
+            c.className = 'circuit ' + l[0];
+            c.innerHTML = '<span class="ecran">' + l[2] + '</span><span class="plaque">' + l[1] + '</span>';
+            bloc.appendChild(c);
+        });
+        header.appendChild(bloc);
+        var present = bloc.querySelector('.present .ecran');
+        clearInterval(horloge);
+        horloge = setInterval(function () { present.textContent = date88(new Date()); }, 10000);
+    }
+
+    function demarrer88() {
+        var e = document.createElement('div');
+        e.className = 'effet-futur';
+        e.innerHTML = '<div class="compteur"><span>00</span><small>MPH</small></div><div class="eclair"></div>' +
+            '<div class="trainee t1"></div><div class="trainee t2"></div>';
+        document.body.appendChild(e);
+        var aff = e.querySelector('.compteur span'), debut = performance.now();
+        (function monter(now) {
+            var v = Math.min(88, Math.round(88 * Math.pow(Math.max(0, now - debut) / 1100, 1.6)));
+            aff.textContent = (v < 10 ? '0' : '') + v;
+            if (v < 88) { requestAnimationFrame(monter); return; }
+            e.classList.add('boom');
+            setTimeout(function () { e.remove(); }, 2300);
+        })(debut);
+    }
+
+    var MODES = { matrix: matrix, futur: futur };
     function modeActif() {
         return Object.keys(MODES).filter(function (m) { return document.documentElement.classList.contains(m); })[0];
     }
@@ -237,6 +305,7 @@ document.addEventListener('click', function (e) {
     if (MODES[memorise]) {
         document.documentElement.classList.add(memorise);          // tout de suite, sans animation
         if (memorise === 'matrix') document.addEventListener('DOMContentLoaded', demarrerPluie);
+        if (memorise === 'futur') document.addEventListener('DOMContentLoaded', afficherCircuits);
     }
     window.modesSite = { basculer: basculer, actif: modeActif };
 

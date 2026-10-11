@@ -1,7 +1,7 @@
 /* Barre du haut pour les pages qui n'utilisent pas style.css (séries d'automatismes, corrigés, activités).
    À inclure dans le <head> :  <script src="../../barre.js"></script>
    - liens Accueil et Automatismes ;
-   - les trois ronds du logo : bleu = site normal, vert = mode Matrix, violet = mode terminal ;
+   - les trois ronds du logo : bleu = site normal, vert = mode Matrix, violet = mode Retour vers le futur ;
    - bouton Sombre / Clair.
    Les choix sont partagés avec le reste du site (mêmes clés que site.js) et restent d'une page à l'autre. */
 (function () {
@@ -43,14 +43,16 @@
         'html.barre-inverse img,html.barre-inverse video,html.barre-inverse picture,html.barre-inverse iframe{filter:invert(1) hue-rotate(180deg)}',
         // modes
         'html.matrix{filter:invert(1) grayscale(1) sepia(1) hue-rotate(75deg) saturate(6) brightness(.9);background:#fff}',
-        'html.terminal{filter:grayscale(1) contrast(1.35) brightness(1.05)}',
+        'html.futur:not([data-theme="dark"]){filter:invert(1) hue-rotate(180deg) sepia(.35) saturate(1.5);background:#fff}',
+        'html.futur:not([data-theme="dark"]) img,html.futur:not([data-theme="dark"]) video,html.futur:not([data-theme="dark"]) iframe{filter:invert(1) hue-rotate(180deg)}',
+        'html[data-theme="dark"].futur{filter:sepia(.35) saturate(1.5)}',
         'html[data-theme="dark"].matrix{filter:grayscale(1) sepia(1) hue-rotate(75deg) saturate(6) brightness(1.1);background:#000}',
         '.barre-effet{position:fixed;inset:0;pointer-events:none;z-index:9999}',
-        '.barre-effet.lignes{background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0,rgba(0,0,0,.18) 1px,transparent 1px,transparent 3px)}',
+        '.barre-effet.feu{top:auto;height:4px;background:linear-gradient(90deg,transparent,#c41a00 20%,#ff6a00 60%,#fff1a0);box-shadow:0 0 12px #ff6a00}',
         '.barre-licence{all:initial;display:block;box-sizing:border-box;width:100%;max-width:1100px;margin:28px auto 12px;padding:0 16px;text-align:center;font:12.5px/1.5 Lexend,system-ui,sans-serif;color:#66708a}',
         '.barre-licence a{color:inherit;text-decoration:underline}',
         'html[data-theme="dark"] .barre-licence{color:#98a2b6}',
-        '@media print{.barre-site,.barre-effet{display:none!important}html.barre-inverse,html.matrix,html.terminal{filter:none}}'
+        '@media print{.barre-site,.barre-effet{display:none!important}html.barre-inverse,html.matrix,html.futur{filter:none}}'
     ].join('');
     var style = document.createElement('style');
     style.textContent = css;
@@ -63,18 +65,18 @@
         racine.classList.toggle('barre-inverse', sombre() && !mode());
     }
 
-    /* ---------- Modes Matrix / terminal ---------- */
-    function mode() { var m = lire(CLE_MODE); return m === 'matrix' || m === 'terminal' ? m : ''; }
+    /* ---------- Modes Matrix / Retour vers le futur ---------- */
+    function mode() { var m = lire(CLE_MODE); return m === 'matrix' || m === 'futur' ? m : ''; }
     var pluie = null;
     function effets() {
         var m = mode();
         racine.classList.toggle('matrix', m === 'matrix');
-        racine.classList.toggle('terminal', m === 'terminal');
+        racine.classList.toggle('futur', m === 'futur');
         appliquerTheme();
         if (!document.body) return;
         document.querySelectorAll('.barre-effet').forEach(function (e) { e.remove(); });
         cancelAnimationFrame(pluie);
-        if (m === 'terminal') { var l = document.createElement('div'); l.className = 'barre-effet lignes'; document.body.appendChild(l); }
+        if (m === 'futur') { var l = document.createElement('div'); l.className = 'barre-effet feu'; document.body.appendChild(l); }
         if (m === 'matrix' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             var c = document.createElement('canvas'); c.className = 'barre-effet'; c.style.opacity = '.35';
             document.body.appendChild(c);
@@ -110,7 +112,7 @@
             '<div class="b-logo"><span class="b-ligne">' +
             '<button type="button" data-m="" title="Site normal"></button>' +
             '<button type="button" data-m="matrix" title="Mode Matrix"></button>' +
-            '<button type="button" data-m="terminal" title="Mode terminal"></button></span>' +
+            '<button type="button" data-m="futur" title="Mode Retour vers le futur"></button></span>' +
             '<a href="' + base + 'index.html">Année 2026-2027 - Lycée Lebrun</a></div>' +
             '<ul><li><a href="' + base + 'index.html">Accueil</a></li>' +
             '<li><a href="' + base + 'automatismes/">Automatismes</a></li>' +
