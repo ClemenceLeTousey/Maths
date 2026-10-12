@@ -133,3 +133,87 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .q-figure .fig-pt { fill: var(--c-seconde); }
 .q-figure .fig-nom { fill: var(--c-seconde); font-weight: 700; font-size: 17px; font-family: system-ui, sans-serif; paint-order: stroke; stroke: var(--surface); stroke-width: 5px; }
 .q-figure .fig-grille { stroke: var(--muted); stroke-opacity: .35; }
+
+/* ==========================================================================
+   Mode Retour vers le futur (classe futur posée par site.js) : convecteur temporel
+   ========================================================================== */
+:root.futur { --ok: #51cf66; --ko: #ff6b6b; --attention: #ffa94d; --ok-fond: #142a1a; --ko-fond: #2e1717; }
+:root.futur .pastille.n2 { background: #13263a; color: #74c0fc; }
+
+.convecteur { display: none; }
+
+:root.futur .convecteur {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    border: 2px solid #000;
+    border-radius: 6px;
+    background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 4px), linear-gradient(180deg, #2b2f36, #1b1e23);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+/* grands écrans : le convecteur reste visible à droite pendant qu'on descend */
+@media (min-width: 1320px) {
+    :root.futur .convecteur {
+        position: fixed;
+        right: max(20px, calc((100% - 820px) / 2 - 250px));
+        top: 140px;
+        width: 210px;
+        flex-direction: column;
+        text-align: center;
+        z-index: 10;
+    }
+}
+
+.conv-schema { width: 110px; flex-shrink: 0; }
+.conv-schema .boitier { fill: #0d0f12; stroke: #4a5059; stroke-width: 2; }
+.conv-schema .tube { stroke: #3a3f47; stroke-width: 9; stroke-linecap: round; }
+.conv-schema .borne { fill: #6b727c; stroke: #0d0f12; stroke-width: 2; }
+.conv-schema .coeur { fill: #2a2e34; stroke: #6b727c; stroke-width: 2; }
+.conv-schema .flux { stroke-width: 4; stroke-linecap: round; stroke: transparent; stroke-dasharray: 6 8; }
+.conv-schema .flux.n1 { --lueur: #51cf66; }
+.conv-schema .flux.n2 { --lueur: #4dabf7; }
+.conv-schema .flux.n3 { --lueur: #ff6b6b; }
+.conv-schema .flux.on { stroke: #fff; filter: drop-shadow(0 0 3px var(--lueur)) drop-shadow(0 0 6px var(--lueur)); opacity: 0.55; }
+.conv-schema .flux.plein { opacity: 1; }
+.convecteur.charge .coeur { fill: #fff; filter: drop-shadow(0 0 6px #ffd23a) drop-shadow(0 0 12px #ff8a1a); }
+
+@media (prefers-reduced-motion: no-preference) {
+    /* la lumière court vers le centre, comme dans le film */
+    .conv-schema .flux.on { animation: flux 0.6s linear infinite; }
+    .convecteur.charge .coeur { animation: coeur 0.5s ease-in-out infinite alternate; }
+}
+
+@keyframes flux { to { stroke-dashoffset: -14; } }
+@keyframes coeur { to { filter: drop-shadow(0 0 2px #ffd23a); } }
+
+.conv-infos { min-width: 0; }
+.conv-nom {
+    display: block;
+    font-family: var(--f-titre, inherit);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.conv-gw {
+    font-family: "DSEG14", var(--f-mono);
+    font-size: 1.9rem;
+    color: #ffb320;
+    text-shadow: 0 0 6px #ffb320, 0 0 14px #ff8a1a;
+}
+.conv-unite { margin-left: 6px; font-weight: 700; color: #ffb320; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em; }
+.conv-msg { margin: 6px 0 0; font-size: 0.9rem; color: var(--text); }
+
+.conv-eclair {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 50%, #fff, #9fd8ff 40%, rgba(80, 160, 255, 0) 75%);
+    animation: eclair 1s ease-out forwards;
+}
+
+@media print { .convecteur, .conv-eclair { display: none !important; } }

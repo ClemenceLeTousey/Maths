@@ -33,6 +33,7 @@
     function connecter(code, mdp) {
         return rpc('connexion', { p_code: code, p_mdp: mdp }).then(function (s) {
             ecrireLocal(CLE_SESSION, s);
+            ecrireLocal('interactif-derniere-connexion', new Date().toISOString());   // affichée par le mode Retour vers le futur
             return s;
         });
     }
@@ -159,7 +160,7 @@
 
         function lancer() {
             zone.innerHTML = '';
-            var debut = Date.now(), repondues = 0, score = 0, details = [], reprises = [], enregistre = false;
+            var debut = Date.now(), repondues = 0, score = 0, details = [], reprises = [], enregistre = false, conv = null;
             var liste = el('ol', 'questions');
             zone.appendChild(liste);
 
@@ -311,7 +312,7 @@
                     });
                     li.classList.add(juste ? 'juste' : 'faux');
                     retour.className = 'q-retour';
-                    retour.textContent = juste ? '✓ Bravo !' : '✗ Ce n\'est pas ça. Correction :';
+                    retour.textContent = juste ? '✓ Bravo !' : futur() ? '✗ Nom de Zeus ! Correction :' : '✗ Ce n\'est pas ça. Correction :';
                     if (q.correction || q.explication) {
                         var c = el('div', 'q-correction');
                         if (q.correction) maths(c, '\\begin{aligned}' + q.correction.join('\\\\') + '\\end{aligned}', true);
@@ -348,6 +349,8 @@
                     indices[n].push(i);
                 }
                 liste.remove();
+                conv = convecteur(def.nb);
+                zone.insertBefore(conv.bloc, bilan);
                 ouvrir(0, 1);
 
                 function ouvrir(k, essai) {
@@ -373,7 +376,8 @@
                         b.remove();
                         var bons = lis.filter(function (li) { return li.classList.contains('juste'); }).length;
                         msg.textContent = (NOMS[n] || 'Niveau ' + n) + ' : ' + bons + ' / ' + lis.length +
-                            (bons === lis.length ? ' — bravo !' : '');
+                            (bons === lis.length ? (futur() ? ' — 88 miles à l\'heure !' : ' — bravo !') : '');
+                        conv.allumer(n, bons === lis.length, essai === 1 ? score : null);
                         var refaire = el('button', 'secondaire', '↻ Refaire cette série avec d\'autres nombres'); refaire.type = 'button';
                         refaire.onclick = function () { actions.remove(); ouvrir(k, essai + 1); };
                         actions.appendChild(refaire);
@@ -394,6 +398,7 @@
             function terminer() {
                 bilan.innerHTML = '';
                 bilan.appendChild(el('p', 'bilan-score', (def.parNiveau ? 'Score (premiers essais) : ' : 'Score : ') + score + ' / ' + def.nb));
+                if (conv) conv.terminer(score);
                 var etat = el('p', 'bilan-etat');
                 bilan.appendChild(etat);
                 var r = { exercice: def.id, score: score, total: def.nb, details: details.concat(reprises.slice(-24)), duree: Math.round((Date.now() - debut) / 1000) };
@@ -412,6 +417,67 @@
             }
         }
         lancer();
+    }
+
+    /* ---------- Mode Retour vers le futur (3e rond du logo) ----------
+       Séries par niveau : un convecteur temporel dont les branches s'allument à chaque série validée
+       (verte, bleue, rouge) ; la puissance monte avec le score : 1,21 gigowatt pour un sans-faute.
+       Le bloc existe toujours mais n'est visible qu'en mode futur (le mode peut changer en cours de route). */
+    function futur() { return document.documentElement.classList.contains('futur'); }
+
+    function gw(x) { return x.toFixed(2).replace('.', ','); }
+
+    function convecteur(nb) {
+        var bloc = el('div', 'convecteur');
+        bloc.setAttribute('aria-hidden', 'true');
+        var branches = [[1, 24, 24], [2, 96, 24], [3, 60, 112]].map(function (b) {
+            return '<line class="tube" x1="' + b[1] + '" y1="' + b[2] + '" x2="60" y2="64"/>' +
+                '<line class="flux n' + b[0] + '" x1="' + b[1] + '" y1="' + b[2] + '" x2="60" y2="64"/>' +
+                '<circle class="borne" cx="' + b[1] + '" cy="' + b[2] + '" r="6"/>';
+        }).join('');
+        bloc.innerHTML =
+            '<svg viewBox="0 0 120 128" class="conv-schema">' +
+            '<rect x="4" y="6" width="112" height="118" rx="8" class="boitier"/>' + branches +
+            '<circle cx="60" cy="64" r="9" class="coeur"/></svg>' +
+            '<div class="conv-infos"><span class="conv-nom">Convecteur temporel</span>' +
+            '<span class="conv-gw">0,00</span><span class="conv-unite">gigowatt</span>' +
+            '<p class="conv-msg">Valide la série verte pour allumer la première branche.</p></div>';
+        var aff = bloc.querySelector('.conv-gw'), msg = bloc.querySelector('.conv-msg');
+
+        function puissance(score) {
+            var cible = 1.21 * score / nb, depart = parseFloat(aff.textContent.replace(',', '.')) || 0, t0 = performance.now();
+            (function monter(now) {
+                var t = Math.min(1, (now - t0) / 900);
+                aff.textContent = gw(depart + (cible - depart) * t);
+                if (t < 1) requestAnimationFrame(monter);
+            })(t0);
+        }
+        return {
+            bloc: bloc,
+            // branche n allumée ; « pleine » si la série est sans faute ; score = premiers essais (null pour une reprise)
+            allumer: function (n, parfait, score) {
+                var f = bloc.querySelector('.flux.n' + n);
+                f.classList.add('on');
+                if (parfait) f.classList.add('plein');
+                if (score != null) puissance(score);
+                if (n < 3) msg.textContent = 'Branche ' + ['verte', 'bleue'][n - 1] + ' allumée ! Passe à la série suivante.';
+            },
+            terminer: function (score) {
+                puissance(score);
+                if (score === nb) {
+                    msg.textContent = '1,21 gigowatt ! Le convecteur est chargé : en route vers le futur !';
+                    bloc.classList.add('charge');
+                    if (futur() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                        var e = el('div', 'conv-eclair');
+                        document.body.appendChild(e);
+                        setTimeout(function () { e.remove(); }, 1200);
+                    }
+                } else {
+                    msg.textContent = gw(1.21 * score / nb) + ' gigowatt : il manquait ' + gw(1.21 * (nb - score) / nb) +
+                        ' gigowatt pour voyager dans le temps. Refais les séries pour t\'entraîner !';
+                }
+            }
+        };
     }
 
     /* Scores par couleur d'une série (premiers essais) : {1: {ok, tot}, 2: …, 3: …} ou null */

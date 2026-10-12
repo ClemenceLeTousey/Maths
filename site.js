@@ -230,18 +230,12 @@ document.addEventListener('click', function (e) {
         }
     }
 
-    // « Last time departed » = la visite précédente du site (gardée le temps de la visite en cours)
+    // « Last time departed » = la dernière connexion aux Automatismes sur cet appareil (enregistrée par moteur.js)
     function dernierDepart() {
-        var depart = null;
         try {
-            depart = sessionStorage.getItem('site-maths-depart');
-            if (depart === null) {
-                depart = localStorage.getItem('site-maths-derniere-visite') || '';
-                sessionStorage.setItem('site-maths-depart', depart);
-            }
-            localStorage.setItem('site-maths-derniere-visite', new Date().toISOString());
-        } catch (e) {}
-        return depart ? new Date(depart) : null;
+            var d = JSON.parse(localStorage.getItem('interactif-derniere-connexion'));
+            return d ? new Date(d) : null;
+        } catch (e) { return null; }
     }
 
     function afficherCircuits() {
