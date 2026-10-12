@@ -54,6 +54,7 @@
                 <label><input type="checkbox" id="memoriser"> mémoriser les noms sur cet ordinateur</label>
                 <button type="button" id="export">Exporter en CSV</button>
                 <button type="button" id="actualiser">Actualiser</button>
+                <button type="button" id="deconnexion" class="secondaire">Se déconnecter</button>
             </div>
             <div class="tableau-defile"><table class="res" id="tableau"></table></div>
             <div id="detail"></div>
@@ -70,6 +71,11 @@
         var form = document.getElementById('f-prof');
         form.onsubmit = function (e) { e.preventDefault(); mdp = form.mdp.value; charger(); };
         document.getElementById('actualiser').onclick = charger;
+        // oublie le mot de passe de la session et revient au formulaire (les noms mémorisés restent)
+        document.getElementById('deconnexion').onclick = function () {
+            try { sessionStorage.removeItem('interactif-prof'); } catch (e) {}
+            location.reload();
+        };
         document.getElementById('classe').onchange = afficher;
         if (mdp) charger();
 
