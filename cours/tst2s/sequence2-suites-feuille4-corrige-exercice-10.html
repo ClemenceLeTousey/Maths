@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feuille 4 · Exercice 10 — Corrigé dynamique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+<style>
+  :root {
+    color-scheme: light;
+    --paper:      #f4f5f1;
+    --surface:    #ffffff;
+    --ink:        #20232b;
+    --ink-soft:   #565a66;
+    --muted:      #8b8f99;
+    --line:       #dce1ea;
+    --rule:       #b9c2d1;
+    --statblue:   #1C7ED6;
+    --skyblue:    #339AF0;
+    --blue-soft:  #e6f1fc;
+    --orange:     #E8590C;   /* valeur du rang n */
+    --orange-soft:#fff4e6;
+    --green:      #2F9E44;   /* opération de récurrence */
+    --green-soft: #ebfbee;
+    --purple:     #AE3EC9;
+    --shadow:     rgba(32, 35, 43, 0.10);
+  }
+
+  * { box-sizing: border-box; }
+  html { font-size: 19px; }
+
+  body {
+    margin: 0;
+    background: var(--paper);          /* fond clair fixe : projection en salle */
+    color: var(--ink);
+    font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    line-height: 1.45;
+    min-height: 100vh;
+    padding-bottom: 96px;
+  }
+
+  /* ---------- en-tête collant : les quatre listes + question ---------- */
+  .top {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 6px 18px -14px var(--shadow);
+    padding: 12px 28px 12px;
+  }
+  .top-inner { max-width: 1200px; margin: 0 auto; }
+
+  .title-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
+  .pill {
+    display: inline-block; background: var(--skyblue); color: #fff;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.02em;
+    padding: 2px 10px; border-radius: 5px; white-space: nowrap;
+  }
+  .title-row h1 { margin: 0; font-size: 1.25rem; font-weight: 500; }
+  .title-row .meta { margin-left: auto; color: var(--muted); font-size: 0.85rem; }
+
+  .data-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: center; }
+  .suites { display: flex; flex-wrap: wrap; gap: 8px; }
+  .suite {
+    border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 10px;
+    background: #fafbf9; transition: all .3s ease; white-space: nowrap; flex: 1 1 auto; max-width: 100%; overflow-x: auto;
+  }
+  .suite .lab { color: var(--muted); margin-right: 6px; }
+  .suite .tag {
+    display: block; font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--muted); min-height: 1.1em;
+  }
+  .suite.hl { border-color: var(--statblue); background: var(--blue-soft); }
+  .suite.dim { opacity: 0.35; }
+  .suite .tag.rel { color: var(--green); text-transform: none; letter-spacing: 0; font-size: 0.8rem; }
+  .suite .tag.rel .katex { font-size: 1em; }
+
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .chip {
+    font: inherit; font-size: 0.8rem; font-weight: 600;
+    color: var(--ink-soft); background: transparent;
+    border: 1.5px solid var(--rule); border-radius: 999px;
+    padding: 4px 11px; cursor: pointer;
+  }
+  .chip:hover { border-color: var(--statblue); color: var(--statblue); }
+  .chip.done { color: var(--statblue); border-color: var(--statblue); background: var(--blue-soft); }
+  .chip.active { background: var(--statblue); border-color: var(--statblue); color: #fff; }
+
+  .question {
+    margin-top: 10px; border-left: 4px solid var(--statblue); background: var(--blue-soft);
+    border-radius: 0 6px 6px 0; padding: 8px 16px 9px;
+  }
+  .question .qlabel {
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--statblue); margin-bottom: 1px;
+  }
+  .question .qtext { font-size: 1.12rem; }
+
+  /* ---------- étapes ---------- */
+  main { max-width: 1200px; margin: 0 auto; padding: 22px 28px 0; }
+  .steps { display: flex; flex-direction: column; gap: 12px; min-height: 200px; }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--line); border-left: 4px solid var(--statblue);
+    border-radius: 0 8px 8px 0; padding: 12px 18px; font-size: 1.08rem;
+  }
+  .step.remark { border-left-color: var(--rule); color: var(--ink-soft); font-size: 1rem; background: #fbfbf9; }
+  .step.warn-box { border-left-color: var(--orange); background: var(--orange-soft); }
+  .step.fresh { animation: rise .4s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step .lead { color: var(--ink-soft); font-size: 0.9rem; font-weight: 500; margin-bottom: 2px; }
+  .step .accent { color: var(--statblue); }
+  .step .warn { color: var(--orange); }
+  .step .ok { color: var(--green); }
+  .step p { margin: 0.25em 0; }
+  .katex-display { margin: 0.45em 0 0.3em; }
+  .katex { font-size: 1.06em; }
+  .badge {
+    display: inline-block; padding: 0 10px; border-radius: 4px; font-size: 0.95rem;
+  }
+  .badge.exp { background: var(--orange-soft); color: var(--orange); }
+  .badge.rec { background: var(--green-soft); color: var(--green); }
+
+  /* ---------- chaînes de termes (récurrence) ---------- */
+  .chain { display: flex; align-items: center; flex-wrap: wrap; gap: 0; margin: 10px 0 4px; }
+  .term {
+    border: 1.5px solid var(--rule); border-radius: 8px; padding: 4px 12px; background: #fafbf9;
+    white-space: nowrap; opacity: 0; animation: pop .4s cubic-bezier(.2,.9,.3,1.3) both;
+  }
+  .term.known { border-color: var(--statblue); background: var(--blue-soft); }
+  .term.goal { border-color: var(--green); background: var(--green-soft); }
+  .term.ghost { border-style: dashed; color: var(--muted); }
+  .arrow {
+    display: flex; flex-direction: column; align-items: center; padding: 0 6px; min-width: 64px;
+    color: var(--green); opacity: 0; animation: pop .4s ease both; font-size: 0.95rem;
+  }
+  .arrow svg { width: 60px; height: 14px; display: block; }
+  .arrow.direct { color: var(--orange); min-width: 140px; }
+  .arrow.direct svg { width: 140px; }
+  @keyframes pop { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+  .chain-lab { color: var(--ink-soft); font-size: 0.92rem; margin-right: 10px; min-width: 2.2em; }
+
+  /* ---------- tableau des égalités (question 4) ---------- */
+  table.pat { border-collapse: collapse; margin: 8px 0 2px; }
+  table.pat td { padding: 3px 10px; white-space: nowrap; }
+  table.pat td.r { text-align: right; }
+  table.pat tr.new td { animation: rise .4s ease both; }
+  table.pat tr.sep td { color: var(--muted); }
+
+  /* ---------- tableau rang / terme (question 1) ---------- */
+  table.rk { border-collapse: collapse; margin: 10px 0 6px; }
+  table.rk th, table.rk td { border: 1.5px solid var(--rule); padding: 4px 16px; text-align: center; min-width: 3.2em; }
+  table.rk th { font-weight: 500; color: var(--ink-soft); background: #fafbf9; text-align: left; }
+  table.rk tr.rang td { color: var(--orange); }
+  table.rk td.on { background: var(--green-soft); border-color: var(--green); font-weight: 600; }
+
+  /* ---------- barre de commande ---------- */
+  .bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    background: var(--surface); border-top: 1px solid var(--line);
+    box-shadow: 0 -6px 18px -14px var(--shadow); padding: 10px 28px;
+  }
+  .bar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    font: inherit; font-size: 0.95rem; font-weight: 500; color: var(--ink); background: var(--surface);
+    border: 1.5px solid var(--rule); border-radius: 8px; padding: 8px 16px; cursor: pointer;
+  }
+  .btn:hover { border-color: var(--statblue); color: var(--statblue); }
+  .btn:disabled { opacity: 0.4; cursor: default; }
+  .btn:disabled:hover { border-color: var(--rule); color: var(--ink); }
+  .btn.primary { background: var(--statblue); border-color: var(--statblue); color: #fff; }
+  .btn.primary:hover { background: #1a6fc0; color: #fff; }
+  .counter { color: var(--ink-soft); font-size: 0.92rem; margin-left: 6px; }
+  .hint { margin-left: auto; color: var(--muted); font-size: 0.82rem; }
+  .hint kbd {
+    font: inherit; font-size: 0.78rem; border: 1px solid var(--rule); border-bottom-width: 2px;
+    border-radius: 4px; padding: 0 5px; background: #fafbf9; color: var(--ink-soft);
+  }
+
+  @media (max-width: 600px) {
+    html { font-size: 17px; }
+    .top, main, .bar { padding-left: 16px; padding-right: 16px; }
+    .data-row { grid-template-columns: 1fr; }
+    .chips { justify-content: flex-start; }
+    .hint { display: none; }
+  }
+
+  /* ---------- fiches « ce que l'on sait » ---------- */
+  .suite .val.empty { color: var(--muted); }
+  .suite.new { animation: pop .4s ease both; }
+  /* ---------- encadré définition ---------- */
+  .defbox { border: 1.5px solid var(--statblue); border-radius: 8px; padding: 8px 14px; margin: 8px 0 4px; background: var(--blue-soft); }
+  .defbox .t { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--statblue); }
+  table.nat { border-collapse: collapse; margin: 8px 0 4px; }
+  table.nat th, table.nat td { border: 1.5px solid var(--rule); padding: 6px 14px; text-align: left; vertical-align: middle; }
+  table.nat th { font-weight: 600; background: #fafbf9; color: var(--ink-soft); }
+  table.nat tr.on td { background: var(--green-soft); border-color: var(--green); }
+  /* ---------- schéma de la question 3 ---------- */
+  .schema { width: 100%; max-width: 820px; height: auto; display: block; margin: 8px 0 4px; }
+  .schema text { font-family: "Source Sans 3", Arial, sans-serif; }
+  .schema .fade { opacity: 0; animation: pop .45s ease both; transform-box: fill-box; transform-origin: center; }
+</style>
+<script src="../../barre.js"></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="title-row">
+      <span class="pill">Exercice 10</span>
+      <h1>Une suite arithmétique qui commence au rang 1</h1>
+      <span class="meta">TST2S · Séquence 2 · Suites numériques · Feuille 4</span>
+    </div>
+
+    <p style="margin:0 0 8px; color:var(--ink-soft); font-size:0.95rem;">Rééducation après une opération du genou : $200$ m par jour la première semaine, puis $50$ m de plus chaque semaine. $d_n$ = distance quotidienne (en m) pendant la $n$-ième semaine.</p>
+
+    <div class="data-row">
+      <div class="suites" id="suites">
+        <div class="suite" data-s="d1"><span class="tag">Premier terme</span><span class="val">$d_1=200$</span></div>
+        <div class="suite" data-s="d23"><span class="tag">Question 1</span><span class="val"></span></div>
+        <div class="suite" data-s="rec"><span class="tag">Récurrence</span><span class="val"></span></div>
+        <div class="suite" data-s="nat"><span class="tag">Nature</span><span class="val"></span></div>
+        <div class="suite" data-s="exp"><span class="tag">Formule explicite</span><span class="val"></span></div>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div class="question">
+      <div class="qlabel" id="qlabel">Question 1</div>
+      <div class="qtext" id="qtext"></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="steps" id="steps"></div>
+</main>
+
+<div class="bar">
+  <div class="bar-inner">
+    <button class="btn" id="btn-prev">◀ Étape précédente</button>
+    <button class="btn primary" id="btn-next">Étape suivante ▶</button>
+    <span class="counter" id="counter"></span>
+    <span class="hint">
+      <kbd>Espace</kbd> étape suivante · <kbd>←</kbd> <kbd>→</kbd> changer de question · <kbd>R</kbd> recommencer la question
+    </span>
+  </div>
+</div>
+
+<script>
+/* ============ petits outils pour les chaînes de termes ============ */
+const ARROW = `<svg viewBox="0 0 60 14"><line x1="2" y1="7" x2="56" y2="7" stroke="currentColor" stroke-width="1.8"/><path d="M50,2 L57,7 L50,12" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`;
+const ARROW_LONG = `<svg viewBox="0 0 140 14"><line x1="2" y1="7" x2="136" y2="7" stroke="currentColor" stroke-width="1.8"/><path d="M130,2 L137,7 L130,12" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`;
+// items : ["T|classe|contenu", "A|étiquette", "D|étiquette"] ; apparition successive
+function chain(items, label) {
+  let h = `<div class="chain">` + (label ? `<span class="chain-lab">${label}</span>` : "");
+  items.forEach((it, i) => {
+    const [kind, a, b] = it.split("|");
+    const delay = `style="animation-delay:${i * 0.22}s"`;
+    if (kind === "T") h += b === undefined ? `<span class="term" ${delay}>${a}</span>` : `<span class="term ${a}" ${delay}>${b}</span>`;
+    else if (kind === "A") h += `<span class="arrow" ${delay}><span>${a}</span>${ARROW}</span>`;
+    else if (kind === "D") h += `<span class="arrow direct" ${delay}><span>${a}</span>${ARROW_LONG}</span>`;
+  });
+  return h + `</div>`;
+}
+
+/* schéma de proche en proche (comme sur la feuille) ; global : afficher la flèche globale */
+function schema(global) {
+  const xs = [50, 170, 290, 410, 530, 650, 770];
+  const svgLab = ["d₁", "d₂", "d₃", "d₄", "⋯", "dₙ", "dₙ₊₁"];
+  let h = `<svg class="schema" viewBox="0 0 820 ${global ? 190 : 120}" role="img" aria-label="Schéma de la suite d">
+    <defs><marker id="hg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F9E44"/></marker>
+    <marker id="ho" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#E8590C"/></marker></defs>`;
+  xs.forEach((x, i) => {
+    h += `<text x="${x}" y="95" text-anchor="middle" font-size="24" fill="#20232b" font-style="${i === 4 ? "normal" : "italic"}">${svgLab[i]}</text>`;
+  });
+  for (let i = 0; i < 6; i++) {
+    const x1 = xs[i] + 14, x2 = xs[i + 1] - 14, dashed = (i === 3 || i === 4);
+    const d = i * 0.18;
+    h += `<g class="fade" style="animation-delay:${d}s"><path d="M${x1},72 Q${(x1 + x2) / 2},20 ${x2},72" fill="none" stroke="#2F9E44" stroke-width="2" ${dashed ? 'stroke-dasharray="6 5"' : ""} marker-end="url(#hg)"/>`;
+    if (!dashed) h += `<text x="${(x1 + x2) / 2}" y="38" text-anchor="middle" font-size="20" fill="#2F9E44">+50</text>`;
+    h += `</g>`;
+  }
+  if (global) {
+    h += `<g class="fade" style="animation-delay:1.3s"><path d="M50,108 L50,140 L650,140 L650,112" fill="none" stroke="#E8590C" stroke-width="2.2" marker-end="url(#ho)"/>
+      <text x="350" y="166" text-anchor="middle" font-size="16" fill="#565a66">on ajoute 50, (n − 1) fois</text>
+      <text x="350" y="186" text-anchor="middle" font-size="20" fill="#E8590C" font-weight="600">+ (n − 1) × 50</text></g>`;
+  }
+  return h + `</svg>`;
+}
+
+/* ============ contenu ============ */
+const QUESTIONS = [
+  { label: "Question 1", html: String.raw`Calculer $d_2$ et $d_3$.` },
+  { label: "Question 2", html: String.raw`Exprimer $d_{n+1}$ en fonction de $d_n$, pour tout entier $n\geqslant1$. Quelle est la nature de la suite $d$ ? Préciser sa raison.` },
+  { label: "Question 3", html: String.raw`Compléter le schéma : les opérations sur les flèches courbes, puis l'opération sur la flèche globale, qui passe directement de $d_1$ à $d_n$.` },
+  { label: "Question 4", html: String.raw`En déduire l'expression de $d_n$ en fonction de $n$, pour tout entier $n\geqslant1$.` },
+  { label: "Question 5", html: String.raw`Quelle distance le patient marchera-t-il chaque jour pendant la $12^\text{e}$ semaine ?` },
+  { label: "Question 6", html: String.raw`À partir de quelle semaine marchera-t-il au moins $1$ km par jour ?` },
+];
+
+/* hl : fiches mises en avant ; tags : fiches remplies */
+const STEPS = [
+  /* --- Q1 --- */
+  { q: 0, hl: ["d1"], tags: [],
+    html: String.raw`<div class="lead">La suite commence au rang $1$</div>
+      <p>La première semaine correspond à $n=\textcolor{#E8590C}{1}$ : le premier terme est $d_1=200$ (il n'y a pas de $d_0$).</p>
+      <table class="rk">
+        <tr class="rang"><th>Semaine $n$</th><td>$1$</td><td>$2$</td><td>$3$</td></tr>
+        <tr><th>Distance $d_n$</th><td>$200$</td><td>$?$</td><td>$?$</td></tr>
+      </table>` },
+
+  { q: 0, hl: ["d23"], tags: ["d23"],
+    html: String.raw`<div class="lead">Chaque semaine, on ajoute $50$ m</div>
+      ${chain(["T|known|$d_1=200$", "A|$+50$", "T|goal|$d_2=250$", "A|$+50$", "T|goal|$d_3=300$"])}
+      $$\begin{aligned} d_2&=d_1+50=200+50=\textcolor{#1C7ED6}{250}\\ d_3&=d_2+50=250+50=\textcolor{#1C7ED6}{300}\end{aligned}$$
+      <p class="accent">Le patient marche $250$ m par jour la $2^\text{e}$ semaine et $300$ m par jour la $3^\text{e}$ semaine.</p>` },
+
+  /* --- Q2 --- */
+  { q: 1, hl: [], tags: ["d23"],
+    html: String.raw`<div class="lead">Que veut dire « exprimer $d_{n+1}$ en fonction de $d_n$ » ?</div>
+      <div class="defbox"><div class="t">À retenir</div>
+      <p>C'est écrire <b>une égalité qui relie le terme suivant $d_{n+1}$ au terme précédent $d_n$</b> :</p>
+      $$d_{n+1}=\ \ldots\ d_n\ \ldots$$
+      <p>Cette égalité s'appelle la <b>formule de récurrence</b> : elle dit comment on passe d'un terme au suivant.</p></div>` },
+
+  { q: 1, hl: [], tags: ["d23"],
+    html: String.raw`<div class="lead">Quelle opération fait passer d'une semaine à la suivante ?</div>
+      ${chain(["T|known|$d_1$", "A|$+50$", "T|$d_2$", "A|$+50$", "T|$d_3$", "A|$+50$", "T|ghost|$\\cdots$"])}
+      <p>C'est toujours la même : on ajoute $50$. C'est vrai pour n'importe quelle semaine $n$ :</p>
+      ${chain(["T|known|$d_n$", "A|$+50$", "T|goal|$d_{n+1}$"], "semaine $n$ → semaine $n+1$ :")}` },
+
+  { q: 1, hl: ["rec"], tags: ["d23", "rec"],
+    html: String.raw`<div class="lead">La formule de récurrence</div>
+      $$d_{n+1}=d_n+\textcolor{#2F9E44}{50}\qquad\text{pour tout entier } n\geqslant1$$` },
+
+  { q: 1, hl: [], tags: ["d23", "rec"], remark: true, warnbox: true,
+    html: String.raw`<span class="warn">Attention :</span> on ne demande pas $d_{n+1}=300$ ni $d_n=\ldots n\ldots$ (ça, c'est la formule explicite, question 4). La formule de récurrence doit contenir <b>$d_{n+1}$ d'un côté et $d_n$ de l'autre</b>.` },
+
+  { q: 1, hl: [], tags: ["d23", "rec"],
+    html: String.raw`<div class="lead">Que veut dire « la nature de la suite » ?</div>
+      <div class="defbox"><div class="t">À retenir</div>
+      <p>Donner la nature d'une suite, c'est dire si elle est <b>arithmétique</b>, <b>géométrique</b>, ou <b>ni l'un ni l'autre</b>. On le lit sur la formule de récurrence :</p>
+      <table class="nat">
+        <tr><th>Formule de récurrence</th><th>Nature</th></tr>
+        <tr><td>$u_{n+1}=u_n+r$ &nbsp;(on <b>ajoute</b> toujours le même nombre)</td><td>arithmétique de raison $r$</td></tr>
+        <tr><td>$u_{n+1}=q\times u_n$ &nbsp;(on <b>multiplie</b> toujours par le même nombre)</td><td>géométrique de raison $q$</td></tr>
+        <tr><td>une autre forme, par exemple $u_{n+1}=0{,}9\times u_n+200$</td><td>ni arithmétique, ni géométrique</td></tr>
+      </table></div>` },
+
+  { q: 1, hl: ["nat"], tags: ["d23", "rec", "nat"],
+    html: String.raw`<div class="lead">On compare avec notre formule</div>
+      <table class="nat">
+        <tr><th>Formule de récurrence</th><th>Nature</th></tr>
+        <tr class="on"><td>$d_{n+1}=d_n+\textcolor{#2F9E44}{50}$ &nbsp;: on ajoute toujours $50$</td><td>arithmétique de raison $50$</td></tr>
+      </table>
+      <p class="accent">La suite $d$ est arithmétique de premier terme $d_1=200$ et de raison $r=50$.</p>` },
+
+  /* --- Q3 --- */
+  { q: 2, hl: ["rec"], tags: ["d23", "rec", "nat"],
+    html: String.raw`<div class="lead">Les flèches courbes : d'un terme au suivant</div>
+      <p>Chaque flèche courbe porte l'opération de la formule de récurrence : $+50$.</p>
+      ${schema(false)}` },
+
+  { q: 2, hl: [], tags: ["d23", "rec", "nat"],
+    html: String.raw`<div class="lead">Combien de flèches courbes pour aller de $d_1$ à $d_n$ ?</div>
+      <table class="rk">
+        <tr><th>De $d_1$ à…</th><td>$d_2$</td><td>$d_3$</td><td>$d_4$</td><td>$d_{10}$</td><td>$d_{100}$</td><td>$d_{253}$</td><td>$d_{346}$</td><td>$d_n$</td></tr>
+        <tr class="rang"><th>Nombre de flèches</th><td>$1$</td><td>$2$</td><td>$3$</td><td>$9$</td><td>$99$</td><td>$252$</td><td>$345$</td><td class="on">$n-1$</td></tr>
+      </table>
+      <p>On compte une flèche de moins que le numéro du terme, car on <b>part de $d_1$</b> (et non de $d_0$).</p>` },
+
+  { q: 2, hl: [], tags: ["d23", "rec", "nat"],
+    html: String.raw`<div class="lead">La flèche globale</div>
+      <p>On ajoute $50$, $(n-1)$ fois, donc on ajoute $(n-1)\times50$ en tout :</p>
+      ${schema(true)}` },
+
+  /* --- Q4 --- */
+  { q: 3, hl: [], tags: ["d23", "rec", "nat"],
+    html: String.raw`<div class="lead">On lit la flèche globale</div>
+      ${chain(["T|known|$d_1=200$", "D|$+\\,(n-1)\\times50$", "T|goal|$d_n$"])}
+      $$d_n=d_1+(n-1)\times r=200+(n-1)\times50$$` },
+
+  { q: 3, hl: ["exp"], tags: ["d23", "rec", "nat", "exp"],
+    html: String.raw`<div class="lead">On peut développer</div>
+      $$\begin{aligned} d_n&=200+(n-1)\times50\\ &=200+50n-50\\ &=\textcolor{#1C7ED6}{150+50n}\end{aligned}$$
+      <p>Vérification : $d_1=150+50\times1=200$ ✓ et $d_3=150+50\times3=300$ ✓.</p>` },
+
+  { q: 3, hl: ["rec", "exp"], tags: ["d23", "rec", "nat", "exp"], remark: true,
+    html: String.raw`<b>Récurrence ou explicite ?</b> La formule de récurrence $d_{n+1}=d_n+50$ donne un terme à partir du <b>précédent</b>. La formule explicite $d_n=150+50n$ donne un terme directement à partir de son <b>rang</b> $n$ : plus besoin de calculer tous les termes d'avant.` },
+
+  /* --- Q5 --- */
+  { q: 4, hl: ["exp"], tags: ["d23", "rec", "nat", "exp"],
+    html: String.raw`<div class="lead">La $12^\text{e}$ semaine correspond à $n=12$</div>
+      $$\begin{aligned} d_{12}&=200+(12-1)\times50\\ &=200+11\times50\\ &=200+550\\ &=750\end{aligned}$$
+      <p class="accent">Pendant la $12^\text{e}$ semaine, le patient marchera $750$ m par jour.</p>` },
+
+  { q: 4, hl: [], tags: ["d23", "rec", "nat", "exp"], remark: true, warnbox: true,
+    html: String.raw`<span class="warn">Attention :</span> on n'ajoute que $11$ fois $50$, pas $12$ fois : la $1^\text{re}$ semaine, il marche déjà $200$ m, sans rien ajouter.` },
+
+  /* --- Q6 --- */
+  { q: 5, hl: ["exp"], tags: ["d23", "rec", "nat", "exp"],
+    html: String.raw`<div class="lead">On traduit la question</div>
+      <p>$1$ km $=1\,000$ m. « Au moins $1\,000$ m » signifie « $1\,000$ m ou plus » : on cherche $n$ tel que</p>
+      $$d_n\geqslant1\,000\quad\text{c'est-à-dire}\quad200+(n-1)\times50\geqslant1\,000$$` },
+
+  { q: 5, hl: [], tags: ["d23", "rec", "nat", "exp"],
+    html: String.raw`<div class="lead">On résout l'inéquation</div>
+      $$\begin{aligned} 200+(n-1)\times50&\geqslant1\,000\\ (n-1)\times50&\geqslant800\\ n-1&\geqslant\tfrac{800}{50}=16\\ n&\geqslant17\end{aligned}$$` },
+
+  { q: 5, hl: [], tags: ["d23", "rec", "nat", "exp"],
+    html: String.raw`<div class="lead">On vérifie</div>
+      <table class="rk">
+        <tr class="rang"><th>Semaine $n$</th><td>$15$</td><td>$16$</td><td class="on">$17$</td><td>$18$</td></tr>
+        <tr><th>Distance $d_n$</th><td>$900$</td><td>$950$</td><td class="on">$1\,000$</td><td>$1\,050$</td></tr>
+      </table>
+      <p>$d_{16}=950<1\,000$ et $d_{17}=1\,000\geqslant1\,000$.</p>
+      <p class="accent">Le patient marchera au moins $1$ km par jour à partir de la $17^\text{e}$ semaine.</p>` },
+];
+
+/* ============ navigation ============ */
+const qlabel = document.getElementById("qlabel");
+const qtext = document.getElementById("qtext");
+const stepsEl = document.getElementById("steps");
+const chipsEl = document.getElementById("chips");
+const counter = document.getElementById("counter");
+const btnPrev = document.getElementById("btn-prev");
+const btnNext = document.getElementById("btn-next");
+const suiteEls = Array.from(document.querySelectorAll(".suite"));
+const FACT = {
+  d23: String.raw`$d_2=250$ ; $d_3=300$`,
+  rec: String.raw`$d_{n+1}=d_n+50$`,
+  nat: String.raw`arithmétique, $r=50$`,
+  exp: String.raw`$d_n=200+(n-1)\times50$`,
+};
+
+function renderMath(node) {
+  if (typeof renderMathInElement !== "function") return;
+  renderMathInElement(node, {
+    delimiters: [{ left: "$$", right: "$$", display: true }, { left: "$", right: "$", display: false }],
+    throwOnError: false,
+  });
+}
+
+// état : question affichée qc, dernière étape révélée cur
+// (cur < firstStepOf(qc) : question posée, aucune étape révélée)
+let qc = 0, cur = -1;
+const firstStepOf = q => STEPS.findIndex(s => s.q === q);
+const currentQ = () => qc;
+
+QUESTIONS.forEach((qq, i) => {
+  const b = document.createElement("button");
+  b.className = "chip"; b.textContent = qq.label.replace("Question ", "");
+  b.title = qq.label;
+  b.addEventListener("click", () => goToQuestion(i));
+  chipsEl.appendChild(b);
+});
+
+function renderFacts(q) {
+  // état des fiches : celui de la dernière étape révélée, ou de la fin de la question précédente
+  let s = cur >= 0 ? STEPS[cur] : null;
+  if (cur < firstStepOf(q)) s = cur >= 0 ? STEPS[firstStepOf(q) - 1] : null;
+  const hl = (s && cur >= firstStepOf(q)) ? s.hl : [], tags = s ? s.tags : [];
+  suiteEls.forEach(e => {
+    const k = e.dataset.s, val = e.querySelector(".val");
+    e.classList.toggle("hl", hl.includes(k));
+    if (k === "d1") return;
+    const on = tags.includes(k);
+    if (val.dataset.on !== String(on)) {
+      val.dataset.on = String(on);
+      val.className = "val" + (on ? "" : " empty");
+      val.innerHTML = on ? FACT[k] : "?";
+      e.classList.toggle("dim", !on);
+      if (on) { renderMath(val); e.classList.remove("new"); void e.offsetWidth; e.classList.add("new"); }
+    }
+  });
+}
+
+function render() {
+  const q = currentQ();
+  qlabel.textContent = QUESTIONS[q].label;
+  qtext.innerHTML = QUESTIONS[q].html;
+  renderMath(qtext);
+
+  Array.from(chipsEl.children).forEach((c, i) => {
+    c.classList.toggle("active", i === q);
+    c.classList.toggle("done", i < q);
+  });
+
+  stepsEl.innerHTML = "";
+  let shown = 0, total = STEPS.filter(s => s.q === q).length;
+  STEPS.forEach((s, i) => {
+    if (s.q !== q || i > cur) return;
+    shown++;
+    const d = document.createElement("div");
+    d.className = "step" + (s.remark ? " remark" : "") + (s.warnbox ? " warn-box" : "") + (i === cur ? " fresh" : "");
+    d.innerHTML = s.html;
+    if (i !== cur) d.querySelectorAll(".term, .arrow, .fade").forEach(n => { n.style.animation = "none"; n.style.opacity = "1"; });
+    stepsEl.appendChild(d);
+    renderMath(d);
+  });
+
+  renderFacts(q);
+
+  counter.textContent = `Étape ${shown} / ${total}`;
+  btnPrev.disabled = cur < 0 && qc === 0;
+  const last = cur === STEPS.length - 1;
+  btnNext.disabled = last;
+  btnNext.textContent = (shown === total && !last) ? "Question suivante ▶" : "Étape suivante ▶";
+
+  const fresh = stepsEl.querySelector(".fresh");
+  if (fresh) fresh.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function next() {
+  if (cur >= STEPS.length - 1) return;
+  if (STEPS[cur + 1].q === qc) cur++;
+  else qc = STEPS[cur + 1].q;          // on pose la question suivante, sans étape
+  render();
+}
+function prev() {
+  if (cur >= firstStepOf(qc)) cur--;
+  else if (qc > 0) qc--;               // retour à la question précédente, entièrement révélée
+  else return;
+  render();
+}
+function goToQuestion(q) {
+  q = Math.max(0, Math.min(QUESTIONS.length - 1, q));
+  qc = q;
+  cur = firstStepOf(q) - 1;           // question posée, aucune étape révélée
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function nextQuestion() { if (currentQ() < QUESTIONS.length - 1) goToQuestion(currentQ() + 1); }
+function prevQuestion() {
+  if (cur >= firstStepOf(currentQ())) goToQuestion(currentQ());   // d'abord revenir au début de la question
+  else if (currentQ() > 0) goToQuestion(currentQ() - 1);
+}
+
+btnPrev.addEventListener("click", prev);
+btnNext.addEventListener("click", next);
+document.addEventListener("keydown", e => {
+  if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  if (e.key === " " || e.key === "Enter" || e.key === "ArrowDown" || e.key === "PageDown") { e.preventDefault(); next(); }
+  else if (e.key === "Backspace" || e.key === "ArrowUp" || e.key === "PageUp") { e.preventDefault(); prev(); }
+  else if (e.key === "ArrowRight") { e.preventDefault(); nextQuestion(); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); prevQuestion(); }
+  else if (e.key === "r" || e.key === "R") { goToQuestion(currentQ()); }
+});
+
+renderMath(document.querySelector(".top-inner"));
+render();
+</script>
+</body>
+</html>
