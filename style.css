@@ -938,8 +938,8 @@ li.res.pending-link { border-left-color: var(--line); }
     max-width: 100%;
 }
 
-header h1 + .flammes { margin: -10px 0 -6px; }
-header p + .flammes { margin: -8px 0 -4px; }
+header h1 + .flammes { margin: -22px 0 -6px; }
+header p + .flammes { margin: -16px 0 -4px; }
 
 :root.futur .class-title,
 :root.futur .sequence-subtitle { font-family: var(--f-titre); letter-spacing: 0.02em; }

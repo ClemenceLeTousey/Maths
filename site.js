@@ -264,40 +264,73 @@ document.addEventListener('click', function (e) {
         ctx.shadowBlur = 0;
     }
 
-    function bruler(f, attiser) {
-        var ctx = f.ctx, lim = f.w * f.front, base = f.h - 4, echelle = f.h / 30;
+    /* Flammes : chaque particule est une petite tache de lumière floue (sprite pré-dessiné), étirée vers le haut,
+       dont la couleur suit la température : blanc-jaune à la naissance, puis jaune, orange, rouge, et elle s'éteint. */
+    var SPRITES = null;
+    function sprites() {
+        if (SPRITES) return SPRITES;
+        var teintes = [[120, 14, 0], [200, 40, 0], [255, 90, 0], [255, 150, 20], [255, 210, 70], [255, 245, 200]];
+        SPRITES = [];
+        for (var k = 0; k < 24; k++) {
+            var t = k / 23 * (teintes.length - 1), i = Math.min(teintes.length - 2, Math.floor(t)), u = t - i;
+            var c = teintes[i].map(function (v, j) { return Math.round(v + (teintes[i + 1][j] - v) * u); });
+            var sp = document.createElement('canvas'); sp.width = sp.height = 32;
+            var x = sp.getContext('2d'), g = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+            g.addColorStop(0, 'rgba(' + c + ', 1)');
+            g.addColorStop(0.4, 'rgba(' + c + ', 0.55)');
+            g.addColorStop(1, 'rgba(' + c + ', 0)');
+            x.fillStyle = g; x.fillRect(0, 0, 32, 32);
+            SPRITES.push(sp);
+        }
+        return SPRITES;
+    }
+
+    // intensite : 1 pendant que le feu brûle, puis descend vers 0 (moins de flammes, plus petites)
+    function bruler(f, intensite, now) {
+        var ctx = f.ctx, lim = f.w * f.front, base = f.h - 4, echelle = f.h / 30, sp = sprites();
         ctx.clearRect(0, 0, f.w, f.h);
         braises(f, lim);
-        // nouvelles flammes, plus hautes vers la droite (le feu est plus vif là où la voiture vient de passer)
-        for (var i = 0, n = attiser ? Math.round(lim / 30) : 0; i < n && f.parts.length < 700; i++) {
-            var x = Math.random() * lim, vif = 0.45 + 0.55 * x / f.w;
-            f.parts.push({ x: x, y: base, vx: -0.15 - Math.random() * 0.6, vy: -(0.5 + Math.random() * 1.2) * echelle * vif,
-                           v: 1, d: 0.03 + Math.random() * 0.04, r: (1.5 + Math.random() * 2.8) * echelle * vif });
+        // nouvelles flammes, plus hautes vers la droite et juste derrière le front (le feu le plus récent)
+        var n = Math.round(lim / 22 * intensite);
+        for (var i = 0; i < n && f.parts.length < 900; i++) {
+            var x = Math.random() * lim, vif = (0.4 + 0.6 * x / f.w) * (0.45 + 0.55 * intensite);
+            if (f.front < 1 && lim - x < 40) vif *= 1.4;
+            f.parts.push({ x: x, y: base + Math.random() * 2, vx: -0.2 - Math.random() * 0.7, vy: -(0.6 + Math.random() * 1.1) * echelle * vif,
+                           v: 1, d: 0.025 + Math.random() * 0.035, r: (2.5 + Math.random() * 3.5) * echelle * vif, ph: Math.random() * 6.3 });
+        }
+        // quelques étincelles qui s'envolent plus haut
+        if (intensite > 0.2 && Math.random() < 0.35 * intensite) {
+            f.parts.push({ x: Math.random() * lim, y: base - 2, vx: -0.5 - Math.random(), vy: -(1.5 + Math.random() * 1.5) * echelle,
+                           v: 1, d: 0.02 + Math.random() * 0.02, r: 0, ph: 0, etincelle: true });
         }
         ctx.globalCompositeOperation = 'lighter';
         f.parts = f.parts.filter(function (p) {
-            p.x += p.vx; p.y += p.vy; p.vy *= 0.97; p.v -= p.d;
+            p.v -= p.d;
             if (p.v <= 0) return false;
-            var a = 0.55 * p.v;
-            ctx.fillStyle = p.v > 0.75 ? 'rgba(255, 244, 200, ' + a + ')' : p.v > 0.5 ? 'rgba(255, 186, 40, ' + a + ')'
-                          : p.v > 0.25 ? 'rgba(255, 96, 0, ' + a + ')' : 'rgba(170, 30, 0, ' + a + ')';
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r * (0.35 + p.v), 0, 2 * Math.PI);
-            ctx.fill();
+            if (p.etincelle) {
+                p.x += p.vx; p.y += p.vy; p.vy += 0.04;
+                ctx.fillStyle = 'rgba(255, 220, 120, ' + p.v + ')';
+                ctx.fillRect(p.x, p.y, 1.6, 1.6);
+                return p.y < f.h;
+            }
+            // la flamme ondule (turbulence) et monte de moins en moins vite
+            p.x += p.vx + Math.sin(now * 0.012 + p.ph) * 0.45 * echelle;
+            p.y += p.vy; p.vy *= 0.975;
+            var r = p.r * (0.45 + 0.75 * p.v);
+            ctx.globalAlpha = Math.min(1, 1.3 * p.v);
+            ctx.drawImage(sp[Math.min(23, Math.floor(p.v * 24))], p.x - r, p.y - r * 1.7, 2 * r, 3 * r);
             return true;
         });
+        ctx.globalAlpha = 1;
         // l'étincelle qui court devant le feu
-        if (f.front < 1) {
-            ctx.fillStyle = 'rgba(255, 250, 220, 0.9)';
-            ctx.beginPath(); ctx.arc(lim, base, 4 * echelle, 0, 2 * Math.PI); ctx.fill();
-        }
+        if (f.front < 1) ctx.drawImage(sp[23], lim - 9 * echelle, base - 9 * echelle, 18 * echelle, 18 * echelle);
     }
 
     function allumerFlammes(progressif) {
         eteindreFlammes();
         var header = document.querySelector('header');
         if (!header) return;
-        [[header.querySelector('h1'), 34], [header.querySelector('p'), 22]].forEach(function (cible) {
+        [[header.querySelector('h1'), 46], [header.querySelector('p'), 30]].forEach(function (cible) {
             if (!cible[0]) return;
             var c = document.createElement('canvas');
             c.className = 'flammes';
@@ -310,16 +343,16 @@ document.addEventListener('click', function (e) {
         var fixe = function () { foyers.forEach(function (f) { dimensionner(f); braises(f, f.w); }); };
         if (document.fonts) document.fonts.ready.then(function () { if (!animFlammes) fixe(); });
         if (calme || !progressif) { fixe(); return; }
-        var t0 = performance.now(), extinction = t0 + 700 + 2600;
+        var t0 = performance.now(), plein = t0 + 700 + 1800, extinction = plein + 1200;
         (function image(now) {
             if (!foyers.length) return;
-            var attiser = now < extinction;
+            var intensite = now < plein ? 1 : Math.max(0, (extinction - now) / (extinction - plein));
             foyers.forEach(function (f) {
                 if (f.front < 1) f.front = Math.min(1, (now - t0) / 700);
-                bruler(f, attiser);
+                bruler(f, intensite, now);
             });
             // plus de flammes : on s'arrête, la ligne de braises reste
-            if (!attiser && foyers.every(function (f) { return !f.parts.length; })) { animFlammes = null; fixe(); return; }
+            if (!intensite && foyers.every(function (f) { return !f.parts.length; })) { animFlammes = null; fixe(); return; }
             animFlammes = requestAnimationFrame(image);
         })(t0);
     }
