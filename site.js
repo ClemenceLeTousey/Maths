@@ -224,11 +224,116 @@ document.addEventListener('click', function (e) {
         if (document.documentElement.classList.toggle('futur')) {
             afficherCircuits();
             if (!calme) demarrer88();
+            else allumerFlammes(false);
         } else {
             clearInterval(horloge);
+            eteindreFlammes();
             document.querySelectorAll('.circuits, .effet-futur').forEach(function (e) { e.remove(); });
         }
     }
+
+    /* Traînées de feu sous le titre et sous le sous-titre : de petites flammes (particules) montent d'une ligne
+       de braises et partent vers l'arrière. progressif (après les 88 mph) : le feu court de gauche à droite,
+       brûle quelques secondes puis s'éteint ; il ne reste que la ligne de braises. Sinon : braises seules. */
+    var foyers = [], animFlammes = null;
+
+    function dimensionner(f) {
+        var r = document.createRange();
+        r.selectNodeContents(f.elt);
+        var texte = r.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+        f.w = Math.max(40, Math.ceil(texte.width) + 12);
+        f.c.width = f.w * dpr; f.c.height = f.h * dpr;
+        f.c.style.width = f.w + 'px'; f.c.style.height = f.h + 'px';
+        f.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        // aligné sur le début du texte, quelles que soient les marges du conteneur
+        f.c.style.marginLeft = '0px';
+        f.c.style.marginLeft = (texte.left - f.c.getBoundingClientRect().left) + 'px';
+    }
+
+    function braises(f, lim) {
+        var ctx = f.ctx, base = f.h - 4;
+        var g = ctx.createLinearGradient(0, 0, f.w, 0);
+        g.addColorStop(0, 'rgba(160, 20, 0, 0)');
+        g.addColorStop(0.15, '#c41a00');
+        g.addColorStop(0.6, '#ff6a00');
+        g.addColorStop(1, '#ffe066');
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.shadowColor = '#ff6a00'; ctx.shadowBlur = 8;
+        ctx.fillStyle = g;
+        ctx.fillRect(0, base - 1, lim, 3);
+        ctx.shadowBlur = 0;
+    }
+
+    function bruler(f, attiser) {
+        var ctx = f.ctx, lim = f.w * f.front, base = f.h - 4, echelle = f.h / 30;
+        ctx.clearRect(0, 0, f.w, f.h);
+        braises(f, lim);
+        // nouvelles flammes, plus hautes vers la droite (le feu est plus vif là où la voiture vient de passer)
+        for (var i = 0, n = attiser ? Math.round(lim / 30) : 0; i < n && f.parts.length < 700; i++) {
+            var x = Math.random() * lim, vif = 0.45 + 0.55 * x / f.w;
+            f.parts.push({ x: x, y: base, vx: -0.15 - Math.random() * 0.6, vy: -(0.5 + Math.random() * 1.2) * echelle * vif,
+                           v: 1, d: 0.03 + Math.random() * 0.04, r: (1.5 + Math.random() * 2.8) * echelle * vif });
+        }
+        ctx.globalCompositeOperation = 'lighter';
+        f.parts = f.parts.filter(function (p) {
+            p.x += p.vx; p.y += p.vy; p.vy *= 0.97; p.v -= p.d;
+            if (p.v <= 0) return false;
+            var a = 0.55 * p.v;
+            ctx.fillStyle = p.v > 0.75 ? 'rgba(255, 244, 200, ' + a + ')' : p.v > 0.5 ? 'rgba(255, 186, 40, ' + a + ')'
+                          : p.v > 0.25 ? 'rgba(255, 96, 0, ' + a + ')' : 'rgba(170, 30, 0, ' + a + ')';
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r * (0.35 + p.v), 0, 2 * Math.PI);
+            ctx.fill();
+            return true;
+        });
+        // l'étincelle qui court devant le feu
+        if (f.front < 1) {
+            ctx.fillStyle = 'rgba(255, 250, 220, 0.9)';
+            ctx.beginPath(); ctx.arc(lim, base, 4 * echelle, 0, 2 * Math.PI); ctx.fill();
+        }
+    }
+
+    function allumerFlammes(progressif) {
+        eteindreFlammes();
+        var header = document.querySelector('header');
+        if (!header) return;
+        [[header.querySelector('h1'), 34], [header.querySelector('p'), 22]].forEach(function (cible) {
+            if (!cible[0]) return;
+            var c = document.createElement('canvas');
+            c.className = 'flammes';
+            c.setAttribute('aria-hidden', 'true');
+            cible[0].after(c);
+            var f = { c: c, ctx: c.getContext('2d'), elt: cible[0], h: cible[1], parts: [], front: progressif ? 0 : 1 };
+            dimensionner(f);
+            foyers.push(f);
+        });
+        var fixe = function () { foyers.forEach(function (f) { dimensionner(f); braises(f, f.w); }); };
+        if (document.fonts) document.fonts.ready.then(function () { if (!animFlammes) fixe(); });
+        if (calme || !progressif) { fixe(); return; }
+        var t0 = performance.now(), extinction = t0 + 700 + 2600;
+        (function image(now) {
+            if (!foyers.length) return;
+            var attiser = now < extinction;
+            foyers.forEach(function (f) {
+                if (f.front < 1) f.front = Math.min(1, (now - t0) / 700);
+                bruler(f, attiser);
+            });
+            // plus de flammes : on s'arrête, la ligne de braises reste
+            if (!attiser && foyers.every(function (f) { return !f.parts.length; })) { animFlammes = null; fixe(); return; }
+            animFlammes = requestAnimationFrame(image);
+        })(t0);
+    }
+
+    function eteindreFlammes() {
+        cancelAnimationFrame(animFlammes);
+        animFlammes = null;
+        foyers.forEach(function (f) { f.c.remove(); });
+        foyers = [];
+    }
+
+    window.addEventListener('resize', function () {
+        foyers.forEach(function (f) { dimensionner(f); if (!animFlammes) braises(f, f.w); });
+    });
 
     // « Last time departed » = la dernière connexion aux Automatismes sur cet appareil (enregistrée par moteur.js)
     function dernierDepart() {
@@ -268,16 +373,29 @@ document.addEventListener('click', function (e) {
     function demarrer88() {
         var e = document.createElement('div');
         e.className = 'effet-futur';
-        e.innerHTML = '<div class="compteur"><span>00</span><small>MPH</small></div><div class="eclair"></div>' +
-            '<div class="trainee t1"></div><div class="trainee t2"></div>';
+        e.innerHTML = '<div class="compteur"><span>00</span><small>MPH</small></div><div class="eclair"></div>';
         document.body.appendChild(e);
+        // le compteur se place au bout du titre : le feu courra vers lui
+        var titre = document.querySelector('header h1'), compteur = e.querySelector('.compteur');
+        if (titre) {
+            var r = document.createRange();
+            r.selectNodeContents(titre);
+            var t = r.getBoundingClientRect(), cr = compteur.getBoundingClientRect();
+            if (t.bottom > 0 && t.top < innerHeight) {
+                compteur.style.left = Math.max(8, Math.min(innerWidth - cr.width - 8, t.right + 16)) + 'px';
+                compteur.style.top = Math.max(8, t.top + (t.height - cr.height) / 2) + 'px';
+                compteur.style.right = 'auto'; compteur.style.bottom = 'auto';
+            }
+        }
         var aff = e.querySelector('.compteur span'), debut = performance.now();
         (function monter(now) {
             var v = Math.min(88, Math.round(88 * Math.pow(Math.max(0, now - debut) / 1100, 1.6)));
             aff.textContent = (v < 10 ? '0' : '') + v;
             if (v < 88) { requestAnimationFrame(monter); return; }
             e.classList.add('boom');
-            setTimeout(function () { e.remove(); }, 2300);
+            if (document.documentElement.classList.contains('futur')) allumerFlammes(true);
+            setTimeout(function () { e.classList.add('fin'); }, 3000);         // le compteur reste le temps du feu
+            setTimeout(function () { e.remove(); }, 3600);
         })(debut);
     }
 
@@ -299,7 +417,7 @@ document.addEventListener('click', function (e) {
     if (MODES[memorise]) {
         document.documentElement.classList.add(memorise);          // tout de suite, sans animation
         if (memorise === 'matrix') document.addEventListener('DOMContentLoaded', demarrerPluie);
-        if (memorise === 'futur') document.addEventListener('DOMContentLoaded', afficherCircuits);
+        if (memorise === 'futur') document.addEventListener('DOMContentLoaded', function () { afficherCircuits(); allumerFlammes(false); });
     }
     window.modesSite = { basculer: basculer, actif: modeActif };
 

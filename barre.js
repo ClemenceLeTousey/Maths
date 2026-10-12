@@ -112,7 +112,7 @@
             '<div class="b-logo"><span class="b-ligne">' +
             '<button type="button" data-m="" title="Site normal"></button>' +
             '<button type="button" data-m="matrix" title="Mode Matrix"></button>' +
-            '<button type="button" data-m="futur" title="Mode Retour vers le futur"></button></span>' +
+            '<button type="button" data-m="futur" title="Mode BTTF (Back to the Future)"></button></span>' +
             '<a href="' + base + 'index.html">Année 2026-2027 - Lycée Lebrun</a></div>' +
             '<ul><li><a href="' + base + 'index.html">Accueil</a></li>' +
             '<li><a href="' + base + 'automatismes/">Automatismes</a></li>' +

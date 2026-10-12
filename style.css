@@ -931,17 +931,15 @@ li.res.pending-link { border-left-color: var(--line); }
 
 :root.futur .titre-stylo svg { stroke: #ffd23a; }
 
-/* traînée de feu sous le titre */
-:root.futur header h1.titre-stylo::after {
-    content: "";
+/* traînées de feu sous le titre et le sous-titre : flammes dessinées par site.js (canvas) */
+.flammes {
     display: block;
-    width: min(100%, 9em);
-    height: 0.09em;
-    margin-top: 0.12em;
-    border-radius: 2px;
-    background: linear-gradient(90deg, transparent, #c41a00 15%, #ff6a00 55%, #ffe066);
-    box-shadow: 0 0 10px rgba(255, 120, 0, 0.7);
+    pointer-events: none;
+    max-width: 100%;
 }
+
+header h1 + .flammes { margin: -10px 0 -6px; }
+header p + .flammes { margin: -8px 0 -4px; }
 
 :root.futur .class-title,
 :root.futur .sequence-subtitle { font-family: var(--f-titre); letter-spacing: 0.02em; }
@@ -1034,7 +1032,7 @@ li.res.pending-link { border-left-color: var(--line); }
 .circuit.present { --c: #33ff77; }
 .circuit.depart { --c: #ffb320; }
 
-/* Démarrage : le compteur monte à 88, éclair, puis deux traînées de feu traversent l'écran */
+/* Démarrage : le compteur monte à 88, éclair, puis les flammes s'allument sous le titre et le sous-titre */
 .effet-futur {
     position: fixed;
     inset: 0;
@@ -1059,6 +1057,9 @@ li.res.pending-link { border-left-color: var(--line); }
 
 .effet-futur .compteur small { font-size: 0.9rem; margin-left: 0.4em; }
 
+.effet-futur .compteur { transition: opacity 0.6s; }
+.effet-futur.fin .compteur { opacity: 0; }
+
 .effet-futur .eclair {
     position: absolute;
     inset: 0;
@@ -1076,30 +1077,6 @@ li.res.pending-link { border-left-color: var(--line); }
     100% { opacity: 0; }
 }
 
-.effet-futur .trainee {
-    position: absolute;
-    left: -10%;
-    width: 120%;
-    height: 6px;
-    border-radius: 3px;
-    background: linear-gradient(90deg, transparent, #c41a00 20%, #ff6a00 60%, #fff1a0);
-    box-shadow: 0 0 14px #ff6a00, 0 0 30px rgba(255, 90, 0, 0.6);
-    transform-origin: left center;
-    transform: scaleX(0);
-    opacity: 0;
-}
-
-.effet-futur .trainee.t1 { bottom: 18%; }
-.effet-futur .trainee.t2 { bottom: 13%; }
-
-.effet-futur.boom .trainee { animation: trainee 1.8s ease-out 0.2s forwards; }
-
-@keyframes trainee {
-    0% { transform: scaleX(0); opacity: 1; }
-    30% { transform: scaleX(1); opacity: 1; }
-    100% { transform: scaleX(1); opacity: 0; }
-}
-
 @media print {
-    .circuits, .effet-futur { display: none !important; }
+    .circuits, .effet-futur, .flammes { display: none !important; }
 }
