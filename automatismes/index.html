@@ -64,7 +64,7 @@
                 var a = document.createElement('a'); a.href = ex.url; a.textContent = ex.titre;
                 var td = document.createElement('td'); td.appendChild(a); tr.appendChild(td);
                 var cs = document.createElement('td');
-                if (b && b.couleurs) Interactif.pastilles(cs, b.couleurs); else cs.textContent = b ? b.meilleur.score + ' / ' + b.meilleur.total : '—';
+                if (b && b.couleurs) Interactif.pastilles(cs, b.couleurs, true); else cs.textContent = b ? b.meilleur.score + ' / ' + b.meilleur.total : '—';
                 tr.appendChild(cs);
                 var cn = document.createElement('td'); cn.textContent = b ? b.series : 0; tr.appendChild(cn);
                 table.appendChild(tr);

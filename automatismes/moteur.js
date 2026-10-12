@@ -528,12 +528,14 @@
         return { couleurs: Object.keys(c).length ? c : null, series: series, meilleur: meilleur };
     }
 
-    /* Pastilles colorées « 3/3 2/3 1/3 » dans un élément */
-    function pastilles(cible, c) {
+    /* Pastilles colorées « 3/3 2/3 1/3 » dans un élément ;
+       avec nonFaites, les couleurs pas encore faites (sur les 3) affichent « N.E. » (non évalué) */
+    function pastilles(cible, c, nonFaites) {
         var NOMS = { 1: 'verte', 2: 'bleue', 3: 'rouge' };
-        Object.keys(c).forEach(function (n) {
-            var p = el('span', 'pastille n' + n, c[n].ok + '/' + c[n].tot);
-            p.title = 'Série ' + (NOMS[n] || n);
+        var niveaux = nonFaites ? ['1', '2', '3'] : Object.keys(c);
+        niveaux.forEach(function (n) {
+            var p = c[n] ? el('span', 'pastille n' + n, c[n].ok + '/' + c[n].tot) : el('span', 'pastille n' + n, 'N.E.');
+            p.title = 'Série ' + (NOMS[n] || n) + (c[n] ? '' : ' : non évaluée');
             cible.appendChild(p);
         });
     }
