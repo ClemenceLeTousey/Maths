@@ -59,6 +59,14 @@
         });
     }
 
+    // enregistre un résultat et l'indique dans l'élément etat
+    function sauver(r, etat) {
+        if (!session()) { etat.textContent = 'Tu n\'es pas connecté(e) : ce résultat n\'est pas enregistré.'; return; }
+        etat.textContent = 'Enregistrement…';
+        enregistrer(r).then(function () { etat.textContent = '✓ Résultat enregistré.'; },
+            function (x) { etat.textContent = 'Résultat gardé sur cet appareil, il sera envoyé plus tard (' + x.message + ').'; });
+    }
+
     function enregistrer(r) {
         var s = session();
         if (!s) return Promise.reject(new Error('non connecté'));
@@ -322,24 +330,26 @@
                     var d = q.texte != null ? { t: q.texte + (q.figureNote ? ' <i>(figure : ' + q.figureNote + ')</i>' : ''), r: res.r, ok: juste } : { q: q.enonce, r: res.r, ok: juste };
                     if (type === 'qcm') d.b = 'ABCDEF'[q.bonne];
                     if (q.niveau) d.n = q.niveau;
+                    li.d = d;
                     if (essai > 1) {             // série refaite : gardée dans le détail, hors score
                         d.e = essai;
-                        if (!enregistre) reprises.push(d);
+                        if (!enregistre && !def.parNiveau) reprises.push(d);
                         return;
                     }
                     repondues++; if (juste) score++;
                     details[i] = d;
                     var suivant = !def.parNiveau && li.nextElementSibling && li.nextElementSibling.querySelector('input, .q-option');
                     if (suivant) suivant.focus();
-                    if (repondues === def.nb) terminer();
+                    if (repondues === def.nb && !def.parNiveau) terminer(score);
                 }
                 return li;
             }
 
             /* Mode « par niveau » : série verte, puis bleue, puis rouge, un bouton « Valider mes réponses »
                par série. Après validation : refaire la série avec d'autres nombres, ou passer à la suivante.
-               Le score enregistré est celui du premier essai de chaque série ; les essais suivants
-               figurent dans le détail. */
+               Chaque série validée est enregistrée tout de suite (une ligne par couleur), pour qu'un élève
+               puisse s'arrêter après la verte. Les reprises sont enregistrées aussi : pour chaque couleur,
+               c'est le meilleur essai qui compte (bilanCouleurs). */
             function paliers() {
                 var NOMS = { 1: 'Série verte', 2: 'Série bleue', 3: 'Série rouge' };
                 var indices = {}, ordre = [];
@@ -348,6 +358,7 @@
                     if (!indices[n]) { indices[n] = []; ordre.push(n); }
                     indices[n].push(i);
                 }
+                var meilleurs = {};             // meilleur essai de chaque couleur
                 liste.remove();
                 conv = convecteur(def.nb);
                 zone.insertBefore(conv.bloc, bilan);
@@ -364,7 +375,7 @@
                     var lis = indices[n].map(function (i) { var li = question(def.generer(i), i, essai); ol.appendChild(li); return li; });
                     bloc.appendChild(ol);
                     var b = el('button', 'valider-palier', 'Valider mes réponses'); b.type = 'button';
-                    var msg = el('p', 'palier-msg');
+                    var msg = el('p', 'palier-msg'), t0 = Date.now();
                     var actions = el('div', 'palier-actions');
                     b.onclick = function () {
                         var reponses = lis.map(function (li) { return li.controler(); });
@@ -377,7 +388,13 @@
                         var bons = lis.filter(function (li) { return li.classList.contains('juste'); }).length;
                         msg.textContent = (NOMS[n] || 'Niveau ' + n) + ' : ' + bons + ' / ' + lis.length +
                             (bons === lis.length ? (futur() ? ' — 88 miles à l\'heure !' : ' — bravo !') : '');
-                        conv.allumer(n, bons === lis.length, essai === 1 ? score : null);
+                        meilleurs[n] = Math.max(meilleurs[n] || 0, bons);
+                        var total = Object.keys(meilleurs).reduce(function (s, c) { return s + meilleurs[c]; }, 0);
+                        conv.allumer(n, bons === lis.length, total);
+                        var etat = el('p', 'palier-etat');
+                        bloc.appendChild(etat);
+                        sauver({ exercice: def.id, score: bons, total: lis.length, details: lis.map(function (li) { return li.d; }),
+                                 duree: Math.round((Date.now() - t0) / 1000) }, etat);
                         var refaire = el('button', 'secondaire', '↻ Refaire cette série avec d\'autres nombres'); refaire.type = 'button';
                         refaire.onclick = function () { actions.remove(); ouvrir(k, essai + 1); };
                         actions.appendChild(refaire);
@@ -388,6 +405,7 @@
                             actions.appendChild(suite);
                         }
                         bloc.appendChild(actions);
+                        if (Object.keys(meilleurs).length === ordre.length) terminer(total);
                     };
                     bloc.appendChild(b); bloc.appendChild(msg);
                     zone.insertBefore(bloc, bilan);
@@ -395,25 +413,21 @@
                 }
             }
 
-            function terminer() {
+            // score = meilleur essai de chaque couleur (mode par niveau) ; rappelé après chaque reprise
+            function terminer(score) {
+                var premiere = !bilan.hasChildNodes();
                 bilan.innerHTML = '';
-                bilan.appendChild(el('p', 'bilan-score', (def.parNiveau ? 'Score (premiers essais) : ' : 'Score : ') + score + ' / ' + def.nb));
+                bilan.appendChild(el('p', 'bilan-score', (def.parNiveau ? 'Score (meilleur essai de chaque série) : ' : 'Score : ') + score + ' / ' + def.nb));
                 if (conv) conv.terminer(score);
                 var etat = el('p', 'bilan-etat');
                 bilan.appendChild(etat);
-                var r = { exercice: def.id, score: score, total: def.nb, details: details.concat(reprises.slice(-24)), duree: Math.round((Date.now() - debut) / 1000) };
                 enregistre = true;
-                if (session()) {
-                    etat.textContent = 'Enregistrement…';
-                    enregistrer(r).then(function () { etat.textContent = '✓ Résultat enregistré.'; },
-                        function (x) { etat.textContent = 'Résultat gardé sur cet appareil, il sera envoyé plus tard (' + x.message + ').'; });
-                } else {
-                    etat.textContent = 'Tu n\'es pas connecté(e) : ce résultat n\'est pas enregistré.';
-                }
+                if (def.parNiveau) etat.textContent = session() ? 'Chaque série est enregistrée dès que tu la valides.' : '';
+                else sauver({ exercice: def.id, score: score, total: def.nb, details: details.concat(reprises.slice(-24)), duree: Math.round((Date.now() - debut) / 1000) }, etat);
                 var encore = el('button', null, 'Nouvelle série'); encore.type = 'button';
                 encore.onclick = function () { lancer(); window.scrollTo(0, 0); };
                 bilan.appendChild(encore);
-                bilan.scrollIntoView({ behavior: 'smooth' });
+                if (premiere) bilan.scrollIntoView({ behavior: 'smooth' });
             }
         }
         lancer();
@@ -454,18 +468,19 @@
         }
         return {
             bloc: bloc,
-            // branche n allumée ; « pleine » si la série est sans faute ; score = premiers essais (null pour une reprise)
+            // branche n allumée ; « pleine » si la série est sans faute ; score = total des meilleurs essais
             allumer: function (n, parfait, score) {
                 var f = bloc.querySelector('.flux.n' + n);
                 f.classList.add('on');
                 if (parfait) f.classList.add('plein');
-                if (score != null) puissance(score);
+                puissance(score);
                 if (n < 3) msg.textContent = 'Branche ' + ['verte', 'bleue'][n - 1] + ' allumée ! Passe à la série suivante.';
             },
             terminer: function (score) {
                 puissance(score);
                 if (score === nb) {
                     msg.textContent = '1,21 gigowatt ! Le convecteur est chargé : en route vers le futur !';
+                    if (bloc.classList.contains('charge')) return;
                     bloc.classList.add('charge');
                     if (futur() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
                         var e = el('div', 'conv-eclair');
@@ -474,23 +489,43 @@
                     }
                 } else {
                     msg.textContent = gw(1.21 * score / nb) + ' gigowatt : il manquait ' + gw(1.21 * (nb - score) / nb) +
-                        ' gigowatt pour voyager dans le temps. Refais les séries pour t\'entraîner !';
+                        ' gigowatt pour voyager dans le temps. Refais une série pour faire monter la puissance !';
                 }
             }
         };
     }
 
-    /* Scores par couleur d'une série (premiers essais) : {1: {ok, tot}, 2: …, 3: …} ou null */
+    /* Scores par couleur d'un résultat : {1: {ok, tot}, 2: …, 3: …} ou null */
     function couleurs(r) {
         var c = {}, det = (r && r.details) || [];
+        // anciennes séries complètes : les reprises (d.e) sont jointes au détail, hors score ;
+        // une ligne d'une seule couleur ne contient qu'un essai (premier ou reprise) : elle compte
+        var reprise = det.length && det.every(function (d) { return !d || d.e; });
         det.forEach(function (d, k) {
-            if (!d || d.e) return;
+            if (!d || (d.e && !reprise)) return;
             var n = d.n || (/serie\d+-j/.test(r.exercice) && r.total === 9 ? Math.floor(k / 3) + 1 : 0);
             if (!n) return;
             c[n] = c[n] || { ok: 0, tot: 0 };
             c[n].tot++; if (d.ok) c[n].ok++;
         });
         return Object.keys(c).length ? c : null;
+    }
+
+    /* Plusieurs résultats d'un même élève pour un même exercice : meilleur essai de chaque couleur
+       {1: {ok, tot}, …} (null si l'exercice n'a pas de couleurs), nombre de séries faites
+       (= séries vertes commencées) et meilleur résultat pour les exercices sans couleurs. */
+    function bilanCouleurs(liste) {
+        var c = {}, series = 0, meilleur = null;
+        liste.forEach(function (r) {
+            if (!meilleur || r.score / r.total > meilleur.score / meilleur.total) meilleur = r;
+            var cr = couleurs(r);
+            if (!cr) { series++; return; }
+            if (cr[1] && !(r.details || []).every(function (d) { return !d || d.e; })) series++;
+            Object.keys(cr).forEach(function (n) {
+                if (!c[n] || cr[n].ok / cr[n].tot > c[n].ok / c[n].tot) c[n] = cr[n];
+            });
+        });
+        return { couleurs: Object.keys(c).length ? c : null, series: series, meilleur: meilleur };
     }
 
     /* Pastilles colorées « 3/3 2/3 1/3 » dans un élément */
@@ -514,6 +549,6 @@
 
     window.Interactif = {
         rpc: rpc, session: session, connecter: connecter, deconnecter: deconnecter,
-        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, couleurs: couleurs, pastilles: pastilles
+        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, couleurs: couleurs, bilanCouleurs: bilanCouleurs, pastilles: pastilles
     };
 })();

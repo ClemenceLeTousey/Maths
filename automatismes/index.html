@@ -43,11 +43,8 @@
         var table = document.getElementById('liste');
 
         function afficher(resultats) {
-            var meilleur = {}, nb = {};
-            (resultats || []).forEach(function (r) {
-                nb[r.exercice] = (nb[r.exercice] || 0) + 1;
-                if (!meilleur[r.exercice] || r.score / r.total > meilleur[r.exercice].score / meilleur[r.exercice].total) meilleur[r.exercice] = r;
-            });
+            var parExercice = {};
+            (resultats || []).forEach(function (r) { (parExercice[r.exercice] = parExercice[r.exercice] || []).push(r); });
             table.innerHTML = '<tr><th>Exercice</th><th>Meilleur score <span class="legende"><span class="pastille n1">vert</span><span class="pastille n2">bleu</span><span class="pastille n3">rouge</span></span></th><th>Séries faites</th></tr>';
             var groupe = null, s = Interactif.session(), niv = s && Interactif.niveauClasse(s.classe);
             var liste = INTERACTIF_CATALOGUE.filter(function (ex) { return !ex.archive && (!niv || ex.niveau === niv); });
@@ -63,13 +60,13 @@
                     th.colSpan = 3; th.className = 'groupe'; th.textContent = groupe;
                     tg.appendChild(th); table.appendChild(tg);
                 }
-                var tr = document.createElement('tr'), m = meilleur[ex.id];
+                var tr = document.createElement('tr'), b = parExercice[ex.id] && Interactif.bilanCouleurs(parExercice[ex.id]);
                 var a = document.createElement('a'); a.href = ex.url; a.textContent = ex.titre;
                 var td = document.createElement('td'); td.appendChild(a); tr.appendChild(td);
-                var cs = document.createElement('td'), cl = m && Interactif.couleurs(m);
-                if (cl) Interactif.pastilles(cs, cl); else cs.textContent = m ? m.score + ' / ' + m.total : '—';
+                var cs = document.createElement('td');
+                if (b && b.couleurs) Interactif.pastilles(cs, b.couleurs); else cs.textContent = b ? b.meilleur.score + ' / ' + b.meilleur.total : '—';
                 tr.appendChild(cs);
-                var cn = document.createElement('td'); cn.textContent = nb[ex.id] || 0; tr.appendChild(cn);
+                var cn = document.createElement('td'); cn.textContent = b ? b.series : 0; tr.appendChild(cn);
                 table.appendChild(tr);
             });
         }

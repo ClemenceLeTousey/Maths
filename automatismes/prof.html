@@ -130,7 +130,6 @@
         function niveau(r) { return r >= 0.75 ? 'n-bon' : r >= 0.5 ? 'n-moyen' : 'n-faible'; }
         function td(tr, texte, classe) { var c = document.createElement('td'); c.textContent = texte; if (classe) c.className = classe; tr.appendChild(c); return c; }
 
-        var couleurs = Interactif.couleurs;
         var COULEURS = { 1: 'verte', 2: 'bleue', 3: 'rouge' };
         function texteCouleurs(c) {
             return Object.keys(c).map(function (n) { return (COULEURS[n] || n)[0].toUpperCase() + ' ' + c[n].ok + '/' + c[n].tot; }).join(', ');
@@ -139,8 +138,8 @@
         function bilan(code, ex) {
             var liste = donnees.resultats.filter(function (r) { return r.code === code && r.exercice === ex; });
             if (!liste.length) return null;
-            var m = liste.reduce(function (a, r) { return r.score / r.total > a.score / a.total ? r : a; });
-            return { meilleur: m, nb: liste.length, liste: liste };
+            var b = Interactif.bilanCouleurs(liste);
+            return { meilleur: b.meilleur, couleurs: b.couleurs, nb: b.series, liste: liste };
         }
 
         function afficher() {
@@ -159,7 +158,7 @@
                 ids.forEach(function (id) {
                     var b = bilan(e.code, id);
                     if (!b) { td(tr, '—'); return; }
-                    var cl = couleurs(b.meilleur), c;
+                    var cl = b.couleurs, c;
                     if (cl) {
                         c = td(tr, '', 'cliquable');
                         Object.keys(cl).forEach(function (k) {
@@ -185,7 +184,7 @@
                 var moy = bs.reduce(function (s, b) { return s + b.meilleur.score / b.meilleur.total; }, 0) / bs.length;
                 var somme = {};
                 bs.forEach(function (b) {
-                    var cl = couleurs(b.meilleur);
+                    var cl = b.couleurs;
                     if (cl) Object.keys(cl).forEach(function (k) { somme[k] = somme[k] || { ok: 0, tot: 0 }; somme[k].ok += cl[k].ok; somme[k].tot += cl[k].tot; });
                 });
                 var cell = td(pied, '');
@@ -254,8 +253,8 @@
                 lignes.push([e.classe, e.code, noms[e.code] || ''].concat(ids.map(function (id) {
                     var b = bilan(e.code, id);
                     if (!b) return '';
-                    var cl = couleurs(b.meilleur);
-                    return b.meilleur.score + '/' + b.meilleur.total + (cl ? ' (' + texteCouleurs(cl) + ')' : '');
+                    var cl = b.couleurs;
+                    return cl ? texteCouleurs(cl) : b.meilleur.score + '/' + b.meilleur.total;
                 })));
             });
             var csv = '﻿' + lignes.map(function (l) { return l.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
