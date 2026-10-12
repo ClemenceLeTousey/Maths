@@ -375,16 +375,15 @@ document.addEventListener('click', function (e) {
         e.className = 'effet-futur';
         e.innerHTML = '<div class="compteur"><span>00</span><small>MPH</small></div><div class="eclair"></div>';
         document.body.appendChild(e);
-        // le compteur se place au bout du titre : le feu courra vers lui
+        // le compteur se place tout à droite de la page, à la hauteur du titre
         var titre = document.querySelector('header h1'), compteur = e.querySelector('.compteur');
         if (titre) {
             var r = document.createRange();
             r.selectNodeContents(titre);
             var t = r.getBoundingClientRect(), cr = compteur.getBoundingClientRect();
             if (t.bottom > 0 && t.top < innerHeight) {
-                compteur.style.left = Math.max(8, Math.min(innerWidth - cr.width - 8, t.right + 16)) + 'px';
                 compteur.style.top = Math.max(8, t.top + (t.height - cr.height) / 2) + 'px';
-                compteur.style.right = 'auto'; compteur.style.bottom = 'auto';
+                compteur.style.bottom = 'auto';
             }
         }
         var aff = e.querySelector('.compteur span'), debut = performance.now();
