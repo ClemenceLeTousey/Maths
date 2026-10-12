@@ -289,6 +289,23 @@
                 if (!def.parNiveau) saisie.appendChild(bouton);
                 li.appendChild(saisie);
                 li.appendChild(apercu); li.appendChild(retour);
+
+                // questions vertes : rappel de méthode à la demande (noté dans le détail pour la professeure)
+                var aide = false, btnRappel = null;
+                if (q.rappel) {
+                    btnRappel = el('button', 'secondaire rappel-btn', 'Je ne sais pas, j\'ai besoin d\'un rappel'); btnRappel.type = 'button';
+                    btnRappel.onclick = function () {
+                        aide = true;
+                        var r = el('div', 'q-rappel');
+                        r.innerHTML = '<strong>Rappel</strong><br>' + mixte(q.rappel) +
+                            '<br><em>À toi maintenant : réponds à la question.</em>';
+                        btnRappel.replaceWith(r);
+                        btnRappel = null;
+                        var c0 = li.querySelector('input:not([disabled])');
+                        if (c0) c0.focus();
+                    };
+                    li.appendChild(btnRappel);
+                }
                 bouton.onclick = valider;
 
                 // Lit la réponse ; renvoie null (avec un message) si elle est vide ou mal écrite
@@ -313,6 +330,7 @@
                 function appliquer(res) {
                     var juste = res.ok;
                     bouton.disabled = true; bouton.remove();
+                    if (btnRappel) { btnRappel.remove(); btnRappel = null; }
                     champs.forEach(function (c) { c.disabled = true; });
                     li.querySelectorAll('.q-option').forEach(function (b, k) {
                         b.disabled = true;
@@ -330,6 +348,7 @@
                     var d = q.texte != null ? { t: q.texte + (q.figureNote ? ' <i>(figure : ' + q.figureNote + ')</i>' : ''), r: res.r, ok: juste } : { q: q.enonce, r: res.r, ok: juste };
                     if (type === 'qcm') d.b = 'ABCDEF'[q.bonne];
                     if (q.niveau) d.n = q.niveau;
+                    if (aide) d.aide = 1;
                     li.d = d;
                     if (essai > 1) {             // série refaite : gardée dans le détail, hors score
                         d.e = essai;
@@ -391,6 +410,9 @@
                         meilleurs[n] = Math.max(meilleurs[n] || 0, bons);
                         var total = Object.keys(meilleurs).reduce(function (s, c) { return s + meilleurs[c]; }, 0);
                         conv.allumer(n, bons === lis.length, total);
+                        var aides = lis.filter(function (li) { return li.d && li.d.aide; }).length;
+                        if (aides) msg.appendChild(el('span', 'palier-aide', ' Tu as demandé ' + (aides > 1 ? aides + ' rappels' : 'un rappel') +
+                            ' : refais la ' + (NOMS[n] || 'série').toLowerCase() + ' sans rappel pour vérifier que tu sais faire seul(e).'));
                         var etat = el('p', 'palier-etat');
                         bloc.appendChild(etat);
                         sauver({ exercice: def.id, score: bons, total: lis.length, details: lis.map(function (li) { return li.d; }),

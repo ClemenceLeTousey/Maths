@@ -139,7 +139,9 @@
             var liste = donnees.resultats.filter(function (r) { return r.code === code && r.exercice === ex; });
             if (!liste.length) return null;
             var b = Interactif.bilanCouleurs(liste);
-            return { meilleur: b.meilleur, couleurs: b.couleurs, nb: b.series, liste: liste };
+            // rappels demandés (questions vertes), toutes séries confondues
+            var aides = liste.reduce(function (s, r) { return s + (r.details || []).filter(function (d) { return d && d.aide; }).length; }, 0);
+            return { meilleur: b.meilleur, couleurs: b.couleurs, nb: b.series, aides: aides, liste: liste };
         }
 
         function afficher() {
@@ -170,7 +172,8 @@
                         });
                     } else c = td(tr, b.meilleur.score + '/' + b.meilleur.total + ' ', 'cliquable ' + niveau(b.meilleur.score / b.meilleur.total));
                     var n = document.createElement('span'); n.className = 'n-tent'; n.textContent = '(' + b.nb + ')'; c.appendChild(n);
-                    c.title = b.nb + ' série(s) — cliquer pour le détail';
+                    if (b.aides) { var ra = document.createElement('span'); ra.className = 'rep-aide'; ra.textContent = ' 💡' + b.aides; c.appendChild(ra); }
+                    c.title = b.nb + ' série(s)' + (b.aides ? ', ' + b.aides + ' rappel(s) demandé(s)' : '') + ' — cliquer pour le détail';
                     c.onclick = function () { detail(e.code, id, b.liste); };
                 });
                 table.appendChild(tr);
@@ -237,7 +240,9 @@
                     if (d.t != null) q.innerHTML = sur(String(d.t)); else Interactif.maths(q, String(d.q));
                     var rep = document.createElement('span'); rep.className = 'rep ' + (d.ok ? 'ok' : 'ko');
                     rep.textContent = '  →  ' + d.r + (d.ok ? ' ✓' : ' ✗') + (d.b && !d.ok ? ' (bonne réponse : ' + d.b + ')' : '');
-                    li.appendChild(q); li.appendChild(rep); ol.appendChild(li);
+                    li.appendChild(q); li.appendChild(rep);
+                    if (d.aide) li.appendChild(Object.assign(document.createElement('span'), { className: 'rep-aide', textContent: '  💡 rappel demandé' }));
+                    ol.appendChild(li);
                 });
                 bloc.appendChild(ol);
                 zone.appendChild(bloc);
@@ -254,7 +259,7 @@
                     var b = bilan(e.code, id);
                     if (!b) return '';
                     var cl = b.couleurs;
-                    return cl ? texteCouleurs(cl) : b.meilleur.score + '/' + b.meilleur.total;
+                    return (cl ? texteCouleurs(cl) : b.meilleur.score + '/' + b.meilleur.total) + (b.aides ? ' (' + b.aides + ' rappel' + (b.aides > 1 ? 's' : '') + ')' : '');
                 })));
             });
             var csv = '﻿' + lignes.map(function (l) { return l.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');

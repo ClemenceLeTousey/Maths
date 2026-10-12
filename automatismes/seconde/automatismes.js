@@ -614,5 +614,66 @@
         return q;
     };
 
+    /* =====================================================================
+       Rappels des questions vertes (bouton « Je ne sais pas, j'ai besoin d'un rappel ») :
+       la méthode et un exemple différent de la question. Texte mixte HTML + $maths$.
+       ===================================================================== */
+    var RAPPEL_DECIMAL = 'Pour comparer des nombres décimaux, on compare d\'abord les parties entières, puis les dixièmes, puis les centièmes, puis les millièmes.<br>' +
+        'Astuce : on écrit tous les nombres avec autant de chiffres après la virgule.<br>' +
+        'Exemple : $0{,}3=0{,}300$ ; $0{,}03=0{,}030$ ; $0{,}033$. Donc $0{,}030<0{,}033<0{,}300$.';
+    var RAPPEL_ECRITURES = 'On écrit tous les nombres sous forme décimale, puis on compare.<br>' +
+        '• Diviser par $10$, $100$, $1\\,000$ : la virgule se décale de $1$, $2$, $3$ rangs vers la gauche : $' + frac(237, 100) + '=2{,}37$.<br>' +
+        '• Fractions à connaître : $' + frac(1, 2) + '=0{,}5$ ; $' + frac(1, 4) + '=0{,}25$ ; $' + frac(3, 4) + '=0{,}75$ ; $' + frac(1, 5) + '=0{,}2$. Par exemple $' + frac(9, 4) + '=2+' + frac(1, 4) + '=2{,}25$.<br>' +
+        '• $\\times10^{-1}$, c\'est diviser par $10$ : $23\\times10^{-1}=2{,}3$.';
+    var RAPPEL_ORDRE_GRANDEUR = 'On remplace chaque nombre par une valeur « ronde » proche, puis on calcule de tête.<br>' +
+        '$10\\,\\%$ d\'un nombre, c\'est ce nombre divisé par $10$ ; $50\\,\\%$, c\'est la moitié.<br>' +
+        'Exemple : $49{,}7\\,\\%$ de $812$ : $49{,}7\\,\\%\\approx50\\,\\%$ et $812\\approx800$, donc environ la moitié de $800$, soit $400$.';
+    var RAPPEL_POURCENTAGE = 'Prendre $p\\,\\%$ d\'un nombre $N$, c\'est multiplier $N$ par $' + frac('p', 100) + '$ : $p\\,\\%$ de $N=' + frac('p\\times N', 100) + '$.<br>' +
+        'Exemple : $30\\,\\%$ de $200$ $=' + frac('30\\times200', 100) + '=60$.';
+    var RAPPEL_RACINE = 'Pour encadrer $\\sqrt{a}$, on cherche les deux carrés parfaits qui entourent $a$.<br>' +
+        'Exemple : $25<30<36$, c\'est-à-dire $5^2<30<6^2$, donc $5<\\sqrt{30}<6$.';
+    var RAPPELS = {
+        plusGrand: RAPPEL_ECRITURES,
+        pourcentage: RAPPEL_POURCENTAGE,
+        encadrerRacine: RAPPEL_RACINE + '<br>Carrés à connaître : $1$, $4$, $9$, $16$, $25$, $36$, $49$, $64$, $81$, $100$.',
+        petitsNombres: RAPPEL_DECIMAL,
+        fractionDecimale: 'Diviser par $10$ : la virgule se décale de $1$ rang vers la gauche ; par $100$ : de $2$ rangs.<br>' +
+            'Exemples : $' + frac(347, 10) + '=34{,}7$ et $' + frac(347, 100) + '=3{,}47$.',
+        distributivite: 'Pour développer, on multiplie le nombre devant la parenthèse par <b>chaque</b> terme : $k(a+b)=k\\times a+k\\times b$.<br>' +
+            'Exemple : $3(x-4)=3\\times x+3\\times(-4)=3x-12$.',
+        ordreGrandeur: RAPPEL_ORDRE_GRANDEUR,
+        equation: 'Pour trouver $x$, on fait la même opération des deux côtés de l\'égalité.<br>' +
+            '• Si on ajoute un nombre à $x$, on le soustrait : $x+7=3$ donne $x=3-7=-4$.<br>' +
+            '• Si $x$ est multiplié par un nombre, on divise par ce nombre : $-5x=20$ donne $x=' + frac(20, -5) + '=-4$.',
+        ranger: RAPPEL_DECIMAL + '<br>Réponds avec les lettres, du plus petit au plus grand.',
+        coefMultiplicateur: 'Augmenter de $t\\,\\%$, c\'est multiplier par $1+' + frac('t', 100) + '$. Diminuer de $t\\,\\%$, c\'est multiplier par $1-' + frac('t', 100) + '$.<br>' +
+            'Exemples : hausse de $8\\,\\%$ : $\\times1{,}08$ ; baisse de $15\\,\\%$ : $\\times0{,}85$.',
+        calculPourcentage: RAPPEL_POURCENTAGE + '<br>Astuces : $10\\,\\%$, c\'est diviser par $10$ ; $25\\,\\%$, c\'est le quart ; $50\\,\\%$, la moitié ; $75\\,\\%$, les trois quarts.<br>' +
+            'Exemple : $30\\,\\%$ de $140$ : $10\\,\\%$ font $14$, donc $30\\,\\%$ font $3\\times14=42$.',
+        equationDeuxMembres: 'On regroupe les $x$ d\'un côté et les nombres de l\'autre, puis on divise.<br>' +
+            'Exemple : $5x+3=2x-9$ ; on enlève $2x$ des deux côtés : $3x+3=-9$ ; on enlève $3$ : $3x=-12$ ; on divise par $3$ : $x=-4$.',
+        lireCoordonnees: 'Les coordonnées d\'un point s\'écrivent $(x\\ ;\\ y)$ : d\'abord l\'<b>abscisse</b>, lue sur l\'axe horizontal, puis l\'<b>ordonnée</b>, lue sur l\'axe vertical.<br>' +
+            'Exemple : un point situé $2$ carreaux à gauche de l\'origine et $1$ carreau au-dessus a pour coordonnées $(-2\\ ;\\ 1)$.',
+        ordreGrandeurNombre: RAPPEL_ORDRE_GRANDEUR,
+        sommeDecimale: 'On écrit chaque fraction en décimal, puis on additionne en alignant les virgules.<br>' +
+            'Exemple : $' + frac(3, 10) + '+' + frac(45, 100) + '+' + frac(7, '1\\,000') + '=0{,}3+0{,}45+0{,}007=0{,}757$.',
+        imageFonction: 'L\'image de $a$ par $f$, c\'est $f(a)$ : on remplace $x$ par $a$ dans l\'expression, avec des parenthèses si $a$ est négatif.<br>' +
+            'Exemple : si $f(x)=3x-5$, alors $f(-2)=3\\times(-2)-5=-6-5=-11$.',
+        rangerEcritures: RAPPEL_ECRITURES + '<br>Réponds avec les lettres, du plus petit au plus grand.',
+        encadrerRacineFinal: RAPPEL_RACINE.replace('$25<30<36$, c\'est-à-dire $5^2<30<6^2$, donc $5<\\sqrt{30}<6$', '$144<150<169$, c\'est-à-dire $12^2<150<13^2$, donc $12<\\sqrt{150}<13$') +
+            '<br>Carrés à connaître : $11^2=121$, $12^2=144$, $13^2=169$, $14^2=196$, $15^2=225$, $16^2=256$, $17^2=289$, $18^2=324$, $19^2=361$, $20^2=400$.',
+        puissances: 'Règles de calcul : $a^m\\times a^n=a^{m+n}$ et $' + frac('a^m', 'a^n') + '=a^{m-n}$.<br>' +
+            'Attention aux exposants négatifs : $' + frac('5^3', '5^{-2}') + '=5^{3-(-2)}=5^5$ et $5^3\\times5^{-2}=5^{3+(-2)}=5^1$.'
+    };
+    // chaque question verte reçoit son rappel
+    Object.keys(RAPPELS).forEach(function (nom) {
+        var generer = Auto[nom];
+        Auto[nom] = function (niveau) {
+            var q = generer(niveau);
+            if (niveau === 1) q.rappel = RAPPELS[nom];
+            return q;
+        };
+    });
+
     window.Auto = Auto;
 })();

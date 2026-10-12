@@ -217,3 +217,18 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 }
 
 @media print { .convecteur, .conv-eclair { display: none !important; } }
+
+/* Rappel à la demande (questions vertes) */
+.interactif button.rappel-btn { margin: 8px 0 0 34px; font-size: 0.85rem; padding: 4px 12px; }
+.q-rappel {
+    margin: 8px 0 4px 34px;
+    padding: 10px 14px;
+    border-left: 4px solid var(--c-seconde);
+    border-radius: 0 8px 8px 0;
+    background: var(--bleu-doux);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+.q-rappel strong { color: var(--c-seconde); }
+.palier-aide { display: block; margin-top: 4px; font-weight: 500; color: var(--attention); }
+.rep-aide { font-size: 0.85em; color: var(--attention); }
