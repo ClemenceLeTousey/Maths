@@ -123,7 +123,7 @@
         if (!document.querySelector('footer')) {
             var lic = document.createElement('p');
             lic.className = 'barre-licence';
-            lic.innerHTML = '© 2026 Clémence Le Tousey<br>Documents sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a> : réutilisation libre en citant l\'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.<br>Hébergé avec GitHub Pages.';
+            lic.innerHTML = '© 2026 Clémence Le Tousey<br>Hébergé avec GitHub Pages.<br>Documents sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a> : réutilisation libre en citant l\'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.';
             document.body.appendChild(lic);
         }
 
