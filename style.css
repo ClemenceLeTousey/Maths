@@ -23,6 +23,7 @@
     --c-seconde: #2f6fdf;
     --c-premiere: #0f9d76;
     --c-tst2s: #8a4fd8;
+    --c-python: #c98f00;
 
     --f-texte: "Lexend", system-ui, -apple-system, "Segoe UI", sans-serif;
     --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -42,6 +43,7 @@
     --c-seconde: #6e9fff;
     --c-premiere: #34c79c;
     --c-tst2s: #b58cff;
+    --c-python: #ffd43b;
     --badge-text: #0b1222;
     --bic: #8ea6ff;
     --bleu-doux: #1a2742;
@@ -61,6 +63,7 @@
         --c-seconde: #6e9fff;
         --c-premiere: #34c79c;
         --c-tst2s: #b58cff;
+        --c-python: #ffd43b;
         --badge-text: #0b1222;
         --bic: #8ea6ff;
     --bleu-doux: #1a2742;
@@ -71,6 +74,7 @@
 .classe-seconde  { --c: var(--c-seconde); }
 .classe-premiere { --c: var(--c-premiere); }
 .classe-tst2s    { --c: var(--c-tst2s); }
+.classe-python   { --c: var(--c-python); }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -824,6 +828,7 @@ li.res.pending-link { border-left-color: var(--line); }
     --c-seconde: #39ff6a;
     --c-premiere: #a6ffbf;
     --c-tst2s: #00c853;
+    --c-python: #7dff9b;
     --badge-text: #000;
     --bic: #39ff6a;
     --bleu-doux: #002b0b;
@@ -887,6 +892,7 @@ li.res.pending-link { border-left-color: var(--line); }
     --c-seconde: #ff4433;     /* rouge « destination time » */
     --c-premiere: #33ff77;    /* vert « present time » */
     --c-tst2s: #ffb320;       /* orange « last time departed » */
+    --c-python: #ffd43b;
     --badge-text: #0a0b0d;
     --bic: #ffb320;
     --bleu-doux: #23272e;
