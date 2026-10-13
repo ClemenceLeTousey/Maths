@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Identités remarquables – Résumé visuel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Même habillage que les corrigés interactifs : une colonne, thème clair fixe (projection en classe).
+   Chaque identité : les étapes à gauche (bouton « Étape suivante »), la figure à droite qui suit les étapes. */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --red: #E03131;
+  /* a et b : mêmes couleurs que dans les corrigés */
+  --ca: #0C8599;
+  --cb: #D9480F;
+  /* zones des figures : mêmes teintes que la fiche papier */
+  --za: #E3F4F7;  --za-l: #0B7285;
+  --zab: #E6F7EF; --zab-l: #099268;
+  --zb: #FCEEF3;  --zb-l: #A61E4D;
+  --zc: #F6EBF9;  --zc-l: #862E9C;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-math: "Latin Modern Math", "STIX Two Math", "Cambria Math", "Times New Roman", serif;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 600; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons des trois identités */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; font-weight: 500; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+.exo { margin-top: 20px; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.exo-h h2 { font-size: 19px; }
+.exo-h .goal { margin-left: auto; color: var(--muted); font-size: 15px; }
+
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 20px; padding: 16px; align-items: start; }
+.fig { min-width: 0; position: sticky; top: 110px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+.fig svg { display: block; width: 100%; height: auto; }
+
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn.solid:disabled:hover { background: var(--calc); }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.step-ctrl .count { margin-left: auto; color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+
+.left { display: grid; gap: 12px; min-width: 0; }
+.steps { display: grid; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 6px; border-top: 1px dashed var(--line); border-radius: 6px; cursor: pointer; color: var(--muted); }
+.step:first-child { border-top: 0; }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--line); color: var(--ink); display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .x { min-width: 0; overflow-x: auto; }
+.step.cur { background: var(--calc-soft); color: var(--ink); cursor: default; }
+.step.cur .n { background: var(--calc); color: #fff; }
+.step mjx-container[display="true"] { margin: 4px 0 !important; text-align: left !important; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 8px 14px; overflow-x: auto; display: grid; gap: 4px; }
+.concl .big { font-size: 20px; }
+.concl p { margin: 0; font-size: 15px; color: var(--muted); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+
+/* Figure */
+.v { transition: opacity .45s ease; }
+.v.off { opacity: 0; }
+.za { fill: var(--za); stroke: var(--za-l); stroke-width: 3; }
+.zab { fill: var(--zab); stroke: var(--zab-l); stroke-width: 3; }
+.zb { fill: var(--zb); stroke: var(--zb-l); stroke-width: 3; }
+.zc { fill: var(--zc); stroke: var(--zc-l); stroke-width: 3; }
+.zbare { fill: var(--za); stroke: none; }
+.ghost { fill: none; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 7 5; }
+.guide { stroke: var(--muted); stroke-width: 1.6; stroke-dasharray: 5 5; }
+.edge { fill: none; stroke: var(--ink); stroke-width: 2.5; }
+.glow { fill: none; stroke: var(--calc); stroke-width: 5; }
+.hatch-line { stroke: var(--ink); stroke-width: 1.5; }
+.cote { stroke: var(--ink); stroke-width: 1.3; }
+.t { font-family: var(--f-math); font-size: 21px; fill: var(--ink); text-anchor: middle; dominant-baseline: central; }
+.t.s { font-size: 18px; }
+.t.num { font-family: var(--f-body); font-size: 17px; font-weight: 600; }
+.t.dim { fill: var(--muted); }
+.tag { fill: var(--paper); fill-opacity: .92; }
+.mv { transition: transform .9s ease-in-out; }
+.piece2 { transform-box: fill-box; transform-origin: center; }
+.piece2.moved { transform: translate(160px, 100px) rotate(90deg); }
+.lab2.moved { transform: translate(160px, 100px); }
+
+@media (max-width: 760px) {
+  .stage { grid-template-columns: minmax(0, 1fr); }
+  .fig { order: -1; top: 96px; z-index: 2; }
+  .fig svg { max-height: 42vh; }
+  .exo-h .goal { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v, .mv { transition: none; }
+}
+</style>
+<script src="../../barre.js"></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Résumé visuel des identités remarquables</b><span>Séquence 3 — Calcul littéral</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" id="exnav" aria-label="Identités remarquables"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']],
+    packages: { '[+]': ['color'] },
+    macros: { A: '{\\color[rgb]{0.047,0.522,0.600}{a}}', B: '{\\color[rgb]{0.851,0.282,0.059}{b}}' }
+  },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<script>
+'use strict';
+const R = String.raw;
+
+/* =====================================================================
+   Petits outils de dessin (SVG)
+   ===================================================================== */
+const CA = '#0C8599', CB = '#D9480F';
+// Écriture d'une étiquette : a et b en italique et en couleur, « ^2 » en exposant.
+function lab(s) {
+  let out = '', down = false;
+  const span = (txt, attrs = '') => { const r = `<tspan${down ? ' dy="8"' : ''}${attrs}>${txt}</tspan>`; down = false; return r; };
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === '^') { out += `<tspan dy="-8" font-size="70%">${s[++i]}</tspan>`; down = true; }
+    else if (c === 'a') out += span('a', ` font-style="italic" fill="${CA}"`);
+    else if (c === 'b') out += span('b', ` font-style="italic" fill="${CB}"`);
+    else out += span(c === '-' ? '−' : c);
+  }
+  return out;
+}
+const T = (x, y, s, cls = '') => `<text class="t ${cls}" x="${x}" y="${y}">${lab(s)}</text>`;
+const Tag = (x, y, s, w = 40) => `<rect class="tag" x="${x - w / 2}" y="${y - 14}" width="${w}" height="28" rx="4"/>${T(x, y, s)}`;
+const Num = (x, y, n) => `<text class="t num" x="${x}" y="${y}">${n === 1 ? '①' : '②'}</text>`;
+const rect = (cls, x, y, w, h, extra = '') => `<rect class="${cls}" x="${x}" y="${y}" width="${w}" height="${h}" ${extra}/>`;
+// Cote horizontale (étiquette au-dessus ou en dessous) ou verticale (à gauche ou à droite)
+function coteH(x1, x2, y, s, side = 'up') {
+  const ly = side === 'up' ? y - 14 : y + 16;
+  return `<line class="cote" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" marker-start="url(#arr)" marker-end="url(#arr)"/>${T((x1 + x2) / 2, ly, s, 's')}`;
+}
+function coteV(x, y1, y2, s, side = 'left') {
+  const w = s.length > 2 ? 24 : 12;
+  const lx = side === 'left' ? x - w - 4 : x + w + 4;
+  return `<line class="cote" x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" marker-start="url(#arr)" marker-end="url(#arr)"/>${T(lx, (y1 + y2) / 2, s, 's')}`;
+}
+// Élément visible pour les étapes « de-à » (« 3- » : à partir de l'étape 3)
+const V = (range, inner, cls = '') => `<g class="v ${cls}" data-v="${range}">${inner}</g>`;
+const DEFS = `<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" fill="#1D2733"/></marker>
+  <pattern id="hR" patternUnits="userSpaceOnUse" width="9" height="9" patternTransform="rotate(45)"><line class="hatch-line" x1="0" y1="0" x2="0" y2="9"/></pattern>
+  <pattern id="hL" patternUnits="userSpaceOnUse" width="9" height="9" patternTransform="rotate(-45)"><line class="hatch-line" x1="0" y1="0" x2="0" y2="9"/></pattern>
+</defs>`;
+const svg = (inner, dx) => `<svg viewBox="0 0 420 320" role="img">${DEFS}<g transform="translate(${dx},10)">${inner}</g></svg>`;
+
+/* =====================================================================
+   Les trois identités
+   ===================================================================== */
+// 1. Carré d'une somme : a = 140, b = 60
+const fig1 = (() => {
+  const x = 40, y = 50, a = 140, b = 60;
+  return svg([
+    V('2-', rect('ghost', x + a, y, b, a) + rect('ghost', x, y + a, a, b) + rect('ghost', x + a, y + a, b, b)),
+    V('1-', rect('za', x, y, a, a) + T(x + a / 2, y + a / 2, 'a^2')),
+    V('3-', rect('zab', x + a, y, b, a) + T(x + a + b / 2, y + a / 2, 'ab')),
+    V('4-', rect('zab', x, y + a, a, b) + T(x + a / 2, y + a + b / 2, 'ab')),
+    V('5-', rect('zb', x + a, y + a, b, b) + T(x + a + b / 2, y + a + b / 2, 'b^2')),
+    V('7-', rect('glow', x + a, y, b, a) + rect('glow', x, y + a, a, b)),
+    V('1-', coteH(x, x + a, y - 16, 'a') + coteV(x - 16, y, y + a, 'a')),
+    V('2-', coteH(x + a, x + a + b, y - 16, 'b') + coteV(x - 16, y + a, y + a + b, 'b') + coteH(x, x + a + b, y + a + b + 18, 'a + b', 'down')),
+  ].join(''), 80);
+})();
+
+// 2. Carré d'une différence : a = 200, b = 60
+const fig2 = (() => {
+  const x = 40, y = 50, a = 200, b = 60, c = a - b;
+  return svg([
+    V('1-', rect('za', x, y, a, a)),
+    V('1-1', T(x + a / 2, y + a / 2, 'a^2')),
+    V('2-', `<line class="guide" x1="${x + c}" y1="${y}" x2="${x + c}" y2="${y + a}"/><line class="guide" x1="${x}" y1="${y + b}" x2="${x + a}" y2="${y + b}"/>`),
+    V('3-', rect('', x + c, y, b, a, 'fill="url(#hR)"') + rect('edge', x + c, y, b, a)),
+    V('4-', rect('', x, y, a, b, 'fill="url(#hL)"') + rect('edge', x, y, a, b)),
+    V('5-', rect('zb', x + c, y, b, b, 'fill-opacity=".9"') + T(x + c + b / 2, y + b / 2, 'b^2')),
+    V('3-', Tag(x + c + b / 2, y + b + c / 2, 'ab') + Num(x + c + b / 2, y + a - 18, 1)),
+    V('4-', Tag(x + c / 2, y + b / 2, 'ab') + Num(x + 18, y + b / 2, 2)),
+    V('6-', rect('za', x, y + b, c, c, 'style="stroke-width:4"') + T(x + c / 2, y + b + c / 2, '(a - b)^2')),
+    V('1-', coteH(x, x + a, y - 16, 'a')),
+    V('1-1', coteV(x - 16, y, y + a, 'a')),
+    V('2-', coteH(x, x + c, y + a + 18, 'a - b', 'down') + coteH(x + c, x + a, y + a + 18, 'b', 'down') +
+            coteV(x - 16, y, y + b, 'b') + coteV(x - 16, y + b, y + a, 'a - b')),
+  ].join(''), 80);
+})();
+
+// 3. Différence de deux carrés : a = 200, b = 60
+const fig3 = (() => {
+  const x = 40, y = 50, a = 200, b = 60, c = a - b;
+  return svg([
+    V('1-1', rect('za', x, y, a, a) + T(x + a / 2, y + a / 2, 'a^2')),
+    V('2-3', rect('ghost', x + c, y, b, b) + T(x + c + b / 2, y + b / 2, 'b^2', 'dim')),
+    V('2-2', `<path class="za" d="M${x},${y} H${x + c} V${y + b} H${x + a} V${y + a} H${x} Z"/>` + T(x + a / 2, y + b + c / 2, 'a^2 - b^2')),
+    V('4-4', rect('ghost', x, y, c, b)),
+    V('3-', rect('za', x, y + b, a, c) + Num(x + a / 2, y + b + c / 2, 1)),
+    V('3-', rect('zc mv piece2', x, y, c, b) + `<text class="t num mv lab2" x="${x + c / 2}" y="${y + b / 2}">②</text>`),
+    V('6-', rect('glow', x, y + b, a + b, c)),
+    V('1-2', coteV(x - 16, y, y + a, 'a')),
+    V('1-1', coteH(x, x + a, y - 16, 'a')),
+    V('2-3', coteH(x + c, x + a, y - 16, 'b')),
+    V('3-3', coteH(x, x + c, y - 16, 'a - b') + coteV(x - 16, y, y + b, 'b') + coteV(x - 16, y + b, y + a, 'a - b') + coteH(x, x + a, y + a + 18, 'a', 'down')),
+    V('5-', coteH(x, x + a + b, y + a + 18, 'a + b', 'down') + coteV(x + a + b + 16, y + b, y + a, 'a - b', 'right')),
+  ].join(''), 55);
+})();
+
+const IDS = [
+  { n: 1, nav: R`\((a+b)^2\)`, title: 'Carré d’une somme', goal: R`on agrandit un carré de côté \(\A\)`, fig: fig1, move: 0,
+    steps: [
+      R`On part d’un carré de côté \(\A\). Son aire est \(\A\times\A=\A^2\).`,
+      R`On l’agrandit : on allonge chaque côté de \(\B\). On obtient un carré de côté \(\A+\B\), donc d’aire \((\A+\B)^2\).`,
+      R`Ce grand carré est formé de 4 zones. On calcule l’aire de chacune. En haut à droite : un rectangle de côtés \(\A\) et \(\B\), d’aire \(\A\times\B=\A\B\).`,
+      R`En bas à gauche : un rectangle de côtés \(\A\) et \(\B\), lui aussi d’aire \(\A\B\).`,
+      R`En bas à droite : un carré de côté \(\B\), d’aire \(\B^2\).`,
+      R`L’aire du grand carré est la somme des aires des 4 zones : \[(\A+\B)^2=\A^2+\A\B+\A\B+\B^2\]`,
+      R`Les deux rectangles ont la même aire : \(\A\B+\A\B=2\A\B\).`,
+    ],
+    concl: R`\((\A+\B)^2=\A^2+2\A\B+\B^2\)` },
+  { n: 2, nav: R`\((a-b)^2\)`, title: 'Carré d’une différence', goal: R`on rétrécit un carré de côté \(\A\)`, fig: fig2, move: 0,
+    steps: [
+      R`On part d’un carré de côté \(\A\). Son aire est \(\A^2\).`,
+      R`On veut un carré de côté \(\A-\B\) : on enlève \(\B\) sur la largeur et \(\B\) sur la hauteur.`,
+      R`On retire la bande ① (hachures « / ») : c’est un rectangle de côtés \(\B\) et \(\A\), d’aire \(\A\B\). Il reste \(\A^2-\A\B\).`,
+      R`On retire la bande ② (hachures « \ ») : elle aussi a pour aire \(\A\B\). Il reste \(\A^2-\A\B-\A\B\).`,
+      R`Attention : le petit carré du coin est hachuré deux fois. On l’a retiré deux fois au lieu d’une ! On le rajoute donc une fois : \(+\B^2\).`,
+      R`Il reste exactement le carré de côté \(\A-\B\) : \[(\A-\B)^2=\A^2-\A\B-\A\B+\B^2\]`,
+      R`On regroupe les deux rectangles : \(-\A\B-\A\B=-2\A\B\).`,
+    ],
+    concl: R`\((\A-\B)^2=\A^2-2\A\B+\B^2\)` },
+  { n: 3, nav: R`\(a^2-b^2\)`, title: 'Différence de deux carrés', goal: R`on retire un carré de côté \(\B\) puis on réarrange`, fig: fig3, move: 4,
+    steps: [
+      R`On part d’un carré de côté \(\A\). Son aire est \(\A^2\).`,
+      R`On retire, dans un coin, un petit carré de côté \(\B\), d’aire \(\B^2\). Ce qui reste a pour aire \(\A^2-\B^2\).`,
+      R`On découpe ce qui reste en deux morceaux : ① est un rectangle de côtés \(\A\) et \(\A-\B\) ; ② est un rectangle de côtés \(\A-\B\) et \(\B\).`,
+      R`On déplace le morceau ② : on le fait tourner d’un quart de tour et on le colle à droite du morceau ①. L’aire ne change pas.`,
+      R`On obtient un rectangle de longueur \(\A+\B\) et de largeur \(\A-\B\). Son aire est \((\A+\B)(\A-\B)\).`,
+      R`C’est la même aire qu’après l’étape 2 : \[\A^2-\B^2=(\A+\B)(\A-\B)\]`,
+    ],
+    concl: R`\(\A^2-\B^2=(\A+\B)(\A-\B)\)`,
+    note: R`Lue de droite à gauche, l’égalité sert à développer : \((\A+\B)(\A-\B)=\A^2-\B^2\).` },
+];
+
+/* =====================================================================
+   Affichage
+   ===================================================================== */
+const $ = (s, el = document) => el.querySelector(s);
+const app = $('#app'), nav = $('#exnav');
+function typeset(el) {
+  if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+    MathJax.startup.promise.then(() => MathJax.typesetPromise([el])).catch(() => {});
+  }
+}
+const inRange = (r, k) => { const [a, b] = r.split('-'); return k >= +a && (b === '' ? true : k <= +b); };
+
+function render(n) {
+  const id = IDS.find(e => e.n === n) || IDS[0];
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.n === id.n));
+  if (window.MathJax && MathJax.typesetClear) { try { MathJax.typesetClear([app]); } catch (e) { /* rien */ } }
+  const N = id.steps.length;
+  app.innerHTML = `
+    <article class="exo">
+      <div class="exo-h"><span class="pill">${id.nav}</span><h2>${id.title}</h2><span class="goal">Idée : ${id.goal}</span></div>
+      <div class="stage">
+        <div class="left">
+          <ol class="steps">${id.steps.map((s, i) => `<li class="step" data-k="${i + 1}"><span class="n">${i + 1}</span><div class="x">${s}</div></li>`).join('')}</ol>
+          <div class="concl" hidden><span>On obtient :</span><span class="big">${id.concl}</span>${id.note ? `<p>${id.note}</p>` : ''}</div>
+          <div class="step-ctrl">
+            <button type="button" class="btn ghost" data-prev>← Précédente</button>
+            <button type="button" class="btn solid" data-next>Étape suivante</button>
+            <button type="button" class="btn ghost" data-all>Tout afficher</button>
+            <button type="button" class="btn ghost" data-reset>Recommencer</button>
+            <span class="count" aria-live="polite"></span>
+          </div>
+        </div>
+        <div class="fig">${id.fig}</div>
+      </div>
+    </article>
+    <nav class="foot">${id.n > 1 ? `<button type="button" class="btn ghost" data-go="${id.n - 1}">← ${IDS[id.n - 2].title}</button>` : '<span></span>'}${id.n < IDS.length ? `<button type="button" class="btn ghost" data-go="${id.n + 1}">${IDS[id.n].title} →</button>` : ''}</nav>`;
+
+  const steps = [...app.querySelectorAll('.step')], parts = [...app.querySelectorAll('.fig .v')];
+  const movers = [...app.querySelectorAll('.fig .mv')];
+  const bPrev = $('[data-prev]', app), bNext = $('[data-next]', app), count = $('.count', app), concl = $('.concl', app);
+  let k = 1;
+  function show(to) {
+    k = Math.max(1, Math.min(N, to));
+    steps.forEach((li, i) => { li.hidden = i + 1 > k; li.classList.toggle('cur', i + 1 === k); });
+    parts.forEach(g => g.classList.toggle('off', !inRange(g.dataset.v, k)));
+    movers.forEach(m => m.classList.toggle('moved', id.move > 0 && k >= id.move));
+    concl.hidden = k < N;
+    bPrev.disabled = k === 1;
+    bNext.disabled = k === N;
+    count.textContent = `Étape ${k} / ${N}`;
+  }
+  bNext.addEventListener('click', () => show(k + 1));
+  bPrev.addEventListener('click', () => show(k - 1));
+  $('[data-all]', app).addEventListener('click', () => show(N));
+  $('[data-reset]', app).addEventListener('click', () => show(1));
+  steps.forEach(li => li.addEventListener('click', () => show(+li.dataset.k)));
+  app.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { location.hash = 'id' + b.dataset.go; }));
+  app.onkeydown = null;
+  show(1);
+  typeset(app);
+  window.scrollTo(0, 0);
+}
+// Flèches du clavier : étape précédente / suivante
+document.addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('input, textarea')) return;
+  if (e.key === 'ArrowRight') { const b = $('[data-next]', app); if (b && !b.disabled) b.click(); }
+  if (e.key === 'ArrowLeft') { const b = $('[data-prev]', app); if (b && !b.disabled) b.click(); }
+});
+nav.innerHTML = IDS.map(e => `<button type="button" data-n="${e.n}">${e.title} ${e.nav}</button>`).join('');
+nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { location.hash = 'id' + b.dataset.n; }));
+typeset(nav);
+const route = () => render(+(location.hash.match(/^#id(\d)$/) || [])[1] || 1);
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
