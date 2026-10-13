@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TP 1 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Même habillage que les corrigés interactifs des feuilles d'exercices ; encadrés Script / Console
+   aux couleurs du TP LaTeX (algoCode…). Python tourne vraiment dans la page (Pyodide, dans un worker). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;
+  --obj: #F76707;
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --code-bg: #282923;
+  --code-gutter: #2F3129;
+  --code-text: #DEE3EB;
+  --code-kw: #E06C75;
+  --code-op: #C678DD;
+  --code-str: #98C379;
+  --code-com: #A0A8B3;
+  --code-no: #8C94A3;
+  --code-num: #E5C07B;
+  --code-tab: #2B6CA0;
+  --code-cur: #3E4A2E;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 600; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+code, .py { font-family: var(--f-mono); font-size: 0.86em; background: #EEF1F5; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; white-space: pre-wrap; }
+
+/* En-tête collant */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; font-weight: 500; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.titre-ex { font-weight: 600; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; min-width: 0; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.run { border-color: var(--code-tab); background: var(--code-tab); color: #fff; }
+.btn.run:hover { background: #245c88; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p, .rappel ul { margin: 0 0 6px; }
+.rappel ul { padding-left: 20px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; flex: 1 1 300px; }
+.item .q > b:first-child { margin-right: 4px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .sheet .item .resline, .item.raw .resline { display: block; }
+
+/* Encadrés Script et Console (comme dans le TP) */
+.code { position: relative; background: var(--code-bg); border-radius: 6px; margin-top: 12px; min-width: 0; max-width: 100%; }
+/* mode sombre de barre.js (page inversée) : les encadrés de code restent sombres */
+html.barre-inverse .code { filter: invert(1) hue-rotate(180deg); }
+.code .tab { position: absolute; top: -11px; left: 10px; background: var(--code-tab); color: #fff; font-size: 12px; font-weight: 500; border-radius: 3px; padding: 0 8px; line-height: 20px; }
+.code pre { margin: 0; padding: 12px 12px 10px 0; overflow-x: auto; font-family: var(--f-mono); font-size: 14.5px; line-height: 1.55; color: var(--code-text); }
+.code pre .l { display: block; padding-left: 44px; position: relative; min-height: 1.55em; }
+.code pre .l::before { content: attr(data-n); position: absolute; left: 0; width: 32px; text-align: right; color: var(--code-no); }
+.code pre .l.cur { background: var(--code-cur); box-shadow: inset 3px 0 0 #8CE99A; }
+.code pre .l.done { opacity: .55; }
+.code.console pre .l { padding-left: 12px; }
+.code.console pre .l::before { content: none; }
+.k { color: var(--code-kw); }
+.o { color: var(--code-op); }
+.s { color: var(--code-str); }
+.c { color: var(--code-com); font-style: italic; }
+.nb { color: var(--code-num); }
+.out { color: #FFFFFF; }
+.err { color: #FF8787; }
+.fix { color: #8CE99A; font-weight: 600; }
+.code textarea { display: block; width: 100%; min-height: 120px; resize: vertical; border: none; outline: none; background: transparent; color: var(--code-text); font-family: var(--f-mono); font-size: 14.5px; line-height: 1.55; padding: 14px 12px 10px; tab-size: 4; white-space: pre; overflow-x: auto; }
+.code textarea:focus { box-shadow: inset 0 0 0 2px var(--code-tab); border-radius: 6px; }
+.codes { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
+.codes > * { flex: 1 1 260px; min-width: 0; }
+.runbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.pystat { color: var(--muted); font-size: 14px; }
+.tests { display: grid; gap: 4px; margin-top: 6px; font-size: 15px; }
+.tests div { border-radius: 4px; padding: 3px 10px; overflow-x: auto; }
+.tests .ok { background: var(--green-soft); border-left: 3px solid var(--green); }
+.tests .ko { background: var(--red-soft); border-left: 3px solid var(--red); }
+
+/* Exécution pas à pas */
+.trace { display: grid; gap: 10px; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: start; }
+@media (max-width: 640px) { .trace { grid-template-columns: 1fr; } }
+.vars { border-collapse: collapse; margin-top: 12px; font-family: var(--f-mono); font-size: 14.5px; }
+.vars th, .vars td { border: 1px solid var(--line); padding: 3px 12px; text-align: center; min-width: 52px; }
+.vars th { background: var(--bg); font-weight: 600; }
+.vars td.chg { background: #FFF3BF; font-weight: 600; }
+.vars td.vide { color: var(--muted); }
+.vars caption { caption-side: top; text-align: left; font-family: var(--f-body); font-size: 14px; color: var(--muted); padding-bottom: 2px; }
+
+/* Blocs Scratch (simplifiés) */
+.scr { display: inline-grid; gap: 2px; font-size: 14px; font-weight: 600; color: #fff; margin: 4px 0; }
+.scr > div { border-radius: 4px; padding: 4px 10px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.scr .def { background: #FF6680; border-radius: 12px 12px 4px 4px; padding-top: 8px; }
+.scr .var { background: #FF8C1A; margin-left: 10px; }
+.scr .look { background: #9966FF; margin-left: 10px; }
+.scr i { font-style: normal; background: #fff; color: #333; border-radius: 10px; padding: 0 8px; font-weight: 500; }
+.scr i.op { background: #59C059; color: #fff; border-radius: 10px; }
+.scr i.par { background: #FF4D6A; color: #fff; }
+.scr i.v { background: #FFAB19; color: #fff; }
+
+/* Réponse de l'élève */
+.aide { margin: 0; font-size: 15px; color: var(--muted); }
+.answer { display: grid; gap: 6px; min-width: 0; }
+.ab { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; min-width: 0; }
+.ab label { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 0 1 260px; }
+.ab label > span { white-space: nowrap; }
+.answer input[type="text"] { font: inherit; font-family: var(--f-mono); font-size: 15px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); min-width: 0; width: 100%; }
+.answer input[type="text"]:focus { outline: none; border-color: var(--calc); box-shadow: 0 0 0 2px var(--calc-soft); }
+.ans-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb { border-radius: 4px; padding: 6px 12px; font-size: 15px; overflow-x: auto; }
+.fb.ok { background: var(--green-soft); border-left: 3px solid var(--green); }
+.fb.warn { background: var(--amber-soft); border-left: 3px solid #F59F00; }
+.fb.ko { background: var(--red-soft); border-left: 3px solid var(--red); }
+.train .item.good { border-color: var(--green); }
+
+.tab-rep { border-collapse: collapse; font-size: 15px; }
+.tab-rep th, .tab-rep td { border: 1px solid var(--line); padding: 4px 12px; text-align: center; }
+.tab-rep th { background: var(--bg); font-weight: 500; }
+.scroll { overflow-x: auto; max-width: 100%; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step > div { min-width: 0; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; margin-top: 2px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.chain { font-family: var(--f-mono); font-size: 15px; overflow-x: auto; }
+.chain .hl { background: #FFF3BF; border-radius: 3px; padding: 0 2px; }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; min-width: 0; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+</style>
+<script src="../../barre.js"></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>TP Algorithmique n°1 — Corrigé</b><span>Premiers pas en Python : affectation et fonctions</span><a href="../../python/">Page Python</a></div>
+    <nav class="exnav" id="exnav" aria-label="Exercices"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<script>
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = ri(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const fr = x => String(x).replace('.', ',');          // écriture française d'un nombre
+const S1 = '<span style="color:var(--star-green)">★</span><span style="color:#C5CCD3">☆☆</span>';
+const S2 = '<span style="color:var(--star-blue)">★★</span><span style="color:#C5CCD3">☆</span>';
+const S3 = '<span style="color:var(--star-red)">★★★</span>';
+
+/* =====================================================================
+   1. Mini-Python : nombres typés (int / float) comme en Python
+   Valeur = { v: nombre, f: vrai si float }.
+   ===================================================================== */
+const I = v => ({ v, f: false }), F = v => ({ v, f: true });
+function repr(x) {
+  if (!x.f) return String(x.v);
+  if (Number.isInteger(x.v) && Math.abs(x.v) < 1e16) return x.v.toFixed(1);
+  return String(x.v);
+}
+function opPy(o, a, b) {
+  if (o === '+') return { v: a.v + b.v, f: a.f || b.f };
+  if (o === '-') return { v: a.v - b.v, f: a.f || b.f };
+  if (o === '*') return { v: a.v * b.v, f: a.f || b.f };
+  if (o === '/') { if (b.v === 0) throw new Error('ZeroDivisionError: division by zero'); return F(a.v / b.v); }
+  if (o === '**') {
+    if (!a.f && !b.f && b.v >= 0) return I(a.v ** b.v);
+    return F(a.v ** b.v);
+  }
+  throw new Error('opération inconnue');
+}
+// Analyse syntaxique : expr = terme (± terme)* ; terme = unaire (*,/ unaire)* ; unaire = -unaire | puiss ; puiss = atome (** unaire)?
+function tokens(s) {
+  const t = [], re = /\s*(\d+\.\d*|\.\d+|\d+|[A-Za-z_]\w*|\*\*|[-+*/(),])/y;
+  let m; re.lastIndex = 0;
+  while (re.lastIndex < s.length) {
+    if (/^\s*$/.test(s.slice(re.lastIndex))) break;
+    m = re.exec(s); if (!m) throw new Error('écriture non reconnue');
+    t.push(m[1]);
+  }
+  return t;
+}
+function parse(s) {
+  const t = tokens(s); let i = 0;
+  const peek = () => t[i], eat = x => { if (t[i] !== x) throw new Error(`« ${x} » attendu`); i++; };
+  function expr() { let n = term(); while (peek() === '+' || peek() === '-') { const op = t[i++]; n = { t: 'bin', op, a: n, b: term() }; } return n; }
+  function term() { let n = unary(); while (peek() === '*' || peek() === '/') { const op = t[i++]; n = { t: 'bin', op, a: n, b: unary() }; } return n; }
+  function unary() { if (peek() === '-') { i++; return { t: 'neg', a: unary() }; } return power(); }
+  function power() { const n = atom(); if (peek() === '**') { i++; return { t: 'bin', op: '**', a: n, b: unary() }; } return n; }
+  function atom() {
+    const x = t[i++];
+    if (x === undefined) throw new Error('expression incomplète');
+    if (x === '(') { const e = expr(); eat(')'); return { t: 'par', e }; }
+    if (/^[\d.]/.test(x)) return { t: 'num', x: x.includes('.') ? F(parseFloat(x)) : I(parseInt(x, 10)) };
+    if (/^[A-Za-z_]/.test(x)) return { t: 'var', n: x };
+    throw new Error(`« ${x} » inattendu`);
+  }
+  const n = expr();
+  if (i < t.length) throw new Error(`« ${t[i]} » inattendu`);
+  return n;
+}
+function ev(n, env = {}) {
+  switch (n.t) {
+    case 'num': return n.x;
+    case 'var': if (!(n.n in env)) throw new Error(`NameError: name '${n.n}' is not defined`); return env[n.n];
+    case 'par': return ev(n.e, env);
+    case 'neg': { const a = ev(n.a, env); return { v: -a.v, f: a.f }; }
+    case 'bin': return opPy(n.op, ev(n.a, env), ev(n.b, env));
+  }
+}
+const evalPy = (s, env) => ev(parse(s), env);
+// Réécriture (les parenthèses d'origine sont conservées)
+function pr(n, sub) {
+  switch (n.t) {
+    case 'num': return repr(n.x);
+    case 'var': if (sub && n.n in sub) { const r = repr(sub[n.n]); return r.startsWith('-') ? `(${r})` : r; } return n.n;
+    case 'par': return '(' + pr(n.e, sub) + ')';
+    case 'neg': return '-' + pr(n.a, sub);
+    case 'bin': return pr(n.a, sub) + ' ' + n.op + ' ' + pr(n.b, sub);
+  }
+}
+const OPN = { '+': 'l’addition', '-': 'la soustraction', '*': 'la multiplication', '/': 'la division', '**': 'la puissance' };
+/* Une étape de calcul, dans l'ordre où Python le fait (de gauche à droite, priorités respectées).
+   Renvoie [nouvel arbre, infos] ou null si l'expression est déjà un nombre. */
+function red(n, inPar) {
+  if (n.t === 'num') return null;
+  if (n.t === 'par') {
+    const r = red(n.e, true); if (!r) return [n.e, { unpar: true }];
+    return [r[0].t === 'num' ? r[0] : { t: 'par', e: r[0] }, r[1]];
+  }
+  if (n.t === 'neg') {
+    const r = red(n.a, inPar); if (r) return [{ t: 'neg', a: r[0] }, r[1]];
+    return [{ t: 'num', x: { v: -n.a.x.v, f: n.a.x.f } }, { neg: true }];
+  }
+  let r = red(n.a, inPar); if (r) return [{ ...n, a: r[0] }, r[1]];
+  r = red(n.b, inPar); if (r) return [{ ...n, b: r[0] }, r[1]];
+  const x = opPy(n.op, n.a.x, n.b.x);
+  return [{ t: 'num', x, mark: true }, { op: n.op, a: n.a.x, b: n.b.x, x, inPar, src: pr(n) }];
+}
+function hasLowOp(n) {
+  if (!n || n.t === 'num' || n.t === 'var') return false;
+  if (n.t === 'par') return false;
+  if (n.t === 'neg') return hasLowOp(n.a);
+  return n.op === '+' || n.op === '-' || hasLowOp(n.a) || hasLowOp(n.b);
+}
+function prMark(n) {
+  switch (n.t) {
+    case 'num': return n.mark ? `<span class="hl">${repr(n.x)}</span>` : repr(n.x);
+    case 'var': return n.n;
+    case 'par': return '(' + prMark(n.e) + ')';
+    case 'neg': return '-' + prMark(n.a);
+    case 'bin': return prMark(n.a) + ' ' + esc(n.op) + ' ' + prMark(n.b);
+  }
+}
+const unmark = n => n.t === 'num' ? { t: 'num', x: n.x } : n.t === 'par' ? { t: 'par', e: unmark(n.e) } : n.t === 'neg' ? { t: 'neg', a: unmark(n.a) } : n.t === 'bin' ? { ...n, a: unmark(n.a), b: unmark(n.b) } : n;
+// Étapes de calcul d'une expression (pour « Correction détaillée »)
+function calcSteps(src) {
+  let n = parse(src); const steps = [];
+  const top0 = n;
+  for (let k = 0; k < 20; k++) {
+    const r = red(n); if (!r) break;
+    const [m, inf] = r;
+    if (inf.unpar || inf.neg) { n = unmark(m); continue; }
+    const why = [];
+    if (inf.inPar) why.push('les parenthèses sont calculées en premier');
+    else if (inf.op === '**' && (n.t === 'bin' && n.op !== '**')) why.push('la puissance <code>**</code> est prioritaire');
+    else if ((inf.op === '*' || inf.op === '/') && hasLowOp(n)) why.push('<code>*</code> et <code>/</code> passent avant <code>+</code> et <code>-</code>');
+    if (inf.op === '/') why.push('une division <code>/</code> donne toujours un nombre à virgule (un <em>float</em>), même quand elle « tombe juste »');
+    else if (inf.x.f && (inf.a.f || inf.b.f)) why.push('un des deux nombres est un float (il s’écrit avec un point), donc le résultat aussi');
+    steps.push({ h: `<div class="chain">${prMark(m)}</div>`, x: `On calcule ${OPN[inf.op]} <code>${esc(inf.src)}</code> = <code>${repr(inf.x)}</code>${why.length ? ' : ' + why.join(' ; ') : ''}.` });
+    n = unmark(m);
+  }
+  return { steps, res: repr(ev(top0)) };
+}
+
+/* =====================================================================
+   2. Exécution « à la main » d'un petit script (affectations, print)
+   ===================================================================== */
+function splitTop(s) {      // découpe « a, b » en dehors des parenthèses
+  const out = []; let d = 0, cur = '';
+  for (const ch of s) { if (ch === '(') d++; if (ch === ')') d--; if (ch === ',' && !d) { out.push(cur); cur = ''; } else cur += ch; }
+  out.push(cur); return out.map(x => x.trim());
+}
+function traceScript(src) {
+  const lines = src.split('\n'), env = {}, order = [], out = [], steps = [];
+  lines.forEach((raw, i) => {
+    const l = raw.replace(/#.*$/, '').trim();
+    if (!l) return;
+    let m;
+    if ((m = l.match(/^print\((.*)\)$/))) {
+      const ast = parse(m[1]), x = ev(ast, env);
+      out.push(repr(x));
+      const subst = ast.t === 'var' ? '' : ` : avec les valeurs actuelles, <code>${esc(pr(ast, env))}</code> = <code>${repr(x)}</code>`;
+      steps.push({ line: i, env: { ...env }, order: order.slice(), chg: [], out: out.slice(), x: `<code>${esc(l)}</code> affiche la valeur de <code>${esc(m[1])}</code>${subst}. La console affiche <b>${repr(x)}</b>.` });
+      return;
+    }
+    if ((m = l.match(/^([A-Za-z_][\w\s,]*?)\s*=\s*(.+)$/))) {
+      const tg = splitTop(m[1]), vs = splitTop(m[2]);
+      const asts = vs.map(parse), vals = asts.map(a => ev(a, env));   // tout est calculé AVANT de ranger
+      const old = { ...env };
+      tg.forEach((n, k) => { if (!(n in env)) order.push(n); env[n] = vals[k]; });
+      const parts = tg.map((n, k) => {
+        const a = asts[k], calc = a.t === 'num' ? '' : (a.t === 'var' ? `la valeur de <code>${a.n}</code>, c’est-à-dire ` : `<code>${esc(pr(a, old))}</code> = `);
+        const lost = n in old && old[n].v !== vals[k].v ? ` (l’ancienne valeur ${repr(old[n])} est effacée)` : '';
+        return `<code>${n}</code> prend ${calc}<b>${repr(vals[k])}</b>${lost}`;
+      });
+      let x = parts.join(' et ') + '.';
+      if (tg.length > 1) x = 'Affectation simultanée : Python calcule d’abord toutes les valeurs à droite du <code>=</code>, puis les range. ' + x;
+      else if (asts[0].t !== 'num' && asts[0].t !== 'var' && JSON.stringify(asts[0]).includes(`"n":"${tg[0]}"`)) x = `On calcule d’abord le membre de droite avec l’<em>ancienne</em> valeur de <code>${tg[0]}</code>, puis on range le résultat. ` + x;
+      steps.push({ line: i, env: { ...env }, order: order.slice(), chg: tg, out: out.slice(), x });
+      return;
+    }
+    throw new Error('ligne non reconnue : ' + l);
+  });
+  return { steps, out };
+}
+
+/* =====================================================================
+   3. Coloration et encadrés Script / Console
+   ===================================================================== */
+const KW = new Set(['def', 'return', 'print', 'if', 'else', 'elif', 'for', 'while', 'in', 'range', 'import', 'from', 'and', 'or', 'not', 'True', 'False', 'None']);
+function hl(line) {
+  let h = '', m; const re = /(#.*$)|('[^']*'|"[^"]*")|([A-Za-z_]\w*)|(\d+\.?\d*)|(\*\*|[-+*/=<>%:])|(\s+)|(.)/g;
+  while ((m = re.exec(line))) {
+    if (m[1]) h += `<span class="c">${esc(m[1])}</span>`;
+    else if (m[2]) h += `<span class="s">${esc(m[2])}</span>`;
+    else if (m[3]) h += KW.has(m[3]) ? `<span class="k">${m[3]}</span>` : m[3];
+    else if (m[4]) h += m[4];
+    else if (m[5]) h += `<span class="o">${esc(m[5])}</span>`;
+    else h += esc(m[0]);
+  }
+  return h;
+}
+// Script : opts.cur = ligne courante, opts.marks = {n° de ligne: classe}
+function scriptHTML(src, opts = {}) {
+  const ls = src.replace(/\n$/, '').split('\n');
+  return `<div class="code"><span class="tab">${opts.tab || 'Script'}</span><pre>${ls.map((l, i) => {
+    let c = 'l'; if (opts.cur === i) c += ' cur'; else if (opts.cur !== undefined && i < opts.cur) c += ' done';
+    if (opts.marks && opts.marks[i]) c += ' ' + opts.marks[i];
+    return `<span class="${c}" data-n="${i + 1}">${opts.raw && opts.raw[i] !== undefined ? opts.raw[i] : hl(l)}</span>`;
+  }).join('')}</pre></div>`;
+}
+// Console : lignes « >>> ... » colorées, sorties en blanc
+function consoleHTML(lines, tab = 'Console') {
+  return `<div class="code console"><span class="tab">${tab}</span><pre>${lines.map(l => {
+    if (l.startsWith('>>>')) return `<span class="l"><span class="o">&gt;&gt;&gt;</span> ${hl(l.slice(4))}</span>`;
+    if (l.startsWith('!')) return `<span class="l err">${esc(l.slice(1))}</span>`;
+    return `<span class="l out">${esc(l)}</span>`;
+  }).join('')}</pre></div>`;
+}
+
+/* =====================================================================
+   4. Le vrai Python (Pyodide dans un worker, chargé au premier clic)
+   ===================================================================== */
+const PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/';
+const PY_AIDE = String.raw`
+import sys, io, traceback
+def __fmt(e):
+    if isinstance(e, SyntaxError):
+        return ''.join(traceback.format_exception_only(type(e), e)).rstrip()
+    tb = [f for f in traceback.extract_tb(e.__traceback__) if f.filename.startswith('<')]
+    t = 'Traceback (most recent call last):\n' + ''.join(traceback.format_list(tb)) + ''.join(traceback.format_exception_only(type(e), e))
+    return t.rstrip()
+def __run(src, cmds):
+    ns = {'__name__': '__main__'}
+    vieux = sys.stdout
+    buf = io.StringIO(); sys.stdout = buf
+    res = {'out': '', 'err': None, 'cmds': []}
+    try:
+        try:
+            exec(compile(src, '<script>', 'exec'), ns)
+        except BaseException as e:
+            res['err'] = __fmt(e)
+        res['out'] = buf.getvalue()
+        for c in cmds:
+            buf = io.StringIO(); sys.stdout = buf
+            r = {'cmd': c, 'val': None, 'err': None}
+            try:
+                try:
+                    code = compile(c, '<console>', 'eval')
+                    v = eval(code, ns)
+                    if v is not None:
+                        r['val'] = repr(v)
+                except SyntaxError:
+                    exec(compile(c, '<console>', 'exec'), ns)
+            except BaseException as e:
+                r['err'] = __fmt(e)
+            r['out'] = buf.getvalue()
+            res['cmds'].append(r)
+    finally:
+        sys.stdout = vieux
+    return res
+`;
+const WORKER_SRC = `importScripts(${JSON.stringify(PYODIDE + 'pyodide.js')});
+var pret = loadPyodide({ indexURL: ${JSON.stringify(PYODIDE)} }).then(function (p) { p.runPython(${JSON.stringify(PY_AIDE)}); postMessage({ type: 'pret' }); return p; },
+  function (e) { postMessage({ type: 'echec', t: String(e) }); });
+onmessage = async function (e) {
+  var p = await pret;
+  p.globals.set('__src', e.data.src); p.globals.set('__cmds', p.toPy(e.data.cmds));
+  var r = p.runPython('__run(__src, __cmds)');
+  var o = r.toJs({ dict_converter: Object.fromEntries }); r.destroy();
+  postMessage({ type: 'res', id: e.data.id, r: o });
+};`;
+const Py = (() => {
+  const url = URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' }));
+  let w = null, ready = null, n = 0;
+  const wait = new Map();
+  function start() {
+    w = new Worker(url);
+    ready = new Promise((ok, ko) => {
+      w.onmessage = e => {
+        const d = e.data;
+        if (d.type === 'pret') ok();
+        else if (d.type === 'echec') ko(new Error(d.t));
+        else if (d.type === 'res' && wait.has(d.id)) { wait.get(d.id)(d.r); wait.delete(d.id); }
+      };
+    });
+  }
+  async function run(src, cmds = [], onState) {
+    if (!w) start();
+    let loaded = false;
+    const t = setTimeout(() => { if (!loaded && onState) onState('Chargement de Python… (quelques secondes la première fois)'); }, 150);
+    try { await ready; } finally { loaded = true; clearTimeout(t); }
+    if (onState) onState('');
+    const id = ++n;
+    return new Promise((ok, ko) => {
+      const lim = setTimeout(() => { wait.delete(id); w.terminate(); w = null; ko(new Error('Le programme met trop de temps (boucle sans fin ?). Python a été relancé.')); }, 6000);
+      wait.set(id, r => { clearTimeout(lim); ok(r); });
+      w.postMessage({ id, src, cmds });
+    });
+  }
+  return { run };
+})();
+// Résultat de Py.run → lignes de console
+function consoleLines(r) {
+  const L = [];
+  if (r.out) r.out.replace(/\n$/, '').split('\n').forEach(x => L.push(x));
+  if (r.err) r.err.split('\n').forEach(x => L.push('!' + x));
+  r.cmds.forEach(c => {
+    L.push('>>> ' + c.cmd);
+    if (c.out) c.out.replace(/\n$/, '').split('\n').forEach(x => L.push(x));
+    if (c.val !== null && c.val !== undefined) L.push(c.val);
+    if (c.err) c.err.split('\n').forEach(x => L.push('!' + x));
+  });
+  return L;
+}
+// Comparaison de deux affichages Python : 'ok' | 'presque' | 'ko'
+function sameNum(a, b) {
+  const x = parseFloat(a), y = parseFloat(b);
+  return /^-?[\d.]+(e[-+]?\d+)?$/i.test(a.trim()) && Number.isFinite(x) && Math.abs(x - y) <= 1e-9 * Math.max(1, Math.abs(y));
+}
+
+/* Encadré « exécutable » : script (fixe ou modifiable) + commandes de console + tests éventuels.
+   o = { src, cmds:[], edit:bool, tests:[[appel, attendu]], label } */
+let boxId = 0;
+function runBoxHTML(o) {
+  const id = 'rb' + (++boxId);
+  o.id = id; RUNBOX[id] = o;
+  const script = o.edit
+    ? `<div class="code"><span class="tab">Script (modifiable)</span><textarea spellcheck="false" autocapitalize="off" autocomplete="off" rows="${Math.max(3, o.src.split('\n').length + 1)}">${esc(o.src)}</textarea></div>`
+    : (o.src.trim() ? scriptHTML(o.src) : '');
+  return `<div class="runbox" data-rb="${id}">
+    ${script}
+    <div class="runbar"><button type="button" class="btn sm run" data-run>▶ ${o.label || (o.tests ? 'Exécuter et tester' : 'Exécuter dans Python')}</button>${o.edit ? '<button type="button" class="btn ghost sm" data-reinit>Revenir au script de départ</button>' : ''}<span class="pystat"></span></div>
+    <div class="sortie"></div>
+  </div>`;
+}
+const RUNBOX = {};
+function wireRunBoxes(root) {
+  $$('.runbox', root).forEach(el => {
+    if (el.dataset.wired) return; el.dataset.wired = 1;
+    const o = RUNBOX[el.dataset.rb], ta = $('textarea', el), stat = $('.pystat', el), sortie = $('.sortie', el), b = $('[data-run]', el);
+    if (ta) {
+      ta.addEventListener('keydown', e => {
+        if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); document.execCommand('insertText', false, '    '); }
+        if (e.key === 'Enter') {          // garde le décalage, et l'augmente après « : »
+          const deb = ta.value.lastIndexOf('\n', ta.selectionStart - 1) + 1, ligne = ta.value.slice(deb, ta.selectionStart);
+          const ind = ligne.match(/^\s*/)[0] + (/:\s*$/.test(ligne) ? '    ' : '');
+          e.preventDefault(); document.execCommand('insertText', false, '\n' + ind);
+        }
+      });
+      $('[data-reinit]', el).addEventListener('click', () => { ta.value = o.src; sortie.innerHTML = ''; });
+    }
+    b.addEventListener('click', async () => {
+      const src = ta ? ta.value : o.src;
+      const cmds = (o.cmds || []).concat((o.tests || []).map(t => t[0]));
+      b.disabled = true; stat.textContent = '';
+      try {
+        const r = await Py.run(src, cmds, s => { stat.textContent = s; });
+        const shown = { ...r, cmds: r.cmds.slice(0, (o.cmds || []).length) };
+        let h = '';
+        const lines = consoleLines(shown);
+        // les appels de test s'affichent aussi dans la console
+        r.cmds.slice((o.cmds || []).length).forEach(c => { lines.push('>>> ' + c.cmd); if (c.val !== null && c.val !== undefined) lines.push(c.val); if (c.err) c.err.split('\n').forEach(x => lines.push('!' + x)); });
+        if (!lines.length) lines.push('>>> # script executed');
+        else lines.unshift('>>> # script executed');
+        h += consoleHTML(lines);
+        if (o.tests) {
+          const tr = r.cmds.slice((o.cmds || []).length);
+          const ok = tr.map((c, k) => c.val !== null && c.val !== undefined && (c.val === o.tests[k][1] || sameNum(c.val, o.tests[k][1])));
+          h += `<div class="tests">${tr.map((c, k) => `<div class="${ok[k] ? 'ok' : 'ko'}"><code>${esc(c.cmd)}</code> ${ok[k] ? `renvoie bien <code>${esc(c.val)}</code> ✓` : (c.err ? `provoque une erreur ✗ (attendu : <code>${esc(o.tests[k][1])}</code>)` : `renvoie <code>${esc(String(c.val))}</code> ✗ (attendu : <code>${esc(o.tests[k][1])}</code>)`)}</div>`).join('')}</div>`;
+          if (ok.every(Boolean)) h += `<div class="fb ok" style="margin-top:6px">✓ Bravo, ta fonction passe tous les tests !</div>`;
+          else if (r.err) h += `<div class="fb ko" style="margin-top:6px">Le script contient une erreur : lis le message en rouge (numéro de <b>ligne</b> et <b>type</b> d’erreur), corrige, puis relance.</div>`;
+        }
+        sortie.innerHTML = h;
+      } catch (e) {
+        sortie.innerHTML = `<div class="fb ko">${esc(e.message)}</div>`;
+      } finally { b.disabled = false; stat.textContent = ''; }
+    });
+  });
+}
+
+/* =====================================================================
+   5. Items : { l, q (HTML), res (HTML), steps:[{h, x, m}], run?, ans? }
+   ans = { fields:[{lab, want, kind}], aide } pour l'entraînement.
+   ===================================================================== */
+function typeset(el) {
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]).catch(() => {});
+  else setTimeout(() => typeset(el), 200);
+}
+function answerHTML(it) {
+  return `<div class="answer">
+    <div class="ab">${it.ans.fields.map((f, k) => `<label><span>${f.lab}</span><input type="text" data-f="${k}" autocomplete="off" autocapitalize="off" spellcheck="false"></label>`).join('')}</div>
+    <div class="ans-btns"><button type="button" class="btn solid sm" data-check>Vérifier</button><button type="button" class="btn ghost sm" data-raw>Réponse brute</button></div>
+    <div class="fb" hidden></div>
+  </div>`;
+}
+function itemHTML(it, id, ans) {
+  return `<div class="item" data-id="${id}">
+    <div class="row"><span class="q">${it.l ? `<b>${it.l}</b> ` : ''}${it.q}</span>${it.steps && it.steps.length ? '<button type="button" class="btn sm" data-open>Correction détaillée</button>' : ''}</div>
+    ${it.fig || ''}
+    ${ans && it.ans ? answerHTML(it) : ''}
+    <div class="resline">Réponse : <span class="res">${it.res}</span></div>
+    <div class="corr" hidden><ol class="steps"></ol>
+      <div class="step-ctrl"><button type="button" class="btn solid sm" data-next>Étape suivante</button><button type="button" class="btn ghost sm" data-all>Tout afficher</button><button type="button" class="btn ghost sm" data-reset hidden>Recommencer</button></div>
+      <div class="end" hidden><div class="concl">${it.concl || 'Réponse : ' + it.res}</div>${it.piege ? `<div class="piege" style="margin-top:8px"><b>Erreur à éviter :</b> ${it.piege}</div>` : ''}</div>
+    </div>
+    ${it.run ? runBoxHTML(it.run) : ''}
+  </div>`;
+}
+// Vérification d'un champ : kind 'py' (affichage Python), 'num' (nombre, virgule acceptée), 'txt' (liste de réponses)
+function checkField(f, s) {
+  s = s.trim();
+  if (!s) return ['vide'];
+  if (f.kind === 'txt') {
+    const n = x => x.toLowerCase().replace(/\s+/g, '').replace(',', '.');
+    return [[].concat(f.want).map(n).includes(n(s)) ? 'ok' : 'ko'];
+  }
+  if (f.kind === 'num') return [sameNum(s.replace(',', '.'), String(f.want)) ? 'ok' : 'ko'];
+  const w = String(f.want);
+  if (s === w) return ['ok'];
+  if (s.replace(',', '.') === w || (s.includes(',') && sameNum(s.replace(',', '.'), w))) return ['warn', `Valeur juste, mais Python écrit les nombres à virgule avec un <b>point</b> : <code>${esc(w)}</code>.`];
+  if (sameNum(s, w)) {
+    if (/\.0$/.test(w) && !s.includes('.')) return ['warn', `Valeur juste, mais c’est un <em>float</em> : Python affiche <code>${esc(w)}</code> (avec <code>.0</code>).`];
+    if (!w.includes('.') && s.includes('.')) return ['warn', `Valeur juste, mais c’est un entier : Python affiche <code>${esc(w)}</code> (sans <code>.0</code>).`];
+    return ['ok', `Python affiche exactement <code>${esc(w)}</code> (petite erreur d’arrondi des nombres à virgule en machine).`];
+  }
+  return ['ko'];
+}
+function wireAnswer(el, it) {
+  const box = $('.answer', el), fb = $('.fb', box), bRaw = $('[data-raw]', box);
+  const say = (k, h) => { fb.hidden = false; fb.className = 'fb ' + k; fb.innerHTML = h; typeset(fb); el.classList.toggle('good', k === 'ok'); };
+  bRaw.addEventListener('click', () => { const on = el.classList.toggle('raw'); bRaw.textContent = on ? 'Masquer la réponse' : 'Réponse brute'; });
+  const run = () => {
+    const ins = $$('input', box), rs = it.ans.fields.map((f, k) => checkField(f, ins[k].value));
+    if (rs.some(r => r[0] === 'vide')) return say('ko', 'Complète toutes les cases.');
+    const notes = rs.filter(r => r[1]).map(r => r[1]);
+    if (rs.every(r => r[0] === 'ok')) return say('ok', '✓ Bravo, c’est juste !' + (notes.length ? ' ' + notes.join(' ') : ''));
+    if (rs.every(r => r[0] !== 'ko')) return say('warn', notes.join(' '));
+    const faux = rs.map((r, k) => r[0] === 'ko' ? it.ans.fields[k].lab : null).filter(Boolean);
+    say('ko', `✗ Pas encore : ${it.ans.fields.length > 1 ? 'regarde ' + faux.map(x => `« ${x} »`).join(', ') : 'ce n’est pas le bon résultat'}. ${it.ans.aide || 'Refais le calcul en suivant l’ordre de Python, ou ouvre la correction détaillée.'}`);
+  };
+  $('[data-check]', box).addEventListener('click', run);
+  $$('input', box).forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') run(); }));
+}
+function stepHTML(st, k) {
+  let inner = '';
+  if (st.h) inner += `<div class="h">${st.h}</div>`;
+  if (st.m) inner += `<div class="m">\\[${st.m}\\]</div>`;
+  if (st.x) inner += `<div class="x">${st.x}</div>`;
+  return `<span class="n">${k}</span><div>${inner}</div>`;
+}
+function wireItem(el, it) {
+  if ($('.answer', el)) wireAnswer(el, it);
+  if (!it.steps || !it.steps.length) return;
+  const corr = $('.corr', el), ol = $('.steps', corr), end = $('.end', corr);
+  const bN = $('[data-next]', corr), bA = $('[data-all]', corr), bR = $('[data-reset]', corr);
+  let k = 0;
+  // une étape « trace » remplace la précédente (exécution pas à pas), les autres s'ajoutent
+  const add = () => {
+    const st = it.steps[k];
+    if (st.replace && ol.lastElementChild && ol.lastElementChild.dataset.replace) ol.lastElementChild.remove();
+    const li = document.createElement('li'); li.className = 'step'; if (st.replace) li.dataset.replace = 1;
+    li.innerHTML = stepHTML(st, k + 1); k++; ol.appendChild(li); wireRunBoxes(li); typeset(li);
+  };
+  const sync = () => { const fin = k >= it.steps.length; bN.hidden = fin; bA.hidden = fin; bR.hidden = !fin; end.hidden = !fin; if (fin) typeset(end); };
+  $('[data-open]', el).addEventListener('click', e => {
+    const open = corr.hidden;
+    corr.hidden = !open; el.classList.toggle('open', open);
+    e.currentTarget.textContent = open ? 'Masquer la correction' : 'Correction détaillée';
+    if (open && k === 0) { add(); sync(); }
+  });
+  bN.addEventListener('click', () => { add(); sync(); });
+  bA.addEventListener('click', () => { while (k < it.steps.length) add(); sync(); });
+  bR.addEventListener('click', () => { ol.innerHTML = ''; k = 0; add(); sync(); });
+}
+
+/* Étapes d'exécution pas à pas d'un script (une étape par ligne exécutée) */
+function traceSteps(src) {
+  const { steps, out } = traceScript(src);
+  return { out, steps: steps.map(s => {
+    const names = s.order;
+    const tab = names.length ? `<table class="vars"><caption>Variables</caption><tr>${names.map(n => `<th>${n}</th>`).join('')}</tr><tr>${names.map(n => `<td class="${s.chg.includes(n) ? 'chg' : ''}">${repr(s.env[n])}</td>`).join('')}</tr></table>` : '';
+    const cons = consoleHTML(['>>> # script executed'].concat(s.out));
+    return { replace: true, h: `<div class="trace"><div>${scriptHTML(src, { cur: s.line })}</div><div>${tab}${s.out.length ? cons : ''}</div></div>`, x: s.x };
+  }) };
+}
+
+/* =====================================================================
+   6. Petits blocs Scratch
+   ===================================================================== */
+const scr = rows => `<div class="scr">${rows.join('')}</div>`;
+const sDef = (nom, ps) => `<div class="def">définir ${nom} ${ps.map(p => `<i class="par">${p}</i>`).join(' ')}</div>`;
+const sSet = (v, val) => `<div class="var">mettre <i class="v">${v}</i> à ${val}</div>`;
+const sSay = val => `<div class="look">dire ${val}</div>`;
+const sOp = (a, o, b) => `<i class="op">${a} ${o} ${b}</i>`;
+const sPar = p => `<i class="par">${p}</i>`;
+const sVar = v => `<i class="v">${v}</i>`;
+const sNum = n => `<i>${n}</i>`;
+
+/* =====================================================================
+   7. Les exercices du TP
+   ===================================================================== */
+const pyc = s => `<code>${esc(s)}</code>`;
+const RAPPEL_AFF = { t: 'Rappel 1 : variables et affectation', h: `<ul><li>${pyc('a = 6')} se lit « \\(a\\) prend la valeur \\(6\\) » : c’est une <b>affectation</b>, pas une égalité.</li><li>Dans ${pyc('a = a + 1')}, Python calcule d’abord ${pyc('a + 1')} avec l’ancienne valeur, puis range le résultat dans ${pyc('a')}.</li><li>${pyc('a, b = 5, 9')} : affectation simultanée.</li></ul>` };
+const RAPPEL_OPS = { t: 'Les opérations', h: `<div class="scroll"><table class="tab-rep"><tr><th>En maths</th><td>\\(7+2\\)</td><td>\\(7-2\\)</td><td>\\(7\\times2\\)</td><td>\\(7\\div2\\)</td><td>\\(7^2\\)</td></tr><tr><th>En Python</th><td>${pyc('7 + 2')}</td><td>${pyc('7 - 2')}</td><td>${pyc('7 * 2')}</td><td>${pyc('7 / 2')}</td><td>${pyc('7 ** 2')}</td></tr></table></div>` };
+const RAPPEL_FCT = { t: 'Rappel 2 : les fonctions', h: `${scriptHTML('def prix_total(prix, frais):\n    return 2 * prix + frais')}<ul style="margin-top:8px"><li>${pyc('def')} + nom + paramètres entre parenthèses + <b>deux-points</b>.</li><li>Les instructions de la fonction sont <b>décalées</b> (4 espaces).</li><li>${pyc('return')} donne la valeur <b>renvoyée</b> ; on appelle la fonction dans la console : ${pyc('prix_total(5, 4)')} renvoie ${pyc('14')}.</li></ul>` };
+const ATT = `<ul><li>Un nombre à virgule s’écrit avec un <b>point</b> : ${pyc('2.5')} ; la multiplication s’écrit toujours : ${pyc('3 * x')}.</li><li>Python lit <b>exactement</b> ce qui est écrit : un ${pyc(':')} oublié, une majuscule… et c’est l’erreur.</li><li>Un message d’erreur indique la <b>ligne</b> et le <b>type</b> d’erreur : on le lit, on corrige, on relance.</li></ul>`;
+
+// Une question « Python affiche ? » pour un calcul
+function itCalc(src, l, ans) {
+  const { steps, res } = calcSteps(src);
+  if (!steps.length) steps.push({ x: 'Il n’y a rien à calculer.' });
+  return { l, q: `On tape ${pyc(src)}`, res: pyc(res), steps, run: { src: '', cmds: [src], label: 'Vérifier dans Python' },
+    ans: ans ? { fields: [{ lab: 'Python affiche', want: res, kind: 'py' }] } : null };
+}
+// Générateur de calculs pour l'entraînement de l'exercice 1
+function randCalc() {
+  const a = ri(2, 9), b = ri(2, 9), c = ri(2, 9), d = pick([0.5, 1.5, 2.5, 0.2, 1.2]);
+  return pick([
+    `${a} * ${b + 3}`, `${pick([2, 3, 5, 10])} ** ${ri(2, 4)}`, `${a} + ${b} * ${c}`, `(${a} + ${b}) * ${c}`,
+    `${a * c + 10} - ${b} * ${c}`, `${a * b} / ${b}`, `${pick([7, 9, 11, 13, 15])} / ${pick([2, 4])}`, `${d} * ${pick([2, 4, 10])}`,
+    `${d} * ${a} + ${b}`, `${a} ** 2 + ${b}`, `(${a} + ${b}) ** 2`, `${a} + ${b} ** 2`, `${2 * a} / 2 + ${b}`, `${c} - ${a + c}`,
+  ]);
+}
+
+// Scripts de l'exercice 2 (entraînement)
+function randScript() {
+  const p = ri(2, 9), q = ri(2, 9), k = ri(2, 4);
+  return pick([
+    () => `a = ${p}\nb = ${q}\na = a ${pick(['+', '*', '-'])} b\nb = a ${pick(['+', '*'])} ${k}\nprint(a)\nprint(b)`,
+    () => `x = ${p}\nx = x * ${k}\nx = x + ${q}\nprint(x)`,
+    () => `x = ${p}\ny = ${q}\ny = x\nx = y\nprint(x)\nprint(y)`,
+    () => `a, b = ${p}, ${q}\na, b = b, a + b\nprint(a)\nprint(b)`,
+    () => `n = ${p}\nm = n + ${q}\nn = m * 2\nm = n - m\nprint(n)\nprint(m)`,
+    () => `prix = ${pick([12, 15, 20, 40])}\nquantite = ${ri(2, 5)}\ntotal = prix * quantite\ntotal = total / 2\nprint(total)`,
+    () => `cote = ${ri(2, 9)}\nperimetre = 4 * cote\naire = cote ** 2\nprint(perimetre)\nprint(aire)`,
+  ])();
+}
+function itScript(l, src, ans) {
+  const t = traceSteps(src);
+  return { l, q: '', fig: scriptHTML(src), res: t.out.map(pyc).join(' puis '),
+    steps: t.steps, concl: `Python affiche ${t.out.map(x => `<b>${x}</b>`).join(' puis ')}.`,
+    run: { src, cmds: [], label: 'Vérifier dans Python' },
+    ans: ans ? { fields: t.out.map((w, k) => ({ lab: t.out.length > 1 ? `Ligne ${k + 1} affichée` : 'Python affiche', want: w, kind: 'py' })), aide: 'Exécute le script ligne par ligne sur ton cahier, en notant la valeur de chaque variable, ou ouvre la correction détaillée.' } : null };
+}
+
+// Banque de fonctions à déboguer (exercice 3, entraînement)
+const BUGS = [
+  { nom: 'double', bug: 'def double(x)\nreturn 2x', ok: 'def double(x):\n    return 2 * x', tests: [['double(5)', '10'], ['double(1.5)', '3.0']],
+    errs: [['SyntaxError: invalid decimal literal', '<code>2x</code> devient <code>2 * x</code>'], ['SyntaxError: expected \':\'', 'ajouter <code>:</code> à la fin de la ligne 1'], ['IndentationError: expected an indented block', 'décaler <code>return</code> de 4 espaces']] },
+  { nom: 'moitie', bug: 'Def moitie(x):\n    return x / 2', ok: 'def moitie(x):\n    return x / 2', tests: [['moitie(9)', '4.5']],
+    errs: [['SyntaxError: invalid syntax', '<code>Def</code> s’écrit en minuscules : <code>def</code>']] },
+  { nom: 'perimetre_rectangle', bug: 'def perimetre_rectangle(L, l):\n    return 2 * (L + l', ok: 'def perimetre_rectangle(L, l):\n    return 2 * (L + l)', tests: [['perimetre_rectangle(5, 3)', '16']],
+    errs: [['SyntaxError: \'(\' was never closed', 'fermer la parenthèse : <code>2 * (L + l)</code>']] },
+  { nom: 'prix_ttc', bug: 'def prix_ttc(prix)\n    return prix * 1,2', ok: 'def prix_ttc(prix):\n    return prix * 1.2', tests: [['prix_ttc(10)', '12.0'], ['prix_ttc(50)', '60.0']],
+    errs: [['SyntaxError: expected \':\'', 'ajouter <code>:</code> à la fin de la ligne 1'], ['pas de message, mais <code>prix_ttc(10)</code> renvoie <code>(10, 2)</code> !', '<code>1,2</code> devient <code>1.2</code> : la virgule sépare deux nombres']] },
+  { nom: 'moyenne', bug: 'def moyenne(a, b):\n    return a + b / 2', ok: 'def moyenne(a, b):\n    return (a + b) / 2', tests: [['moyenne(10, 20)', '15.0'], ['moyenne(7, 8)', '7.5']],
+    errs: [['pas de message, mais <code>moyenne(10, 20)</code> renvoie <code>20.0</code> au lieu de <code>15.0</code>', 'la division est prioritaire : il faut des parenthèses, <code>(a + b) / 2</code>']] },
+  { nom: 'carre', bug: 'def carre(x):\n    return x²', ok: 'def carre(x):\n    return x ** 2', tests: [['carre(7)', '49'], ['carre(-3)', '9']],
+    errs: [['SyntaxError: invalid character \'²\' (U+00B2)', 'la puissance s’écrit <code>x ** 2</code>']] },
+  { nom: 'aire_triangle', bug: 'def aire_triangle(b, h):\nreturn b * h / 2', ok: 'def aire_triangle(b, h):\n    return b * h / 2', tests: [['aire_triangle(6, 4)', '12.0']],
+    errs: [['IndentationError: expected an indented block after function definition on line 1', 'décaler <code>return</code> de 4 espaces']] },
+];
+function itBug(l, B, ans) {
+  return { l, q: `Cette fonction ${pyc(B.nom)} contient ${B.errs.length > 1 ? B.errs.length + ' erreurs' : 'une erreur'}. La corriger dans le script ci-dessous, puis lancer les tests.`,
+    res: `<pre style="margin:0;font-family:var(--f-mono);font-size:14px">${esc(B.ok)}</pre>`,
+    steps: B.errs.map((e, k) => ({ h: `<b>Erreur ${k + 1}</b> : ${e[0].startsWith('pas de') ? e[0] : `<code>${esc(e[0])}</code>`}`, x: `Correction : ${e[1]}.` }))
+      .concat([{ h: scriptHTML(B.ok, { tab: 'Script corrigé' }), x: 'On relance après chaque correction : Python signale les erreurs une par une.' }]),
+    concl: 'Le script corrigé passe tous les tests.',
+    run: { src: B.bug, edit: true, tests: B.tests } };
+}
+
+/* Fonctions à écrire (exercices 4 à 7) : tests calculés par le mini-Python */
+function fnTests(expr, params, valeurs) {
+  return valeurs.map(vs => {
+    const env = {}; params.forEach((p, k) => { env[p] = typeof vs[k] === 'number' && !Number.isInteger(vs[k]) ? F(vs[k]) : I(vs[k]); });
+    return [`${expr.nom}(${vs.join(', ')})`, repr(evalPy(expr.corps, env))];
+  });
+}
+const numPy = x => (Number.isInteger(x) ? I(x) : F(x));
+function valPy(corps, params, vs) {
+  const env = {}; params.forEach((p, k) => { env[p] = numPy(vs[k]); });
+  return repr(evalPy(corps, env));
+}
+// Question « f(…) renvoie ? »
+function itCall(l, nom, corps, params, vs, ans, extra = {}) {
+  const call = `${nom}(${vs.join(', ')})`, w = valPy(corps, params, vs);
+  const env = {}; params.forEach((p, k) => { env[p] = numPy(vs[k]); });
+  const sub = pr(parse(corps), env);
+  const st = calcSteps(sub);
+  return { l, q: `${pyc(call)} renvoie ?`, res: pyc(w),
+    steps: [{ h: `<div class="chain">${esc(call)} → ${esc(corps)} avec ${params.map((p, k) => `${p} = ${vs[k]}`).join(', ')}</div>`, x: 'On remplace chaque paramètre par la valeur donnée dans l’appel.' },
+      { h: `<div class="chain">${esc(sub)}</div>`, x: 'L’expression à calculer.' }].concat(st.steps),
+    ans: ans ? { fields: [{ lab: 'renvoie', want: w, kind: 'py' }] } : null, ...extra };
+}
+
+/* ----------------------- Exercice 8 : programme mystère ----------------------- */
+function mystereTex(a, b, c) {
+  const p = (v) => (v < 0 ? `-${fr(-v)}` : `+${fr(v)}`);
+  return `(x${p(a)})^2-(x${p(b)})^2-${c === 1 ? '' : fr(c)}x`;
+}
+function mystereSteps(a, b, c) {
+  const p = v => (v < 0 ? `-${fr(-v)}` : `+${fr(v)}`);
+  const sq = v => `x^2${p(2 * v).replace(/^\+/, '+')}x${p(v * v)}`;
+  return [
+    { m: `(x${p(a)})^2=x^2+2\\times x\\times ${a < 0 ? `(${fr(a)})` : fr(a)}+${a < 0 ? `(${fr(a)})` : fr(a)}^2=${sq(a)}`, x: 'Identité remarquable \\((a+b)^2=a^2+2ab+b^2\\) (ou double distributivité).' },
+    { m: `(x${p(b)})^2=${sq(b)}`, x: 'Même calcul pour la deuxième parenthèse.' },
+    { m: `(x${p(a)})^2-(x${p(b)})^2-${fr(c)}x=${sq(a)}-(${sq(b)})-${fr(c)}x`, x: 'On remplace, en gardant des parenthèses : le signe \\(-\\) s’applique à tout le carré.' },
+    { m: `=x^2${p(2 * a)}x${p(a * a)}-x^2${p(-2 * b)}x${p(-b * b)}-${fr(c)}x`, x: 'Le signe \\(-\\) devant la parenthèse change le signe de chaque terme.' },
+    { m: `=${fr(a * a - b * b)}`, x: `Les \\(x^2\\) s’éliminent, les \\(x\\) aussi : \\(${fr(2 * a)}-${2 * b < 0 ? `(${fr(2 * b)})` : fr(2 * b)}-${fr(c)}=0\\). Il reste \\(${fr(a * a)}-${b * b < 0 ? `(${fr(b * b)})` : fr(b * b)}=${fr(a * a - b * b)}\\).` },
+  ];
+}
+
+const EX = [
+  { n: 1, stars: S1, comp: 'Calculer', titre: 'La console comme calculatrice', rappel: [RAPPEL_OPS], consigne: 'Taper chaque calcul dans la console et noter le résultat affiché.',
+    build: tr => {
+      if (tr) return { main: Array.from({ length: 4 }, () => itCalc(randCalc(), '', true)) };
+      return { main: ['7 * 8', '2 ** 10', '3 + 4 * 5', '(3 + 4) * 5', '7 / 2', '10 / 5', '2.5 * 4', '1.5 * 6 + 3'].map(s => itCalc(s, '')),
+        more: [
+          { l: '1.', q: 'Python respecte-t-il les priorités opératoires ? Justifier avec deux résultats du tableau.', res: `Oui : ${pyc('3 + 4 * 5')} donne \\(23\\) (multiplication d’abord), alors que ${pyc('(3 + 4) * 5')} donne \\(35\\) (parenthèses d’abord).`,
+            steps: calcSteps('3 + 4 * 5').steps.concat(calcSteps('(3 + 4) * 5').steps.map(s => ({ ...s }))), concl: 'Oui : Python respecte les priorités opératoires, comme en mathématiques.' },
+          { l: '2.', q: `Certains résultats s’écrivent avec « ${pyc('.0')} ». Dans quels cas ?`, res: `Après une division ${pyc('/')} (même si elle tombe juste, comme ${pyc('10 / 5')}), ou dès qu’un nombre à virgule intervient dans le calcul : le résultat est un <em>float</em>.`,
+            steps: [{ h: `${pyc('10 / 5')} → ${pyc('2.0')}`, x: 'La division donne toujours un float.' }, { h: `${pyc('2.5 * 4')} → ${pyc('10.0')}`, x: 'Un des nombres est un float, donc le résultat aussi, même si sa partie décimale est nulle.' }] },
+          { l: '3.', q: `Taper ${pyc('3,5 * 2')}. Qu’affiche Python ? Comment écrire \\(3{,}5\\times2\\) ?`, res: `Python affiche ${pyc('(3, 10)')} : la virgule <b>sépare</b> deux nombres, \\(3\\) et \\(5\\times2=10\\). Il faut écrire ${pyc('3.5 * 2')}, qui donne ${pyc('7.0')}.`,
+            steps: [{ h: consoleHTML(['>>> 3,5 * 2', '(3, 10)']), x: 'Pour Python, la virgule sépare deux valeurs : il calcule \\(3\\) d’un côté, \\(5\\times2=10\\) de l’autre.' }, { h: consoleHTML(['>>> 3.5 * 2', '7.0']), x: 'Un nombre à virgule s’écrit avec un point.' }],
+            run: { src: '', cmds: ['3,5 * 2', '3.5 * 2'], label: 'Essayer dans Python' } },
+        ] };
+    } },
+  { n: 2, stars: S2, comp: 'Raisonner', titre: 'Prévoir, puis vérifier', rappel: [RAPPEL_AFF], consigne: 'Pour chaque script, prévoir d’abord ce qui va s’afficher, puis l’exécuter pour vérifier. La correction détaillée exécute le script <b>ligne par ligne</b>.',
+    build: tr => {
+      if (tr) return { main: [itScript('', randScript(), true), itScript('', randScript(), true)] };
+      const A = itScript('Script A', 'a = 5\nb = 3\na = a + b\nb = a * 2\nprint(a)\nprint(b)');
+      const B = itScript('Script B', 'x = 4\ny = 7\nx = y\ny = x\nprint(x)\nprint(y)');
+      const C = itScript('Script C', 'masse = 50\nvitesse = 12\nenergie = 0.5 * masse * vitesse ** 2\nprint(energie)');
+      C.q = '<em>énergie cinétique d’un objet de 50 kg lancé à 12 m/s</em>';
+      C.steps.push({ h: `<div class="chain">0.5 * 50 * 12 ** 2</div>`, x: 'Détail du calcul de la ligne 3 :' }, ...calcSteps('0.5 * 50 * 12 ** 2').steps);
+      const swap = 'x = 4\ny = 7\nz = x      # on met de côté la valeur de x\nx = y\ny = z\nprint(x)   # affiche 7\nprint(y)   # affiche 4';
+      return { main: [A, B, C], more: [
+        { l: '1.', q: 'Le script B devait <b>échanger</b> les valeurs de <code>x</code> et <code>y</code>. Est-ce réussi ?', res: `Non : les deux variables valent \\(7\\) à la fin. Au moment de ${pyc('y = x')}, <code>x</code> a déjà été écrasée par la valeur de <code>y</code>.`,
+          steps: traceSteps('x = 4\ny = 7\nx = y\ny = x').steps, concl: 'Non : l’ancienne valeur \\(4\\) de <code>x</code> est perdue dès la ligne 3.' },
+        { l: '2.', q: 'Corriger le script B avec une troisième variable <code>z</code>.', res: pyc('z = x') + ' puis ' + pyc('x = y') + ' puis ' + pyc('y = z'),
+          steps: traceSteps(swap).steps, concl: 'On a bien échangé : <code>x</code> vaut \\(7\\) et <code>y</code> vaut \\(4\\).', run: { src: swap, edit: true } },
+        { l: '3.', q: `Que fait l’instruction ${pyc('x, y = y, x')} ?`, res: 'Elle échange les deux valeurs en une seule instruction : Python calcule d’abord toutes les valeurs à droite du <code>=</code>, avant de les ranger.',
+          steps: traceSteps('x, y = 4, 7\nx, y = y, x\nprint(x)\nprint(y)').steps, run: { src: '', cmds: ['x, y = 4, 7', 'x, y = y, x', 'x', 'y'], label: 'Essayer dans la console' } },
+      ] };
+    } },
+  { n: 3, stars: S1, comp: 'Chercher', titre: 'Chasse aux erreurs', rappel: [RAPPEL_FCT], consigne: 'Voici une fonction censée renvoyer le triple d’un nombre. Elle contient <b>trois erreurs</b>. Corriger une erreur, relancer, et ainsi de suite jusqu’à ce que <code>triple(5)</code> renvoie \\(15\\).',
+    build: tr => {
+      if (tr) return { main: shuffle(BUGS).slice(0, 2).map(B => itBug('', B)) };
+      const B = { nom: 'triple', bug: 'def triple(x)\nreturn 3x', ok: 'def triple(x):\n    return 3 * x', tests: [['triple(5)', '15'], ['triple(-2)', '-6']],
+        errs: [['SyntaxError: invalid decimal literal', '<code>3x</code> devient <code>3 * x</code>'], ['SyntaxError: expected \':\'', 'ajouter <code>:</code> à la fin de la ligne 1'], ['IndentationError: expected an indented block after function definition on line 1', 'décaler <code>return</code> vers la droite (4 espaces)']] };
+      const it1 = itBug('1.', B); it1.q = 'Corriger le script ci-dessous (erreur par erreur) et compléter le tableau.';
+      return { main: [it1, { l: '2.', q: `Taper ${pyc('Triple(5)')} dans la console. Que se passe-t-il ? Pourquoi ?`,
+        res: `${pyc("NameError: name 'Triple' is not defined")} : Python distingue majuscules et minuscules. La fonction s’appelle <code>triple</code>, pas <code>Triple</code>.`,
+        steps: [{ h: consoleHTML(['>>> Triple(5)', '!Traceback (most recent call last):', '!  File "<console>", line 1, in <module>', "!NameError: name 'Triple' is not defined"]), x: '<em>NameError</em> : Python ne connaît aucun objet de ce nom.' }, { x: 'Pour Python, <code>Triple</code> et <code>triple</code> sont deux noms différents.' }],
+        run: { src: B.ok, cmds: ['triple(5)', 'Triple(5)'], label: 'Essayer dans Python' } }] };
+    } },
+  { n: 4, stars: S1, comp: 'Représenter', titre: 'De Scratch à Python', rappel: [RAPPEL_FCT], consigne: 'Traduire chaque bloc Scratch en fonction Python, puis l’appeler dans la console.',
+    build: tr => {
+      if (tr) {
+        const a = ri(2, 6), b = ri(2, 5), c = pick([3, 5, 6]);
+        const prog = pick([
+          { ops: [['x', '+', a], ['resultat', '*', b]], corps: `(x + ${a}) * ${b}` },
+          { ops: [['x', '*', b], ['resultat', '-', a]], corps: `x * ${b} - ${a}` },
+          { ops: [['x', '-', a], ['resultat', '*', 'resultat']], corps: `(x - ${a}) * (x - ${a})` },
+        ]);
+        const fig = scr([sDef('programme', ['x']), ...prog.ops.map(([u, o, v]) => sSet('resultat', sOp(u === 'x' ? sPar('x') : sVar(u), o, v === 'resultat' ? sVar(v) : sNum(v)))), sSay(sVar('resultat'))]);
+        const src = `def programme(x):\n${prog.ops.map(([u, o, v]) => `    resultat = ${u} ${o} ${v}`).join('\n')}\n    return resultat`;
+        const vals = [ri(-5, 9), pick([0.5, 1.5, 2.5])];
+        const geo = pick([['perimetre_triangle', 'c', '3 * c', 'le périmètre d’un triangle équilatéral de côté \\(c\\)'], ['aire_carre', 'c', 'c ** 2', 'l’aire d’un carré de côté \\(c\\)'], ['perimetre_hexagone', 'c', '6 * c', 'le périmètre d’un hexagone régulier de côté \\(c\\)']]);
+        const c0 = ri(3, 12), solG = `def ${geo[0]}(${geo[1]}):\n    return ${geo[2]}`;
+        const g = itCall('', geo[0], geo[2], [geo[1]], [c0], true);
+        g.q = `La fonction ${pyc(geo[0] + '(' + geo[1] + ')')} renvoie ${geo[3]}. L’écrire, puis : ${pyc(`${geo[0]}(${c0})`)} renvoie ?`;
+        g.fig = runBoxHTML({ src: `def ${geo[0]}(${geo[1]}):\n    `, edit: true, tests: fnTests({ nom: geo[0], corps: geo[2] }, [geo[1]], [[c0], [2.5]]) });
+        g.steps.unshift({ h: scriptHTML(solG, { tab: 'Une solution' }) });
+        const p1 = itCall('', 'programme', prog.corps, ['x'], [vals[0]], true);
+        p1.q = `Écrire la fonction ${pyc('programme(x)')} correspondant au bloc, avec une variable <code>resultat</code>. ${pyc(`programme(${vals[0]})`)} renvoie ?`;
+        p1.fig = `<div>${fig}</div>${runBoxHTML({ src: 'def programme(x):\n    ', edit: true, tests: fnTests({ nom: 'programme', corps: prog.corps }, ['x'], [[4], [-3], [vals[0]]]) })}`;
+        p1.steps.unshift({ h: scriptHTML(src, { tab: 'Une solution' }), x: 'Chaque « mettre resultat à … » devient une affectation, « dire » devient <code>return</code>.' });
+        const p2 = itCall('', 'programme', prog.corps, ['x'], [vals[1]], true);
+        p2.q = `Avec la même fonction : ${pyc(`programme(${vals[1]})`)} renvoie ?`;
+        return { main: [g, p1, p2] };
+      }
+      const fig1 = scr([sDef('perimetre_carre', ['c']), sSay(sOp(sNum(4), '*', sPar('c')))]);
+      const fig3 = scr([sDef('programme', ['x']), sSet('resultat', sOp(sPar('x'), '+', sNum(3))), sSet('resultat', sOp(sVar('resultat'), '*', sNum(2))), sSay(sVar('resultat'))]);
+      const corr = (src, txt) => [{ h: scriptHTML(src, { tab: 'Script corrigé' }), x: txt }];
+      return { main: [
+        { l: '1.', q: 'Fonction <code>perimetre_carre</code> correspondant au bloc :', fig: `<div>${fig1}</div>${runBoxHTML({ src: 'def perimetre_carre(c):\n    ', edit: true, tests: [['perimetre_carre(7)', '28'], ['perimetre_carre(2.5)', '10.0']] })}`,
+          res: `${pyc('return 4 * c')} ; ${pyc('perimetre_carre(7)')} renvoie ${pyc('28')} et ${pyc('perimetre_carre(2.5)')} renvoie ${pyc('10.0')}`,
+          steps: [{ x: '« définir perimetre_carre (c) » devient <code>def perimetre_carre(c):</code> ; « dire 4 * c » devient <code>return 4 * c</code>, décalé de 4 espaces.' }].concat(corr('def perimetre_carre(c):\n    return 4 * c', '<code>2.5</code> est un float, donc le résultat aussi : <code>10.0</code>.')) },
+        { l: '2.', q: 'Fonction <code>aire_rectangle</code> à deux paramètres <code>L</code> et <code>l</code>.', fig: runBoxHTML({ src: 'def aire_rectangle(L, l):\n    ', edit: true, tests: [['aire_rectangle(5, 3)', '15'], ['aire_rectangle(2.5, 4)', '10.0']] }),
+          res: `${pyc('return L * l')} ; ${pyc('aire_rectangle(5, 3)')} renvoie ${pyc('15')} et ${pyc('aire_rectangle(2.5, 4)')} renvoie ${pyc('10.0')}`,
+          steps: [{ x: 'Les deux paramètres sont séparés par une virgule dans les parenthèses : <code>def aire_rectangle(L, l):</code>.' }].concat(corr('def aire_rectangle(L, l):\n    return L * l', '<code>L</code> et <code>l</code> sont deux variables différentes : Python distingue majuscules et minuscules.')) },
+        { l: '3.', q: 'Fonction <code>programme(x)</code> avec une variable <code>resultat</code> :', fig: `<div>${fig3}</div>${runBoxHTML({ src: 'def programme(x):\n    ', edit: true, tests: [['programme(4)', '14'], ['programme(-3)', '0']] })}`,
+          res: `${pyc('programme(4)')} renvoie ${pyc('14')} et ${pyc('programme(-3)')} renvoie ${pyc('0')}`,
+          steps: [{ x: 'Chaque bloc « mettre resultat à … » devient une affectation, « dire » devient <code>return</code>.' }].concat(corr('def programme(x):\n    resultat = x + 3\n    resultat = resultat * 2\n    return resultat', '\\((4+3)\\times2=14\\) et \\((-3+3)\\times2=0\\).'),
+            [{ x: 'On pouvait aussi écrire directement <code>return (x + 3) * 2</code>.' }]).flat(),
+          piege: 'sans parenthèses, <code>x + 3 * 2</code> calcule \\(x+6\\).' },
+      ] };
+    } },
+  { n: 5, stars: S1, comp: 'Modéliser', titre: 'Vitesse moyenne', rappel: [RAPPEL_FCT], consigne: 'On a écrit la fonction <code>vitesse(distance, temps)</code> qui renvoie <code>distance / temps</code>.',
+    build: tr => {
+      const h = t => { const hh = Math.floor(t), mm = Math.round((t - hh) * 60); return `${hh} h ${String(mm).padStart(2, '0')} min`; };
+      if (tr) {
+        const out = [];
+        for (let k = 0; k < 2; k++) {
+          const v = pick([40, 60, 80, 90, 100, 120]), t = pick([0.25, 0.5, 0.75, 1.25, 1.5, 2.5, 3.75]), d = v * t;
+          const w = valPy('d / v', ['d', 'v'], [d, v]);
+          out.push({ l: '', q: `${pyc(`temps(${d}, ${v})`)} : temps pour parcourir ${fr(d)} km à ${v} km/h.`, res: `${pyc(w)}, soit ${h(t)}`,
+            steps: [{ h: `<div class="chain">temps(${d}, ${v}) → ${d} / ${v}</div>`, x: 'On remplace <code>d</code> et <code>v</code>.' }, { h: `<div class="chain">${w}</div>`, x: 'La division donne un float.' },
+              { x: `Conversion : \\(${fr(t - Math.floor(t))}\\) h \\(=${fr(t - Math.floor(t))}\\times60=${Math.round((t - Math.floor(t)) * 60)}\\) min.` }],
+            ans: { fields: [{ lab: 'renvoie', want: w, kind: 'py' }, { lab: 'en heures et minutes', want: [h(t), h(t).replace(' 00 min', ''), h(t).replace(/ 0(\d) min/, ' $1 min'), h(t).replace(' min', ''), h(t).replace(/\s/g, '')], kind: 'txt' }], aide: 'Écris la durée sous la forme « 3 h 45 min ».' } });
+        }
+        const d2 = pick([150, 180, 210, 240]), t2 = pick([1.5, 2, 2.5, 3]);
+        out.push(itCall('', 'vitesse', 'distance / temps', ['distance', 'temps'], [d2, t2], true));
+        return { main: out };
+      }
+      return { main: [
+        { l: '1.', q: 'Combien de paramètres cette fonction possède-t-elle ? Lesquels ?', fig: scriptHTML('def vitesse(distance, temps):\n    return distance / temps'), res: 'Deux paramètres : <code>distance</code> et <code>temps</code>.', steps: [{ x: 'Les paramètres sont écrits entre les parenthèses après le nom de la fonction, séparés par une virgule.' }] },
+        { l: '2.', q: `${pyc('vitesse(120, 1.5)')} renvoie ${pyc('80.0')}. Que signifie ce résultat ?`, res: 'Parcourir \\(120\\) km en \\(1{,}5\\) h (1 h 30 min) correspond à une vitesse moyenne de \\(80\\) km/h.',
+          steps: [{ h: '<div class="chain">vitesse(120, 1.5) → 120 / 1.5</div>', x: 'distance = 120 (km), temps = 1.5 (h).' }, { m: '120\\div1{,}5=80', x: 'Unité : km/h, car on divise des km par des heures.' }] },
+        { l: '3.', q: `Écrire une fonction ${pyc('temps(d, v)')} ; ${pyc('temps(300, 80)')} renvoie ? soit une durée de ?`, fig: runBoxHTML({ src: 'def temps(d, v):\n    ', edit: true, tests: [['temps(300, 80)', '3.75'], ['temps(150, 60)', '2.5']] }),
+          res: `${pyc('return d / v')} ; ${pyc('3.75')}, soit 3 h 45 min`,
+          steps: [{ m: 'v=\\dfrac{d}{t}\\iff t=\\dfrac{d}{v}', x: 'On isole le temps dans la formule de la vitesse.' }, { h: scriptHTML('def temps(d, v):\n    return d / v', { tab: 'Script corrigé' }) }, { m: '300\\div80=3{,}75\\text{ h}', x: '\\(0{,}75\\) h \\(=0{,}75\\times60=45\\) min : la durée est de 3 h 45 min.' }],
+          piege: '\\(3{,}75\\) h ne fait pas 3 h 75 min !' },
+      ] };
+    } },
+  { n: 6, stars: S2, comp: 'Modéliser', titre: 'Degrés Celsius et Fahrenheit', rappel: [RAPPEL_FCT], consigne: 'Pour convertir en °F une température \\(C\\) en °C : \\(F=1{,}8\\times C+32\\).',
+    build: tr => {
+      if (tr) {
+        const Cs = shuffle([-10, 5, 15, 25, 30, 37, 40, 50, -20]).slice(0, 2);
+        const Fs = shuffle([50, 86, 104, 14, 23, 59, 95]).slice(0, 2);
+        return { main: [
+          ...Cs.map(c => itCall('', 'fahrenheit', '1.8 * C + 32', ['C'], [c], true)),
+          ...Fs.map(f => itCall('', 'celsius', '(F - 32) / 1.8', ['F'], [f], true)),
+        ] };
+      }
+      const tests = [[0], [100], [20], [-40]].map(v => [`fahrenheit(${v[0]})`, valPy('1.8 * C + 32', ['C'], v)]);
+      return { main: [
+        { l: '1.', q: `Écrire une fonction ${pyc('fahrenheit(C)')} qui renvoie la température en °F.`, fig: runBoxHTML({ src: 'def fahrenheit(C):\n    ', edit: true, tests }), res: pyc('return 1.8 * C + 32'),
+          steps: [{ x: 'On recopie la formule en Python : le point pour \\(1{,}8\\), et <code>*</code> pour la multiplication.' }, { h: scriptHTML('def fahrenheit(C):\n    return 1.8 * C + 32', { tab: 'Script corrigé' }) }] },
+        { l: '2.', q: 'Compléter le tableau.', fig: `<div class="scroll"><table class="tab-rep"><tr><th>°C</th><td>0</td><td>100</td><td>20</td><td>−40</td></tr><tr><th>°F</th>${tests.map(t => `<td>${pyc(t[1])}</td>`).join('')}</tr></table></div>`, res: tests.map(t => pyc(t[1])).join(' ; '),
+          steps: [[0], [100], [20], [-40]].flatMap(v => [{ h: `<div class="chain">fahrenheit(${v[0]}) → ${esc(pr(parse('1.8 * C + 32'), { C: I(v[0]) }))}</div>` }, ...calcSteps(pr(parse('1.8 * C + 32'), { C: I(v[0]) })).steps.slice(-1)]) },
+        { l: '3.', q: 'Que remarque-t-on pour −40 °C ?', res: '\\(-40\\) °C correspond à \\(-40\\) °F : c’est la seule température qui s’écrit de la même façon dans les deux unités.',
+          steps: [{ m: '1{,}8C+32=C\\iff 0{,}8C=-32\\iff C=\\dfrac{-32}{0{,}8}=-40', x: 'C’est la solution de l’équation \\(1{,}8C+32=C\\).' }] },
+        { l: '4.', q: `Écrire une fonction ${pyc('celsius(F)')} qui fait la conversion inverse. ${pyc('celsius(212)')} renvoie ?`, fig: runBoxHTML({ src: 'def celsius(F):\n    ', edit: true, tests: [['celsius(212)', '100.0'], ['celsius(32)', '0.0'], ['celsius(-40)', '-40.0']] }),
+          res: `${pyc('return (F - 32) / 1.8')} ; ${pyc('celsius(212)')} renvoie ${pyc('100.0')}`,
+          steps: [{ m: 'F=1{,}8C+32\\iff F-32=1{,}8C\\iff C=\\dfrac{F-32}{1{,}8}', x: 'On isole \\(C\\).' }, { h: scriptHTML('def celsius(F):\n    return (F - 32) / 1.8', { tab: 'Script corrigé' }), x: 'Les parenthèses sont indispensables.' }],
+          piege: `${pyc('F - 32 / 1.8')} calcule \\(F-\\dfrac{32}{1{,}8}\\) : la division passe avant la soustraction.` },
+      ] };
+    } },
+  { n: 7, stars: S2, comp: 'Modéliser', titre: 'Hausses et remises', rappel: [RAPPEL_FCT, { t: 'Coefficient multiplicateur', h: '<p>Augmenter de \\(p\\) % : multiplier par \\(1+\\dfrac{p}{100}\\).</p><p>Diminuer de \\(p\\) % : multiplier par \\(1-\\dfrac{p}{100}\\).</p>' }],
+    consigne: 'Augmenter de \\(p\\) % revient à multiplier par \\(CM=1+\\dfrac{p}{100}\\) ; diminuer de \\(p\\) %, par \\(CM=1-\\dfrac{p}{100}\\).',
+    build: tr => {
+      if (tr) {
+        const loyer = pick([400, 450, 600, 650, 800]), taux = pick([2, 3, 4, 10]);
+        const src = `loyer = ${loyer}\ntaux = ${taux}\nnouveau_loyer = loyer * (1 + taux / 100)\nprint(nouveau_loyer)`;
+        const L = itScript('', src, true); L.q = `Le loyer passe de ${loyer} € à… (hausse de ${taux} %). Qu’affiche ce script ?`;
+        L.steps.push({ m: `CM=1+\\dfrac{${taux}}{100}=${fr(1 + taux / 100)}\\quad\\text{et}\\quad ${loyer}\\times${fr(1 + taux / 100)}=${fr(+(loyer * (1 + taux / 100)).toFixed(2))}`, x: 'Le calcul « à la main ».' });
+        const p = pick([40, 60, 80, 120, 25.5, 49.9]), r = pick([10, 20, 25, 40, 50]);
+        return { main: [L, itCall('', 'solde', 'prix * (1 - remise / 100)', ['prix', 'remise'], [p, r], true), itCall('', 'solde', 'prix * (1 - remise / 100)', ['prix', 'remise'], [pick([30, 90, 150]), pick([15, 30, 60])], true)] };
+      }
+      const raw = [undefined, undefined, `nouveau_loyer <span class="o">=</span> <span class="fix">loyer * (1 + taux / 100)</span>`];
+      return { main: [
+        { l: '1.', q: 'Le loyer de 500 € augmente de 5 %. Compléter le script.', fig: scriptHTML('loyer = 500\ntaux = 5\nnouveau_loyer = loyer * (1 + taux / 100)\nprint(nouveau_loyer)', { raw }),
+          res: `${pyc('loyer * (1 + taux / 100)')} ; Python affiche ${pyc('525.0')} : le nouveau loyer est de 525 €.`,
+          steps: [{ m: 'CM=1+\\dfrac{5}{100}=1{,}05', x: 'Coefficient multiplicateur d’une hausse de 5 %.' }, { h: '<div class="chain">loyer * (1 + taux / 100)</div>', x: 'En Python, avec les variables.' }, ...traceSteps('loyer = 500\ntaux = 5\nnouveau_loyer = loyer * (1 + taux / 100)\nprint(nouveau_loyer)').steps.slice(-2)],
+          piege: `sans parenthèses, ${pyc('loyer * 1 + taux / 100')} calcule \\(500+0{,}05\\).`, run: { src: 'loyer = 500\ntaux = 5\nnouveau_loyer = loyer * (1 + taux / 100)\nprint(nouveau_loyer)', cmds: [] } },
+        { l: '2.', q: `Écrire une fonction ${pyc('solde(prix, remise)')}. ${pyc('solde(80, 25)')} et ${pyc('solde(49.90, 30)')} renvoient ?`, fig: runBoxHTML({ src: 'def solde(prix, remise):\n    ', edit: true, tests: [['solde(80, 25)', '60.0'], ['solde(49.90, 30)', valPy('prix * (1 - remise / 100)', ['prix', 'remise'], [49.9, 30])]] }),
+          res: `${pyc('return prix * (1 - remise / 100)')} ; ${pyc('60.0')} et ${pyc(valPy('prix * (1 - remise / 100)', ['prix', 'remise'], [49.9, 30]))}`,
+          steps: [{ h: scriptHTML('def solde(prix, remise):\n    return prix * (1 - remise / 100)', { tab: 'Script corrigé' }) }, { m: 'CM=1-\\dfrac{25}{100}=0{,}75\\quad\\text{et}\\quad 80\\times0{,}75=60', x: 'Pour 25 %.' }, { m: '49{,}90\\times0{,}7=34{,}93', x: 'Pour 30 %.' }] },
+      ] };
+    } },
+  { n: 8, stars: S3, comp: 'Raisonner', titre: 'Le programme mystère', rappel: [RAPPEL_FCT, { t: 'Identités remarquables', h: '<p>\\((a+b)^2=a^2+2ab+b^2\\)</p><p>\\((a-b)^2=a^2-2ab+b^2\\)</p>' }],
+    consigne: 'On considère la fonction ci-dessous.',
+    build: tr => {
+      let a = 3, b = 1, c = 4, xs = [5, -2, 0, 10.5, 1000];
+      if (tr) { do { a = ri(-6, 9); b = ri(-6, 9); } while (a === b || a === 0 || b === 0 || a * a === b * b); c = 2 * a - 2 * b; xs = shuffle([ri(2, 9), -ri(1, 9), 0, 2.5, 100]).slice(0, 3); }
+      const sg = v => (v < 0 ? `- ${-v}` : `+ ${v}`);
+      const corps = `(x ${sg(a)}) ** 2 - (x ${sg(b)}) ** 2 ${c < 0 ? '+ ' + -c : '- ' + c} * x`;
+      const src = `def mystere(x):\n    return ${corps}`;
+      const k = a * a - b * b;
+      const tab = xs.map(x => [x, valPy(corps, ['x'], [x])]);
+      const demo = { l: tr ? '' : '3.', q: tr ? 'Démontrer la conjecture.' : 'Démontrer cette conjecture en développant et en réduisant.', res: `L’expression vaut \\(${fr(k)}\\) pour tout \\(x\\).`, steps: c > 0 ? mystereSteps(a, b, c) : [{ m: `(x${a < 0 ? a : '+' + a})^2-(x${b < 0 ? b : '+' + b})^2${c < 0 ? '+' + -c : '-' + c}x=x^2${2 * a < 0 ? 2 * a : '+' + 2 * a}x+${a * a}-x^2${-2 * b < 0 ? -2 * b : '+' + -2 * b}x-${b * b}${c < 0 ? '+' + -c : '-' + c}x`, x: 'On développe chaque carré, puis on enlève les parenthèses (le signe \\(-\\) change tous les signes).' }, { m: `=${k}`, x: 'Les \\(x^2\\) et les \\(x\\) s’éliminent.' }],
+        concl: `Pour <b>tout</b> nombre \\(x\\), l’expression vaut \\(${fr(k)}\\). Tester des valeurs ne suffit pas à le prouver ; le calcul littéral, si.` };
+      if (tr) {
+        return { main: [
+          { l: '', q: 'Que renvoie cette fonction ? (prévoir, puis vérifier)', fig: scriptHTML(src), res: tab.map(t => `${pyc(`mystere(${t[0]})`)} → ${pyc(t[1])}`).join(' ; '),
+            steps: tab.flatMap(t => [{ h: `<div class="chain">mystere(${t[0]})</div>` }, ...calcSteps(pr(parse(corps), { x: numPy(t[0]) })).steps.slice(-1)]),
+            ans: { fields: tab.map(t => ({ lab: `mystere(${t[0]})`, want: t[1], kind: 'num' })), aide: 'Une conjecture ? Tu peux aussi exécuter le script.' }, run: { src, cmds: tab.map(t => `mystere(${t[0]})`) } },
+          demo,
+          (() => { const N = pick([12, 15, 16, 21, 24, 32, 40]); return { l: '', q: `<em>Défi.</em> Trouver \\(a\\), \\(b\\), \\(c\\) pour que ${pyc('(x + a) ** 2 - (x + b) ** 2 - c * x')} renvoie toujours \\(${N}\\).`, fig: defiHTML(N), res: `Il faut \\(c=2a-2b\\) et \\(a^2-b^2=${N}\\).`, steps: defiSteps(N) }; })(),
+        ] };
+      }
+      return { main: [
+        { l: '1.', q: 'Compléter le tableau à l’aide de la console.', fig: scriptHTML(src) + `<div class="scroll" style="margin-top:8px"><table class="tab-rep"><tr><th>\\(x\\)</th>${xs.map(x => `<td>${fr(x)}</td>`).join('')}</tr><tr><th>mystere(x)</th>${tab.map(t => `<td>${pyc(t[1])}</td>`).join('')}</tr></table></div>`,
+          res: tab.map(t => pyc(t[1])).join(' ; '), steps: tab.flatMap(t => [{ h: `<div class="chain">mystere(${t[0]}) → ${esc(pr(parse(corps), { x: numPy(t[0]) }))}</div>` }, ...calcSteps(pr(parse(corps), { x: numPy(t[0]) })).steps.slice(-3)]),
+          run: { src, cmds: xs.map(x => `mystere(${x})`) } },
+        { l: '2.', q: 'Quelle conjecture peut-on faire ?', res: 'Quel que soit le nombre \\(x\\) choisi, la fonction semble toujours renvoyer \\(8\\).', steps: [{ x: 'Toutes les valeurs du tableau valent \\(8\\) (ou \\(8.0\\) pour un float).' }] },
+        demo,
+        { l: '4.', q: '<em>Défi.</em> Trouver \\(a\\), \\(b\\), \\(c\\) pour que la fonction renvoie toujours \\(20\\).', fig: defiHTML(20), res: 'Par exemple \\(a=6\\), \\(b=4\\), \\(c=4\\) : \\(36-16=20\\).', steps: defiSteps(20) },
+      ] };
+    } },
+];
+function defiHTML(N) {
+  return `<div class="defi" data-n="${N}"><div class="ab" style="margin-top:6px">${['a', 'b', 'c'].map(v => `<label><span>${v} =</span><input type="text" data-v="${v}" style="font:inherit;font-family:var(--f-mono);width:80px;padding:3px 8px;border:1px solid var(--line);border-radius:6px"></label>`).join('')}<button type="button" class="btn solid sm" data-defi>Tester</button></div><div class="fb" hidden style="margin-top:6px"></div></div>`;
+}
+function defiSteps(N) {
+  const ex = []; for (let b = 0; b < 30 && ex.length < 2; b++) for (let a = b + 1; a < 40; a++) if (a * a - b * b === N) { ex.push([a, b]); break; }
+  const [a, b] = ex[ex.length > 1 ? 1 : 0];
+  return [
+    { m: '(x+a)^2-(x+b)^2-cx=x^2+2ax+a^2-x^2-2bx-b^2-cx=(2a-2b-c)\\,x+a^2-b^2', x: 'On développe dans le cas général.' },
+    { x: `Pour que le résultat ne dépende pas de \\(x\\), il faut \\(2a-2b-c=0\\), c’est-à-dire \\(c=2a-2b\\). Il reste \\(a^2-b^2=${N}\\).` },
+    { m: `a=${a},\\ b=${b}\\ :\\ ${a * a}-${b * b}=${N}\\ \\text{et}\\ c=2\\times${a}-2\\times${b}=${2 * a - 2 * b}`, x: 'Un choix qui convient (il y en a d’autres).' },
+    { h: scriptHTML(`def mystere2(x):\n    return (x + ${a}) ** 2 - (x + ${b}) ** 2 - ${2 * a - 2 * b} * x`, { tab: 'Une solution' }) },
+  ];
+}
+function wireDefi(root) {
+  $$('.defi', root).forEach(d => {
+    if (d.dataset.wired) return; d.dataset.wired = 1;
+    const N = +d.dataset.n, fb = $('.fb', d);
+    const go = () => {
+      const v = {}; for (const i of $$('input', d)) { const x = parseFloat(i.value.replace(',', '.')); if (!Number.isFinite(x)) { fb.hidden = false; fb.className = 'fb ko'; fb.textContent = 'Écris trois nombres.'; return; } v[i.dataset.v] = x; }
+      const lin = 2 * v.a - 2 * v.b - v.c, cst = v.a * v.a - v.b * v.b;
+      const f = x => (x + v.a) ** 2 - (x + v.b) ** 2 - v.c * x;
+      fb.hidden = false;
+      if (Math.abs(lin) < 1e-9 && Math.abs(cst - N) < 1e-9) { fb.className = 'fb ok'; fb.innerHTML = `✓ Bravo ! Pour tout \\(x\\), on obtient \\(${N}\\) : par exemple \\(f(5)=${fr(+f(5).toFixed(6))}\\) et \\(f(-3)=${fr(+f(-3).toFixed(6))}\\).`; }
+      else if (Math.abs(lin) < 1e-9) { fb.className = 'fb warn'; fb.innerHTML = `Les \\(x\\) s’éliminent bien (\\(c=2a-2b\\)), mais le résultat constant est \\(a^2-b^2=${fr(cst)}\\), pas \\(${N}\\).`; }
+      else { fb.className = 'fb ko'; fb.innerHTML = `Le résultat dépend de \\(x\\) : \\(f(0)=${fr(+f(0).toFixed(6))}\\) mais \\(f(1)=${fr(+f(1).toFixed(6))}\\). Indice : développe pour trouver la condition sur \\(c\\).`; }
+      typeset(fb);
+    };
+    $('[data-defi]', d).addEventListener('click', go);
+    $$('input', d).forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') go(); }));
+  });
+}
+
+/* =====================================================================
+   8. Affichage
+   ===================================================================== */
+const app = $('#app'), nav = $('#exnav');
+function itemsBlock(set, pre, ex, ans) {
+  let h = `<div class="items">${set.main.map((it, i) => itemHTML(it, `${pre}m${i}`, ans)).join('')}</div>`;
+  if (set.more) h += `<h2 class="part">Questions</h2><div class="items">${set.more.map((it, i) => itemHTML(it, `${pre}p${i}`, ans)).join('')}</div>`;
+  return h;
+}
+function wireBlock(root, set, pre) {
+  set.main.forEach((it, i) => wireItem($(`[data-id="${pre}m${i}"]`, root), it));
+  (set.more || []).forEach((it, i) => wireItem($(`[data-id="${pre}p${i}"]`, root), it));
+  wireRunBoxes(root); wireDefi(root);
+}
+const sheet = {};
+let train = 0;
+function render(n) {
+  const ex = EX.find(e => e.n === n) || EX[0];
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.n === ex.n));
+  const set = sheet[ex.n] || (sheet[ex.n] = ex.build(false));
+  app.innerHTML = `
+    <p class="obj"><b>Partie 3 :</b> Exercices d’application</p>
+    <article class="exo">
+      <div class="exo-h"><span class="pill">Exercice ${ex.n}</span><span class="stars">${ex.stars}</span><span class="titre-ex">${ex.titre}</span><span class="comp">${ex.comp}</span></div>
+      <div class="exo-b">
+        <p class="consigne">${ex.consigne}</p>
+        <div class="tools">
+          <button type="button" class="btn" data-rappel>Rappel</button>
+          <button type="button" class="btn ghost" data-res>Réponses seules</button>
+          <button type="button" class="btn green" data-train>↻ Nouvelles valeurs pour s’entraîner</button>
+        </div>
+        <div class="rappel" hidden>${ex.rappel.map(b => `<div><h3>${b.t}</h3>${b.h}</div>`).join('')}<div class="att"><h3>Règles d’or</h3>${ATT}</div></div>
+        <div class="sheet"><h2 class="part">Corrigé du TP <small>« Correction détaillée » pour suivre étape par étape, « ▶ » pour exécuter le vrai Python</small></h2>${itemsBlock(set, 's', ex)}</div>
+        <div class="train" hidden></div>
+      </div>
+    </article>
+    <nav class="foot">${ex.n > 1 ? `<button type="button" class="btn ghost" data-go="${ex.n - 1}">← Exercice ${ex.n - 1}</button>` : '<span></span>'}${ex.n < EX.length ? `<button type="button" class="btn ghost" data-go="${ex.n + 1}">Exercice ${ex.n + 1} →</button>` : ''}</nav>`;
+  wireBlock($('.sheet', app), set, 's');
+  const rap = $('.rappel', app), bRap = $('[data-rappel]', app);
+  bRap.addEventListener('click', () => { rap.hidden = !rap.hidden; bRap.classList.toggle('on', !rap.hidden); if (!rap.hidden) typeset(rap); });
+  const bRes = $('[data-res]', app), body = $('.exo-b', app);
+  bRes.addEventListener('click', () => { body.classList.toggle('showres'); bRes.classList.toggle('on'); });
+  const tr = $('.train', app);
+  $('[data-train]', app).addEventListener('click', () => {
+    const fresh = ex.build(true), pre = `t${++train}`;
+    tr.hidden = false;
+    tr.innerHTML = `<h2 class="part">Entraînement : nouvelles valeurs <small>cherche d’abord sur ton cahier, écris ta réponse, puis vérifie</small></h2>
+      <p class="aide">Écris ce que Python affiche, exactement comme lui : un point pour les nombres à virgule, et <code>.0</code> quand c’est un <em>float</em> (par exemple <code>7.0</code>). Le bouton « ▶ » vérifie dans le vrai Python.</p>${itemsBlock(fresh, pre, ex, true)}`;
+    wireBlock(tr, fresh, pre);
+    typeset(tr);
+    tr.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  app.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.go; }));
+  typeset(app);
+  window.scrollTo(0, 0);
+}
+nav.innerHTML = EX.map(e => `<button type="button" data-n="${e.n}">Exercice ${e.n}</button>`).join('');
+nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.n; }));
+const route = () => render(+(location.hash.match(/^#ex(\d+)$/) || [])[1] || 1);
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
