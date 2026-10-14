@@ -21,6 +21,8 @@
         .soutien-semaine label.grise { color: var(--muted); cursor: default; }
         .soutien-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
         .soutien-actions .aide { margin: 0; }
+        .message label { display: block; margin-bottom: 8px; }
+        .message textarea { width: 100%; box-sizing: border-box; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); resize: vertical; }
     </style>
 </head>
 <body>
@@ -42,6 +44,13 @@
         <div class="tableau-defile"><table class="res" id="liste"></table></div>
         <p class="aide">Tu peux refaire un exercice autant de fois que tu veux : les nombres changent à chaque fois.</p>
         <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>
+
+        <section class="soutien message">
+            <h2>Un message pour ta professeure</h2>
+            <label for="message-texte" class="aide">Si tu vois une erreur sur la page, que tu as une suggestion, ou bien encore que tu as besoin d'informations complémentaires sur un sujet, laisse-moi un message ici.</label>
+            <textarea id="message-texte" rows="4" maxlength="2000"></textarea>
+            <p class="soutien-actions"><button type="button" id="message-envoyer">Envoyer le message</button> <span id="message-etat" class="aide" aria-live="polite"></span></p>
+        </section>
 
         <section id="soutien" class="soutien">
             <h2>Soutien en mathématiques · de la Toussaint à Noël</h2>
@@ -156,7 +165,24 @@
             }, function (x) { etatSoutien.textContent = 'Non enregistré : ' + x.message; });
         };
 
+        /* ---------- Message à la professeure ---------- */
+        var texteMessage = document.getElementById('message-texte');
+        var etatMessage = document.getElementById('message-etat');
+        document.getElementById('message-envoyer').onclick = function () {
+            var s = Interactif.session(), t = texteMessage.value.trim();
+            if (!s) return;
+            if (!t) { etatMessage.textContent = 'Écris d\'abord ton message.'; return; }
+            var bouton = this; bouton.disabled = true;
+            etatMessage.textContent = 'Envoi…';
+            Interactif.rpc('envoyer_message', { p_jeton: s.jeton, p_texte: t }).then(function () {
+                texteMessage.value = '';
+                etatMessage.textContent = '✓ Message envoyé, merci !';
+            }, function (x) { etatMessage.textContent = 'Non envoyé : ' + x.message; })
+              .then(function () { bouton.disabled = false; });
+        };
+
         function charger(s) {
+            etatMessage.textContent = '';
             document.getElementById('contenu').hidden = !s;
             document.querySelector('.espace-prof').hidden = !!s;   // seulement sur l'accueil, pas pour un élève connecté
             afficher(null);

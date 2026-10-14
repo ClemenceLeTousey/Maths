@@ -59,6 +59,9 @@
             </div>
             <div class="tableau-defile"><table class="res" id="tableau"></table></div>
             <div id="detail"></div>
+            <h2>Messages des élèves</h2>
+            <p class="aide" id="messages-etat"></p>
+            <div id="messages"></div>
             <h2>Soutien · inscriptions de la classe</h2>
             <p class="aide" id="soutien-etat"></p>
             <div class="tableau-defile"><table class="res" id="soutien"></table></div>
@@ -98,6 +101,7 @@
                 afficher();
                 Interactif.rpc('prof_creneaux', { p_mdp: mdp }).then(function (l) { inscriptions = l || []; afficherSoutien(); },
                     function (x) { inscriptions = null; document.getElementById('soutien-etat').textContent = 'Inscriptions indisponibles (' + x.message + ') : le script maj-soutien.sql a-t-il été lancé dans Supabase ?'; });
+                chargerMessages();
             }, function (x) {
                 err.textContent = x.message;
                 form.hidden = false;
@@ -212,6 +216,36 @@
             });
             table.appendChild(pied);
             if (inscriptions) afficherSoutien();
+            if (messages) afficherMessages();
+        }
+
+        /* ---------- Messages des élèves (toutes classes, les plus récents d'abord) ---------- */
+        var messages = null;
+        function chargerMessages() {
+            var etat = document.getElementById('messages-etat');
+            Interactif.rpc('prof_messages', { p_mdp: mdp }).then(function (l) { messages = l || []; afficherMessages(); },
+                function (x) { messages = null; etat.textContent = 'Messages indisponibles (' + x.message + ') : le script maj-messages.sql a-t-il été lancé dans Supabase ?'; });
+        }
+        function afficherMessages() {
+            var zone = document.getElementById('messages');
+            zone.innerHTML = '';
+            document.getElementById('messages-etat').textContent = messages.length ? messages.length + ' message(s).' : 'Aucun message.';
+            messages.forEach(function (m) {
+                var bloc = document.createElement('div'); bloc.className = 'tentative';
+                var t = document.createElement('h3');
+                t.textContent = new Date(m.envoye_le).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) +
+                    ' · ' + m.code + (noms[m.code] ? ' — ' + noms[m.code] : '');
+                var sup = document.createElement('button'); sup.type = 'button'; sup.className = 'lien'; sup.textContent = 'supprimer';
+                sup.onclick = function () {
+                    if (!confirm('Supprimer définitivement ce message ?')) return;
+                    Interactif.rpc('prof_supprimer_message', { p_mdp: mdp, p_id: m.id }).then(chargerMessages, function (x) { alert(x.message); });
+                };
+                t.appendChild(sup);
+                var p = document.createElement('p'); p.style.whiteSpace = 'pre-wrap'; p.style.margin = '0';
+                p.textContent = m.texte;   // texte brut : jamais interprété comme du HTML
+                bloc.appendChild(t); bloc.appendChild(p);
+                zone.appendChild(bloc);
+            });
         }
 
         /* ---------- Soutien : inscrits par séance pour la classe choisie ---------- */
