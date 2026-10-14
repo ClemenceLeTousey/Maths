@@ -1,7 +1,7 @@
 /* ==========================================================================
    DA « Plan de lignes » : chaque classe est une ligne, chaque séquence une station.
    ========================================================================== */
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Architects+Daughter&family=Orbitron:wght@700;900&family=Creepster&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Architects+Daughter&family=Orbitron:wght@700;900&family=Mystery+Quest&display=swap");
 
 /* ==========================================================================
    1. VARIABLES (thème clair, puis thème sombre automatique)
@@ -1086,7 +1086,7 @@ header p + .flammes { margin: -16px 0 -4px; }
 }
 
 /* --------------------------------------------------------------------------
-   Mode Halloween : nuit violette et pleine lune, titres « qui dégoulinent »,
+   Mode Halloween : nuit violette et pleine lune, titres façon livre de contes,
    toiles d'araignée sur les cartes ; chauves-souris, fantômes et araignée dessinés par site.js
    -------------------------------------------------------------------------- */
 :root.halloween {
@@ -1106,7 +1106,7 @@ header p + .flammes { margin: -16px 0 -4px; }
     --badge-text: #12081d;
     --bic: #ff9a4d;
     --bleu-doux: #2a1640;
-    --f-titre: "Creepster", "Lexend", cursive;
+    --f-titre: "Mystery Quest", "Lexend", cursive;
     color-scheme: dark;
     background:
         radial-gradient(circle at 86% 14%, #fff4d6 0 44px, rgba(255, 214, 150, 0.35) 46px, rgba(255, 150, 60, 0.1) 110px, transparent 230px) fixed,
