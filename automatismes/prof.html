@@ -13,6 +13,7 @@
     <script src="../site.js"></script>
     <script src="config.js"></script>
     <script src="moteur.js"></script>
+    <script src="soutien.js"></script>
     <style>
         .interactif { max-width: 1100px; }
         .outils { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 16px; }
@@ -58,13 +59,16 @@
             </div>
             <div class="tableau-defile"><table class="res" id="tableau"></table></div>
             <div id="detail"></div>
+            <h2>Soutien · inscriptions de la classe</h2>
+            <p class="aide" id="soutien-etat"></p>
+            <div class="tableau-defile"><table class="res" id="soutien"></table></div>
         </div>
     </main>
 
     <script>
     (function () {
         var CLE_NOMS = 'interactif-noms';
-        var mdp = null, donnees = null, noms = {};
+        var mdp = null, donnees = null, noms = {}, inscriptions = null;
         try { noms = JSON.parse(localStorage.getItem(CLE_NOMS)) || {}; document.getElementById('memoriser').checked = Object.keys(noms).length > 0; } catch (e) {}
         try { mdp = sessionStorage.getItem('interactif-prof'); } catch (e) {}
 
@@ -92,6 +96,8 @@
                 classes.forEach(function (c) { var o = document.createElement('option'); o.textContent = c; sel.appendChild(o); });
                 if (classes.indexOf(avant) >= 0) sel.value = avant;
                 afficher();
+                Interactif.rpc('prof_creneaux', { p_mdp: mdp }).then(function (l) { inscriptions = l || []; afficherSoutien(); },
+                    function (x) { inscriptions = null; document.getElementById('soutien-etat').textContent = 'Inscriptions indisponibles (' + x.message + ') : le script maj-soutien.sql a-t-il été lancé dans Supabase ?'; });
             }, function (x) {
                 err.textContent = x.message;
                 form.hidden = false;
@@ -205,6 +211,29 @@
                 var nb = document.createElement('span'); nb.className = 'n-tent'; nb.textContent = ' (' + bs.length + ' él.)'; cell.appendChild(nb);
             });
             table.appendChild(pied);
+            if (inscriptions) afficherSoutien();
+        }
+
+        /* ---------- Soutien : inscrits par séance pour la classe choisie ---------- */
+        function afficherSoutien() {
+            var classe = document.getElementById('classe').value;
+            var table = document.getElementById('soutien');
+            var miennes = inscriptions.filter(function (i) { return i.classe === classe; });
+            document.getElementById('soutien-etat').textContent =
+                new Set(miennes.map(function (i) { return i.code; })).size + ' élève(s) de ' + classe + ' inscrit(s).';
+            table.innerHTML = '<tr><th>Séance</th><th>Inscrits</th><th>Élèves</th></tr>';
+            SOUTIEN.seances().forEach(function (sem) {
+                var tg = document.createElement('tr'), th = document.createElement('th');
+                th.colSpan = 3; th.className = 'groupe'; th.textContent = sem.titre;
+                tg.appendChild(th); table.appendChild(tg);
+                sem.seances.forEach(function (se) {
+                    var qui = miennes.filter(function (i) { return i.seance === se.id; })
+                                     .map(function (i) { return noms[i.code] || i.code; }).sort();
+                    var tr = document.createElement('tr');
+                    td(tr, se.texte); td(tr, qui.length || '—'); td(tr, qui.join(', '));
+                    table.appendChild(tr);
+                });
+            });
         }
 
         /* Texte venu du navigateur de l'élève : on n'accepte que <b> et les maths (KaTeX, sans HTML actif) */

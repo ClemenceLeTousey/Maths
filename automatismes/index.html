@@ -10,6 +10,18 @@
     <script src="../site.js"></script>
     <script src="config.js"></script>
     <script src="moteur.js"></script>
+    <script src="soutien.js"></script>
+    <style>
+        .soutien { margin-top: 28px; }
+        .soutien h2 { font-size: 1.2rem; margin-bottom: 6px; }
+        .soutien-semaine { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; margin-bottom: 10px; }
+        .soutien-semaine h3 { margin: 0 0 4px; font-size: 1rem; }
+        .soutien-semaine label { display: flex; align-items: center; gap: 10px; padding: 4px 0; cursor: pointer; }
+        .soutien-semaine input { width: 1.15rem; height: 1.15rem; }
+        .soutien-semaine label.grise { color: var(--muted); cursor: default; }
+        .soutien-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+        .soutien-actions .aide { margin: 0; }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -30,6 +42,13 @@
         <div class="tableau-defile"><table class="res" id="liste"></table></div>
         <p class="aide">Tu peux refaire un exercice autant de fois que tu veux : les nombres changent à chaque fois.</p>
         <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>
+
+        <section id="soutien" class="soutien">
+            <h2>Soutien en mathématiques · de la Toussaint à Noël</h2>
+            <p class="aide">Seuls les créneaux compatibles avec ton emploi du temps sont proposés, et jamais sur ta seule heure de repas. Coche ceux où tu veux venir, puis enregistre : tu peux modifier ton choix jusqu'à la veille.</p>
+            <div id="soutien-semaines"></div>
+            <p class="soutien-actions"><button type="button" id="soutien-enregistrer">Enregistrer mes créneaux</button> <span id="soutien-etat" class="aide" aria-live="polite"></span></p>
+        </section>
         </div>
         <p class="espace-prof"><a class="bouton" href="prof.html">Espace professeure</a></p>
     </main>
@@ -71,10 +90,77 @@
             });
         }
 
+        /* ---------- Soutien : cases à cocher selon l'emploi du temps ---------- */
+        var zoneSoutien = document.getElementById('soutien-semaines');
+        var etatSoutien = document.getElementById('soutien-etat');
+        var boutonSoutien = document.getElementById('soutien-enregistrer');
+        var gardes = [];   // choix déjà enregistrés mais plus modifiables (séances passées)
+
+        function cases() { return Array.prototype.slice.call(zoneSoutien.querySelectorAll('input')); }
+
+        // jeudi 12h et 13h s'excluent : on garde toujours une heure pour manger
+        function exclusions() {
+            cases().forEach(function (cb) {
+                if (!cb.dataset.exclusif || cb.dataset.passee) return;
+                var pris = cases().some(function (a) {
+                    return a !== cb && a.checked && a.dataset.exclusif === cb.dataset.exclusif && a.value.slice(0, 10) === cb.value.slice(0, 10);
+                });
+                cb.disabled = pris;
+                cb.parentNode.classList.toggle('grise', pris);
+                cb.parentNode.title = pris ? 'Tu as déjà choisi l\'autre heure ce midi-là : garde-toi une heure pour manger.' : '';
+            });
+        }
+
+        function soutien(s) {
+            zoneSoutien.innerHTML = ''; etatSoutien.textContent = ''; gardes = [];
+            var dispos = s && SOUTIEN.dispos(s.code);
+            boutonSoutien.hidden = !dispos;
+            if (!s) return;
+            if (!dispos) {
+                zoneSoutien.appendChild(Object.assign(document.createElement('p'), { textContent: 'Pas de créneau proposé pour toi pour l\'instant : parles-en à ta professeure.' }));
+                return;
+            }
+            SOUTIEN.seances(dispos).forEach(function (sem) {
+                var bloc = document.createElement('div'); bloc.className = 'soutien-semaine';
+                bloc.appendChild(Object.assign(document.createElement('h3'), { textContent: sem.titre }));
+                sem.seances.forEach(function (se) {
+                    var l = document.createElement('label'), cb = document.createElement('input');
+                    cb.type = 'checkbox'; cb.value = se.id;
+                    if (se.exclusif) cb.dataset.exclusif = se.exclusif;
+                    if (SOUTIEN.passee(se.id)) { cb.disabled = true; cb.dataset.passee = '1'; l.className = 'grise'; }
+                    cb.onchange = exclusions;
+                    l.appendChild(cb); l.appendChild(document.createTextNode(se.texte));
+                    bloc.appendChild(l);
+                });
+                zoneSoutien.appendChild(bloc);
+            });
+            etatSoutien.textContent = 'Chargement de tes choix…';
+            Interactif.rpc('mes_creneaux', { p_jeton: s.jeton }).then(function (ids) {
+                ids = ids || [];
+                cases().forEach(function (cb) { cb.checked = ids.indexOf(cb.value) >= 0; });
+                gardes = ids.filter(function (id) {
+                    return SOUTIEN.passee(id) || !cases().some(function (cb) { return cb.value === id; });
+                });
+                exclusions();
+                etatSoutien.textContent = ids.length ? '' : 'Aucun créneau choisi pour l\'instant.';
+            }, function (x) { etatSoutien.textContent = 'Impossible de charger tes choix (' + x.message + ').'; });
+        }
+
+        boutonSoutien.onclick = function () {
+            var s = Interactif.session();
+            if (!s) return;
+            var choix = cases().filter(function (cb) { return cb.checked && !cb.dataset.passee; }).map(function (cb) { return cb.value; });
+            etatSoutien.textContent = 'Enregistrement…';
+            Interactif.rpc('enregistrer_creneaux', { p_jeton: s.jeton, p_creneaux: gardes.concat(choix) }).then(function () {
+                etatSoutien.textContent = '✓ Enregistré : ' + choix.length + ' créneau' + (choix.length > 1 ? 'x' : '') + ' à venir.';
+            }, function (x) { etatSoutien.textContent = 'Non enregistré : ' + x.message; });
+        };
+
         function charger(s) {
             document.getElementById('contenu').hidden = !s;
             document.querySelector('.espace-prof').hidden = !!s;   // seulement sur l'accueil, pas pour un élève connecté
             afficher(null);
+            soutien(s);
             if (!s) return;
             Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(afficher, function (x) {
                 if (/Session/.test(x.message)) { Interactif.deconnecter(); Interactif.bandeau(document.getElementById('bandeau'), charger); }
