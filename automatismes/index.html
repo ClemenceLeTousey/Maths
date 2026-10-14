@@ -23,6 +23,14 @@
         .soutien-actions .aide { margin: 0; }
         .message label { display: block; margin-bottom: 8px; }
         .message textarea { width: 100%; box-sizing: border-box; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); resize: vertical; }
+        .pj { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-top: 8px; }
+        .pj .aide { margin: 0; }
+        .aide.pj-avert { margin: 6px 0 0; font-size: 0.85rem; }
+        .message label.pj-bouton { display: inline-block; margin: 0; cursor: pointer; border: 1px solid var(--line); border-radius: 8px; padding: 4px 12px; background: var(--surface); }
+        .message label.pj-bouton:hover { border-color: var(--c-seconde); }
+        #pj-apercu { display: inline-flex; align-items: center; gap: 8px; }
+        #pj-apercu[hidden] { display: none; }
+        #pj-image { max-height: 70px; max-width: 160px; border: 1px solid var(--line); border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -49,6 +57,12 @@
             <h2>Un message pour ta professeure</h2>
             <label for="message-texte" class="aide">Si tu vois une erreur sur la page, que tu as une suggestion, ou bien encore que tu as besoin d'informations complémentaires sur un sujet, laisse-moi un message ici.</label>
             <textarea id="message-texte" rows="4" maxlength="2000"></textarea>
+            <div class="pj">
+                <label class="pj-bouton">📎 Joindre une capture d'écran <input type="file" id="message-image" accept="image/*" hidden></label>
+                <span class="aide">ou colle-la dans le message (Ctrl+V / ⌘V)</span>
+                <span id="pj-apercu" hidden><img id="pj-image" alt="Capture jointe"> <button type="button" class="lien" id="pj-retirer">retirer</button></span>
+            </div>
+            <p class="aide pj-avert">Si tu joins une capture, vérifie qu'elle ne montre que la page qui pose souci (pas de conversation ni d'informations personnelles).</p>
             <p class="soutien-actions"><button type="button" id="message-envoyer">Envoyer le message</button> <span id="message-etat" class="aide" aria-live="polite"></span></p>
         </section>
 
@@ -168,14 +182,47 @@
         /* ---------- Message à la professeure ---------- */
         var texteMessage = document.getElementById('message-texte');
         var etatMessage = document.getElementById('message-etat');
+        // Capture jointe : réduite dans le navigateur (JPEG, 1600 px de large au plus) avant l'envoi
+        var image = null, apercu = document.getElementById('pj-apercu'), champImage = document.getElementById('message-image');
+        function retirerImage() { image = null; apercu.hidden = true; champImage.value = ''; }
+        function prendreImage(fichier) {
+            if (!fichier || !/^image\//.test(fichier.type)) return;
+            etatMessage.textContent = 'Préparation de la capture…';
+            var url = URL.createObjectURL(fichier), img = new Image();
+            img.onload = function () {
+                var k = Math.min(1, 1600 / img.width), cv = document.createElement('canvas');
+                cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+                var ctx = cv.getContext('2d');
+                ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);   // fond blanc si PNG transparent
+                ctx.drawImage(img, 0, 0, cv.width, cv.height);
+                URL.revokeObjectURL(url);
+                var q = 0.82, d = cv.toDataURL('image/jpeg', q);
+                while (d.length > 900000 && q > 0.3) { q -= 0.15; d = cv.toDataURL('image/jpeg', q); }
+                if (d.length > 900000) { etatMessage.textContent = 'Capture trop lourde, essaie d\'en prendre une plus petite.'; return; }
+                image = d;
+                document.getElementById('pj-image').src = d;
+                apercu.hidden = false; etatMessage.textContent = '';
+            };
+            img.onerror = function () { URL.revokeObjectURL(url); etatMessage.textContent = 'Ce fichier n\'est pas une image lisible.'; };
+            img.src = url;
+        }
+        champImage.onchange = function () { prendreImage(champImage.files[0]); };
+        document.getElementById('pj-retirer').onclick = retirerImage;
+        texteMessage.addEventListener('paste', function (e) {
+            var items = (e.clipboardData && e.clipboardData.items) || [];
+            for (var i = 0; i < items.length; i++) {
+                if (items[i].kind === 'file' && /^image\//.test(items[i].type)) { e.preventDefault(); prendreImage(items[i].getAsFile()); return; }
+            }
+        });
+
         document.getElementById('message-envoyer').onclick = function () {
             var s = Interactif.session(), t = texteMessage.value.trim();
             if (!s) return;
-            if (!t) { etatMessage.textContent = 'Écris d\'abord ton message.'; return; }
+            if (!t && !image) { etatMessage.textContent = 'Écris d\'abord ton message.'; return; }
             var bouton = this; bouton.disabled = true;
             etatMessage.textContent = 'Envoi…';
-            Interactif.rpc('envoyer_message', { p_jeton: s.jeton, p_texte: t }).then(function () {
-                texteMessage.value = '';
+            Interactif.rpc('envoyer_message', { p_jeton: s.jeton, p_texte: t, p_image: image }).then(function () {
+                texteMessage.value = ''; retirerImage();
                 etatMessage.textContent = '✓ Message envoyé, merci !';
             }, function (x) { etatMessage.textContent = 'Non envoyé : ' + x.message; })
               .then(function () { bouton.disabled = false; });

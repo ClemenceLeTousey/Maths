@@ -244,6 +244,22 @@
                 var p = document.createElement('p'); p.style.whiteSpace = 'pre-wrap'; p.style.margin = '0';
                 p.textContent = m.texte;   // texte brut : jamais interprété comme du HTML
                 bloc.appendChild(t); bloc.appendChild(p);
+                if (m.image) {
+                    var voir = document.createElement('button'); voir.type = 'button'; voir.className = 'lien'; voir.textContent = '📎 voir la capture';
+                    voir.onclick = function () {
+                        voir.textContent = 'chargement…';
+                        Interactif.rpc('prof_image', { p_mdp: mdp, p_id: m.id }).then(function (d) {
+                            if (typeof d !== 'string' || !/^data:image\/(jpeg|png|webp);base64,/.test(d)) { voir.textContent = 'capture illisible'; return; }
+                            var a = document.createElement('a'); a.href = d; a.download = 'capture-' + m.code + '-' + m.id + '.jpg';
+                            a.title = 'Cliquer pour télécharger';
+                            var img = document.createElement('img'); img.src = d; img.alt = 'Capture envoyée par ' + m.code;
+                            img.style.cssText = 'display:block;max-width:100%;margin-top:8px;border:1px solid var(--line);border-radius:6px';
+                            a.appendChild(img);
+                            voir.replaceWith(a);
+                        }, function (x) { voir.textContent = '📎 voir la capture (' + x.message + ')'; });
+                    };
+                    bloc.appendChild(voir);
+                }
                 zone.appendChild(bloc);
             });
         }
