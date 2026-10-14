@@ -1,7 +1,7 @@
 /* Barre du haut pour les pages qui n'utilisent pas style.css (séries d'automatismes, corrigés, activités).
    À inclure dans le <head> :  <script src="../../barre.js"></script>
    - liens Accueil et Automatismes ;
-   - les trois ronds du logo : bleu = site normal, vert = mode Matrix, violet = mode Retour vers le futur ;
+   - les quatre ronds du logo : bleu = site normal, vert = mode Matrix, violet = mode Retour vers le futur, orange = mode Halloween ;
    - bouton Sombre / Clair.
    Les choix sont partagés avec le reste du site (mêmes clés que site.js) et restent d'une page à l'autre. */
 (function () {
@@ -25,12 +25,13 @@
         '.barre-site *{box-sizing:border-box;font:inherit}',
         '.barre-site a{color:inherit;text-decoration:none}',
         '.barre-site .b-logo{display:flex;align-items:center;gap:10px}',
-        '.barre-site .b-ligne{position:relative;display:inline-block;width:42px;height:12px;flex-shrink:0}',
+        '.barre-site .b-ligne{position:relative;display:inline-block;width:57px;height:12px;flex-shrink:0}',
         '.barre-site .b-ligne:before{content:"";position:absolute;left:4px;right:4px;top:5px;height:2px;background:currentColor}',
         '.barre-site .b-ligne button{all:unset;position:absolute;top:0;width:12px;height:12px;border-radius:50%;cursor:pointer;box-sizing:border-box}',
         '.barre-site .b-ligne button:nth-child(1){left:0;background:#2f6fdf}',
         '.barre-site .b-ligne button:nth-child(2){left:15px;background:#0f9d76}',
         '.barre-site .b-ligne button:nth-child(3){left:30px;background:#fff;border:2.5px solid #8a4fd8}',
+        '.barre-site .b-ligne button:nth-child(4){left:45px;background:#ff7518}',
         '.barre-site ul{all:unset;display:flex;align-items:center;gap:4px 18px;flex-wrap:wrap}',
         '.barre-site li{all:unset}',
         '.barre-site ul a{color:#66708a;font-weight:500}',
@@ -46,13 +47,17 @@
         'html.futur:not([data-theme="dark"]){filter:invert(1) hue-rotate(180deg) sepia(.35) saturate(1.5);background:#fff}',
         'html.futur:not([data-theme="dark"]) img,html.futur:not([data-theme="dark"]) video,html.futur:not([data-theme="dark"]) iframe{filter:invert(1) hue-rotate(180deg)}',
         'html[data-theme="dark"].futur{filter:sepia(.35) saturate(1.5)}',
+        // Halloween : page assombrie et teintée orange / violet, chauves-souris qui passent
+        'html.halloween:not([data-theme="dark"]){filter:invert(1) hue-rotate(180deg) sepia(.6) saturate(2.2) hue-rotate(-25deg);background:#fff}',
+        'html.halloween:not([data-theme="dark"]) img,html.halloween:not([data-theme="dark"]) video,html.halloween:not([data-theme="dark"]) iframe{filter:invert(1) hue-rotate(180deg)}',
+        'html[data-theme="dark"].halloween{filter:sepia(.6) saturate(2.2) hue-rotate(-25deg)}',
         'html[data-theme="dark"].matrix{filter:grayscale(1) sepia(1) hue-rotate(75deg) saturate(6) brightness(1.1);background:#000}',
         '.barre-effet{position:fixed;inset:0;pointer-events:none;z-index:9999}',
         '.barre-effet.feu{top:auto;height:4px;background:linear-gradient(90deg,transparent,#c41a00 20%,#ff6a00 60%,#fff1a0);box-shadow:0 0 12px #ff6a00}',
         '.barre-licence{all:initial;display:block;box-sizing:border-box;width:100%;max-width:1100px;margin:28px auto 12px;padding:0 16px;text-align:center;font:12.5px/1.5 Lexend,system-ui,sans-serif;color:#66708a}',
         '.barre-licence a{color:inherit;text-decoration:underline}',
         'html[data-theme="dark"] .barre-licence{color:#98a2b6}',
-        '@media print{.barre-site,.barre-effet{display:none!important}html.barre-inverse,html.matrix,html.futur{filter:none}}'
+        '@media print{.barre-site,.barre-effet{display:none!important}html.barre-inverse,html.matrix,html.futur,html.halloween{filter:none}}'
     ].join('');
     var style = document.createElement('style');
     style.textContent = css;
@@ -65,18 +70,49 @@
         racine.classList.toggle('barre-inverse', sombre() && !mode());
     }
 
-    /* ---------- Modes Matrix / Retour vers le futur ---------- */
-    function mode() { var m = lire(CLE_MODE); return m === 'matrix' || m === 'futur' ? m : ''; }
+    /* ---------- Modes Matrix / Retour vers le futur / Halloween ---------- */
+    function mode() { var m = lire(CLE_MODE); return m === 'matrix' || m === 'futur' || m === 'halloween' ? m : ''; }
     var pluie = null;
     function effets() {
         var m = mode();
         racine.classList.toggle('matrix', m === 'matrix');
         racine.classList.toggle('futur', m === 'futur');
+        racine.classList.toggle('halloween', m === 'halloween');
         appliquerTheme();
         if (!document.body) return;
         document.querySelectorAll('.barre-effet').forEach(function (e) { e.remove(); });
         cancelAnimationFrame(pluie);
         if (m === 'futur') { var l = document.createElement('div'); l.className = 'barre-effet feu'; document.body.appendChild(l); }
+        if (m === 'halloween' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            // chauves-souris (blanches avant l'inversion du thème clair, noires en sombre natif)
+            var cv = document.createElement('canvas'); cv.className = 'barre-effet'; cv.style.opacity = '.7';
+            document.body.appendChild(cv);
+            var cx = cv.getContext('2d'), vol, encre = themeNatif() && racine.getAttribute('data-theme') === 'dark' ? '#000' : '#fff';
+            var nouvelle = function (partout) {
+                var sens = Math.random() < .5 ? 1 : -1;
+                return { x: partout ? Math.random() * innerWidth : (sens > 0 ? -30 : innerWidth + 30), y: Math.random() * innerHeight * .8,
+                         s: 7 + Math.random() * 10, v: sens * (.6 + Math.random()), p: Math.random() * 6 };
+            };
+            var dimH = function () { cv.width = innerWidth; cv.height = innerHeight; vol = Array.from({ length: Math.max(3, Math.round(innerWidth / 220)) }, function () { return nouvelle(true); }); };
+            dimH(); window.addEventListener('resize', dimH);
+            (function image() {
+                if (mode() !== 'halloween') return;
+                pluie = requestAnimationFrame(image);
+                cx.clearRect(0, 0, cv.width, cv.height); cx.fillStyle = encre;
+                vol.forEach(function (b, i) {
+                    b.x += b.v; b.p += .25;
+                    if (b.x < -40 || b.x > innerWidth + 40) vol[i] = b = nouvelle(false);
+                    var s = b.s, f = Math.sin(b.p) * s * .55;
+                    cx.beginPath();
+                    [1, -1].forEach(function (k) {
+                        cx.moveTo(0 + b.x, b.y - s * .12);
+                        cx.quadraticCurveTo(b.x + k * s * .5, b.y - s * .35 - f * .5, b.x + k * s, b.y - f);
+                        cx.quadraticCurveTo(b.x + k * s * .6, b.y, b.x, b.y + s * .22);
+                    });
+                    cx.fill();
+                });
+            })();
+        }
         if (m === 'matrix' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             var c = document.createElement('canvas'); c.className = 'barre-effet'; c.style.opacity = '.35';
             document.body.appendChild(c);
@@ -112,7 +148,8 @@
             '<div class="b-logo"><span class="b-ligne">' +
             '<button type="button" data-m="" title="Site normal"></button>' +
             '<button type="button" data-m="matrix" title="Mode Matrix"></button>' +
-            '<button type="button" data-m="futur" title="Mode BTTF (Back to the Future)"></button></span>' +
+            '<button type="button" data-m="futur" title="Mode BTTF (Back to the Future)"></button>' +
+            '<button type="button" data-m="halloween" title="Mode Halloween"></button></span>' +
             '<a href="' + base + 'index.html">Année 2026-2027 - Lycée Lebrun</a></div>' +
             '<ul><li><a href="' + base + 'index.html">Accueil</a></li>' +
             '<li><a href="' + base + 'automatismes/">Automatismes</a></li>' +

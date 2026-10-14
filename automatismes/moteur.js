@@ -338,7 +338,7 @@
                     });
                     li.classList.add(juste ? 'juste' : 'faux');
                     retour.className = 'q-retour';
-                    retour.textContent = juste ? '✓ Bravo !' : futur() ? '✗ Nom de Zeus ! Correction :' : '✗ Ce n\'est pas ça. Correction :';
+                    retour.textContent = juste ? '✓ Bravo !' : futur() ? '✗ Nom de Zeus ! Correction :' : halloween() ? '✗ Bouh ! Correction :' : '✗ Ce n\'est pas ça. Correction :';
                     if (q.correction || q.explication) {
                         var c = el('div', 'q-correction');
                         if (q.correction) maths(c, '\\begin{aligned}' + q.correction.join('\\\\') + '\\end{aligned}', true);
@@ -406,7 +406,7 @@
                         b.remove();
                         var bons = lis.filter(function (li) { return li.classList.contains('juste'); }).length;
                         msg.textContent = (NOMS[n] || 'Niveau ' + n) + ' : ' + bons + ' / ' + lis.length +
-                            (bons === lis.length ? (futur() ? ' — 88 miles à l\'heure !' : ' — bravo !') : '');
+                            (bons === lis.length ? (futur() ? ' — 88 miles à l\'heure !' : halloween() ? ' — ensorcelant !' : ' — bravo !') : '');
                         meilleurs[n] = Math.max(meilleurs[n] || 0, bons);
                         var total = Object.keys(meilleurs).reduce(function (s, c) { return s + meilleurs[c]; }, 0);
                         conv.allumer(n, bons === lis.length, total);
@@ -460,6 +460,7 @@
        (verte, bleue, rouge) ; la puissance monte avec le score : 1,21 gigowatt pour un sans-faute.
        Le bloc existe toujours mais n'est visible qu'en mode futur (le mode peut changer en cours de route). */
     function futur() { return document.documentElement.classList.contains('futur'); }
+    function halloween() { return document.documentElement.classList.contains('halloween'); }   // 4e rond du logo
 
     function gw(x) { return x.toFixed(2).replace('.', ','); }
 

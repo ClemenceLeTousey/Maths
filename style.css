@@ -1,7 +1,7 @@
 /* ==========================================================================
    DA « Plan de lignes » : chaque classe est une ligne, chaque séquence une station.
    ========================================================================== */
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Architects+Daughter&family=Orbitron:wght@700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Architects+Daughter&family=Orbitron:wght@700;900&family=Creepster&display=swap");
 
 /* ==========================================================================
    1. VARIABLES (thème clair, puis thème sombre automatique)
@@ -24,6 +24,7 @@
     --c-premiere: #0f9d76;
     --c-tst2s: #8a4fd8;
     --c-python: #c98f00;
+    --citrouille: #ff7518;   /* 4e rond du logo : mode Halloween */
 
     --f-texte: "Lexend", system-ui, -apple-system, "Segoe UI", sans-serif;
     --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -127,7 +128,7 @@ a { color: inherit; }
     position: relative;
     display: inline-block;
     flex-shrink: 0;
-    width: 42px;
+    width: 58px;
     height: 12px;
 }
 
@@ -170,6 +171,7 @@ a { color: inherit; }
 .logo-ligne button:nth-child(1) { left: 0;    border-color: var(--c-seconde);  background: var(--c-seconde); }
 .logo-ligne button:nth-child(2) { left: 16px; border-color: var(--c-premiere); background: var(--c-premiere); }
 .logo-ligne button:nth-child(3) { left: 32px; border-color: var(--c-tst2s); }
+.logo-ligne button:nth-child(4) { left: 48px; border-color: var(--citrouille); background: var(--citrouille); }
 
 .nav-links {
     list-style: none;
@@ -805,7 +807,7 @@ li.res.pending-link { border-left-color: var(--line); }
 .archives li { margin-bottom: 0; }
 
 /* ==========================================================================
-   10. EFFETS DU LOGO (site.js) : mode Matrix, mode Retour vers le futur
+   10. EFFETS DU LOGO (site.js) : mode Matrix, mode Retour vers le futur, mode Halloween
    ========================================================================== */
 .effet-canvas {
     position: fixed;
@@ -1083,6 +1085,155 @@ header p + .flammes { margin: -16px 0 -4px; }
     100% { opacity: 0; }
 }
 
+/* --------------------------------------------------------------------------
+   Mode Halloween : nuit violette et pleine lune, titres « qui dégoulinent »,
+   toiles d'araignée sur les cartes ; chauves-souris, fantômes et araignée dessinés par site.js
+   -------------------------------------------------------------------------- */
+:root.halloween {
+    --nuit: #0c0614;
+    --orange: #ff7518;
+    --bg: #12081d;
+    --surface: rgba(30, 16, 44, 0.86);
+    --text: #f3e9ff;
+    --muted: #b49cc9;
+    --line: #3e2558;
+    --pending: #6c5482;
+    --c-seconde: #ff7518;     /* citrouille */
+    --c-premiere: #8ee34a;    /* potion */
+    --c-tst2s: #c084fc;       /* sorcière */
+    --c-python: #ffd23a;
+    --citrouille: #ff7518;
+    --badge-text: #12081d;
+    --bic: #ff9a4d;
+    --bleu-doux: #2a1640;
+    --f-titre: "Creepster", "Lexend", cursive;
+    color-scheme: dark;
+    background:
+        radial-gradient(circle at 86% 14%, #fff4d6 0 44px, rgba(255, 214, 150, 0.35) 46px, rgba(255, 150, 60, 0.1) 110px, transparent 230px) fixed,
+        linear-gradient(180deg, #1f0d36, #0a0510) fixed;
+}
+
+:root.halloween body { background: transparent; }
+
+.effet-halloween { z-index: -1; }
+
+:root.halloween .navbar {
+    background: rgba(12, 6, 20, 0.92);
+    border-bottom: 2px solid #ff7518;
+    box-shadow: 0 0 18px rgba(255, 117, 24, 0.35);
+}
+
+:root.halloween header {
+    background: linear-gradient(180deg, rgba(34, 16, 52, 0.85), rgba(18, 8, 29, 0.6));
+    border-bottom: 1px solid var(--line);
+}
+
+:root.halloween header h1.titre-stylo {
+    font-family: var(--f-titre);
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: 0.04em;
+    filter: drop-shadow(0 0 10px rgba(255, 117, 24, 0.55));
+}
+
+:root.halloween .titre-stylo .l {
+    color: transparent;
+    background: linear-gradient(180deg, #ffe08a 0%, #ff9a1f 40%, #ff5a00 70%, #8a1a00 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+:root.halloween .titre-stylo svg { stroke: #8ee34a; }
+
+:root.halloween .class-title,
+:root.halloween .sequence-subtitle { font-family: var(--f-titre); font-weight: 400; letter-spacing: 0.05em; }
+
+/* Cartes : une toile d'araignée dans le coin */
+:root.halloween .class-card {
+    position: relative;
+    border-color: #4a2a68;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 117, 24, 0.08);
+}
+
+:root.halloween .class-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 70px;
+    height: 70px;
+    pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60' fill='none' stroke='%23d9c8f0' stroke-width='.7' opacity='.5'%3E%3Cpath d='M60 0L0 1M60 0L6 24M60 0L24 50M60 0L59 60M46 0Q50 8 53 10Q55 14 60 15M31 0Q37 14 43 20Q48 28 60 30M16 0Q25 19 35 31Q42 42 60 45'/%3E%3C/svg%3E") no-repeat top right / contain;
+}
+
+:root.halloween .class-title .badge { box-shadow: 0 0 10px var(--c, var(--orange)); }
+
+:root.halloween a:hover { text-shadow: 0 0 8px rgba(255, 117, 24, 0.85); }
+
+/* le 4e rond du logo devient une citrouille allumée : il clignote comme une bougie */
+@media (prefers-reduced-motion: no-preference) {
+    :root.halloween .logo-ligne button:nth-child(4) { animation: bougie 1.8s ease-in-out infinite; }
+}
+
+@keyframes bougie {
+    0%, 100% { box-shadow: 0 0 6px #ff7518; }
+    30% { box-shadow: 0 0 0 3px rgba(255, 117, 24, 0.35), 0 0 14px #ffb347; }
+    45% { box-shadow: 0 0 4px #ff7518; }
+    70% { box-shadow: 0 0 0 2px rgba(255, 117, 24, 0.3), 0 0 11px #ff9a1f; }
+}
+
+/* araignée suspendue à son fil sous la barre de navigation */
+.araignee {
+    position: fixed;
+    top: 0;
+    right: max(24px, 12%);
+    z-index: 2500;
+    width: 40px;
+    transform: translateY(var(--y, 90px));
+    transition: transform 1.6s cubic-bezier(.3, .1, .3, 1);
+}
+
+.araignee::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    width: 1px;
+    height: 100vh;
+    background: rgba(230, 220, 245, 0.55);
+}
+
+.araignee svg { display: block; filter: drop-shadow(0 0 4px rgba(255, 117, 24, 0.5)); }
+
+.araignee.fuite { --y: 8px; transition-duration: 0.35s; }
+
+@media (prefers-reduced-motion: no-preference) {
+    .araignee { animation: descente 2.4s ease-out; }
+    .araignee svg { animation: balance 3s ease-in-out infinite; transform-origin: 50% 0; }
+}
+
+@keyframes descente { from { transform: translateY(-40px); } }
+@keyframes balance { 50% { transform: rotate(6deg) translateY(4px); } }
+
+/* Démarrage : éclair violet puis nuée de chauves-souris */
+.effet-nuee {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    pointer-events: none;
+}
+
+.effet-nuee canvas { width: 100%; height: 100%; }
+
+.effet-nuee .eclair {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 70% 20%, #ffffff, #d8c2ff 35%, rgba(140, 80, 255, 0) 75%);
+    opacity: 0;
+}
+
+.effet-nuee.boom .eclair { animation: eclair 0.7s ease-out; }
+
 @media print {
-    .circuits, .effet-futur, .flammes { display: none !important; }
+    .circuits, .effet-futur, .flammes, .araignee, .effet-nuee, .effet-halloween { display: none !important; }
 }

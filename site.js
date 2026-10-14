@@ -146,8 +146,8 @@ document.addEventListener('click', function (e) {
     });
 })();
 
-/* Effets cachés dans le logo (les trois ronds de la ligne) :
-   bleu = le titre se réécrit, vert = mode Matrix, violet = mode Retour vers le futur. */
+/* Effets cachés dans le logo (les quatre ronds de la ligne) :
+   bleu = le titre se réécrit, vert = mode Matrix, violet = mode Retour vers le futur, orange = mode Halloween. */
 (function () {
     var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -431,7 +431,173 @@ document.addEventListener('click', function (e) {
         })(debut);
     }
 
-    var MODES = { matrix: matrix, futur: futur };
+    /* Orange : mode Halloween — nuit violette et pleine lune, chauves-souris et fantômes qui passent derrière,
+       une araignée qui descend de la barre. Au démarrage : coup de tonnerre et nuée de chauves-souris. */
+    var nuit = null;
+
+    function halloween() {
+        if (document.documentElement.classList.toggle('halloween')) {
+            demarrerNuit();
+            if (!calme) nuee();
+        } else arreterNuit();
+    }
+
+    // silhouette de chauve-souris centrée en (0, 0), envergure 2s ; battement entre -1 et 1
+    function chauveSouris(ctx, x, y, s, battement) {
+        var f = battement * s * 0.55;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.beginPath();
+        [1, -1].forEach(function (k) {
+            ctx.moveTo(0, -s * 0.12);
+            ctx.quadraticCurveTo(k * s * 0.5, -s * 0.35 - f * 0.5, k * s, -f);
+            ctx.quadraticCurveTo(k * s * 0.82, -f * 0.4 + s * 0.06, k * s * 0.66, s * 0.12 - f * 0.3);
+            ctx.quadraticCurveTo(k * s * 0.5, -f * 0.15, k * s * 0.33, s * 0.18 - f * 0.1);
+            ctx.quadraticCurveTo(k * s * 0.2, s * 0.06, 0, s * 0.22);
+        });
+        ctx.ellipse(0, s * 0.02, s * 0.11, s * 0.22, 0, 0, Math.PI * 2);
+        // oreilles
+        ctx.moveTo(-s * 0.1, -s * 0.12); ctx.lineTo(-s * 0.07, -s * 0.3); ctx.lineTo(-s * 0.02, -s * 0.16);
+        ctx.moveTo(s * 0.1, -s * 0.12); ctx.lineTo(s * 0.07, -s * 0.3); ctx.lineTo(s * 0.02, -s * 0.16);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    // petit fantôme (largeur 2r) qui ondule
+    function fantome(ctx, x, y, r, t, alpha) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#efe9ff';
+        ctx.shadowColor = 'rgba(220, 200, 255, 0.8)';
+        ctx.shadowBlur = r * 0.8;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, Math.PI, 0);
+        ctx.lineTo(r, r * 1.5);
+        for (var i = 0; i < 4; i++) {
+            var x1 = r - (i + 0.5) * r / 2, x2 = r - (i + 1) * r / 2;
+            ctx.quadraticCurveTo(x1, r * (1.5 + 0.35 * Math.sin(t * 4 + i * 1.7)), x2, r * 1.5);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#1a0d2b';
+        ctx.beginPath();
+        ctx.ellipse(-r * 0.35, -r * 0.1, r * 0.14, r * 0.22, 0, 0, Math.PI * 2);
+        ctx.ellipse(r * 0.35, -r * 0.1, r * 0.14, r * 0.22, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, r * 0.45, r * 0.12, r * 0.18, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function demarrerNuit() {
+        var racine = document.documentElement;
+        var c = document.createElement('canvas');
+        c.className = 'effet-canvas effet-halloween';
+        document.body.appendChild(c);
+        var ctx = c.getContext('2d'), w, h, chauves, fantomes;
+        function hasard(a, b) { return a + Math.random() * (b - a); }
+        function nouvelleChauve(partout) {
+            var sens = Math.random() < 0.5 ? 1 : -1;
+            return { x: partout ? hasard(0, w) : (sens > 0 ? -40 : w + 40), y: hasard(h * 0.05, h * 0.75), s: hasard(9, 22),
+                     v: sens * hasard(0.6, 1.6), p: hasard(0, 6), vp: hasard(0.18, 0.3), o: hasard(0, 6) };
+        }
+        function nouveauFantome(partout) {
+            return { x: hasard(w * 0.05, w * 0.95), y: partout ? hasard(0, h) : h + 60, r: hasard(14, 26),
+                     v: hasard(0.25, 0.6), o: hasard(0, 6), a: hasard(0.12, 0.28) };
+        }
+        function dimension() {
+            var dpr = window.devicePixelRatio || 1;
+            w = innerWidth; h = innerHeight;
+            c.width = w * dpr; c.height = h * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            var n = Math.max(4, Math.round(w / 160));
+            chauves = Array.from({ length: n }, function () { return nouvelleChauve(true); });
+            fantomes = Array.from({ length: Math.max(2, Math.round(w / 500)) }, function () { return nouveauFantome(true); });
+            if (calme) image(0);
+        }
+        function image(now) {
+            var t = now / 1000;
+            ctx.clearRect(0, 0, w, h);
+            fantomes.forEach(function (f, i) {
+                if (!calme) { f.y -= f.v; if (f.y < -80) fantomes[i] = f = nouveauFantome(false); }
+                fantome(ctx, f.x + Math.sin(t * 0.8 + f.o) * 24, f.y, f.r, t + f.o, f.a);
+            });
+            ctx.fillStyle = '#07030c';
+            ctx.shadowColor = 'rgba(255, 120, 30, 0.45)';
+            ctx.shadowBlur = 6;
+            chauves.forEach(function (b, i) {
+                if (!calme) {
+                    b.x += b.v; b.p += b.vp;
+                    if (b.x < -60 || b.x > w + 60) chauves[i] = b = nouvelleChauve(false);
+                }
+                chauveSouris(ctx, b.x, b.y + Math.sin(t * 1.5 + b.o) * 14, b.s, Math.sin(b.p));
+            });
+            ctx.shadowBlur = 0;
+        }
+        dimension();
+        window.addEventListener('resize', dimension);
+        if (!calme) nuit = requestAnimationFrame(function boucle(now) {
+            if (!racine.classList.contains('halloween')) return;
+            image(now);
+            nuit = requestAnimationFrame(boucle);
+        });
+        c._quitter = function () { window.removeEventListener('resize', dimension); };
+
+        // l'araignée descend de la barre de navigation ; si on la survole, elle remonte se cacher
+        var a = document.createElement('div');
+        a.className = 'araignee';
+        a.setAttribute('aria-hidden', 'true');
+        a.innerHTML = '<svg viewBox="-20 -16 40 34" width="40" height="34"><g stroke="#0b0510" stroke-width="2" fill="none" stroke-linecap="round">' +
+            '<path d="M-5-3l-8-7-4 6M-5 0l-10-3-5 6M-5 3l-9 3-3 7M-4 5l-6 6-1 6M5-3l8-7 4 6M5 0l10-3 5 6M5 3l9 3 3 7M4 5l6 6 1 6"/></g>' +
+            '<ellipse cx="0" cy="3" rx="7" ry="8" fill="#0b0510"/><circle cy="-6" r="5" fill="#0b0510"/>' +
+            '<circle cx="-2" cy="-7" r="1.4" fill="#ff4a1c"/><circle cx="2" cy="-7" r="1.4" fill="#ff4a1c"/></svg>';
+        a.addEventListener('mouseenter', function () {
+            a.classList.add('fuite');
+            setTimeout(function () { a.classList.remove('fuite'); }, 4000);
+        });
+        document.body.appendChild(a);
+    }
+
+    function arreterNuit() {
+        cancelAnimationFrame(nuit);
+        document.querySelectorAll('.effet-halloween').forEach(function (c) { if (c._quitter) c._quitter(); c.remove(); });
+        document.querySelectorAll('.araignee, .effet-nuee').forEach(function (e) { e.remove(); });
+    }
+
+    // démarrage : éclair, puis une nuée de chauves-souris s'échappe du rond orange du logo
+    function nuee() {
+        var e = document.createElement('div');
+        e.className = 'effet-nuee';
+        e.innerHTML = '<div class="eclair"></div><canvas></canvas>';
+        document.body.appendChild(e);
+        var c = e.querySelector('canvas'), ctx = c.getContext('2d'), dpr = window.devicePixelRatio || 1;
+        c.width = innerWidth * dpr; c.height = innerHeight * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        var rond = document.querySelector('.logo-ligne button:nth-child(4)');
+        var r = rond ? rond.getBoundingClientRect() : { left: 40, top: 20, width: 0, height: 0 };
+        var x0 = r.left + r.width / 2, y0 = r.top + r.height / 2;
+        var vol = Array.from({ length: 28 }, function () {
+            var angle = Math.random() * Math.PI * 0.7 - 0.15, vitesse = 4 + Math.random() * 7;
+            return { x: x0, y: y0, vx: Math.cos(angle) * vitesse, vy: Math.sin(angle) * vitesse * 0.8,
+                     s: 4 + Math.random() * 6, g: 1.012 + Math.random() * 0.012, p: Math.random() * 6 };
+        });
+        var debut = performance.now();
+        (function image(now) {
+            if (!e.isConnected) return;
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            ctx.fillStyle = '#07030c';
+            vol.forEach(function (b) {
+                b.x += b.vx; b.y += b.vy + Math.sin(b.p) * 1.5; b.s *= b.g; b.p += 0.35;
+                chauveSouris(ctx, b.x, b.y, b.s, Math.sin(b.p));
+            });
+            if (now - debut < 2600) requestAnimationFrame(image);
+            else e.remove();
+        })(debut);
+        e.classList.add('boom');
+    }
+
+    var MODES = { matrix: matrix, futur: futur, halloween: halloween };
     function modeActif() {
         return Object.keys(MODES).filter(function (m) { return document.documentElement.classList.contains(m); })[0];
     }
@@ -450,6 +616,7 @@ document.addEventListener('click', function (e) {
         document.documentElement.classList.add(memorise);          // tout de suite, sans animation
         if (memorise === 'matrix') document.addEventListener('DOMContentLoaded', demarrerPluie);
         if (memorise === 'futur') document.addEventListener('DOMContentLoaded', function () { afficherCircuits(); allumerFlammes(false); });
+        if (memorise === 'halloween') document.addEventListener('DOMContentLoaded', demarrerNuit);
     }
     window.modesSite = { basculer: basculer, actif: modeActif };
 

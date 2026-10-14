@@ -140,6 +140,10 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 :root.futur { --ok: #51cf66; --ko: #ff6b6b; --attention: #ffa94d; --ok-fond: #142a1a; --ko-fond: #2e1717; }
 :root.futur .pastille.n2 { background: #13263a; color: #74c0fc; }
 
+/* Mode Halloween : fond de nuit, mêmes couleurs lisibles qu'en sombre */
+:root.halloween { --ok: #8ee34a; --ko: #ff6b6b; --attention: #ffa94d; --ok-fond: #1b2a12; --ko-fond: #2e1420; }
+:root.halloween .pastille.n2 { background: #2a1640; color: #d6b4ff; }
+
 .convecteur { display: none; }
 
 :root.futur .convecteur {
