@@ -122,6 +122,7 @@ document.addEventListener('click', function (e) {
                 l.className = 'l';
                 l.style.animationDelay = (rang++ * 0.07) + 's';
                 l.textContent = ch === 'É' ? 'E' : ch;
+                l.dataset.min = ch.toLowerCase();          // mode Halloween : titre en minuscules (style.css)
                 var b = document.createElement('i');
                 b.className = 'base';
                 l.appendChild(b);
@@ -147,7 +148,8 @@ document.addEventListener('click', function (e) {
 })();
 
 /* Effets cachés dans le logo (les quatre ronds de la ligne) :
-   bleu = le titre se réécrit, vert = mode Matrix, violet = mode Retour vers le futur, orange = mode Halloween. */
+   bleu = le titre se réécrit, vert = mode Matrix, violet = mode Retour vers le futur, orange = mode Halloween
+   (en mode Halloween, cliquer sur un fantôme ouvre un Pac-Man : pacman.js). */
 (function () {
     var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -369,24 +371,20 @@ document.addEventListener('click', function (e) {
     });
 
     // « Last time departed » = la dernière connexion aux Automatismes sur cet appareil (enregistrée par moteur.js)
-    function dernierDepart() {
-        try {
-            var d = JSON.parse(localStorage.getItem('interactif-derniere-connexion'));
-            return d ? new Date(d) : null;
-        } catch (e) { return null; }
-    }
+    // « Last time departed » : le premier départ de Marty, au parking du Twin Pines Mall
+    var DEPART_MARTY = new Date(1985, 9, 26, 1, 35);
 
     function afficherCircuits() {
         var header = document.querySelector('header');
         if (!header || header.querySelector('.circuits')) return;
-        var maintenant = new Date(), depart = dernierDepart();
+        var maintenant = new Date();
         // destination : 30 ans plus tard, comme Marty (1985 → 2015)
         var destination = new Date(maintenant);
         destination.setFullYear(destination.getFullYear() + 30);
         var lignes = [
             ['destination', 'Destination time', date88(destination)],
             ['present', 'Present time', date88(maintenant)],
-            ['depart', 'Last time departed', depart ? date88(depart) : '--- -- ---- --:--']
+            ['depart', 'Last time departed', date88(DEPART_MARTY)]
         ];
         var bloc = document.createElement('div');
         bloc.className = 'circuits';
@@ -433,7 +431,21 @@ document.addEventListener('click', function (e) {
 
     /* Orange : mode Halloween — nuit violette et pleine lune, chauves-souris et fantômes qui passent derrière,
        une araignée qui descend de la barre. Au démarrage : coup de tonnerre et nuée de chauves-souris. */
-    var nuit = null;
+    var nuit = null, lireFantomes = null;
+    var SCRIPT = document.currentScript, BASE = SCRIPT ? SCRIPT.src.replace(/site\.js(\?.*)?$/, '') : '';
+
+    // pacman.js : le jeu caché derrière les fantômes, et le plan du labyrinthe dessiné en fond
+    function chargerPacman(suite) {
+        if (window.pacmanHalloween) { suite(); return; }
+        var s = document.querySelector('script[data-pacman]');
+        if (!s) {
+            s = document.createElement('script');
+            s.src = BASE + 'pacman.js';
+            s.dataset.pacman = '';
+            document.head.appendChild(s);
+        }
+        s.addEventListener('load', suite);
+    }
 
     function halloween() {
         if (document.documentElement.classList.toggle('halloween')) {
@@ -495,7 +507,7 @@ document.addEventListener('click', function (e) {
         var c = document.createElement('canvas');
         c.className = 'effet-canvas effet-halloween';
         document.body.appendChild(c);
-        var ctx = c.getContext('2d'), w, h, chauves, fantomes;
+        var ctx = c.getContext('2d'), w, h, chauves, fantomes, labyrinthe = null;
         function hasard(a, b) { return a + Math.random() * (b - a); }
         function nouvelleChauve(partout) {
             var sens = Math.random() < 0.5 ? 1 : -1;
@@ -514,14 +526,50 @@ document.addEventListener('click', function (e) {
             var n = Math.max(4, Math.round(w / 160));
             chauves = Array.from({ length: n }, function () { return nouvelleChauve(true); });
             fantomes = Array.from({ length: Math.max(2, Math.round(w / 500)) }, function () { return nouveauFantome(true); });
+            dessinerLabyrinthe();
             if (calme) image(0);
+        }
+        // les murs du labyrinthe de Pac-Man, en néon violet discret, couvrent tout l'écran
+        function dessinerLabyrinthe() {
+            if (!window.pacmanHalloween) return;
+            var plan = window.pacmanHalloween.plan, L = plan[0].length, H = plan.length, dpr = window.devicePixelRatio || 1;
+            var T = Math.max(w / L, h / H), x0 = (w - L * T) / 2, y0 = (h - H * T) / 2;
+            labyrinthe = document.createElement('canvas');
+            labyrinthe.width = w * dpr; labyrinthe.height = h * dpr;
+            var m = labyrinthe.getContext('2d');
+            m.setTransform(dpr, 0, 0, dpr, 0, 0);
+            var mur = function (x, y) { return y < 0 || y >= H || x < 0 || x >= L || plan[y][x] === '#'; };
+            m.fillStyle = 'rgba(40, 14, 70, 0.35)';
+            m.beginPath();
+            for (var y = 0; y < H; y++) for (var x = 0; x < L; x++) {
+                if (plan[y][x] !== '#') continue;
+                m.rect(x0 + x * T, y0 + y * T, T, T);
+            }
+            m.fill();
+            m.strokeStyle = 'rgba(166, 107, 255, 0.3)';
+            m.lineWidth = Math.max(1.5, T / 10);
+            m.lineCap = 'round';
+            m.shadowColor = 'rgba(166, 107, 255, 0.6)';
+            m.shadowBlur = T / 4;
+            m.beginPath();
+            for (y = 0; y < H; y++) for (x = 0; x < L; x++) {
+                if (plan[y][x] !== '#') continue;
+                var gx = x0 + x * T, gy = y0 + y * T;
+                if (!mur(x, y - 1)) { m.moveTo(gx, gy); m.lineTo(gx + T, gy); }
+                if (!mur(x, y + 1)) { m.moveTo(gx, gy + T); m.lineTo(gx + T, gy + T); }
+                if (!mur(x - 1, y)) { m.moveTo(gx, gy); m.lineTo(gx, gy + T); }
+                if (!mur(x + 1, y)) { m.moveTo(gx + T, gy); m.lineTo(gx + T, gy + T); }
+            }
+            m.stroke();
         }
         function image(now) {
             var t = now / 1000;
             ctx.clearRect(0, 0, w, h);
+            if (labyrinthe) ctx.drawImage(labyrinthe, 0, 0, w, h);
             fantomes.forEach(function (f, i) {
                 if (!calme) { f.y -= f.v; if (f.y < -80) fantomes[i] = f = nouveauFantome(false); }
-                fantome(ctx, f.x + Math.sin(t * 0.8 + f.o) * 24, f.y, f.r, t + f.o, f.a);
+                f.px = f.x + Math.sin(t * 0.8 + f.o) * 24; f.py = f.y;
+                fantome(ctx, f.px, f.py, f.r, t + f.o, f.survol ? 0.75 : f.a);
             });
             ctx.fillStyle = '#07030c';
             ctx.shadowColor = 'rgba(255, 120, 30, 0.45)';
@@ -537,6 +585,12 @@ document.addEventListener('click', function (e) {
         }
         dimension();
         window.addEventListener('resize', dimension);
+        lireFantomes = function () { return fantomes; };
+        chargerPacman(function () {
+            if (!c.isConnected) return;
+            dessinerLabyrinthe();
+            if (calme) image(0);
+        });
         if (!calme) nuit = requestAnimationFrame(function boucle(now) {
             if (!racine.classList.contains('halloween')) return;
             image(now);
@@ -561,6 +615,8 @@ document.addEventListener('click', function (e) {
 
     function arreterNuit() {
         cancelAnimationFrame(nuit);
+        lireFantomes = null;
+        document.documentElement.classList.remove('sur-fantome');
         document.querySelectorAll('.effet-halloween').forEach(function (c) { if (c._quitter) c._quitter(); c.remove(); });
         document.querySelectorAll('.araignee, .effet-nuee').forEach(function (e) { e.remove(); });
     }
@@ -596,6 +652,28 @@ document.addEventListener('click', function (e) {
         })(debut);
         e.classList.add('boom');
     }
+
+    /* Un clic sur un fantôme (là où rien d'autre n'est cliquable) ouvre le Pac-Man caché */
+    function fantomeSous(e) {
+        if (!lireFantomes || !document.documentElement.classList.contains('halloween')) return null;
+        if (e.target.closest && e.target.closest('a, button, input, textarea, select, label, summary, .class-card, .navbar, .pacman-fond')) return null;
+        var liste = lireFantomes();
+        for (var i = 0; i < liste.length; i++) {
+            var f = liste[i], dx = e.clientX - f.px, dy = e.clientY - (f.py + f.r * 0.3);
+            if (f.px !== undefined && dx * dx + dy * dy < f.r * f.r * 1.8) return f;
+        }
+        return null;
+    }
+    document.addEventListener('mousemove', function (e) {
+        if (!lireFantomes) return;
+        var f = fantomeSous(e);
+        lireFantomes().forEach(function (g) { g.survol = g === f; });
+        document.documentElement.classList.toggle('sur-fantome', !!f);
+    });
+    document.addEventListener('click', function (e) {
+        if (!fantomeSous(e)) return;
+        chargerPacman(function () { window.pacmanHalloween.ouvrir(); });
+    });
 
     var MODES = { matrix: matrix, futur: futur, halloween: halloween };
     function modeActif() {

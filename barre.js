@@ -17,6 +17,10 @@
     // Page qui gère déjà elle-même le thème (séries d'automatismes : attribut data-theme + bouton #theme-toggle)
     function themeNatif() { return racine.hasAttribute('data-theme') && !racine.classList.contains('barre-inverse'); }
 
+    // 4e rond : petite citrouille, allumée en mode Halloween (mêmes dessins que style.css)
+    var CITROUILLE = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 28 26\'%3E%3Cpath d=\'M14 7Q13 3 16.5 1\' stroke=\'%233f8f2a\' stroke-width=\'2.6\' fill=\'none\' stroke-linecap=\'round\'/%3E%3Cellipse cx=\'9\' cy=\'16\' rx=\'8\' ry=\'9\' fill=\'%23d9560a\'/%3E%3Cellipse cx=\'19\' cy=\'16\' rx=\'8\' ry=\'9\' fill=\'%23d9560a\'/%3E%3Cellipse cx=\'14\' cy=\'16\' rx=\'7\' ry=\'9.6\' fill=\'%23ff7518\'/%3E%3Cpath d=\'M7.5 14.5L10 10.5L12.5 14.5ZM15.5 14.5L18 10.5L20.5 14.5ZM6.5 18Q14 26 21.5 18Q14 21.5 6.5 18Z\' fill=\'%236b2200\'/%3E%3C/svg%3E")';
+    var CITROUILLE_ALLUMEE = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 28 26\'%3E%3Cdefs%3E%3CradialGradient id=\'f\' cx=\'.5\' cy=\'.55\' r=\'.6\'%3E%3Cstop offset=\'0\' stop-color=\'%23fff8c4\'/%3E%3Cstop offset=\'.5\' stop-color=\'%23ffd23a\'/%3E%3Cstop offset=\'1\' stop-color=\'%23ff8a00\'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d=\'M14 7Q13 3 16.5 1\' stroke=\'%233f8f2a\' stroke-width=\'2.6\' fill=\'none\' stroke-linecap=\'round\'/%3E%3Cellipse cx=\'9\' cy=\'16\' rx=\'8\' ry=\'9\' fill=\'%23d9560a\'/%3E%3Cellipse cx=\'19\' cy=\'16\' rx=\'8\' ry=\'9\' fill=\'%23d9560a\'/%3E%3Cellipse cx=\'14\' cy=\'16\' rx=\'7\' ry=\'9.6\' fill=\'%23ff7518\'/%3E%3Cpath d=\'M7.5 14.5L10 10.5L12.5 14.5ZM15.5 14.5L18 10.5L20.5 14.5ZM6.5 18Q14 26 21.5 18Q14 21.5 6.5 18Z\' fill=\'url(%23f)\'/%3E%3C/svg%3E")';
+
     /* ---------- Styles (tous préfixés .barre-site / html.barre-…) ---------- */
     var css = [
         '.barre-site{all:initial;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 16px;',
@@ -25,13 +29,14 @@
         '.barre-site *{box-sizing:border-box;font:inherit}',
         '.barre-site a{color:inherit;text-decoration:none}',
         '.barre-site .b-logo{display:flex;align-items:center;gap:10px}',
-        '.barre-site .b-ligne{position:relative;display:inline-block;width:57px;height:12px;flex-shrink:0}',
+        '.barre-site .b-ligne{position:relative;display:inline-block;width:61px;height:12px;flex-shrink:0}',
         '.barre-site .b-ligne:before{content:"";position:absolute;left:4px;right:4px;top:5px;height:2px;background:currentColor}',
         '.barre-site .b-ligne button{all:unset;position:absolute;top:0;width:12px;height:12px;border-radius:50%;cursor:pointer;box-sizing:border-box}',
         '.barre-site .b-ligne button:nth-child(1){left:0;background:#2f6fdf}',
         '.barre-site .b-ligne button:nth-child(2){left:15px;background:#0f9d76}',
         '.barre-site .b-ligne button:nth-child(3){left:30px;background:#fff;border:2.5px solid #8a4fd8}',
-        '.barre-site .b-ligne button:nth-child(4){left:45px;background:#ff7518}',
+        '.barre-site .b-ligne button:nth-child(4){left:45px;top:-3px;width:16px;height:15px;border-radius:0;background:center/contain no-repeat ' + CITROUILLE + '}',
+        'html.halloween .barre-site .b-ligne button:nth-child(4){background-image:' + CITROUILLE_ALLUMEE + ';filter:drop-shadow(0 0 3px #ffb020)}',
         '.barre-site ul{all:unset;display:flex;align-items:center;gap:4px 18px;flex-wrap:wrap}',
         '.barre-site li{all:unset}',
         '.barre-site ul a{color:#66708a;font-weight:500}',

@@ -33,7 +33,7 @@
     function connecter(code, mdp) {
         return rpc('connexion', { p_code: code, p_mdp: mdp }).then(function (s) {
             ecrireLocal(CLE_SESSION, s);
-            ecrireLocal('interactif-derniere-connexion', new Date().toISOString());   // affichée par le mode Retour vers le futur
+            ecrireLocal('interactif-derniere-connexion', new Date().toISOString());
             return s;
         });
     }
