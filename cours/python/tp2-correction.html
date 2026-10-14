@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TP 2 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="tp-commun.css">
+<script src="../../barre.js"></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>TP Algorithmique n°2 — Corrigé</b><span>Les structures conditionnelles : if, elif, else</span><a href="../../python/">Page Python</a></div>
+    <nav class="exnav" id="exnav" aria-label="Exercices"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<script src="tp-commun.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   TP2 : les structures conditionnelles
+   ===================================================================== */
+const F_COURS = 'def f(x):\n    if x > 3:\n        return 2 * x\n    else:\n        return x + 10';
+const ETAT = 'def etat_eau(t):\n    if t < 0:\n        return "glace"\n    elif t < 100:\n        return "liquide"\n    else:\n        return "vapeur"';
+const R_SI = { t: 'Cours 1 : si… sinon…', h: `${scriptHTML(F_COURS)}${consoleHTML(['>>> f(4)', '8', '>>> f(3)', '13'])}<ul style="margin-top:8px"><li>Si la condition est vraie, Python exécute le bloc sous ${pyc('if')} ; sinon, le bloc sous ${pyc('else')}.</li><li>Deux-points ${pyc(':')} après la condition et après ${pyc('else')}, puis indentation.</li><li>\\(3>3\\) est <b>faux</b> : ${pyc('f(3)')} passe dans le ${pyc('else')}.</li></ul>` };
+const R_CMP = { t: 'Les comparaisons', h: `<div class="scroll"><table class="tab-rep"><tr><th>En maths</th><td>\\(x<3\\)</td><td>\\(x>3\\)</td><td>\\(x\\leqslant3\\)</td><td>\\(x\\geqslant3\\)</td><td>\\(x=3\\)</td><td>\\(x\\neq3\\)</td></tr><tr><th>En Python</th><td>${pyc('x < 3')}</td><td>${pyc('x > 3')}</td><td>${pyc('x <= 3')}</td><td>${pyc('x >= 3')}</td><td>${pyc('x == 3')}</td><td>${pyc('x != 3')}</td></tr></table></div><p style="margin-top:6px">Pour <b>tester</b> une égalité, on écrit ${pyc('==')} ; le simple ${pyc('=')} est réservé à l’affectation.</p>` };
+const R_ELIF = { t: 'Cours 2 : plus de deux cas avec elif', h: `${scriptHTML(ETAT)}${consoleHTML(['>>> etat_eau(20)', "'liquide'"])}<ul style="margin-top:8px"><li>${pyc('elif')} = « <em>else if</em> » (sinon si).</li><li>Python teste les conditions <b>dans l’ordre</b> et exécute <b>seulement le premier</b> bloc dont la condition est vraie.</li><li>Le ${pyc('else')} n’est exécuté que si aucune condition n’est vraie.</li></ul>` };
+const ATT = `<ul><li>Deux-points ${pyc(':')} en fin de ligne après ${pyc('if')}, ${pyc('elif')}, ${pyc('else')}, puis on <b>décale</b> les instructions du bloc (4 espaces).</li><li>Tester une égalité : ${pyc('==')} ; affecter : ${pyc('=')}.</li><li>Toujours tester les <b>valeurs frontières</b> : \\(10>10\\) est faux, \\(10\\geqslant10\\) est vrai.</li><li>Avec ${pyc('elif')}, le cas le plus restrictif se place <b>en premier</b>.</li></ul>`;
+
+const SA = 'x = 7\nif x > 5:\n    print("grand")\nelse:\n    print("petit")';
+const SB = 'note = 10\nif note > 10:\n    print("admis")\nelse:\n    print("refusé")';
+const SC = 'a = 8\nif a > 4:\n    a = 2 * a - 5\nif a > 10:\n    a = a - 10\nprint(a)';
+const PRIX = 'def prix(taille, age):\n    if taille < 1.30:\n        entree = age * 0.5\n    else:\n        entree = age * 1.1\n    return entree';
+const TARIF = 'def tarif(age):\n    if age < 18:\n        return 6\n    else:\n        return 9';
+const TARIF_LARGE = 'def tarif(age):\n    if age <= 18:\n        return 6\n    else:\n        return 9';
+const TARIF3 = 'def tarif(age):\n    if age < 14:\n        return 4.5\n    elif age < 18:\n        return 6\n    else:\n        return 9';
+const TARIF3_ORDRE = 'def tarif(age):\n    if age < 18:\n        return 6\n    elif age < 14:\n        return 4.5\n    else:\n        return 9';
+const MAXI = 'def maximum(a, b):\n    if a > b:\n        return a\n    else:\n        return b';
+const GROUPE = 'def groupe(age):\n    if age < 8:\n        return "Trop jeune"\n    elif age < 10:\n        return "U8"\n    elif age < 12:\n        return "U10"\n    elif age < 14:\n        return "U12"\n    elif age < 16:\n        return "U14"\n    else:\n        return "Hors école"';
+const GROUPE_TROUS = 'def groupe(age):\n    if age < 8:\n        return "Trop jeune"\n    elif age < 10:\n        return "U8"\n    elif ...:\n        return ...\n    elif ...:\n        return ...\n    elif ...:\n        return ...\n    else:\n        return ...';
+const FPM = 'def f(x):\n    if x <= -1:\n        return 2 * x + 1\n    elif x <= 0:\n        return -x + 2\n    else:\n        return -3 * x + 2';
+const FPM_TROUS = 'def f(x):\n    if x <= -1:\n        return 2 * x + 1\n    elif x <= 0:\n        return ...\n    else:\n        return ...';
+const VELO_AB = 'def tarif_A(h):\n    return 3 * h\n\ndef tarif_B(h):\n    return 10 + h';
+const VELO = VELO_AB + '\n\ndef meilleur_tarif(h):\n    if tarif_A(h) < tarif_B(h):\n        return "A"\n    else:\n        return "B"';
+const VELO_EG = VELO_AB + '\n\ndef meilleur_tarif(h):\n    if tarif_A(h) == tarif_B(h):\n        return "égalité"\n    elif tarif_A(h) < tarif_B(h):\n        return "A"\n    else:\n        return "B"';
+const tabRep = (titres, lignes) => `<div class="scroll"><table class="tab-rep">${lignes.map((l, k) => `<tr><th>${titres[k]}</th>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table></div>`;
+const trou = '<span class="fix">…</span>';
+
+// Scripts « prévoir, puis vérifier » de l'entraînement
+function randIf() {
+  const b = ri(3, 9);
+  return pick([
+    () => `x = ${pick([b - 1, b, b + ri(1, 4)])}\nif x > ${b}:\n    print("grand")\nelse:\n    print("petit")`,
+    () => { const s = pick([8, 10, 12]); return `note = ${pick([s - 1, s, s + ri(1, 5)])}\nif note >= ${s}:\n    print("admis")\nelse:\n    print("refusé")`; },
+    () => { const d = pick([8, 10, 12]); return `a = ${ri(3, 9)}\nif a > 4:\n    a = ${ri(2, 3)} * a - ${ri(1, 6)}\nif a > ${d}:\n    a = a - ${d}\nprint(a)`; },
+    () => `t = ${pick([-15, -1, 0, 37, 99, 100, 120])}\nif t < 0:\n    print("glace")\nelif t < 100:\n    print("liquide")\nelse:\n    print("vapeur")`,
+    () => `a = ${ri(2, 12)}\nb = ${ri(2, 12)}\nif a > b:\n    a, b = b, a\nprint(a)\nprint(b)`,
+    () => `x = ${ri(-6, 6)}\nif x >= 0:\n    y = 2 * x\nelse:\n    y = -x\nprint(y)`,
+    () => `n = ${ri(1, 20)}\nif n < 5:\n    print("petit")\nelif n < 15:\n    print("moyen")\nelse:\n    print("grand")`,
+  ])();
+}
+
+const EX = [
+  { n: 1, stars: S1, comp: 'Raisonner', titre: 'Prévoir, puis vérifier', rappel: [R_SI, R_CMP],
+    consigne: 'Pour chaque script, écrire d’abord ce qui va s’afficher, puis vérifier. La correction détaillée exécute le script <b>ligne par ligne</b> et montre chaque test.',
+    build: tr => {
+      if (tr) return { main: [itScript('', randIf(), true), itScript('', randIf(), true), itScript('', randIf(), true)] };
+      const B2 = 'note = 10\nif note >= 10:\n    print("admis")\nelse:\n    print("refusé")';
+      return { main: [itScript('Script A', SA), itScript('Script B', SB), itScript('Script C', SC)], more: [
+        { l: '1.', q: 'Dans le script B, un élève qui a exactement \\(10\\) devrait être admis. Corriger la condition.', res: `${pyc('if note >= 10:')}`,
+          steps: [{ x: '\\(10>10\\) est <b>faux</b> : le script B affiche <code>refusé</code>. Pour accepter le \\(10\\), il faut « supérieur <b>ou égal</b> », qui s’écrit <code>&gt;=</code>.' }].concat(traceSteps(B2).steps),
+          run: { src: SB, edit: true } },
+        { l: '2.', q: 'Dans le script C, pourquoi le résultat n’est-il pas \\(11\\) ?', res: 'Les deux <code>if</code> sont indépendants : après le premier, <code>a</code> vaut \\(11\\) ; le second test porte sur cette <em>nouvelle</em> valeur, \\(11>10\\) est vrai, donc <code>a</code> devient \\(11-10=1\\).',
+          steps: traceSteps(SC).steps, concl: 'Les deux tests sont faits l’un après l’autre : le second utilise la nouvelle valeur de <code>a</code>. Python affiche \\(1\\).' },
+      ] };
+    } },
+  { n: 2, stars: S2, comp: 'Raisonner', titre: 'Parc d’attractions', rappel: [R_SI],
+    consigne: `Une personne qui mesure moins de \\(1{,}30\\) m paie moins cher. La fonction calcule le prix d’entrée (en euros) selon la taille (en mètres) et l’âge.${scriptHTML(PRIX)}`,
+    build: tr => {
+      if (tr) {
+        const t = shuffle([1.05, 1.15, 1.25, 1.3, 1.35, 1.5, 1.62, 1.75, 1.88]).slice(0, 3), a = [ri(4, 12), ri(10, 17), ri(18, 60)];
+        return { main: t.map((x, k) => itCall('', PRIX, `prix(${x}, ${a[k]})`, true)) };
+      }
+      const inv = itCall('3.', PRIX, 'prix(18, 1.82)');
+      inv.q = `Un élève tape ${pyc('prix(18, 1.82)')} pour la personne de 18 ans. Quel résultat obtient-il ? Pourquoi est-il absurde ?`;
+      inv.concl = `Python renvoie ${pyc('2.0020000000000002')}, environ 2 € : les valeurs sont dans le mauvais ordre. Python a pris <code>taille = 18</code> et <code>age = 1.82</code>. L’ordre des arguments doit suivre l’ordre des paramètres. (Le « 0000000000002 » est une minuscule erreur d’arrondi des nombres à virgule en machine.)`;
+      return { main: [
+        { l: '1.', q: 'Combien de paramètres cette fonction possède-t-elle ? Lesquels ?', res: 'Deux paramètres : <code>taille</code> et <code>age</code>, dans cet ordre.', steps: [{ x: 'Les paramètres sont écrits entre les parenthèses après le nom de la fonction : <code>def prix(taille, age):</code>.' }] },
+        Object.assign(itCall('2.', PRIX, 'prix(1.82, 18)'), { q: `Personne de 18 ans qui mesure 1,82 m : ${pyc('prix(1.82, 18)')} renvoie ?` }),
+        Object.assign(itCall('', PRIX, 'prix(1.20, 8)'), { q: `Enfant de 8 ans qui mesure 1,20 m : ${pyc('prix(1.20, 8)')} renvoie ?` }),
+        inv,
+      ] };
+    } },
+  { n: 3, stars: S2, comp: 'Raisonner', titre: 'Au cinéma', rappel: [R_SI, R_ELIF, R_CMP],
+    consigne: 'Un cinéma propose un tarif réduit de \\(6\\) € aux personnes de <b>moins de 18 ans</b> ; les autres paient \\(9\\) €.',
+    build: tr => {
+      if (tr) {
+        const a1 = pick([12, 13, 14]), a2 = pick([16, 18, 25]), p1 = pick([4, 4.5, 5]), p2 = pick([6, 6.5, 7]), p3 = pick([9, 9.5, 10]);
+        const src = `def tarif(age):\n    if age < ${a1}:\n        return ${p1}\n    elif age < ${a2}:\n        return ${p2}\n    else:\n        return ${p3}`;
+        const ages = shuffle([a1 - ri(1, 5), a1, a2 - 1, a2, a2 + ri(1, 40)]).slice(0, 3);
+        const its = ages.map(a => itCall('', src, `tarif(${a})`, true));
+        its[0].q = `Un autre cinéma : moins de ${a1} ans ${fr(p1)} €, moins de ${a2} ans ${fr(p2)} €, sinon ${fr(p3)} €. ${its[0].q}`;
+        its[0].fig = scriptHTML(src);
+        return { main: its };
+      }
+      const raw = [undefined, `    <span class="k">if</span> <span class="fix">age &lt; 18</span>:`];
+      return { main: [
+        { l: '1.', q: `Compléter la condition, puis : ${pyc('tarif(15)')}, ${pyc('tarif(18)')} et ${pyc('tarif(40)')} renvoient ?`, fig: scriptHTML(TARIF, { raw }) + runBoxHTML({ src: 'def tarif(age):\n    if ...:\n        return 6\n    else:\n        return 9', edit: true, tests: testsDe(TARIF, ['tarif(15)', 'tarif(18)', 'tarif(40)']) }),
+          res: `${pyc('age < 18')} ; ${pyc('6')}, ${pyc('9')} et ${pyc('9')}`, steps: traceSteps(TARIF, { call: 'tarif(18)' }).steps, concl: '« Moins de 18 ans » s’écrit <code>age &lt; 18</code> : pour 18 ans, \\(18<18\\) est faux, on paie 9 €.' },
+        { l: '2.', q: `Un élève a écrit ${pyc('age <= 18')}. Pour quel âge sa fonction se trompe-t-elle ?`, res: 'Pour 18 ans : \\(18\\leqslant18\\) est vrai, sa fonction renvoie \\(6\\) au lieu de \\(9\\). Pour tous les autres âges, les deux conditions donnent le même résultat.',
+          steps: traceSteps(TARIF_LARGE, { call: 'tarif(18)' }).steps, concl: 'Sa fonction se trompe seulement pour 18 ans : il faut toujours <b>tester la valeur frontière</b>.', run: { src: TARIF_LARGE, cmds: ['tarif(17)', 'tarif(18)', 'tarif(19)'] } },
+        { l: '3.', q: `Tarif enfant de 4,50 € pour les moins de 14 ans : modifier la fonction avec ${pyc('elif')}. ${pyc('tarif(10)')}, ${pyc('tarif(14)')}, ${pyc('tarif(17)')}, ${pyc('tarif(18)')} renvoient ?`,
+          fig: runBoxHTML({ src: TARIF, edit: true, tests: testsDe(TARIF3, ['tarif(10)', 'tarif(14)', 'tarif(17)', 'tarif(18)']) }),
+          res: `${pyc('4.5')}, ${pyc('6')}, ${pyc('6')} et ${pyc('9')}`, steps: [{ h: scriptHTML(TARIF3, { tab: 'Script corrigé' }), x: 'Le cas le plus restrictif (moins de 14 ans) est testé en premier.' }].concat(traceSteps(TARIF3, { call: 'tarif(14)' }).steps) },
+        { l: '4.', q: `Un élève a écrit les tests dans l’autre ordre (d’abord ${pyc('age < 18')}). Que renvoie ${pyc('tarif(10)')} ?`, res: `${pyc('6')} : \\(10<18\\) est vrai, Python exécute le premier bloc et ne regarde pas la suite.`,
+          steps: traceSteps(TARIF3_ORDRE, { call: 'tarif(10)' }).steps, concl: 'Le cas <code>age &lt; 14</code> n’est jamais atteint : tout nombre inférieur à 14 est aussi inférieur à 18. Avec <code>elif</code>, le cas le plus restrictif se place <b>en premier</b>.', run: { src: TARIF3_ORDRE, cmds: ['tarif(10)'] } },
+      ] };
+    } },
+  { n: 4, stars: S2, comp: 'Chercher', titre: 'Le plus grand des deux', rappel: [R_SI, R_CMP],
+    consigne: `Écrire une fonction ${pyc('maximum(a, b)')} qui renvoie le plus grand des deux nombres <code>a</code> et <code>b</code>, à l’aide de ${pyc('if')} et ${pyc('else')}.`,
+    build: tr => {
+      if (tr) {
+        const paires = [[ri(-9, 9), ri(-9, 9)], [ri(-9, 9), ri(-9, 9)], [ri(1, 9), 0]]; const e = ri(-5, 5); paires.push([e, e]);
+        const MINI = 'def minimum(a, b):\n    if a < b:\n        return a\n    else:\n        return b';
+        return { main: [
+          itFn('', `Écrire une fonction ${pyc('minimum(a, b)')} qui renvoie le plus <b>petit</b> des deux nombres.`, 'def minimum(a, b):\n    ', MINI, paires.map(p => `minimum(${p[0]}, ${p[1]})`)),
+          itCall('', MAXI, `maximum(${ri(-9, 9)}, ${ri(-9, 9)})`, true),
+          itCall('', MINI, `minimum(${pick([2.5, -1.5, 0.5])}, ${ri(-3, 3)})`, true),
+        ] };
+      }
+      return { main: [
+        itFn('1.', 'Écrire la fonction <code>maximum</code> :', 'def maximum(a, b):\n    ', MAXI, ['maximum(3, 7)', 'maximum(7, 3)', 'maximum(-2, -5)', 'maximum(5, 5)']),
+        { l: '2.', q: `La tester avec ${pyc('maximum(3, 7)')}, ${pyc('maximum(7, 3)')}, ${pyc('maximum(-2, -5)')} et ${pyc('maximum(5, 5)')}. Tous les résultats sont-ils corrects ?`,
+          res: `${pyc('7')}, ${pyc('7')}, ${pyc('-2')} et ${pyc('5')} : tout est correct.`, steps: traceSteps(MAXI, { call: 'maximum(5, 5)' }).steps,
+          concl: 'Pour <code>maximum(5, 5)</code>, \\(5>5\\) est faux : la fonction renvoie <code>b</code>, c’est-à-dire \\(5\\). Les deux nombres sont égaux, peu importe la branche.', run: { src: MAXI, cmds: ['maximum(3, 7)', 'maximum(7, 3)', 'maximum(-2, -5)', 'maximum(5, 5)'] } },
+      ] };
+    } },
+  { n: 5, stars: S2, comp: 'Modéliser', titre: 'École de rugby', rappel: [R_ELIF],
+    consigne: 'Moins de 8 ans : « Trop jeune » ; <b>U8</b> de 8 ans inclus à 10 ans exclus ; <b>U10</b> de 10 à 12 ans ; <b>U12</b> de 12 à 14 ans ; <b>U14</b> de 14 à 16 ans ; à partir de 16 ans : « Hors école ».',
+    build: tr => {
+      if (tr) return { main: shuffle([7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 5]).slice(0, 4).map(a => itCall('', GROUPE, `groupe(${a})`, true)) };
+      const ages = [7, 8, 11, 12, 15, 16], vals = ages.map(a => unq(renvoie(GROUPE, `groupe(${a})`)));
+      return { main: [
+        { l: '1.', q: 'Compléter la fonction <code>groupe(age)</code>.', fig: runBoxHTML({ src: GROUPE_TROUS, edit: true, tests: testsDe(GROUPE, ages.map(a => `groupe(${a})`)) }),
+          res: `<pre style="margin:0;font-family:var(--f-mono);font-size:14px">${esc(GROUPE)}</pre>`, steps: [{ h: scriptHTML(GROUPE, { tab: 'Script corrigé' }), x: 'Chaque <code>elif</code> teste seulement la borne supérieure du groupe.' }] },
+        { l: '2.', q: 'Compléter le tableau, en particulier aux âges frontières.', fig: tabRep(['<code>age</code>', '<code>groupe(age)</code>'], [ages, vals.map(esc)]),
+          res: vals.map(esc).join(' ; '), steps: traceSteps(GROUPE, { call: 'groupe(12)' }).steps, concl: `Pour 12 ans : \\(12<12\\) est faux, on passe au test suivant, \\(12<14\\) est vrai : <code>U12</code>. ${ages.map((a, k) => `${a} → ${esc(vals[k])}`).join(' ; ')}.`,
+          run: { src: GROUPE, cmds: ages.map(a => `groupe(${a})`) } },
+        { l: '3.', q: `Pourquoi n’a-t-on pas besoin d’écrire ${pyc('elif 8 <= age and age < 10:')} à la ligne 4 ?`, res: 'Si Python arrive au premier <code>elif</code>, c’est que <code>age &lt; 8</code> était faux : on sait déjà que \\(\\text{age}\\geqslant8\\).',
+          steps: traceSteps(GROUPE, { call: 'groupe(9)' }).steps, concl: 'Chaque test profite des tests précédents : c’est tout l’intérêt de <code>elif</code>.' },
+      ] };
+    } },
+  { n: 6, stars: S2, comp: 'Représenter', titre: 'Une fonction définie par morceaux', rappel: [R_ELIF, R_CMP],
+    consigne: 'On considère la fonction \\(f\\) définie par \\[f(x)=\\begin{cases}2x+1&\\text{si } x\\leqslant-1\\\\-x+2&\\text{si } -1<x\\leqslant0\\\\-3x+2&\\text{si } x>0\\end{cases}\\]',
+    build: tr => {
+      if (tr) return { main: shuffle([-6, -3, -1.5, -1, -0.5, -0.25, 0, 0.25, 0.5, 1.5, 4, 10]).slice(0, 4).map(x => itCall('', FPM, `f(${x})`, true)) };
+      const xs = [-4, -1, -0.5, 0, 0.5, 2, 3], vals = xs.map(x => renvoie(FPM, `f(${x})`));
+      return { main: [
+        { l: '1.', q: 'Compléter la traduction en Python.', fig: runBoxHTML({ src: FPM_TROUS, edit: true, tests: testsDe(FPM, xs.map(x => `f(${x})`)) }), res: `${pyc('return -x + 2')} et ${pyc('return -3 * x + 2')}`,
+          steps: [{ h: scriptHTML(FPM, { tab: 'Script corrigé' }), x: 'On recopie chaque formule : la multiplication s’écrit toujours <code>*</code>.' }] },
+        { l: '2.', q: 'Compléter le tableau de valeurs à l’aide de la console.', fig: tabRep(['\\(x\\)', '\\(f(x)\\)'], [xs.map(fr), vals.map(pyc)]),
+          res: vals.map(pyc).join(' ; '), steps: traceSteps(FPM, { call: 'f(-1)' }).steps.concat(traceSteps(FPM, { call: 'f(0)' }).steps),
+          concl: `Aux frontières : \\(f(-1)=2\\times(-1)+1=-1\\) (première formule, car \\(-1\\leqslant-1\\)) et \\(f(0)=-0+2=2\\) (deuxième formule).`, run: { src: FPM, cmds: xs.map(x => `f(${x})`) } },
+        { l: '3.', q: `La deuxième condition s’écrit \\(-1<x\\leqslant0\\) en maths, mais simplement ${pyc('x <= 0')} en Python. Pourquoi est-ce correct ?`, res: 'On n’arrive au <code>elif</code> que si <code>x &lt;= -1</code> est faux, c’est-à-dire si \\(x>-1\\). Il reste seulement à tester \\(x\\leqslant0\\).',
+          steps: traceSteps(FPM, { call: 'f(-0.5)' }).steps },
+      ] };
+    } },
+  { n: 7, stars: S3, comp: 'Modéliser', titre: 'Location de vélos', rappel: [R_SI, R_ELIF],
+    consigne: '<b>Tarif A</b> : \\(3\\) € par heure. <b>Tarif B</b> : un abonnement de \\(10\\) €, puis \\(1\\) € par heure.',
+    build: tr => {
+      if (tr) {
+        const q = pick([1, 2]), p = q + pick([1, 2, 3]), m = (p - q) * pick([2, 3, 4, 5]), h0 = m / (p - q);
+        const src = `def tarif_A(h):\n    return ${p} * h\n\ndef tarif_B(h):\n    return ${m} + ${q} * h\n\ndef meilleur_tarif(h):\n    if tarif_A(h) == tarif_B(h):\n        return "égalité"\n    elif tarif_A(h) < tarif_B(h):\n        return "A"\n    else:\n        return "B"`;
+        const h1 = ri(1, h0 + 4), h2 = pick([h0 - 1, h0, h0 + 2]);
+        const a = itCall('', src, `tarif_A(${h1})`, true); a.q = `Un autre loueur : tarif A ${p} € par heure ; tarif B abonnement ${m} € puis ${q} € par heure. ${a.q}`; a.fig = scriptHTML(src);
+        return { main: [a, itCall('', src, `tarif_B(${h1})`, true), itCall('', src, `meilleur_tarif(${h2})`, true),
+          { l: '', q: 'À partir de combien d’heures le tarif B est-il <b>strictement</b> plus avantageux ? (au-delà de … heures)', res: `au-delà de ${h0} heures`,
+            steps: [{ m: `${m}+${q === 1 ? '' : q}h<${p}h\\iff ${m}<${p - q === 1 ? '' : p - q}h\\iff h>${h0}`, x: 'On résout l’inéquation « tarif B &lt; tarif A ».' }],
+            ans: { fields: [{ lab: 'au-delà de (heures)', want: h0, kind: 'num' }] } }] };
+      }
+      const hs = [2, 4, 5, 6, 8];
+      return { main: [
+        itFn('1.', `Écrire deux fonctions ${pyc('tarif_A(h)')} et ${pyc('tarif_B(h)')} qui renvoient le prix payé pour \\(h\\) heures.`, 'def tarif_A(h):\n    \n\ndef tarif_B(h):\n    ', VELO_AB, ['tarif_A(2)', 'tarif_B(2)', 'tarif_A(8)', 'tarif_B(8)']),
+        { l: '2.', q: 'Compléter le tableau à l’aide de la console.', fig: tabRep(['\\(h\\)', 'Tarif A (€)', 'Tarif B (€)'], [hs, hs.map(h => renvoie(VELO_AB, `tarif_A(${h})`)), hs.map(h => renvoie(VELO_AB, `tarif_B(${h})`))]),
+          res: `A : ${hs.map(h => renvoie(VELO_AB, `tarif_A(${h})`)).join(', ')} ; B : ${hs.map(h => renvoie(VELO_AB, `tarif_B(${h})`)).join(', ')}`, steps: [{ m: '\\text{tarif A : }3\\times h\\qquad\\text{tarif B : }10+h', x: 'Pour \\(h=5\\) : \\(3\\times5=15\\) et \\(10+5=15\\), les deux tarifs sont égaux.' }], run: { src: VELO_AB, cmds: hs.flatMap(h => [`tarif_A(${h})`, `tarif_B(${h})`]) } },
+        { l: '3.', q: 'Compléter <code>meilleur_tarif(h)</code> pour qu’elle renvoie <code>"A"</code> ou <code>"B"</code> selon le tarif le moins cher.', fig: runBoxHTML({ src: VELO_AB + '\n\ndef meilleur_tarif(h):\n    if ...:\n        return "A"\n    else:\n        return "B"', edit: true, tests: testsDe(VELO, ['meilleur_tarif(2)', 'meilleur_tarif(8)']) }),
+          res: pyc('if tarif_A(h) < tarif_B(h):'), steps: traceSteps(VELO, { call: 'meilleur_tarif(2)' }).steps, concl: 'Une fonction peut en appeler d’autres : Python calcule <code>tarif_A(h)</code> et <code>tarif_B(h)</code>, puis les compare.' },
+        { l: '4.', q: 'À partir de combien d’heures le tarif B est-il <b>strictement</b> plus avantageux ? Justifier par un calcul.', res: 'Au-delà de 5 heures.', steps: [{ m: '10+h<3h\\iff 10<2h\\iff h>5', x: 'On résout l’inéquation « tarif B &lt; tarif A ».' }] },
+        { l: '5.', q: `Que renvoie ${pyc('meilleur_tarif(5)')} ? Est-ce satisfaisant ? <em>Bonus :</em> avec ${pyc('elif')}, renvoyer <code>"égalité"</code> dans ce cas.`, fig: runBoxHTML({ src: VELO, edit: true, tests: testsDe(VELO_EG, ['meilleur_tarif(5)', 'meilleur_tarif(2)', 'meilleur_tarif(8)']) }),
+          res: `${pyc("'B'")} : ce n’est pas faux, mais trompeur, car les deux tarifs valent 15 €.`, steps: traceSteps(VELO, { call: 'meilleur_tarif(5)' }).steps.concat([{ h: scriptHTML(VELO_EG, { tab: 'Une solution (bonus)' }), x: 'On teste l’égalité en premier, avec <code>==</code>.' }]),
+          concl: 'Pour \\(h=5\\), \\(15<15\\) est faux : la fonction renvoie <code>"B"</code>, alors que les deux tarifs se valent.' },
+      ] };
+    } },
+  { n: 8, stars: S3, comp: 'Raisonner', titre: 'Pour aller plus loin', rappel: [R_SI],
+    consigne: `On reprend la fonction <code>f</code> du cours (automatisme de la Série 4).${scriptHTML(F_COURS)}`,
+    build: tr => {
+      const cas = N => {
+        const sols = [], st = [];
+        const x1 = N / 2, x2 = N - 10;
+        st.push({ m: `\\text{Si } x>3\\ :\\ 2x=${N}\\iff x=${fr(x1)}`, x: x1 > 3 ? `\\(${fr(x1)}>3\\) ✓ : solution acceptée.` : `\\(${fr(x1)}>3\\) est faux : <b>refusé</b>.` });
+        if (x1 > 3) sols.push(x1);
+        st.push({ m: `\\text{Si } x\\leqslant3\\ :\\ x+10=${N}\\iff x=${fr(x2)}`, x: x2 <= 3 ? `\\(${fr(x2)}\\leqslant3\\) ✓ : solution acceptée.` : `\\(${fr(x2)}>3\\) : <b>refusé</b> (d’ailleurs <code>f(${x2})</code> renvoie <code>${renvoie(F_COURS, `f(${x2})`)}</code>).` });
+        if (x2 <= 3) sols.push(x2);
+        return { sols, st };
+      };
+      const item = (l, N, ans) => {
+        const c = cas(N), txt = c.sols.length ? (c.sols.length > 1 ? `Deux solutions : ${c.sols.map(s => `\\(x=${fr(s)}\\)`).join(' et ')}.` : `Une seule solution : \\(x=${fr(c.sols[0])}\\).`) : 'Aucune solution.';
+        return { l, q: `Trouver <b>tous</b> les nombres \\(x\\) tels que ${pyc('f(x)')} renvoie \\(${N}\\).`, res: txt, steps: c.st, concl: txt, run: { src: F_COURS, cmds: c.sols.map(s => `f(${s})`) },
+          ans: ans ? { fields: [{ lab: 'solutions (séparées par ;)', want: c.sols, kind: 'set' }], aide: 'Étudie les deux cas, \\(x>3\\) et \\(x\\leqslant3\\), et vérifie que chaque solution est bien dans son cas. Écris « aucune » s’il n’y en a pas.' } : null };
+      };
+      if (tr) return { main: shuffle([4, 5, 8, 9, 11, 12, 13, 16, 20, 2, 6]).slice(0, 2).map(N => item('', N, true)) };
+      return { main: [item('1.', 14), item('2.', 7)] };
+    } },
+];
+demarrer({ EX, partie: 'Partie 2 :', partieTitre: 'Exercices', att: ATT });
+</script>
+</body>
+</html>

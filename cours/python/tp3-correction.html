@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TP 3 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="tp-commun.css">
+<script src="../../barre.js"></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>TP Algorithmique n°3 — Corrigé</b><span>Les boucles en Python : for, while et le reste %</span><a href="../../python/">Page Python</a></div>
+    <nav class="exnav" id="exnav" aria-label="Exercices"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<script src="tp-commun.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   TP3 : les boucles
+   ===================================================================== */
+const R_FOR = { t: 'Cours 1 : la boucle bornée for', h: `${scriptHTML('for i in range(5):\n    print(i)')}${consoleHTML(['>>> # script executed', '0', '1', '2', '3', '4'])}<div class="scroll" style="margin-top:8px"><table class="tab-rep"><tr><th>On écrit</th><th><code>i</code> prend les valeurs</th></tr><tr><td>${pyc('range(5)')}</td><td>0, 1, 2, 3, 4 (sans le 5)</td></tr><tr><td>${pyc('range(1, 6)')}</td><td>1, 2, 3, 4, 5 (sans le 6)</td></tr><tr><td>${pyc('range(2, 11, 2)')}</td><td>2, 4, 6, 8, 10 (de 2 en 2)</td></tr></table></div><p style="margin-top:6px">Les instructions <b>décalées</b> sont répétées ; ce qui n’est plus décalé est exécuté <b>une seule fois</b>, après la boucle.</p>` };
+const R_WHILE = { t: 'Cours 2 : la boucle non bornée while', h: `${scriptHTML('x = 1\nwhile x <= 1000:\n    x = 2 * x\nprint(x)')}${consoleHTML(['>>> # script executed', '1024'])}<ul style="margin-top:8px"><li>On répète <b>tant que</b> la condition est vraie : on ne sait pas à l’avance combien de fois.</li><li>Scratch dit « répéter <b>jusqu’à</b> \\(x>1000\\) », Python dit « <b>tant que</b> \\(x\\leqslant1000\\) » : la condition est <b>contraire</b>.</li><li>Si la condition reste toujours vraie : <b>boucle infinie</b> !</li></ul>` };
+const R_DIV = { t: 'Cours 3 : quotient et reste', h: `<p>\\(17=5\\times3+2\\) : le quotient est \\(3\\), le reste est \\(2\\).</p><div class="scroll"><table class="tab-rep"><tr><th></th><th>En Python</th><th>Résultat</th></tr><tr><th>Quotient</th><td>${pyc('17 // 5')}</td><td>3</td></tr><tr><th>Reste</th><td>${pyc('17 % 5')}</td><td>2</td></tr></table></div><ul style="margin-top:6px"><li>${pyc('n % 2 == 0')} : <code>n</code> est pair ;</li><li>${pyc('n % 3 == 0')} : <code>n</code> est un multiple de 3.</li></ul>` };
+const ATT = `<ul><li>Ce qui est <b>décalé</b> sous ${pyc('for')} ou ${pyc('while')} est répété ; le reste est exécuté une seule fois.</li><li>${pyc('range(1, n)')} s’arrête <b>avant</b> \\(n\\) : pour aller jusqu’à \\(n\\), écrire ${pyc('range(1, n + 1)')}.</li><li>Un accumulateur (somme) ou un compteur s’initialise <b>avant</b> la boucle.</li><li>Dans un ${pyc('while')}, la variable testée doit changer à chaque tour, sinon la boucle ne s’arrête jamais.</li></ul>`;
+
+const SA = 'for i in range(1, 6):\n    print(i)';
+const SB = 'for k in range(4):\n    print(3 * k)';
+const SC = 'for i in range(3):\n    print("Bonjour")\nprint("Fin")';
+const SOMME = 'somme = 0\nfor i in range(1, 11):\n    somme = somme + i\nprint(somme)';
+const SOMME_DANS = 'somme = 0\nfor i in range(1, 11):\n    somme = somme + i\n    print(somme)';
+const SOMME_N = 'def somme_entiers(n):\n    somme = 0\n    for i in range(1, n + 1):\n        somme = somme + i\n    return somme';
+const PLAC = 'capital = 1000\nfor annee in range(10):\n    capital = capital * 1.03\nprint(round(capital, 2))';
+const DOUBLE = 'capital = 1000\nannee = 0\nwhile capital <= 2000:\n    capital = capital * 1.03\n    annee = annee + 1\nprint(annee)';
+const EIFFEL = 'epaisseur = 0.1\npliages = 0\nwhile epaisseur <= 330000:\n    epaisseur = 2 * epaisseur\n    pliages = pliages + 1\nprint(pliages)';
+const PARITE = 'def parite(n):\n    if n % 2 == 0:\n        return "pair"\n    else:\n        return "impair"';
+const MULT7 = 'for n in range(1, 101):\n    if n % 7 == 0:\n        print(n)';
+const FB_FAUX = 'def fizzbuzz(n):\n    if n % 3 == 0:\n        return "Fizz"\n    elif n % 5 == 0:\n        return "Buzz"\n    elif n % 15 == 0:\n        return "FizzBuzz"\n    else:\n        return n';
+const FB = 'def fizzbuzz(n):\n    if n % 15 == 0:\n        return "FizzBuzz"\n    elif n % 3 == 0:\n        return "Fizz"\n    elif n % 5 == 0:\n        return "Buzz"\n    else:\n        return n';
+const FB_TOUT = FB + '\n\nfor i in range(1, 101):\n    print(fizzbuzz(i))';
+const FB_COMPTE = FB + '\n\nnb_fizz = 0\nfor i in range(1, 101):\n    if fizzbuzz(i) == "Fizz":\n        nb_fizz = nb_fizz + 1\nprint(nb_fizz)';
+const SYR = 'def syracuse(n):\n    etapes = 0\n    while n != 1:\n        if n % 2 == 0:\n            n = n // 2\n        else:\n            n = 3 * n + 1\n        etapes = etapes + 1\n    return etapes';
+const tabRep = (titres, lignes) => `<div class="scroll"><table class="tab-rep">${lignes.map((l, k) => `<tr><th>${titres[k]}</th>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table></div>`;
+const fixe = src => `<span class="fix">${esc(src)}</span>`;
+
+// Quotient ou reste : « On tape 17 % 5 »
+function itDiv(l, a, op, b, ans) {
+  const expr = `${a} ${op} ${b}`, q = Math.floor(a / b), r = a - b * q, w = op === '//' ? q : r;
+  return { l, q: `On tape ${pyc(expr)}`, res: pyc(String(w)),
+    steps: [{ m: `${a}=${b}\\times${q}+${r}`, x: `Division euclidienne de \\(${a}\\) par \\(${b}\\) : le quotient est \\(${q}\\), le reste est \\(${r}\\) (il est plus petit que \\(${b}\\)).` },
+      { x: op === '//' ? `<code>//</code> donne le <b>quotient</b> : \\(${q}\\).` : `<code>%</code> donne le <b>reste</b> : \\(${r}\\)${r === 0 ? `, donc \\(${a}\\) est un multiple de \\(${b}\\)` : ''}.` }],
+    run: { src: '', cmds: [expr], label: 'Vérifier dans Python' }, ans: ans ? { fields: [{ lab: 'Python affiche', want: String(w), kind: 'py' }] } : null };
+}
+// Scripts « prévoir, puis vérifier » de l'entraînement
+function randFor() {
+  const a = ri(0, 4), b = a + ri(3, 5), k = ri(2, 9);
+  return pick([
+    () => `for i in range(${a}, ${b}):\n    print(i)`,
+    () => `for k in range(${ri(3, 5)}):\n    print(${k} * k)`,
+    () => `for i in range(${ri(2, 4)}):\n    print("Bonjour")\nprint("Fin")`,
+    () => `for i in range(${a}, ${a + 2 * ri(3, 4)}, 2):\n    print(i)`,
+    () => `for i in range(1, ${ri(4, 6)}):\n    print(i * i)`,
+    () => `x = ${ri(1, 5)}\nfor i in range(${ri(3, 4)}):\n    x = x + ${k}\nprint(x)`,
+    () => `x = 1\nfor i in range(${ri(3, 6)}):\n    x = 2 * x\n    print(x)`,
+  ])();
+}
+function randAccu() {
+  const a = ri(1, 4), b = a + ri(4, 7);
+  return pick([
+    () => `somme = 0\nfor i in range(${a}, ${b}):\n    somme = somme + i\nprint(somme)`,
+    () => `somme = 0\nfor i in range(1, ${ri(4, 6)}):\n    somme = somme + i * i\nprint(somme)`,
+    () => `produit = 1\nfor i in range(1, ${ri(4, 6)}):\n    produit = produit * i\nprint(produit)`,
+    () => `somme = 0\nfor i in range(0, ${2 * ri(4, 8)}, 2):\n    somme = somme + i\nprint(somme)`,
+    () => `n = 0\nfor i in range(${a}, ${b}):\n    n = n + 1\nprint(n)`,
+  ])();
+}
+
+const EX = [
+  { n: 1, stars: S1, comp: 'Raisonner', titre: 'Prévoir, puis vérifier', rappel: [R_FOR],
+    consigne: 'Pour chaque script, écrire d’abord ce qui va s’afficher, puis vérifier. La correction détaillée exécute le script <b>tour de boucle par tour de boucle</b>.',
+    build: tr => {
+      if (tr) return { main: [itScript('', randFor(), true), itScript('', randFor(), true), itScript('', randFor(), true)] };
+      const A = itScript('Script A', SA), B = itScript('Script B', SB), C = itScript('Script C', SC);
+      B.piege = '<code>k</code> prend les valeurs 0, 1, 2, 3 : <code>range(4)</code> s’arrête <b>avant</b> 4.';
+      C.concl += ' <code>print("Fin")</code> n’est pas décalé : il est exécuté une seule fois, <em>après</em> la boucle.';
+      return { main: [A, B, C], more: [
+        { l: '1.', q: 'Modifier le script A pour qu’il affiche les nombres de \\(1\\) à \\(20\\).', res: pyc('for i in range(1, 21):'),
+          steps: [{ x: '<code>range(1, 21)</code> donne 1, 2, …, 20 : le 21 n’est pas compris.' }, { h: scriptHTML('for i in range(1, 21):\n    print(i)', { tab: 'Script corrigé' }) }], run: { src: SA, edit: true } },
+        { l: '2.', q: 'Écrire un script qui affiche la table de multiplication de \\(7\\) : \\(7\\), \\(14\\), \\(21\\), …, \\(70\\).', res: `${pyc('for i in range(1, 11):')} puis ${pyc('print(7 * i)')}`,
+          steps: [{ h: scriptHTML('for i in range(1, 11):\n    print(7 * i)', { tab: 'Une solution' }), x: '<code>i</code> va de 1 à 10 ; on affiche \\(7\\times i\\) à chaque tour.' }, { h: scriptHTML('for i in range(7, 71, 7):\n    print(i)', { tab: 'Une autre solution' }), x: 'Ou bien on compte de 7 en 7, jusqu’à 70 compris (donc 71 en borne).' }],
+          run: { src: '', edit: true } },
+      ] };
+    } },
+  { n: 2, stars: S2, comp: 'Raisonner', titre: 'Additionner avec une boucle', rappel: [R_FOR],
+    consigne: `Le script ci-dessous calcule une somme.${scriptHTML(SOMME)}`,
+    build: tr => {
+      if (tr) {
+        const n = pick([5, 6, 8, 12, 20, 50]);
+        return { main: [itScript('', randAccu(), true), itScript('', randAccu(), true), itCall('', SOMME_N, `somme_entiers(${n})`, true)] };
+      }
+      return { main: [
+        { l: '1.', q: 'Compléter le tableau qui suit l’évolution des variables à chaque tour de boucle (jusqu’au 5<sup>e</sup> tour).', fig: tabRep(['Tour de boucle', 'Valeur de <code>i</code>', 'Valeur de <code>somme</code>'], [['avant', '1<sup>er</sup>', '2<sup>e</sup>', '3<sup>e</sup>', '4<sup>e</sup>', '5<sup>e</sup>'], ['—', 1, 2, 3, 4, 5], [0, 1, 3, 6, 10, 15]]),
+          res: '<code>somme</code> vaut 1, 3, 6, 10, 15', steps: traceSteps(SOMME).steps, concl: 'À chaque tour, on ajoute <code>i</code> à l’ancienne valeur de <code>somme</code> : 0+1=1, 1+2=3, 3+3=6, 6+4=10, 10+5=15…' },
+        { l: '2.', q: 'Quelle somme ce script calcule-t-il ? Que va-t-il afficher ?', res: '\\(1+2+3+\\cdots+10\\) : il affiche \\(55\\).', steps: [{ x: 'La variable <code>somme</code> « accumule » les valeurs de <code>i</code> : c’est un <b>accumulateur</b>, initialisé à \\(0\\) <em>avant</em> la boucle.' }, { m: '1+2+3+4+5+6+7+8+9+10=55' }], run: { src: SOMME, cmds: [] } },
+        { l: '3.', q: `Que se passe-t-il si l’on décale la dernière ligne ${pyc('print(somme)')} ?`, fig: scriptHTML(SOMME_DANS), res: 'Le <code>print</code> est dans la boucle : Python affiche la somme à chaque tour, soit 1, 3, 6, 10, …, 55 (dix nombres).',
+          steps: traceSteps(SOMME_DANS).steps, run: { src: SOMME_DANS, cmds: [] } },
+        itFn('4.', `Écrire une fonction ${pyc('somme_entiers(n)')} qui renvoie la somme \\(1+2+\\cdots+n\\). ${pyc('somme_entiers(10)')} et ${pyc('somme_entiers(100)')} renvoient ?`, 'def somme_entiers(n):\n    ', SOMME_N, ['somme_entiers(10)', 'somme_entiers(100)', 'somme_entiers(1)'],
+          { res: `${pyc('55')} et ${pyc('5050')}`, steps: [{ h: scriptHTML(SOMME_N, { tab: 'Une solution' }), x: 'Attention à <code>range(1, n + 1)</code> pour que \\(n\\) soit compris, et au <code>return</code> placé <em>après</em> la boucle.' }, { x: 'Le mathématicien Gauss aurait trouvé \\(5\\,050\\) de tête, à 10 ans : \\(1+100=2+99=\\cdots=101\\), et il y a \\(50\\) paires.' }],
+            piege: 'un <code>return</code> décalé sous le <code>for</code> arrête la fonction dès le premier tour.' }),
+      ] };
+    } },
+  { n: 3, stars: S2, comp: 'Modéliser', titre: 'Placement bancaire', rappel: [R_FOR, R_WHILE],
+    consigne: 'On place \\(1\\,000\\) € à \\(3\\) % par an : chaque année, le capital est multiplié par \\(CM=1+\\dfrac{3}{100}=1{,}03\\).',
+    build: tr => {
+      if (tr) {
+        const c0 = pick([500, 800, 1000, 1500, 2000]), t = pick([2, 4, 5, 6]), n = pick([5, 8, 12, 15]), cm = 1 + t / 100, cible = pick([1.5, 2, 3]);
+        const s1 = `capital = ${c0}\nfor annee in range(${n}):\n    capital = capital * ${cm}\nprint(round(capital, 2))`;
+        const s2 = `capital = ${c0}\nannee = 0\nwhile capital <= ${c0 * cible}:\n    capital = capital * ${cm}\n    annee = annee + 1\nprint(annee)`;
+        const a = itScript('', s1, true); a.q = `${fr(c0)} € placés à ${t} % par an pendant ${n} ans. Qu’affiche ce script ?`;
+        const b = itScript('', s2, true); b.q = `Au bout de combien d’années le capital dépasse-t-il ${fr(c0 * cible)} € ?`;
+        return { main: [a, b] };
+      }
+      const a = itScript('1.', PLAC); a.q = 'Compléter, puis exécuter le script qui calcule le capital au bout de 10 ans.';
+      a.fig = scriptHTML(PLAC, { raw: [undefined, undefined, `    capital <span class="o">=</span> ${fixe('capital * 1.03')}`] });
+      a.concl = 'Au bout de 10 ans, le capital est de \\(1\\,343{,}92\\) €. <code>round(capital, 2)</code> arrondit au centième.';
+      const c = itScript('3.', DOUBLE); c.q = 'Compléter le script, l’exécuter et conclure.';
+      c.fig = scriptHTML(DOUBLE, { raw: [undefined, undefined, `<span class="k">while</span> ${fixe('capital <= 2000')}<span class="o">:</span>`, undefined, `    annee <span class="o">=</span> ${fixe('annee + 1')}`] });
+      c.concl = 'Le capital aura doublé au bout de <b>24 ans</b> (environ 2 032,79 € ; au bout de 23 ans, il ne vaut encore que 1 973,59 €). <code>annee</code> est un <b>compteur</b> : elle augmente de 1 à chaque tour.';
+      return { main: [a,
+        { l: '2.', q: 'On cherche au bout de combien d’années le capital aura <b>doublé</b>. Pourquoi une boucle <code>for</code> ne convient-elle pas ?', res: 'On ne sait pas à l’avance combien de tours il faudra : c’est justement ce qu’on cherche.', steps: [{ x: 'Une boucle <code>for</code> répète un nombre de fois <b>connu à l’avance</b>. Ici, on répète <b>tant que</b> le capital ne dépasse pas 2 000 € : c’est une boucle <code>while</code>.' }] },
+        c] };
+    } },
+  { n: 4, stars: S2, comp: 'Chercher', titre: 'Plier une feuille jusqu’au sommet de la tour Eiffel ?', rappel: [R_WHILE],
+    consigne: 'Une feuille a une épaisseur de \\(0{,}1\\) mm ; à chaque pliage, son épaisseur double. La tour Eiffel mesure environ \\(330\\) m, soit \\(330\\,000\\) mm. Combien de pliages faut-il pour dépasser la tour Eiffel ?',
+    build: tr => {
+      if (tr) {
+        const [nom, h] = pick([['le mont Blanc (4 806 m)', 4806000], ['l’Everest (8 849 m)', 8849000], ['la Lune (384 400 km)', 384400000000], ['un immeuble de 30 m', 30000], ['l’Arc de triomphe (50 m)', 50000]]);
+        const e = pick([0.05, 0.08, 0.1, 0.2]);
+        const src = `epaisseur = ${e}\npliages = 0\nwhile epaisseur <= ${h}:\n    epaisseur = 2 * epaisseur\n    pliages = pliages + 1\nprint(pliages)`;
+        const it = itScript('', src, true); it.q = `Feuille de ${fr(e)} mm : combien de pliages pour dépasser ${nom} ?`;
+        return { main: [it] };
+      }
+      const it = itScript('', EIFFEL);
+      it.q = 'Un script qui répond à la question :';
+      it.res = '<code>22</code> pliages ; l’épaisseur est alors de 419 430,4 mm, soit environ 419 m.';
+      it.concl = 'Il faut <b>22 pliages</b> : l’épaisseur est alors de \\(0{,}1\\times2^{22}=419\\,430{,}4\\) mm, soit environ 419 m. (Après 21 pliages, on n’est qu’à 209,7 m.)';
+      it.run = { src: EIFFEL + '\nprint(epaisseur)', cmds: [], label: 'Vérifier dans Python' };
+      return { main: [it] };
+    } },
+  { n: 5, stars: S1, comp: 'Calculer', titre: 'Le reste d’une division', rappel: [R_DIV],
+    consigne: 'Taper chaque calcul dans la console et noter le résultat.',
+    build: tr => {
+      if (tr) {
+        const out = [];
+        for (let k = 0; k < 4; k++) { const b = ri(2, 9), a = b * ri(1, 12) + pick([0, ri(1, b - 1)]); out.push(itDiv('', a, pick(['//', '%']), b, true)); }
+        out.push(itCall('', PARITE, `parite(${ri(10, 3000)})`, true));
+        return { main: out };
+      }
+      return { main: [itDiv('', 17, '//', 5), itDiv('', 17, '%', 5), itDiv('', 20, '%', 4), itDiv('', 2026, '%', 2), itDiv('', 7, '%', 2)], more: [
+        itFn('2.', `Écrire une fonction ${pyc('parite(n)')} qui renvoie <code>"pair"</code> si <code>n</code> est pair, et <code>"impair"</code> sinon.`, 'def parite(n):\n    ', PARITE, ['parite(2026)', 'parite(7)', 'parite(0)'],
+          { steps: [{ h: scriptHTML(PARITE, { tab: 'Une solution' }), x: 'Un nombre est pair quand le reste de sa division par 2 est nul : <code>n % 2 == 0</code>.' }].concat(traceSteps(PARITE, { call: 'parite(7)' }).steps) }),
+        Object.assign(itScript('3.', MULT7), { q: 'À l’aide d’une boucle et de <code>%</code>, afficher tous les multiples de \\(7\\) compris entre \\(1\\) et \\(100\\).', fig: runBoxHTML({ src: '', edit: true }),
+          res: '7, 14, 21, …, 98 (14 nombres)', concl: `On obtient ${sortie(MULT7).join(', ')} : 14 nombres. On pouvait aussi écrire <code>for n in range(7, 101, 7):</code>.`,
+          steps: [{ h: scriptHTML(MULT7, { tab: 'Une solution' }), x: 'On teste chaque nombre de 1 à 100 : on ne l’affiche que si le reste de sa division par 7 est nul.' }].concat(traceSteps(MULT7).steps) }),
+      ] };
+    } },
+  { n: 6, stars: S3, comp: 'Raisonner', titre: 'FizzBuzz', rappel: [R_DIV, R_FOR, { t: 'Rappel du TP2', h: `<p>Pour plus de deux cas : ${pyc('if')}, ${pyc('elif')}, ${pyc('else')}. Python exécute <b>seulement le premier</b> bloc dont la condition est vraie.</p>` }],
+    consigne: 'On compte de \\(1\\) à \\(100\\), mais on dit <code>"Fizz"</code> à la place d’un multiple de 3, <code>"Buzz"</code> à la place d’un multiple de 5, et <code>"FizzBuzz"</code> à la place d’un multiple de 3 <b>et</b> de 5 (donc de 15). Début : 1, 2, Fizz, 4, Buzz, Fizz, 7, 8, Fizz, Buzz, 11, Fizz, 13, 14, FizzBuzz, 16…',
+    build: tr => {
+      if (tr) {
+        const N = pick([30, 50, 60, 75, 120, 200]);
+        const nf = Math.floor(N / 3) - Math.floor(N / 15), nb = Math.floor(N / 5) - Math.floor(N / 15), nfb = Math.floor(N / 15);
+        const its = shuffle([ri(16, 99), 15 * ri(2, 6), 3 * ri(6, 33), 5 * ri(4, 19), ri(101, 199)]).slice(0, 4).map(n => itCall('', FB, `fizzbuzz(${n})`, true));
+        its.push({ l: '', q: `De 1 à ${N}, combien de fois dit-on <code>"Fizz"</code> ? <code>"Buzz"</code> ? <code>"FizzBuzz"</code> ?`, res: `${nf}, ${nb} et ${nfb}`,
+          steps: [{ m: `\\left\\lfloor\\frac{${N}}{3}\\right\\rfloor-\\left\\lfloor\\frac{${N}}{15}\\right\\rfloor=${Math.floor(N / 3)}-${nfb}=${nf}`, x: `Il y a ${Math.floor(N / 3)} multiples de 3 jusqu’à ${N}, dont ${nfb} multiples de 15 (qui disent « FizzBuzz »).` }, { m: `${Math.floor(N / 5)}-${nfb}=${nb}`, x: 'Même raisonnement pour les multiples de 5.' }],
+          ans: { fields: [{ lab: '"Fizz"', want: nf, kind: 'num' }, { lab: '"Buzz"', want: nb, kind: 'num' }, { lab: '"FizzBuzz"', want: nfb, kind: 'num' }] }, run: { src: FB_COMPTE.replace('range(1, 101)', `range(1, ${N + 1})`), cmds: [] } });
+        return { main: its };
+      }
+      const q1 = [30, 33, 35, 49].map(n => itCall('', FB, `fizzbuzz(${n})`));
+      q1[0].q = `Sans ordinateur, que faut-il dire à la place de \\(30\\) ? ${q1[0].q}`;
+      return { main: q1, more: [
+        { l: '2.', q: `Cette première version contient une erreur. Que renvoie ${pyc('fizzbuzz(15)')} ? Expliquer, puis corriger.`, fig: runBoxHTML({ src: FB_FAUX, edit: true, tests: testsDe(FB, ['fizzbuzz(15)', 'fizzbuzz(9)', 'fizzbuzz(10)', 'fizzbuzz(7)']) }),
+          res: `${pyc("'Fizz'")} : il faut tester le multiple de 15 <b>en premier</b>.`, steps: traceSteps(FB_FAUX, { call: 'fizzbuzz(15)' }).steps.concat([{ h: scriptHTML(FB, { tab: 'Script corrigé' }), x: 'Le cas le plus restrictif (multiple de 15) est testé en premier.' }]),
+          concl: '\\(15\\) est un multiple de 3 : le premier test est vrai et Python ne regarde pas la suite. La ligne <code>return "FizzBuzz"</code> n’est jamais atteinte.' },
+        { l: '3.', q: 'À l’aide d’une boucle <code>for</code>, afficher le FizzBuzz complet de \\(1\\) à \\(100\\).', res: `${pyc('for i in range(1, 101):')} puis ${pyc('print(fizzbuzz(i))')}`,
+          steps: [{ h: scriptHTML(FB_TOUT, { tab: 'Une solution' }), x: 'À chaque tour, on affiche ce que renvoie <code>fizzbuzz(i)</code>.' }], run: { src: FB_TOUT, cmds: [] } },
+        { l: '4.', q: '<em>Bonus.</em> Combien de fois dit-on <code>"Fizz"</code>, <code>"Buzz"</code>, <code>"FizzBuzz"</code> entre 1 et 100 ? Faire compter Python.', res: '27, 14 et 6 fois',
+          steps: [{ h: scriptHTML(FB_COMPTE, { tab: 'Une solution pour « Fizz »' }), x: `Python affiche ${sortie(FB_COMPTE)[0]}.` }, { m: '33-6=27\\qquad 20-6=14\\qquad 6', x: '33 multiples de 3 jusqu’à 100, dont 6 multiples de 15 ; 20 multiples de 5, dont les mêmes 6 : 15, 30, 45, 60, 75 et 90.' }],
+          run: { src: FB_COMPTE, edit: true } },
+      ] };
+    } },
+  { n: 7, stars: S3, comp: 'Chercher', titre: 'Pour aller plus loin : la suite de Syracuse', rappel: [R_WHILE, R_DIV],
+    consigne: 'On choisit un entier \\(n\\geqslant1\\) et on répète : si \\(n\\) est pair, on le divise par 2 ; sinon, on le multiplie par 3 et on ajoute 1. On s’arrête quand on obtient 1. Par exemple : \\(6\\to3\\to10\\to5\\to16\\to8\\to4\\to2\\to1\\), soit 8 étapes.',
+    build: tr => {
+      if (tr) return { main: shuffle([3, 5, 9, 11, 12, 17, 19, 25, 31, 40, 50]).slice(0, 3).map(n => itCall('', SYR, `syracuse(${n})`, true)) };
+      return { main: [
+        itFn('1.', `Écrire une fonction ${pyc('syracuse(n)')} qui renvoie le nombre d’étapes pour arriver à 1 (avec <code>while</code>, <code>%</code> et <code>//</code>).`, 'def syracuse(n):\n    ', SYR, ['syracuse(6)', 'syracuse(7)', 'syracuse(27)', 'syracuse(1)'],
+          { steps: [{ h: scriptHTML(SYR, { tab: 'Une solution' }), x: '<code>etapes</code> est un compteur ; on répète <b>tant que</b> \\(n\\neq1\\) (<code>!=</code>). On utilise <code>//</code> pour que \\(n\\) reste un entier.' }].concat(traceSteps(SYR, { call: 'syracuse(6)' }).steps) }),
+        Object.assign(itCall('2.', SYR, 'syracuse(6)'), { q: `${pyc('syracuse(6)')}, ${pyc('syracuse(7)')} et ${pyc('syracuse(27)')} renvoient ?`, res: `${pyc('8')}, ${pyc('16')} et ${pyc('111')}`, run: { src: SYR, cmds: ['syracuse(6)', 'syracuse(7)', 'syracuse(27)'] },
+          concl: 'On trouve 8, 16 et 111 étapes. Pour tous les nombres testés à ce jour, on finit par arriver à 1, mais personne n’a jamais réussi à le <b>démontrer</b> : c’est la <b>conjecture de Syracuse</b>, un problème ouvert depuis près de 100 ans.' }),
+      ] };
+    } },
+];
+demarrer({ EX, partie: 'Partie 2 :', partieTitre: 'Exercices', att: ATT });
+</script>
+</body>
+</html>
