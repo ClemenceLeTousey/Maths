@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automatismes</title>
+    <title>Espace élève</title>
     <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="interactif.css">
@@ -13,7 +13,7 @@
     <script src="soutien.js"></script>
     <style>
         .soutien { margin-top: 28px; }
-        .soutien h2 { font-size: 1.2rem; margin-bottom: 6px; }
+        .soutien h2, h2.section { font-size: 1.2rem; margin-bottom: 6px; }
         .soutien-semaine { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; margin-bottom: 10px; }
         .soutien-semaine h3 { margin: 0 0 4px; font-size: 1rem; }
         .soutien-semaine label { display: flex; align-items: center; gap: 10px; padding: 4px 0; cursor: pointer; }
@@ -42,13 +42,14 @@
     </nav>
 
     <header>
-        <h1>Automatismes</h1>
+        <h1>Espace élève</h1>
         <p>Connecte-toi avec l'identifiant et le mot de passe donnés en classe.</p>
     </header>
 
     <main class="interactif">
         <div id="bandeau"></div>
         <div id="contenu" hidden>
+        <h2 class="section">Automatismes</h2>
         <div class="tableau-defile"><table class="res" id="liste"></table></div>
         <p class="aide">Tu peux refaire un exercice autant de fois que tu veux : les nombres changent à chaque fois.</p>
         <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>

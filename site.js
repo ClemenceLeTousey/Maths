@@ -724,18 +724,18 @@ document.addEventListener('click', function (e) {
     });
 })();
 
-/* Lien « Automatismes » dans la barre de navigation de toutes les pages (après « Accueil ») */
+/* Lien « Espace élève » (page automatismes/) dans la barre de navigation de toutes les pages (après « Accueil ») */
 (function () {
     var script = document.currentScript;
     var base = script ? script.src.replace(/site\.js(\?.*)?$/, '') : '';
     document.addEventListener('DOMContentLoaded', function () {
         var menu = document.querySelector('.nav-links');
         if (!menu || !base) return;
-        var deja = Array.from(menu.querySelectorAll('a')).some(function (a) { return a.textContent.trim() === 'Automatismes'; });
+        var deja = Array.from(menu.querySelectorAll('a')).some(function (a) { return a.textContent.trim() === 'Espace élève'; });
         if (deja) return;
         var li = document.createElement('li'), a = document.createElement('a');
         a.href = base + 'automatismes/';
-        a.textContent = 'Automatismes';
+        a.textContent = 'Espace élève';
         if (/\/automatismes\/(index\.html)?$/.test(location.pathname)) a.className = 'active';
         li.appendChild(a);
         var premier = menu.querySelector(':scope > li');
