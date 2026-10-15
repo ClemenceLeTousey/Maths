@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Suivi des résultats</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="interactif.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="../site.js"></script>
+    <script src="config.js"></script>
+    <script src="moteur.js"></script>
+    <script src="soutien.js"></script>
+    <style>
+        .interactif { max-width: 1100px; }
+        .outils { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 16px; }
+        .outils label { color: var(--muted); font-size: 0.9rem; }
+        .outils select { font: inherit; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--text); }
+        #detail { margin-top: 20px; }
+        .tentative { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; margin-bottom: 10px; }
+        .tentative h3 { margin: 0 0 6px; font-size: 1rem; display: flex; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+        .tentative ol { margin: 0; padding-left: 1.4em; }
+        .tentative li { margin: 2px 0; }
+        .rep { font-family: var(--f-mono); }
+        .ok { color: var(--ok); } .ko { color: var(--ko); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><span class="logo-ligne"><button type="button" data-effet="ecrire" title="Réécrire le titre"></button><button type="button" data-effet="matrix" title="Mode Matrix"></button><button type="button" data-effet="futur" title="Mode BTTF (Back to the Future)"></button><button type="button" data-effet="halloween" title="Mode Halloween"></button></span><a href="../index.html">Année 2026-2027 - Lycée Lebrun</a></div>
+        <ul class="nav-links">
+            <li><a href="../index.html">Accueil</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>Suivi des résultats</h1>
+        <p>Espace professeure</p>
+    </header>
+
+    <main class="interactif">
+        <form class="connexion" id="f-prof">
+            <label>Mot de passe professeure <input name="mdp" type="password" autocomplete="current-password" required></label>
+            <button type="submit">Afficher les résultats</button>
+            <p class="erreur" aria-live="polite"></p>
+        </form>
+
+        <div id="vue" hidden>
+            <div class="outils">
+                <label>Classe <select id="classe"></select></label>
+                <label>Noms : <input type="file" id="noms" accept=".csv" multiple> (fichiers comptes-*.csv, lus sur cet ordinateur uniquement)</label>
+                <label><input type="checkbox" id="memoriser"> mémoriser les noms sur cet ordinateur</label>
+                <button type="button" id="export">Exporter en CSV</button>
+                <button type="button" id="actualiser">Actualiser</button>
+                <button type="button" id="deconnexion" class="secondaire">Se déconnecter</button>
+            </div>
+            <div class="tableau-defile"><table class="res" id="tableau"></table></div>
+            <div id="detail"></div>
+            <h2>Messages des élèves</h2>
+            <p class="aide" id="messages-etat"></p>
+            <div id="messages"></div>
+            <h2>Soutien · inscriptions de la classe</h2>
+            <p class="aide" id="soutien-etat"></p>
+            <div class="tableau-defile"><table class="res" id="soutien"></table></div>
+        </div>
+    </main>
+
+    <script>
+    (function () {
+        var CLE_NOMS = 'interactif-noms';
+        var mdp = null, donnees = null, noms = {}, inscriptions = null;
+        try { noms = JSON.parse(localStorage.getItem(CLE_NOMS)) || {}; document.getElementById('memoriser').checked = Object.keys(noms).length > 0; } catch (e) {}
+        try { mdp = sessionStorage.getItem('interactif-prof'); } catch (e) {}
+
+        var form = document.getElementById('f-prof');
+        form.onsubmit = function (e) { e.preventDefault(); mdp = form.mdp.value; charger(); };
+        document.getElementById('actualiser').onclick = charger;
+        // oublie le mot de passe de la session et revient au formulaire (les noms mémorisés restent)
+        document.getElementById('deconnexion').onclick = function () {
+            try { sessionStorage.removeItem('interactif-prof'); } catch (e) {}
+            location.reload();
+        };
+        document.getElementById('classe').onchange = afficher;
+        if (mdp) charger();
+
+        function charger() {
+            var err = form.querySelector('.erreur');
+            err.textContent = 'Chargement…';
+            Interactif.rpc('prof_resultats', { p_mdp: mdp }).then(function (d) {
+                donnees = d; err.textContent = '';
+                try { sessionStorage.setItem('interactif-prof', mdp); } catch (e) {}
+                form.hidden = true; document.getElementById('vue').hidden = false;
+                var sel = document.getElementById('classe'), avant = sel.value;
+                var classes = Array.from(new Set(d.eleves.map(function (e) { return e.classe; }))).sort();
+                sel.innerHTML = '';
+                classes.forEach(function (c) { var o = document.createElement('option'); o.textContent = c; sel.appendChild(o); });
+                if (classes.indexOf(avant) >= 0) sel.value = avant;
+                afficher();
+                Interactif.rpc('prof_creneaux', { p_mdp: mdp }).then(function (l) { inscriptions = l || []; afficherSoutien(); },
+                    function (x) { inscriptions = null; document.getElementById('soutien-etat').textContent = 'Inscriptions indisponibles (' + x.message + ') : le script maj-soutien.sql a-t-il été lancé dans Supabase ?'; });
+                chargerMessages();
+            }, function (x) {
+                err.textContent = x.message;
+                form.hidden = false;
+                try { sessionStorage.removeItem('interactif-prof'); } catch (e) {}
+            });
+        }
+
+        /* ---------- Noms (fichiers locaux, jamais envoyés) ---------- */
+        document.getElementById('noms').onchange = function (e) {
+            var fichiers = Array.from(e.target.files);
+            Promise.all(fichiers.map(function (f) { return f.text(); })).then(function (textes) {
+                textes.forEach(function (t) {
+                    t.replace(/^﻿/, '').split(/\r?\n/).slice(1).forEach(function (l) {
+                        var c = l.split(';');
+                        if (c.length >= 2 && c[1]) noms[c[1].trim().toUpperCase()] = c[0].replace(/^"|"$/g, '').trim();
+                    });
+                });
+                memoriser(); afficher();
+            });
+        };
+        document.getElementById('memoriser').onchange = memoriser;
+        function memoriser() {
+            try {
+                if (document.getElementById('memoriser').checked) localStorage.setItem(CLE_NOMS, JSON.stringify(noms));
+                else localStorage.removeItem(CLE_NOMS);
+            } catch (e) {}
+        }
+
+        /* ---------- Tableau ---------- */
+        function exercices() {
+            // séries archivées et exercices retirés : pas de colonne (résultats gardés en base)
+            var masques = (window.INTERACTIF_MASQUES_PROF || []).concat(
+                INTERACTIF_CATALOGUE.filter(function (e) { return e.archive; }).map(function (e) { return e.id; }));
+            var ids = INTERACTIF_CATALOGUE.filter(function (e) { return !e.archive; }).map(function (e) { return e.id; });
+            donnees.resultats.forEach(function (r) { if (ids.indexOf(r.exercice) < 0 && masques.indexOf(r.exercice) < 0) ids.push(r.exercice); });
+            return ids;
+        }
+        function titre(id) {
+            var ex = INTERACTIF_CATALOGUE.find(function (e) { return e.id === id; });
+            return ex ? (ex.court || ex.titre) : id;
+        }
+        function niveau(r) { return r >= 0.75 ? 'n-bon' : r >= 0.5 ? 'n-moyen' : 'n-faible'; }
+        function td(tr, texte, classe) { var c = document.createElement('td'); c.textContent = texte; if (classe) c.className = classe; tr.appendChild(c); return c; }
+
+        var COULEURS = { 1: 'verte', 2: 'bleue', 3: 'rouge' };
+        function texteCouleurs(c) {
+            return Object.keys(c).map(function (n) { return (COULEURS[n] || n)[0].toUpperCase() + ' ' + c[n].ok + '/' + c[n].tot; }).join(', ');
+        }
+
+        function bilan(code, ex) {
+            var liste = donnees.resultats.filter(function (r) { return r.code === code && r.exercice === ex; });
+            if (!liste.length) return null;
+            var b = Interactif.bilanCouleurs(liste);
+            // rappels demandés (questions vertes), toutes séries confondues
+            var aides = liste.reduce(function (s, r) { return s + (r.details || []).filter(function (d) { return d && d.aide; }).length; }, 0);
+            return { meilleur: b.meilleur, couleurs: b.couleurs, nb: b.series, aides: aides, liste: liste };
+        }
+
+        function afficher() {
+            var classe = document.getElementById('classe').value;
+            var eleves = donnees.eleves.filter(function (e) { return e.classe === classe; });
+            var ids = exercices();
+            var table = document.getElementById('tableau');
+            table.innerHTML = '';
+            var tete = document.createElement('tr');
+            ['Code', 'Nom'].concat(ids.map(titre)).forEach(function (t) { var th = document.createElement('th'); th.textContent = t; tete.appendChild(th); });
+            table.appendChild(tete);
+
+            eleves.forEach(function (e) {
+                var tr = document.createElement('tr');
+                td(tr, e.code); td(tr, noms[e.code] || '');
+                ids.forEach(function (id) {
+                    var b = bilan(e.code, id);
+                    if (!b) { td(tr, '—'); return; }
+                    var cl = b.couleurs, c;
+                    if (cl) {
+                        c = td(tr, '', 'cliquable');
+                        Object.keys(cl).forEach(function (k) {
+                            var p = document.createElement('span');
+                            p.className = 'pastille n' + k;
+                            p.textContent = cl[k].ok + '/' + cl[k].tot;
+                            p.title = 'Série ' + COULEURS[k];
+                            c.appendChild(p);
+                        });
+                    } else c = td(tr, b.meilleur.score + '/' + b.meilleur.total + ' ', 'cliquable ' + niveau(b.meilleur.score / b.meilleur.total));
+                    var n = document.createElement('span'); n.className = 'n-tent'; n.textContent = '(' + b.nb + ')'; c.appendChild(n);
+                    if (b.aides) { var ra = document.createElement('span'); ra.className = 'rep-aide'; ra.textContent = ' 💡' + b.aides; c.appendChild(ra); }
+                    c.title = b.nb + ' série(s)' + (b.aides ? ', ' + b.aides + ' rappel(s) demandé(s)' : '') + ' — cliquer pour le détail';
+                    c.onclick = function () { detail(e.code, id, b.liste); };
+                });
+                table.appendChild(tr);
+            });
+
+            var pied = document.createElement('tr');
+            td(pied, 'Moyenne des meilleurs scores'); td(pied, '');
+            ids.forEach(function (id) {
+                var bs = eleves.map(function (e) { return bilan(e.code, id); }).filter(Boolean);
+                if (!bs.length) { td(pied, '—'); return; }
+                var moy = bs.reduce(function (s, b) { return s + b.meilleur.score / b.meilleur.total; }, 0) / bs.length;
+                var somme = {};
+                bs.forEach(function (b) {
+                    var cl = b.couleurs;
+                    if (cl) Object.keys(cl).forEach(function (k) { somme[k] = somme[k] || { ok: 0, tot: 0 }; somme[k].ok += cl[k].ok; somme[k].tot += cl[k].tot; });
+                });
+                var cell = td(pied, '');
+                if (Object.keys(somme).length) Object.keys(somme).forEach(function (k) {
+                    var p = document.createElement('span'); p.className = 'pastille n' + k;
+                    p.textContent = Math.round(100 * somme[k].ok / somme[k].tot) + ' %'; cell.appendChild(p);
+                });
+                else cell.textContent = Math.round(moy * 100) + ' %';
+                var nb = document.createElement('span'); nb.className = 'n-tent'; nb.textContent = ' (' + bs.length + ' él.)'; cell.appendChild(nb);
+            });
+            table.appendChild(pied);
+            if (inscriptions) afficherSoutien();
+            if (messages) afficherMessages();
+        }
+
+        /* ---------- Messages des élèves (toutes classes, les plus récents d'abord) ---------- */
+        var messages = null;
+        function chargerMessages() {
+            var etat = document.getElementById('messages-etat');
+            Interactif.rpc('prof_messages', { p_mdp: mdp }).then(function (l) { messages = l || []; afficherMessages(); },
+                function (x) { messages = null; etat.textContent = 'Messages indisponibles (' + x.message + ') : le script maj-messages.sql a-t-il été lancé dans Supabase ?'; });
+        }
+        function afficherMessages() {
+            var zone = document.getElementById('messages');
+            zone.innerHTML = '';
+            document.getElementById('messages-etat').textContent = messages.length ? messages.length + ' message(s).' : 'Aucun message.';
+            messages.forEach(function (m) {
+                var bloc = document.createElement('div'); bloc.className = 'tentative';
+                var t = document.createElement('h3');
+                t.textContent = new Date(m.envoye_le).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) +
+                    ' · ' + m.code + (noms[m.code] ? ' — ' + noms[m.code] : '');
+                var sup = document.createElement('button'); sup.type = 'button'; sup.className = 'lien'; sup.textContent = 'supprimer';
+                sup.onclick = function () {
+                    if (!confirm('Supprimer définitivement ce message ?')) return;
+                    Interactif.rpc('prof_supprimer_message', { p_mdp: mdp, p_id: m.id }).then(chargerMessages, function (x) { alert(x.message); });
+                };
+                t.appendChild(sup);
+                var p = document.createElement('p'); p.style.whiteSpace = 'pre-wrap'; p.style.margin = '0';
+                p.textContent = m.texte;   // texte brut : jamais interprété comme du HTML
+                bloc.appendChild(t); bloc.appendChild(p);
+                if (m.image) {
+                    var voir = document.createElement('button'); voir.type = 'button'; voir.className = 'lien'; voir.textContent = '📎 voir la capture';
+                    voir.onclick = function () {
+                        voir.textContent = 'chargement…';
+                        Interactif.rpc('prof_image', { p_mdp: mdp, p_id: m.id }).then(function (d) {
+                            if (typeof d !== 'string' || !/^data:image\/(jpeg|png|webp);base64,/.test(d)) { voir.textContent = 'capture illisible'; return; }
+                            var a = document.createElement('a'); a.href = d; a.download = 'capture-' + m.code + '-' + m.id + '.jpg';
+                            a.title = 'Cliquer pour télécharger';
+                            var img = document.createElement('img'); img.src = d; img.alt = 'Capture envoyée par ' + m.code;
+                            img.style.cssText = 'display:block;max-width:100%;margin-top:8px;border:1px solid var(--line);border-radius:6px';
+                            a.appendChild(img);
+                            voir.replaceWith(a);
+                        }, function (x) { voir.textContent = '📎 voir la capture (' + x.message + ')'; });
+                    };
+                    bloc.appendChild(voir);
+                }
+                zone.appendChild(bloc);
+            });
+        }
+
+        /* ---------- Soutien : inscrits par séance pour la classe choisie ---------- */
+        function afficherSoutien() {
+            var classe = document.getElementById('classe').value;
+            var table = document.getElementById('soutien');
+            var miennes = inscriptions.filter(function (i) { return i.classe === classe; });
+            document.getElementById('soutien-etat').textContent =
+                new Set(miennes.map(function (i) { return i.code; })).size + ' élève(s) de ' + classe + ' inscrit(s).';
+            table.innerHTML = '<tr><th>Séance</th><th>Inscrits</th><th>Élèves</th></tr>';
+            SOUTIEN.seances().forEach(function (sem) {
+                var tg = document.createElement('tr'), th = document.createElement('th');
+                th.colSpan = 3; th.className = 'groupe'; th.textContent = sem.titre;
+                tg.appendChild(th); table.appendChild(tg);
+                sem.seances.forEach(function (se) {
+                    var qui = miennes.filter(function (i) { return i.seance === se.id; })
+                                     .map(function (i) { return noms[i.code] || i.code; }).sort();
+                    var tr = document.createElement('tr');
+                    td(tr, se.texte); td(tr, qui.length || '—'); td(tr, qui.join(', '));
+                    table.appendChild(tr);
+                });
+            });
+        }
+
+        /* Texte venu du navigateur de l'élève : on n'accepte que <b> et les maths (KaTeX, sans HTML actif) */
+        function sur(t) {
+            return t.split(/(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/).map(function (m, k) {
+                if (k % 2) return Interactif.mixte(m);
+                return m.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                        .replace(/&lt;(\/?b)&gt;/g, '<$1>').replace(/&lt;br&gt;/g, ' ');
+            }).join('');
+        }
+
+        function detail(code, id, liste) {
+            var zone = document.getElementById('detail');
+            zone.innerHTML = '';
+            var h = document.createElement('h2');
+            h.textContent = code + (noms[code] ? ' — ' + noms[code] : '') + ' · ' + titre(id);
+            zone.appendChild(h);
+            liste.slice().reverse().forEach(function (r) {
+                var bloc = document.createElement('div'); bloc.className = 'tentative';
+                var t = document.createElement('h3');
+                t.textContent = new Date(r.fait_le).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) +
+                    ' · ' + r.score + '/' + r.total + ' · ' + Math.round((r.duree_s || 0) / 60) + ' min';
+                var sup = document.createElement('button'); sup.type = 'button'; sup.className = 'lien'; sup.textContent = 'supprimer';
+                sup.onclick = function () {
+                    if (!confirm('Supprimer définitivement cette série ?')) return;
+                    Interactif.rpc('prof_supprimer_resultat', { p_mdp: mdp, p_id: r.id }).then(function () {
+                        zone.innerHTML = ''; charger();
+                    }, function (x) { alert(x.message); });
+                };
+                t.appendChild(sup);
+                bloc.appendChild(t);
+                var ol = document.createElement('ol');
+                (r.details || []).forEach(function (d) {
+                    if (!d) return;
+                    var li = document.createElement('li');
+                    var q = document.createElement('span');
+                    if (d.n) li.appendChild(Object.assign(document.createElement('span'), { className: 'pastille n' + d.n, textContent: '★★★'.slice(0, d.n) }));
+                    if (d.e) li.appendChild(Object.assign(document.createElement('span'), { className: 'n-tent', textContent: '(essai ' + d.e + ') ' }));
+                    if (d.t != null) q.innerHTML = sur(String(d.t)); else Interactif.maths(q, String(d.q));
+                    var rep = document.createElement('span'); rep.className = 'rep ' + (d.ok ? 'ok' : 'ko');
+                    rep.textContent = '  →  ' + d.r + (d.ok ? ' ✓' : ' ✗') + (d.b && !d.ok ? ' (bonne réponse : ' + d.b + ')' : '');
+                    li.appendChild(q); li.appendChild(rep);
+                    if (d.aide) li.appendChild(Object.assign(document.createElement('span'), { className: 'rep-aide', textContent: '  💡 rappel demandé' }));
+                    ol.appendChild(li);
+                });
+                bloc.appendChild(ol);
+                zone.appendChild(bloc);
+            });
+            zone.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        /* ---------- Export ---------- */
+        document.getElementById('export').onclick = function () {
+            var classe = document.getElementById('classe').value, ids = exercices();
+            var lignes = [['Classe', 'Code', 'Nom'].concat(ids.map(titre))];
+            donnees.eleves.filter(function (e) { return e.classe === classe; }).forEach(function (e) {
+                lignes.push([e.classe, e.code, noms[e.code] || ''].concat(ids.map(function (id) {
+                    var b = bilan(e.code, id);
+                    if (!b) return '';
+                    var cl = b.couleurs;
+                    return (cl ? texteCouleurs(cl) : b.meilleur.score + '/' + b.meilleur.total) + (b.aides ? ' (' + b.aides + ' rappel' + (b.aides > 1 ? 's' : '') + ')' : '');
+                })));
+            });
+            var csv = '﻿' + lignes.map(function (l) { return l.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            a.download = 'resultats-' + classe + '.csv';
+            a.click();
+        };
+    })();
+    </script>
+</body>
+</html>

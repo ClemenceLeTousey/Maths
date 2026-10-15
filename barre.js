@@ -158,7 +158,7 @@
             (HALLOWEEN_EN_LIGNE ? '<button type="button" data-m="halloween" title="Mode Halloween"></button>' : '') + '</span>' +
             '<a href="' + base + 'index.html">Année 2026-2027 - Lycée Lebrun</a></div>' +
             '<ul><li><a href="' + base + 'index.html">Accueil</a></li>' +
-            '<li><a href="' + base + 'automatismes/">Espace élève</a></li>' +
+            '<li><a href="' + base + 'espace-eleve/">Espace élève</a></li>' +
             '<li><button type="button" class="b-theme"></button></li></ul>';
         document.body.insertBefore(nav, document.body.firstChild);
 
