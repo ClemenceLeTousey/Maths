@@ -153,6 +153,16 @@ document.addEventListener('click', function (e) {
 (function () {
     var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    /* Mode Halloween (citrouille, Pac-Man…) : mettre true pour le remettre en ligne (prévu le 31 octobre).
+       À false, la citrouille du logo disparaît et le mode ne peut pas s'activer ; tout le code reste en place. */
+    var HALLOWEEN_EN_LIGNE = false;
+    if (!HALLOWEEN_EN_LIGNE) {
+        document.documentElement.classList.add('sans-halloween');
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.logo-ligne button[data-effet="halloween"]').forEach(function (b) { b.remove(); });
+        });
+    }
+
     function reecrire() {
         document.querySelectorAll('.titre-stylo').forEach(function (h) {
             h.classList.remove('ecrit');
@@ -676,6 +686,7 @@ document.addEventListener('click', function (e) {
     });
 
     var MODES = { matrix: matrix, futur: futur, halloween: halloween };
+    if (!HALLOWEEN_EN_LIGNE) delete MODES.halloween;
     function modeActif() {
         return Object.keys(MODES).filter(function (m) { return document.documentElement.classList.contains(m); })[0];
     }

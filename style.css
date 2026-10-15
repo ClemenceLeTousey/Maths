@@ -171,6 +171,9 @@ a { color: inherit; }
 .logo-ligne button:nth-child(1) { left: 0;    border-color: var(--c-seconde);  background: var(--c-seconde); }
 .logo-ligne button:nth-child(2) { left: 16px; border-color: var(--c-premiere); background: var(--c-premiere); }
 .logo-ligne button:nth-child(3) { left: 32px; border-color: var(--c-tst2s); }
+/* Mode Halloween hors ligne (site.js) : la ligne du logo retrouve ses trois ronds */
+.sans-halloween .logo-ligne { width: 42px; }
+
 /* 4e rond : une petite citrouille (mode Halloween), qui s'allume quand le mode est actif */
 .logo-ligne button:nth-child(4) {
     left: 47px;

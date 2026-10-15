@@ -10,6 +10,7 @@
     var script = document.currentScript;
     var base = script ? script.src.replace(/barre\.js(\?.*)?$/, '') : '';
     var CLE_THEME = 'site-maths-theme', CLE_MODE = 'site-maths-mode';
+    var HALLOWEEN_EN_LIGNE = false;   // comme dans site.js : true pour remettre le mode Halloween (prévu le 31 octobre)
 
     function lire(cle) { try { return localStorage.getItem(cle) || ''; } catch (e) { return ''; } }
     function ecrire(cle, v) { try { localStorage.setItem(cle, v); } catch (e) {} }
@@ -29,7 +30,7 @@
         '.barre-site *{box-sizing:border-box;font:inherit}',
         '.barre-site a{color:inherit;text-decoration:none}',
         '.barre-site .b-logo{display:flex;align-items:center;gap:10px}',
-        '.barre-site .b-ligne{position:relative;display:inline-block;width:61px;height:12px;flex-shrink:0}',
+        '.barre-site .b-ligne{position:relative;display:inline-block;width:' + (HALLOWEEN_EN_LIGNE ? 61 : 42) + 'px;height:12px;flex-shrink:0}',
         '.barre-site .b-ligne:before{content:"";position:absolute;left:4px;right:4px;top:5px;height:2px;background:currentColor}',
         '.barre-site .b-ligne button{all:unset;position:absolute;top:0;width:12px;height:12px;border-radius:50%;cursor:pointer;box-sizing:border-box}',
         '.barre-site .b-ligne button:nth-child(1){left:0;background:#2f6fdf}',
@@ -76,7 +77,7 @@
     }
 
     /* ---------- Modes Matrix / Retour vers le futur / Halloween ---------- */
-    function mode() { var m = lire(CLE_MODE); return m === 'matrix' || m === 'futur' || m === 'halloween' ? m : ''; }
+    function mode() { var m = lire(CLE_MODE); return m === 'matrix' || m === 'futur' || (m === 'halloween' && HALLOWEEN_EN_LIGNE) ? m : ''; }
     var pluie = null;
     function effets() {
         var m = mode();
@@ -154,7 +155,7 @@
             '<button type="button" data-m="" title="Site normal"></button>' +
             '<button type="button" data-m="matrix" title="Mode Matrix"></button>' +
             '<button type="button" data-m="futur" title="Mode BTTF (Back to the Future)"></button>' +
-            '<button type="button" data-m="halloween" title="Mode Halloween"></button></span>' +
+            (HALLOWEEN_EN_LIGNE ? '<button type="button" data-m="halloween" title="Mode Halloween"></button>' : '') + '</span>' +
             '<a href="' + base + 'index.html">Année 2026-2027 - Lycée Lebrun</a></div>' +
             '<ul><li><a href="' + base + 'index.html">Accueil</a></li>' +
             '<li><a href="' + base + 'automatismes/">Automatismes</a></li>' +
