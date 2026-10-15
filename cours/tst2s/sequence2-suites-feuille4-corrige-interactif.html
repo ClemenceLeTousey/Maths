@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feuille 4 – Corrigé interactif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<link rel="stylesheet" href="suites-corrige.css">
+<script src="../../barre.js"></script>
+<script src="suites-corrige.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js" defer></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Feuille d’exercices n°4 — Corrigé interactif</b><span>Suites numériques : rappels de première</span>
+      <span class="liens"><a href="https://nuage02.apps.education.fr/index.php/s/Fdp5S4M9NtD7SQJ" target="_blank" rel="noopener">Énoncé PDF</a><a href="https://nuage02.apps.education.fr/index.php/s/Aj6Pe6ADn3caNWT" target="_blank" rel="noopener">Corrigé PDF</a><a href="../../tst2s/">Page TST2S</a></span></div>
+    <div class="barre-outils"><nav class="exnav" id="exnav" aria-label="Exercices"></nav><button type="button" class="btn ghost sm" id="tout">Tout afficher</button></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- =================================================================== OBJECTIF 1 -->
+<h2 class="obj"><b>Objectif 1</b>Comprendre ce qu’est une suite (rang, terme, terme suivant, terme précédent)</h2>
+
+<details class="rappel" open>
+  <summary>Rappel : vocabulaire des suites <small>(cliquer pour replier)</small></summary>
+  <div class="contenu">
+    <p>Une <b>suite</b> \(u\) associe à chaque entier naturel \(n\) (appelé le <b>rang</b> : c’est la <b>position</b> du terme dans la liste) un nombre noté \(u_n\) (appelé le <b>terme de rang \(n\)</b>).</p>
+    <div class="tab-wrap"><table class="tab">
+      <tr><th>Rang \(n\)</th><td>\(0\)</td><td>\(1\)</td><td>\(2\)</td><td>\(\cdots\)</td><td>\(n-1\)</td><td>\(n\)</td><td>\(n+1\)</td><td>\(\cdots\)</td></tr>
+      <tr><th>Terme</th><td>\(u_0\)</td><td>\(u_1\)</td><td>\(u_2\)</td><td>\(\cdots\)</td><td>\(u_{n-1}\)</td><td>\(u_n\)</td><td>\(u_{n+1}\)</td><td>\(\cdots\)</td></tr>
+    </table></div>
+    <ul>
+      <li>le rang initial est le plus souvent \(0\) : le <b>premier terme</b> est alors \(u_0\). Mais il arrive qu’une suite commence au rang \(1\) : son premier terme est alors \(u_1\) ;</li>
+      <li>le terme qui <b>suit</b> \(u_n\) est \(u_{n+1}\) ; le terme qui <b>précède</b> \(u_n\) est \(u_{n-1}\).</li>
+    </ul>
+    <p class="att"><b>Attention :</b> \(u_{n+1}\) (le terme de rang \(n+1\)) \(\neq\) \(u_n+1\) (le terme de rang \(n\), auquel on ajoute \(1\)).</p>
+  </div>
+</details>
+
+<!-- Exercice 1 -->
+<section class="exo" id="ex1" data-nav="1">
+  <div class="exo-h"><span class="pill">Exercice 1</span></div>
+  <div class="exo-b">
+    <p class="enonce">Pour chacune des listes de nombres suivantes, deviner comment on passe d’un nombre au suivant.</p>
+    <div class="q"><div class="q-h"><span class="num lettre">a</span><div class="q-txt">\(2\ ;\ 5\ ;\ 8\ ;\ 11\ ;\ 14\ ;\ \ldots\)</div></div>
+      <div class="sol"><p>On calcule \(5-2=3\), \(8-5=3\), \(11-8=3\)… La liste \(a\) s’obtient en <b>ajoutant \(3\)</b> à chaque fois.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num lettre">b</span><div class="q-txt">\(2\ ;\ 6\ ;\ 18\ ;\ 54\ ;\ 162\ ;\ \ldots\)</div></div>
+      <div class="sol"><p>Les écarts ne sont pas constants (\(+4\), \(+12\)…), mais \(2\times3=6\), \(6\times3=18\)… La liste \(b\) s’obtient en <b>multipliant par \(3\)</b> à chaque fois.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num lettre">c</span><div class="q-txt">\(6\ ;\ -6\ ;\ 6\ ;\ -6\ ;\ 6\ ;\ \ldots\)</div></div>
+      <div class="sol"><p>Le nombre change de signe à chaque fois : on <b>multiplie par \(-1\)</b>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num lettre">d</span><div class="q-txt">\(1\ ;\ 3\ ;\ 7\ ;\ 15\ ;\ 31\ ;\ \ldots\)</div></div>
+      <div class="sol"><p>On teste : \(1\times2+1=3\), \(3\times2+1=7\), \(7\times2+1=15\), \(15\times2+1=31\).</p><p>On <b>multiplie par \(2\), puis on ajoute \(1\)</b>.</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 2 -->
+<section class="exo" id="ex2" data-nav="2">
+  <div class="exo-h"><span class="pill">Exercice 2</span></div>
+  <div class="exo-b">
+    <div class="enonce-bloc"><p>On considère la suite \(u\) dont les premiers termes sont donnés ci-dessous. Elle commence au rang \(0\).</p>
+      <div class="tab-wrap"><table class="tab"><tr><th>Rang \(n\)</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr><tr><th>\(u_n\)</th><td>2</td><td>3</td><td>5</td><td>8</td><td>12</td><td>17</td><td>23</td><td>30</td></tr></table></div>
+      <p class="note">La ligne des rangs n’est pas dans l’énoncé : on l’ajoute pour se repérer. Attention, le premier nombre est de rang \(0\).</p></div>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Donner la valeur de \(u_0\), de \(u_3\) et de \(u_6\).</div></div>
+      <div class="sol"><p>La suite commence au rang \(0\) : on a \(u_0=\) <span class="res">\(2\)</span>, \(u_3=\) <span class="res">\(8\)</span> et \(u_6=\) <span class="res">\(23\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Quel est le rang du terme \(17\) ? Écrire l’égalité correspondante.</div></div>
+      <div class="sol"><p>Le nombre \(17\) est le terme de rang \(5\) : <span class="res">\(u_5=17\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Quel est le terme qui <b>suit</b> \(12\) ? Quel est son rang ? Écrire une égalité liant ces deux termes.</div></div>
+      <div class="sol"><p>Le nombre \(12\) est de rang \(4\). Le terme qui le suit est \(17\), de rang \(5\).</p><p>On passe de l’un à l’autre en ajoutant \(5\) : <span class="res">\(u_5=u_4+5\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">Quel est le terme qui <b>précède</b> \(8\) ? Quel est son rang ? Écrire une égalité liant ces deux termes.</div></div>
+      <div class="sol"><p>Le nombre \(8\) est de rang \(3\). Le terme qui le précède est \(5\), de rang \(2\).</p><p>On passe de l’un à l’autre en ajoutant \(3\) : <span class="res">\(u_3=u_2+3\)</span>.</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 3 -->
+<section class="exo" id="ex3" data-nav="3">
+  <div class="exo-h"><span class="pill">Exercice 3</span></div>
+  <div class="exo-b">
+    <p class="enonce">On considère une suite \(u\) qui commence au rang \(0\) ; \(n\) désigne un entier naturel. Compléter.</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Le terme qui suit \(u_2\) est ……</div></div><div class="sol"><p>Le terme qui suit \(u_2\) est <span class="res">\(u_3\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Le terme qui précède \(u_4\) est ……</div></div><div class="sol"><p>Le terme qui précède \(u_4\) est <span class="res">\(u_3\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Le terme qui suit \(u_n\) est ……</div></div><div class="sol"><p>Le terme qui suit \(u_n\) est <span class="res">\(u_{n+1}\)</span> : on ajoute \(1\) au <b>rang</b>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">Le terme qui précède \(u_n\) est ……</div></div><div class="sol"><p>Le terme qui précède \(u_n\) est <span class="res">\(u_{n-1}\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">Le terme qui suit \(u_{n+2}\) est ……</div></div><div class="sol"><p>Le terme qui suit \(u_{n+2}\) est <span class="res">\(u_{n+3}\)</span>, car \((n+2)+1=n+3\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">6</span><div class="q-txt">Le terme qui précède \(u_{n+1}\) est ……</div></div><div class="sol"><p>Le terme qui précède \(u_{n+1}\) est <span class="res">\(u_n\)</span>, car \((n+1)-1=n\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">7</span><div class="q-txt">On considère la suite \(v\) définie pour tout entier naturel \(n\) par \(v_n=n^2\). Calculer \(v_3+1\), puis \(v_{3+1}\). Ces deux nombres sont-ils égaux ?</div></div>
+      <div class="sol">
+        <p>On a \(v_3+1=3^2+1=9+1=\) <span class="res">\(10\)</span>.</p>
+        <p>On a \(v_{3+1}=v_4=4^2=\) <span class="res">\(16\)</span>.</p>
+        <p class="concl">Ces deux nombres ne sont <b>pas égaux</b> : \(v_{n+1}\) (le terme suivant) n’est pas \(v_n+1\).</p>
+      </div></div>
+  </div>
+</section>
+
+<!-- =================================================================== OBJECTIF 2 -->
+<h2 class="obj"><b>Objectif 2</b>Calculer des termes : suite explicite ou suite définie par récurrence</h2>
+
+<details class="rappel" open>
+  <summary>Rappel : deux façons de définir une suite <small>(cliquer pour replier)</small></summary>
+  <div class="contenu">
+    <ul>
+      <li><b>de façon explicite</b> : \(u_n\) est donné directement en fonction de \(n\). On calcule n’importe quel terme en remplaçant \(n\) par sa valeur.<br><i>Exemple :</i> si \(u_n=3n-2\), alors \(u_{10}=3\times10-2=28\) ;</li>
+      <li><b>par récurrence</b> : on donne le premier terme et une relation qui permet de calculer un terme à partir du <b>précédent</b>. On calcule les termes <b>de proche en proche</b> : pour obtenir \(u_3\), il faut d’abord \(u_1\), puis \(u_2\).<br><i>Exemple :</i> si \(v_0=5\) et \(v_{n+1}=2\times v_n-1\), alors \(v_1=2\times5-1=9\) et \(v_2=2\times9-1=17\).<br><i>Exemple d’une suite qui commence au rang \(1\) :</i> si \(t_1=3\) et \(t_{n+1}=t_n+4\) pour tout entier \(n\geqslant1\), alors \(t_2=3+4=7\) et \(t_3=7+4=11\).</li>
+    </ul>
+    <p class="att"><b>Attention, vocabulaire :</b> « pour tout entier naturel \(n\) » signifie que \(n\) prend les valeurs \(0\), \(1\), \(2\)… : la suite commence alors <b>implicitement au rang \(0\)</b>. Pour une suite qui commence au rang \(1\), on écrit « pour tout entier \(n\geqslant1\) ».</p>
+  </div>
+</details>
+
+<!-- Exercice 4 -->
+<section class="exo" id="ex4" data-nav="4">
+  <div class="exo-h"><span class="pill">Exercice 4</span><span class="titre">Suites explicites</span></div>
+  <div class="exo-b">
+    <p class="note">Méthode : on <b>remplace \(n\)</b> par la valeur du rang partout où il apparaît, puis on calcule en respectant les priorités (puissances, puis multiplications, puis additions).</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">La suite \(u\) est définie pour tout entier naturel \(n\) par \(u_n=n^2+4n\). Calculer \(u_0\), \(u_3\) et \(u_5\).</div></div>
+      <div class="sol"><p>\(u_0=0^2+4\times0=\) <span class="res">\(0\)</span></p><p>\(u_3=3^2+4\times3=9+12=\) <span class="res">\(21\)</span></p><p>\(u_5=5^2+4\times5=25+20=\) <span class="res">\(45\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">La suite \(v\) est définie pour tout entier naturel \(n\) par \(v_n=50-3n\). Calculer \(v_0\), \(v_{10}\) et \(v_{20}\).</div></div>
+      <div class="sol"><p>\(v_0=50-3\times0=\) <span class="res">\(50\)</span></p><p>\(v_{10}=50-3\times10=50-30=\) <span class="res">\(20\)</span></p><p>\(v_{20}=50-3\times20=50-60=\) <span class="res">\(-10\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">La suite \(w\) est définie pour tout entier naturel \(n\) par \(w_n=-0{,}5n^2+3\). Calculer le premier terme, puis \(w_6\) et \(w_{25}\).</div></div>
+      <div class="sol"><p>« Pour tout entier naturel \(n\) » : le premier terme est \(w_0=-0{,}5\times0^2+3=\) <span class="res">\(3\)</span>.</p><p>\(w_6=-0{,}5\times36+3=-18+3=\) <span class="res">\(-15\)</span></p><p>\(w_{25}=-0{,}5\times625+3=-312{,}5+3=\) <span class="res">\(-309{,}5\)</span></p><p class="piege"><b>Piège :</b> le carré ne porte que sur \(n\). On calcule \(6^2=36\), puis on multiplie par \(-0{,}5\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">La suite \(t\) est définie pour tout entier \(n\geqslant1\) par \(t_n=\dfrac{12}{n}\). Calculer le premier terme, puis \(t_3\) et \(t_4\). Pourquoi cette suite ne peut-elle pas commencer au rang \(0\) ?</div></div>
+      <div class="sol"><p>La suite commence au rang \(1\), donc le premier terme est \(t_1=\dfrac{12}{1}=\) <span class="res">\(12\)</span>.</p><p>\(t_3=\dfrac{12}{3}=\) <span class="res">\(4\)</span> et \(t_4=\dfrac{12}{4}=\) <span class="res">\(3\)</span>.</p><p class="concl">Le nombre \(t_0=\dfrac{12}{0}\) n’existe pas : on ne peut pas diviser par \(0\). La suite ne peut donc pas commencer au rang \(0\).</p></div></div>
+  </div>
+</section>
+
+<section class="exo bis" id="ex4bis" data-nav="4 bis">
+  <div class="exo-h"><span class="pill">Exercice 4 bis</span><span class="titre">Suites explicites</span></div>
+  <div class="exo-b">
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">La suite \(u\) est définie pour tout entier naturel \(n\) par \(u_n=n^2-2n\). Calculer \(u_0\), \(u_4\) et \(u_6\).</div></div>
+      <div class="sol"><p>\(u_0=0^2-2\times0=\) <span class="res">\(0\)</span></p><p>\(u_4=4^2-2\times4=16-8=\) <span class="res">\(8\)</span></p><p>\(u_6=6^2-2\times6=36-12=\) <span class="res">\(24\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">La suite \(v\) est définie pour tout entier naturel \(n\) par \(v_n=7+4n\). Calculer \(v_0\), \(v_{10}\) et \(v_{25}\).</div></div>
+      <div class="sol"><p>\(v_0=7+4\times0=\) <span class="res">\(7\)</span></p><p>\(v_{10}=7+4\times10=\) <span class="res">\(47\)</span></p><p>\(v_{25}=7+4\times25=\) <span class="res">\(107\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">La suite \(w\) est définie pour tout entier naturel \(n\) par \(w_n=-2n^2+50\). Calculer le premier terme, puis \(w_3\) et \(w_{10}\).</div></div>
+      <div class="sol"><p>Le premier terme est \(w_0=-2\times0^2+50=\) <span class="res">\(50\)</span>.</p><p>\(w_3=-2\times9+50=\) <span class="res">\(32\)</span></p><p>\(w_{10}=-2\times100+50=\) <span class="res">\(-150\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">La suite \(t\) est définie pour tout entier \(n\geqslant1\) par \(t_n=\dfrac{60}{n}\). Calculer le premier terme, puis \(t_4\) et \(t_5\). Pourquoi cette suite ne peut-elle pas commencer au rang \(0\) ?</div></div>
+      <div class="sol"><p>Le premier terme est \(t_1=\dfrac{60}{1}=\) <span class="res">\(60\)</span>.</p><p>\(t_4=\dfrac{60}{4}=\) <span class="res">\(15\)</span> et \(t_5=\dfrac{60}{5}=\) <span class="res">\(12\)</span>.</p><p class="concl">Elle ne peut pas commencer au rang \(0\), car on ne peut pas diviser par \(0\).</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 5 -->
+<section class="exo" id="ex5" data-nav="5">
+  <div class="exo-h"><span class="pill">Exercice 5</span><span class="titre">Suites définies par récurrence</span></div>
+  <div class="exo-b">
+    <p class="note">Méthode : on calcule les termes <b>de proche en proche</b>, en réutilisant à chaque ligne le résultat de la ligne précédente. Un terme négatif se met entre parenthèses dans un produit.</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">La suite \(u\) est définie par \(u_0=-4\) et, pour tout entier naturel \(n\), \(u_{n+1}=0{,}5\times u_n+2\). Calculer \(u_1\), \(u_2\) et \(u_3\).</div></div>
+      <div class="sol"><p>\(u_1=0{,}5\times u_0+2=0{,}5\times(-4)+2=\) <span class="res">\(0\)</span></p><p>\(u_2=0{,}5\times u_1+2=0{,}5\times0+2=\) <span class="res">\(2\)</span></p><p>\(u_3=0{,}5\times u_2+2=0{,}5\times2+2=\) <span class="res">\(3\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">La suite \(v\) est définie par \(v_0=-1\) et, pour tout entier naturel \(n\), \(v_{n+1}=-2\times v_n+10\). Calculer le terme de rang \(1\), puis \(v_3\).</div></div>
+      <div class="sol"><p>Le terme de rang \(1\) est \(v_1=-2\times(-1)+10=\) <span class="res">\(12\)</span>.</p><p>On ne peut pas sauter d’étape : \(v_2=-2\times12+10=-14\).</p><p>\(v_3=-2\times(-14)+10=28+10=\) <span class="res">\(38\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">La suite \(a\) est définie par \(a_1=2\) et, pour tout entier \(n\geqslant1\), \(a_{n+1}=3\times a_n-1\). Calculer \(a_2\), \(a_3\) et \(a_4\).</div></div>
+      <div class="sol"><p>\(a_2=3\times2-1=\) <span class="res">\(5\)</span></p><p>\(a_3=3\times5-1=\) <span class="res">\(14\)</span></p><p>\(a_4=3\times14-1=\) <span class="res">\(41\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">La suite \(b\) est définie par \(b_1=100\) et, pour tout entier \(n\geqslant1\), \(b_{n+1}=b_n-15\). Quel est le premier terme de la suite \(b\) ? Calculer le troisième terme de la suite, puis \(b_5\).</div></div>
+      <div class="sol"><p>La suite commence au rang \(1\) : son premier terme est <span class="res">\(b_1=100\)</span>.</p><p class="piege"><b>Piège :</b> le troisième terme est \(b_3\) (et non \(b_2\)), car on commence à \(b_1\).</p><p>\(b_2=100-15=85\), puis \(b_3=85-15=\) <span class="res">\(70\)</span>.</p><p>\(b_4=70-15=55\), puis \(b_5=55-15=\) <span class="res">\(40\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt"><i>Vrai ou faux ?</i> On considère la suite \(w\) définie par \(w_0=5\) et, pour tout entier naturel \(n\), \(w_{n+1}=2\times w_n+1\). <b>Affirmation :</b> \(w_3=47\).</div></div>
+      <div class="sol"><p>\(w_1=2\times5+1=11\)</p><p>\(w_2=2\times11+1=23\)</p><p>\(w_3=2\times23+1=47\)</p><p class="concl">L’affirmation est <span class="verdict vrai">vraie</span>.</p></div></div>
+  </div>
+</section>
+
+<section class="exo bis" id="ex5bis" data-nav="5 bis">
+  <div class="exo-h"><span class="pill">Exercice 5 bis</span><span class="titre">Suites définies par récurrence</span></div>
+  <div class="exo-b">
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">La suite \(u\) est définie par \(u_0=6\) et, pour tout entier naturel \(n\), \(u_{n+1}=0{,}5\times u_n+1\). Calculer \(u_1\), \(u_2\) et \(u_3\).</div></div>
+      <div class="sol"><p>\(u_1=0{,}5\times6+1=\) <span class="res">\(4\)</span></p><p>\(u_2=0{,}5\times4+1=\) <span class="res">\(3\)</span></p><p>\(u_3=0{,}5\times3+1=\) <span class="res">\(2{,}5\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">La suite \(v\) est définie par \(v_0=2\) et, pour tout entier naturel \(n\), \(v_{n+1}=-3\times v_n+5\). Calculer le terme de rang \(1\), puis \(v_3\).</div></div>
+      <div class="sol"><p>\(v_1=-3\times2+5=\) <span class="res">\(-1\)</span></p><p>\(v_2=-3\times(-1)+5=8\)</p><p>\(v_3=-3\times8+5=\) <span class="res">\(-19\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">La suite \(a\) est définie par \(a_1=3\) et, pour tout entier \(n\geqslant1\), \(a_{n+1}=2\times a_n-2\). Calculer \(a_2\), \(a_3\) et \(a_4\).</div></div>
+      <div class="sol"><p>\(a_2=2\times3-2=\) <span class="res">\(4\)</span></p><p>\(a_3=2\times4-2=\) <span class="res">\(6\)</span></p><p>\(a_4=2\times6-2=\) <span class="res">\(10\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">La suite \(b\) est définie par \(b_1=50\) et, pour tout entier \(n\geqslant1\), \(b_{n+1}=b_n+12\). Quel est le premier terme de la suite \(b\) ? Calculer le troisième terme de la suite, puis \(b_5\).</div></div>
+      <div class="sol"><p>Le premier terme est <span class="res">\(b_1=50\)</span> ; le troisième terme est donc \(b_3\).</p><p>\(b_2=50+12=62\), puis \(b_3=62+12=\) <span class="res">\(74\)</span>.</p><p>\(b_4=86\), puis \(b_5=\) <span class="res">\(98\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt"><i>Vrai ou faux ?</i> On considère la suite \(w\) définie par \(w_0=2\) et, pour tout entier naturel \(n\), \(w_{n+1}=3\times w_n-1\). <b>Affirmation :</b> \(w_3=40\).</div></div>
+      <div class="sol"><p>\(w_1=3\times2-1=5\)</p><p>\(w_2=3\times5-1=14\)</p><p>\(w_3=3\times14-1=41\)</p><p class="concl">On trouve \(41\) et non \(40\) : l’affirmation est <span class="verdict faux">fausse</span>.</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 6 -->
+<section class="exo" id="ex6" data-nav="6">
+  <div class="exo-h"><span class="pill">Exercice 6</span><span class="titre">Explicite ou récurrence ?</span><a class="lien-dyn" href="sequence2-suites-feuille4-corrige-exercice-6.html" target="_blank" rel="noopener">Version animée ↗</a></div>
+  <div class="exo-b">
+    <div class="enonce-bloc"><p>On considère les quatre suites suivantes.</p>
+      <div class="listes"><p>(a) \(u_n=4n+7\)</p><p>(b) \(u_0=3\) et \(u_{n+1}=u_n-7\)</p><p>(c) \(u_n=1{,}5\times 2^n\)</p><p>(d) \(u_0=10\) et \(u_{n+1}=3\times u_n\)</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Pour chacune de ces suites, dire si elle est définie de façon explicite ou par récurrence, puis calculer \(u_2\).</div></div>
+      <div class="quiz" data-rep="Explicite"><span class="t">À toi : la suite (a) est…</span><button>Explicite</button><button>Par récurrence</button></div>
+      <div class="quiz" data-rep="Par récurrence"><span class="t">et la suite (b) ?</span><button>Explicite</button><button>Par récurrence</button></div>
+      <div class="sol">
+        <ul>
+          <li>la suite (a) est définie de façon <b>explicite</b> : \(u_2=4\times2+7=\) <span class="res">\(15\)</span> ;</li>
+          <li>la suite (b) est définie <b>par récurrence</b> : \(u_1=3-7=-4\), puis \(u_2=-4-7=\) <span class="res">\(-11\)</span> ;</li>
+          <li>la suite (c) est définie de façon <b>explicite</b> : \(u_2=1{,}5\times2^2=1{,}5\times4=\) <span class="res">\(6\)</span> ;</li>
+          <li>la suite (d) est définie <b>par récurrence</b> : \(u_1=3\times10=30\), puis \(u_2=3\times30=\) <span class="res">\(90\)</span>.</li>
+        </ul>
+      </div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Pour laquelle des suites (a) et (b) peut-on calculer directement \(u_{50}\) ? Le faire.</div></div>
+      <div class="sol"><p>C’est la suite (a), définie de façon explicite : \(u_{50}=4\times50+7=\) <span class="res">\(207\)</span>.</p><p class="note">Pour la suite (b), il faudrait calculer de proche en proche les \(49\) termes précédents.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">On reprend la suite (b). Traduire en une phrase en français comment on passe d’un terme au suivant.</div></div>
+      <div class="sol"><p>Chaque terme s’obtient en <b>retirant \(7\)</b> au terme précédent.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">La suite \(s\) est définie par \(s_0=0\) et \(s_{n+1}=-4\times s_n+3\). Exprimer \(s_{14}\) en fonction de \(s_{13}\), puis \(s_n\) en fonction de \(s_{n-1}\).</div></div>
+      <div class="sol"><p>Le terme \(s_{14}\) suit \(s_{13}\) : <span class="res">\(s_{14}=-4\times s_{13}+3\)</span>.</p><p>Le terme \(s_n\) suit \(s_{n-1}\) : pour tout entier \(n\geqslant1\), <span class="res">\(s_n=-4\times s_{n-1}+3\)</span>.</p></div></div>
+  </div>
+</section>
+
+<section class="exo bis" id="ex6bis" data-nav="6 bis">
+  <div class="exo-h"><span class="pill">Exercice 6 bis</span><span class="titre">Explicite ou récurrence ?</span><a class="lien-dyn" href="sequence2-suites-feuille4-corrige-exercice-6bis.html" target="_blank" rel="noopener">Version animée ↗</a></div>
+  <div class="exo-b">
+    <div class="enonce-bloc"><p>On considère les quatre suites suivantes.</p>
+      <div class="listes"><p>(a) \(u_n=5n-3\)</p><p>(b) \(u_0=20\) et \(u_{n+1}=u_n+6\)</p><p>(c) \(u_n=3\times 4^n\)</p><p>(d) \(u_0=1\) et \(u_{n+1}=5\times u_n\)</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Pour chacune de ces suites, dire si elle est définie de façon explicite ou par récurrence, puis calculer \(u_2\).</div></div>
+      <div class="sol"><ul>
+        <li>la suite (a) est <b>explicite</b> : \(u_2=5\times2-3=\) <span class="res">\(7\)</span> ;</li>
+        <li>la suite (b) est définie <b>par récurrence</b> : \(u_1=26\), puis \(u_2=\) <span class="res">\(32\)</span> ;</li>
+        <li>la suite (c) est <b>explicite</b> : \(u_2=3\times4^2=3\times16=\) <span class="res">\(48\)</span> ;</li>
+        <li>la suite (d) est définie <b>par récurrence</b> : \(u_1=5\), puis \(u_2=\) <span class="res">\(25\)</span>.</li>
+      </ul></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Pour laquelle des suites (a) et (b) peut-on calculer directement \(u_{30}\) ? Le faire.</div></div>
+      <div class="sol"><p>C’est la suite (a), explicite : \(u_{30}=5\times30-3=\) <span class="res">\(147\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">On reprend la suite (d). Traduire en une phrase en français comment on passe d’un terme au suivant.</div></div>
+      <div class="sol"><p>Chaque terme s’obtient en <b>multipliant par \(5\)</b> le terme précédent.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">La suite \(s\) est définie par \(s_0=1\) et \(s_{n+1}=2\times s_n-5\). Exprimer \(s_{21}\) en fonction de \(s_{20}\), puis \(s_n\) en fonction de \(s_{n-1}\).</div></div>
+      <div class="sol"><p>On a <span class="res">\(s_{21}=2\times s_{20}-5\)</span> et, pour tout entier \(n\geqslant1\), <span class="res">\(s_n=2\times s_{n-1}-5\)</span>.</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 7 -->
+<section class="exo" id="ex7" data-nav="7">
+  <div class="exo-h"><span class="pill">Exercice 7</span><span class="titre">Retrouver une relation de récurrence</span><a class="lien-dyn" href="sequence2-suites-feuille4-corrige-exercice-7.html" target="_blank" rel="noopener">Version animée ↗</a></div>
+  <div class="exo-b">
+    <p class="enonce">On reprend les listes de nombres \(a\), \(b\), \(c\) et \(d\) de l’exercice 1 (\(a\) : \(2 ; 5 ; 8 ; 11 ; 14\) — \(b\) : \(2 ; 6 ; 18 ; 54 ; 162\) — \(c\) : \(6 ; -6 ; 6 ; -6\) — \(d\) : \(1 ; 3 ; 7 ; 15 ; 31\)) et on considère qu’elles commencent au rang \(0\).</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Quel est le terme de rang \(3\) de la suite \(a\) ?</div></div>
+      <div class="sol"><p>Les rangs sont \(0, 1, 2, 3\) pour \(2 ; 5 ; 8 ; 11\) : on a <span class="res">\(a_3=11\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Compléter : \(a_1=a_0+\ldots\quad a_2=a_1+\ldots\quad a_3=a_2+\ldots\quad\cdots\quad a_{n+1}=a_n+\ldots\)</div></div>
+      <div class="sol"><p>\(a_1=a_0+3\quad a_2=a_1+3\quad a_3=a_2+3\quad\cdots\quad\) <span class="res">\(a_{n+1}=a_n+3\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Donner une définition par récurrence de chacune des suites \(b\), \(c\) et \(d\), en précisant le premier terme.</div></div>
+      <div class="sol"><p>Pour tout entier naturel \(n\) :</p>
+        <p>\(\begin{cases} b_0=2 \\ b_{n+1}=3\times b_n \end{cases}\qquad \begin{cases} c_0=6 \\ c_{n+1}=-c_n \end{cases}\qquad \begin{cases} d_0=1 \\ d_{n+1}=2\times d_n+1 \end{cases}\)</p></div></div>
+  </div>
+</section>
+
+<section class="exo bis" id="ex7bis" data-nav="7 bis">
+  <div class="exo-h"><span class="pill">Exercice 7 bis</span><span class="titre">Retrouver une relation de récurrence</span></div>
+  <div class="exo-b">
+    <div class="enonce-bloc"><p>On considère les quatre listes de nombres suivantes, qui commencent au rang \(0\).</p>
+      <div class="listes"><p>\(e\) : \(4 ; 9 ; 14 ; 19 ; 24 ; \ldots\)</p><p>\(g\) : \(3 ; 6 ; 12 ; 24 ; 48 ; \ldots\)</p><p>\(h\) : \(80 ; 40 ; 20 ; 10 ; 5 ; \ldots\)</p><p>\(k\) : \(1 ; 2 ; 5 ; 14 ; 41 ; \ldots\)</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Quel est le terme de rang \(3\) de la suite \(e\) ?</div></div>
+      <div class="sol"><p>On a <span class="res">\(e_3=19\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Compléter : \(e_1=e_0+\ldots\quad e_2=e_1+\ldots\quad e_3=e_2+\ldots\quad\cdots\quad e_{n+1}=e_n+\ldots\)</div></div>
+      <div class="sol"><p>\(e_1=e_0+5\quad e_2=e_1+5\quad e_3=e_2+5\quad\cdots\quad\) <span class="res">\(e_{n+1}=e_n+5\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Donner une définition par récurrence de chacune des suites \(g\), \(h\) et \(k\), en précisant le premier terme. <i>Aide pour \(k\) : on multiplie, puis on retire un nombre.</i></div></div>
+      <div class="sol"><p>Pour tout entier naturel \(n\) :</p>
+        <p>\(\begin{cases} g_0=3 \\ g_{n+1}=2\times g_n \end{cases}\qquad \begin{cases} h_0=80 \\ h_{n+1}=0{,}5\times h_n \end{cases}\qquad \begin{cases} k_0=1 \\ k_{n+1}=3\times k_n-1 \end{cases}\)</p>
+        <p class="note">Vérification pour \(k\) : \(3\times1-1=2\), \(3\times2-1=5\), \(3\times5-1=14\), \(3\times14-1=41\).</p></div></div>
+  </div>
+</section>
+
+<!-- =================================================================== OBJECTIF 3 -->
+<h2 class="obj"><b>Objectif 3</b>Reconnaître une suite arithmétique ou géométrique</h2>
+
+<details class="rappel" open>
+  <summary>Rappel : suites arithmétiques et géométriques <small>(cliquer pour replier)</small></summary>
+  <div class="contenu">
+    <ul>
+      <li>une suite est <b class="arith">arithmétique</b> lorsqu’on passe d’un terme au suivant en <b>ajoutant</b> toujours le même nombre \(r\), appelé la <b>raison</b> : pour tout entier naturel \(n\), \(u_{n+1}=u_n+r\). On a alors, pour tout entier naturel \(n\), \(u_n=u_0+n\times r\) ;</li>
+      <li>une suite est <b class="geom">géométrique</b> lorsqu’on passe d’un terme au suivant en <b>multipliant</b> toujours par le même nombre \(q\), appelé la <b>raison</b> : pour tout entier naturel \(n\), \(u_{n+1}=q\times u_n\). On a alors, pour tout entier naturel \(n\), \(u_n=u_0\times q^n\) ;</li>
+      <li>augmenter une quantité de \(p\,\%\), c’est la multiplier par \(CM=1+\dfrac{p}{100}\) ; la diminuer de \(p\,\%\), c’est la multiplier par \(CM=1-\dfrac{p}{100}\).<br><i>Exemples :</i> une hausse de \(6\,\%\) correspond à \(\times1{,}06\) ; une baisse de \(5\,\%\) correspond à \(\times0{,}95\).</li>
+    </ul>
+    <div class="schema" data-v="u" data-op="+r" data-glob="+ n × r" data-glob2="on ajoute r, n fois"></div>
+    <div class="schema" data-v="u" data-op="× q" data-glob="× qⁿ" data-glob2="on multiplie par q, n fois" data-geo></div>
+  </div>
+</details>
+
+<!-- Exercice 8 -->
+<section class="exo" id="ex8" data-nav="8">
+  <div class="exo-h"><span class="pill">Exercice 8</span><span class="titre">Arithmétique, géométrique ou ni l’un ni l’autre ?</span></div>
+  <div class="exo-b">
+    <p class="enonce">Les suites ci-dessous sont définies par leur premier terme et une relation valable pour tout entier naturel \(n\). Dire si chacune est arithmétique, géométrique ou ni l’un ni l’autre. Le cas échéant, préciser le premier terme et la raison.</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">\(u_0=3\) et \(u_{n+1}=u_n-7\)</div></div>
+      <div class="quiz" data-rep="Arithmétique"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>On ajoute toujours \(-7\) : suite <span class="arith">arithmétique</span> de premier terme \(u_0=3\) et de raison <span class="res">\(r=-7\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">\(u_0=-1\) et \(u_{n+1}-4=u_n\)</div></div>
+      <div class="quiz" data-rep="Arithmétique"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>L’égalité \(u_{n+1}-4=u_n\) s’écrit aussi \(u_{n+1}=u_n+4\) (on ajoute \(4\) des deux côtés).</p><p>Suite <span class="arith">arithmétique</span> de premier terme \(u_0=-1\) et de raison <span class="res">\(r=4\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">\(u_0=1\,000\) et \(u_{n+1}=3\times u_n\)</div></div>
+      <div class="quiz" data-rep="Géométrique"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>On multiplie toujours par \(3\) : suite <span class="geom">géométrique</span> de premier terme \(u_0=1\,000\) et de raison <span class="res">\(q=3\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">\(u_0=5\) et \(u_{n+1}=2\times u_n+1\)</div></div>
+      <div class="quiz" data-rep="Ni l’un ni l’autre"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>On calcule les premiers termes : \(u_0=5\), \(u_1=11\), \(u_2=23\).</p><p>On ajoute \(6\), puis \(12\) ; on multiplie par \(2{,}2\), puis par environ \(2{,}09\).</p><p class="concl"><span class="ni">Ni l’un ni l’autre</span> : on multiplie <b>et</b> on ajoute.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">\(u_0=800\) et \(u_{n+1}=0{,}95\times u_n\)</div></div>
+      <div class="quiz" data-rep="Géométrique"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>On multiplie toujours par \(0{,}95\) (baisse de \(5\,\%\)) : suite <span class="geom">géométrique</span> de premier terme \(u_0=800\) et de raison <span class="res">\(q=0{,}95\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">6</span><div class="q-txt">\(u_0=2\) et \(u_{n+1}=u_n\times u_n\)</div></div>
+      <div class="quiz" data-rep="Ni l’un ni l’autre"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>On calcule : \(u_0=2\), \(u_1=4\), \(u_2=16\). On ajoute \(2\), puis \(12\) ; on multiplie par \(2\), puis par \(4\).</p><p class="concl"><span class="ni">Ni l’un ni l’autre</span>.</p></div></div>
+  </div>
+</section>
+
+<section class="exo bis" id="ex8bis" data-nav="8 bis">
+  <div class="exo-h"><span class="pill">Exercice 8 bis</span><span class="titre">Arithmétique, géométrique ou ni l’un ni l’autre ?</span></div>
+  <div class="exo-b">
+    <p class="enonce">Même consigne que l’exercice 8.</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">\(u_0=10\) et \(u_{n+1}=u_n+2{,}5\)</div></div>
+      <div class="quiz" data-rep="Arithmétique"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>On ajoute toujours \(2{,}5\) : suite <span class="arith">arithmétique</span> de premier terme \(u_0=10\) et de raison <span class="res">\(r=2{,}5\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">\(u_0=4\) et \(u_{n+1}-u_n=-3\)</div></div>
+      <div class="quiz" data-rep="Arithmétique"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>L’égalité s’écrit \(u_{n+1}=u_n-3\) : suite <span class="arith">arithmétique</span> de premier terme \(u_0=4\) et de raison <span class="res">\(r=-3\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">\(u_0=500\) et \(u_{n+1}=1{,}2\times u_n\)</div></div>
+      <div class="quiz" data-rep="Géométrique"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>On multiplie toujours par \(1{,}2\) : suite <span class="geom">géométrique</span> de premier terme \(u_0=500\) et de raison <span class="res">\(q=1{,}2\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">\(u_0=1\) et \(u_{n+1}=3\times u_n+2\)</div></div>
+      <div class="quiz" data-rep="Ni l’un ni l’autre"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>On calcule : \(u_0=1\), \(u_1=5\), \(u_2=17\). On ajoute \(4\), puis \(12\) ; on multiplie par \(5\), puis par \(3{,}4\).</p><p class="concl"><span class="ni">Ni l’un ni l’autre</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">\(u_0=1\,000\) et \(u_{n+1}=\dfrac{u_n}{2}\)</div></div>
+      <div class="quiz" data-rep="Géométrique"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>Diviser par \(2\), c’est multiplier par \(0{,}5\) : suite <span class="geom">géométrique</span> de premier terme \(u_0=1\,000\) et de raison <span class="res">\(q=0{,}5\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">6</span><div class="q-txt">\(u_0=2\) et \(u_{n+1}=u_n+n\)</div></div>
+      <div class="quiz" data-rep="Ni l’un ni l’autre"><span class="t">Ta réponse :</span><button>Arithmétique</button><button>Géométrique</button><button>Ni l’un ni l’autre</button></div>
+      <div class="sol"><p>On calcule : \(u_0=2\), \(u_1=2+0=2\), \(u_2=2+1=3\), \(u_3=3+2=5\).</p><p>On ajoute \(0\), puis \(1\), puis \(2\) : ce n’est pas toujours le même nombre (et on ne multiplie pas toujours par le même nombre non plus).</p><p class="concl"><span class="ni">Ni l’un ni l’autre</span>.</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 9 -->
+<section class="exo" id="ex9" data-nav="9">
+  <div class="exo-h"><span class="pill">Exercice 9</span><span class="titre">Du contexte à la suite</span></div>
+  <div class="exo-b">
+    <p class="enonce">Pour chaque situation, donner le premier terme, la relation de récurrence et la nature de la suite (en précisant sa raison).</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">En 2020, la population d’une ville est de \(25\,000\) habitants. Elle augmente de \(6\,\%\) par an. On note \(p_n\) la population de la ville en \(2020+n\).</div></div>
+      <div class="sol"><p>Le premier terme est \(p_0=25\,000\).</p><p>Une hausse de \(6\,\%\) correspond à \(CM=1+\dfrac{6}{100}=1{,}06\), donc \(p_{n+1}=1{,}06\times p_n\).</p><p class="concl">La suite \(p\) est <span class="geom">géométrique</span> de raison <span class="res">\(q=1{,}06\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Au 1<sup>er</sup> janvier 2026, le loyer mensuel d’un appartement est de \(430\) €. Il augmente de \(10\) € au 1<sup>er</sup> janvier de chaque année. On note \(\ell(n)\) le loyer au 1<sup>er</sup> janvier \(2026+n\).</div></div>
+      <div class="sol"><p>Le premier terme est \(\ell(0)=430\), et \(\ell(n+1)=\ell(n)+10\).</p><p class="concl">La suite \(\ell\) est <span class="arith">arithmétique</span> de raison <span class="res">\(r=10\)</span>.</p><p class="note">Il s’agit de « \(+10\) € » (et non de « \(+10\,\%\) ») : on ajoute.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Une plaque de carton absorbe \(13\,\%\) de l’intensité d’un son. Un son a une intensité de \(125\) décibels. On note \(s_n\) l’intensité du son après la traversée de \(n\) plaques.</div></div>
+      <div class="sol"><p>Le premier terme est \(s_0=125\).</p><p>Chaque plaque absorbe \(13\,\%\) de l’intensité : c’est une baisse de \(13\,\%\), donc \(CM=1-\dfrac{13}{100}=0{,}87\) et \(s_{n+1}=0{,}87\times s_n\).</p><p class="concl">La suite \(s\) est <span class="geom">géométrique</span> de raison <span class="res">\(q=0{,}87\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt"><i>Vrai ou faux ?</i> Une chaîne vidéo perd chaque mois un dixième de ses abonnés, mais en gagne \(200\). On note \(V_n\) le nombre d’abonnés le \(n\)-ième mois. <b>Affirmation :</b> pour tout entier naturel \(n\), \(V_{n+1}=1{,}1\times V_n+200\).</div></div>
+      <div class="sol"><p>Perdre un dixième des abonnés, c’est en garder les neuf dixièmes : on multiplie par \(1-\dfrac{1}{10}=0{,}9\).</p><p>On ajoute ensuite les \(200\) nouveaux abonnés : \(V_{n+1}=0{,}9\times V_n+200\).</p><p class="concl">L’affirmation est <span class="verdict faux">fausse</span> : multiplier par \(1{,}1\) correspondrait à une hausse de \(10\,\%\).</p><p class="note">Remarque : la suite \(V\) n’est ni arithmétique, ni géométrique.</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 10 -->
+<section class="exo" id="ex10" data-nav="10">
+  <div class="exo-h"><span class="pill">Exercice 10</span><span class="titre">Une suite arithmétique qui commence au rang 1</span><a class="lien-dyn" href="sequence2-suites-feuille4-corrige-exercice-10.html" target="_blank" rel="noopener">Version animée ↗</a></div>
+  <div class="exo-b">
+    <p class="enonce">Après une opération du genou, un patient suit un programme de rééducation. La première semaine, il marche \(200\) m par jour ; chaque semaine, il ajoute \(50\) m à sa distance quotidienne. On note \(d_n\) la distance (en mètres) parcourue chaque jour pendant la \(n\)-ième semaine. On a donc \(d_1=200\) : la suite <b>commence au rang \(1\)</b>.</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Calculer \(d_2\) et \(d_3\).</div></div>
+      <div class="sol"><p>\(d_2=200+50=\) <span class="res">\(250\)</span> et \(d_3=250+50=\) <span class="res">\(300\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Exprimer \(d_{n+1}\) en fonction de \(d_n\), pour tout entier \(n\geqslant1\). Quelle est la nature de la suite \(d\) ? Préciser sa raison.</div></div>
+      <div class="sol"><p>Chaque semaine, on ajoute \(50\) m : pour tout entier \(n\geqslant1\), <span class="res">\(d_{n+1}=d_n+50\)</span>.</p><p class="concl">La suite \(d\) est <span class="arith">arithmétique</span> de premier terme \(d_1=200\) et de raison \(r=50\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Compléter le schéma : les opérations sur les flèches courbes, puis l’opération sur la flèche globale, qui passe directement de \(d_1\) à \(d_n\). <i>Aide : combien de flèches courbes faut-il franchir pour aller de \(d_1\) à \(d_n\) ?</i></div></div>
+      <div class="schema" data-v="d" data-debut="1" data-op="+50" data-glob="+ (n − 1) × 50" data-glob2="on ajoute 50, (n − 1) fois" data-cache></div>
+      <div class="sol"><p>Chaque flèche courbe correspond à \(+50\).</p><p>De \(d_1\) à \(d_n\), on franchit \(n-1\) flèches (de \(1\) à \(2\), de \(2\) à \(3\), …, de \(n-1\) à \(n\)).</p><p class="concl">La flèche globale correspond donc à <span class="res">\(+\,(n-1)\times50\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">En déduire l’expression de \(d_n\) en fonction de \(n\), pour tout entier \(n\geqslant1\).</div></div>
+      <div class="sol"><p>Pour tout entier \(n\geqslant1\), <span class="res">\(d_n=d_1+(n-1)\times50=200+(n-1)\times50\)</span>, soit \(d_n=150+50n\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">Quelle distance le patient marchera-t-il chaque jour pendant la \(12\)<sup>e</sup> semaine ?</div></div>
+      <div class="sol"><p>On calcule \(d_{12}=200+11\times50=200+550=750\).</p><p class="concl">Pendant la \(12\)<sup>e</sup> semaine, il marchera <span class="res">\(750\) m</span> par jour.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">6</span><div class="q-txt">À partir de quelle semaine marchera-t-il au moins \(1\) km par jour ?</div></div>
+      <div class="sol"><p>On cherche \(n\) tel que \(200+(n-1)\times50\geqslant1\,000\).</p><p>Cela donne \((n-1)\times50\geqslant800\), soit \(n-1\geqslant16\) et \(n\geqslant17\).</p><p>Vérification : \(d_{16}=950\) et \(d_{17}=1\,000\).</p><p class="concl">Il marchera au moins \(1\) km par jour à partir de la <span class="res">\(17\)<sup>e</sup> semaine</span>.</p>
+        <div class="explore" data-v="d" data-debut="1" data-u="200" data-r="50" data-max="20" data-seuil="1000" data-sens=">=" data-unite="m" data-dec="0" data-msg="Premier rang où le seuil est atteint : <b>n = {n}</b>."></div></div></div>
+  </div>
+</section>
+
+<section class="exo bis" id="ex10bis" data-nav="10 bis">
+  <div class="exo-h"><span class="pill">Exercice 10 bis</span><span class="titre">Une suite arithmétique qui commence au rang 1</span></div>
+  <div class="exo-b">
+    <p class="enonce">Pour préparer un semi-marathon, une infirmière court \(3\) km lors de chaque sortie la première semaine. Chaque semaine, elle allonge ses sorties de \(0{,}5\) km. On note \(d_n\) la distance (en km) de chaque sortie pendant la \(n\)-ième semaine. On a donc \(d_1=3\).</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Calculer \(d_2\) et \(d_3\).</div></div>
+      <div class="sol"><p>\(d_2=3+0{,}5=\) <span class="res">\(3{,}5\)</span> et \(d_3=3{,}5+0{,}5=\) <span class="res">\(4\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Exprimer \(d_{n+1}\) en fonction de \(d_n\). Quelle est la nature de la suite \(d\) ? Préciser sa raison.</div></div>
+      <div class="sol"><p>Pour tout entier \(n\geqslant1\), <span class="res">\(d_{n+1}=d_n+0{,}5\)</span>.</p><p class="concl">La suite \(d\) est <span class="arith">arithmétique</span> de premier terme \(d_1=3\) et de raison \(r=0{,}5\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt"><b>Faire à la main</b> un schéma comme celui de l’exercice 10.</div></div>
+      <div class="sol"><div class="schema" data-v="d" data-debut="1" data-op="+0,5" data-glob="+ (n − 1) × 0,5" data-glob2="on ajoute 0,5, (n − 1) fois"></div></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">En déduire l’expression de \(d_n\) en fonction de \(n\).</div></div>
+      <div class="sol"><p>Pour tout entier \(n\geqslant1\), <span class="res">\(d_n=3+(n-1)\times0{,}5\)</span>, soit \(d_n=2{,}5+0{,}5n\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">Quelle distance courra-t-elle à chaque sortie pendant la \(10\)<sup>e</sup> semaine ?</div></div>
+      <div class="sol"><p>On calcule \(d_{10}=3+9\times0{,}5=3+4{,}5=7{,}5\).</p><p class="concl">Elle courra <span class="res">\(7{,}5\) km</span> par sortie.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">6</span><div class="q-txt">À partir de quelle semaine courra-t-elle au moins \(10\) km par sortie ?</div></div>
+      <div class="sol"><p>On cherche \(n\) tel que \(3+(n-1)\times0{,}5\geqslant10\), c’est-à-dire \((n-1)\times0{,}5\geqslant7\), soit \(n-1\geqslant14\) et \(n\geqslant15\).</p><p>Vérification : \(d_{14}=9{,}5\) et \(d_{15}=10\).</p><p class="concl">À partir de la <span class="res">\(15\)<sup>e</sup> semaine</span>.</p>
+        <div class="explore" data-v="d" data-debut="1" data-u="3" data-r="0.5" data-max="20" data-seuil="10" data-sens=">=" data-unite="km" data-dec="1" data-msg="Premier rang où le seuil est atteint : <b>n = {n}</b>."></div></div></div>
+  </div>
+</section>
+
+<!-- Exercice 11 -->
+<section class="exo" id="ex11" data-nav="11">
+  <div class="exo-h"><span class="pill">Exercice 11</span><span class="titre">Une suite géométrique qui commence au rang 1</span></div>
+  <div class="exo-b">
+    <p class="enonce">Une application de suivi de santé compte \(2\,000\) utilisateurs le premier mois de son lancement. Ensuite, le nombre d’utilisateurs augmente de \(10\,\%\) chaque mois. On note \(a_n\) le nombre d’utilisateurs le \(n\)-ième mois. On a donc \(a_1=2\,000\) : la suite <b>commence au rang \(1\)</b>.</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Calculer \(a_2\) et \(a_3\).</div></div>
+      <div class="sol"><p>Une hausse de \(10\,\%\) correspond à \(CM=1+\dfrac{10}{100}=1{,}1\).</p><p>\(a_2=1{,}1\times2\,000=\) <span class="res">\(2\,200\)</span> et \(a_3=1{,}1\times2\,200=\) <span class="res">\(2\,420\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Justifier que, pour tout entier \(n\geqslant1\), \(a_{n+1}=1{,}1\times a_n\). Quelle est la nature de la suite \(a\) ? Préciser sa raison.</div></div>
+      <div class="sol"><p>Chaque mois, le nombre d’utilisateurs augmente de \(10\,\%\), donc est multiplié par \(CM=1{,}1\) : pour tout entier \(n\geqslant1\), \(a_{n+1}=1{,}1\times a_n\).</p><p class="concl">La suite \(a\) est <span class="geom">géométrique</span> de premier terme \(a_1=2\,000\) et de raison <span class="res">\(q=1{,}1\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Compléter le schéma : les opérations sur les flèches courbes, puis l’opération sur la flèche globale, qui passe directement de \(a_1\) à \(a_n\).</div></div>
+      <div class="schema" data-v="a" data-debut="1" data-op="× 1,1" data-glob="× 1,1ⁿ⁻¹" data-glob2="on multiplie par 1,1, (n − 1) fois" data-geo data-cache></div>
+      <div class="sol"><p>Chaque flèche courbe correspond à \(\times1{,}1\). De \(a_1\) à \(a_n\), on franchit \(n-1\) flèches.</p><p class="concl">La flèche globale correspond donc à <span class="res">\(\times\,1{,}1^{\,n-1}\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">En déduire l’expression de \(a_n\) en fonction de \(n\), pour tout entier \(n\geqslant1\).</div></div>
+      <div class="sol"><p>Pour tout entier \(n\geqslant1\), <span class="res">\(a_n=a_1\times1{,}1^{\,n-1}=2\,000\times1{,}1^{\,n-1}\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">À l’aide de la calculatrice, déterminer le nombre d’utilisateurs le \(12\)<sup>e</sup> mois (arrondir à l’unité).</div></div>
+      <div class="sol"><p>On calcule \(a_{12}=2\,000\times1{,}1^{11}\approx5\,706\).</p><p class="concl">Le \(12\)<sup>e</sup> mois, l’application comptera environ <span class="res">\(5\,706\)</span> utilisateurs.</p>
+        <div class="explore" data-v="a" data-debut="1" data-u="2000" data-q="1.1" data-max="15" data-dec="0"></div></div></div>
+  </div>
+</section>
+
+<section class="exo bis" id="ex11bis" data-nav="11 bis">
+  <div class="exo-h"><span class="pill">Exercice 11 bis</span><span class="titre">Une suite géométrique qui commence au rang 1</span></div>
+  <div class="exo-b">
+    <p class="enonce">Dans une ville, une campagne de prévention fait baisser le nombre de fumeurs. La première année de la campagne, on compte \(5\,000\) fumeurs. Ensuite, ce nombre baisse de \(20\,\%\) chaque année. On note \(v_n\) le nombre de fumeurs la \(n\)-ième année de la campagne. On a donc \(v_1=5\,000\).</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Calculer \(v_2\) et \(v_3\).</div></div>
+      <div class="sol"><p>Une baisse de \(20\,\%\) correspond à \(CM=1-\dfrac{20}{100}=0{,}8\).</p><p>\(v_2=0{,}8\times5\,000=\) <span class="res">\(4\,000\)</span> et \(v_3=0{,}8\times4\,000=\) <span class="res">\(3\,200\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Justifier que, pour tout entier \(n\geqslant1\), \(v_{n+1}=0{,}8\times v_n\). Quelle est la nature de la suite \(v\) ? Préciser sa raison.</div></div>
+      <div class="sol"><p>Chaque année, le nombre de fumeurs baisse de \(20\,\%\), donc est multiplié par \(CM=0{,}8\).</p><p class="concl">La suite \(v\) est <span class="geom">géométrique</span> de premier terme \(v_1=5\,000\) et de raison <span class="res">\(q=0{,}8\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt"><b>Faire à la main</b> un schéma comme celui de l’exercice 11.</div></div>
+      <div class="sol"><div class="schema" data-v="v" data-debut="1" data-op="× 0,8" data-glob="× 0,8ⁿ⁻¹" data-glob2="on multiplie par 0,8, (n − 1) fois" data-geo></div></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">En déduire l’expression de \(v_n\) en fonction de \(n\).</div></div>
+      <div class="sol"><p>Pour tout entier \(n\geqslant1\), <span class="res">\(v_n=5\,000\times0{,}8^{\,n-1}\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">À l’aide de la calculatrice, déterminer le nombre de fumeurs la \(8\)<sup>e</sup> année de la campagne (arrondir à l’unité).</div></div>
+      <div class="sol"><p>On calcule \(v_8=5\,000\times0{,}8^{7}\approx1\,049\).</p><p class="concl">La \(8\)<sup>e</sup> année, on comptera environ <span class="res">\(1\,049\)</span> fumeurs.</p>
+        <div class="explore" data-v="v" data-debut="1" data-u="5000" data-q="0.8" data-max="12" data-dec="0"></div></div></div>
+  </div>
+</section>
+
+<div class="foot"><span>Feuille 4 · TST2S · Lycée Lebrun 2026-2027</span><a href="sequence2-suites-feuille5-corrige-interactif.html">Feuille 5 — corrigé interactif →</a></div>
+</main>
+</body>
+</html>

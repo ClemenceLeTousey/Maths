@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feuille 5 – Corrigé interactif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<link rel="stylesheet" href="suites-corrige.css">
+<script src="../../barre.js"></script>
+<script src="suites-corrige.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js" defer></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Feuille d’exercices n°5 — Corrigé interactif</b><span>Suites numériques : terme général et sujets de bac</span>
+      <span class="liens"><a href="https://nuage02.apps.education.fr/index.php/s/gQ7s55xDp3fe4Sk" target="_blank" rel="noopener">Énoncé PDF</a><a href="https://nuage02.apps.education.fr/index.php/s/cs2oFNHs3PwTT3t" target="_blank" rel="noopener">Corrigé PDF</a><a href="../../tst2s/">Page TST2S</a></span></div>
+    <div class="barre-outils"><nav class="exnav" id="exnav" aria-label="Exercices"></nav><button type="button" class="btn ghost sm" id="tout">Tout afficher</button></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<details class="rappel" open style="margin-top:22px">
+  <summary>Rappel : terme général d’une suite arithmétique ou géométrique <small>(cliquer pour replier)</small></summary>
+  <div class="contenu">
+    <div class="tab-wrap"><table class="tab">
+      <tr><th></th><th><span class="arith">Arithmétique</span> de raison \(r\)</th><th><span class="geom">Géométrique</span> de raison \(q\)</th></tr>
+      <tr><th>D’un terme au suivant</th><td>\(u_{n+1}=u_n+r\)</td><td>\(u_{n+1}=q\times u_n\)</td></tr>
+      <tr><th>Si la suite commence au rang \(0\)</th><td>\(u_n=u_0+n\times r\)</td><td>\(u_n=u_0\times q^n\)</td></tr>
+      <tr><th>Si la suite commence au rang \(1\)</th><td>\(u_n=u_1+(n-1)\times r\)</td><td>\(u_n=u_1\times q^{\,n-1}\)</td></tr>
+    </table></div>
+    <p class="att"><b>Attention :</b> avant d’écrire la formule, on repère toujours le <b>premier terme</b> : \(u_0\) ou \(u_1\) ?</p>
+    <ul>
+      <li>augmenter de \(p\,\%\), c’est multiplier par \(CM=1+\dfrac{p}{100}\) ; diminuer de \(p\,\%\), c’est multiplier par \(CM=1-\dfrac{p}{100}\) ;</li>
+      <li>« augmente de \(30\) € » : on <b>ajoute</b> (arithmétique) ; « augmente de \(10\,\%\) » : on <b>multiplie</b> (géométrique).</li>
+    </ul>
+  </div>
+</details>
+
+<!-- Exercice 1 -->
+<section class="exo" id="ex1" data-nav="1">
+  <div class="exo-h"><span class="pill">Exercice 1</span><span class="titre">Exprimer le terme général</span></div>
+  <div class="exo-b">
+    <p class="enonce">Pour chacune des suites suivantes, dire si elle est arithmétique ou géométrique et préciser son premier terme et sa raison. Exprimer ensuite le terme général en fonction de \(n\), puis calculer le terme demandé.</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">On considère la suite arithmétique \(u\) de premier terme \(u_0=7\) et de raison \(4\). Calculer \(u_{15}\).</div></div>
+      <div class="sol"><p>La suite \(u\) est <span class="arith">arithmétique</span>, de premier terme \(u_0=7\) et de raison \(r=4\). Elle commence au rang \(0\).</p><p>Pour tout entier naturel \(n\), \(u_n=u_0+n\times r=7+4n\).</p><p>On en déduit \(u_{15}=7+4\times15=\) <span class="res">\(67\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">On considère la suite géométrique \(v\) de premier terme \(v_0=3\) et de raison \(2\). Calculer \(v_6\).</div></div>
+      <div class="sol"><p>La suite \(v\) est <span class="geom">géométrique</span>, de premier terme \(v_0=3\) et de raison \(q=2\). Elle commence au rang \(0\).</p><p>Pour tout entier naturel \(n\), \(v_n=v_0\times q^n=3\times2^n\).</p><p>On en déduit \(v_6=3\times2^6=3\times64=\) <span class="res">\(192\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">On considère la suite arithmétique \(w\) de premier terme \(w_1=50\) et de raison \(-6\). Calculer \(w_{10}\).</div></div>
+      <div class="sol"><p>La suite \(w\) est <span class="arith">arithmétique</span>, de premier terme \(w_1=50\) et de raison \(r=-6\). Elle commence au <b>rang \(1\)</b>.</p><p>Pour tout entier \(n\geqslant1\), \(w_n=w_1+(n-1)\times r=50-6(n-1)\).</p><p>On en déduit \(w_{10}=50-6\times9=\) <span class="res">\(-4\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">On considère la suite géométrique \(t\) de premier terme \(t_1=5\) et de raison \(3\). Calculer \(t_5\).</div></div>
+      <div class="sol"><p>La suite \(t\) est <span class="geom">géométrique</span>, de premier terme \(t_1=5\) et de raison \(q=3\). Elle commence au <b>rang \(1\)</b>.</p><p>Pour tout entier \(n\geqslant1\), \(t_n=t_1\times q^{\,n-1}=5\times3^{n-1}\).</p><p>On en déduit \(t_5=5\times3^4=5\times81=\) <span class="res">\(405\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">On considère la suite \(a\) définie par \(a_0=200\) et, pour tout entier naturel \(n\), \(a_{n+1}=0{,}9\times a_n\). Calculer \(a_3\).</div></div>
+      <div class="quiz" data-rep="Géométrique"><span class="t">Nature de la suite :</span><button>Arithmétique</button><button>Géométrique</button></div>
+      <div class="sol"><p>On multiplie par \(0{,}9\) pour passer d’un terme au suivant : la suite \(a\) est <span class="geom">géométrique</span>, de premier terme \(a_0=200\) et de raison \(q=0{,}9\).</p><p>Pour tout entier naturel \(n\), \(a_n=200\times0{,}9^n\).</p><p>On en déduit \(a_3=200\times0{,}9^3=200\times0{,}729=\) <span class="res">\(145{,}8\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">6</span><div class="q-txt">On considère la suite \(b\) définie par \(b_1=12\) et, pour tout entier \(n\geqslant1\), \(b_{n+1}=b_n+2{,}5\). Calculer \(b_{21}\).</div></div>
+      <div class="quiz" data-rep="Arithmétique"><span class="t">Nature de la suite :</span><button>Arithmétique</button><button>Géométrique</button></div>
+      <div class="sol"><p>On ajoute \(2{,}5\) pour passer d’un terme au suivant : la suite \(b\) est <span class="arith">arithmétique</span>, de premier terme \(b_1=12\) et de raison \(r=2{,}5\).</p><p>Pour tout entier \(n\geqslant1\), \(b_n=12+2{,}5(n-1)\).</p><p>On en déduit \(b_{21}=12+2{,}5\times20=\) <span class="res">\(62\)</span>.</p></div></div>
+  </div>
+</section>
+
+<section class="exo bis" id="ex1bis" data-nav="1 bis">
+  <div class="exo-h"><span class="pill">Exercice 1 bis</span><span class="titre">Exprimer le terme général</span></div>
+  <div class="exo-b">
+    <p class="enonce">Même consigne que l’exercice 1.</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">On considère la suite arithmétique \(u\) de premier terme \(u_0=-3\) et de raison \(5\). Calculer \(u_{12}\).</div></div>
+      <div class="sol"><p>Pour tout entier naturel \(n\), \(u_n=-3+5n\).</p><p>On en déduit \(u_{12}=-3+5\times12=\) <span class="res">\(57\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">On considère la suite géométrique \(v\) de premier terme \(v_0=4\) et de raison \(3\). Calculer \(v_5\).</div></div>
+      <div class="sol"><p>Pour tout entier naturel \(n\), \(v_n=4\times3^n\).</p><p>On en déduit \(v_5=4\times3^5=4\times243=\) <span class="res">\(972\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">On considère la suite arithmétique \(w\) de premier terme \(w_1=100\) et de raison \(-8\). Calculer \(w_{11}\).</div></div>
+      <div class="sol"><p>La suite commence au rang \(1\) : pour tout entier \(n\geqslant1\), \(w_n=100-8(n-1)\).</p><p>On en déduit \(w_{11}=100-8\times10=\) <span class="res">\(20\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">On considère la suite géométrique \(t\) de premier terme \(t_1=2\) et de raison \(5\). Calculer \(t_4\).</div></div>
+      <div class="sol"><p>La suite commence au rang \(1\) : pour tout entier \(n\geqslant1\), \(t_n=2\times5^{n-1}\).</p><p>On en déduit \(t_4=2\times5^3=2\times125=\) <span class="res">\(250\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">On considère la suite \(a\) définie par \(a_0=500\) et, pour tout entier naturel \(n\), \(a_{n+1}=1{,}2\times a_n\). Calculer \(a_3\).</div></div>
+      <div class="sol"><p>La suite \(a\) est <span class="geom">géométrique</span>, de premier terme \(a_0=500\) et de raison \(q=1{,}2\) : \(a_n=500\times1{,}2^n\).</p><p>On en déduit \(a_3=500\times1{,}2^3=500\times1{,}728=\) <span class="res">\(864\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">6</span><div class="q-txt">On considère la suite \(b\) définie par \(b_1=30\) et, pour tout entier \(n\geqslant1\), \(b_{n+1}=b_n-1{,}5\). Calculer \(b_{11}\).</div></div>
+      <div class="sol"><p>La suite \(b\) est <span class="arith">arithmétique</span>, de premier terme \(b_1=30\) et de raison \(r=-1{,}5\) : \(b_n=30-1{,}5(n-1)\).</p><p>On en déduit \(b_{11}=30-1{,}5\times10=\) <span class="res">\(15\)</span>.</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 2 -->
+<section class="exo" id="ex2" data-nav="2">
+  <div class="exo-h"><span class="pill">Exercice 2</span><span class="titre">D’après le bac technologique, Métropole 2026</span></div>
+  <div class="exo-b">
+    <div class="enonce-bloc"><p>Une salle de sport propose deux offres d’abonnement :</p>
+      <ul><li><b>abonnement n°1</b> : \(250\) € en 2026, puis une augmentation de \(30\) € par an ;</li><li><b>abonnement n°2</b> : \(200\) € en 2026, puis une augmentation de \(10\,\%\) par an.</li></ul></div>
+    <p class="enonce"><b>Partie A.</b> On note \(a_n\) le montant de l’abonnement n°1 pour l’année \(2026+n\). On a ainsi \(a_0=250\).</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Calculer le montant de l’abonnement n°1 en 2027.</div></div>
+      <div class="sol"><p>L’année 2027 correspond à \(n=1\) : \(a_1=a_0+30=250+30=280\).</p><p class="concl">L’abonnement n°1 coûte <span class="res">\(280\) €</span> en 2027.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Calculer \(a_2\) et interpréter le résultat dans le contexte de l’exercice.</div></div>
+      <div class="sol"><p>On calcule \(a_2=a_1+30=280+30=\) <span class="res">\(310\)</span>.</p><p class="concl">En 2028 (\(2026+2\)), l’abonnement n°1 coûte \(310\) €.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Exprimer, pour tout entier naturel \(n\), \(a_{n+1}\) en fonction de \(a_n\). En déduire la nature de la suite \(a\) et préciser sa raison.</div></div>
+      <div class="sol"><p>Chaque année, on ajoute \(30\) € : pour tout entier naturel \(n\), <span class="res">\(a_{n+1}=a_n+30\)</span>.</p><p class="concl">La suite \(a\) est <span class="arith">arithmétique</span> de premier terme \(a_0=250\) et de raison \(r=30\).</p></div></div>
+    <p class="enonce"><b>Partie B.</b> On note \(b_n\) le montant de l’abonnement n°2 pour l’année \(2026+n\). On a ainsi \(b_0=200\).</p>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">Justifier que le montant de l’abonnement n°2 en 2027 s’élève à \(220\) €.</div></div>
+      <div class="sol"><p>Une hausse de \(10\,\%\) correspond à \(CM=1+\dfrac{10}{100}=1{,}1\).</p><p>On a donc \(b_1=1{,}1\times200=220\) : l’abonnement n°2 coûte bien <span class="res">\(220\) €</span> en 2027.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">Exprimer, pour tout entier naturel \(n\), \(b_{n+1}\) en fonction de \(b_n\). En déduire la nature de la suite \(b\) et préciser sa raison.</div></div>
+      <div class="sol"><p>Pour tout entier naturel \(n\), <span class="res">\(b_{n+1}=1{,}1\times b_n\)</span>.</p><p class="concl">La suite \(b\) est <span class="geom">géométrique</span> de premier terme \(b_0=200\) et de raison \(q=1{,}1\).</p></div></div>
+    <div class="enonce-bloc"><p><b>Partie C.</b> On a calculé quelques termes des deux suites, arrondis au centime :</p>
+      <div class="tab-wrap"><table class="tab"><tr><th>\(n\)</th><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td></tr><tr><th>\(a_n\)</th><td>490</td><td>520</td><td>550</td><td>580</td><td>610</td><td>640</td></tr><tr><th>\(b_n\)</th><td>428,72</td><td>471,59</td><td>518,75</td><td>570,62</td><td>627,69</td><td>690,45</td></tr></table></div></div>
+    <div class="q"><div class="q-h"><span class="num">6</span><div class="q-txt">À partir de quelle année l’abonnement n°2 devient-il plus cher que l’abonnement n°1 ?</div></div>
+      <div class="sol"><p>Pour \(n=11\) : \(b_{11}\approx570{,}62\lt 580=a_{11}\).</p><p>Pour \(n=12\) : \(b_{12}\approx627{,}69\gt 610=a_{12}\).</p><p class="concl">C’est à partir de \(n=12\), c’est-à-dire de l’année \(2026+12=\) <span class="res">\(2038\)</span>, que l’abonnement n°2 devient plus cher.</p>
+        <div class="explore" data-v="a" data-u="250" data-r="30" data-v2="b" data-u2="200" data-q2="1.1" data-max="16" data-unite="€" data-annee="2026" data-msg="L’abonnement n°2 dépasse l’abonnement n°1 à partir de <b>n = {n}</b>, soit l’année <b>{a}</b>. Remarque : la croissance linéaire (points alignés) finit toujours par être dépassée par la croissance exponentielle."></div></div></div>
+  </div>
+</section>
+
+<!-- Exercice 3 -->
+<section class="exo" id="ex3" data-nav="3">
+  <div class="exo-h"><span class="pill">Exercice 3</span><span class="titre">D’après le bac technologique, Antilles 2026</span></div>
+  <div class="exo-b">
+    <p class="enonce">Au 1<sup>er</sup> janvier 2025, une famille installe des éoliennes domestiques, qui produisent \(3\,000\) kWh d’énergie en 2025. Chaque année, la quantité d’énergie produite baisse de \(5\,\%\). On note \(u_n\) la quantité d’énergie (en kWh) produite durant l’année \(2025+n\). On a donc \(u_0=3\,000\).</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Quelle sera la quantité d’énergie produite en 2026 ? Détailler le calcul.</div></div>
+      <div class="sol"><p>Une baisse de \(5\,\%\) correspond à \(CM=1-\dfrac{5}{100}=0{,}95\).</p><p>On a \(u_1=0{,}95\times3\,000=2\,850\).</p><p class="concl">En 2026, l’installation produira <span class="res">\(2\,850\) kWh</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Justifier que, pour tout entier naturel \(n\), \(u_{n+1}=0{,}95\times u_n\).</div></div>
+      <div class="sol"><p>Chaque année, la production baisse de \(5\,\%\) : on passe d’une année à la suivante en multipliant par \(CM=0{,}95\).</p><p>Donc, pour tout entier naturel \(n\), \(u_{n+1}=0{,}95\times u_n\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Quelle est la nature de la suite \(u\) ? Préciser sa raison.</div></div>
+      <div class="sol"><p>La suite \(u\) est <span class="geom">géométrique</span> de premier terme \(u_0=3\,000\) et de raison <span class="res">\(q=0{,}95\)</span>.</p></div></div>
+    <div class="enonce-bloc"><p>Voici un extrait des valeurs de \(u_n\), arrondies au centième :</p>
+      <div class="tab-wrap"><table class="tab"><tr><th>\(n\)</th><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td></tr><tr><th>\(u_n\)</th><td>1 075,46</td><td>1 021,68</td><td>970,60</td><td>922,07</td><td>875,97</td><td>832,17</td></tr></table></div></div>
+    <div class="q"><div class="q-h"><span class="num">4a</span><div class="q-txt">À partir de quelle année la quantité d’énergie produite sera-t-elle inférieure à \(1\,000\) kWh ?</div></div>
+      <div class="sol"><p>D’après le tableau, \(u_{21}\approx1\,021{,}68\gt 1\,000\) et \(u_{22}\approx970{,}60\lt 1\,000\).</p><p class="concl">La production sera inférieure à \(1\,000\) kWh à partir de \(n=22\), c’est-à-dire de l’année \(2025+22=\) <span class="res">\(2047\)</span>.</p>
+        <div class="explore" data-v="u" data-u="3000" data-q="0.95" data-max="26" data-seuil="1000" data-sens="<" data-unite="kWh" data-annee="2025" data-msg="Premier rang où la production passe sous 1 000 kWh : <b>n = {n}</b>, soit l’année <b>{a}</b>."></div></div></div>
+    <div class="q"><div class="q-h"><span class="num">4b</span><div class="q-txt">Le fabricant affirme qu’après \(25\) ans de fonctionnement, l’installation produira encore plus de \(30\,\%\) de la quantité produite la première année. A-t-il raison ? Justifier.</div></div>
+      <div class="sol"><p>Les \(30\,\%\) de la production de la première année représentent \(0{,}30\times3\,000=900\) kWh.</p><p>Or, d’après le tableau, \(u_{25}\approx832{,}17\lt 900\) (soit environ \(28\,\%\) de \(3\,000\) kWh).</p><p class="concl">Le fabricant a donc <span class="verdict faux">tort</span>.</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 4 -->
+<section class="exo" id="ex4" data-nav="4">
+  <div class="exo-h"><span class="pill">Exercice 4</span><span class="titre">Type bac technologique</span></div>
+  <div class="exo-b">
+    <p class="enonce">Une commune compte \(2\,400\) habitants de plus de \(75\) ans en 2025. Une étude prévoit que ce nombre augmentera de \(120\) personnes chaque année. On note \(p_n\) le nombre d’habitants de plus de \(75\) ans de la commune pour l’année \(2025+n\). On a donc \(p_0=2\,400\).</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Calculer \(p_1\) et \(p_2\).</div></div>
+      <div class="sol"><p>\(p_1=p_0+120=2\,400+120=\) <span class="res">\(2\,520\)</span></p><p>\(p_2=p_1+120=2\,520+120=\) <span class="res">\(2\,640\)</span></p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Exprimer \(p_{n+1}\) en fonction de \(p_n\). En déduire la nature de la suite \(p\) et préciser sa raison.</div></div>
+      <div class="sol"><p>Chaque année, on ajoute \(120\) personnes : pour tout entier naturel \(n\), <span class="res">\(p_{n+1}=p_n+120\)</span>.</p><p class="concl">La suite \(p\) est <span class="arith">arithmétique</span> de premier terme \(p_0=2\,400\) et de raison \(r=120\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Exprimer \(p_n\) en fonction de \(n\).</div></div>
+      <div class="sol"><p>Pour tout entier naturel \(n\), \(p_n=p_0+n\times r\), soit <span class="res">\(p_n=2\,400+120n\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4a</span><div class="q-txt">Parmi les formules suivantes, lesquelles peuvent être saisies en cellule <code>B3</code> puis recopiées vers le bas pour obtenir les termes de la suite ? <code>=B2+120</code> · <code>=B2*120</code> · <code>=2400+120*A3</code> · <code>=$B$2+120</code></div></div>
+      <div class="tableur-zone">
+        <p class="note" style="margin:0 0 6px">Teste chaque formule : elle est saisie en B3 puis recopiée vers le bas.</p>
+        <div class="formules" id="formules"><button data-f="rel">=B2+120</button><button data-f="mul">=B2*120</button><button data-f="exp">=2400+120*A3</button><button data-f="abs">=$B$2+120</button></div>
+        <div class="tab-wrap" style="margin-top:8px"><table class="tableur" id="tableur"></table></div>
+        <p class="note" id="tableur-fb" style="margin:6px 0 0"></p>
+      </div>
+      <div class="sol"><p>Conviennent : <code>=B2+120</code> (on ajoute \(120\) au terme précédent) et <code>=2400+120*A3</code> (formule explicite, avec \(n\) lu en colonne A).</p><p class="piege"><b>Ne conviennent pas :</b> <code>=B2*120</code> multiplie par \(120\) au lieu d’ajouter ; <code>=$B$2+120</code> donne \(2\,520\) dans toutes les cellules, car la référence absolue <code>$B$2</code> ne se décale pas quand on recopie.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4b</span><div class="q-txt">Quelle valeur s’affiche dans la cellule <code>B7</code> ?</div></div>
+      <div class="sol"><p>La cellule <code>B7</code> correspond à \(n=5\) (la ligne 2 correspond à \(n=0\)).</p><p>On a \(p_5=2\,400+120\times5=\) <span class="res">\(3\,000\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">La commune prévoit d’ouvrir une nouvelle résidence pour personnes âgées dès que ce nombre dépassera \(3\,500\). En quelle année devra-t-elle l’ouvrir ? Justifier à l’aide du tableur, puis par le calcul.</div></div>
+      <div class="sol"><p><b>Avec le tableur :</b> \(p_9=3\,480\leqslant3\,500\) et \(p_{10}=3\,600\gt 3\,500\).</p>
+        <p><b>Par le calcul :</b> on résout l’inéquation \(2\,400+120n\gt 3\,500\).</p>
+        <p>\(\begin{aligned} 2\,400+120n&\gt 3\,500\\ 120n&\gt 1\,100\\ n&\gt \tfrac{1\,100}{120}\approx9{,}17 \end{aligned}\)</p>
+        <p class="concl">Le plus petit entier qui convient est \(n=10\). La commune devra ouvrir la résidence en \(2025+10=\) <span class="res">\(2035\)</span>.</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 5 -->
+<section class="exo" id="ex5" data-nav="5">
+  <div class="exo-h"><span class="pill">Exercice 5</span><span class="titre">Type bac technologique</span></div>
+  <div class="exo-b">
+    <p class="enonce">Un service d’aide à domicile ouvre en 2026. Il compte \(180\) bénéficiaires la première année de fonctionnement, et on prévoit \(25\) bénéficiaires supplémentaires chaque année. On note \(u_n\) le nombre de bénéficiaires la \(n\)-ième année de fonctionnement. On a donc \(u_1=180\).</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Calculer \(u_2\) et \(u_3\). À quelle année correspond \(u_3\) ?</div></div>
+      <div class="sol"><p>\(u_2=u_1+25=180+25=\) <span class="res">\(205\)</span> et \(u_3=u_2+25=205+25=\) <span class="res">\(230\)</span>.</p><p>Le terme \(u_3\) correspond à la \(3\)<sup>e</sup> année de fonctionnement : 2026, 2027, <b>2028</b>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Plus généralement, à quelle année correspond le rang \(n\) ?</div></div>
+      <div class="sol"><p>La \(1\)<sup>re</sup> année est 2026, la \(2\)<sup>e</sup> est 2027…</p><p class="concl">Le rang \(n\) correspond à l’année <span class="res">\(2025+n\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Exprimer \(u_{n+1}\) en fonction de \(u_n\). En déduire la nature de la suite \(u\) et préciser sa raison.</div></div>
+      <div class="sol"><p>Chaque année, on ajoute \(25\) bénéficiaires : pour tout entier \(n\geqslant1\), <span class="res">\(u_{n+1}=u_n+25\)</span>.</p><p class="concl">La suite \(u\) est <span class="arith">arithmétique</span> de premier terme \(u_1=180\) et de raison \(r=25\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">Exprimer \(u_n\) en fonction de \(n\).</div></div>
+      <div class="sol"><p>La suite commence au rang \(1\) : \(u_n=u_1+(n-1)\times r=180+25(n-1)\).</p><p>Après développement, <span class="res">\(u_n=155+25n\)</span>.</p><div class="schema" data-v="u" data-debut="1" data-op="+25" data-glob="+ (n − 1) × 25" data-glob2="on ajoute 25, (n − 1) fois"></div></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">Un élève propose la formule \(u_n=180+25n\). Calculer \(u_1\) avec sa formule et expliquer son erreur.</div></div>
+      <div class="sol"><p>Avec la formule de l’élève, \(u_1=180+25\times1=205\), alors qu’on doit trouver \(180\).</p><p class="piege"><b>Erreur :</b> l’élève a utilisé la formule \(u_n=u_0+n\times r\) avec \(180\) à la place de \(u_0\), alors que \(180\) est \(u_1\). Entre \(u_1\) et \(u_n\), on n’ajoute la raison que \(n-1\) fois.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">6</span><div class="q-txt">Combien de bénéficiaires le service comptera-t-il en 2035 ?</div></div>
+      <div class="sol"><p>L’année 2035 correspond à \(2025+n=2035\), soit \(n=10\).</p><p>On a \(u_{10}=180+25\times9=405\).</p><p class="concl">En 2035, le service comptera <span class="res">\(405\)</span> bénéficiaires.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">7</span><div class="q-txt">Le service peut accueillir au maximum \(500\) bénéficiaires. En quelle année cette capacité sera-t-elle dépassée ? Justifier par le calcul.</div></div>
+      <div class="sol"><p>On résout l’inéquation \(155+25n\gt 500\).</p>
+        <p>\(\begin{aligned} 155+25n&\gt 500\\ 25n&\gt 345\\ n&\gt \tfrac{345}{25}=13{,}8 \end{aligned}\)</p>
+        <p>Le plus petit entier qui convient est \(n=14\). Vérification : \(u_{13}=480\leqslant500\) et \(u_{14}=505\gt 500\).</p>
+        <p class="concl">La capacité sera dépassée en \(2025+14=\) <span class="res">\(2039\)</span>.</p>
+        <div class="explore" data-v="u" data-debut="1" data-u="180" data-r="25" data-max="16" data-seuil="500" data-sens=">" data-dec="0" data-annee="2025" data-msg="Premier rang où la capacité est dépassée : <b>n = {n}</b>, soit l’année <b>{a}</b>."></div></div></div>
+  </div>
+</section>
+
+<!-- Exercice 6 -->
+<section class="exo" id="ex6" data-nav="6">
+  <div class="exo-h"><span class="pill">Exercice 6</span><span class="titre">Type bac technologique</span></div>
+  <div class="exo-b">
+    <p class="enonce">Après une opération du genou, un patient suit des séances de rééducation. Lors de la première séance, il marche \(200\) m. Le kinésithérapeute prévoit d’augmenter la distance parcourue de \(10\,\%\) à chaque séance. On note \(d_n\) la distance (en mètres) parcourue lors de la \(n\)-ième séance. On a donc \(d_1=200\).</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Calculer \(d_2\) et \(d_3\). Détailler les calculs.</div></div>
+      <div class="sol"><p>Une hausse de \(10\,\%\) correspond à \(CM=1+\dfrac{10}{100}=1{,}1\).</p><p>\(d_2=1{,}1\times200=\) <span class="res">\(220\)</span> et \(d_3=1{,}1\times220=\) <span class="res">\(242\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Justifier que la suite \(d\) est géométrique et préciser sa raison.</div></div>
+      <div class="sol"><p>À chaque séance, la distance est multipliée par \(CM=1{,}1\) : pour tout entier \(n\geqslant1\), \(d_{n+1}=1{,}1\times d_n\).</p><p class="concl">La suite \(d\) est <span class="geom">géométrique</span> de premier terme \(d_1=200\) et de raison <span class="res">\(q=1{,}1\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Exprimer \(d_n\) en fonction de \(n\).</div></div>
+      <div class="sol"><p>La suite commence au rang \(1\) : <span class="res">\(d_n=d_1\times q^{\,n-1}=200\times1{,}1^{n-1}\)</span>.</p><div class="schema" data-v="d" data-debut="1" data-op="× 1,1" data-glob="× 1,1ⁿ⁻¹" data-glob2="on multiplie par 1,1, (n − 1) fois" data-geo></div></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">Calculer la distance parcourue lors de la \(8\)<sup>e</sup> séance (arrondir au mètre).</div></div>
+      <div class="sol"><p>On calcule \(d_8=200\times1{,}1^7\approx200\times1{,}948\,7\approx390\).</p><p class="concl">Lors de la \(8\)<sup>e</sup> séance, le patient marche environ <span class="res">\(390\) m</span>.</p></div></div>
+    <div class="enonce-bloc"><p>Voici un extrait des valeurs de \(d_n\), arrondies au centième :</p>
+      <div class="tab-wrap"><table class="tab"><tr><th>\(n\)</th><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td></tr><tr><th>\(d_n\)</th><td>759,50</td><td>835,45</td><td>918,99</td><td>1 010,89</td><td>1 111,98</td></tr></table></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">L’objectif est que le patient marche au moins \(1\) km lors d’une séance. Lors de quelle séance cet objectif sera-t-il atteint pour la première fois ? Vérifier un des résultats du tableau à l’aide de la formule de la question 3.</div></div>
+      <div class="sol"><p>On convertit : \(1\) km \(=1\,000\) m.</p><p>D’après le tableau, \(d_{17}\approx918{,}99\lt 1\,000\) et \(d_{18}\approx1\,010{,}89\geqslant1\,000\).</p><p class="concl">L’objectif sera atteint pour la première fois lors de la <span class="res">\(18\)<sup>e</sup> séance</span>.</p><p>Vérification : \(d_{18}=200\times1{,}1^{17}\approx200\times5{,}054\,47\approx1\,010{,}89\).</p>
+        <div class="explore" data-v="d" data-debut="1" data-u="200" data-q="1.1" data-max="20" data-seuil="1000" data-sens=">=" data-unite="m" data-msg="Premier rang où le seuil est atteint : <b>n = {n}</b>."></div></div></div>
+  </div>
+</section>
+
+<!-- Exercice 7 -->
+<section class="exo" id="ex7" data-nav="7">
+  <div class="exo-h"><span class="pill">Exercice 7</span><span class="titre">Type bac technologique</span></div>
+  <div class="exo-b">
+    <p class="enonce">On injecte à un patient \(80\) mg d’un médicament. Chaque heure, la quantité de médicament présente dans le sang diminue de \(20\,\%\). On note \(u_n\) la quantité de médicament (en mg) présente dans le sang \(n\) heures après l’injection. On a donc \(u_0=80\).</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Calculer \(u_1\) et \(u_2\). Détailler les calculs.</div></div>
+      <div class="sol"><p>Une baisse de \(20\,\%\) correspond à \(CM=1-\dfrac{20}{100}=0{,}8\).</p><p>\(u_1=0{,}8\times80=\) <span class="res">\(64\)</span> et \(u_2=0{,}8\times64=\) <span class="res">\(51{,}2\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Justifier que la suite \(u\) est géométrique et préciser sa raison.</div></div>
+      <div class="sol"><p>Chaque heure, on multiplie la quantité par \(CM=0{,}8\) : pour tout entier naturel \(n\), \(u_{n+1}=0{,}8\times u_n\).</p><p class="concl">La suite \(u\) est <span class="geom">géométrique</span> de premier terme \(u_0=80\) et de raison <span class="res">\(q=0{,}8\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Exprimer \(u_n\) en fonction de \(n\). Calculer la quantité de médicament présente dans le sang \(5\) heures après l’injection (arrondir au centième).</div></div>
+      <div class="sol"><p>Pour tout entier naturel \(n\), <span class="res">\(u_n=u_0\times q^n=80\times0{,}8^n\)</span>.</p><p>On calcule \(u_5=80\times0{,}8^5=80\times0{,}327\,68\approx26{,}21\).</p><p class="concl">Au bout de \(5\) heures, il reste environ <span class="res">\(26{,}21\) mg</span> de médicament.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">Le médecin doit faire une nouvelle injection dès que la quantité de médicament devient inférieure à \(10\) mg. On considère la fonction <code>seuil</code> ci-dessous, écrite en langage Python.</div></div>
+      <div class="code" id="code">
+        <div class="l" data-n="1"><span><span class="kw">def</span> seuil():</span></div>
+        <div class="l" data-n="2"><span>    n = 0</span></div>
+        <div class="l" data-n="3"><span>    u = 80</span></div>
+        <div class="l" data-n="4"><span>    <span class="kw">while</span> <select id="cond" aria-label="Condition de la ligne 4"><option value="">……………</option><option value="ge">u &gt;= 10</option><option value="lt">u &lt; 10</option><option value="gt80">u &gt; 80</option><option value="ge0">u &gt;= 0</option></select>:</span></div>
+        <div class="l" data-n="5"><span>        u = <select id="maj" aria-label="Instruction de la ligne 5"><option value="">……………</option><option value="m08">0.8 * u</option><option value="m02">0.2 * u</option><option value="s20">u - 20</option><option value="m12">1.2 * u</option></select></span></div>
+        <div class="l" data-n="6"><span>        n = n + 1</span></div>
+        <div class="l" data-n="7"><span>    <span class="kw">return</span> n</span></div>
+      </div>
+      <div class="q-btns" style="padding-left:0"><button type="button" class="btn solid sm" id="executer">Exécuter seuil()</button></div>
+      <div id="py-out" class="note"></div>
+    </div>
+    <div class="q"><div class="q-h"><span class="num">4a</span><div class="q-txt">Recopier et compléter les lignes 4 et 5 pour que la fonction renvoie le nombre d’heures au bout duquel la quantité devient inférieure à \(10\) mg.</div></div>
+      <div class="sol"><p>On répète <b>tant que</b> la quantité est encore supérieure ou égale à \(10\) mg, et à chaque heure on multiplie par \(0{,}8\) :</p>
+        <div class="code"><div class="l" data-n="4"><span>    <span class="kw">while</span> u &gt;= 10:</span></div><div class="l" data-n="5"><span>        u = 0.8 * u</span></div></div>
+        <p class="piege"><b>Piège :</b> la condition du <code>while</code> est la condition pour <b>continuer</b>, c’est-à-dire le contraire de la condition d’arrêt « \(u\lt 10\) ».</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4b</span><div class="q-txt">L’appel <code>seuil()</code> renvoie <code>10</code>. Interpréter ce résultat dans le contexte de l’exercice.</div></div>
+      <div class="sol"><p class="concl">C’est au bout de \(10\) heures que la quantité de médicament devient inférieure à \(10\) mg : le médecin devra faire une nouvelle injection <span class="res">\(10\) heures</span> après la première.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4c</span><div class="q-txt">Vérifier ce résultat en calculant \(u_9\) et \(u_{10}\).</div></div>
+      <div class="sol"><p>On calcule \(u_9=80\times0{,}8^9\approx10{,}74\geqslant10\) et \(u_{10}=80\times0{,}8^{10}\approx8{,}59\lt 10\).</p><p class="concl">Le résultat est confirmé.</p>
+        <div class="explore" data-v="u" data-u="80" data-q="0.8" data-max="14" data-seuil="10" data-sens="<" data-unite="mg" data-msg="Premier rang où la quantité passe sous 10 mg : <b>n = {n}</b>."></div></div></div>
+  </div>
+</section>
+
+<div class="foot"><a href="sequence2-suites-feuille4-corrige-interactif.html">← Feuille 4 — corrigé interactif</a><span>Feuille 5 · TST2S · Lycée Lebrun 2026-2027</span></div>
+</main>
+
+<script>
+/* ---------- Exercice 4 : tableur ---------- */
+(function () {
+  const tab = document.getElementById('tableur'), fb = document.getElementById('tableur-fb');
+  const nb = (x) => x.toLocaleString('fr-FR').replace(/ /g, ' ');
+  const LIGNES = 13;   // lignes 2 à 13 : n = 0 à 11
+  const EXPL = {
+    rel: ['ok', 'Cette formule convient : chaque cellule ajoute 120 à la cellule du dessus (le terme précédent).'],
+    mul: ['ko', 'Cette formule ne convient pas : elle multiplie par 120 au lieu d’ajouter 120.'],
+    exp: ['ok', 'Cette formule convient : c’est la formule explicite p(n) = 2 400 + 120n, avec n lu dans la colonne A.'],
+    abs: ['ko', 'Cette formule ne convient pas : avec $B$2, on ajoute toujours 120 à la cellule B2, donc toutes les cellules affichent 2 520.']
+  };
+  function remplir(f) {
+    let html = '<tr><th></th><th>A</th><th>B</th></tr><tr><th>1</th><td style="text-align:center">n</td><td style="text-align:center">p(n)</td></tr>';
+    let prec = 2400;
+    for (let l = 2; l <= LIGNES; l++) {
+      const n = l - 2;
+      let v = 2400, txt = '';
+      if (l > 2) {
+        v = f === 'rel' ? prec + 120 : f === 'mul' ? prec * 120 : f === 'exp' ? 2400 + 120 * n : f === 'abs' ? 2520 : null;
+        txt = f === 'rel' ? `=B${l - 1}+120` : f === 'mul' ? `=B${l - 1}*120` : f === 'exp' ? `=2400+120*A${l}` : f === 'abs' ? '=$B$2+120' : '';
+      }
+      const bon = 2400 + 120 * n;
+      const cls = v === null ? '' : (Math.abs(v - bon) < 1e-9 ? '' : 'err') + (l === 7 ? ' sel' : '');
+      const aff = v === null ? '' : (v > 1e15 ? v.toExponential(2).replace('.', ',') : nb(v));
+      html += `<tr><th>${l}</th><td>${n}</td><td class="${cls}" title="${txt}">${aff}</td></tr>`;
+      if (v !== null) prec = v;
+    }
+    tab.innerHTML = html;
+  }
+  document.querySelectorAll('#formules button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#formules button').forEach(o => o.classList.remove('on'));
+    const [etat, msg] = EXPL[b.dataset.f];
+    b.classList.add('on', etat);
+    remplir(b.dataset.f);
+    fb.textContent = msg + ' (Survole une cellule pour voir sa formule ; la cellule B7 est encadrée.)';
+  }));
+  remplir(null);
+})();
+
+/* ---------- Exercice 7 : fonction seuil ---------- */
+(function () {
+  const out = document.getElementById('py-out');
+  document.getElementById('executer').addEventListener('click', () => {
+    const c = document.getElementById('cond').value, m = document.getElementById('maj').value;
+    if (!c || !m) { out.innerHTML = 'Choisis d’abord les lignes 4 et 5 dans les menus.'; return; }
+    const cond = { ge: u => u >= 10, lt: u => u < 10, gt80: u => u > 80, ge0: u => u >= 0 }[c];
+    const maj = { m08: u => 0.8 * u, m02: u => 0.2 * u, s20: u => u - 20, m12: u => 1.2 * u }[m];
+    let n = 0, u = 80;
+    const lignes = [[n, u, cond(u)]];
+    let boucle = 0;
+    while (cond(u) && boucle < 40) { u = maj(u); n++; boucle++; lignes.push([n, u, cond(u)]); }
+    const f = x => (Math.round(x * 100) / 100).toLocaleString('fr-FR');
+    let t = '<table class="trace"><tr><th>n</th><th>u</th><th>condition vraie ?</th></tr>';
+    lignes.forEach(([a, b, k], i) => { t += `<tr class="${i === lignes.length - 1 && !k ? 'fin' : ''}"><td>${a}</td><td>${f(b)}</td><td>${k ? 'oui → on continue' : 'non → on sort'}</td></tr>`; });
+    t += '</table>';
+    let msg;
+    if (boucle >= 40) msg = '⚠ La boucle ne s’arrête jamais (arrêtée au bout de 40 tours) : la condition reste toujours vraie.';
+    else if (c === 'ge' && m === 'm08') msg = '✓ <b>seuil() renvoie ' + n + '</b> : c’est la bonne fonction.';
+    else if (lignes.length === 1) msg = '✗ La condition est fausse dès le départ : la boucle ne tourne jamais et la fonction renvoie 0.';
+    else msg = '✗ La fonction renvoie ' + n + ', mais ce n’est pas ce qu’on cherche. Vérifie la diminution de 20 % (×0,8) et la condition pour continuer.';
+    out.innerHTML = '<p style="margin:6px 0">' + msg + '</p>' + (lignes.length > 1 || boucle >= 40 ? '<div class="tab-wrap">' + t + '</div>' : '');
+  });
+})();
+</script>
+</body>
+</html>
