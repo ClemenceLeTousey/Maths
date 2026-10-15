@@ -35,7 +35,7 @@
         '.barre-site .b-ligne button{all:unset;position:absolute;top:0;width:12px;height:12px;border-radius:50%;cursor:pointer;box-sizing:border-box}',
         '.barre-site .b-ligne button:nth-child(1){left:0;background:#2f6fdf}',
         '.barre-site .b-ligne button:nth-child(2){left:15px;background:#0f9d76}',
-        '.barre-site .b-ligne button:nth-child(3){left:30px;background:#fff;border:2.5px solid #8a4fd8}',
+        '.barre-site .b-ligne button:nth-child(3){left:30px;background:#fff;border:2.5px solid #e8740c}',
         '.barre-site .b-ligne button:nth-child(4){left:45px;top:-3px;width:16px;height:15px;border-radius:0;background:center/contain no-repeat ' + CITROUILLE + '}',
         'html.halloween .barre-site .b-ligne button:nth-child(4){background-image:' + CITROUILLE_ALLUMEE + ';filter:drop-shadow(0 0 3px #ffb020)}',
         '.barre-site ul{all:unset;display:flex;align-items:center;gap:4px 18px;flex-wrap:wrap}',

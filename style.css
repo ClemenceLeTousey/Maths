@@ -22,7 +22,7 @@
     /* Une couleur par classe */
     --c-seconde: #2f6fdf;
     --c-premiere: #0f9d76;
-    --c-tst2s: #8a4fd8;
+    --c-tst2s: #e8740c;
     --c-python: #c98f00;
     --citrouille: #ff7518;   /* 4e rond du logo : mode Halloween */
 
@@ -43,7 +43,7 @@
     --pending: #5f687c;
     --c-seconde: #6e9fff;
     --c-premiere: #34c79c;
-    --c-tst2s: #b58cff;
+    --c-tst2s: #ffa04d;
     --c-python: #ffd43b;
     --badge-text: #0b1222;
     --bic: #8ea6ff;
@@ -63,7 +63,7 @@
         --pending: #5f687c;
         --c-seconde: #6e9fff;
         --c-premiere: #34c79c;
-        --c-tst2s: #b58cff;
+        --c-tst2s: #ffa04d;
         --c-python: #ffd43b;
         --badge-text: #0b1222;
         --bic: #8ea6ff;
