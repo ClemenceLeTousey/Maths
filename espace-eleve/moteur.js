@@ -176,6 +176,7 @@
             zone.appendChild(bilan);
 
             if (def.parNiveau) paliers();
+            else if (def.chrono) { chrono(); return; }
             else for (var i = 0; i < def.nb; i++) liste.appendChild(question(def.generer(i), i));
 
             var premier = liste.querySelector('input');
@@ -215,7 +216,11 @@
                     var c = el('input', classe);
                     c.autocomplete = 'off'; c.spellcheck = false; c.setAttribute('autocapitalize', 'off');
                     c.setAttribute('aria-label', 'Réponse ' + (i + 1));
-                    c.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' && !def.parNiveau) valider(); });
+                    c.addEventListener('keydown', function (ev) {
+                        if (ev.key !== 'Enter') return;
+                        if (def.chrono) { if (li.entree) li.entree(); }
+                        else if (!def.parNiveau) valider();
+                    });
                     c.addEventListener('input', function () { retour.textContent = ''; retour.className = 'q-retour'; });
                     champs.push(c);
                     return c;
@@ -286,13 +291,13 @@
                         return { ok: choix === q.bonne, r: 'ABCDEF'[choix] };
                     };
                 }
-                if (!def.parNiveau) saisie.appendChild(bouton);
+                if (!def.parNiveau && !def.chrono) saisie.appendChild(bouton);
                 li.appendChild(saisie);
                 li.appendChild(apercu); li.appendChild(retour);
 
                 // questions vertes : rappel de méthode à la demande (noté dans le détail pour la professeure)
                 var aide = false, btnRappel = null;
-                if (q.rappel) {
+                if (q.rappel && !def.chrono) {
                     btnRappel = el('button', 'secondaire rappel-btn', 'Je ne sais pas, j\'ai besoin d\'un rappel'); btnRappel.type = 'button';
                     btnRappel.onclick = function () {
                         aide = true;
@@ -432,6 +437,103 @@
                     bloc.appendChild(b); bloc.appendChild(msg);
                     zone.insertBefore(bloc, bilan);
                     if (k > 0 || essai > 1) bloc.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            /* Mode chronométré (def.chrono(i) = secondes accordées à la question i) : une question à la fois,
+               sans correction ni retour en arrière. « Valider » (ou Entrée) passe à la suivante ; à la fin du temps,
+               la réponse saisie est prise si elle est lisible, sinon la question compte faux. À la fin, toutes les
+               questions sont corrigées d'un coup et le résultat est enregistré (une ligne par bilan). */
+            function chrono() {
+                var lis = [], reponses = [], k = -1, fin = 0, minuteur = null;
+                for (var i = 0; i < def.nb; i++) {
+                    var li = question(def.generer(i), i);
+                    li.hidden = true; lis.push(li); liste.appendChild(li);
+                }
+                liste.remove();
+                var secondes = lis.map(function (li, j) { return def.chrono(j); });
+                var total = secondes.reduce(function (s, t) { return s + t; }, 0);
+
+                var accueil = el('div', 'chrono-accueil');
+                accueil.innerHTML = '<p><strong>' + def.nb + ' questions chronométrées</strong>, de ' +
+                    Math.min.apply(null, secondes) + ' à ' + Math.max.apply(null, secondes) + ' secondes chacune (' + duree(total) + ' au maximum).</p>' +
+                    '<p>Les questions arrivent une par une. Quand tu as répondu, clique sur « Valider » (ou appuie sur Entrée) : tu passes à la suivante. ' +
+                    'Quand le temps est écoulé, on passe tout seul à la suivante ; une réponse vide compte faux. Pas de retour en arrière.</p>' +
+                    '<p>La correction s\'affiche à la fin. Prépare un brouillon !</p>';
+                var go = el('button', 'chrono-go', 'Commencer ⏱'); go.type = 'button';
+                accueil.appendChild(go);
+                zone.insertBefore(accueil, bilan);
+
+                var barre = el('div', 'chrono-barre');
+                var pos = el('span', 'chrono-pos'), reste = el('span', 'chrono-reste');
+                var jauge = el('div', 'chrono-jauge'), remplie = el('div');
+                jauge.appendChild(remplie);
+                barre.appendChild(pos); barre.appendChild(reste); barre.appendChild(jauge);
+                var actions = el('div', 'chrono-actions');
+                var valider = el('button', null, 'Valider →'); valider.type = 'button';
+                var passer = el('button', 'secondaire', 'Je passe'); passer.type = 'button';
+                var msg = el('p', 'chrono-msg');
+                actions.appendChild(valider); actions.appendChild(passer); actions.appendChild(msg);
+                valider.onclick = function () { suivante(false); };
+                passer.onclick = function () { suivante(true); };
+
+                go.onclick = function () {
+                    accueil.remove();
+                    zone.insertBefore(barre, bilan);
+                    zone.insertBefore(liste, bilan);
+                    zone.insertBefore(actions, bilan);
+                    debut = Date.now();
+                    montrer(0);
+                };
+
+                function duree(s) { return Math.floor(s / 60) + ' min ' + String(s % 60).padStart(2, '0'); }
+
+                function montrer(j) {
+                    k = j;
+                    lis[j].hidden = false;
+                    lis[j].entree = function () { suivante(false); };
+                    pos.textContent = 'Question ' + (j + 1) + ' / ' + def.nb;
+                    msg.textContent = '';
+                    fin = Date.now() + secondes[j] * 1000;
+                    clearInterval(minuteur);
+                    minuteur = setInterval(tic, 200);
+                    tic();
+                    var c = lis[j].querySelector('input');
+                    if (c) c.focus();
+                    barre.scrollIntoView({ block: 'nearest' });
+                }
+
+                function tic() {
+                    var ms = Math.max(0, fin - Date.now()), s = Math.ceil(ms / 1000);
+                    reste.textContent = '⏱ ' + s + ' s';
+                    remplie.style.width = (100 * ms / (secondes[k] * 1000)) + '%';
+                    barre.classList.toggle('urgent', s <= 5);
+                    if (ms <= 0) suivante(true, true);
+                }
+
+                // vide : « Je passe » ou fin du temps (la réponse saisie compte si elle est lisible)
+                function suivante(vide, tempsEcoule) {
+                    var li = lis[k], res = vide && !tempsEcoule ? null : li.controler();
+                    if (!res) {
+                        if (!vide) { msg.textContent = 'Réponds, ou clique sur « Je passe ».'; return; }
+                        res = { ok: false, r: tempsEcoule ? '(temps écoulé)' : '(passée)' };
+                        li.vide = tempsEcoule ? 'temps' : 'passe';
+                    }
+                    reponses[k] = res;
+                    li.hidden = true; li.entree = null;
+                    if (k + 1 < def.nb) montrer(k + 1);
+                    else terminerChrono();
+                }
+
+                function terminerChrono() {
+                    clearInterval(minuteur);
+                    barre.remove(); actions.remove();
+                    zone.appendChild(liste);             // la correction sous le score
+                    lis.forEach(function (li, j) {
+                        li.hidden = false;
+                        li.appliquer(reponses[j]);
+                        if (li.vide) li.querySelector('.q-retour').textContent = li.vide === 'temps' ? '⏱ Temps écoulé. Correction :' : '✗ Question passée. Correction :';
+                    });
                 }
             }
 

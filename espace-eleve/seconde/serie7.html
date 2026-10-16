@@ -52,7 +52,7 @@
         document.title = 'Série 7 · Jour ' + j;
         document.getElementById('jours').innerHTML = [1, 2, 3].map(function (k) {
             return k === j ? '<strong>Jour ' + k + '</strong>' : '<a href="?j=' + k + '">Jour ' + k + '</a>';
-        }).join(' · ');
+        }).join(' · ') + ' · <a href="serie7-bilan.html">Bilan ⏱</a>';
 
         var types = JOURS[j];
         Interactif.exercice({

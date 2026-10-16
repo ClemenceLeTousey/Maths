@@ -236,3 +236,21 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .q-rappel strong { color: var(--c-seconde); }
 .palier-aide { display: block; margin-top: 4px; font-weight: 500; color: var(--attention); }
 .rep-aide { font-size: 0.85em; color: var(--attention); }
+
+/* Mode chronométré (bilans) : une question à la fois, compte à rebours */
+.chrono-accueil { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
+.chrono-accueil p { margin: 0 0 10px; }
+.interactif button.chrono-go { font-size: 1.05rem; padding: 8px 22px; }
+.chrono-barre {
+    position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline;
+    gap: 4px 12px; margin-bottom: 12px; padding: 8px 0; background: var(--bg, var(--surface));
+}
+.chrono-pos { font-weight: 600; }
+.chrono-reste { font-family: var(--f-mono); font-size: 1.15rem; font-weight: 600; }
+.chrono-jauge { flex-basis: 100%; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.chrono-jauge > div { height: 100%; background: var(--c-seconde); transition: width 0.2s linear; }
+.chrono-barre.urgent .chrono-reste { color: var(--ko); }
+.chrono-barre.urgent .chrono-jauge > div { background: var(--ko); }
+.chrono-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
+.interactif .chrono-actions button { font-size: 1rem; padding: 8px 18px; }
+.chrono-msg { margin: 0; color: var(--attention); font-weight: 600; }
