@@ -18,7 +18,8 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie7-bilan', groupe: 'Facultatif · Série 7 en temps limité ⏱', titre: 'Bilan Série 7 (10 questions chronométrées)', court: 'S7 · Bilan', url: 'seconde/serie7-bilan.html' },
     { niveau: 'seconde', id: 'seconde/serie6-j1', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 1', court: 'S6 · J1', url: 'seconde/serie6.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie6-j2', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 2', court: 'S6 · J2', url: 'seconde/serie6.html?j=2' },
-    { niveau: 'seconde', id: 'seconde/serie6-j3', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 3', court: 'S6 · J3', url: 'seconde/serie6.html?j=3' }
+    { niveau: 'seconde', id: 'seconde/serie6-j3', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 3', court: 'S6 · J3', url: 'seconde/serie6.html?j=3' },
+    { niveau: 'seconde', id: 'seconde/serie6-evaluation', groupe: 'Facultatif · Série 6 en temps limité ⏱', titre: 'Évaluation Série 6 (7 questions chronométrées)', court: 'S6 · Éval', url: 'seconde/serie6-evaluation.html' }
 ];
 
 /* Description de chaque groupe (même libellé que « groupe » ci-dessus), affichée sous son titre sur la page élève :
@@ -33,6 +34,10 @@ window.INTERACTIF_GROUPES = {
         section: 'Anciennes séries',
         themes: ['A1 · Comparer deux nombres', 'A4 · Écritures d\'un nombre', 'A5 · Encadrer, ordre de grandeur',
                  'A9 · Développer', 'A10 · Équations', 'A13 · Proportions']
+    },
+    'Facultatif · Série 6 en temps limité ⏱': {
+        section: 'Anciennes séries',
+        texte: 'Ces bilans ne sont pas obligatoires : ils sont là pour celles et ceux qui veulent s\'entraîner en temps limité.'
     },
     'Facultatif · Série 7 en temps limité ⏱': {
         texte: 'Ces bilans ne sont pas obligatoires : ils sont là pour celles et ceux qui veulent s\'entraîner en temps limité.'

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Série 6 · Évaluation chronométrée</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../../img/favicon-32.png">
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../interactif.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="../../site.js"></script>
+    <script src="../config.js"></script>
+    <script src="../expr.js"></script>
+    <script src="../moteur.js"></script>
+    <script src="automatismes.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><span class="logo-ligne"><button type="button" data-effet="ecrire" title="Réécrire le titre"></button><button type="button" data-effet="matrix" title="Mode Matrix"></button><button type="button" data-effet="futur" title="Mode BTTF (Back to the Future)"></button><button type="button" data-effet="halloween" title="Mode Halloween"></button></span><a href="../../index.html">Année 2026-2027 - Lycée Lebrun</a></div>
+        <ul class="nav-links">
+            <li><a href="../../index.html">Accueil</a></li>
+            <li><a href="../index.html">Automatismes</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1 id="titre">Évaluation Série 6</h1>
+        <p>Facultatif · s'entraîner en temps limité</p>
+    </header>
+
+    <main class="interactif">
+        <div id="bandeau"></div>
+        <p class="aide"><strong>Facultatif.</strong> Les 7 questions de l'évaluation de la Série 6 distribuée en classe, avec le même temps pour chaque question.<br>Connecte-toi d'abord pour que ton résultat soit enregistré.<br>Pour une fraction, écris par exemple <code>12/5</code> ; pour un nombre décimal, mets une virgule ou un point ; pour une expression, écris par exemple <code>-12x+22</code>.</p>
+        <div id="exercice"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Clémence Le Tousey<br>Hébergé avec GitHub Pages.<br>Documents sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a> : réutilisation libre en citant l'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.</p>
+    </footer>
+
+    <script>
+    (function () {
+        // Les 7 questions de l'évaluation de la Série 6 (Jour 4, fiche distribuée en classe), avec le temps de la projection
+        var QUESTIONS = [
+            { duree: 50, q: {
+                objectif: 'A1 · Comparer deux nombres', type: 'qcm',
+                texte: 'Parmi les quatre nombres suivants, lequel est le plus petit ?',
+                options: ['$\\dfrac{126}{100}$', '$1{,}3$', '$\\dfrac{5}{4}$', '$13\\times10^{-1}$'], bonne: 2,
+                explication: '$\\dfrac{126}{100}=1{,}26$ ; $\\dfrac{5}{4}=5\\div4=1{,}25$ ; $13\\times10^{-1}=13\\div10=1{,}3$.<br>$1{,}25<1{,}26<1{,}3$ : le plus petit est $\\dfrac{5}{4}$ (réponse C).' } },
+            { duree: 40, q: {
+                objectif: 'A13 · Proportions', type: 'qcm',
+                texte: 'L\'opération qui permet de calculer $35\\,\\%$ de $240$ est :',
+                options: ['$35\\times240\\times0{,}01$', '$35\\times240\\times100$', '$\\dfrac{35\\times240}{10}$', '$240\\times35\\times0{,}1$'], bonne: 0,
+                explication: '$35\\,\\%$ de $240$ $=\\dfrac{35}{100}\\times240=35\\times240\\times0{,}01=84$ (réponse A) : multiplier par $0{,}01$, c\'est diviser par $100$.<br>B multiplie par $100$ ; C et D divisent seulement par $10$.' } },
+            { duree: 50, q: {
+                objectif: 'A5 · Encadrer, ordre de grandeur', type: 'champs',
+                texte: 'Sans utiliser de calculatrice, encadrer $\\sqrt{57}$ entre deux nombres entiers consécutifs.',
+                gabarit: '[] $<\\sqrt{57}<$ []', attendus: [7, 8],
+                explication: '$7^2=49$ et $8^2=64$, et $49<57<64$.<br>Donc $\\sqrt{49}<\\sqrt{57}<\\sqrt{64}$, c\'est-à-dire $7<\\sqrt{57}<8$.' } },
+            { duree: 40, q: {
+                objectif: 'A4 · Écritures d\'un nombre', type: 'nombre', decimal: true, prefixe: 'B=', attendu: 1.06,
+                texte: 'Écrire sous forme décimale : $B=\\dfrac{7}{10}+\\dfrac{36}{100}$',
+                explication: '$\\dfrac{7}{10}=0{,}7$ et $\\dfrac{36}{100}=0{,}36$.<br>$B=0{,}7+0{,}36=1{,}06$.<br>Piège : $0{,}7+0{,}36$ n\'est pas $0{,}43$ : on aligne les virgules ($0{,}70+0{,}36$).' } },
+            { duree: 50, q: {
+                objectif: 'A9 · Développer, factoriser', type: 'expr', prefixe: 'C=', attendu: '-12x+22', forme: 'developpee',
+                texte: 'Développer et réduire : $C=-3(4x-5)+7$',
+                explication: '$C=(-3)\\times4x+(-3)\\times(-5)+7=-12x+15+7=-12x+22$.<br>Piège : $(-3)\\times(-5)=+15$ (moins par moins).' } },
+            { duree: 40, q: {
+                objectif: 'A5 · Ordre de grandeur', type: 'qcm',
+                texte: 'Parmi les valeurs proposées, la valeur la plus proche de $19\\,\\%$ de $812$ est :',
+                options: ['$16$', '$80$', '$1\\,600$', '$160$'], bonne: 3,
+                explication: '$19\\,\\%\\approx20\\,\\%$ et $812\\approx800$.<br>$20\\,\\%$ de $800$ : $0{,}2\\times800=160$ (réponse D). Valeur exacte : $0{,}19\\times812=154{,}28$.<br>$20\\,\\%$, c\'est un cinquième : $800\\div5=160$.' } },
+            { duree: 65, q: {
+                objectif: 'A10 · Équations', type: 'nombre', prefixe: 'x =', attendu: 2.4,
+                texte: 'Résoudre l\'équation : $-5x+8=-4$',
+                explication: 'On soustrait $8$ aux deux membres : $-5x=-12$.<br>On divise les deux membres par $-5$ : $x=\\dfrac{-12}{-5}=\\dfrac{12}{5}=2{,}4$.<br>Vérification : $-5\\times2{,}4+8=-12+8=-4$ ✓. La solution est $2{,}4$.' } }
+        ];
+
+        Interactif.exercice({
+            id: 'seconde/serie6-evaluation',
+            nb: QUESTIONS.length,
+            chrono: function (i) { return QUESTIONS[i].duree; },
+            generer: function (i) { return Object.assign({}, QUESTIONS[i].q); }
+        });
+    })();
+    </script>
+</body>
+</html>
