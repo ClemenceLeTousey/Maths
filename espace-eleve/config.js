@@ -18,7 +18,7 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie7-j1', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 1', court: 'S7 · J1', url: 'seconde/serie7.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie7-j2', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 2', court: 'S7 · J2', url: 'seconde/serie7.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie7-j3', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 3', court: 'S7 · J3', url: 'seconde/serie7.html?j=3' },
-    { niveau: 'seconde', id: 'seconde/serie7-bilan', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Bilan chronométré ⏱', court: 'S7 · Bilan', url: 'seconde/serie7-bilan.html' }
+    { niveau: 'seconde', id: 'seconde/serie7-bilan', groupe: 'Facultatif · s\'entraîner en temps limité ⏱', titre: 'Bilan Série 7 (10 questions chronométrées)', court: 'S7 · Bilan', url: 'seconde/serie7-bilan.html' }
 ];
 
 /* Exercices retirés qui ne sont plus au catalogue : masqués dans le suivi prof
