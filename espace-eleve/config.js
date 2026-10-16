@@ -35,12 +35,7 @@ window.INTERACTIF_GROUPES = {
                  'A9 · Développer', 'A10 · Équations', 'A13 · Proportions']
     },
     'Facultatif · Série 7 en temps limité ⏱': {
-        texte: 'Ces bilans ne sont pas obligatoires : ils sont là pour celles et ceux qui veulent s\'entraîner davantage. ' +
-               'Un bilan reprend en 10 questions les types de questions de la série, avec d\'autres nombres, mais cette fois ' +
-               '<strong>en temps limité</strong> : chaque question a son propre chrono (de 30 secondes à 1 min 15), comme lors d\'une interrogation en classe. ' +
-               'Les questions arrivent une par une, sans rappel ni retour en arrière, et la correction s\'affiche à la fin. ' +
-               'Conseil : commence par réussir les séries vertes des Jours 1 à 3, puis lance le bilan pour vérifier que tu sais faire vite et seul(e). ' +
-               'Tu peux le refaire autant de fois que tu veux : les nombres changent à chaque fois.'
+        texte: 'Ces bilans ne sont pas obligatoires : ils sont là pour celles et ceux qui veulent s\'entraîner en temps limité.'
     }
 };
 
