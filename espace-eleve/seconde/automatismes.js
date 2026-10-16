@@ -110,7 +110,7 @@
     Auto.encadrerRacine = function (niveau) {
         var q = { niveau: niveau, objectif: 'A5 · Encadrer, ordre de grandeur', type: 'champs' };
         if (niveau < 3) {
-            var a = niveau === 1 ? nonCarre(2, 99) : nonCarre(101, 399), n = Math.floor(Math.sqrt(a));
+            var a = niveau === 1 ? nonCarre(2, 99) : nonCarre(101, 143), n = Math.floor(Math.sqrt(a));
             q.texte = 'Encadrer $\\sqrt{' + a + '}$ entre deux entiers consécutifs.';
             q.gabarit = '[] $<\\sqrt{' + a + '}<$ []';
             q.attendus = [n, n + 1];
@@ -342,14 +342,14 @@
         var q = { niveau: niveau, objectif: 'A13 · Proportions', type: 'nombre' };
         var p, N;
         if (niveau === 1) {
-            p = A.choix([10, 20, 30, 40, 60, 70, 25, 50, 75]); N = A.entier(3, 40) * 20;
+            p = A.entier(1, 19) * 5; N = A.entier(3, 40) * 20;
             q.texte = 'Calculer $' + pct(p) + '$ de $' + fr(N) + '$.';
             q.attendu = p * N / 100;
-            q.explication = '$' + frac(p, 100) + '\\times' + fr(N) + '=' + fr(q.attendu) + '$' + (p % 10 === 0 ? ' ($10\\,\\%$ de $' + fr(N) + '$ font $' + fr(N / 10) + '$, et on multiplie par $' + p / 10 + '$).' : '.');
+            q.explication = '$' + frac(p, 100) + '\\times' + fr(N) + '=' + fr(q.attendu) + '$' + (p % 10 === 0 ? ' ($10\\,\\%$ de $' + fr(N) + '$ font $' + fr(N / 10) + '$, et on multiplie par $' + p / 10 + '$).' : ' ($10\\,\\%$ : $' + fr(N / 10) + '$ ; $5\\,\\%$ : $' + fr(N / 20) + '$).');
             return q;
         }
         if (niveau === 2) {
-            p = A.choix([5, 15, 35, 45, 12, 85]); N = A.entier(3, 30) * (p === 12 ? 25 : 20);
+            p = A.choix([5, 15, 35, 45, 55, 65, 85, 95]); N = A.entier(3, 30) * 20;
             q.texte = 'Calculer $' + pct(p) + '$ de $' + fr(N) + '$.';
             q.attendu = arrondi(p * N / 100);
             q.explication = '$' + fr(p / 100) + '\\times' + fr(N) + '=' + fr(q.attendu) + '$' + (p % 5 === 0 && p % 10 ? ' ($10\\,\\%$ : $' + fr(N / 10) + '$ ; $5\\,\\%$ : $' + fr(N / 20) + '$).' : '.');
@@ -541,7 +541,7 @@
     Auto.encadrerRacineFinal = function (niveau) {
         var q = { niveau: niveau, objectif: 'A5 · Encadrer, ordre de grandeur', type: 'champs' };
         if (niveau === 1) {
-            var a = nonCarre(101, 399), n = Math.floor(Math.sqrt(a));
+            var a = nonCarre(26, 143), n = Math.floor(Math.sqrt(a));
             q.texte = 'Sans calculatrice, encadrer $\\sqrt{' + a + '}$ entre deux entiers consécutifs.';
             q.gabarit = '[] $<\\sqrt{' + a + '}<$ []';
             q.attendus = [n, n + 1];
@@ -549,7 +549,7 @@
             return q;
         }
         if (niveau === 2) {
-            var b = nonCarre(101, 399), d10 = Math.floor(Math.sqrt(b * 100));
+            var b = nonCarre(2, 143), d10 = Math.floor(Math.sqrt(b * 100));
             while (d10 * d10 > b * 100) d10--;
             while ((d10 + 1) * (d10 + 1) <= b * 100) d10++;
             var d = d10 / 10, e = (d10 + 1) / 10;
@@ -560,7 +560,7 @@
             return q;
         }
         var k = A.entier(2, 5), m, kk;
-        do { m = nonCarre(2, 15); kk = k * k * m; } while (kk > 200);
+        do { m = nonCarre(2, 15); kk = k * k * m; } while (kk > 143);
         var r = Math.floor(Math.sqrt(kk));
         q.texte = 'Encadrer $' + k + '\\sqrt{' + m + '}$ entre deux entiers consécutifs.';
         q.gabarit = '[] $<' + k + '\\sqrt{' + m + '}<$ []';
@@ -635,7 +635,7 @@
     var RAPPELS = {
         plusGrand: RAPPEL_ECRITURES,
         pourcentage: RAPPEL_POURCENTAGE,
-        encadrerRacine: RAPPEL_RACINE + '<br>Carrés à connaître : $1$, $4$, $9$, $16$, $25$, $36$, $49$, $64$, $81$, $100$.',
+        encadrerRacine: RAPPEL_RACINE + '<br>Carrés à connaître : $1$, $4$, $9$, $16$, $25$, $36$, $49$, $64$, $81$, $100$, $121$, $144$.',
         petitsNombres: RAPPEL_DECIMAL,
         fractionDecimale: 'Diviser par $10$ : la virgule se décale de $1$ rang vers la gauche ; par $100$ : de $2$ rangs.<br>' +
             'Exemples : $' + frac(347, 10) + '=34{,}7$ et $' + frac(347, 100) + '=3{,}47$.',
@@ -660,8 +660,8 @@
         imageFonction: 'L\'image de $a$ par $f$, c\'est $f(a)$ : on remplace $x$ par $a$ dans l\'expression, avec des parenthèses si $a$ est négatif.<br>' +
             'Exemple : si $f(x)=3x-5$, alors $f(-2)=3\\times(-2)-5=-6-5=-11$.',
         rangerEcritures: RAPPEL_ECRITURES + '<br>Réponds avec les lettres, du plus petit au plus grand.',
-        encadrerRacineFinal: RAPPEL_RACINE.replace('$25<30<36$, c\'est-à-dire $5^2<30<6^2$, donc $5<\\sqrt{30}<6$', '$144<150<169$, c\'est-à-dire $12^2<150<13^2$, donc $12<\\sqrt{150}<13$') +
-            '<br>Carrés à connaître : $11^2=121$, $12^2=144$, $13^2=169$, $14^2=196$, $15^2=225$, $16^2=256$, $17^2=289$, $18^2=324$, $19^2=361$, $20^2=400$.',
+        encadrerRacineFinal: RAPPEL_RACINE.replace('$25<30<36$, c\'est-à-dire $5^2<30<6^2$, donc $5<\\sqrt{30}<6$', '$121<130<144$, c\'est-à-dire $11^2<130<12^2$, donc $11<\\sqrt{130}<12$') +
+            '<br>Carrés à connaître : $1$, $4$, $9$, $16$, $25$, $36$, $49$, $64$, $81$, $100$, $121$, $144$.',
         puissances: 'Règles de calcul : $a^m\\times a^n=a^{m+n}$ et $' + frac('a^m', 'a^n') + '=a^{m-n}$.<br>' +
             'Attention aux exposants négatifs : $' + frac('5^3', '5^{-2}') + '=5^{3-(-2)}=5^5$ et $5^3\\times5^{-2}=5^{3+(-2)}=5^1$.'
     };
