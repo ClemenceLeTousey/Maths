@@ -12,7 +12,18 @@
     <script src="moteur.js"></script>
     <script src="soutien.js"></script>
     <style>
-        .soutien { margin-top: 28px; }
+        .soutien { margin-top: 4px; }
+        .onglets { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 18px; }
+        .interactif .onglets button {
+            background: none; color: var(--muted); border: 1px solid transparent; border-bottom: none;
+            border-radius: 8px 8px 0 0; padding: 8px 16px; margin-bottom: -2px; font-size: 1rem;
+        }
+        .interactif .onglets button:hover { color: var(--c-seconde); }
+        .interactif .onglets button[aria-selected="true"] {
+            color: var(--c-seconde); background: var(--surface); border-color: var(--line);
+            border-bottom: 2px solid var(--surface); font-weight: 600;
+        }
+        .interactif .onglets button:focus-visible { outline: 2px solid var(--c-seconde); outline-offset: -2px; }
         .soutien h2, h2.section { font-size: 1.2rem; margin-bottom: 6px; }
         .soutien-semaine { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; margin-bottom: 10px; }
         .soutien-semaine h3 { margin: 0 0 4px; font-size: 1rem; }
@@ -49,11 +60,19 @@
     <main class="interactif">
         <div id="bandeau"></div>
         <div id="contenu" hidden>
-        <h2 class="section">Automatismes</h2>
+        <div class="onglets" role="tablist" aria-label="Rubriques de l'espace élève">
+            <button type="button" role="tab" id="onglet-automatismes" aria-controls="panneau-automatismes" data-onglet="automatismes">Automatismes</button>
+            <button type="button" role="tab" id="onglet-echange" aria-controls="panneau-echange" data-onglet="echange">Espace d'échange</button>
+            <button type="button" role="tab" id="onglet-soutien" aria-controls="panneau-soutien" data-onglet="soutien">Soutien</button>
+        </div>
+
+        <div class="panneau" role="tabpanel" id="panneau-automatismes" aria-labelledby="onglet-automatismes">
         <div class="tableau-defile"><table class="res" id="liste"></table></div>
         <p class="aide">Tu peux refaire un exercice autant de fois que tu veux : les nombres changent à chaque fois.</p>
         <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>
+        </div>
 
+        <div class="panneau" role="tabpanel" id="panneau-echange" aria-labelledby="onglet-echange" hidden>
         <section class="soutien message">
             <h2>Un message pour ta professeure</h2>
             <label for="message-texte" class="aide">Si tu vois une erreur sur la page, que tu as une suggestion, ou bien encore que tu as besoin d'informations complémentaires sur un sujet, laisse-moi un message ici.</label>
@@ -66,13 +85,16 @@
             <p class="aide pj-avert">Si tu joins une capture, vérifie qu'elle ne montre que la page qui pose souci (pas de conversation ni d'informations personnelles).</p>
             <p class="soutien-actions"><button type="button" id="message-envoyer">Envoyer le message</button> <span id="message-etat" class="aide" aria-live="polite"></span></p>
         </section>
+        </div>
 
-        <section id="soutien" class="soutien">
+        <div class="panneau" role="tabpanel" id="panneau-soutien" aria-labelledby="onglet-soutien" hidden>
+        <section class="soutien">
             <h2>Soutien en mathématiques · de la Toussaint à Noël</h2>
             <p class="aide">Seuls les créneaux compatibles avec ton emploi du temps sont proposés, et jamais sur ta seule heure de repas. Coche ceux où tu veux venir, puis enregistre : tu peux modifier ton choix jusqu'à la veille.</p>
             <div id="soutien-semaines"></div>
             <p class="soutien-actions"><button type="button" id="soutien-enregistrer">Enregistrer mes créneaux</button> <span id="soutien-etat" class="aide" aria-live="polite"></span></p>
         </section>
+        </div>
         </div>
         <p class="espace-prof"><a class="bouton" href="prof.html">Espace professeure</a></p>
     </main>
@@ -240,6 +262,29 @@
                 if (/Session/.test(x.message)) { Interactif.deconnecter(); Interactif.bandeau(document.getElementById('bandeau'), charger); }
             });
         }
+
+        /* ---------- Onglets : Automatismes par défaut ; #echange ou #soutien dans l'adresse ouvre l'onglet voulu ---------- */
+        var onglets = Array.prototype.slice.call(document.querySelectorAll('.onglets [role="tab"]'));
+        function ouvrirOnglet(nom, focus) {
+            if (!onglets.some(function (o) { return o.dataset.onglet === nom; })) nom = 'automatismes';
+            onglets.forEach(function (o) {
+                var actif = o.dataset.onglet === nom;
+                o.setAttribute('aria-selected', actif ? 'true' : 'false');
+                o.tabIndex = actif ? 0 : -1;
+                document.getElementById(o.getAttribute('aria-controls')).hidden = !actif;
+                if (actif && focus) o.focus();
+            });
+            try { history.replaceState(null, '', nom === 'automatismes' ? location.pathname + location.search : '#' + nom); } catch (e) {}
+        }
+        onglets.forEach(function (o, k) {
+            o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };
+            o.onkeydown = function (e) {
+                var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+                if (d) { e.preventDefault(); ouvrirOnglet(onglets[(k + d + onglets.length) % onglets.length].dataset.onglet, true); }
+            };
+        });
+        ouvrirOnglet(location.hash.slice(1));
+        window.addEventListener('hashchange', function () { ouvrirOnglet(location.hash.slice(1)); });
 
         Interactif.bandeau(document.getElementById('bandeau'), charger);
         charger(Interactif.session());
