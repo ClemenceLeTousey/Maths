@@ -303,9 +303,9 @@
             etatMessage.textContent = '';
             document.getElementById('contenu').hidden = !s;
             document.querySelector('.espace-prof').hidden = !!s;   // seulement sur l'accueil, pas pour un élève connecté
-            // onglets réservés à un niveau (Évaluations : Secondes seulement)
+            // onglets réservés à un niveau (Évaluations : Secondes seulement) ; compte TEST (sans niveau) : tout voir
             var niv = s && Interactif.niveauClasse(s.classe);
-            onglets.forEach(function (o) { if (o.dataset.niveau) o.hidden = o.dataset.niveau !== niv; });
+            onglets.forEach(function (o) { if (o.dataset.niveau) o.hidden = !s || (!!niv && o.dataset.niveau !== niv); });
             if (s) ouvrirOnglet(location.hash.slice(1));   // déconnecté : on garde #evaluations… pour après la connexion
             afficher(null);
             soutien(s);
