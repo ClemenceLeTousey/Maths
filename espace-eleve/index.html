@@ -47,6 +47,11 @@
         #pj-apercu { display: inline-flex; align-items: center; gap: 8px; }
         #pj-apercu[hidden] { display: none; }
         #pj-image { max-height: 70px; max-width: 160px; border: 1px solid var(--line); border-radius: 4px; }
+        .evals { list-style: none; padding: 0; margin: 0; }
+        .evals li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; }
+        .evals .eval-titre { font-weight: 600; }
+        .evals .eval-titre span { display: block; font-weight: 400; font-size: 0.9rem; color: var(--muted); }
+        .evals .eval-liens { display: flex; flex-wrap: wrap; gap: 6px; }
     </style>
 </head>
 <body>
@@ -67,6 +72,7 @@
         <div id="contenu" hidden>
         <div class="onglets" role="tablist" aria-label="Rubriques de l'espace élève">
             <button type="button" role="tab" id="onglet-automatismes" aria-controls="panneau-automatismes" data-onglet="automatismes">Automatismes</button>
+            <button type="button" role="tab" id="onglet-evaluations" aria-controls="panneau-evaluations" data-onglet="evaluations" data-niveau="seconde" hidden>Évaluations</button>
             <button type="button" role="tab" id="onglet-echange" aria-controls="panneau-echange" data-onglet="echange">Espace d'échange</button>
             <button type="button" role="tab" id="onglet-soutien" aria-controls="panneau-soutien" data-onglet="soutien">Soutien</button>
         </div>
@@ -75,6 +81,25 @@
         <div class="tableau-defile"><table class="res" id="liste"></table></div>
         <p class="aide">Tu peux refaire un exercice autant de fois que tu veux : les nombres changent à chaque fois.</p>
         <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>
+        </div>
+
+        <div class="panneau" role="tabpanel" id="panneau-evaluations" aria-labelledby="onglet-evaluations" hidden>
+        <section class="soutien">
+            <h2>Évaluations déjà faites</h2>
+            <p class="aide">Les sujets et leurs corrigés, pour revoir tes erreurs et préparer les prochains devoirs.</p>
+            <ul class="evals">
+                <li><div class="eval-titre">Évaluation formative 1<span>Calculs numériques</span></div>
+                    <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef1-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef1-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
+                <li><div class="eval-titre">Évaluation formative 2<span>Racines carrées et vecteurs</span></div>
+                    <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef2-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef2-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
+                <li><div class="eval-titre">Devoir surveillé 1 · Contrat<span>Le sujet d'entraînement, même structure que le DS</span></div>
+                    <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ds1-contrat.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ds1-contrat-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
+                <li><div class="eval-titre">Devoir surveillé 1<span>Sujets A et B</span></div>
+                    <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ds1-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ds1-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
+                <li><div class="eval-titre">Évaluation formative 3<span>Équations et vecteurs</span></div>
+                    <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef3-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef3-corrige.pdf" target="_blank" rel="noopener">Corrigé</a><a class="bouton" href="seconde/evaluations/ef3-corrige-detaille.pdf" target="_blank" rel="noopener">Corrigé détaillé</a></div></li>
+            </ul>
+        </section>
         </div>
 
         <div class="panneau" role="tabpanel" id="panneau-echange" aria-labelledby="onglet-echange" hidden>
@@ -278,6 +303,10 @@
             etatMessage.textContent = '';
             document.getElementById('contenu').hidden = !s;
             document.querySelector('.espace-prof').hidden = !!s;   // seulement sur l'accueil, pas pour un élève connecté
+            // onglets réservés à un niveau (Évaluations : Secondes seulement)
+            var niv = s && Interactif.niveauClasse(s.classe);
+            onglets.forEach(function (o) { if (o.dataset.niveau) o.hidden = o.dataset.niveau !== niv; });
+            if (s) ouvrirOnglet(location.hash.slice(1));   // déconnecté : on garde #evaluations… pour après la connexion
             afficher(null);
             soutien(s);
             if (!s) return;
@@ -286,10 +315,10 @@
             });
         }
 
-        /* ---------- Onglets : Automatismes par défaut ; #echange ou #soutien dans l'adresse ouvre l'onglet voulu ---------- */
+        /* ---------- Onglets : Automatismes par défaut ; #evaluations, #echange ou #soutien dans l'adresse ouvre l'onglet voulu ---------- */
         var onglets = Array.prototype.slice.call(document.querySelectorAll('.onglets [role="tab"]'));
         function ouvrirOnglet(nom, focus) {
-            if (!onglets.some(function (o) { return o.dataset.onglet === nom; })) nom = 'automatismes';
+            if (!onglets.some(function (o) { return o.dataset.onglet === nom && !o.hidden; })) nom = 'automatismes';
             onglets.forEach(function (o) {
                 var actif = o.dataset.onglet === nom;
                 o.setAttribute('aria-selected', actif ? 'true' : 'false');
@@ -299,14 +328,16 @@
             });
             try { history.replaceState(null, '', nom === 'automatismes' ? location.pathname + location.search : '#' + nom); } catch (e) {}
         }
-        onglets.forEach(function (o, k) {
+        onglets.forEach(function (o) {
             o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };
             o.onkeydown = function (e) {
                 var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-                if (d) { e.preventDefault(); ouvrirOnglet(onglets[(k + d + onglets.length) % onglets.length].dataset.onglet, true); }
+                if (!d) return;
+                e.preventDefault();
+                var visibles = onglets.filter(function (x) { return !x.hidden; }), k = visibles.indexOf(o);
+                ouvrirOnglet(visibles[(k + d + visibles.length) % visibles.length].dataset.onglet, true);
             };
         });
-        ouvrirOnglet(location.hash.slice(1));
         window.addEventListener('hashchange', function () { ouvrirOnglet(location.hash.slice(1)); });
 
         Interactif.bandeau(document.getElementById('bandeau'), charger);
