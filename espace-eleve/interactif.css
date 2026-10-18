@@ -124,6 +124,11 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .legende { display: block; font-weight: 400; font-size: 0.8em; }
 .legende .pastille { min-width: 0; }
 
+/* Code Python d'une question (Série 5) */
+.q-code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.95rem; line-height: 1.45; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; margin: 8px 0 2px; width: fit-content; max-width: 100%; overflow-x: auto; white-space: pre; }
+.q-console { font-family: ui-monospace, Menlo, Consolas, monospace; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; white-space: pre; }
+.q-aide-code { display: block; margin-top: 4px; font-size: 0.85rem; color: var(--muted); }
+
 /* Figure d'une question (repère…) */
 .q-figure { margin: 6px 0 4px 34px; }
 .q-figure svg { max-width: 100%; height: auto; display: block; }
@@ -133,6 +138,9 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .q-figure .fig-pt { fill: var(--c-seconde); }
 .q-figure .fig-nom { fill: var(--c-seconde); font-weight: 700; font-size: 17px; font-family: system-ui, sans-serif; paint-order: stroke; stroke: var(--surface); stroke-width: 5px; }
 .q-figure .fig-grille { stroke: var(--muted); stroke-opacity: .35; }
+.q-figure .fig-forme { fill: var(--bleu-doux); stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.q-figure .fig-cote { font-size: 15px; }
+.q-figure .fig-var { font-style: italic; font-family: 'Times New Roman', serif; font-size: 18px; }
 
 /* ==========================================================================
    Mode Retour vers le futur (classe futur posée par site.js) : convecteur temporel

@@ -13,10 +13,11 @@
     <script src="soutien.js"></script>
     <style>
         .soutien { margin-top: 4px; }
-        table.res th.section-titre { text-align: left; background: none; border-left: none; border-right: none; padding: 44px 0 6px; font-size: 1.1rem; color: var(--c-seconde); }
-        .themes-groupe { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin-top: 6px; font-weight: 400; }
-        .themes-intro { font-size: 0.85rem; color: var(--muted); margin-right: 2px; }
-        .themes-groupe .theme { font-size: 0.8rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+        table.res tr.entetes th { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+        table.res tr + tr > th.groupe { border-top: 18px solid var(--bg); }
+        .anciennes { margin-top: 36px; }
+        .anciennes label { font-weight: 600; color: var(--c-seconde); margin-right: 8px; }
+        .anciennes select { font: inherit; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); margin-bottom: 10px; }
         .texte-groupe { margin: 6px 0 2px; font-weight: 400; font-size: 0.9rem; line-height: 1.5; color: var(--text); }
         .onglets { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 18px; }
         .interactif .onglets button {
@@ -79,6 +80,11 @@
 
         <div class="panneau" role="tabpanel" id="panneau-automatismes" aria-labelledby="onglet-automatismes">
         <div class="tableau-defile"><table class="res" id="liste"></table></div>
+        <div class="anciennes" id="anciennes" hidden>
+            <label for="choix-ancienne">Anciennes séries :</label>
+            <select id="choix-ancienne"></select>
+            <div class="tableau-defile"><table class="res" id="liste-anciennes"></table></div>
+        </div>
         <p class="aide">Tu peux refaire un exercice autant de fois que tu veux : les nombres changent à chaque fois.</p>
         <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>
         </div>
@@ -130,48 +136,36 @@
     </main>
 
     <footer>
-        <p>&copy; 2026 Clémence Le Tousey<br>Hébergé avec GitHub Pages.<br>Documents sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a> : réutilisation libre en citant l'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.</p>
+        <p>Hébergé avec GitHub Pages. &copy; 2026 Clémence Le Tousey<br>Documents sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a> : réutilisation libre en citant l'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.</p>
     </footer>
 
     <script>
     (function () {
         var table = document.getElementById('liste');
 
-        function afficher(resultats) {
-            var parExercice = {};
-            (resultats || []).forEach(function (r) { (parExercice[r.exercice] = parExercice[r.exercice] || []).push(r); });
-            table.innerHTML = '<tr><th>Exercice</th><th>Meilleur score <span class="legende"><span class="pastille n1">vert</span><span class="pastille n2">bleu</span><span class="pastille n3">rouge</span></span></th><th>Séries faites</th></tr>';
-            var groupe = null, section = null, s = Interactif.session(), niv = s && Interactif.niveauClasse(s.classe);
-            var GROUPES = window.INTERACTIF_GROUPES || {};
-            var liste = INTERACTIF_CATALOGUE.filter(function (ex) { return !ex.archive && (!niv || ex.niveau === niv); });
-            if (!liste.length) {
-                var vide = document.createElement('tr'), c = document.createElement('td');
-                c.colSpan = 3; c.textContent = 'Pas encore d\'automatismes pour ta classe.';
-                vide.appendChild(c); table.appendChild(vide);
-            }
-            liste.forEach(function (ex) {
+        var anciennes = document.getElementById('anciennes'), tableAnciennes = document.getElementById('liste-anciennes');
+        var choixAncienne = document.getElementById('choix-ancienne'), derniersResultats = null;
+
+        // remplit une table : titre de chaque groupe ; ligne d'en-têtes sous le premier seulement (au-dessus des Jours)
+        function remplir(t, exercices, parExercice) {
+            var GROUPES = window.INTERACTIF_GROUPES || {}, groupe = null, entetes = true;
+            t.innerHTML = '';
+            exercices.forEach(function (ex) {
                 if (ex.groupe !== groupe) {
                     groupe = ex.groupe;
                     var info = GROUPES[groupe] || {};
-                    if ((info.section || null) !== section) {       // rubrique : Anciennes séries, Facultatif
-                        section = info.section || null;
-                        var ts = document.createElement('tr'), ths = document.createElement('th');
-                        ths.colSpan = 3; ths.className = 'section-titre'; ths.textContent = section;
-                        ts.appendChild(ths); table.appendChild(ts);
-                    }
                     var tg = document.createElement('tr'), th = document.createElement('th');
                     th.colSpan = 3; th.className = 'groupe'; th.textContent = groupe;
-                    if (info.themes) {
-                        var pills = document.createElement('div'); pills.className = 'themes-groupe';
-                        pills.appendChild(Object.assign(document.createElement('span'), { className: 'themes-intro', textContent: 'Automatismes travaillés :' }));
-                        info.themes.forEach(function (t) { pills.appendChild(Object.assign(document.createElement('span'), { className: 'theme', textContent: t })); });
-                        th.appendChild(pills);
-                    }
                     if (info.texte) {
-                        var ex2 = document.createElement('p'); ex2.className = 'texte-groupe'; ex2.innerHTML = info.texte;
-                        th.appendChild(ex2);
+                        var p = document.createElement('p'); p.className = 'texte-groupe'; p.innerHTML = info.texte;
+                        th.appendChild(p);
                     }
-                    tg.appendChild(th); table.appendChild(tg);
+                    tg.appendChild(th); t.appendChild(tg);
+                    if (entetes) {      // une seule fois par table : pas de nouveau pour le bilan facultatif
+                        var te = document.createElement('tr'); te.className = 'entetes';
+                        te.innerHTML = '<th>Exercice</th><th>Meilleur score <span class="legende"><span class="pastille n1">vert</span><span class="pastille n2">bleu</span><span class="pastille n3">rouge</span></span></th><th>Séries faites</th>';
+                        t.appendChild(te); entetes = false;
+                    }
                 }
                 var tr = document.createElement('tr'), b = parExercice[ex.id] && Interactif.bilanCouleurs(parExercice[ex.id]);
                 var a = document.createElement('a'); a.href = ex.url; a.textContent = ex.titre;
@@ -180,9 +174,42 @@
                 if (b && b.couleurs) Interactif.pastilles(cs, b.couleurs, true); else cs.textContent = b ? b.meilleur.score + ' / ' + b.meilleur.total : '—';
                 tr.appendChild(cs);
                 var cn = document.createElement('td'); cn.textContent = b ? b.series : 0; tr.appendChild(cn);
-                table.appendChild(tr);
+                t.appendChild(tr);
             });
         }
+
+        function afficher(resultats) {
+            derniersResultats = resultats;
+            var parExercice = {};
+            (resultats || []).forEach(function (r) { (parExercice[r.exercice] = parExercice[r.exercice] || []).push(r); });
+            var s = Interactif.session(), niv = s && Interactif.niveauClasse(s.classe);
+            var GROUPES = window.INTERACTIF_GROUPES || {};
+            var liste = INTERACTIF_CATALOGUE.filter(function (ex) { return !ex.archive && (!niv || ex.niveau === niv); });
+            var enCours = liste.filter(function (ex) { return !(GROUPES[ex.groupe] || {}).section; });
+            remplir(table, enCours, parExercice);
+            if (!liste.length) {
+                var vide = document.createElement('tr'), c = document.createElement('td');
+                c.colSpan = 3; c.textContent = 'Pas encore d\'automatismes pour ta classe.';
+                vide.appendChild(c); table.appendChild(vide);
+            }
+            // anciennes séries : une entrée du menu par série (la série et son bilan facultatif ensemble)
+            var series = [], parSerie = {};
+            liste.forEach(function (ex) {
+                var info = GROUPES[ex.groupe] || {};
+                if (!info.section) return;
+                var cle = info.serie || ex.groupe;
+                if (!parSerie[cle]) { parSerie[cle] = { titre: ex.groupe, exercices: [] }; series.push(cle); }
+                parSerie[cle].exercices.push(ex);
+            });
+            anciennes.hidden = !series.length;
+            var choisie = parSerie[choixAncienne.value] ? choixAncienne.value : '';   // par défaut : rien d'affiché
+            choixAncienne.innerHTML = '';
+            choixAncienne.appendChild(new Option('', '', false, !choisie));
+            series.forEach(function (cle) { choixAncienne.appendChild(new Option(parSerie[cle].titre, cle, false, cle === choisie)); });
+            tableAnciennes.hidden = !choisie;
+            if (choisie) remplir(tableAnciennes, parSerie[choisie].exercices, parExercice); else tableAnciennes.innerHTML = '';
+        }
+        choixAncienne.onchange = function () { afficher(derniersResultats); };
 
         /* ---------- Soutien : cases à cocher selon l'emploi du temps ---------- */
         var zoneSoutien = document.getElementById('soutien-semaines');

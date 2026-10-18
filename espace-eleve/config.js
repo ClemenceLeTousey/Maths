@@ -19,29 +19,42 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie6-j1', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 1', court: 'S6 · J1', url: 'seconde/serie6.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie6-j2', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 2', court: 'S6 · J2', url: 'seconde/serie6.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie6-j3', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 3', court: 'S6 · J3', url: 'seconde/serie6.html?j=3' },
-    { niveau: 'seconde', id: 'seconde/serie6-evaluation', groupe: 'Facultatif · Série 6 en temps limité ⏱', titre: 'Évaluation Série 6 (7 questions chronométrées)', court: 'S6 · Éval', url: 'seconde/serie6-evaluation.html' }
+    { niveau: 'seconde', id: 'seconde/serie6-evaluation', groupe: 'Facultatif · Série 6 en temps limité ⏱', titre: 'Évaluation Série 6 (7 questions chronométrées)', court: 'S6 · Éval', url: 'seconde/serie6-evaluation.html' },
+    { niveau: 'seconde', id: 'seconde/serie5-j1', groupe: 'Série 5 · semaine du 5 au 9 octobre', titre: 'Jour 1', court: 'S5 · J1', url: 'seconde/serie5.html?j=1' },
+    { niveau: 'seconde', id: 'seconde/serie5-j2', groupe: 'Série 5 · semaine du 5 au 9 octobre', titre: 'Jour 2', court: 'S5 · J2', url: 'seconde/serie5.html?j=2' },
+    { niveau: 'seconde', id: 'seconde/serie5-j3', groupe: 'Série 5 · semaine du 5 au 9 octobre', titre: 'Jour 3', court: 'S5 · J3', url: 'seconde/serie5.html?j=3' },
+    { niveau: 'seconde', id: 'seconde/serie5-j4', groupe: 'Série 5 · semaine du 5 au 9 octobre', titre: 'Jour 4', court: 'S5 · J4', url: 'seconde/serie5.html?j=4' },
+    { niveau: 'seconde', id: 'seconde/serie4-j1', groupe: 'Série 4 · semaine du 28 septembre au 2 octobre', titre: 'Jour 1', court: 'S4 · J1', url: 'seconde/serie4.html?j=1' },
+    { niveau: 'seconde', id: 'seconde/serie4-j2', groupe: 'Série 4 · semaine du 28 septembre au 2 octobre', titre: 'Jour 2', court: 'S4 · J2', url: 'seconde/serie4.html?j=2' },
+    { niveau: 'seconde', id: 'seconde/serie4-j3', groupe: 'Série 4 · semaine du 28 septembre au 2 octobre', titre: 'Jour 3', court: 'S4 · J3', url: 'seconde/serie4.html?j=3' }
 ];
 
 /* Description de chaque groupe (même libellé que « groupe » ci-dessus), affichée sous son titre sur la page élève :
-   themes = automatismes travaillés ; texte = explication ; section = rubrique (« Anciennes séries »),
-   absente pour la série en cours. Quand une nouvelle série arrive, mettre la précédente (et son bilan facultatif) en section: 'Anciennes séries'. */
+   themes = automatismes travaillés (pour mémoire, plus affichés) ; texte = explication ;
+   section = 'Anciennes séries' (absente pour la série en cours) ; serie = entrée du menu déroulant des anciennes séries.
+   Quand une nouvelle série arrive, mettre la précédente et son bilan facultatif en section: 'Anciennes séries', avec le même serie: 'Série N'. */
 window.INTERACTIF_GROUPES = {
     'Série 7 · semaine du 2 au 6 novembre': {
         themes: ['A1 · Comparer deux nombres', 'A3 · Puissances', 'A4 · Écritures d\'un nombre', 'A5 · Encadrer, ordre de grandeur',
                  'A10 · Équations', 'A13 · Proportions', 'A16 · Images et antécédents', 'A20 · Repère orthogonal']
     },
     'Série 6 · semaine du 12 au 16 octobre': {
-        section: 'Anciennes séries',
+        section: 'Anciennes séries', serie: 'Série 6',
         themes: ['A1 · Comparer deux nombres', 'A4 · Écritures d\'un nombre', 'A5 · Encadrer, ordre de grandeur',
                  'A9 · Développer', 'A10 · Équations', 'A13 · Proportions']
     },
     'Facultatif · Série 6 en temps limité ⏱': {
-        section: 'Anciennes séries',
-        texte: 'Ces bilans ne sont pas obligatoires : ils sont là pour celles et ceux qui veulent s\'entraîner en temps limité.'
+        section: 'Anciennes séries', serie: 'Série 6'
     },
-    'Facultatif · Série 7 en temps limité ⏱': {
-        texte: 'Ces bilans ne sont pas obligatoires : ils sont là pour celles et ceux qui veulent s\'entraîner en temps limité.'
-    }
+    'Série 5 · semaine du 5 au 9 octobre': {
+        section: 'Anciennes séries', serie: 'Série 5',
+        themes: ['A10 · Équations', 'A13 · Proportions', 'Algo · Variables et affectations', 'Algo · Structures conditionnelles']
+    },
+    'Série 4 · semaine du 28 septembre au 2 octobre': {
+        section: 'Anciennes séries', serie: 'Série 4',
+        themes: ['A10 · Équations', 'A21 · Périmètres, aires', 'Algo · Structures conditionnelles', 'Algo · Variables et affectations']
+    },
+    'Facultatif · Série 7 en temps limité ⏱': {}
 };
 
 /* Exercices retirés qui ne sont plus au catalogue : masqués dans le suivi prof
