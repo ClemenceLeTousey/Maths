@@ -158,7 +158,7 @@
 
     /* ---------- Déroulé d'un exercice ----------
        def = { id, titre, nb, generer: function (i) -> question }
-       question = { consigne, enonce (TeX), prefixe (TeX), attendu (texte), forme: 'developpee' | null,
+       question = { consigne, enonce (TeX), prefixe (TeX), attendu (texte), forme: 'developpee' | 'factorisee' (+ facteur) | null,
                     correction: [lignes TeX alignées sur =] } */
     function exercice(def) {
         var zone = document.getElementById('exercice');
@@ -250,6 +250,22 @@
                         var juste = Expr.egales(arbre, attendu, lettres);
                         if (juste && q.forme === 'developpee' && !Expr.developpeeReduite(arbre))
                             return { attention: 'C\'est égal, mais ce n\'est pas encore développé et réduit : continue !' };
+                        if (juste && q.forme === 'factorisee') {
+                            // un produit, dont une parenthèse est le facteur attendu (q.facteur), au signe près
+                            var n = arbre, fs = [];
+                            while (n.t === 'neg') n = n.a;
+                            (function facteurs(m) { if (m.t === '*') { facteurs(m.a); facteurs(m.b); } else fs.push(m); })(n);
+                            var pars = fs.filter(function (f) { return f.t === 'par'; });
+                            if (n.t !== '*' || !pars.length)
+                                return { attention: 'C\'est égal, mais ce n\'est pas un produit : factorise !' };
+                            if (q.facteur) {
+                                var fa = Expr.lire(q.facteur, lettres), oppose = { t: 'neg', a: fa };
+                                if (!pars.some(function (f) { return Expr.egales(f.a, fa, lettres) || Expr.egales(f.a, oppose, lettres); }))
+                                    return { attention: 'C\'est égal, mais on peut encore factoriser : cherche le plus grand facteur commun.' };
+                                if (lettres === 'x' && !pars.every(function (f) { return Expr.developpeeReduite(f.a); }))
+                                    return { attention: 'C\'est presque ça : réduis ce qu\'il y a dans la parenthèse.' };
+                            }
+                        }
                         return { ok: juste, r: c.value };
                     };
                 } else if (type === 'champs') {

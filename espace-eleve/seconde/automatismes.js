@@ -1089,6 +1089,427 @@
     };
 
     /* =====================================================================
+       Série 3 (semaine du 21 au 25 septembre) : factoriser, développer, segments codés, vecteurs
+       ===================================================================== */
+    /* ===== A9 · Factoriser ===== */
+    function factoQ(niveau, texte, attendu, facteur, variables) {
+        var q = { niveau: niveau, objectif: 'A9 · Développer, factoriser', type: 'expr', forme: 'factorisee', prefixe: 'A =' };
+        q.texte = 'Factoriser $A=' + texte + '$.';
+        q.attendu = attendu; q.facteur = facteur;
+        if (variables) q.variables = variables;
+        return q;
+    }
+    // k·(ax + b) avec k facteur commun « visible » : 9x + 27 = 9(x + 3)
+    function factoNumerique(niveau) {
+        var poly = Interactif.poly, k = A.entier(2, 9), b = A.nonNul(-9, 9), q;
+        q = factoQ(niveau, poly([k, k * b]), k + '(' + poly([1, b]) + ')', poly([1, b]));
+        q.explication = '$' + Math.abs(k * b) + '=' + k + '\\times' + Math.abs(b) + '$ : le facteur commun est $' + k + '$. $A=' + k + '\\times x' + (b > 0 ? '+' : '-') + k + '\\times' + Math.abs(b) + '=' + k + '(' + poly([1, b]) + ')$.';
+        return q;
+    }
+    // a x² + b x = g x (… ) : facteur commun g x
+    function factoX(niveau, g) {
+        var poly = Interactif.poly, a, b;
+        do { a = A.entier(1, 5); b = A.nonNul(-9, 9); } while (pgcd(a, b) !== 1 || (g === 1 && a === 1 && b === 1));
+        var gx = g === 1 ? 'x' : g + 'x', q = factoQ(niveau, poly([g * a, g * b, 0]), gx + '(' + poly([a, b]) + ')', poly([a, b]));
+        q.explication = '$' + poly([g * a, 0, 0]) + '=' + gx + '\\times' + (a === 1 ? 'x' : a + 'x') + '$ et $' + poly([Math.abs(g * b), 0]) + '=' + gx + '\\times' + Math.abs(b) + '$ : le facteur commun est $' + gx + '$.<br>$A=' + gx + '(' + poly([a, b]) + ')$.' +
+            (Math.abs(b) === 1 && g === 1 ? ' Attention : $' + (b < 0 ? '-' : '') + 'x=' + (b < 0 ? '(-1)' : '1') + '\\times x$, il ne faut pas oublier ce $' + b + '$.' : '');
+        return q;
+    }
+    Auto.factoriser = function (niveau) {
+        if (niveau === 1) {
+            var poly = Interactif.poly, k = A.entier(2, 9), b = A.entier(2, 9) * A.signe();
+            var q = { niveau: 1, objectif: 'A9 · Développer, factoriser' };
+            q.texte = 'Factoriser $' + poly([k, k * b]) + '$ :';
+            q.explication = '$' + Math.abs(k * b) + '=' + k + '\\times' + Math.abs(b) + '$, donc $' + k + '$ est le facteur commun : $' + poly([k, k * b]) + '=' + k + '\\times x' + (b > 0 ? '+' : '-') + k + '\\times' + Math.abs(b) + '=' + k + '(' + poly([1, b]) + ')$.';
+            return qcm(q, [
+                { t: '$' + k + '(' + poly([1, b]) + ')$', ok: true },
+                { t: '$' + k + '(' + poly([1, k * b]) + ')$', ok: false },
+                { t: '$' + poly([k + k * b, 0]) + '$', ok: false },
+                { t: '$' + k + 'x\\times' + Interactif.par(b) + '$', ok: false }
+            ]);
+        }
+        if (niveau === 2) return factoX(2, A.entier(2, 5));
+        // a x²y + b x²y² - c xy = xy(a x + b xy - c)
+        var a = A.entier(2, 7), bb = A.entier(2, 7), c = A.entier(2, 9);
+        var t = a + 'x^2y+' + bb + 'x^2y^2-' + c + 'xy', fac = a + 'x+' + bb + 'xy-' + c;
+        var q3 = factoQ(3, t, 'xy(' + fac + ')', fac, 'xy');
+        q3.explication = 'Chaque terme contient $x$ et $y$ : $' + a + 'x^2y=xy\\times' + a + 'x$, $' + bb + 'x^2y^2=xy\\times' + bb + 'xy$, $' + c + 'xy=xy\\times' + c + '$.<br>Donc $A=xy(' + fac + ')$.';
+        return q3;
+    };
+    Auto.factoriserCommun = function (niveau) {
+        if (niveau === 1) return factoNumerique(1);
+        if (niveau === 2) return factoX(2, A.entier(2, 5));
+        var poly = Interactif.poly, a, b, k;          // (x + a)(x + b) + k(x + a) = (x + a)(x + b + k)
+        do { a = A.nonNul(-6, 6); b = A.nonNul(-6, 6); k = A.nonNul(-6, 6); } while (b + k === 0 || a === b || a === b + k);
+        var pa = '(' + poly([1, a]) + ')', q = factoQ(3, pa + '(' + poly([1, b]) + ')' + (k > 0 ? '+' : '') + k + pa, pa + '(' + poly([1, b + k]) + ')', poly([1, b + k]));
+        q.explication = 'Le facteur commun est la parenthèse $' + pa + '$ : $A=' + pa + '\\big[(' + poly([1, b]) + ')' + (k > 0 ? '+' : '') + k + '\\big]=' + pa + '(' + poly([1, b + k]) + ')$.';
+        return q;
+    };
+    Auto.factoriserParX = function (niveau) {
+        if (niveau === 1) return factoX(1, 1);
+        if (niveau === 2) {
+            var a = A.entier(2, 9), q = factoQ(2, Interactif.poly([a, -1, 0]), 'x(' + Interactif.poly([a, -1]) + ')', Interactif.poly([a, -1]));
+            q.explication = '$' + a + 'x^2=x\\times' + a + 'x$ et, attention, $-x=(-1)\\times x$. Le facteur commun est $x$ : $A=x(' + a + 'x-1)$. Le piège est d\'oublier ce $-1$.';
+            return q;
+        }
+        var n = A.choix([49, 99, 199, 999, 59, 39]);
+        var q3 = { niveau: 3, objectif: 'A9 · Développer, factoriser', type: 'nombre' };
+        q3.texte = 'On a $x^2+x=x(x+1)$. En déduire <b>de tête</b> la valeur de $' + n + '^2+' + n + '$.';
+        q3.attendu = n * (n + 1);
+        q3.explication = 'Avec $x=' + n + '$ : $' + n + '^2+' + n + '=' + n + '\\times(' + n + '+1)=' + n + '\\times' + (n + 1) + '=' + fr(n * (n + 1)) + '$.';
+        return q3;
+    };
+
+    /* ===== A9 · Développer (simple puis double distributivité) ===== */
+    Auto.developper = function (niveau) {
+        var poly = Interactif.poly;
+        if (niveau === 1) { var q1 = Auto.distributivite(2); q1.niveau = 1; q1.objectif = 'A9 · Développer, factoriser'; delete q1.rappel; return q1; }
+        var q = { niveau: niveau, objectif: 'A9 · Développer, factoriser', type: 'expr', forme: 'developpee', consigne: 'Développer et réduire :', prefixe: 'A =' };
+        var a = A.entier(1, 4), b = A.nonNul(-6, 6), c = A.entier(1, 4), d = A.nonNul(-6, 6);
+        var P = [a * c, a * d + b * c, b * d], tx = '(' + poly([a, b]) + ')(' + poly([c, d]) + ')';
+        if (niveau === 2) {
+            q.enonce = 'A = ' + tx; q.attendu = poly(P);
+            q.correction = ['A&=' + poly([a, 0]) + '\\times ' + poly([c, 0]) + '+' + poly([a, 0]) + '\\times ' + Interactif.par(d) + (b > 0 ? '+' : '') + b + '\\times ' + poly([c, 0]) + (b > 0 ? '+' : '') + b + '\\times ' + Interactif.par(d),
+                '&=' + poly([a * c, 0, 0]) + (a * d > 0 ? '+' : '') + poly([a * d, 0]) + (b * c > 0 ? '+' : '') + poly([b * c, 0]) + (b * d > 0 ? '+' : '') + b * d, '&=' + poly(P)];
+            return q;
+        }
+        var k = A.entier(2, 3), p = A.nonNul(-5, 5), r = A.nonNul(-5, 5), Q = [k, k * (p + r), k * p * r];
+        var R = [P[0] - Q[0], P[1] - Q[1], P[2] - Q[2]];
+        q.enonce = 'A = ' + tx + '-' + k + '(' + poly([1, p]) + ')(' + poly([1, r]) + ')'; q.attendu = poly(R);
+        q.correction = ['A&=' + poly(P) + '-' + k + '(' + poly([1, p + r, p * r]) + ')', '&=' + poly(P) + (Q.some(function (x) { return x; }) ? '-(' + poly(Q) + ')' : ''), '&=' + poly(R)];
+        return q;
+    };
+
+    /* ===== A8 · Segments codés ===== */
+    // morceaux : [{ code: 'o' | '//' | 'x', l: longueur dessinée, cote: texte de la mesure }] ; noms des points aux extrémités
+    function segment(morceaux, noms, rouge) {
+        var total = morceaux.reduce(function (s, m) { return s + m.l; }, 0), k = 520 / total, x0 = 24, y = 40;
+        var s = '<svg viewBox="0 0 568 112" width="568" height="112" role="img" aria-label="Segment codé">';
+        s += '<line class="fig-seg" x1="' + x0 + '" y1="' + y + '" x2="' + (x0 + total * k) + '" y2="' + y + '"/>';
+        var x = x0;
+        morceaux.forEach(function (m, i) {
+            var x2 = x + m.l * k, mi = (x + x2) / 2;
+            if (rouge && rouge[0] === i) s += '<line class="fig-seg-rouge" x1="' + x + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '"/>';
+            if (m.code === 'o') s += '<circle class="fig-code" cx="' + mi + '" cy="' + y + '" r="6"/>';
+            else if (m.code === '//') s += '<line class="fig-seg" x1="' + (mi - 7) + '" y1="' + (y + 7) + '" x2="' + (mi - 1) + '" y2="' + (y - 7) + '"/><line class="fig-seg" x1="' + (mi + 1) + '" y1="' + (y + 7) + '" x2="' + (mi + 7) + '" y2="' + (y - 7) + '"/>';
+            else if (m.code === 'x') s += '<line class="fig-seg" x1="' + (mi - 6) + '" y1="' + (y - 6) + '" x2="' + (mi + 6) + '" y2="' + (y + 6) + '"/><line class="fig-seg" x1="' + (mi - 6) + '" y1="' + (y + 6) + '" x2="' + (mi + 6) + '" y2="' + (y - 6) + '"/>';
+            if (m.cote) {
+                s += '<line class="fig-mesure" x1="' + (x + 4) + '" y1="' + (y + 32) + '" x2="' + (x2 - 4) + '" y2="' + (y + 32) + '"/>';
+                s += '<path class="fig-fleche" d="M' + (x + 2) + ',' + (y + 32) + ' l8,-4 v8 z"/><path class="fig-fleche" d="M' + (x2 - 2) + ',' + (y + 32) + ' l-8,-4 v8 z"/>';
+                s += '<text class="fig-txt fig-cote' + (m.cote === 'x' ? ' fig-var' : '') + '" x="' + mi + '" y="' + (y + 56) + '" text-anchor="middle">' + m.cote + '</text>';
+            }
+            x = x2;
+        });
+        x = x0;
+        for (var i = 0; i <= morceaux.length; i++) {
+            s += '<line class="fig-seg" x1="' + x + '" y1="' + (y - 7) + '" x2="' + x + '" y2="' + (y + 7) + '"/>';
+            if (noms && noms[i]) s += '<text class="fig-nom-pt" x="' + x + '" y="' + (y - 14) + '" text-anchor="middle">' + noms[i] + '</text>';
+            if (i < morceaux.length) x += morceaux[i].l * k;
+        }
+        return s + '</svg>';
+    }
+    // Jour 1 : AB = 2 morceaux x (○) et n morceaux c (//), dans un ordre mélangé
+    Auto.segmentSomme = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A8 · Calcul littéral élémentaire' }, poly = Interactif.poly;
+        var n = A.entier(2, 4), c = A.entier(3, 9), ordre = melanger(['o', 'o'].concat(Array(n).fill('//')));
+        var vusO = false, vusB = false;
+        var morceaux = ordre.map(function (code) {
+            var m = { code: code, l: code === 'o' ? 2 : 3 };
+            if (code === 'o' && !vusO) { m.cote = 'x'; vusO = true; }
+            if (code === '//' && !vusB) { m.cote = String(c); vusB = true; }
+            return m;
+        });
+        var expr = poly([2, n * c]);
+        q.figure = segment(morceaux, ['A'].concat(Array(morceaux.length - 1).fill(''), ['B']));
+        q.figureNote = ordre.join(' ') + ' ; // = ' + c;
+        q.texte = 'Les morceaux portant le même codage ont la même longueur.';
+        if (niveau === 1) {
+            q.type = 'expr'; q.prefixe = 'AB ='; q.attendu = expr;
+            q.texte += ' Exprimer $AB$ en fonction de $x$ (forme réduite).';
+            q.forme = 'developpee';
+            q.explication = 'Deux morceaux ○ mesurent $x$ et ' + n + ' morceaux // mesurent $' + c + '$ : $AB=2x+' + n + '\\times' + c + '=' + expr + '$.';
+            return q;
+        }
+        if (niveau === 2) {
+            var x = A.entier(2, 12), T = 2 * x + n * c;
+            q.type = 'nombre'; q.prefixe = 'x ='; q.attendu = x;
+            q.texte += ' On sait que $AB=' + T + '$. Déterminer $x$.';
+            q.explication = '$AB=' + expr + '$, donc $' + expr + '=' + T + '$ : $2x=' + T + '-' + n * c + '=' + 2 * x + '$ et $x=' + x + '$.';
+            return q;
+        }
+        q.type = 'expr'; q.prefixe = 'L ='; q.attendu = String(n * c / 2);
+        q.texte += ' Un rectangle a pour périmètre $AB$ et pour largeur $x$. Exprimer sa longueur $L$ en fonction de $x$ (écris le résultat le plus simple possible).';
+        q.forme = 'developpee';
+        q.explication = 'Périmètre : $2(L+x)=' + expr + '$, donc $L+x=x+' + fr(n * c / 2) + '$ et $L=' + fr(n * c / 2) + '$. La longueur ne dépend pas de $x$ !';
+        return q;
+    };
+    // Jour 2 : AF = T ; AB, DE, EF codés // (= x) ; BC = CD codés ○
+    Auto.segmentReste = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A8 · Calcul littéral élémentaire' }, poly = Interactif.poly;
+        var T = A.entier(11, 25);
+        var morceaux = [{ code: '//', l: 2, cote: 'x' }, { code: 'o', l: 3 }, { code: 'o', l: 3 }, { code: '//', l: 2 }, { code: '//', l: 2 }];
+        q.figure = segment(morceaux, ['A', 'B', 'C', 'D', 'E', 'F']);
+        q.figureNote = 'AF=' + T + ' ; AB=DE=EF=x ; BC=CD';
+        var BD = poly([-3, T]);
+        q.texte = 'Les morceaux portant le même codage ont la même longueur et $AF=' + T + '$.';
+        if (niveau === 1) {
+            q.type = 'expr'; q.prefixe = 'BD ='; q.attendu = BD; q.forme = 'developpee';
+            q.texte += ' Exprimer $BD$ en fonction de $x$.';
+            q.explication = 'Les trois morceaux // mesurent $x$ : $AB+DE+EF=3x$. Ce qui reste est $BD$ : $BD=AF-3x=' + BD + '$.';
+            return q;
+        }
+        if (niveau === 2) {
+            var x, v;
+            do { x = A.entier(1, 7); v = T - 3 * x; } while (v <= 0);
+            q.type = 'nombre'; q.prefixe = 'x ='; q.attendu = x;
+            q.texte += ' On sait que $BD=' + v + '$. Déterminer $x$.';
+            q.explication = '$BD=' + BD + '$, donc $' + BD + '=' + v + '$ : $3x=' + T + '-' + v + '=' + 3 * x + '$ et $x=' + x + '$.';
+            return q;
+        }
+        q.type = 'expr'; q.prefixe = 'BC ='; q.attendu = '(' + BD + ')/2';
+        q.texte += ' Exprimer $BC$ en fonction de $x$.';
+        q.explication = '$BC=CD$, donc $BC=' + frac('BD', 2) + '=' + frac(BD, 2) + '$ (ou $' + fr(T / 2) + '-' + fr(1.5) + 'x$).';
+        return q;
+    };
+    // Jour 3 : AF = T ; AB = EF = x (//) ; BC = CD = DE (○)
+    Auto.segmentQuotient = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A8 · Calcul littéral élémentaire' }, poly = Interactif.poly;
+        var T = A.choix([15, 20, 25, 30, 35, 40]);
+        var morceaux = [{ code: '//', l: 2, cote: 'x' }, { code: 'o', l: 3 }, { code: 'o', l: 3 }, { code: 'o', l: 3 }, { code: '//', l: 2 }];
+        q.figure = segment(morceaux, ['A', 'B', 'C', 'D', 'E', 'F'], niveau === 1 ? [1] : null);
+        q.figureNote = 'AF=' + T + ' ; AB=EF=x ; BC=CD=DE';
+        var BE = poly([-2, T]);
+        q.texte = 'Les morceaux portant le même codage ont la même longueur et $AF=' + T + '$.';
+        if (niveau === 1) {
+            q.type = 'expr'; q.prefixe = 'BC ='; q.attendu = '(' + BE + ')/3';
+            q.texte += ' Exprimer $BC$ en fonction de $x$.';
+            q.explication = 'Les deux morceaux // mesurent $x$ : $AB+EF=2x$. Ce qui reste, $BE=' + BE + '$, est partagé en trois morceaux ○ : $BC=' + frac(BE, 3) + '$.';
+            return q;
+        }
+        if (niveau === 2) {
+            q.type = 'expr'; q.prefixe = 'AC ='; q.attendu = '(x+' + T + ')/3';
+            q.texte += ' Exprimer $AC$ en fonction de $x$, sous la forme d\'un seul quotient.';
+            q.explication = '$BC=' + frac(BE, 3) + '$, donc $AC=AB+BC=x+' + frac(BE, 3) + '=' + frac('3x', 3) + '+' + frac(BE, 3) + '=' + frac('x+' + T, 3) + '$.';
+            return q;
+        }
+        q.type = 'champs';
+        q.texte += ' Pour quelles valeurs de $x$ le morceau $BC$ est-il plus long que le morceau $AB$ ?';
+        q.gabarit = '$0<x<$ []';
+        q.attendus = [T / 5];
+        q.explication = 'Il faut $' + frac(BE, 3) + '>x$, c\'est-à-dire $' + BE + '>3x$, donc $' + T + '>5x$ et $x<' + fr(T / 5) + '$. Comme $x$ est une longueur, $x>0$.';
+        return q;
+    };
+
+    /* ----- Vecteurs sur un quadrillage ----- */
+    // o = { l, h (carreaux), vecteurs: [{ x, y, dx, dy, nom, libre (nom en italique fléché) , v2 (seconde couleur) }] }
+    function quadrillage(o) {
+        var c = 30, m = 14, W = o.l * c + 2 * m, H = o.h * c + 2 * m, k;
+        function X(x) { return m + x * c; }
+        function Y(y) { return m + (o.h - y) * c; }
+        var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="Quadrillage">';
+        for (k = 0; k <= o.l; k++) s += '<line class="fig-grille" x1="' + X(k) + '" y1="' + m + '" x2="' + X(k) + '" y2="' + (H - m) + '"/>';
+        for (k = 0; k <= o.h; k++) s += '<line class="fig-grille" x1="' + m + '" y1="' + Y(k) + '" x2="' + (W - m) + '" y2="' + Y(k) + '"/>';
+        o.vecteurs.forEach(function (v) {
+            var x1 = X(v.x), y1 = Y(v.y), x2 = X(v.x + v.dx), y2 = Y(v.y + v.dy), L = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / L, uy = (y2 - y1) / L;
+            var bx = x2 - 12 * ux, by = y2 - 12 * uy;
+            s += '<g class="fig-vec' + (v.v2 ? ' v2' : '') + '"><line x1="' + x1 + '" y1="' + y1 + '" x2="' + bx + '" y2="' + by + '"/>' +
+                '<polygon points="' + x2 + ',' + y2 + ' ' + (bx - 5 * uy) + ',' + (by + 5 * ux) + ' ' + (bx + 5 * uy) + ',' + (by - 5 * ux) + '"/></g>';
+            if (v.libre) {
+                var mx = (x1 + x2) / 2 - 13 * uy, my = (y1 + y2) / 2 + 13 * ux + 5;   // nom à côté du milieu
+                s += '<text class="fig-vnom' + (v.v2 ? ' v2' : '') + '" x="' + mx + '" y="' + my + '" text-anchor="middle">' + v.nom + '</text>' +
+                    '<path class="fig-vfleche' + (v.v2 ? ' v2' : '') + '" d="M' + (mx - 5) + ',' + (my - 15) + ' h10 m-3,-3 l3,3 l-3,3"/>';
+            } else {
+                s += '<circle class="fig-pt" cx="' + x1 + '" cy="' + y1 + '" r="3"/><circle class="fig-pt" cx="' + x2 + '" cy="' + y2 + '" r="3"/>';
+                // noms dans le prolongement du vecteur, de part et d'autre
+                s += '<text class="fig-nom" x="' + (x1 - 15 * ux) + '" y="' + (y1 - 15 * uy + 6) + '" text-anchor="middle">' + v.nom[0] + '</text>';
+                s += '<text class="fig-nom" x="' + (x2 + 15 * ux) + '" y="' + (y2 + 15 * uy + 6) + '" text-anchor="middle">' + v.nom[1] + '</text>';
+            }
+        });
+        return s + '</svg>';
+    }
+    function vec(n) { return '\\overrightarrow{' + n + '}'; }
+    function norme(n) { return '\\lVert' + vec(n) + '\\rVert'; }
+    // racine simplifiée : n = a²·b -> [a, b]
+    function racine(n) { for (var a = Math.floor(Math.sqrt(n)); a > 1; a--) if (n % (a * a) === 0) return [a, n / (a * a)]; return [1, n]; }
+    function racineTex(n) { var r = racine(n); return r[1] === 1 ? String(r[0]) : (r[0] === 1 ? '' : r[0]) + '\\sqrt{' + r[1] + '}'; }
+    function deplacement(dx, dy) {
+        return Math.abs(dx) + ' carreau' + (Math.abs(dx) > 1 ? 'x' : '') + ' vers la ' + (dx > 0 ? 'droite' : 'gauche') + ' et ' + Math.abs(dy) + ' vers le ' + (dy > 0 ? 'haut' : 'bas');
+    }
+    // un vecteur AB dessiné seul, départ choisi pour tenir dans le quadrillage
+    function vecteurSeul(dx, dy, nom) {
+        var l = Math.abs(dx) + 2, h = Math.abs(dy) + 2;
+        return quadrillage({ l: Math.max(l, 6), h: Math.max(h, 4), vecteurs: [{ x: dx < 0 ? -dx + 1 : 1, y: dy < 0 ? -dy + 1 : 1, dx: dx, dy: dy, nom: nom }] });
+    }
+    function pythagore(nom, dx, dy) {
+        var n2 = dx * dx + dy * dy;
+        return '$' + vec(nom) + '$ correspond à un déplacement de ' + deplacement(dx, dy) + '. Pythagore : $' + nom + '^2=' + Math.abs(dx) + '^2+' + Math.abs(dy) + '^2=' + n2 + '$, donc $' + norme(nom) + '=\\sqrt{' + n2 + '}' + (racineTex(n2) !== '\\sqrt{' + n2 + '}' ? '=' + racineTex(n2) : '') + '$.';
+    }
+    var TRIPLETS = [[3, 4], [4, 3], [6, 8], [8, 6], [5, 12]];
+    // norme entière (QCM)
+    function normeEntiere(niveau) {
+        var t = A.choix(TRIPLETS), dx = t[0] * (Math.random() < 0.3 ? -1 : 1), dy = t[1] * (Math.random() < 0.3 ? -1 : 1), n = Math.hypot(dx, dy);
+        var q = { niveau: niveau, objectif: 'Vecteurs' };
+        q.figure = vecteurSeul(dx, dy, 'AB'); q.figureNote = 'AB(' + dx + ' ; ' + dy + ')';
+        q.texte = 'Les carreaux ont pour côté $1$. Quelle est la norme $' + norme('AB') + '$ ?';
+        q.explication = pythagore('AB', dx, dy);
+        return qcm(q, [{ t: '$' + n + '$', ok: true }, { t: '$' + (t[0] + t[1]) + '$', ok: false }, { t: '$\\sqrt{' + (t[0] + t[1]) + '}$', ok: false }, { t: '$' + n * n + '$', ok: false }]);
+    }
+    function nonCarreSomme() {
+        var dx, dy, n2; do { dx = A.nonNul(-4, 5); dy = A.nonNul(-4, 4); n2 = dx * dx + dy * dy; } while (racine(n2)[0] !== 1); return [dx, dy];
+    }
+    function avecCarre() {
+        var dx, dy, n2; do { dx = A.nonNul(-6, 6); dy = A.nonNul(-5, 5); n2 = dx * dx + dy * dy; } while (racine(n2)[0] === 1 || racine(n2)[1] === 1); return [dx, dy];
+    }
+    Auto.normeVecteur = function (niveau) {
+        if (niveau === 1) return normeEntiere(1);
+        var q = { niveau: niveau, objectif: 'Vecteurs', type: 'champs' };
+        if (niveau === 2) {
+            var d = nonCarreSomme(), n2 = d[0] * d[0] + d[1] * d[1];
+            q.figure = vecteurSeul(d[0], d[1], 'CD'); q.figureNote = 'CD(' + d[0] + ' ; ' + d[1] + ')';
+            q.texte = 'Les carreaux ont pour côté $1$. Quelle est la norme $' + norme('CD') + '$ ?';
+            q.gabarit = '$' + norme('CD') + '=\\sqrt{b}$ avec $b=$ []';
+            q.attendus = [n2];
+            q.explication = pythagore('CD', d[0], d[1]) + ' La racine ne se simplifie pas.';
+            return q;
+        }
+        var t = A.choix([[12, 13], [8, 10], [6, 10], [9, 15], [5, 13], [15, 17], [24, 25]]), dy = Math.sqrt(t[1] * t[1] - t[0] * t[0]);
+        q.type = 'nombre';
+        q.texte = 'Le vecteur $' + vec('EF') + '$ correspond à un déplacement de $' + t[0] + '$ carreaux vers la droite et sa norme vaut $' + t[1] + '$. De combien de carreaux monte-t-il ?';
+        q.attendu = dy;
+        q.explication = 'On appelle $v$ le déplacement vertical. Pythagore : $' + t[0] + '^2+v^2=' + t[1] + '^2$, donc $v^2=' + t[1] * t[1] + '-' + t[0] * t[0] + '=' + dy * dy + '$ et $v=' + dy + '$.';
+        return q;
+    };
+    Auto.normeSimplifier = function (niveau) {
+        var q = { niveau: niveau, objectif: 'Vecteurs' };
+        if (niveau === 1) {
+            var d = avecCarre(), n2 = d[0] * d[0] + d[1] * d[1], r = racine(n2);
+            q.figure = vecteurSeul(d[0], d[1], 'AB'); q.figureNote = 'AB(' + d[0] + ' ; ' + d[1] + ')';
+            q.texte = 'Les carreaux ont pour côté $1$. Quelle est la norme $' + norme('AB') + '$ ?';
+            q.explication = pythagore('AB', d[0], d[1]).replace('$, donc', '$ et $' + n2 + '=' + r[0] * r[0] + '\\times' + r[1] + '$, donc');
+            var opts = [{ t: '$' + racineTex(n2) + '$', ok: true }, { t: '$' + (Math.abs(d[0]) + Math.abs(d[1])) + '$', ok: false }, { t: '$' + r[1] + '\\sqrt{' + r[0] + '}$', ok: false }, { t: '$' + n2 + '$', ok: false }];
+            if (r[0] === r[1]) opts[2] = { t: '$' + r[0] * r[0] + '\\sqrt{' + r[1] + '}$', ok: false };
+            return qcm(q, opts);
+        }
+        q.type = 'champs';
+        var u, v, s, s2, rs, op = niveau === 3 ? -1 : 1;
+        do { u = [A.nonNul(-3, 4), A.nonNul(-3, 3)]; v = [A.nonNul(-3, 4), A.nonNul(-3, 3)]; s = [u[0] + op * v[0], u[1] + op * v[1]]; s2 = s[0] * s[0] + s[1] * s[1]; rs = racine(s2); }
+        while (rs[0] === 1 || rs[1] === 1 || !s[0] || !s[1] || u[0] * v[1] === u[1] * v[0]);
+        q.figure = quadrillage({ l: 15, h: 6, vecteurs: [{ x: u[0] < 0 ? 4 : 1, y: u[1] < 0 ? 4 : 1, dx: u[0], dy: u[1], nom: 'AB' }, { x: v[0] < 0 ? 12 : 9, y: v[1] < 0 ? 4 : 1, dx: v[0], dy: v[1], nom: 'CD', v2: true }] });
+        q.figureNote = 'AB(' + u + ') CD(' + v + ')';
+        q.texte = 'Les carreaux ont pour côté $1$. Calculer la norme du vecteur $' + vec('AB') + (op > 0 ? '+' : '-') + vec('CD') + '$ et l\'écrire sous la forme $a\\sqrt{b}$ ($b$ le plus petit possible).';
+        q.gabarit = '$a=$ [] et $b=$ []';
+        q.attendus = [rs[0], rs[1]];
+        q.explication = (op > 0 ? 'Bout à bout' : 'On ajoute l\'opposé de $' + vec('CD') + '$') + ' : le vecteur va de $' + s[0] + '$ carreau(x) horizontalement et $' + s[1] + '$ verticalement.<br>' +
+            'Sa norme vaut $\\sqrt{' + Interactif.par(s[0]) + '^2+' + Interactif.par(s[1]) + '^2}=\\sqrt{' + s2 + '}=\\sqrt{' + rs[0] * rs[0] + '\\times' + rs[1] + '}=' + racineTex(s2) + '$.';
+        return q;
+    };
+    Auto.normeColineaire = function (niveau) {
+        var q = { niveau: niveau, objectif: 'Vecteurs' }, d = nonCarreSomme(), n2 = d[0] * d[0] + d[1] * d[1], k = A.entier(2, 3);
+        if (niveau === 1) {
+            var D = [k * d[0], k * d[1]], N2 = D[0] * D[0] + D[1] * D[1];
+            q.figure = vecteurSeul(D[0], D[1], 'AB'); q.figureNote = 'AB(' + D + ')';
+            q.texte = 'Les carreaux ont pour côté $1$. Quelle est la norme $' + norme('AB') + '$ ?';
+            q.explication = pythagore('AB', D[0], D[1]);
+            var opts = [{ t: '$' + k + '\\sqrt{' + n2 + '}$', ok: true }, { t: '$' + (Math.abs(D[0]) + Math.abs(D[1])) + '$', ok: false }, { t: '$' + N2 + '$', ok: false }];
+            if (n2 !== k) opts.push({ t: '$' + n2 + '\\sqrt{' + k + '}$', ok: false }); else opts.push({ t: '$' + k * k + '\\sqrt{' + n2 + '}$', ok: false });
+            return qcm(q, opts);
+        }
+        q.type = 'champs';
+        if (niveau === 2) {
+            do { d = [A.nonNul(-3, 3), A.nonNul(-3, 3)]; n2 = d[0] * d[0] + d[1] * d[1]; } while (racine(n2)[0] !== 1);
+            var ax = Math.abs(d[0]), ay = Math.abs(d[1]), x0 = k * ax + 3;
+            q.figure = quadrillage({ l: x0 + ax + 1, h: Math.max(k * ay + 2, 4), vecteurs: [
+                { x: d[0] < 0 ? k * ax + 1 : 1, y: d[1] < 0 ? k * ay + 1 : 1, dx: k * d[0], dy: k * d[1], nom: 'AB' },
+                { x: d[0] < 0 ? x0 + ax : x0, y: d[1] < 0 ? ay + 1 : 1, dx: d[0], dy: d[1], nom: 'CD', v2: true }] });
+            q.figureNote = 'AB=' + k + 'CD, CD(' + d + ')';
+            q.texte = 'Les carreaux ont pour côté $1$. Calculer $' + norme('CD') + '$, puis comparer $' + norme('AB') + '$ et $' + norme('CD') + '$.';
+            q.gabarit = '$' + norme('CD') + '=\\sqrt{b}$ avec $b=$ [] ; $' + norme('AB') + '=$ [] $\\times' + norme('CD') + '$';
+            q.attendus = [n2, k];
+            q.explication = '$CD^2=' + Interactif.par(d[0]) + '^2+' + Interactif.par(d[1]) + '^2=' + n2 + '$, donc $' + norme('CD') + '=\\sqrt{' + n2 + '}$.<br>$' + vec('AB') + '$ fait $' + k + '$ fois le même déplacement : $' + vec('AB') + '=' + k + vec('CD') + '$, et $' + norme('AB') + '=' + k + '\\sqrt{' + n2 + '}$.';
+            return q;
+        }
+        var a = A.entier(3, 7), b = -A.entier(2, 4);
+        q.texte = 'On sait que $' + norme('CD') + '=\\sqrt{' + n2 + '}$. Sans refaire de calcul de Pythagore, compléter :';
+        q.gabarit = '$\\lVert' + a + vec('CD') + '\\rVert=$ [] $\\sqrt{' + n2 + '}$ &nbsp; et &nbsp; $\\lVert' + b + vec('CD') + '\\rVert=$ [] $\\sqrt{' + n2 + '}$';
+        q.attendus = [a, -b];
+        q.explication = 'Multiplier un vecteur par $k$ multiplie sa norme par $|k|$ : $\\lVert' + a + vec('CD') + '\\rVert=' + a + '\\sqrt{' + n2 + '}$ et $\\lVert' + b + vec('CD') + '\\rVert=' + -b + '\\sqrt{' + n2 + '}$, et non $' + b + '\\sqrt{' + n2 + '}$ : une norme est toujours positive.';
+        return q;
+    };
+
+    /* ===== Vecteurs : somme sur un quadrillage ===== */
+    function figureSomme(u, v, cands) {
+        var liste = [{ d: u, nom: 'u' }, { d: v, nom: 'v', v2: true }].concat(cands), x = 1, h = 2;
+        liste.forEach(function (c) { h = Math.max(h, Math.abs(c.d[1]) + 2); });
+        var vs = liste.map(function (c) {
+            var o = { x: c.d[0] < 0 ? x - c.d[0] : x, y: c.d[1] < 0 ? -c.d[1] + 1 : 1, dx: c.d[0], dy: c.d[1], nom: c.nom, libre: true, v2: c.v2 };
+            x += Math.abs(c.d[0]) + 2;
+            return o;
+        });
+        return quadrillage({ l: x - 1, h: h, vecteurs: vs });
+    }
+    function petitVecteur() { var d; do { d = [A.entier(-1, 3), A.entier(-2, 2)]; } while (!d[0] || !d[1]); return d; }
+    Auto.sommeVecteurs = function (niveau) {
+        var q = { niveau: niveau, objectif: 'Vecteurs' }, u, v;
+        do { u = petitVecteur(); v = petitVecteur(); } while (u[0] * v[1] === u[1] * v[0]);
+        function cle(d) { return d[0] + ',' + d[1]; }
+        function txt(d) { return deplacement(d[0], d[1]).replace(/^0 carreau vers la (droite|gauche) et /, '').replace(/ et 0 vers le (haut|bas)$/, ''); }
+        if (niveau < 3) {
+            var bon = niveau === 1 ? [u[0] + v[0], u[1] + v[1]] : [u[0] - v[0], u[1] - v[1]];
+            if (!bon[0] && !bon[1]) return Auto.sommeVecteurs(niveau);
+            var pieges = [[u[0] - v[0], u[1] - v[1]], [u[0] + v[0], v[1] - u[1]], [v[0] - u[0], v[1] - u[1]], [u[0] + v[0], u[1]], [u[0], u[1] + v[1]], [-bon[0], -bon[1]]];
+            var vus = {}, cands = [{ d: bon, ok: true }];
+            vus[cle(bon)] = true;
+            pieges.forEach(function (d) { if (!vus[cle(d)] && (d[0] || d[1]) && cands.length < 4 && Math.abs(d[0]) <= 5 && Math.abs(d[1]) <= 4) { vus[cle(d)] = true; cands.push({ d: d }); } });
+            cands = melanger(cands);
+            var noms = ['a', 'b', 'c', 'd'];
+            cands.forEach(function (c, k) { c.nom = noms[k]; });
+            q.figure = figureSomme(u, v, cands);
+            q.figureNote = 'u(' + u + ') v(' + v + ') ' + cands.map(function (c) { return c.nom + '(' + c.d + ')'; }).join(' ');
+            q.texte = 'Quel vecteur est égal à $\\vec{u}' + (niveau === 1 ? '+' : '-') + '\\vec{v}$ ?';
+            var nb = cands.filter(function (c) { return c.ok; })[0].nom;
+            q.explication = (niveau === 1 ? 'On met $\\vec{v}$ bout à bout au bout de $\\vec{u}$' : 'On parcourt $\\vec{u}$, puis $\\vec{v}$ à l\'envers') + ' : au total, ' + txt(bon) + '. C\'est $\\vec{' + nb + '}$.';
+            return qcm(q, cands.map(function (c) { return { t: '$\\vec{' + c.nom + '}$', ok: !!c.ok }; }));
+        }
+        var al, be, d;
+        do { al = A.choix([-1, 1, 2]); be = A.choix([-1, 1, 2]); d = [al * u[0] + be * v[0], al * u[1] + be * v[1]]; } while ((!d[0] && !d[1]) || Math.abs(d[0]) > 5 || Math.abs(d[1]) > 4);
+        q.type = 'champs';
+        q.figure = figureSomme(u, v, [{ d: d, nom: 'd' }]);
+        q.figureNote = 'u(' + u + ') v(' + v + ') d(' + d + ')';
+        q.texte = 'Exprimer $\\vec{d}$ à l\'aide de $\\vec{u}$ et $\\vec{v}$ : trouver les nombres $\\alpha$ et $\\beta$ tels que $\\vec{d}=\\alpha\\vec{u}+\\beta\\vec{v}$.';
+        q.gabarit = '$\\alpha=$ [] et $\\beta=$ []';
+        q.attendus = [al, be];
+        function terme(k, n) { return (k === 1 ? '' : k === -1 ? '-' : k) + '\\vec{' + n + '}'; }
+        q.explication = '$\\vec{d}$ : ' + txt(d) + '. On le retrouve en parcourant ' + (Math.abs(al) === 2 ? 'deux fois ' : '') + '$\\vec{u}$' + (al < 0 ? ' à l\'envers' : '') + ', puis ' + (Math.abs(be) === 2 ? 'deux fois ' : '') + '$\\vec{v}$' + (be < 0 ? ' à l\'envers' : '') + ' : $\\vec{d}=' + terme(al, 'u') + (be > 0 ? '+' : '') + terme(be, 'v') + '$.';
+        return q;
+    };
+
+    /* ===== Algo · Fonctions Python (produit, somme) ===== */
+    Auto.fonctionPython = function (niveau) {
+        var q = { niveau: niveau, objectif: 'Algo · Fonctions', type: 'nombre' }, c = A.entier(1, 5), a;
+        if (niveau === 1) {
+            a = A.entier(2, 9);
+            q.texte = 'Que renvoie <code>f(' + a + ')</code> ?' + code(['def f(x):', '    return x * (x + ' + c + ')']);
+            q.attendu = a * (a + c);
+            q.explication = 'On remplace $x$ par $' + a + '$ : $' + a + '\\times(' + a + '+' + c + ')=' + a + '\\times' + (a + c) + '=' + a * (a + c) + '$.';
+            return q;
+        }
+        if (niveau === 2) {
+            a = A.entier(3, 9); var b = A.choix([100, 1000, 50, 250]);
+            q.type = 'champs';
+            q.texte = 'Que renvoient <code>h(' + a + ')</code> et <code>h(' + b + ')</code> ?' + code(['def h(x):', '    return x * (x + ' + c + ') - x * x']);
+            q.gabarit = '<code>h(' + a + ')</code> renvoie [] et <code>h(' + b + ')</code> renvoie []';
+            q.attendus = [c * a, c * b];
+            q.explication = '$h(' + a + ')=' + a + '\\times' + (a + c) + '-' + a + '\\times' + a + '=' + a * (a + c) + '-' + a * a + '=' + c * a + '$.<br>En développant, $x(x+' + c + ')-x^2=x^2+' + c + 'x-x^2=' + (c === 1 ? '' : c) + 'x$ : donc $h(' + b + ')=' + fr(c * b) + '$.';
+            return q;
+        }
+        var n = A.choix([50, 100, 25, 40]);
+        q.texte = 'Que renvoie <code>k(' + n + ')</code> ? Sans calculatrice !' + code(['def k(x):', '    return (x + ' + c + ') * (x + ' + c + ') - x * x']);
+        q.attendu = 2 * c * n + c * c;
+        q.explication = '$(x+' + c + ')^2-x^2=x^2+' + 2 * c + 'x+' + c * c + '-x^2=' + 2 * c + 'x+' + c * c + '$ : donc $k(' + n + ')=' + 2 * c + '\\times' + n + '+' + c * c + '=' + fr(q.attendu) + '$.';
+        return q;
+    };
+
+    /* =====================================================================
        Rappels des questions vertes (bouton « Je ne sais pas, j'ai besoin d'un rappel ») :
        la méthode et un exemple différent de la question. Texte mixte HTML + $maths$.
        ===================================================================== */
@@ -1155,7 +1576,31 @@
             'Exemple : $4x-7=13$ ; on ajoute $7$ aux deux membres : $4x=20$ ; on divise par $4$ : $x=' + frac(20, 4) + '=5$.',
         perimetreAire: 'Le <b>périmètre</b> est la longueur du contour : on additionne les longueurs de tous les côtés (il faut parfois retrouver celles qui ne sont pas écrites).<br>' +
             'L\'<b>aire</b> d\'une figure « rectangle moins un morceau » : aire du grand rectangle moins aire du morceau retiré.<br>' +
-            'Exemple : rectangle de $10$ m sur $6$ m privé d\'un carré de $2$ m : aire $10\\times6-2^2=56$ m².'
+            'Exemple : rectangle de $10$ m sur $6$ m privé d\'un carré de $2$ m : aire $10\\times6-2^2=56$ m².',
+        factoriser: 'Factoriser, c\'est écrire une somme sous la forme d\'un produit : on cherche le <b>facteur commun</b> à tous les termes, puis on utilise $ka+kb=k(a+b)$.<br>' +
+            'Exemple : $6x+15=3\\times2x+3\\times5=3(2x+5)$.',
+        factoriserCommun: 'Factoriser, c\'est écrire une somme sous la forme d\'un produit : on cherche le <b>facteur commun</b> à tous les termes, puis on utilise $ka+kb=k(a+b)$.<br>' +
+            'Exemple : $4x-28=4\\times x-4\\times7=4(x-7)$. On vérifie en développant.',
+        factoriserParX: 'Factoriser, c\'est écrire une somme sous la forme d\'un produit : on cherche le <b>facteur commun</b> à tous les termes, puis on utilise $ka+kb=k(a+b)$.<br>' +
+            'Exemple : $x^2+5x=x\\times x+x\\times5=x(x+5)$.',
+        developper: 'Pour développer, on multiplie le nombre devant la parenthèse par <b>chaque</b> terme, signe compris : $k(a+b)=k\\times a+k\\times b$.<br>' +
+            'Exemple : $-2(3x-4)=-2\\times3x+(-2)\\times(-4)=-6x+8$.',
+        segmentSomme: 'Des morceaux qui portent le même codage ont la même longueur. On additionne la longueur de tous les morceaux, puis on réduit.<br>' +
+            'Exemple : trois morceaux de longueur $x$ et deux de longueur $4$ : $x+x+x+4+4=3x+8$.',
+        segmentReste: 'Des morceaux qui portent le même codage ont la même longueur. Ce qui reste d\'un segment, c\'est la longueur totale moins les morceaux connus.<br>' +
+            'Exemple : un segment de $15$ dont on retire deux morceaux de longueur $x$ : il reste $15-2x$.',
+        segmentQuotient: 'Si une longueur $L$ est partagée en $3$ morceaux de même longueur, chaque morceau mesure $' + frac('L', 3) + '$.<br>' +
+            'Exemple : un segment de $12$ dont on retire $x$, puis partagé en $2$ : chaque morceau mesure $' + frac('12-x', 2) + '$.',
+        normeVecteur: 'La norme d\'un vecteur, c\'est sa longueur. Sur un quadrillage, on compte le déplacement horizontal $a$ et le déplacement vertical $b$, puis Pythagore : norme $=\\sqrt{a^2+b^2}$.<br>' +
+            'Exemple : $2$ carreaux à droite et $1$ en haut : $\\sqrt{2^2+1^2}=\\sqrt{5}$.',
+        normeSimplifier: 'Norme sur un quadrillage : $\\sqrt{a^2+b^2}$. Pour simplifier une racine, on fait apparaître un carré : $\\sqrt{k^2\\times n}=k\\sqrt{n}$.<br>' +
+            'Exemple : $4$ à droite et $2$ en haut : $\\sqrt{16+4}=\\sqrt{20}=\\sqrt{4\\times5}=2\\sqrt{5}$.',
+        normeColineaire: 'Norme sur un quadrillage : $\\sqrt{a^2+b^2}$, puis on simplifie : $\\sqrt{k^2\\times n}=k\\sqrt{n}$.<br>' +
+            'Exemple : $6$ à droite et $2$ en haut : $\\sqrt{36+4}=\\sqrt{40}=\\sqrt{4\\times10}=2\\sqrt{10}$.',
+        sommeVecteurs: 'Pour additionner deux vecteurs, on les met <b>bout à bout</b> : on parcourt le premier, puis le second à partir de son extrémité. On additionne les déplacements horizontaux, puis les verticaux.<br>' +
+            'Exemple : $2$ à droite et $1$ en haut, puis $1$ à droite et $3$ en haut : au total $3$ à droite et $4$ en haut.',
+        fonctionPython: '<code>def f(x):</code> définit une fonction ; <code>return</code> donne le résultat. Pour calculer <code>f(4)</code>, on remplace <code>x</code> par $4$ dans l\'expression.<br>' +
+            'Exemple : avec <code>return x * (x - 2)</code>, <code>f(4)</code> renvoie $4\\times(4-2)=4\\times2=8$.'
     };
     // chaque question verte reçoit son rappel
     Object.keys(RAPPELS).forEach(function (nom) {

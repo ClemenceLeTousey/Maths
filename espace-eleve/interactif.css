@@ -140,6 +140,19 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .q-figure .fig-grille { stroke: var(--muted); stroke-opacity: .35; }
 .q-figure .fig-forme { fill: var(--bleu-doux); stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
 .q-figure .fig-cote { font-size: 15px; }
+.q-figure .fig-seg { stroke: currentColor; stroke-width: 2; }
+.q-figure .fig-seg-rouge { stroke: #e03131; stroke-width: 4; }
+.q-figure .fig-code { fill: none; stroke: currentColor; stroke-width: 2; }
+.q-figure .fig-mesure { stroke: var(--c-seconde); stroke-width: 1.5; }
+.q-figure .fig-fleche { fill: var(--c-seconde); }
+.q-figure .fig-nom-pt { fill: currentColor; font-size: 16px; font-weight: 700; font-family: system-ui, sans-serif; }
+.q-figure .fig-vec { stroke: var(--c-seconde); fill: var(--c-seconde); stroke-width: 2.5; }
+.q-figure .fig-vec.v2, .q-figure .fig-vnom.v2 { stroke: #d9480f; fill: #d9480f; }
+.q-figure .fig-vec.v2 line { stroke: #d9480f; }
+.q-figure .fig-vnom { fill: var(--c-seconde); font: italic 700 18px 'Times New Roman', serif; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+.q-figure .fig-vnom.v2 { stroke: var(--surface); }
+.q-figure .fig-vfleche { fill: none; stroke: var(--c-seconde); stroke-width: 1.5; }
+.q-figure .fig-vfleche.v2 { stroke: #d9480f; }
 .q-figure .fig-var { font-style: italic; font-family: 'Times New Roman', serif; font-size: 18px; }
 
 /* ==========================================================================
