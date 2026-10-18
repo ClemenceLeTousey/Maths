@@ -51,6 +51,7 @@
         <div id="vue" hidden>
             <div class="outils">
                 <label>Classe <select id="classe"></select></label>
+                <label>Série <select id="serie"></select></label>
                 <label>Noms : <input type="file" id="noms" accept=".csv" multiple> (fichiers comptes-*.csv, lus sur cet ordinateur uniquement)</label>
                 <label><input type="checkbox" id="memoriser"> mémoriser les noms sur cet ordinateur</label>
                 <button type="button" id="export">Exporter en CSV</button>
@@ -84,6 +85,8 @@
             location.reload();
         };
         document.getElementById('classe').onchange = afficher;
+        remplirSeries();
+        document.getElementById('serie').onchange = function () { document.getElementById('detail').innerHTML = ''; afficher(); };
         if (mdp) charger();
 
         function charger() {
@@ -130,13 +133,34 @@
             } catch (e) {}
         }
 
+        /* ---------- Choix de la série : la série en cours par défaut, les anciennes dans le menu ---------- */
+        // '' = série en cours (groupes sans section 'Anciennes séries'), 'Série N' = ancienne série, '*' = tout
+        function serieDe(ex) {
+            var g = (window.INTERACTIF_GROUPES || {})[ex.groupe] || {};
+            return g.section === 'Anciennes séries' ? (g.serie || ex.groupe) : '';
+        }
+        function remplirSeries() {
+            var sel = document.getElementById('serie'), vues = [], enCours = null;
+            INTERACTIF_CATALOGUE.forEach(function (ex) {
+                if (ex.archive) return;
+                var s = serieDe(ex);
+                if (!s && !enCours) { var m = /^Série \d+/.exec(ex.groupe); if (m) enCours = m[0]; }
+                if (s && vues.indexOf(s) < 0) vues.push(s);
+            });
+            [['', (enCours || 'Série') + ' (en cours)']].concat(vues.map(function (s) { return [s, s]; }), [['*', 'Toutes les séries']])
+                .forEach(function (c) { var o = document.createElement('option'); o.value = c[0]; o.textContent = c[1]; sel.appendChild(o); });
+        }
+
         /* ---------- Tableau ---------- */
         function exercices() {
+            var choix = document.getElementById('serie').value;
             // séries archivées et exercices retirés : pas de colonne (résultats gardés en base)
             var masques = (window.INTERACTIF_MASQUES_PROF || []).concat(
                 INTERACTIF_CATALOGUE.filter(function (e) { return e.archive; }).map(function (e) { return e.id; }));
-            var ids = INTERACTIF_CATALOGUE.filter(function (e) { return !e.archive; }).map(function (e) { return e.id; });
-            donnees.resultats.forEach(function (r) { if (ids.indexOf(r.exercice) < 0 && masques.indexOf(r.exercice) < 0) ids.push(r.exercice); });
+            var ids = INTERACTIF_CATALOGUE.filter(function (e) { return !e.archive && (choix === '*' || serieDe(e) === choix); })
+                                          .map(function (e) { return e.id; });
+            // résultats d'exercices hors catalogue : seulement dans « Toutes les séries »
+            if (choix === '*') donnees.resultats.forEach(function (r) { if (ids.indexOf(r.exercice) < 0 && masques.indexOf(r.exercice) < 0) ids.push(r.exercice); });
             return ids;
         }
         function titre(id) {
