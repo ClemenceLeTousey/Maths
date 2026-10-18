@@ -23,7 +23,20 @@
         .py-outils button:disabled { opacity: .5; cursor: default; }
         .py-outils button.stop:not(:disabled) { background: #e03131; border-color: #e03131; color: #fff; font-weight: 600; }
         .py-etat { color: var(--muted); font-size: 0.85rem; margin-left: auto; }
-        .py-grille { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; height: calc(100vh - 250px); min-height: 420px; }
+        .onglets { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 14px; }
+        .onglets button {
+            font: inherit; font-size: 1rem; cursor: pointer;
+            background: none; color: var(--muted); border: 1px solid transparent; border-bottom: none;
+            border-radius: 8px 8px 0 0; padding: 8px 16px; margin-bottom: -2px;
+        }
+        .onglets button:hover { color: var(--c-python); }
+        .onglets button[aria-selected="true"] {
+            color: var(--c-python); background: var(--surface); border-color: var(--line);
+            border-bottom: 2px solid var(--surface); font-weight: 600;
+        }
+        .onglets button:focus-visible { outline: 2px solid var(--c-python); outline-offset: -2px; }
+        #panneau-tp .class-card { max-width: 700px; margin: 0 auto; }
+        .py-grille { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; height: calc(100vh - 300px); min-height: 420px; }
         @media (max-width: 900px) { .py-grille { grid-template-columns: 1fr; height: auto; } .py-grille > * { height: 50vh; } }
         .py-editeur, .py-console { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); display: flex; flex-direction: column; min-height: 0; }
         .py-editeur .CodeMirror { height: 100%; font-family: var(--f-mono); font-size: 15px; background: var(--surface); color: var(--text); }
@@ -67,10 +80,16 @@
 
     <header>
         <h1>Python</h1>
-        <p>Éditeur et console · Python s'exécute dans ton navigateur, rien n'est envoyé</p>
+        <p>Éditeur, console et TP · Python s'exécute dans ton navigateur, rien n'est envoyé</p>
     </header>
 
     <main class="py">
+        <div class="onglets" role="tablist" aria-label="Rubriques Python">
+            <button type="button" role="tab" id="onglet-editeur" aria-controls="panneau-editeur" data-onglet="editeur" aria-selected="true">Éditeur et console</button>
+            <button type="button" role="tab" id="onglet-tp" aria-controls="panneau-tp" data-onglet="tp" aria-selected="false" tabindex="-1">TP</button>
+        </div>
+
+        <div class="panneau" role="tabpanel" id="panneau-editeur" aria-labelledby="onglet-editeur">
         <div class="py-outils">
             <button type="button" class="lancer" id="lancer" disabled>▶ Exécuter</button>
             <button type="button" class="stop" id="stop" disabled>■ Stop</button>
@@ -87,6 +106,25 @@
             </div>
         </div>
         <p class="py-aide"><kbd>Ctrl</kbd>+<kbd>Entrée</kbd> exécute le programme · dans la console, ↑ / ↓ rappellent les instructions précédentes · <b>■ Stop</b> arrête un programme qui ne s'arrête pas · <code>input()</code> ouvre une petite fenêtre (un programme avec <code>input()</code> ne peut pas être stoppé : recharge la page si besoin) · <code>matplotlib</code> affiche les graphiques dans la console. Ton programme est gardé sur cet appareil.<br>Besoin de <code>turtle</code> ? Utilise la <a href="consolepython.html">console Python Basthon</a>.</p>
+        </div>
+
+        <div class="panneau" role="tabpanel" id="panneau-tp" aria-labelledby="onglet-tp" hidden>
+            <div class="class-card classe-python">
+                <details class="sequence-details seq seq-now" open>
+                    <summary class="sequence-summary">
+                        <span class="sequence-title">
+                            <span class="seq-num">Travaux pratiques</span>
+                            <span class="sequence-subtitle">Python avec Capytale</span>
+                        </span>
+                    </summary>
+                    <ul>
+                        <li class="res"><span class="type">TP 1</span><span class="res-body"><a href="https://nuage02.apps.education.fr/index.php/s/cptqx7BFM3zTQ8G" target="_blank" rel="noopener">Premiers pas en Python avec Capytale</a></span><span class="corriges"><a href="https://nuage02.apps.education.fr/index.php/s/BDzzFP2fzENr69Y" target="_blank" rel="noopener">Corrigé PDF</a><a href="cours/python/tp1-correction.html" target="_blank" rel="noopener">Corrigé interactif</a></span></li>
+                        <li class="res"><span class="type">TP 2</span><span class="res-body"><a href="https://nuage02.apps.education.fr/index.php/s/5Q6HNyDJMpmeeCT" target="_blank" rel="noopener">Les structures conditionnelles</a></span><span class="corriges"><a href="https://nuage02.apps.education.fr/index.php/s/q76RQ64Z3DaGMQM" target="_blank" rel="noopener">Corrigé PDF</a><a href="cours/python/tp2-correction.html" target="_blank" rel="noopener">Corrigé interactif</a></span></li>
+                        <li class="res"><span class="type">TP 3</span><span class="res-body"><a href="https://nuage02.apps.education.fr/index.php/s/iEQg8nfnqwxAqa3" target="_blank" rel="noopener">Les boucles en Python</a></span><span class="corriges"><a href="https://nuage02.apps.education.fr/index.php/s/bTcrcoW9qyoZS5w" target="_blank" rel="noopener">Corrigé PDF</a><a href="cours/python/tp3-correction.html" target="_blank" rel="noopener">Corrigé interactif</a></span></li>
+                    </ul>
+                </details>
+            </div>
+        </div>
     </main>
 
     <script>
@@ -309,6 +347,32 @@
             var f = e.target.files[0];
             if (f) f.text().then(function (t) { ed.setValue(t); });
         };
+
+        /* ---------- Onglets : Éditeur et console par défaut ; #tp dans l'adresse ouvre les TP ---------- */
+        var onglets = Array.prototype.slice.call(document.querySelectorAll('.onglets [role="tab"]'));
+        function ouvrirOnglet(nom, focus) {
+            if (nom !== 'tp') nom = 'editeur';
+            onglets.forEach(function (o) {
+                var actif = o.dataset.onglet === nom;
+                o.setAttribute('aria-selected', actif ? 'true' : 'false');
+                o.tabIndex = actif ? 0 : -1;
+                document.getElementById(o.getAttribute('aria-controls')).hidden = !actif;
+                if (actif && focus) o.focus();
+            });
+            if (nom === 'editeur') ed.refresh();   // CodeMirror se redessine après avoir été caché
+            try { history.replaceState(null, '', nom === 'editeur' ? location.pathname + location.search : '#tp'); } catch (e) {}
+        }
+        onglets.forEach(function (o) {
+            o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };
+            o.onkeydown = function (e) {
+                var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+                if (!d) return;
+                e.preventDefault();
+                var k = onglets.indexOf(o);
+                ouvrirOnglet(onglets[(k + d + onglets.length) % onglets.length].dataset.onglet, true);
+            };
+        });
+        ouvrirOnglet(location.hash.slice(1));
     })();
     </script>
 </body>
