@@ -1510,6 +1510,401 @@
     };
 
     /* =====================================================================
+       Série 2 (semaine du 14 au 18 septembre) : translations, vecteurs, puissances, Python, écritures
+       ===================================================================== */
+    /* ----- Réseau de points (quadrillage de parallélogrammes) nommés par des lettres ----- */
+    var LETTRES_RESEAU = 'ABCDEFGHIJKLMNRSTUVW';      // sans O, P, Q
+    function reseau(nc, nl, marques) {
+        var dx = 70, dy = 56, decal = 22, m = 30, W = (nc - 1) * dx + (nl - 1) * decal + 2 * m, H = (nl - 1) * dy + 2 * m;
+        function pos(c, l) { return [m + c * dx + l * decal, m + (nl - 1 - l) * dy]; }
+        var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="Réseau de points">', c, l, p, q;
+        for (l = 0; l < nl; l++) { p = pos(0, l); q = pos(nc - 1, l); s += '<line class="fig-grille" x1="' + p[0] + '" y1="' + p[1] + '" x2="' + q[0] + '" y2="' + q[1] + '"/>'; }
+        for (c = 0; c < nc; c++) { p = pos(c, 0); q = pos(c, nl - 1); s += '<line class="fig-grille" x1="' + p[0] + '" y1="' + p[1] + '" x2="' + q[0] + '" y2="' + q[1] + '"/>'; }
+        (marques || []).forEach(function (v) {
+            var a = pos(v[0][0], v[0][1]), b = pos(v[1][0], v[1][1]), L = Math.hypot(b[0] - a[0], b[1] - a[1]), ux = (b[0] - a[0]) / L, uy = (b[1] - a[1]) / L;
+            var bx = b[0] - 16 * ux, by = b[1] - 16 * uy;
+            s += '<g class="fig-vec"><line x1="' + (a[0] + 6 * ux) + '" y1="' + (a[1] + 6 * uy) + '" x2="' + bx + '" y2="' + by + '"/><polygon points="' + (b[0] - 5 * ux) + ',' + (b[1] - 5 * uy) + ' ' + (bx - 5 * uy) + ',' + (by + 5 * ux) + ' ' + (bx + 5 * uy) + ',' + (by - 5 * ux) + '"/></g>';
+        });
+        for (l = 0; l < nl; l++) for (c = 0; c < nc; c++) {
+            p = pos(c, l);
+            s += '<circle class="fig-pt" cx="' + p[0] + '" cy="' + p[1] + '" r="3.5"/><text class="fig-nom-pt" x="' + (p[0] + 7) + '" y="' + (p[1] - 7) + '">' + LETTRES_RESEAU[l * nc + c] + '</text>';
+        }
+        return s + '</svg>';
+    }
+    function nomPoint(nc, c, l) { return LETTRES_RESEAU[l * nc + c]; }
+    Auto.translationPoint = function (niveau) {
+        var nc = 5, nl = 4, q = { niveau: niveau, objectif: 'Vecteurs · Translations' };
+        function dans(c, l) { return c >= 0 && c < nc && l >= 0 && l < nl; }
+        var PA, PB, K, v, im, w;
+        do {
+            PA = [A0(nc), A0(nl)]; PB = [A0(nc), A0(nl)]; K = [A0(nc), A0(nl)];
+            v = [PB[0] - PA[0], PB[1] - PA[1]];
+            if (niveau === 3) { w = [A.entier(-1, 1), A.entier(-1, 1)]; im = [K[0] + v[0] + w[0], K[1] + v[1] + w[1]]; }
+            else { im = niveau === 2 ? [K[0] - v[0], K[1] - v[1]] : [K[0] + v[0], K[1] + v[1]]; }
+        } while (!v[0] && !v[1] || (niveau === 1 && (!v[0] || !v[1]) && Math.random() < 0.5) || (niveau > 1 && (!v[0] || !v[1])) || !dans(im[0], im[1]) ||
+                 (K[0] === PA[0] && K[1] === PA[1]) || (K[0] === PB[0] && K[1] === PB[1]) || (niveau === 3 && (!w[0] && !w[1] || (w[0] === -v[0] && w[1] === -v[1]))));
+        function A0(n) { return Math.floor(Math.random() * n); }
+        var nA = nomPoint(nc, PA[0], PA[1]), nB = nomPoint(nc, PB[0], PB[1]), nK = nomPoint(nc, K[0], K[1]), nI = nomPoint(nc, im[0], im[1]);
+        var marques = [[PA, PB]], C, D, nC, nD;
+        if (niveau === 3) {
+            do { C = [A0(nc), A0(nl)]; D = [C[0] + w[0], C[1] + w[1]]; } while (!dans(D[0], D[1]) || (C[0] === PA[0] && C[1] === PA[1]) || (C[0] === PB[0] && C[1] === PB[1]));
+            nC = nomPoint(nc, C[0], C[1]); nD = nomPoint(nc, D[0], D[1]);
+            marques.push([C, D]);
+        }
+        q.figure = reseau(nc, nl, marques);
+        q.figureNote = nA + nB + ' ; ' + nK + ' -> ' + nI;
+        function dep(d) {
+            var t = [];
+            if (d[0]) t.push(Math.abs(d[0]) + ' colonne' + (Math.abs(d[0]) > 1 ? 's' : '') + ' vers la ' + (d[0] > 0 ? 'droite' : 'gauche'));
+            if (d[1]) t.push(Math.abs(d[1]) + ' rangée' + (Math.abs(d[1]) > 1 ? 's' : '') + ' vers le ' + (d[1] > 0 ? 'haut' : 'bas'));
+            return t.join(' et ') || 'aucun déplacement';
+        }
+        if (niveau === 1) {
+            q.texte = 'Par la translation qui transforme $' + nA + '$ en $' + nB + '$, quelle est l\'image du point $' + nK + '$ ?';
+            q.explication = 'De $' + nA + '$ à $' + nB + '$ : ' + dep(v) + '. On applique le même déplacement à partir de $' + nK + '$ : on arrive en $' + nI + '$.';
+        } else if (niveau === 2) {
+            q.texte = 'Par la translation qui transforme $' + nB + '$ en $' + nA + '$, quelle est l\'image du point $' + nK + '$ ?';
+            q.explication = 'Attention au sens : de $' + nB + '$ à $' + nA + '$, c\'est ' + dep([-v[0], -v[1]]) + ' (le vecteur $\\overrightarrow{' + nB + nA + '}$, opposé de $\\overrightarrow{' + nA + nB + '}$). À partir de $' + nK + '$, on arrive en $' + nI + '$.';
+        } else {
+            q.texte = 'Quelle est l\'image du point $' + nK + '$ par la translation de vecteur $\\overrightarrow{' + nA + nB + '}+\\overrightarrow{' + nC + nD + '}$ ?';
+            q.explication = 'On enchaîne les deux déplacements : ' + dep(v) + ', puis ' + dep(w) + '. Au total, ' + dep([v[0] + w[0], v[1] + w[1]]) + ' : à partir de $' + nK + '$, on arrive en $' + nI + '$.';
+        }
+        var pieges = [[K[0] - v[0], K[1] - v[1]], [K[0] + v[0], K[1] + v[1]], [K[0] + v[1], K[1] + v[0]], [K[0] + v[0], K[1]], [K[0], K[1] + v[1]], [A0(nc), A0(nl)], [A0(nc), A0(nl)], [A0(nc), A0(nl)]];
+        if (niveau === 3) pieges.unshift([K[0] + v[0] - w[0], K[1] + v[1] - w[1]], [K[0] + w[0], K[1] + w[1]]);
+        var vus = {}, opts = [{ t: '$' + nI + '$', ok: true }];
+        vus[nI] = true;
+        pieges.forEach(function (p) {
+            if (!dans(p[0], p[1]) || opts.length >= 4) return;
+            var n = nomPoint(nc, p[0], p[1]);
+            if (!vus[n]) { vus[n] = true; opts.push({ t: '$' + n + '$', ok: false }); }
+        });
+        while (opts.length < 4) { var n2 = LETTRES_RESEAU[A0(nc * nl)]; if (!vus[n2]) { vus[n2] = true; opts.push({ t: '$' + n2 + '$', ok: false }); } }
+        return qcm(q, opts);
+    };
+
+    /* ===== Vecteurs · Égalité et parallélogramme ===== */
+    function quatreLettres() {
+        var l = melanger('ABCDEFGHKLMNRST'.split('')).slice(0, 4);
+        if (l.indexOf('P') >= 0 && l.indexOf('Q') >= 0) return quatreLettres();
+        return l;
+    }
+    Auto.vecteurEgalite = function (niveau) {
+        var q = { niveau: niveau, objectif: 'Vecteurs · Égalité' }, L = quatreLettres(), a = L[0], b = L[1], c = L[2], d = L[3];
+        function v(x, y) { return '$\\overrightarrow{' + x + y + '}$'; }
+        function ve(x, y, z, t) { return '$\\overrightarrow{' + x + y + '}=\\overrightarrow{' + z + t + '}$'; }
+        if (niveau === 1) {
+            q.texte = 'On sait que ' + ve(a, b, d, c) + '. Quel quadrilatère est un parallélogramme ?';
+            q.explication = ve(a, b, d, c) + ' signifie que ' + a + b + c + d + ' est un parallélogramme : on lit les sommets dans l\'ordre $' + a + '\\to' + b + '\\to' + c + '\\to' + d + '$ (le second vecteur se lit « à l\'envers », de $' + d + '$ vers $' + c + '$).';
+            return qcm(q, [{ t: a + b + c + d, ok: true }, { t: a + b + d + c, ok: false }, { t: a + c + b + d, ok: false }]);
+        }
+        if (niveau === 2) {
+            q.texte = a + b + c + d + ' est un parallélogramme. Quelle égalité est vraie ?';
+            q.explication = 'Dans le parallélogramme ' + a + b + c + d + ', ' + ve(a, b, d, c) + ' (côtés opposés, même sens) et ' + ve(a, d, b, c) + '. Attention, ' + v(a, b) + ' et ' + v(c, d) + ' sont opposés.';
+            return qcm(q, [{ t: ve(a, b, d, c), ok: true }, { t: ve(a, b, c, d), ok: false }, { t: ve(a, d, c, b), ok: false }, { t: ve(a, c, b, d), ok: false }]);
+        }
+        q.texte = 'On sait que ' + ve(a, b, d, c) + '. Compléter : $\\overrightarrow{' + a + d + '}=\\ ?$';
+        q.explication = ve(a, b, d, c) + ' : ' + a + b + c + d + ' est un parallélogramme. Ses autres côtés opposés donnent ' + ve(a, d, b, c) + '.';
+        return qcm(q, [{ t: v(b, c), ok: true }, { t: v(c, b), ok: false }, { t: v(d, b), ok: false }, { t: v(c, a), ok: false }]);
+    };
+
+    /* ===== A3 · Puissances de x ===== */
+    function px(n) { return n === 1 ? 'x' : 'x^{' + n + '}'; }
+    Auto.puissancesX = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A3 · Puissances' }, a = A.entier(2, 7), b = A.entier(2, 7);
+        if (niveau === 1) {
+            q.texte = 'Simplifier $' + px(a) + '\\times ' + px(b) + '$ (le résultat sera écrit sous la forme $x^n$).';
+            q.explication = 'Pour multiplier deux puissances de même base, on additionne les exposants : $' + px(a) + '\\times ' + px(b) + '=x^{' + a + '+' + b + '}=' + px(a + b) + '$.';
+            var opts = [{ t: '$' + px(a + b) + '$', ok: true }, { t: '$' + px(a * b) + '$', ok: false }, { t: '$2' + px(a + b) + '$', ok: false }];
+            opts.push({ t: '$' + (a === b ? '2' + px(a) : px(Math.abs(a - b))) + '$', ok: false });
+            if (a * b === a + b) opts[1] = { t: '$' + px(a + b + 1) + '$', ok: false };
+            return qcm(q, opts);
+        }
+        q.type = 'nombre'; q.prefixe = 'n =';
+        if (niveau === 2) {
+            if (Math.random() < 0.5) {
+                do { a = A.entier(4, 12); b = A.entier(2, 9); } while (b >= a);
+                q.texte = 'Simplifier $' + frac(px(a), px(b)) + '$ sous la forme $x^n$ ($x\\neq0$). Donner $n$.';
+                q.attendu = a - b;
+                q.explication = 'Pour diviser deux puissances de même base, on soustrait les exposants : $' + frac(px(a), px(b)) + '=x^{' + a + '-' + b + '}=' + px(a - b) + '$.';
+            } else {
+                q.texte = 'Simplifier $(' + px(a) + ')^{' + b + '}$ sous la forme $x^n$. Donner $n$.';
+                q.attendu = a * b;
+                q.explication = 'Puissance d\'une puissance : on multiplie les exposants, $(' + px(a) + ')^{' + b + '}=x^{' + a + '\\times' + b + '}=' + px(a * b) + '$.';
+            }
+            return q;
+        }
+        var c = A.entier(2, 4), d = A.entier(1, 6), e = A.entier(2, 9);
+        q.texte = 'Écrire $A=' + frac(px(a) + '\\times(' + px(b) + ')^{' + c + '}\\times ' + px(d), px(e)) + '$ sous la forme $x^n$ ($x\\neq0$). Donner $n$.';
+        q.attendu = a + b * c + d - e;
+        q.explication = '$(' + px(b) + ')^{' + c + '}=' + px(b * c) + '$, puis au numérateur $x^{' + a + '+' + b * c + '+' + d + '}=' + px(a + b * c + d) + '$, et $' + frac(px(a + b * c + d), px(e)) + '=x^{' + (a + b * c + d) + '-' + e + '}=x^{' + q.attendu + '}$.';
+        return q;
+    };
+
+    /* ===== Calcul littéral · Distributivité ===== */
+    Auto.distributiviteS2 = function (niveau) {
+        var poly = Interactif.poly, q, k, b;
+        if (niveau === 1) {
+            q = { niveau: 1, objectif: 'Calcul littéral · Distributivité' };
+            k = A.entier(2, 9) * A.signe(); b = A.nonNul(-9, 9);
+            q.texte = 'Développer $' + k + '(' + poly([1, b]) + ')$ :';
+            q.explication = '$' + k + '(' + poly([1, b]) + ')=' + k + '\\times x+' + Interactif.par(k) + '\\times' + Interactif.par(b) + '=' + poly([k, k * b]) + '$. Le nombre devant multiplie <b>chaque</b> terme, signe compris.';
+            var opts = [{ t: '$' + poly([k, k * b]) + '$', ok: true }, { t: '$' + poly([k, b]) + '$', ok: false }, { t: '$' + poly([k, -k * b]) + '$', ok: false }, { t: '$' + poly([k + b, 0]) + '$', ok: false }];
+            if (k + b === 0 || k + b === k) opts[3] = { t: '$' + poly([1, k * b]) + '$', ok: false };
+            return qcm(q, opts);
+        }
+        q = { niveau: niveau, objectif: 'Calcul littéral · Distributivité', type: 'expr', forme: 'developpee', consigne: 'Développer et réduire :', prefixe: 'A =' };
+        if (niveau === 2) {
+            var a, c;
+            do { k = A.entier(2, 9); a = A.nonNul(-9, 9); c = A.nonNul(-9, 9); } while (c === k || c === 0);
+            q.enonce = 'A = ' + k + '(' + a + '-x)' + (c > 0 ? '+' : '') + poly([c, 0]);
+            q.attendu = poly([c - k, k * a]);
+            q.correction = ['A&=' + poly([k * a]) + (-k > 0 ? '+' : '') + poly([-k, 0]) + (c > 0 ? '+' : '') + poly([c, 0]), '&=' + q.attendu];
+            return q;
+        }
+        var q3 = Auto.developper(2); q3.niveau = 3; q3.objectif = 'Calcul littéral · Distributivité';
+        return q3;
+    };
+
+    /* ===== Algo · Fonctions Python à deux paramètres ===== */
+    Auto.fonctionDeuxParametres = function (niveau) {
+        var q = { niveau: niveau, objectif: 'Algo · Lire un programme' }, k, a, b, r;
+        if (niveau === 1) {
+            k = A.entier(2, 4); a = A.entier(3, 12); b = A.entier(2, 9); r = k * a + b;
+            q.texte = 'Que renvoie la console si on saisit <code>prix_total(' + a + ', ' + b + ')</code> ?' + code(['def prix_total(prix, frais):', '    return ' + k + ' * prix + frais']);
+            q.explication = '<code>prix</code> vaut $' + a + '$ et <code>frais</code> vaut $' + b + '$ (dans l\'ordre des parenthèses) : $' + k + '\\times' + a + '+' + b + '=' + r + '$.';
+            return qcmNombres(q, r, [k * b + a, k * (a + b), a + b, k * a], '');
+        }
+        q.type = 'nombre';
+        if (niveau === 2) {
+            var c = A.choix([1.5, 2.5, 0.5]); a = A.entier(2, 9) * 2; b = A.entier(1, 5); r = c * a + b;
+            q.texte = 'Que renvoie la console si on saisit <code>note_finale(' + a + ', ' + b + ')</code> ?' + code(['def note_finale(devoir, bonus):', '    return ' + String(c) + ' * devoir + bonus']);
+            q.attendu = r;
+            q.explication = '$' + fr(c) + '\\times' + a + '+' + b + '=' + fr(c * a) + '+' + b + '=' + fr(r) + '$. Comme <code>' + c + '</code> est un nombre à virgule, Python affiche <code>' + r.toFixed(1) + '</code>.';
+            return q;
+        }
+        a = A.entier(2, 6); k = A.entier(2, 4); var m = A.entier(1, 9), bv = A.entier(2, 12); r = a * a + k * bv + m;
+        q.texte = 'En Python, <code>a**2</code> calcule $a^2$. On saisit <code>mystere(' + a + ', b)</code> et la console renvoie $' + r + '$. Quelle est la valeur de <code>b</code> ?' + code(['def mystere(a, b):', '    return a**2 + ' + k + '*b + ' + m]);
+        q.prefixe = 'b =';
+        q.attendu = bv;
+        q.explication = '$' + a + '^2+' + k + 'b+' + m + '=' + r + '$, donc $' + k + 'b=' + r + '-' + a * a + '-' + m + '=' + k * bv + '$ et $b=' + bv + '$.';
+        return q;
+    };
+
+    /* ===== A4 · Écritures d'un nombre ===== */
+    Auto.ecrituresNombre = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A4 · Écritures d\'un nombre' };
+        if (niveau === 1) {
+            var f = A.choix([[3, 8], [5, 8], [1, 8], [7, 8], [3, 4], [1, 4], [2, 5], [3, 5], [7, 20], [9, 25], [3, 16]]), v = f[0] / f[1];
+            q.texte = 'L\'écriture décimale de $' + frac(f[0], f[1]) + '$ est :';
+            q.explication = '$' + frac(f[0], f[1]) + '=' + f[0] + '\\div' + f[1] + '=' + fr(v) + '$.';
+            var faux = [arrondi(f[1] / f[0]), arrondi(f[0] + f[1] / 10), arrondi(f[0] / 10 + f[1] / 100), Math.round(v * 100) / 100];
+            var vus = {}, opts = [{ t: '$' + fr(v) + '$', ok: true }];
+            vus[fr(v)] = true;
+            faux.forEach(function (x) { if (!vus[fr(x)] && opts.length < 4) { vus[fr(x)] = true; opts.push({ t: '$' + fr(x) + '$', ok: false }); } });
+            while (opts.length < 4) { var y = arrondi(v * 10); if (!vus[fr(y)]) { vus[fr(y)] = true; opts.push({ t: '$' + fr(y) + '$', ok: false }); } else { y = arrondi(v + 1); vus[fr(y)] = true; opts.push({ t: '$' + fr(y) + '$', ok: false }); } }
+            return qcm(q, opts);
+        }
+        q.type = 'champs';
+        if (niveau === 2) {
+            var n, d0 = 100, g;
+            do { n = A.entier(2, 98); g = pgcd(n, d0); } while (g === 1 || n % 10 === 0);
+            q.texte = 'Donner l\'écriture fractionnaire irréductible de $' + fr(n / 100) + '$.';
+            q.gabarit = '[] $/$ []';
+            q.attendus = [n / g, d0 / g];
+            q.explication = '$' + fr(n / 100) + '=' + frac(n, 100) + '=' + frac(n / g + '\\times' + g, d0 / g + '\\times' + g) + '=' + frac(n / g, d0 / g) + '$.';
+            return q;
+        }
+        var a = A.entier(1, 9), b = A.entier(1, 9), c = A.entier(1, 9), e1 = A.entier(2, 4), e2 = A.entier(0, e1 - 1), e3 = -A.entier(1, 3);
+        var val = a * Math.pow(10, e1) + b * Math.pow(10, e2) + c * Math.pow(10, e3), mant = arrondi(val / Math.pow(10, e1));
+        q.texte = 'Écrire en notation scientifique, sous la forme $a\\times10^n$, le nombre $' + a + '\\times10^{' + e1 + '}+' + b + '\\times10^{' + e2 + '}+' + c + '\\times10^{' + e3 + '}$.';
+        q.gabarit = '$a=$ [] et $n=$ []';
+        q.attendus = [mant, e1];
+        q.explication = 'On calcule : $' + fr(a * Math.pow(10, e1)) + '+' + fr(b * Math.pow(10, e2)) + '+' + fr(arrondi(c * Math.pow(10, e3))) + '=' + fr(arrondi(val)) + '$, soit $' + fr(mant) + '\\times10^{' + e1 + '}$ en notation scientifique.';
+        return q;
+    };
+
+    /* =====================================================================
+       Série 1 (semaine du 7 au 11 septembre) : comparer, fractions, puissances de 10, notation scientifique, Pythagore
+       ===================================================================== */
+    function signeComp(x, y) { return x < y ? '<' : x > y ? '>' : '='; }
+    function qcmComparaison(q, g, d, sym) {
+        return qcm(q, ['<', '>', '='].map(function (s) { return { t: '$' + g + s + d + '$', ok: s === sym }; }));
+    }
+
+    /* ===== A1 · Comparer deux nombres ===== */
+    Auto.comparerFractions = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A1 · Comparer deux nombres' }, a, b, c, d;
+        if (niveau === 1) {                    // même numérateur
+            do { a = A.entier(1, 7); b = A.entier(2, 12); c = A.entier(2, 12); } while (b === c || pgcd(a, b) > 1 || pgcd(a, c) > 1);
+            var s1 = signeComp(a / b, a / c);
+            q.texte = 'Comparer $' + frac(a, b) + '$ et $' + frac(a, c) + '$.';
+            q.explication = 'Les deux fractions ont le même numérateur $' + a + '$ : la plus grande est celle qui a le plus <b>petit</b> dénominateur (on partage en moins de parts). Donc $' + frac(a, b) + s1 + frac(a, c) + '$.';
+            return qcmComparaison(q, frac(a, b), frac(a, c), s1);
+        }
+        if (niveau === 2) {                    // a/b et c/d proches
+            do { b = A.entier(3, 9); d = A.entier(3, 9); a = A.entier(b + 1, 2 * b); c = A.entier(d + 1, 2 * d); } while (b === d || pgcd(a, b) > 1 || pgcd(c, d) > 1 || a * d === b * c);
+            var s2 = signeComp(a / b, c / d);
+            q.texte = 'Sans calculatrice, comparer $A=' + frac(a, b) + '$ et $B=' + frac(c, d) + '$.';
+            q.explication = 'On réduit au même dénominateur $' + b * d + '$ : $A=' + frac(a * d, b * d) + '$ et $B=' + frac(c * b, b * d) + '$, donc $A' + s2 + 'B$.';
+            return qcmComparaison(q, 'A', 'B', s2);
+        }
+        if (Math.random() < 0.5) {             // fractions négatives
+            do { b = A.entier(3, 9); d = A.entier(3, 9); a = A.entier(1, b - 1); c = A.entier(1, d - 1); } while (b === d || pgcd(a, b) > 1 || pgcd(c, d) > 1 || a * d === b * c);
+            var s3 = signeComp(-a / b, -c / d);
+            q.texte = 'Comparer $A=-' + frac(a, b) + '$ et $B=-' + frac(c, d) + '$.';
+            q.explication = '$' + frac(a, b) + '=' + frac(a * d, b * d) + '$ et $' + frac(c, d) + '=' + frac(c * b, b * d) + '$, donc $' + frac(a, b) + signeComp(a / b, c / d) + frac(c, d) + '$.<br>Pour des nombres <b>négatifs</b>, l\'ordre est inversé : $A' + s3 + 'B$.';
+            return qcmComparaison(q, 'A', 'B', s3);
+        }
+        var p = A.choix([[6, 5, 2, 15], [4, 9, 6, 6], [10, 3, 5, 6], [3, 8, 5, 4], [7, 4, 5, 6], [9, 4, 6, 5], [12, 5, 7, 9]]);   // p0²·p1² comparé à p2²·p3²
+        var x = p[0] * p[1], y = p[2] * p[3], s4 = signeComp(x, y);
+        q.texte = 'Comparer $a=' + p[0] + '^{2}\\times' + p[1] + '^{2}$ et $b=' + p[2] + '^{2}\\times' + p[3] + '^{2}$.';
+        q.explication = '$a=(' + p[0] + '\\times' + p[1] + ')^2=' + x + '^2$ et $b=(' + p[2] + '\\times' + p[3] + ')^2=' + y + '^2$, donc $a' + s4 + 'b$.';
+        return qcmComparaison(q, 'a', 'b', s4);
+    };
+
+    /* ===== A2 · Fractions ===== */
+    Auto.fractionsCalcul = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A2 · Fractions' }, a, b, c, d;
+        if (niveau === 1) {                    // une seule égalité fausse
+            var k = A.entier(2, 5), n = A.entier(1, 6), m = A.entier(2, 9);
+            do { a = A.entier(1, 8); b = A.entier(2, 9); } while (pgcd(a, b) > 1 || a === b);
+            var vraies = [frac(a * k, b * k) + '=' + frac(a, b), frac(n * m, m) + '=' + n, frac(a, b) + '+' + frac(1, b) + '=' + frac(a + 1, b)];
+            var fausses = [frac(a, b) + '+' + frac(1, b) + '=' + frac(a + 1, 2 * b), frac(a + k, b + k) + '=' + frac(a, b), frac(a, b) + '\\times' + k + '=' + frac(a * k, b * k)];
+            var f = A.choix(fausses);
+            if (f.indexOf('+' + frac(1, b) + '=') >= 0) vraies[2] = frac(a, b) + '\\times' + k + '=' + frac(a * k, b);
+            q.texte = 'Une seule de ces égalités est <b>fausse</b>. Laquelle ?';
+            q.explication = '$' + f + '$ est fausse. ' + (f.indexOf('+') >= 0 && f.indexOf(frac(1, b)) >= 0 ? 'Pour additionner deux fractions de même dénominateur, on additionne les numérateurs et on <b>garde</b> le dénominateur.' :
+                f.indexOf('\\times') >= 0 ? 'Pour multiplier une fraction par un entier, on ne multiplie que le numérateur.' : 'On ne peut pas ajouter le même nombre en haut et en bas : il faut <b>multiplier</b> (ou diviser) les deux par le même nombre.');
+            return qcm(q, [{ t: '$' + f + '$', ok: true }].concat(vraies.map(function (t) { return { t: '$' + t + '$', ok: false }; })));
+        }
+        q.type = 'nombre';
+        if (niveau === 2) {                    // fraction d'une quantité, à l'envers
+            var p = A.choix([[2, 3], [3, 4], [2, 5], [3, 5], [5, 6], [3, 8]]), tot = p[1] * A.entier(4, 15), part = tot * p[0] / p[1];
+            var mots = { '2/3': 'deux tiers', '3/4': 'trois quarts', '2/5': 'deux cinquièmes', '3/5': 'trois cinquièmes', '5/6': 'cinq sixièmes', '3/8': 'trois huitièmes' };
+            q.texte = 'Dans les ' + mots[p.join('/')] + ' d\'un gâteau, il y a $' + part + '$ grammes de sucre. Combien y a-t-il de grammes de sucre dans le gâteau entier ?';
+            q.attendu = tot;
+            q.explication = '$' + frac(p[0], p[1]) + '$ du gâteau contiennent $' + part + '$ g, donc $' + frac(1, p[1]) + '$ contient $' + part + '\\div' + p[0] + '=' + part / p[0] + '$ g, et le gâteau entier $' + p[1] + '\\times' + part / p[0] + '=' + tot + '$ g.';
+            return q;
+        }
+        var e, f2, g2, h2, r;
+        do {
+            b = A.choix([3, 4, 6]); d = A.choix([2, 3, 6, 12]); a = A.entier(1, b * 2); c = A.entier(1, d);
+            e = A.entier(1, 4); f2 = A.choix([3, 5, 7]); g2 = 1; h2 = A.choix([2, 5, 10]);
+            r = (a / b - c / d) * e / f2 + g2 / h2;
+        } while (a / b <= c / d || pgcd(a, b) > 1 || pgcd(c, d) > 1 || b === d || Math.abs(r * 60 * f2 - Math.round(r * 60 * f2)) > 1e-9);
+        q.texte = 'Calculer $A=\\left(' + frac(a, b) + '-' + frac(c, d) + '\\right)\\times' + frac(e, f2) + '+' + frac(g2, h2) + '$ (résultat exact, sous forme de fraction si besoin).';
+        q.attendu = r;
+        var den1 = b * d / pgcd(b, d), n1 = a * den1 / b - c * den1 / d;
+        q.explication = '$' + frac(a, b) + '-' + frac(c, d) + '=' + frac(n1, den1) + (pgcd(n1, den1) > 1 ? '=' + fracTex(n1, den1) : '') + '$, puis $' + fracTex(n1, den1) + '\\times' + frac(e, f2) + '=' + fracTex(n1 * e, den1 * f2) + '$, et $' + fracTex(n1 * e, den1 * f2) + '+' + frac(g2, h2) + '=' + fracTex(n1 * e * h2 + den1 * f2 * g2, den1 * f2 * h2) + '$.';
+        return q;
+    };
+
+    /* ===== A3 · Puissances de 10 ===== */
+    Auto.puissancesDix = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A3 · Puissances' }, a, b, c;
+        if (niveau === 1) {
+            a = A.entier(2, 4); b = A.entier(0, 1); c = -A.entier(1, 3);
+            var v = Math.pow(10, a) + Math.pow(10, b) + Math.pow(10, c);
+            q.texte = 'Calculer $10^{' + a + '}+10^{' + b + '}+10^{' + c + '}$.';
+            q.explication = '$10^{' + a + '}=' + fr(Math.pow(10, a)) + '$, $10^{' + b + '}=' + Math.pow(10, b) + '$' + (b === 0 ? ' (tout nombre non nul à la puissance $0$ vaut $1$)' : '') + ' et $10^{' + c + '}=' + fr(Math.pow(10, c)) + '$. Total : $' + fr(arrondi(v)) + '$.';
+            return qcm(q, [
+                { t: '$' + fr(arrondi(v)) + '$', ok: true },
+                { t: '$' + fr(arrondi(Math.pow(10, a) + (b === 0 ? 0 : 1) + Math.pow(10, c))) + '$', ok: false },
+                { t: '$' + fr(arrondi(Math.pow(10, a) + Math.pow(10, b) + Math.pow(10, -c))) + '$', ok: false },
+                { t: '$' + fr(Math.pow(10, a + b + c)) + '$', ok: false }
+            ]);
+        }
+        q.type = 'nombre';
+        if (niveau === 2) {
+            var e = -A.entier(1, 4), mant = A.entier(11, 99) / 10, x = arrondi(mant * Math.pow(10, e));
+            q.texte = 'On écrit $10^{a}<' + fr(x) + '<10^{b}$, où $a$ et $b$ sont deux entiers relatifs consécutifs. Quelle est la valeur de $b$ ?';
+            q.prefixe = 'b =';
+            q.attendu = e + 1;
+            q.explication = '$10^{' + e + '}=' + fr(Math.pow(10, e)) + '$ et $10^{' + (e + 1) + '}=' + fr(Math.pow(10, e + 1)) + '$ : $' + fr(Math.pow(10, e)) + '<' + fr(x) + '<' + fr(Math.pow(10, e + 1)) + '$, donc $a=' + e + '$ et $b=' + (e + 1) + '$.';
+            return q;
+        }
+        var base = A.choix([2, 3, 5, 6, 7]), p = A.entier(2, 5), r = A.entier(2, 4), s = A.entier(8, 18);
+        q.prefixe = 'n =';
+        q.texte = 'Écrire $' + frac('(' + base + '^{' + p + '})^{' + r + '}', base + '^{' + s + '}') + '$ sous la forme d\'une puissance de $' + base + '$. Donner l\'exposant $n$.';
+        q.attendu = p * r - s;
+        q.explication = '$(' + base + '^{' + p + '})^{' + r + '}=' + base + '^{' + p * r + '}$, puis $' + frac(base + '^{' + p * r + '}', base + '^{' + s + '}') + '=' + base + '^{' + p * r + '-' + s + '}=' + base + '^{' + q.attendu + '}$.';
+        return q;
+    };
+
+    /* ===== A4 · Notation scientifique ===== */
+    Auto.notationScientifique = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A4 · Écritures d\'un nombre' }, m, e;
+        if (niveau === 1) {
+            m = A.entier(11, 99) / 10; e = A.entier(2, 4); var v = arrondi(m * Math.pow(10, e));
+            q.texte = 'Quelle est l\'écriture décimale du nombre dont l\'écriture scientifique est $' + fr(m) + '\\times10^{' + e + '}$ ?';
+            q.explication = 'Multiplier par $10^{' + e + '}$, c\'est décaler la virgule de $' + e + '$ rangs vers la droite : $' + fr(m) + '\\times10^{' + e + '}=' + fr(v) + '$.';
+            return qcm(q, [{ t: '$' + fr(v) + '$', ok: true }, { t: '$' + fr(arrondi(v / 10)) + '$', ok: false }, { t: '$' + fr(arrondi(v * 10)) + '$', ok: false }, { t: '$' + fr(arrondi(m + Math.pow(10, e))) + '$', ok: false }]);
+        }
+        q.type = 'champs'; q.gabarit = '$a=$ [] et $n=$ []';
+        if (niveau === 2) {
+            m = A.entier(11, 99) / 10; e = -A.entier(2, 5); var x = arrondi(m * Math.pow(10, e));
+            q.texte = 'Donner l\'écriture scientifique $a\\times10^n$ du nombre $' + fr(x) + '$.';
+            q.attendus = [m, e];
+            q.explication = 'On place la virgule après le premier chiffre non nul : $' + fr(m) + '$ ; pour revenir à $' + fr(x) + '$, on la décale de $' + -e + '$ rangs vers la gauche : $' + fr(x) + '=' + fr(m) + '\\times10^{' + e + '}$.';
+            return q;
+        }
+        var a = A.entier(2, 9), b = A.entier(2, 9), p = A.entier(2, 6), r = -A.entier(1, 5), pr = a * b, mm = pr >= 10 ? pr / 10 : pr, ee = p + r + (pr >= 10 ? 1 : 0);
+        q.texte = 'Calculer $(' + a + '\\times10^{' + p + '})\\times(' + b + '\\times10^{' + r + '})$ et donner le résultat en écriture scientifique $a\\times10^n$.';
+        q.attendus = [mm, ee];
+        q.explication = 'On regroupe : $' + a + '\\times' + b + '=' + pr + '$ et $10^{' + p + '}\\times10^{' + r + '}=10^{' + (p + r) + '}$, soit $' + pr + '\\times10^{' + (p + r) + '}$' +
+            (pr >= 10 ? ' $=' + fr(mm) + '\\times10^{1}\\times10^{' + (p + r) + '}=' + fr(mm) + '\\times10^{' + ee + '}$ (car $' + pr + '$ n\'est pas entre $1$ et $10$).' : ', déjà en écriture scientifique.');
+        return q;
+    };
+
+    /* ===== A22 · Pythagore ===== */
+    // triangle rectangle quelconque (jamais isocèle), angle droit au sommet nom[0] ; cotes = textes des trois côtés [c1 (nom0-nom1), c2 (nom0-nom2), hyp]
+    function triangleRectangle(noms, c1, c2, cotes) {
+        var k = 150 / Math.max(c1, c2), ang = A.choix([0, 15, -15, 25]) * Math.PI / 180;
+        var u1 = [Math.cos(ang), -Math.sin(ang)], u2 = [-Math.sin(ang), -Math.cos(ang)];      // u2 ⟂ u1, vers le haut (y vers le bas en SVG)
+        var P0 = [0, 0], pts = [P0, [c1 * k * u1[0], c1 * k * u1[1]], [c2 * k * u2[0], c2 * k * u2[1]]];
+        var xs = pts.map(function (p) { return p[0]; }), ys = pts.map(function (p) { return p[1]; }), m = 64;
+        var minx = Math.min.apply(null, xs) - m, miny = Math.min.apply(null, ys) - m, W = Math.max.apply(null, xs) - minx + m, H = Math.max.apply(null, ys) - miny + m;
+        function X(p) { return p[0] - minx; } function Y(p) { return p[1] - miny; }
+        var s = '<svg viewBox="0 0 ' + W.toFixed(0) + ' ' + H.toFixed(0) + '" width="' + W.toFixed(0) + '" height="' + H.toFixed(0) + '" role="img" aria-label="Triangle rectangle">';
+        s += '<polygon class="fig-forme" points="' + pts.map(function (p) { return X(p).toFixed(1) + ',' + Y(p).toFixed(1); }).join(' ') + '"/>';
+        var e = 12;
+        s += '<path class="fig-seg" fill="none" d="M' + (X(P0) + e * u1[0]).toFixed(1) + ',' + (Y(P0) + e * u1[1]).toFixed(1) + ' L' + (X(P0) + e * u1[0] + e * u2[0]).toFixed(1) + ',' + (Y(P0) + e * u1[1] + e * u2[1]).toFixed(1) + ' L' + (X(P0) + e * u2[0]).toFixed(1) + ',' + (Y(P0) + e * u2[1]).toFixed(1) + '"/>';
+        var G = [(pts[0][0] + pts[1][0] + pts[2][0]) / 3, (pts[0][1] + pts[1][1] + pts[2][1]) / 3];
+        pts.forEach(function (p, i) {
+            var dx = p[0] - G[0], dy = p[1] - G[1], n = Math.hypot(dx, dy);
+            s += '<text class="fig-nom-pt" x="' + (X(p) + 18 * dx / n).toFixed(1) + '" y="' + (Y(p) + 18 * dy / n + 6).toFixed(1) + '" text-anchor="middle">' + noms[i] + '</text>';
+        });
+        [[0, 1, cotes[0]], [0, 2, cotes[1]], [1, 2, cotes[2]]].forEach(function (c) {
+            if (!c[2]) return;
+            var a = pts[c[0]], b = pts[c[1]], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, dx = mx - G[0], dy = my - G[1], n = Math.hypot(dx, dy);
+            s += '<text class="fig-txt fig-cote" x="' + (X([mx, my]) + 20 * dx / n).toFixed(1) + '" y="' + (Y([mx, my]) + 20 * dy / n + 5).toFixed(1) + '" text-anchor="middle">' + c[2] + '</text>';
+        });
+        return s + '</svg>';
+    }
+    function nomsTriangle() { return A.choix([['A', 'B', 'C'], ['E', 'D', 'F'], ['K', 'L', 'M'], ['R', 'S', 'T']]); }
+    Auto.pythagore = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A22 · Pythagore, Thalès' }, N = nomsTriangle(), a, b, h2, r;
+        var c1 = N[0] + N[1], c2 = N[0] + N[2], hyp = N[1] + N[2];
+        if (niveau === 1) {
+            do { a = A.entier(2, 9); b = A.entier(2, 9); h2 = a * a + b * b; } while (a === b || racine(h2)[0] !== 1);
+            q.figure = triangleRectangle(N, a, b, [a + ' cm', b + ' cm', '?']); q.figureNote = c1 + '=' + a + ' ' + c2 + '=' + b;
+            q.texte = 'Le triangle $' + N.join('') + '$ est rectangle en $' + N[0] + '$, avec $' + c1 + '=' + a + '$ cm et $' + c2 + '=' + b + '$ cm. Quelle est la longueur du segment $[' + hyp + ']$ ?';
+            q.explication = 'Pythagore dans le triangle rectangle en $' + N[0] + '$ ($[' + hyp + ']$ est l\'hypoténuse) : $' + hyp + '^2=' + a + '^2+' + b + '^2=' + a * a + '+' + b * b + '=' + h2 + '$, donc $' + hyp + '=\\sqrt{' + h2 + '}$ cm.';
+            return qcm(q, [{ t: '$\\sqrt{' + h2 + '}$ cm', ok: true }, { t: '$' + (a + b) + '$ cm', ok: false }, { t: '$' + h2 + '$ cm', ok: false }, { t: '$\\sqrt{' + Math.abs(a * a - b * b) + '}$ cm', ok: false }]);
+        }
+        q.type = 'champs';
+        do { a = A.entier(3, 12); b = A.entier(2, a - 1); r = a * a - b * b; } while (niveau === 2 ? racine(r)[0] !== 1 : (racine(r)[0] === 1 || racine(r)[1] === 1));
+        var cote = Math.sqrt(r);
+        q.figure = triangleRectangle(N, b, cote, [b + ' cm', '?', a + ' cm']); q.figureNote = hyp + '=' + a + ' ' + c1 + '=' + b;
+        q.texte = 'Le triangle $' + N.join('') + '$ est rectangle en $' + N[0] + '$, avec l\'hypoténuse $' + hyp + '=' + a + '$ cm et $' + c1 + '=' + b + '$ cm. ' +
+            (niveau === 2 ? 'Calculer la valeur exacte de $' + c2 + '$.' : 'Déterminer la valeur exacte de $' + c2 + '$, sous la forme $a\\sqrt{b}$ ($b$ le plus petit possible).');
+        q.gabarit = niveau === 2 ? '$' + c2 + '=\\sqrt{b}$ avec $b=$ []' : '$a=$ [] et $b=$ []';
+        q.attendus = niveau === 2 ? [r] : racine(r);
+        q.explication = 'Pythagore : $' + hyp + '^2=' + c1 + '^2+' + c2 + '^2$, donc $' + c2 + '^2=' + a + '^2-' + b + '^2=' + a * a + '-' + b * b + '=' + r + '$ et $' + c2 + '=\\sqrt{' + r + '}' + (niveau === 3 ? '=\\sqrt{' + racine(r)[0] * racine(r)[0] + '\\times' + racine(r)[1] + '}=' + racineTex(r) : '') + '$ cm.';
+        return q;
+    };
+
+    /* =====================================================================
        Rappels des questions vertes (bouton « Je ne sais pas, j'ai besoin d'un rappel ») :
        la méthode et un exemple différent de la question. Texte mixte HTML + $maths$.
        ===================================================================== */
@@ -1600,7 +1995,28 @@
         sommeVecteurs: 'Pour additionner deux vecteurs, on les met <b>bout à bout</b> : on parcourt le premier, puis le second à partir de son extrémité. On additionne les déplacements horizontaux, puis les verticaux.<br>' +
             'Exemple : $2$ à droite et $1$ en haut, puis $1$ à droite et $3$ en haut : au total $3$ à droite et $4$ en haut.',
         fonctionPython: '<code>def f(x):</code> définit une fonction ; <code>return</code> donne le résultat. Pour calculer <code>f(4)</code>, on remplace <code>x</code> par $4$ dans l\'expression.<br>' +
-            'Exemple : avec <code>return x * (x - 2)</code>, <code>f(4)</code> renvoie $4\\times(4-2)=4\\times2=8$.'
+            'Exemple : avec <code>return x * (x - 2)</code>, <code>f(4)</code> renvoie $4\\times(4-2)=4\\times2=8$.',
+        translationPoint: 'La translation qui transforme $A$ en $B$ fait subir à <b>tous</b> les points le même déplacement que celui qui va de $A$ à $B$ (même direction, même sens, même longueur).<br>' +
+            'On compte ce déplacement sur le réseau (colonnes, rangées), puis on le refait à partir du point de départ.',
+        vecteurEgalite: '$\\overrightarrow{AB}=\\overrightarrow{DC}$ signifie que $ABCD$ est un parallélogramme (éventuellement aplati) : les sommets se lisent dans l\'ordre $A\\to B\\to C\\to D$.<br>' +
+            'Astuce : dans $\\overrightarrow{AB}=\\overrightarrow{DC}$, on lit le premier vecteur à l\'endroit ($A$, $B$) et le second à l\'envers ($C$, $D$).',
+        puissancesX: 'Règles de calcul : $x^m\\times x^n=x^{m+n}$ ; $' + frac('x^m', 'x^n') + '=x^{m-n}$ ; $(x^m)^n=x^{m\\times n}$.<br>' +
+            'Exemple : $x^4\\times x^3=x^{4+3}=x^7$.',
+        distributiviteS2: 'Pour développer, on multiplie le nombre devant la parenthèse par <b>chaque</b> terme, signe compris : $k(a+b)=k\\times a+k\\times b$.<br>' +
+            'Exemple : $-3(x-5)=-3\\times x+(-3)\\times(-5)=-3x+15$.',
+        fonctionDeuxParametres: 'Avec <code>def f(a, b):</code>, l\'appel <code>f(4, 7)</code> donne <code>a = 4</code> et <code>b = 7</code>, <b>dans l\'ordre</b>. On remplace dans la ligne <code>return</code>.<br>' +
+            'Exemple : avec <code>return 3 * a + b</code>, <code>f(4, 7)</code> renvoie $3\\times4+7=19$.',
+        ecrituresNombre: 'Une fraction est une division : $' + frac(3, 4) + '=3\\div4=0{,}75$.<br>À connaître : $' + frac(1, 2) + '=0{,}5$ ; $' + frac(1, 4) + '=0{,}25$ ; $' + frac(1, 5) + '=0{,}2$ ; $' + frac(1, 8) + '=0{,}125$.',
+        comparerFractions: 'Deux fractions de même numérateur : la plus grande a le plus <b>petit</b> dénominateur, $' + frac(3, 5) + '>' + frac(3, 7) + '$.<br>' +
+            'Sinon, on les réduit au même dénominateur : $' + frac(2, 3) + '=' + frac(8, 12) + '$ et $' + frac(3, 4) + '=' + frac(9, 12) + '$, donc $' + frac(2, 3) + '<' + frac(3, 4) + '$.',
+        fractionsCalcul: 'On ne change pas une fraction en <b>multipliant</b> (ou divisant) son numérateur et son dénominateur par le même nombre : $' + frac(2, 3) + '=' + frac(8, 12) + '$.<br>' +
+            'Pour additionner deux fractions de même dénominateur, on additionne les numérateurs : $' + frac(2, 7) + '+' + frac(3, 7) + '=' + frac(5, 7) + '$.',
+        puissancesDix: '$10^n$ ($n$ positif) : un $1$ suivi de $n$ zéros. $10^0=1$. $10^{-n}$ : $0{,}0\\ldots01$ avec le $1$ au $n$-ième rang après la virgule.<br>' +
+            'Exemples : $10^3=1\\,000$ ; $10^{-2}=0{,}01$.',
+        notationScientifique: 'Multiplier par $10^n$ ($n>0$), c\'est décaler la virgule de $n$ rangs vers la <b>droite</b> ; par $10^{-n}$, de $n$ rangs vers la <b>gauche</b>.<br>' +
+            'Exemple : $3{,}7\\times10^{2}=370$ et $3{,}7\\times10^{-2}=0{,}037$.',
+        pythagore: 'Dans un triangle rectangle, le carré de l\'<b>hypoténuse</b> (le côté opposé à l\'angle droit, le plus long) est égal à la somme des carrés des deux autres côtés.<br>' +
+            'Exemple : triangle rectangle de côtés $5$ et $12$ : hypoténuse$^2=5^2+12^2=169$, donc hypoténuse $=\\sqrt{169}=13$.'
     };
     // chaque question verte reçoit son rappel
     Object.keys(RAPPELS).forEach(function (nom) {

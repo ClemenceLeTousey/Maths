@@ -30,7 +30,15 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie3-j1', groupe: 'Série 3 · semaine du 21 au 25 septembre', titre: 'Jour 1', court: 'S3 · J1', url: 'seconde/serie3.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie3-j2', groupe: 'Série 3 · semaine du 21 au 25 septembre', titre: 'Jour 2', court: 'S3 · J2', url: 'seconde/serie3.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie3-j3', groupe: 'Série 3 · semaine du 21 au 25 septembre', titre: 'Jour 3', court: 'S3 · J3', url: 'seconde/serie3.html?j=3' },
-    { niveau: 'seconde', id: 'seconde/serie3-j4', groupe: 'Série 3 · semaine du 21 au 25 septembre', titre: 'Jour 4', court: 'S3 · J4', url: 'seconde/serie3.html?j=4' }
+    { niveau: 'seconde', id: 'seconde/serie3-j4', groupe: 'Série 3 · semaine du 21 au 25 septembre', titre: 'Jour 4', court: 'S3 · J4', url: 'seconde/serie3.html?j=4' },
+    { niveau: 'seconde', id: 'seconde/serie2-j1', groupe: 'Série 2 · semaine du 14 au 18 septembre', titre: 'Jour 1', court: 'S2 · J1', url: 'seconde/serie2.html?j=1' },
+    { niveau: 'seconde', id: 'seconde/serie2-j2', groupe: 'Série 2 · semaine du 14 au 18 septembre', titre: 'Jour 2', court: 'S2 · J2', url: 'seconde/serie2.html?j=2' },
+    { niveau: 'seconde', id: 'seconde/serie2-j3', groupe: 'Série 2 · semaine du 14 au 18 septembre', titre: 'Jour 3', court: 'S2 · J3', url: 'seconde/serie2.html?j=3' },
+    { niveau: 'seconde', id: 'seconde/serie2-j4', groupe: 'Série 2 · semaine du 14 au 18 septembre', titre: 'Jour 4', court: 'S2 · J4', url: 'seconde/serie2.html?j=4' },
+    { niveau: 'seconde', id: 'seconde/serie1-j1', groupe: 'Série 1 · semaine du 7 au 11 septembre', titre: 'Jour 1', court: 'S1 · J1', url: 'seconde/serie1.html?j=1' },
+    { niveau: 'seconde', id: 'seconde/serie1-j2', groupe: 'Série 1 · semaine du 7 au 11 septembre', titre: 'Jour 2', court: 'S1 · J2', url: 'seconde/serie1.html?j=2' },
+    { niveau: 'seconde', id: 'seconde/serie1-j3', groupe: 'Série 1 · semaine du 7 au 11 septembre', titre: 'Jour 3', court: 'S1 · J3', url: 'seconde/serie1.html?j=3' },
+    { niveau: 'seconde', id: 'seconde/serie1-j4', groupe: 'Série 1 · semaine du 7 au 11 septembre', titre: 'Jour 4', court: 'S1 · J4', url: 'seconde/serie1.html?j=4' }
 ];
 
 /* Description de chaque groupe (même libellé que « groupe » ci-dessus), affichée sous son titre sur la page élève :
@@ -61,6 +69,14 @@ window.INTERACTIF_GROUPES = {
     'Série 3 · semaine du 21 au 25 septembre': {
         section: 'Anciennes séries', serie: 'Série 3',
         themes: ['A8 · Calcul littéral élémentaire', 'A9 · Développer, factoriser', 'Vecteurs', 'Algo · Fonctions']
+    },
+    'Série 2 · semaine du 14 au 18 septembre': {
+        section: 'Anciennes séries', serie: 'Série 2',
+        themes: ['A3 · Puissances', 'A4 · Écritures d\'un nombre', 'Vecteurs · Translations', 'Calcul littéral · Distributivité', 'Algo · Lire un programme']
+    },
+    'Série 1 · semaine du 7 au 11 septembre': {
+        section: 'Anciennes séries', serie: 'Série 1',
+        themes: ['A1 · Comparer deux nombres', 'A2 · Fractions', 'A3 · Puissances', 'A4 · Écritures d\'un nombre', 'A22 · Pythagore', 'Algo', 'Translations']
     },
     'Facultatif · Série 7 en temps limité ⏱': {}
 };
