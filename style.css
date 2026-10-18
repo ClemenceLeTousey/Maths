@@ -1048,6 +1048,25 @@ header p + .flammes { margin: -16px 0 -4px; }
     border-radius: 2px;
 }
 
+/* Accueil en mode BTTF : ni raccourcis, ni archives, ni pied de page ; seulement les trois menus,
+   cachés pendant le démarrage (88 mph et feu) puis affichés en fondu (site.js retire .futur-intro) */
+:root.futur-accueil .raccourcis-classes,
+:root.futur-accueil .archives,
+:root.futur-accueil footer { display: none; }
+
+:root.futur-accueil .grid-classes > * { transition: opacity 1.2s ease, transform 1.2s ease; }
+:root.futur-accueil .grid-classes > *:nth-child(2) { transition-delay: 0.3s; }
+:root.futur-accueil .grid-classes > *:nth-child(3) { transition-delay: 0.6s; }
+
+:root.futur-intro .grid-classes > * {
+    opacity: 0;
+    transform: translateY(14px);
+    pointer-events: none;
+}
+
+.circuits { transition: opacity 0.7s ease; }
+.circuits.part { opacity: 0; }
+
 .circuit.destination { --c: #ff4433; }
 .circuit.present { --c: #33ff77; }
 .circuit.depart { --c: #ffb320; }

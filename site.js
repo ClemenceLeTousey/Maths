@@ -106,9 +106,15 @@ document.addEventListener('click', function (e) {
         lettre.appendChild(svg);
     }
 
+    // en mode Matrix, le titre de l'accueil devient « Mathématrix »
+    function texteTitre(h) {
+        var t = h.dataset.titre || (h.dataset.titre = h.textContent.trim());
+        return t === 'Mathématiques' && document.documentElement.classList.contains('matrix') ? 'Mathématrix' : t;
+    }
+
     function crayonner(h) {
-        var texte = h.textContent.trim().toUpperCase();
-        h.setAttribute('aria-label', h.textContent.trim());
+        var titre = texteTitre(h), texte = titre.toUpperCase();
+        h.setAttribute('aria-label', titre);
         h.classList.add('titre-stylo', 'ecrit');
         h.textContent = '';
         var accents = [], rang = 0;
@@ -145,6 +151,13 @@ document.addEventListener('click', function (e) {
         filtreStylo();
         titres.forEach(crayonner);
     });
+
+    // appelé par le mode Matrix : réécrit le titre avec son nouveau nom
+    window.recrayonnerTitres = function () {
+        document.querySelectorAll('.titre-stylo').forEach(function (h) {
+            if (texteTitre(h) !== h.getAttribute('aria-label')) crayonner(h);
+        });
+    };
 })();
 
 /* Effets cachés dans le logo (les quatre ronds de la ligne) :
@@ -176,6 +189,7 @@ document.addEventListener('click', function (e) {
     function matrix() {
         if (document.documentElement.classList.toggle('matrix')) demarrerPluie();
         else arreterPluie();
+        if (window.recrayonnerTitres) window.recrayonnerTitres();
     }
     function demarrerPluie() {
         var racine = document.documentElement;
@@ -222,8 +236,10 @@ document.addEventListener('click', function (e) {
         }
     }
 
-    /* Violet : mode Retour vers le futur — tableau de bord en inox et « time circuits » sous le titre.
-       Au démarrage, le compteur monte à 88, éclair, puis deux traînées de feu. */
+    /* Violet : mode Retour vers le futur — tableau de bord en inox.
+       Sur l'accueil, au démarrage : seuls restent le titre, les « time circuits », le compteur qui monte à 88,
+       l'éclair et les deux traînées de feu ; quand les flammes s'éteignent, les time circuits disparaissent
+       et les trois menus (Seconde, Première, TST2S) apparaissent en fondu. */
     var MOIS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
     var horloge = null;
 
@@ -232,16 +248,38 @@ document.addEventListener('click', function (e) {
         return MOIS[d.getMonth()] + ' ' + deux(d.getDate()) + ' ' + d.getFullYear() + ' ' + deux(d.getHours()) + ':' + deux(d.getMinutes());
     }
 
+    function accueil() {
+        var ici = location.href.split(/[?#]/)[0];
+        return ici === BASE || ici === BASE + 'index.html';
+    }
+
     function futur() {
-        if (document.documentElement.classList.toggle('futur')) {
-            afficherCircuits();
-            if (!calme) demarrer88();
-            else allumerFlammes(false);
+        var racine = document.documentElement;
+        if (racine.classList.toggle('futur')) {
+            racine.classList.toggle('futur-accueil', accueil());
+            if (!calme) {
+                if (accueil()) { racine.classList.add('futur-intro'); afficherCircuits(); }
+                demarrer88();
+            } else allumerFlammes(false);
         } else {
             clearInterval(horloge);
             eteindreFlammes();
+            racine.classList.remove('futur-accueil', 'futur-intro');
             document.querySelectorAll('.circuits, .effet-futur').forEach(function (e) { e.remove(); });
         }
+    }
+
+    // fin du feu : les time circuits s'effacent, puis les trois menus apparaissent en fondu
+    function finIntro() {
+        var racine = document.documentElement, bloc = document.querySelector('.circuits');
+        clearInterval(horloge);
+        if (!bloc) { racine.classList.remove('futur-intro'); return; }
+        bloc.classList.add('part');
+        setTimeout(function () {
+            bloc.remove();
+            foyers.forEach(function (f) { dimensionner(f); braises(f, f.w); });
+            racine.classList.remove('futur-intro');
+        }, 700);
     }
 
     /* Traînées de feu sous le titre et sous le sous-titre : de petites flammes (particules) montent d'une ligne
@@ -338,7 +376,7 @@ document.addEventListener('click', function (e) {
         if (f.front < 1) ctx.drawImage(sp[23], lim - 9 * echelle, base - 9 * echelle, 18 * echelle, 18 * echelle);
     }
 
-    function allumerFlammes(progressif) {
+    function allumerFlammes(progressif, apres) {
         eteindreFlammes();
         var header = document.querySelector('header');
         if (!header) return;
@@ -364,7 +402,11 @@ document.addEventListener('click', function (e) {
                 bruler(f, intensite, now);
             });
             // plus de flammes : on s'arrête, la ligne de braises reste
-            if (!intensite && foyers.every(function (f) { return !f.parts.length; })) { animFlammes = null; fixe(); return; }
+            if (!intensite && foyers.every(function (f) { return !f.parts.length; })) {
+                animFlammes = null; fixe();
+                if (apres) apres();
+                return;
+            }
             animFlammes = requestAnimationFrame(image);
         })(t0);
     }
@@ -386,8 +428,7 @@ document.addEventListener('click', function (e) {
 
     function afficherCircuits() {
         // les écrans ne s'affichent que sur la page d'accueil du site
-        var ici = location.href.split(/[?#]/)[0];
-        if (ici !== BASE && ici !== BASE + 'index.html') return;
+        if (!accueil()) return;
         var header = document.querySelector('header');
         if (!header || header.querySelector('.circuits')) return;
         var maintenant = new Date();
@@ -436,7 +477,7 @@ document.addEventListener('click', function (e) {
             aff.textContent = (v < 10 ? '0' : '') + v;
             if (v < 88) { requestAnimationFrame(monter); return; }
             e.classList.add('boom');
-            if (document.documentElement.classList.contains('futur')) allumerFlammes(true);
+            if (document.documentElement.classList.contains('futur')) allumerFlammes(true, finIntro);
             setTimeout(function () { e.classList.add('fin'); }, 3000);         // le compteur reste le temps du feu
             setTimeout(function () { e.remove(); }, 3600);
         })(debut);
@@ -707,7 +748,11 @@ document.addEventListener('click', function (e) {
     if (MODES[memorise]) {
         document.documentElement.classList.add(memorise);          // tout de suite, sans animation
         if (memorise === 'matrix') document.addEventListener('DOMContentLoaded', demarrerPluie);
-        if (memorise === 'futur') document.addEventListener('DOMContentLoaded', function () { afficherCircuits(); allumerFlammes(false); });
+        // BTTF déjà actif : directement l'état final (braises et trois menus), sans time circuits
+        if (memorise === 'futur') {
+            document.documentElement.classList.toggle('futur-accueil', accueil());
+            document.addEventListener('DOMContentLoaded', function () { allumerFlammes(false); });
+        }
         if (memorise === 'halloween') document.addEventListener('DOMContentLoaded', demarrerNuit);
     }
     window.modesSite = { basculer: basculer, actif: modeActif };
