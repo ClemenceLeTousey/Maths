@@ -80,16 +80,16 @@
 
     <header>
         <h1>Python</h1>
-        <p>Éditeur, console et TP · Python s'exécute dans ton navigateur, rien n'est envoyé</p>
+        <p>TP Capytale, éditeur et console · Python s'exécute dans ton navigateur, rien n'est envoyé</p>
     </header>
 
     <main class="py">
         <div class="onglets" role="tablist" aria-label="Rubriques Python">
-            <button type="button" role="tab" id="onglet-editeur" aria-controls="panneau-editeur" data-onglet="editeur" aria-selected="true">Éditeur et console</button>
-            <button type="button" role="tab" id="onglet-tp" aria-controls="panneau-tp" data-onglet="tp" aria-selected="false" tabindex="-1">TP</button>
+            <button type="button" role="tab" id="onglet-tp" aria-controls="panneau-tp" data-onglet="tp" aria-selected="true">TP Capytale</button>
+            <button type="button" role="tab" id="onglet-editeur" aria-controls="panneau-editeur" data-onglet="editeur" aria-selected="false" tabindex="-1">Éditeur et console</button>
         </div>
 
-        <div class="panneau" role="tabpanel" id="panneau-editeur" aria-labelledby="onglet-editeur">
+        <div class="panneau" role="tabpanel" id="panneau-editeur" aria-labelledby="onglet-editeur" hidden>
         <div class="py-outils">
             <button type="button" class="lancer" id="lancer" disabled>▶ Exécuter</button>
             <button type="button" class="stop" id="stop" disabled>■ Stop</button>
@@ -108,21 +108,13 @@
         <p class="py-aide"><kbd>Ctrl</kbd>+<kbd>Entrée</kbd> exécute le programme · dans la console, ↑ / ↓ rappellent les instructions précédentes · <b>■ Stop</b> arrête un programme qui ne s'arrête pas · <code>input()</code> ouvre une petite fenêtre (un programme avec <code>input()</code> ne peut pas être stoppé : recharge la page si besoin) · <code>matplotlib</code> affiche les graphiques dans la console. Ton programme est gardé sur cet appareil.<br>Besoin de <code>turtle</code> ? Utilise la <a href="consolepython.html">console Python Basthon</a>.</p>
         </div>
 
-        <div class="panneau" role="tabpanel" id="panneau-tp" aria-labelledby="onglet-tp" hidden>
+        <div class="panneau" role="tabpanel" id="panneau-tp" aria-labelledby="onglet-tp">
             <div class="class-card classe-python">
-                <details class="sequence-details seq seq-now" open>
-                    <summary class="sequence-summary">
-                        <span class="sequence-title">
-                            <span class="seq-num">Travaux pratiques</span>
-                            <span class="sequence-subtitle">Python avec Capytale</span>
-                        </span>
-                    </summary>
-                    <ul>
-                        <li class="res"><span class="type">TP 1</span><span class="res-body"><a href="https://nuage02.apps.education.fr/index.php/s/cptqx7BFM3zTQ8G" target="_blank" rel="noopener">Premiers pas en Python avec Capytale</a></span><span class="corriges"><a href="https://nuage02.apps.education.fr/index.php/s/BDzzFP2fzENr69Y" target="_blank" rel="noopener">Corrigé PDF</a><a href="cours/python/tp1-correction.html" target="_blank" rel="noopener">Corrigé interactif</a></span></li>
-                        <li class="res"><span class="type">TP 2</span><span class="res-body"><a href="https://nuage02.apps.education.fr/index.php/s/5Q6HNyDJMpmeeCT" target="_blank" rel="noopener">Les structures conditionnelles</a></span><span class="corriges"><a href="https://nuage02.apps.education.fr/index.php/s/q76RQ64Z3DaGMQM" target="_blank" rel="noopener">Corrigé PDF</a><a href="cours/python/tp2-correction.html" target="_blank" rel="noopener">Corrigé interactif</a></span></li>
-                        <li class="res"><span class="type">TP 3</span><span class="res-body"><a href="https://nuage02.apps.education.fr/index.php/s/iEQg8nfnqwxAqa3" target="_blank" rel="noopener">Les boucles en Python</a></span><span class="corriges"><a href="https://nuage02.apps.education.fr/index.php/s/bTcrcoW9qyoZS5w" target="_blank" rel="noopener">Corrigé PDF</a><a href="cours/python/tp3-correction.html" target="_blank" rel="noopener">Corrigé interactif</a></span></li>
-                    </ul>
-                </details>
+                <ul>
+                    <li class="res"><span class="type">TP 1</span><span class="res-body"><a href="https://nuage02.apps.education.fr/index.php/s/cptqx7BFM3zTQ8G" target="_blank" rel="noopener">Affectations et fonctions</a></span><span class="corriges"><a href="https://nuage02.apps.education.fr/index.php/s/BDzzFP2fzENr69Y" target="_blank" rel="noopener">Corrigé PDF</a><a href="cours/python/tp1-correction.html" target="_blank" rel="noopener">Corrigé interactif</a></span></li>
+                    <li class="res"><span class="type">TP 2</span><span class="res-body"><a href="https://nuage02.apps.education.fr/index.php/s/5Q6HNyDJMpmeeCT" target="_blank" rel="noopener">Les structures conditionnelles</a></span><span class="corriges"><a href="https://nuage02.apps.education.fr/index.php/s/q76RQ64Z3DaGMQM" target="_blank" rel="noopener">Corrigé PDF</a><a href="cours/python/tp2-correction.html" target="_blank" rel="noopener">Corrigé interactif</a></span></li>
+                    <li class="res"><span class="type">TP 3</span><span class="res-body"><a href="https://nuage02.apps.education.fr/index.php/s/iEQg8nfnqwxAqa3" target="_blank" rel="noopener">Les boucles en Python</a></span><span class="corriges"><a href="https://nuage02.apps.education.fr/index.php/s/bTcrcoW9qyoZS5w" target="_blank" rel="noopener">Corrigé PDF</a><a href="cours/python/tp3-correction.html" target="_blank" rel="noopener">Corrigé interactif</a></span></li>
+                </ul>
             </div>
         </div>
     </main>
@@ -348,10 +340,10 @@
             if (f) f.text().then(function (t) { ed.setValue(t); });
         };
 
-        /* ---------- Onglets : Éditeur et console par défaut ; #tp dans l'adresse ouvre les TP ---------- */
+        /* ---------- Onglets : TP Capytale par défaut ; #editeur dans l'adresse ouvre l'éditeur ---------- */
         var onglets = Array.prototype.slice.call(document.querySelectorAll('.onglets [role="tab"]'));
         function ouvrirOnglet(nom, focus) {
-            if (nom !== 'tp') nom = 'editeur';
+            if (nom !== 'editeur') nom = 'tp';
             onglets.forEach(function (o) {
                 var actif = o.dataset.onglet === nom;
                 o.setAttribute('aria-selected', actif ? 'true' : 'false');
@@ -360,7 +352,7 @@
                 if (actif && focus) o.focus();
             });
             if (nom === 'editeur') ed.refresh();   // CodeMirror se redessine après avoir été caché
-            try { history.replaceState(null, '', nom === 'editeur' ? location.pathname + location.search : '#tp'); } catch (e) {}
+            try { history.replaceState(null, '', nom === 'tp' ? location.pathname + location.search : '#editeur'); } catch (e) {}
         }
         onglets.forEach(function (o) {
             o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };
