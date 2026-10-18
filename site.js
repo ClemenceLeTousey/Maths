@@ -385,6 +385,9 @@ document.addEventListener('click', function (e) {
     var DEPART_MARTY = new Date(1985, 9, 26, 1, 35);
 
     function afficherCircuits() {
+        // les écrans ne s'affichent que sur la page d'accueil du site
+        var ici = location.href.split(/[?#]/)[0];
+        if (ici !== BASE && ici !== BASE + 'index.html') return;
         var header = document.querySelector('header');
         if (!header || header.querySelector('.circuits')) return;
         var maintenant = new Date();
