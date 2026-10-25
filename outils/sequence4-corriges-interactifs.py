@@ -428,7 +428,7 @@ STYLE_PLUS = """
 .objs b { color: var(--calc); font-weight: 600; }
 .pill.red { background: var(--star-red); }
 .pill.gris { background: #868E96; }
-.pill.maison { background: #F76707; }
+.pill.maison { background: #E8A200; color: #1D2733; }
 .legende { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); margin-top: 10px; align-items: center; }
 .legende span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; background: var(--c); }
 .blk { border-radius: 0 8px 8px 0; padding: 6px 12px; margin: 8px 0; border-left: 3px solid; overflow-x: auto; }
@@ -495,7 +495,7 @@ def page(num, theme, nom_fiche, sortie):
                 f'{etoiles(e["niv"])}{maison}<span class="comp">{esc(e["comp"])}</span></div>'
                 f'<div class="exo-b"><div class="consigne">{conv(e["corps"])}</div>{corr_html}</div></article>')
     nav_css = (".exnav a.nb { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 3px 10px; text-decoration: none; font-weight: 500; font-size: 15px; }\n"
-               ".exnav a.nb:hover { background: var(--calc-soft); }\n.exnav a.nb.red { border-color: var(--star-red); color: var(--star-red); }\n.exnav a.nb.gris { border-color: #868E96; color: #868E96; }\n.exnav a.nb.maison { border-color: #F76707; color: #F76707; }\n")
+               ".exnav a.nb:hover { background: var(--calc-soft); }\n.exnav a.nb.red { border-color: var(--star-red); color: var(--star-red); }\n.exnav a.nb.gris { border-color: #868E96; color: #868E96; }\n.exnav a.nb.maison { border-color: #E8A200; color: #9C6B00; }\n")
     doc = f"""<!doctype html>
 <html lang="fr">
 <head>
@@ -516,7 +516,7 @@ def page(num, theme, nom_fiche, sortie):
   </div>
 </header>
 <main class="wrap">
-<div class="legende"><span style="--c:#339AF0">en classe</span><span style="--c:#868E96">si le temps le permet</span><span style="--c:#F76707">à la maison</span><span style="--c:#FA5252">approfondissement</span></div>
+<div class="legende"><span style="--c:#339AF0">en classe</span><span style="--c:#868E96">si le temps le permet</span><span style="--c:#E8A200">à la maison</span><span style="--c:#FA5252">approfondissement</span></div>
 <div class="toutes"><button class="btn green" id="tout">Afficher tous les corrigés</button><button class="btn ghost" id="rien">Masquer tous les corrigés</button></div>
 {"".join(corps)}
 </main>
