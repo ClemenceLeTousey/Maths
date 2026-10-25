@@ -453,6 +453,11 @@ STYLE_PLUS = """
 .pill.red { background: var(--star-red); }
 .pill.gris { background: #868E96; }
 .graph { max-width: 620px; margin: 6px auto; }
+.graph97 { max-width: 560px; margin: 8px auto; font-size: 13px; }
+.g97-t { color: var(--ink); margin-bottom: 6px; line-height: 1.35; }
+.g97-c { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.leg97 { display: grid; gap: 2px; }
+.leg97 i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
 .graph img { width: 100%; margin: 0; }
 .leg61 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 2px 14px; font-size: 13px; color: var(--ink); margin-top: 6px; padding-left: 8%; }
 .leg61 i { display: inline-block; width: 18px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
