@@ -67,6 +67,13 @@ for m in re.finditer(r"\\DefCorr\{", CORR):
     num, i = arg(CORR, i)
     corps, i = arg(CORR, i)
     CORRS[num.strip()] = sans_commentaires(corps)
+# Objectif de chaque exercice : classement de "Séquence 4 - Exercices manuel.tex".
+OBJ_EXO, _obj = {}, None
+for m in re.finditer(r"\\Objectif\{(\d+)\}|\\UseExo(?:\[\w+\])?\{(\d+)\}", sans_commentaires(lire("Séquence 4 - Exercices manuel.tex"))):
+    if m.group(1):
+        _obj = m.group(1)
+    else:
+        OBJ_EXO[m.group(2)] = _obj
 DETAILS = {}
 DET = lire("Séquence 4 - Corrigés interactifs - détails.tex")
 for m in re.finditer(r"\\DefDetail\{", DET):
@@ -428,6 +435,7 @@ STYLE_PLUS = """
 .objs b { color: var(--calc); font-weight: 600; }
 .pill.red { background: var(--star-red); }
 .pill.gris { background: #868E96; }
+.objn { font-family: var(--f-body); font-size: 14px; font-weight: 600; color: var(--calc); }
 .pill.maison { background: #E8A200; color: #1D2733; }
 .legende { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); margin-top: 10px; align-items: center; }
 .legende span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; background: var(--c); }
@@ -492,7 +500,7 @@ def page(num, theme, nom_fiche, sortie):
                          if corr else '<p class="aide">Corrigé à venir.</p>')
             corps.append(
                 f'<article class="exo" id="ex{n}"><div class="exo-h"><span class="pill{coul}">Ex {n} p {esc(e["page"])}</span>'
-                f'{etoiles(e["niv"])}{maison}<span class="comp">{esc(e["comp"])}</span></div>'
+                f'{etoiles(e["niv"])}{maison}<span class="comp"><span class="objn">Objectif {OBJ_EXO.get(n, "?")}</span> · {esc(e["comp"])}</span></div>'
                 f'<div class="exo-b"><div class="consigne">{conv(e["corps"])}</div>{corr_html}</div></article>')
     nav_css = (".exnav a.nb { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 3px 10px; text-decoration: none; font-weight: 500; font-size: 15px; }\n"
                ".exnav a.nb:hover { background: var(--calc-soft); }\n.exnav a.nb.red { border-color: var(--star-red); color: var(--star-red); }\n.exnav a.nb.gris { border-color: #868E96; color: #868E96; }\n.exnav a.nb.maison { border-color: #E8A200; color: #9C6B00; }\n")
