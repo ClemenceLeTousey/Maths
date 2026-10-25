@@ -81,6 +81,7 @@ for m in re.finditer(r"\\DefDetail\{", DET):
     num, i = arg(DET, i)
     corps, i = arg(DET, i)
     DETAILS[num.strip()] = sans_commentaires(corps)
+TEMPS = dict(re.findall(r"\\TempsExo\{(\d+)\}\{(\d+)\}", sans_commentaires(DET)))
 mm = re.search(r"\\ExoMaison\{([^}]*)\}", sans_commentaires(COMMUN))
 MAISON = set(x.strip() for x in mm.group(1).split(",")) if mm else set()
 
@@ -435,6 +436,7 @@ STYLE_PLUS = """
 .objs b { color: var(--calc); font-weight: 600; }
 .pill.red { background: var(--star-red); }
 .pill.gris { background: #868E96; }
+.temps { font-size: 14px; color: var(--muted); white-space: nowrap; }
 .objn { font-family: var(--f-body); font-size: 14px; font-weight: 600; color: var(--calc); }
 .pill.maison { background: #E8A200; color: #1D2733; }
 .legende { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); margin-top: 10px; align-items: center; }
@@ -494,13 +496,14 @@ def page(num, theme, nom_fiche, sortie):
                 coul = " maison"
             e = EXOS[n]
             maison = " 🏠" if n in MAISON else ""
+            temps = f'<span class="temps">⏱ {TEMPS[n]} min</span>' if n in TEMPS else ""
             nav.append(f'<a class="nb{coul}" href="#ex{n}">{n}</a>')
             corr = DETAILS.get(n) or CORRS.get(n)
             corr_html = (f'<details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">{conv(corr)}</div></details>'
                          if corr else '<p class="aide">Corrigé à venir.</p>')
             corps.append(
                 f'<article class="exo" id="ex{n}"><div class="exo-h"><span class="pill{coul}">Ex {n} p {esc(e["page"])}</span>'
-                f'{etoiles(e["niv"])}{maison}<span class="comp"><span class="objn">Objectif {OBJ_EXO.get(n, "?")}</span> · {esc(e["comp"])}</span></div>'
+                f'{etoiles(e["niv"])}{temps}{maison}<span class="comp"><span class="objn">Objectif {OBJ_EXO.get(n, "?")}</span> · {esc(e["comp"])}</span></div>'
                 f'<div class="exo-b"><div class="consigne">{conv(e["corps"])}</div>{corr_html}</div></article>')
     nav_css = (".exnav a.nb { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 3px 10px; text-decoration: none; font-weight: 500; font-size: 15px; }\n"
                ".exnav a.nb:hover { background: var(--calc-soft); }\n.exnav a.nb.red { border-color: var(--star-red); color: var(--star-red); }\n.exnav a.nb.gris { border-color: #868E96; color: #868E96; }\n.exnav a.nb.maison { border-color: #E8A200; color: #9C6B00; }\n")
