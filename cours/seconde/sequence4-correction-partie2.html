@@ -153,6 +153,14 @@ h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
 .objs b { color: var(--calc); font-weight: 600; }
 .pill.red { background: var(--star-red); }
 .pill.gris { background: #868E96; }
+.graph { max-width: 620px; margin: 6px auto; }
+.graph img { width: 100%; margin: 0; }
+.leg61 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 2px 14px; font-size: 13px; color: var(--ink); margin-top: 6px; padding-left: 8%; }
+.leg61 i { display: inline-block; width: 18px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.codes { display: flex; gap: 14px; flex-wrap: wrap; margin: 8px 0; }
+.codeb { flex: 1 1 240px; min-width: 0; }
+.codeb-t { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px; }
+.codeb pre.code { margin: 0; font-size: 15px; line-height: 1.45; }
 .temps { font-size: 14px; color: var(--muted); white-space: nowrap; }
 .objn { font-family: var(--f-body); font-size: 14px; font-weight: 600; color: var(--calc); }
 .pill.maison { background: #E8A200; color: #1D2733; }
@@ -248,7 +256,7 @@ De son troisième à son quatrième mois de mandat, la cote de popularité du pr
 <div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">La cote de popularité a baissé d'environ \(25{,}93\,\%\).</div></div>
 <div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Une baisse de \(14\) points n'est pas une baisse de \(14\,\%\)&nbsp;: les \(14\) points sont rapportés aux \(54\) points de départ.</div></div></div></div></details></div></article><article class="exo" id="ex61"><div class="exo-h"><span class="pill">Ex 61 p 262</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span><span class="comp"><span class="objn">Objectif 4</span> · Chercher</span></div><div class="exo-b"><div class="consigne">
 Le graphique ci-dessous indique l'évolution des effectifs de professionnels de santé en activité.
-<div class="c"><img src="img-sequence4/ex61.png" alt="" loading="lazy"></div>
+<div class="graph"><img src="img-sequence4/ex61-graphique.png" alt="Indices base 100 en 1990 des effectifs de professionnels de santé, de 1990 à 2013"><div class="leg61"><span><i style="background:#F9006C"></i>Médecins généralistes</span><span><i style="background:#FFA105"></i>Infirmiers</span><span><i style="background:#AAD400"></i>Médecins spécialistes</span><span><i style="background:#9C0089"></i>Masseurs-kinésithérapeutes</span><span><i style="background:#00B44B"></i>Chirurgiens-dentistes</span><span><i style="background:#565655"></i>Population française</span><span><i style="background:#0061B7"></i>Sages-femmes</span></div></div>
 <ol><li> Ce graphique veut-il dire qu'en 1990, il y avait le même nombre de professionnels de santé dans chaque catégorie&nbsp;?
 </li><li> Donner l'évolution approximative du nombre de médecins généralistes et de masseurs-kinésithérapeutes entre 1990 et 2013.
 </li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
@@ -258,24 +266,30 @@ Le graphique ci-dessous indique l'évolution des effectifs de professionnels de 
 <div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Médecins généralistes&nbsp;: indice environ \(116\) en 2013, donc \(116-100=16\).<br>
 Masseurs-kinésithérapeutes&nbsp;: indice environ \(196\), donc \(196-100=96\).</div></div>
 <div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Le nombre de médecins généralistes a augmenté d'environ \(16\,\%\), celui des masseurs-kinésithérapeutes d'environ \(96\,\%\) (il a presque doublé).</div></div></div></div></details></div></article><article class="exo" id="ex57"><div class="exo-h"><span class="pill gris">Ex 57 p 262</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 10 min</span><span class="comp"><span class="objn">Objectif 4</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
-<b>Algorithme.</b> On considère l'algorithme ci-dessous.
-<div class="c">
-<span class="fbox"><div>
-Définir Variation(\(v_1\), \(v_2\))&nbsp;:<br>
-\(A \leftarrow \dots\)<br>
-\(R \leftarrow \dots\)<br>
-\(T \leftarrow \dots\)<br>
-retourner(\(A\), \(T\))
-</div></span>
-</div>
+<b>Algorithme.</b> On considère l'algorithme ci-dessous, écrit en langage naturel et en Python.
+<div class="codes"><div class="codeb"><div class="codeb-t">Langage naturel</div><pre class="code">Définir Variation(v1, v2) :
+    A ← …
+    R ← …
+    T ← …
+    retourner (A, T)</pre></div><div class="codeb"><div class="codeb-t">Python</div><pre class="code">def variation(v1, v2):
+    A = ...
+    R = ...
+    T = ...
+    return A, T</pre></div></div>
 <ol><li> Compléter l'algorithme pour qu'il calcule la variation absolue \(A\), la variation relative \(R\) et le taux d'évolution \(T\) exprimé en pourcentage.
 </li><li> Quelles seront les valeurs retournées lorsque&nbsp;:<br>
 <b>a.</b> \(v_1=75\) et \(v_2=30\)&nbsp;?<br> <b>b.</b> \(v_1=160\) et \(v_2=340\)&nbsp;?
 </li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
 <div class="qq"><div class="qq-n">Question 1</div><div class="blk form"><div class="blk-t">Formule utilisée</div><div class="blk-c">\(A=v_2-v_1\), &emsp; \(R=\dfrac{A}{v_1}\), &emsp; \(T=R\times100\).</div></div>
-<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(A\leftarrow v_2-v_1\)<br>
-\(R\leftarrow A/v_1\)<br>
-\(T\leftarrow R\times100\)</div></div></div>
+<div class="codes"><div class="codeb"><div class="codeb-t">Langage naturel</div><pre class="code">Définir Variation(v1, v2) :
+    A ← v2 − v1
+    R ← A / v1
+    T ← R × 100
+    retourner (A, T)</pre></div><div class="codeb"><div class="codeb-t">Python</div><pre class="code">def variation(v1, v2):
+    A = v2 - v1
+    R = A / v1
+    T = R * 100
+    return A, T</pre></div></div></div>
 <div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><b>a.</b> \(A=30-75=-45\)&nbsp;; \(R=\dfrac{-45}{75}=-0{,}6\)&nbsp;; \(T=-60\).<br>
 <b>b.</b> \(A=340-160=180\)&nbsp;; \(R=\dfrac{180}{160}=1{,}125\)&nbsp;; \(T=112{,}5\).</div></div>
 <div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">L'algorithme retourne \((-45~;~-60)\) puis \((180~;~112{,}5)\).</div></div></div></div></details></div></article><h2 class="rub">À la maison</h2><article class="exo" id="ex26"><div class="exo-h"><span class="pill maison">Ex 26 p 259</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 5 min</span> 🏠<span class="comp"><span class="objn">Objectif 4</span> · Calculer</span></div><div class="exo-b"><div class="consigne">

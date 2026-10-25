@@ -81,6 +81,12 @@ for m in re.finditer(r"\\DefDetail\{", DET):
     num, i = arg(DET, i)
     corps, i = arg(DET, i)
     DETAILS[num.strip()] = sans_commentaires(corps)
+ENONCES_WEB = {}
+for m in re.finditer(r"\\DefEnonceWeb\{", DET):
+    i = m.end() - 1
+    num, i = arg(DET, i)
+    corps, i = arg(DET, i)
+    ENONCES_WEB[num.strip()] = sans_commentaires(corps)
 TEMPS = dict(re.findall(r"\\TempsExo\{(\d+)\}\{(\d+)\}", sans_commentaires(DET)))
 mm = re.search(r"\\ExoMaison\{([^}]*)\}", sans_commentaires(COMMUN))
 MAISON = set(x.strip() for x in mm.group(1).split(",")) if mm else set()
@@ -355,6 +361,16 @@ def trait(nom, s, i, out):
         if nom == "Reperage" and "\\item" in c and "\\begin{itemize}" not in c:
             c = "\\begin{itemize}" + c + "\\end{itemize}"
         out.append(f'<div class="blk {cls}"><div class="blk-t">{titre}</div><div class="blk-c">{conv(c)}</div></div>'); return i
+    if nom == "HTML":
+        c, i = arg(s, i)
+        out.append(c); return i
+    if nom == "CodeBlocs":
+        blocs = []
+        for _ in range(2):
+            t, i = arg(s, i); c, i = arg(s, i)
+            lignes = c.strip("\n").split("\n")
+            blocs.append(f'<div class="codeb"><div class="codeb-t">{esc(t)}</div><pre class="code">{esc(chr(10).join(lignes))}</pre></div>')
+        out.append('<div class="codes">' + "".join(blocs) + "</div>"); return i
     if nom == "Q":
         q, i = arg(s, i); c, i = arg(s, i)
         out.append(f'<div class="qq"><div class="qq-n">Question {esc(q)}</div>{conv(c)}</div>'); return i
@@ -436,6 +452,14 @@ STYLE_PLUS = """
 .objs b { color: var(--calc); font-weight: 600; }
 .pill.red { background: var(--star-red); }
 .pill.gris { background: #868E96; }
+.graph { max-width: 620px; margin: 6px auto; }
+.graph img { width: 100%; margin: 0; }
+.leg61 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 2px 14px; font-size: 13px; color: var(--ink); margin-top: 6px; padding-left: 8%; }
+.leg61 i { display: inline-block; width: 18px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.codes { display: flex; gap: 14px; flex-wrap: wrap; margin: 8px 0; }
+.codeb { flex: 1 1 240px; min-width: 0; }
+.codeb-t { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px; }
+.codeb pre.code { margin: 0; font-size: 15px; line-height: 1.45; }
 .temps { font-size: 14px; color: var(--muted); white-space: nowrap; }
 .objn { font-family: var(--f-body); font-size: 14px; font-weight: 600; color: var(--calc); }
 .pill.maison { background: #E8A200; color: #1D2733; }
@@ -504,7 +528,7 @@ def page(num, theme, nom_fiche, sortie):
             corps.append(
                 f'<article class="exo" id="ex{n}"><div class="exo-h"><span class="pill{coul}">Ex {n} p {esc(e["page"])}</span>'
                 f'{etoiles(e["niv"])}{temps}{maison}<span class="comp"><span class="objn">Objectif {OBJ_EXO.get(n, "?")}</span> · {esc(e["comp"])}</span></div>'
-                f'<div class="exo-b"><div class="consigne">{conv(e["corps"])}</div>{corr_html}</div></article>')
+                f'<div class="exo-b"><div class="consigne">{conv(ENONCES_WEB.get(n, e["corps"]))}</div>{corr_html}</div></article>')
     nav_css = (".exnav a.nb { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 3px 10px; text-decoration: none; font-weight: 500; font-size: 15px; }\n"
                ".exnav a.nb:hover { background: var(--calc-soft); }\n.exnav a.nb.red { border-color: var(--star-red); color: var(--star-red); }\n.exnav a.nb.gris { border-color: #868E96; color: #868E96; }\n.exnav a.nb.maison { border-color: #E8A200; color: #9C6B00; }\n")
     doc = f"""<!doctype html>
@@ -544,7 +568,7 @@ document.getElementById('rien').onclick = () => document.querySelectorAll('detai
     return sortie
 
 os.makedirs(os.path.join(SITE, IMG_DIR), exist_ok=True)
-imgs = set(re.findall(r"images/([A-Za-z0-9_.-]+\.png)", COMMUN + CORR))
+imgs = set(re.findall(r"images/([A-Za-z0-9_.-]+\.png)", COMMUN + CORR)) | set(re.findall(r"img-sequence4/([A-Za-z0-9_.-]+\.png)", DET))
 for f in imgs:
     shutil.copy(os.path.join(SEQ, "images", f), os.path.join(SITE, IMG_DIR, f))
 for num, theme, fiche, sortie in [
