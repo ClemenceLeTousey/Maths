@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Exercices Partie 1 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Même habillage que la page de remédiation DS1 : une colonne de lecture, thème clair fixe (projection en classe). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs de la feuille */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* sinon display:grid (rappel, entraînement) l’emporte sur hidden */
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons d'exercices */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.green.on { background: var(--green); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .sheet .item .resline, .item.raw .resline { display: block; }
+
+/* Réponse de l'élève (entraînement avec nouvelles valeurs) */
+.aide { margin: 0; font-size: 15px; color: var(--muted); }
+.aide code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.answer { display: grid; gap: 6px; min-width: 0; }
+.ans-row, .ab { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; min-width: 0; }
+.ans-row label, .ab label { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 260px; max-width: 480px; }
+.ab label { flex: 0 1 180px; }
+.answer input[type="text"] { font: inherit; font-size: 17px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); min-width: 0; width: 100%; }
+.answer input[type="text"]:focus { outline: none; border-color: var(--calc); box-shadow: 0 0 0 2px var(--calc-soft); }
+.ans-prev { min-height: 1.5em; color: var(--muted); font-size: 15px; overflow-x: auto; }
+.choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.choices label { display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; background: var(--paper); }
+.choices label:has(input:checked) { border-color: var(--calc); background: var(--calc-soft); }
+.ans-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb { border-radius: 4px; padding: 6px 12px; font-size: 15px; overflow-x: auto; }
+.fb.ok { background: var(--green-soft); border-left: 3px solid var(--green); }
+.fb.warn { background: var(--amber-soft); border-left: 3px solid #F59F00; }
+.fb.ko { background: var(--red-soft); border-left: 3px solid var(--red); }
+.train .item.good { border-color: var(--green); }
+.qfig { overflow-x: auto; }
+.qfig svg, .fig svg { display: block; max-width: none; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+/* Tableau de double distributivité (Ex. 4) : termes de la 1re parenthèse en colonnes, de la 2de en lignes */
+.tdd { border-collapse: collapse; margin: 4px 0 6px; }
+.tdd th, .tdd td { border: 1px solid var(--line); padding: 4px 14px; text-align: center; min-width: 56px; }
+.tdd th { background: var(--bg); font-weight: 400; }
+.tdd th.coin { color: var(--muted); }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+
+.rub { margin: 22px 0 6px; font-size: 17px; color: var(--calc); border-bottom: 1px solid #CFE2F7; padding-bottom: 2px; }
+.rub.red { color: var(--red); border-color: #F8C9C9; }
+.objs { margin: 26px 0 4px; background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 8px 14px; border-radius: 0 8px 8px 0; display: grid; gap: 2px; }
+.objs b { color: var(--calc); font-weight: 600; }
+.pill.red { background: var(--star-red); }
+.exo { margin-top: 12px; scroll-margin-top: 110px; }
+.exo-b img { max-width: 100%; height: auto; display: block; margin: 4px auto; }
+.exo-b ol, .exo-b ul { margin: 4px 0; padding-left: 24px; }
+.exo-b li { margin: 2px 0; }
+.c { text-align: center; }
+.c > * { margin-inline: auto; }
+.tw { overflow-x: auto; }
+table.t { border-collapse: collapse; margin: 6px auto; font-size: 15px; }
+table.t td { border: 1px solid var(--line); padding: 3px 10px; text-align: center; }
+table.t td.hd { background: #FFE8CC; font-weight: 500; }
+.nc { color: var(--calc); font-weight: 500; margin-right: 2px; }
+.cm { font-family: var(--f-body); }
+.fbox { border: 1px solid var(--ink); padding: 1px 6px; }
+pre.code { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; font-size: 14px; overflow-x: auto; margin: 6px 0; }
+details.corr { border-top: 1px dashed var(--line); padding-top: 10px; }
+details.corr > summary { list-style: none; cursor: pointer; display: inline-block; border: 1px solid var(--green); color: var(--green); border-radius: 6px; padding: 4px 14px; font-weight: 500; font-size: 15px; }
+details.corr > summary::-webkit-details-marker { display: none; }
+details.corr[open] > summary { background: var(--green); color: #fff; }
+.corr-b { margin-top: 10px; background: var(--green-soft); border-left: 3px solid var(--green); padding: 10px 14px; border-radius: 0 8px 8px 0; overflow-x: auto; }
+.avec { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.avec > div:first-child { flex: 1 1 280px; min-width: 0; }
+.figs { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.figs.c { margin-top: 6px; flex-direction: row; flex-wrap: wrap; justify-content: center; }
+.fig svg { display: block; max-width: none; }
+.toutes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.exnav a.nb { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 3px 10px; text-decoration: none; font-weight: 500; font-size: 15px; }
+.exnav a.nb:hover { background: var(--calc-soft); }
+.exnav a.nb.red { border-color: var(--star-red); color: var(--star-red); }
+</style>
+<script src="../../barre.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Séquence 4 — Exercices Partie 1 — Corrigé</b><span>Proportions</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" aria-label="Exercices"><a class="nb" href="#ex41">41</a><a class="nb" href="#ex42">42</a><a class="nb" href="#ex45">45</a><a class="nb" href="#ex50">50</a><a class="nb" href="#ex53">53</a><a class="nb" href="#ex21">21</a><a class="nb" href="#ex35">35</a><a class="nb" href="#ex17">17</a><a class="nb" href="#ex22">22</a><a class="nb" href="#ex23">23</a><a class="nb" href="#ex36">36</a><a class="nb" href="#ex18">18</a><a class="nb" href="#ex24">24</a><a class="nb" href="#ex25">25</a><a class="nb red" href="#ex46">46</a><a class="nb red" href="#ex49">49</a><a class="nb red" href="#ex51">51</a><a class="nb red" href="#ex54">54</a><a class="nb red" href="#ex90">90</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<div class="toutes"><button class="btn green" id="tout">Afficher tous les corrigés</button><button class="btn ghost" id="rien">Masquer tous les corrigés</button></div>
+<div class="objs"><div><b>Objectif 1&nbsp;:</b> Calculer une proportion et l'exprimer sous différentes formes</div><div><b>Objectif 2&nbsp;:</b> Calculer une partie connaissant le tout, ou le tout connaissant une partie</div><div><b>Objectif 3&nbsp;:</b> Calculer une proportion de proportion</div></div><h2 class="rub">En classe</h2><article class="exo" id="ex41"><div class="exo-h"><span class="pill">Ex 41 p 260</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Raisonner</span></div><div class="exo-b"><div class="consigne">
+En 1998, le film <i>Titanic</i> avait enregistré \(20\,634\,793\) entrées. Cette année-là, \(170{,}1\) millions d'entrées ont été enregistrées en France, tous films confondus.<br>
+En 2008, le film <i>Bienvenue chez les Ch'tis</i> enregistrait \(20\,489\,303\) entrées pour \(212{,}7\) millions d'entrées au total cette année-là (<i>source&nbsp;: Cinemondial.com</i>).<br>
+Lequel de ces deux films a attiré la plus grande proportion de spectateurs&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<i>Titanic</i>&nbsp;: \(p=\dfrac{20\,634\,793}{170\,100\,000}\approx0{,}1213\), soit environ \(12{,}13\,\%\) des entrées de 1998.<br>
+<i>Les Ch'tis</i>&nbsp;: \(p=\dfrac{20\,489\,303}{212\,700\,000}\approx0{,}0963\), soit environ \(9{,}63\,\%\) des entrées de 2008.<br>
+C'est <i>Titanic</i> qui a attiré la plus grande proportion de spectateurs (alors que les deux films ont fait à peu près le même nombre d'entrées).</div></details></div></article><article class="exo" id="ex42"><div class="exo-h"><span class="pill">Ex 42 p 260</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Dans une classe de \(30\) élèves, \(12\) sont internes. Dans une autre classe de \(25\) élèves, \(11\) sont internes.
+<ol><li> Calculer la proportion d'élèves internes dans chacune des deux classes.
+</li><li> Calculer la proportion d'élèves internes sur l'ensemble des deux classes. Donner le résultat en pourcentage, arrondi au centième.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> Classe&nbsp;1&nbsp;: \(\dfrac{12}{30}=0{,}4=40\,\%\). &emsp; Classe&nbsp;2&nbsp;: \(\dfrac{11}{25}=0{,}44=44\,\%\).
+</li><li> Sur les deux classes&nbsp;: \(12+11=23\) internes pour \(30+25=55\) élèves.<br>
+\(p=\dfrac{23}{55}\approx0{,}4182\), soit environ \(41{,}82\,\%\).<br>
+Ce n'est pas \(40\,\%+44\,\%\), ni la moyenne \(42\,\%\)&nbsp;: les deux classes n'ont pas le même effectif.
+</li></ol></div></details></div></article><article class="exo" id="ex45"><div class="exo-h"><span class="pill">Ex 45 p 260</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+En juillet 2018, on estime à \(33\) millions le nombre d'utilisateurs de Facebook en France, soit \(1{,}5\,\%\) des utilisateurs dans le monde (<i>source&nbsp;: agence Tiz</i>). Combien d'utilisateurs de Facebook estime-t-on qu'il y avait dans le monde en juillet 2018&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="avec"><div>
+On connaît la partie (\(33\) millions) et la proportion (\(1{,}5\,\%\))&nbsp;; on cherche le tout&nbsp;:<br>
+\(N=\dfrac{33}{0{,}015}=2\,200\).<br>
+Il y avait environ \(2\,200\) millions, soit \(2{,}2\) milliards d'utilisateurs dans le monde.</div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><line x1="80" y1="64" x2="80" y2="110" stroke="#6741D9"/><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#1D2733">33</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#1D2733">0,015</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">on cache N</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">N=n/p</text></svg></span></div></div></div></details></div></article><article class="exo" id="ex50"><div class="exo-h"><span class="pill">Ex 50 p 261</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Un journal assure \(15\,\%\) du marché. Ses exemplaires numériques représentent \(49\,\%\) de ses ventes. Calculer la proportion d'exemplaires numériques de ce journal parmi l'ensemble des ventes en France.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+\(p=0{,}15\times0{,}49=0{,}0735\).<br>
+Les exemplaires numériques de ce journal représentent \(7{,}35\,\%\) des ventes en France.</div></details></div></article><article class="exo" id="ex53"><div class="exo-h"><span class="pill">Ex 53 p 261</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+À la session de juin 2018, \(52\,\%\) des candidats se sont présentés aux épreuves des séries générales de l'ancien baccalauréat. Le taux de réussite s'est élevé à \(91{,}1\,\%\), dont \(54{,}1\,\%\) de mentions.<br>
+Calculer la proportion de bacheliers des séries générales ayant obtenu une mention parmi tous les candidats de la session de juin 2018. Donner le résultat en pourcentage, arrondi au dixième.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+Candidats \(\xrightarrow{\times0{,}52}\) séries générales \(\xrightarrow{\times0{,}911}\) bacheliers \(\xrightarrow{\times0{,}541}\) mentions.<br>
+\(p=0{,}52\times0{,}911\times0{,}541\approx0{,}2563\).<br>
+Environ \(25{,}6\,\%\) des candidats sont des bacheliers des séries générales avec mention.</div></details></div></article><h2 class="rub">À la maison</h2><article class="exo" id="ex21"><div class="exo-h"><span class="pill">Ex 21 p 259</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span> 🏠<span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+La forêt amazonienne s'étend sur \(5{,}5\) millions de km\(^2\) et se situe en Amérique du Sud, continent de \(17{,}84\) millions de km\(^2\). Calculer la proportion de la superficie du continent occupée par la forêt amazonienne. Donner le résultat en pourcentage, arrondi au centième.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="avec"><div>
+Le tout est la superficie du continent, \(N=17{,}84\) millions de km\(^2\)&nbsp;; la partie est la forêt, \(n=5{,}5\) millions de km\(^2\).<br>
+\(p=\dfrac{n}{N}=\dfrac{5{,}5}{17{,}84}\approx0{,}3083\).<br>
+La forêt amazonienne occupe environ \(30{,}83\,\%\) de la superficie de l'Amérique du Sud.</div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><line x1="80" y1="64" x2="80" y2="110" stroke="#6741D9"/><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#1D2733">5,5</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#1D2733">17,84</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">on cache p</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">p=n/N</text></svg></span></div></div></div></details></div></article><article class="exo" id="ex35"><div class="exo-h"><span class="pill">Ex 35 p 260</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span> 🏠<span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+<b>Flash.</b> Sur un budget de vacances de \(600\)&nbsp;€, \(180\)&nbsp;€ sont consacrés aux loisirs. Quelle proportion du budget cela représente-t-il&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="avec"><div>
+\(p=\dfrac{180}{600}=0{,}3=30\,\%\).<br>
+Les loisirs représentent \(30\,\%\) du budget.</div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><line x1="80" y1="64" x2="80" y2="110" stroke="#6741D9"/><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#1D2733">180</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#1D2733">600</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">on cache p</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">p=n/N</text></svg></span></div></div></div></details></div></article><article class="exo" id="ex17"><div class="exo-h"><span class="pill">Ex 17 p 259</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Après le passage de la tempête Irma en septembre 2017, \(95\,\%\) des \(21\,050\) bâtiments de l'île de Saint-Martin ont été détruits. Combien de bâtiments cela représente-t-il&nbsp;? Arrondir à la dizaine.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="avec"><div>
+On cherche la partie&nbsp;: \(n=p\times N=0{,}95\times21\,050=19\,997{,}5\).<br>
+Environ \(20\,000\) bâtiments ont été détruits.</div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><line x1="80" y1="64" x2="80" y2="110" stroke="#6741D9"/><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#1D2733">0,95</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#1D2733">21 050</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">on cache n</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">n=p× N</text></svg></span></div></div></div></details></div></article><article class="exo" id="ex22"><div class="exo-h"><span class="pill">Ex 22 p 259</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Pour leurs vacances, Mario et ses amis ont un budget total de \(850\)&nbsp;€. Ils prévoient \(35\,\%\) de ce budget pour l'hébergement. Combien leur coûterait l'hébergement&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="avec"><div>
+\(n=p\times N=0{,}35\times850=297{,}5\).<br>
+L'hébergement coûterait \(297{,}50\)&nbsp;€.</div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><line x1="80" y1="64" x2="80" y2="110" stroke="#6741D9"/><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#1D2733">0,35</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#1D2733">850</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">on cache n</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">n=p× N</text></svg></span></div></div></div></details></div></article><article class="exo" id="ex23"><div class="exo-h"><span class="pill">Ex 23 p 259</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+\(19\,\%\) des élèves d'un lycée sont externes, ce qui représente \(285\) élèves. Combien d'élèves y a-t-il dans ce lycée&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="avec"><div>
+On connaît la partie \(n=285\) et la proportion \(p=0{,}19\)&nbsp;; on cherche le tout&nbsp;:<br>
+\(N=\dfrac{n}{p}=\dfrac{285}{0{,}19}=1\,500\).<br>
+Il y a \(1\,500\) élèves dans ce lycée. <i>Vérification&nbsp;: \(285<1\,500\).</i></div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><line x1="80" y1="64" x2="80" y2="110" stroke="#6741D9"/><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#1D2733">285</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#1D2733">0,19</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">on cache N</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">N=n/p</text></svg></span></div></div></div></details></div></article><article class="exo" id="ex36"><div class="exo-h"><span class="pill">Ex 36 p 260</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+<b>Flash.</b> \(300\) articles du magasin sont en soldes, ce qui représente \(25\,\%\) de la totalité des articles. Combien y a-t-il d'articles dans ce magasin&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="avec"><div>
+\(N=\dfrac{n}{p}=\dfrac{300}{0{,}25}=1\,200\).<br>
+Il y a \(1\,200\) articles dans le magasin.</div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><line x1="80" y1="64" x2="80" y2="110" stroke="#6741D9"/><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#1D2733">300</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#1D2733">0,25</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">on cache N</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">N=n/p</text></svg></span></div></div></div></details></div></article><article class="exo" id="ex18"><div class="exo-h"><span class="pill">Ex 18 p 259</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Raisonner</span></div><div class="exo-b"><div class="consigne">
+\(x\) est un nombre réel. Quelle proportion est la plus grande&nbsp;?
+<ul><li> \(50\,\%\) de \(50\,\%\) de \(x\)&nbsp;;
+</li><li> \(75\,\%\) de \(25\,\%\) de \(x\)&nbsp;;
+</li><li> \(25\,\%\) de \(75\,\%\) de \(x\).
+</li></ul></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+On multiplie les proportions&nbsp;:
+<ul><li> \(0{,}5\times0{,}5=0{,}25\), soit \(25\,\%\) de \(x\)&nbsp;;
+</li><li> \(0{,}75\times0{,}25=0{,}1875\), soit \(18{,}75\,\%\) de \(x\)&nbsp;;
+</li><li> \(0{,}25\times0{,}75=0{,}1875\), soit \(18{,}75\,\%\) de \(x\).
+</li></ul>
+Pour \(x>0\), c'est \(50\,\%\) de \(50\,\%\) de \(x\) la plus grande. Les deux dernières sont égales (l'ordre ne compte pas dans un produit).</div></details></div></article><article class="exo" id="ex24"><div class="exo-h"><span class="pill">Ex 24 p 259</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+\(50\,\%\) des foyers français possèdent au moins un animal de compagnie et, pour \(20\,\%\) de ces foyers, il s'agit de chats. Quelle proportion des foyers français possède au moins un chat&nbsp;? Exprimer le résultat en pourcentage.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+\(p=p_B\times p_C=0{,}5\times0{,}2=0{,}1\).<br>
+\(10\,\%\) des foyers français possèdent au moins un chat.</div></details></div></article><article class="exo" id="ex25"><div class="exo-h"><span class="pill">Ex 25 p 259</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Représenter</span></div><div class="exo-b"><div class="consigne">
+Dans une grande entreprise, \(38{,}3\,\%\) des salariés sont des cadres et, parmi eux, \(86{,}5\,\%\) optent fréquemment pour le télétravail.
+<ol><li> Modéliser la situation à l'aide d'un schéma judicieusement choisi.
+</li><li> Quelle proportion des salariés sont des cadres qui optent pour le télétravail&nbsp;? Donner le résultat en pourcentage, arrondi au dixième.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> Schéma&nbsp;: salariés \(\xrightarrow{\times0{,}383}\) cadres \(\xrightarrow{\times0{,}865}\) cadres en télétravail.
+</li><li> \(p=0{,}383\times0{,}865=0{,}331\,295\).<br>
+Environ \(33{,}1\,\%\) des salariés sont des cadres qui optent pour le télétravail.
+</li></ol></div></details></div></article><h2 class="rub red">Approfondissement</h2><article class="exo" id="ex46"><div class="exo-h"><span class="pill red">Ex 46 p 261</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Modéliser</span></div><div class="exo-b"><div class="consigne">
+Pour faire du béton pour des fondations, les professionnels du bâtiment ont l'habitude de dire&nbsp;: « \(7\) volumes de gravier pour \(5\) volumes de sable, \(2\) volumes de ciment et \(1\) volume d'eau ».
+<ol><li> Quelle proportion de gravier retrouve-t-on dans ce béton&nbsp;? Donner le résultat en pourcentage, arrondi au centième.
+</li><li> Avec \(4\)&nbsp;m\(^3\) de gravier, quel volume de béton peut-on faire&nbsp;? Arrondir au centième.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="avec"><div>
+<ol><li> Le béton compte \(7+5+2+1=15\) volumes, dont \(7\) de gravier&nbsp;:<br>
+\(p=\dfrac{7}{15}\approx0{,}4667\), soit environ \(46{,}67\,\%\) de gravier.
+</li><li> Les \(4\)&nbsp;m\(^3\) de gravier sont la partie&nbsp;; on cherche le tout&nbsp;:<br>
+\(N=\dfrac{4}{\frac{7}{15}}=\dfrac{4\times15}{7}\approx8{,}57\).<br>
+On peut faire environ \(8{,}57\)&nbsp;m\(^3\) de béton.
+</li></ol></div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><line x1="80" y1="64" x2="80" y2="110" stroke="#6741D9"/><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#1D2733">4</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#1D2733">7/15</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">question 2, on cache N</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">N=n/p</text></svg></span></div></div></div></details></div></article><article class="exo" id="ex49"><div class="exo-h"><span class="pill red">Ex 49 p 261</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Représenter</span></div><div class="exo-b"><div class="consigne">
+Lors d'un congrès international, \(76\) personnalités parlent anglais, ce qui correspond à \(80\,\%\) des participants. \(60\,\%\) de l'ensemble des participants sont des femmes et, parmi elles, \(49\) parlent anglais.
+<ol><li> Calculer le nombre de personnes présentes au congrès.
+</li><li> Construire un tableau à double entrée donnant la répartition des effectifs.
+</li><li> La proportion de personnes parlant anglais est-elle plus importante chez les hommes ou chez les femmes&nbsp;?
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div>
+<ol><li> Les \(76\) anglophones sont \(80\,\%\) du tout&nbsp;: \(N=\dfrac{76}{0{,}8}=95\) participants.
+</li><li> Femmes&nbsp;: \(0{,}6\times95=57\)&nbsp;; hommes&nbsp;: \(95-57=38\).<br>
+Hommes anglophones&nbsp;: \(76-49=27\).<br>
+
+<div class="tw"><table class="t"><tr><td></td><td>Femmes</td><td>Hommes</td><td>Total</td></tr><tr><td>Anglais</td><td>\(49\)</td><td>\(27\)</td><td>\(76\)</td></tr><tr><td>Pas anglais</td><td>\(8\)</td><td>\(11\)</td><td>\(19\)</td></tr><tr><td>Total</td><td>\(57\)</td><td>\(38\)</td><td>\(95\)</td></tr></table></div>
+</li><li> Chez les femmes&nbsp;: \(\dfrac{49}{57}\approx85{,}96\,\%\)&nbsp;; chez les hommes&nbsp;: \(\dfrac{27}{38}\approx71{,}05\,\%\).<br>
+La proportion d'anglophones est plus importante chez les femmes.
+</li></ol></div><div class="figs c"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><line x1="80" y1="64" x2="80" y2="110" stroke="#6741D9"/><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#1D2733">76</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#1D2733">0,8</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">question 1, on cache N</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">N=n/p</text></svg></span></div></div></details></div></article><article class="exo" id="ex51"><div class="exo-h"><span class="pill red">Ex 51 p 261</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Chercher</span></div><div class="exo-b"><div class="consigne">
+À la suite d'une épidémie de grippe, \(2{,}75\,\%\) des élèves d'un lycée sont malades et absents depuis plus d'une semaine, et \(5\,\%\) des élèves sont malades. Parmi les élèves malades, quelle est la proportion d'élèves absents depuis plus d'une semaine&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+On note \(p_C\) la proportion cherchée&nbsp;: \(0{,}05\times p_C=0{,}0275\), donc<br>
+\(p_C=\dfrac{0{,}0275}{0{,}05}=0{,}55\).<br>
+\(55\,\%\) des élèves malades sont absents depuis plus d'une semaine.</div></details></div></article><article class="exo" id="ex54"><div class="exo-h"><span class="pill red">Ex 54 p 261</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Chercher</span></div><div class="exo-b"><div class="consigne">
+\(54\,\%\) des salariés d'une entreprise sont des hommes. \(7\,\%\) des hommes et \(11\,\%\) des femmes sont cadres.
+<ol><li> Quel est le pourcentage de cadres dans l'entreprise&nbsp;?
+</li><li> L'entreprise compte \(85\) cadres. Quel est le nombre total de salariés dans cette entreprise&nbsp;?
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="avec"><div>
+<ol><li> Hommes cadres&nbsp;: \(0{,}54\times0{,}07=0{,}0378\).<br>
+Femmes&nbsp;: \(100\,\%-54\,\%=46\,\%\)&nbsp;; femmes cadres&nbsp;: \(0{,}46\times0{,}11=0{,}0506\).<br>
+Les deux groupes n'ont pas d'individu commun, on additionne&nbsp;:<br>
+\(0{,}0378+0{,}0506=0{,}0884\), soit \(8{,}84\,\%\) de cadres.
+</li><li> \(N=\dfrac{85}{0{,}0884}\approx961{,}5\).<br>
+L'entreprise compte environ \(962\) salariés.
+</li></ol></div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><line x1="80" y1="64" x2="80" y2="110" stroke="#6741D9"/><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#1D2733">85</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#1D2733">0,0884</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">question 2, on cache N</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">N=n/p</text></svg></span></div></div></div></details></div></article><article class="exo" id="ex90"><div class="exo-h"><span class="pill red">Ex 90 p ?</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Chercher</span></div><div class="exo-b"><div class="consigne">
+Lorsqu'il va chez son cardiologue, M.&nbsp;Charrier paie sa consultation. \(70\,\%\) de ce montant lui est remboursé par la Sécurité sociale. Sur le montant restant à sa charge après ce remboursement, sa mutuelle lui rembourse \(80\,\%\). Il lui reste finalement \(6\)&nbsp;€ à sa charge.
+<ol><li> Quel pourcentage du prix de la consultation sa mutuelle lui rembourse-t-elle&nbsp;?
+</li><li> Quel pourcentage du prix de la consultation a-t-il finalement payé&nbsp;?
+</li><li> Quel était le montant de sa consultation au départ&nbsp;?
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="avec"><div>
+<ol><li> Après la Sécurité sociale, il reste \(100\,\%-70\,\%=30\,\%\) à payer. La mutuelle en rembourse \(80\,\%\)&nbsp;:<br>
+\(0{,}3\times0{,}8=0{,}24\), soit \(24\,\%\) du prix.
+</li><li> Il paie \(20\,\%\) des \(30\,\%\) restants&nbsp;: \(0{,}3\times0{,}2=0{,}06\), soit \(6\,\%\) du prix.<br>
+<i>(Vérification&nbsp;: \(70\,\%+24\,\%+6\,\%=100\,\%\).)</i>
+</li><li> \(6\)&nbsp;€ représentent \(6\,\%\) du prix&nbsp;: \(N=\dfrac{6}{0{,}06}=100\).<br>
+La consultation coûtait \(100\)&nbsp;€.
+</li></ol></div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><line x1="80" y1="64" x2="80" y2="110" stroke="#6741D9"/><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#1D2733">6</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#1D2733">0,06</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">question 3, on cache N</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">N=n/p</text></svg></span></div></div></div></details></div></article>
+</main>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] } }, svg: { fontCache: 'global' } };
+document.getElementById('tout').onclick = () => document.querySelectorAll('details.corr').forEach(d => d.open = true);
+document.getElementById('rien').onclick = () => document.querySelectorAll('details.corr').forEach(d => d.open = false);
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Exercices Partie 3 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Même habillage que la page de remédiation DS1 : une colonne de lecture, thème clair fixe (projection en classe). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs de la feuille */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* sinon display:grid (rappel, entraînement) l’emporte sur hidden */
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons d'exercices */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.green.on { background: var(--green); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .sheet .item .resline, .item.raw .resline { display: block; }
+
+/* Réponse de l'élève (entraînement avec nouvelles valeurs) */
+.aide { margin: 0; font-size: 15px; color: var(--muted); }
+.aide code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.answer { display: grid; gap: 6px; min-width: 0; }
+.ans-row, .ab { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; min-width: 0; }
+.ans-row label, .ab label { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 260px; max-width: 480px; }
+.ab label { flex: 0 1 180px; }
+.answer input[type="text"] { font: inherit; font-size: 17px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); min-width: 0; width: 100%; }
+.answer input[type="text"]:focus { outline: none; border-color: var(--calc); box-shadow: 0 0 0 2px var(--calc-soft); }
+.ans-prev { min-height: 1.5em; color: var(--muted); font-size: 15px; overflow-x: auto; }
+.choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.choices label { display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; background: var(--paper); }
+.choices label:has(input:checked) { border-color: var(--calc); background: var(--calc-soft); }
+.ans-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb { border-radius: 4px; padding: 6px 12px; font-size: 15px; overflow-x: auto; }
+.fb.ok { background: var(--green-soft); border-left: 3px solid var(--green); }
+.fb.warn { background: var(--amber-soft); border-left: 3px solid #F59F00; }
+.fb.ko { background: var(--red-soft); border-left: 3px solid var(--red); }
+.train .item.good { border-color: var(--green); }
+.qfig { overflow-x: auto; }
+.qfig svg, .fig svg { display: block; max-width: none; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+/* Tableau de double distributivité (Ex. 4) : termes de la 1re parenthèse en colonnes, de la 2de en lignes */
+.tdd { border-collapse: collapse; margin: 4px 0 6px; }
+.tdd th, .tdd td { border: 1px solid var(--line); padding: 4px 14px; text-align: center; min-width: 56px; }
+.tdd th { background: var(--bg); font-weight: 400; }
+.tdd th.coin { color: var(--muted); }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+
+.rub { margin: 22px 0 6px; font-size: 17px; color: var(--calc); border-bottom: 1px solid #CFE2F7; padding-bottom: 2px; }
+.rub.red { color: var(--red); border-color: #F8C9C9; }
+.objs { margin: 26px 0 4px; background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 8px 14px; border-radius: 0 8px 8px 0; display: grid; gap: 2px; }
+.objs b { color: var(--calc); font-weight: 600; }
+.pill.red { background: var(--star-red); }
+.exo { margin-top: 12px; scroll-margin-top: 110px; }
+.exo-b img { max-width: 100%; height: auto; display: block; margin: 4px auto; }
+.exo-b ol, .exo-b ul { margin: 4px 0; padding-left: 24px; }
+.exo-b li { margin: 2px 0; }
+.c { text-align: center; }
+.c > * { margin-inline: auto; }
+.tw { overflow-x: auto; }
+table.t { border-collapse: collapse; margin: 6px auto; font-size: 15px; }
+table.t td { border: 1px solid var(--line); padding: 3px 10px; text-align: center; }
+table.t td.hd { background: #FFE8CC; font-weight: 500; }
+.nc { color: var(--calc); font-weight: 500; margin-right: 2px; }
+.cm { font-family: var(--f-body); }
+.fbox { border: 1px solid var(--ink); padding: 1px 6px; }
+pre.code { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; font-size: 14px; overflow-x: auto; margin: 6px 0; }
+details.corr { border-top: 1px dashed var(--line); padding-top: 10px; }
+details.corr > summary { list-style: none; cursor: pointer; display: inline-block; border: 1px solid var(--green); color: var(--green); border-radius: 6px; padding: 4px 14px; font-weight: 500; font-size: 15px; }
+details.corr > summary::-webkit-details-marker { display: none; }
+details.corr[open] > summary { background: var(--green); color: #fff; }
+.corr-b { margin-top: 10px; background: var(--green-soft); border-left: 3px solid var(--green); padding: 10px 14px; border-radius: 0 8px 8px 0; overflow-x: auto; }
+.avec { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.avec > div:first-child { flex: 1 1 280px; min-width: 0; }
+.figs { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.figs.c { margin-top: 6px; flex-direction: row; flex-wrap: wrap; justify-content: center; }
+.fig svg { display: block; max-width: none; }
+.toutes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.exnav a.nb { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 3px 10px; text-decoration: none; font-weight: 500; font-size: 15px; }
+.exnav a.nb:hover { background: var(--calc-soft); }
+.exnav a.nb.red { border-color: var(--star-red); color: var(--star-red); }
+</style>
+<script src="../../barre.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Séquence 4 — Exercices Partie 3 — Corrigé</b><span>Évolutions successives et réciproques</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" aria-label="Exercices"><a class="nb" href="#ex20">20</a><a class="nb" href="#ex72">72</a><a class="nb" href="#ex80">80</a><a class="nb" href="#ex73">73</a><a class="nb" href="#ex81">81</a><a class="nb" href="#ex75">75</a><a class="nb" href="#ex74">74</a><a class="nb" href="#ex78">78</a><a class="nb" href="#ex79">79</a><a class="nb red" href="#ex76">76</a><a class="nb red" href="#ex77">77</a><a class="nb red" href="#ex88">88</a><a class="nb red" href="#ex93">93</a><a class="nb red" href="#ex100">100</a><a class="nb red" href="#ex101">101</a><a class="nb red" href="#ex103">103</a><a class="nb" href="#ex84">84</a><a class="nb" href="#ex33">33</a><a class="nb" href="#ex96">96</a><a class="nb" href="#ex40">40</a><a class="nb" href="#ex85">85</a><a class="nb" href="#ex87">87</a><a class="nb" href="#ex94">94</a><a class="nb" href="#ex95">95</a><a class="nb red" href="#ex86">86</a><a class="nb red" href="#ex89">89</a><a class="nb red" href="#ex102">102</a><a class="nb" href="#ex56">56</a><a class="nb" href="#ex59">59</a><a class="nb" href="#ex82">82</a><a class="nb" href="#ex83">83</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<div class="toutes"><button class="btn green" id="tout">Afficher tous les corrigés</button><button class="btn ghost" id="rien">Masquer tous les corrigés</button></div>
+<div class="objs"><div><b>Objectif 7&nbsp;:</b> Calculer le taux d'évolution global d'évolutions successives</div></div><h2 class="rub">En classe</h2><article class="exo" id="ex20"><div class="exo-h"><span class="pill">Ex 20 p 259</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Raisonner</span></div><div class="exo-b"><div class="consigne">
+Que peut-on dire d'une quantité qui subit une augmentation de \(20\,\%\) puis une diminution de \(20\,\%\)&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div>
+\(\textsf{CM}_g=1{,}2\times0{,}8=0{,}96\)&nbsp;; \((0{,}96-1)\times100=-4\).<br>
+La quantité baisse de \(4\,\%\)&nbsp;: elle ne revient pas à sa valeur de départ.</div><div class="figs c"><span class="fig"><svg viewBox="0 0 240 96" width="240" height="96" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="120" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="120" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₂</text><circle cx="220" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="220" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₃</text><line x1="37" y1="30" x2="103" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="70.0" y="24" text-anchor="middle" font-size="11">×1,2</text><line x1="137" y1="30" x2="203" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="24" text-anchor="middle" font-size="11">×0,8</text><path d="M30,46 Q120.0,87.6 210,46" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="120.0" y="84" text-anchor="middle" font-size="11">×0,96</text></svg></span></div></div></details></div></article><article class="exo" id="ex72"><div class="exo-h"><span class="pill">Ex 72 p 264</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Certaines plantes vertes peuvent voir leur croissance augmenter rapidement. Une variété grandit de \(60\,\%\) en \(3\)&nbsp;mois, puis de \(50\,\%\) les \(3\)&nbsp;mois suivants. Déterminer le taux de croissance sur \(6\)&nbsp;mois de cette variété de plante verte.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div>
+\(\textsf{CM}_g=1{,}6\times1{,}5=2{,}4\)&nbsp;; \((2{,}4-1)\times100=140\).<br>
+Sur 6&nbsp;mois, la plante grandit de \(140\,\%\) (et non de \(110\,\%\)).</div><div class="figs c"><span class="fig"><svg viewBox="0 0 240 96" width="240" height="96" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="120" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="120" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₂</text><circle cx="220" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="220" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₃</text><line x1="37" y1="30" x2="103" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="70.0" y="24" text-anchor="middle" font-size="11">×1,6</text><line x1="137" y1="30" x2="203" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="24" text-anchor="middle" font-size="11">×1,5</text><path d="M30,46 Q120.0,87.6 210,46" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="120.0" y="84" text-anchor="middle" font-size="11">×2,4</text></svg></span></div></div></details></div></article><article class="exo" id="ex80"><div class="exo-h"><span class="pill">Ex 80 p 264</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Déterminer le taux d'évolution global associé à trois baisses successives de \(42\,\%\) (en pourcentage, arrondi au centième).</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div>
+\(\textsf{CM}_g=0{,}58^3=0{,}195\,112\)&nbsp;; \((0{,}195\,112-1)\times100\approx-80{,}49\).<br>
+Baisse globale d'environ \(80{,}49\,\%\) (et non de \(126\,\%\), ce qui serait absurde).</div><div class="figs c"><span class="fig"><svg viewBox="0 0 340 96" width="340" height="96" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="120" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="120" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₂</text><circle cx="220" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="220" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₃</text><circle cx="320" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="320" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₄</text><line x1="37" y1="30" x2="103" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="70.0" y="24" text-anchor="middle" font-size="11">×0,58</text><line x1="137" y1="30" x2="203" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="24" text-anchor="middle" font-size="11">×0,58</text><line x1="237" y1="30" x2="303" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="270.0" y="24" text-anchor="middle" font-size="11">×0,58</text><path d="M30,46 Q170.0,87.6 310,46" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="84" text-anchor="middle" font-size="11">×0,195 112</text></svg></span></div></div></details></div></article><article class="exo" id="ex73"><div class="exo-h"><span class="pill">Ex 73 p 264</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+La population d'une ville de \(45\,304\) habitants augmente de \(5\,\%\), puis diminue de \(10\,\%\) l'année suivante.
+<ol><li> Calculer le taux d'évolution global sur les deux années.
+</li><li> Calculer le nombre d'habitants après ces évolutions. Arrondir à l'unité.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div>
+<ol><li> \(\textsf{CM}_g=1{,}05\times0{,}9=0{,}945\)&nbsp;; \((0{,}945-1)\times100=-5{,}5\)&nbsp;: baisse de \(5{,}5\,\%\).
+</li><li> \(45\,304\times0{,}945=42\,812{,}28\)&nbsp;: environ \(42\,812\) habitants.
+</li></ol></div><div class="figs c"><span class="fig"><svg viewBox="0 0 240 96" width="240" height="96" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="120" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="120" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₂</text><circle cx="220" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="220" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₃</text><line x1="37" y1="30" x2="103" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="70.0" y="24" text-anchor="middle" font-size="11">×1,05</text><line x1="137" y1="30" x2="203" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="24" text-anchor="middle" font-size="11">×0,9</text><path d="M30,46 Q120.0,87.6 210,46" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="120.0" y="84" text-anchor="middle" font-size="11">×0,945</text></svg></span></div></div></details></div></article><article class="exo" id="ex81"><div class="exo-h"><span class="pill">Ex 81 p 264</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Le prix d'un baril de pétrole a augmenté de \(7{,}34\,\%\) entre août et septembre, puis de \(9{,}78\,\%\) en octobre, pour chuter ensuite de \(11{,}46\,\%\) en novembre.<br>
+Déterminer le taux d'évolution global du prix d'un baril de pétrole entre août et novembre.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div>
+\(\textsf{CM}_g=1{,}0734\times1{,}0978\times0{,}8854\approx1{,}0433\).<br>
+Le prix du baril a augmenté d'environ \(4{,}33\,\%\) entre août et novembre.</div><div class="figs c"><span class="fig"><svg viewBox="0 0 340 96" width="340" height="96" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="120" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="120" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₂</text><circle cx="220" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="220" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₃</text><circle cx="320" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="320" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₄</text><line x1="37" y1="30" x2="103" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="70.0" y="24" text-anchor="middle" font-size="11">×1,0734</text><line x1="137" y1="30" x2="203" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="24" text-anchor="middle" font-size="11">×1,0978</text><line x1="237" y1="30" x2="303" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="270.0" y="24" text-anchor="middle" font-size="11">×0,8854</text><path d="M30,46 Q170.0,87.6 310,46" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="84" text-anchor="middle" font-size="11">×1,0433</text></svg></span></div></div></details></div></article><article class="exo" id="ex75"><div class="exo-h"><span class="pill">Ex 75 p 264</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Modéliser</span></div><div class="exo-b"><div class="consigne">
+Lors de l'achat d'une voiture, le vendeur propose une remise de \(10\,\%\) sur le prix HT, puis d'appliquer la TVA de \(20\,\%\). Le client préférerait que le vendeur lui applique la remise de \(10\,\%\) sur le prix TTC.<br>
+La proposition du client lui est-elle plus avantageuse&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+On note \(P\) le prix HT.<br>
+Vendeur&nbsp;: \(P\times0{,}9\times1{,}2=1{,}08P\).<br>
+Client&nbsp;: \(P\times1{,}2\times0{,}9=1{,}08P\).<br>
+Les deux propositions donnent le même prix&nbsp;: l'ordre des évolutions ne change pas le résultat (on multiplie les mêmes coefficients).</div></details></div></article><article class="exo" id="ex74"><div class="exo-h"><span class="pill">Ex 74 p 264</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+De juin à août, le temps perdu dans les embouteillages à Paris aux heures de pointe diminue en moyenne de \(80\,\%\), puis augmente de \(275\,\%\) en septembre pour atteindre \(15\)&nbsp;secondes perdues par kilomètre parcouru (<i>source&nbsp;: étude V-Traffic</i>).<br>
+Combien de temps un automobiliste perd-il en moyenne par kilomètre en juin&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div>
+\(\textsf{CM}_g=\left(1-\dfrac{80}{100}\right)\times\left(1+\dfrac{275}{100}\right)=0{,}2\times3{,}75=0{,}75\).<br>
+\(v_1=\dfrac{15}{0{,}75}=20\).<br>
+En juin, un automobiliste perdait en moyenne \(20\)&nbsp;secondes par kilomètre.</div><div class="figs c"><span class="fig"><svg viewBox="0 0 240 96" width="240" height="96" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="34" text-anchor="middle" font-size="12" fill="#6741D9" font-weight="600">?</text><circle cx="120" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="120" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₂</text><circle cx="220" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="220" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">15</text><line x1="37" y1="30" x2="103" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="70.0" y="24" text-anchor="middle" font-size="11">×0,2</text><line x1="137" y1="30" x2="203" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="24" text-anchor="middle" font-size="11">×3,75</text><path d="M30,46 Q120.0,87.6 210,46" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="120.0" y="84" text-anchor="middle" font-size="11">×0,75</text></svg></span></div></div></details></div></article><h2 class="rub">À la maison</h2><article class="exo" id="ex78"><div class="exo-h"><span class="pill">Ex 78 p 264</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Le prix moyen d'une baguette de pain, en euros par kg, a augmenté de \(0{,}87\,\%\) de 2011 à 2015, puis de \(0{,}57\,\%\) de 2015 à 2017.
+<ol><li> Calculer le taux d'évolution global entre 2011 et 2017 (en pourcentage, arrondi au centième).
+</li><li> Que remarque-t-on si l'on additionne les deux taux d'évolution successifs&nbsp;?
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> \(\textsf{CM}_g=1{,}0087\times1{,}0057\approx1{,}0144\)&nbsp;: hausse d'environ \(1{,}44\,\%\).
+</li><li> \(0{,}87\,\%+0{,}57\,\%=1{,}44\,\%\)&nbsp;: on obtient presque le même résultat. Pour de petits taux, la somme est une bonne approximation du taux global (mais ce n'est jamais exact).
+</li></ol></div></details></div></article><article class="exo" id="ex79"><div class="exo-h"><span class="pill">Ex 79 p 264</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Modéliser</span></div><div class="exo-b"><div class="consigne">
+Lucas place ses économies de \(520\)&nbsp;€ sur un compte à intérêts composés au taux annuel de \(2{,}25\,\%\)&nbsp;: les intérêts sont calculés chaque année à partir du nouveau montant total.<br>
+Déterminer le montant présent sur son compte, au centime près&nbsp;:
+<ol><li> 2&nbsp;ans plus tard&nbsp;;
+</li><li> 3&nbsp;ans plus tard.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+Chaque année, le montant est multiplié par \(1{,}0225\).
+<ol><li> \(520\times1{,}0225^2\approx543{,}66\)&nbsp;€.
+</li><li> \(520\times1{,}0225^3\approx555{,}90\)&nbsp;€.
+</li></ol></div></details></div></article><h2 class="rub red">Approfondissement</h2><article class="exo" id="ex76"><div class="exo-h"><span class="pill red">Ex 76 p 264</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+En 2015, il y a eu \(17\,268\) immatriculations de voitures électriques. Ce nombre a augmenté de \(44{,}26\,\%\) en 2&nbsp;ans, dont \(25{,}96\,\%\) la première année (<i>source&nbsp;: Fiches-auto.fr</i>).<br>
+Déterminer le taux d'évolution du nombre d'immatriculations de voitures électriques de 2016 à 2017, en pourcentage arrondi au centième.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div>
+\(\textsf{CM}_g=1{,}4426\) et \(\textsf{CM}_1=1{,}2596\). On cherche \(\textsf{CM}_2\) tel que \(1{,}2596\times \textsf{CM}_2=1{,}4426\)&nbsp;:<br>
+\(\textsf{CM}_2=\dfrac{1{,}4426}{1{,}2596}\approx1{,}1453\).<br>
+De 2016 à 2017, le nombre d'immatriculations a augmenté d'environ \(14{,}53\,\%\).</div><div class="figs c"><span class="fig"><svg viewBox="0 0 240 96" width="240" height="96" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="120" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="120" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₂</text><circle cx="220" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="220" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₃</text><line x1="37" y1="30" x2="103" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="70.0" y="24" text-anchor="middle" font-size="11">×1,2596</text><line x1="137" y1="30" x2="203" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="24" text-anchor="middle" font-size="11">×?</text><path d="M30,46 Q120.0,87.6 210,46" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="120.0" y="84" text-anchor="middle" font-size="11">×1,4426</text></svg></span></div></div></details></div></article><article class="exo" id="ex77"><div class="exo-h"><span class="pill red">Ex 77 p 264</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Lors des premières représentations d'un jeune humoriste, le nombre de spectateurs fluctue fortement. Il a baissé les 15&nbsp;premiers jours du mois, puis a augmenté de \(35\,\%\) les 15&nbsp;derniers jours.<br>
+Sachant que le nombre de spectateurs a augmenté de \(25\,\%\) entre le premier et le dernier jour du mois, déterminer le taux d'évolution de la première quinzaine (en pourcentage, arrondi au centième).</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div>
+\(\textsf{CM}_1\times1{,}35=1{,}25\), donc \(\textsf{CM}_1=\dfrac{1{,}25}{1{,}35}\approx0{,}9259\).<br>
+\((0{,}9259-1)\times100\approx-7{,}41\)&nbsp;: le nombre de spectateurs a baissé d'environ \(7{,}41\,\%\) la première quinzaine.</div><div class="figs c"><span class="fig"><svg viewBox="0 0 240 96" width="240" height="96" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="120" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="120" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₂</text><circle cx="220" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="220" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₃</text><line x1="37" y1="30" x2="103" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="70.0" y="24" text-anchor="middle" font-size="11">×?</text><line x1="137" y1="30" x2="203" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="24" text-anchor="middle" font-size="11">×1,35</text><path d="M30,46 Q120.0,87.6 210,46" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="120.0" y="84" text-anchor="middle" font-size="11">×1,25</text></svg></span></div></div></details></div></article><article class="exo" id="ex88"><div class="exo-h"><span class="pill red">Ex 88 p 265</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Chercher</span></div><div class="exo-b"><div class="consigne">
+Une action en Bourse a connu les évolutions suivantes au cours des 7&nbsp;dernières heures&nbsp;: \(+3\,\%\)&nbsp;; \(+1{,}2\,\%\)&nbsp;; \(-4{,}5\,\%\)&nbsp;; \(+0{,}2\,\%\)&nbsp;; \(-5{,}6\,\%\)&nbsp;; \(-1\,\%\)&nbsp;; \(+0{,}7\,\%\). À la fin de la 8<sup>e</sup>&nbsp;heure, le taux d'évolution global est finalement de \(+0{,}3\,\%\).<br>
+Quel a été le taux d'évolution entre la 7<sup>e</sup> et la 8<sup>e</sup>&nbsp;heure&nbsp;? Donner le résultat en pourcentage, arrondi au dixième.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+Coefficient des 7 premières heures&nbsp;:<br>
+\(1{,}03\times1{,}012\times0{,}955\times1{,}002\times0{,}944\times0{,}99\times1{,}007\approx0{,}9387\).<br>
+On cherche \(\textsf{CM}_8\) tel que \(0{,}9387\times \textsf{CM}_8=1{,}003\)&nbsp;:<br>
+\(\textsf{CM}_8=\dfrac{1{,}003}{0{,}9387}\approx1{,}0685\).<br>
+Entre la 7<sup>e</sup> et la 8<sup>e</sup>&nbsp;heure, l'action a augmenté d'environ \(6{,}9\,\%\).</div></details></div></article><article class="exo" id="ex93"><div class="exo-h"><span class="pill red">Ex 93 p ?</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+L'écharpe rectangulaire de Pierre a rétréci au lavage&nbsp;: sa longueur a diminué de \(15\,\%\) et sa largeur de \(20\,\%\). Son aire est maintenant de \(2\,448\)&nbsp;cm\(^2\).<br>
+Quelle était son aire avant le lavage&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+L'aire est le produit longueur \(\times\) largeur&nbsp;: elle est multipliée par \(0{,}85\times0{,}8=0{,}68\).<br>
+\(A=\dfrac{2\,448}{0{,}68}=3\,600\).<br>
+L'aire de l'écharpe était de \(3\,600\)&nbsp;cm\(^2\) avant le lavage.</div></details></div></article><article class="exo" id="ex100"><div class="exo-h"><span class="pill red">Ex 100 p ?</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Chercher</span></div><div class="exo-b"><div class="consigne">
+<b>Défi.</b> Déterminer le taux d'évolution qui, appliqué deux fois de suite, donne une augmentation de \(74{,}24\,\%\).</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+On cherche \(\textsf{CM}\) tel que \(\textsf{CM}^2=1{,}7424\)&nbsp;: \(\textsf{CM}=\sqrt{1{,}7424}=1{,}32\).<br>
+Il s'agit d'une hausse de \(32\,\%\) (et non de \(37{,}12\,\%\)).</div></details></div></article><article class="exo" id="ex101"><div class="exo-h"><span class="pill red">Ex 101 p ?</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Chercher</span></div><div class="exo-b"><div class="consigne">
+<b>Défi.</b> Déterminer le taux d'évolution qui, appliqué trois fois de suite, donne une baisse de \(34{,}1497\,\%\).</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+\(\textsf{CM}^3=1-0{,}341\,497=0{,}658\,503\). On essaie à la calculatrice&nbsp;: \(0{,}87^3=0{,}658\,503\).<br>
+Donc \(\textsf{CM}=0{,}87\)&nbsp;: il s'agit d'une baisse de \(13\,\%\).</div></details></div></article><article class="exo" id="ex103"><div class="exo-h"><span class="pill red">Ex 103 p ?</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Chercher</span></div><div class="exo-b"><div class="consigne">
+<b>Énigme.</b> En plaçant \(1\,500\)&nbsp;€ sur un compte à intérêts composés au taux annuel de \(1{,}5\,\%\), déterminer au bout de combien d'années ce capital aura doublé.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+Chaque année, le capital est multiplié par \(1{,}015\). On cherche le premier entier \(n\) tel que \(1{,}015^n\geq2\).<br>
+À la calculatrice&nbsp;: \(1{,}015^{46}\approx1{,}984\) et \(1{,}015^{47}\approx2{,}013\).<br>
+Le capital aura doublé au bout de \(47\) ans.</div></details></div></article><div class="objs"><div><b>Objectif 8&nbsp;:</b> Calculer un taux d'évolution réciproque</div></div><h2 class="rub">En classe</h2><article class="exo" id="ex84"><div class="exo-h"><span class="pill">Ex 84 p 265</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Après un passage en machine à laver, un pull a rétréci de \(7\,\%\). En utilisant des astuces pour lui faire retrouver sa taille d'origine, de quel pourcentage doit-il alors s'agrandir&nbsp;? Donner le résultat arrondi au dixième.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="avec"><div>
+\(\textsf{CM}=1-\dfrac{7}{100}=0{,}93\)&nbsp;; \(\textsf{CM}_{\text{rec}}=\dfrac{1}{0{,}93}\approx1{,}0753\).<br>
+Le pull doit s'agrandir d'environ \(7{,}5\,\%\) (et non de \(7\,\%\)).</div><div class="figs"><span class="fig"><svg viewBox="0 0 170 108" width="170" height="108" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="54" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="58" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="150" cy="54" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="150" y="58" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₂</text><path d="M34,44 Q85.0,2.3999999999999986 136,44" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="85.0" y="14" text-anchor="middle" font-size="11">×0,93</text><path d="M136,64 Q85.0,105.6 34,64" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="85.0" y="102" text-anchor="middle" font-size="11">×1,0753</text></svg></span></div></div></div></details></div></article><article class="exo" id="ex33"><div class="exo-h"><span class="pill">Ex 33 p 259</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Dans chacun des cas suivants, déterminer le taux d'évolution réciproque (en pourcentage, arrondi au centième).
+<ol><li> Une augmentation de \(21\,\%\).
+</li><li> Une augmentation de \(150\,\%\).
+</li><li> Une baisse de \(43\,\%\).
+</li><li> Une baisse de \(4{,}7\,\%\).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+On calcule \(\textsf{CM}_{\text{rec}}=\dfrac{1}{\textsf{CM}}\), puis \((\textsf{CM}_{\text{rec}}-1)\times100\).
+<ol><li> \(\textsf{CM}_{\text{rec}}=\dfrac{1}{1{,}21}\approx0{,}8264\)&nbsp;: baisse d'environ \(17{,}36\,\%\).
+</li><li> \(\textsf{CM}_{\text{rec}}=\dfrac{1}{2{,}5}=0{,}4\)&nbsp;: baisse de \(60\,\%\).
+</li><li> \(\textsf{CM}_{\text{rec}}=\dfrac{1}{0{,}57}\approx1{,}7544\)&nbsp;: hausse d'environ \(75{,}44\,\%\).
+</li><li> \(\textsf{CM}_{\text{rec}}=\dfrac{1}{0{,}953}\approx1{,}0493\)&nbsp;: hausse d'environ \(4{,}93\,\%\).
+</li></ol></div></details></div></article><article class="exo" id="ex96"><div class="exo-h"><span class="pill">Ex 96 p ?</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Communiquer</span></div><div class="exo-b"><div class="consigne">
+Lors d'une élection, un candidat affirme qu'il a obtenu \(21\,\%\) de voix de plus que son concurrent. Ce dernier affirme pourtant qu'il n'en a obtenu que \(17{,}4\,\%\) de moins.
+<ol><li> Expliquer pourquoi les deux candidats ont raison.
+</li><li> Déterminer le pourcentage de voix obtenues par chacun des deux candidats. On suppose qu'il n'y a pas d'autre candidat et pas de bulletin nul ou blanc.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> On note \(A\) et \(B\) les nombres de voix. « \(21\,\%\) de plus »&nbsp;: \(A=1{,}21B\). Donc \(B=\dfrac{A}{1{,}21}\approx0{,}826A\)&nbsp;: \(B\) a environ \(17{,}4\,\%\) de voix de moins que \(A\). Les deux affirmations sont vraies&nbsp;: ce sont deux évolutions réciproques.
+</li><li> \(A+B=100\,\%\) et \(A=1{,}21B\), donc \(2{,}21B=100\,\%\).<br>
+\(B=\dfrac{100}{2{,}21}\approx45{,}25\,\%\) et \(A\approx54{,}75\,\%\).
+</li></ol></div></details></div></article><article class="exo" id="ex40"><div class="exo-h"><span class="pill">Ex 40 p 260</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+<b>Flash.</b> Une quantité subit une augmentation de \(60\,\%\) puis une baisse de \(50\,\%\). Calculer le coefficient multiplicateur global, puis le coefficient multiplicateur réciproque associé.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div>
+\(\textsf{CM}_g=\left(1+\dfrac{60}{100}\right)\times\left(1-\dfrac{50}{100}\right)=1{,}6\times0{,}5=0{,}8\).<br>
+\(\textsf{CM}_{\text{rec}}=\dfrac{1}{0{,}8}=1{,}25\) (il faudrait une hausse de \(25\,\%\) pour revenir à la valeur de départ).</div><div class="figs c"><span class="fig"><svg viewBox="0 0 240 96" width="240" height="96" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="120" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="120" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₂</text><circle cx="220" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="220" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₃</text><line x1="37" y1="30" x2="103" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="70.0" y="24" text-anchor="middle" font-size="11">×1,6</text><line x1="137" y1="30" x2="203" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="24" text-anchor="middle" font-size="11">×0,5</text><path d="M30,46 Q120.0,87.6 210,46" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="120.0" y="84" text-anchor="middle" font-size="11">×0,8</text></svg></span>&emsp;<span class="fig"><svg viewBox="0 0 170 108" width="170" height="108" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="54" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="58" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="150" cy="54" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="150" y="58" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₃</text><path d="M34,44 Q85.0,2.3999999999999986 136,44" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="85.0" y="14" text-anchor="middle" font-size="11">×0,8</text><path d="M136,64 Q85.0,105.6 34,64" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="85.0" y="102" text-anchor="middle" font-size="11">×1,25</text></svg></span></div></div></details></div></article><article class="exo" id="ex85"><div class="exo-h"><span class="pill">Ex 85 p 265</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+Après une augmentation de ses prix de \(11{,}3\,\%\) puis de \(5{,}7\,\%\), un commerçant souhaite récompenser un client fidèle en lui accordant une remise qui compense ses deux dernières augmentations.<br>
+Déterminer le pourcentage de remise que doit accorder le commerçant.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div>
+\(\textsf{CM}_g=1{,}113\times1{,}057=1{,}176\,441\).<br>
+\(\textsf{CM}_{\text{rec}}=\dfrac{1}{1{,}176\,441}\approx0{,}8500\)&nbsp;; \((0{,}85-1)\times100=-15\).<br>
+Le commerçant doit accorder une remise d'environ \(15\,\%\).</div><div class="figs c"><span class="fig"><svg viewBox="0 0 240 96" width="240" height="96" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="120" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="120" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₂</text><circle cx="220" cy="30" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="220" y="34" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₃</text><line x1="37" y1="30" x2="103" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="70.0" y="24" text-anchor="middle" font-size="11">×1,113</text><line x1="137" y1="30" x2="203" y2="30" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="170.0" y="24" text-anchor="middle" font-size="11">×1,057</text><path d="M30,46 Q120.0,87.6 210,46" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="120.0" y="84" text-anchor="middle" font-size="11">×1,176 441</text></svg></span>&emsp;<span class="fig"><svg viewBox="0 0 170 108" width="170" height="108" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="54" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="58" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₁</text><circle cx="150" cy="54" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="150" y="58" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">v₃</text><path d="M34,44 Q85.0,2.3999999999999986 136,44" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="85.0" y="14" text-anchor="middle" font-size="11">×1,176</text><path d="M136,64 Q85.0,105.6 34,64" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="85.0" y="102" text-anchor="middle" font-size="11">×0,85</text></svg></span></div></div></details></div></article><article class="exo" id="ex87"><div class="exo-h"><span class="pill">Ex 87 p 265</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Raisonner</span></div><div class="exo-b"><div class="consigne">
+Étienne se plaint car Justine gagne \(66{,}7\,\%\) de plus que lui. Pour le rassurer, Jimmy lui dit qu'il ne gagne que \(40\,\%\) de moins que Justine. Étienne doit-il se sentir rassuré&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+Justine gagne \(1{,}667\) fois le salaire d'Étienne. Donc Étienne gagne \(\dfrac{1}{1{,}667}\approx0{,}6\) fois le salaire de Justine, soit \(40\,\%\) de moins.<br>
+Les deux phrases disent la même chose&nbsp;: Étienne n'a aucune raison d'être rassuré.</div></details></div></article><h2 class="rub">Pour réviser</h2><article class="exo" id="ex94"><div class="exo-h"><span class="pill">Ex 94 p ?</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="comp">Chercher</span></div><div class="exo-b"><div class="consigne">
+<b>Bac STMG Antilles 2018.</b> La feuille de calcul suivante, extraite d'un tableur, donne la part de la surface agricole couverte par l'agriculture biologique (en pourcentage de la surface agricole totale) en Suède entre 2010 et 2016. Les cellules de la ligne&nbsp;3 sont au format pourcentage à deux décimales.
+<div class="c"><img src="img-sequence4/ex94.png" alt="" loading="lazy"></div>
+<ol><li> Quelle formule peut-on saisir en cellule C3 pour obtenir, par copie vers la droite, les valeurs de la plage de cellules C3:H3&nbsp;?
+</li><li> Déterminer le taux d'évolution global de la part de la surface agricole couverte par l'agriculture biologique en Suède entre 2010 et 2016. On l'exprimera en pourcentage.
+</li><li> Le gouvernement suédois a pour objectif que, d'ici 2025, \(25\,\%\) de la surface agricole totale soit occupée par l'agriculture biologique. On suppose qu'à partir de 2016, la part de la surface agricole couverte par l'agriculture biologique augmente de \(4\,\%\) par an. L'objectif du gouvernement sera-t-il atteint&nbsp;? Justifier.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> C3&nbsp;: <code>=(C2-$B$2)/$B$2</code> (le $ fige la référence à 2010).
+</li><li> \(t=\dfrac{18{,}21-14{,}3}{14{,}3}\approx0{,}2734\)&nbsp;: hausse d'environ \(27{,}34\,\%\).
+</li><li> De 2016 à 2025, il y a \(9\) hausses de \(4\,\%\)&nbsp;: \(18{,}21\times1{,}04^9\approx25{,}92\).<br>
+\(25{,}92\,\%>25\,\%\)&nbsp;: l'objectif serait atteint.
+</li></ol></div></details></div></article><article class="exo" id="ex95"><div class="exo-h"><span class="pill">Ex 95 p ?</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Modéliser</span></div><div class="exo-b"><div class="consigne">
+<b>Bac ST2S Polynésie 2018.</b> Marion est salariée dans le même laboratoire pharmaceutique depuis quinze ans. Elle souhaite étudier l'évolution de son salaire, qui dépend de son ancienneté, de la politique salariale de l'entreprise, des augmentations occasionnelles, etc. Elle a reporté dans la feuille de tableur ci-dessous son salaire mensuel moyen entre 2010 et 2017. Les cellules de la plage B2:I2 sont au format nombre arrondi à l'unité, celles de la plage C3:I3 au format pourcentage arrondi au dixième.
+<div class="c"><img src="img-sequence4/ex95.png" alt="" loading="lazy"></div>
+<ol><li> Calculer le taux d'évolution du salaire moyen entre 2011 et 2012. Donner le résultat en pourcentage, arrondi au dixième.
+</li><li> La ligne&nbsp;3 indique les taux d'évolution du salaire mensuel moyen d'une année sur l'autre. Quelle formule, entrée dans la cellule C3 puis copiée vers la droite, permet d'obtenir les taux d'évolution de la plage C3:I3&nbsp;?
+</li><li> Calculer le taux d'évolution global du salaire mensuel moyen entre 2010 et 2017. Donner le résultat en pourcentage, arrondi au dixième.
+</li><li> Montrer qu'en moyenne, son salaire a augmenté de \(2{,}49\,\%\) par an sur la période 2010-2017.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> \(t=\dfrac{1\,740-1\,725}{1\,725}\approx0{,}0087\)&nbsp;: hausse d'environ \(0{,}9\,\%\).
+</li><li> C3&nbsp;: <code>=(C2-B2)/B2</code>
+</li><li> \(t=\dfrac{1\,960-1\,650}{1\,650}\approx0{,}1879\)&nbsp;: hausse d'environ \(18{,}8\,\%\).
+</li><li> Sept hausses de \(2{,}49\,\%\)&nbsp;: \(1{,}0249^7\approx1{,}1879\), ce qui correspond bien à la hausse globale de \(18{,}8\,\%\).
+</li></ol></div></details></div></article><h2 class="rub red">Approfondissement</h2><article class="exo" id="ex86"><div class="exo-h"><span class="pill red">Ex 86 p 265</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Chercher</span></div><div class="exo-b"><div class="consigne">
+Pendant une période de promotion, on peut lire sur les vitrines d'un magasin d'ameublement&nbsp;:
+<div class="c"><img src="img-sequence4/ex86.png" alt="" loading="lazy"></div>
+<ol><li> Pour une cuisine destinée à un logement neuf et affichée à \(7\,540\)&nbsp;€ TTC, quel sera le prix payé par le client avec cette remise, au centime près&nbsp;?
+</li><li> De quelle remise le client a-t-il réellement profité&nbsp;? Donner le résultat en pourcentage, arrondi au centième.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> Logement neuf&nbsp;: TVA de \(20\,\%\). « TVA offerte » signifie que le client paie le prix HT&nbsp;:<br>
+\(\dfrac{7\,540}{1{,}2}\approx6\,283{,}33\)&nbsp;€.
+</li><li> \(\textsf{CM}=\dfrac{6\,283{,}33}{7\,540}=\dfrac{1}{1{,}2}\approx0{,}8333\).<br>
+Le client a profité d'une remise d'environ \(16{,}67\,\%\), et non de \(20\,\%\).
+</li></ol>
+<span class="fig"><svg viewBox="0 0 170 108" width="170" height="108" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><circle cx="20" cy="54" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="20" y="58" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">HT</text><circle cx="150" cy="54" r="17" fill="#fff" stroke="#1D2733" stroke-width="1.2"/><text x="150" y="58" text-anchor="middle" font-size="12" fill="#1D2733" font-weight="400">TTC</text><path d="M34,44 Q85.0,2.3999999999999986 136,44" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="85.0" y="14" text-anchor="middle" font-size="11">×1,2</text><path d="M136,64 Q85.0,105.6 34,64" fill="none" stroke="#1D2733" stroke-width="1.1" marker-end="url(#fl)"/><text x="85.0" y="102" text-anchor="middle" font-size="11">×0,8333</text></svg></span></div></details></div></article><article class="exo" id="ex89"><div class="exo-h"><span class="pill red">Ex 89 p 265</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Chercher</span></div><div class="exo-b"><div class="consigne">
+Lundi, Audrey possède une certaine somme d'argent \(S\) dans sa tirelire. Mardi, elle ajoute \(40\,\%\) de cette somme&nbsp;; mercredi, elle ajoute \(30\,\%\) de la nouvelle somme&nbsp;; jeudi, elle ajoute \(20\,\%\) de la nouvelle somme&nbsp;; enfin, vendredi, elle ajoute \(10\,\%\) du total de sa tirelire. Samedi, elle dépense tout l'argent qu'elle a ajouté et sa tirelire contient à nouveau la somme de départ \(S\).
+<ol><li> Quel a été le taux global d'augmentation de la somme \(S\) entre lundi et vendredi&nbsp;?
+</li><li> Quel a été le taux réciproque samedi&nbsp;? Donner le résultat en pourcentage, arrondi au dixième.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> \(\textsf{CM}_g=1{,}4\times1{,}3\times1{,}2\times1{,}1=2{,}4024\)&nbsp;: hausse de \(140{,}24\,\%\).
+</li><li> \(\textsf{CM}_{\text{rec}}=\dfrac{1}{2{,}4024}\approx0{,}4163\)&nbsp;: baisse d'environ \(58{,}4\,\%\).
+</li></ol></div></details></div></article><article class="exo" id="ex102"><div class="exo-h"><span class="pill red">Ex 102 p ?</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="comp">Raisonner</span></div><div class="exo-b"><div class="consigne">
+<b>Énigme.</b> Existe-t-il un réel \(t\) strictement positif tel qu'après une hausse de \(2t\,\%\) puis une baisse de \(t\,\%\), la valeur reste inchangée&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+On note \(x=\dfrac{t}{100}\). On cherche \((1+2x)(1-x)=1\).<br>
+\(1-x+2x-2x^2=1\), soit \(x-2x^2=0\), soit \(x(1-2x)=0\).<br>
+Comme \(x\neq0\), \(x=0{,}5\), donc \(t=50\).<br>
+Oui&nbsp;: une hausse de \(100\,\%\) puis une baisse de \(50\,\%\) (\(2\times0{,}5=1\)).</div></details></div></article><h2 class="rub">En salle informatique</h2><article class="exo" id="ex56"><div class="exo-h"><span class="pill">Ex 56 p 262</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+<b>Tableur.</b> Le prix moyen des appartements anciens dans 7 villes françaises est donné dans le tableau ci-dessous. Les cellules de la colonne E sont au format pourcentage écrit avec une décimale (<i>source&nbsp;: baromètre LPI-Seloger</i>).
+<div class="c"><img src="img-sequence4/ex56.png" alt="" loading="lazy"></div>
+<ol><li> Quelles formules peut-on entrer dans les cellules D2 et E2 pour que, une fois recopiées vers le bas, elles affichent les variations absolue et relative pour chacune des villes&nbsp;?
+</li><li> Reproduire et compléter le tableau dans un tableur.
+</li><li> Dans laquelle de ces villes le prix connaît-il la plus forte augmentation en euros&nbsp;? en pourcentage&nbsp;?
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> D2&nbsp;: <code>=C2-B2</code> &emsp; E2&nbsp;: <code>=(C2-B2)/B2</code>
+</li><li> 
+<div class="tw"><table class="t"><tr><td>Ville</td><td>D</td><td>E</td></tr><tr><td>Strasbourg</td><td>\(252\)</td><td>\(7{,}7\,\%\)</td></tr><tr><td>Bordeaux</td><td>\(444\)</td><td>\(10{,}7\,\%\)</td></tr><tr><td>Caen</td><td>\(83\)</td><td>\(3{,}6\,\%\)</td></tr><tr><td>Paris</td><td>\(592\)</td><td>\(6{,}6\,\%\)</td></tr><tr><td>Nîmes</td><td>\(257\)</td><td>\(12{,}1\,\%\)</td></tr><tr><td>Orléans</td><td>\(-47\)</td><td>\(-2{,}2\,\%\)</td></tr><tr><td>Lyon</td><td>\(325\)</td><td>\(7{,}6\,\%\)</td></tr></table></div>
+</li><li> Plus forte hausse en euros&nbsp;: Paris (\(+592\)&nbsp;€ par m\(^2\))&nbsp;; en pourcentage&nbsp;: Nîmes (\(+12{,}1\,\%\)).
+</li></ol></div></details></div></article><article class="exo" id="ex59"><div class="exo-h"><span class="pill">Ex 59 p 262</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+<b>Tableur.</b> Le tableau ci-dessous donne le prix d'une matière première, en euros par tonne, entre 2011 et 2016. Afin de suivre l'évolution de ce prix, on utilise des indices en prenant pour base 100 le prix en 2011. La série des indices est proportionnelle à la série des prix.<br>
+
+<div class="tw"><table class="t"><tr><td class="hd"><b>Année</b></td><td class="hd">2011</td><td class="hd">2012</td><td class="hd">2013</td><td class="hd">2014</td><td class="hd">2015</td><td class="hd">2016</td></tr><tr><td class="hd">Prix (€/t)</td><td>\(248\)</td><td>\(188{,}5\)</td><td>\(237\)</td><td>\(259\)</td><td>\(167{,}5\)</td><td>\(189\)</td></tr><tr><td class="hd">Indice</td><td>\(100\)</td><td>\(76\)</td><td>……</td><td>……</td><td>……</td><td>……</td></tr><tr><td class="hd">Taux par rapport à 2011</td><td>……</td><td>\(-24\,\%\)</td><td>……</td><td>……</td><td>……</td><td>……</td></tr></table></div>
+<ol><li> Retrouver par le calcul l'indice du prix en 2012 ainsi que le taux d'évolution de 2011 à 2012.
+</li><li> Compléter le tableau.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> Indice 2012&nbsp;: \(\dfrac{188{,}5}{248}\times100=76\).<br>
+Taux&nbsp;: \(t=\dfrac{188{,}5-248}{248}=-0{,}24\), soit une baisse de \(24\,\%\) (c'est aussi \(76-100\)).
+</li><li> 
+<div class="tw"><table class="t"><tr><td>Année</td><td>Indice</td><td>Taux / 2011</td></tr><tr><td>2011</td><td>\(100\)</td><td>\(0\,\%\)</td></tr><tr><td>2012</td><td>\(76\)</td><td>\(-24\,\%\)</td></tr><tr><td>2013</td><td>\(95{,}56\)</td><td>\(-4{,}44\,\%\)</td></tr><tr><td>2014</td><td>\(104{,}44\)</td><td>\(+4{,}44\,\%\)</td></tr><tr><td>2015</td><td>\(67{,}54\)</td><td>\(-32{,}46\,\%\)</td></tr><tr><td>2016</td><td>\(76{,}21\)</td><td>\(-23{,}79\,\%\)</td></tr></table></div><br>
+Indice \(=\dfrac{\text{prix}}{248}\times100\)&nbsp;; taux par rapport à 2011 \(=\) indice \(-100\) (en %).
+</li></ol></div></details></div></article><article class="exo" id="ex82"><div class="exo-h"><span class="pill">Ex 82 p 264</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Calculer</span></div><div class="exo-b"><div class="consigne">
+<b>Tableur.</b> Le tableau ci-dessous donne les taux d'évolution successifs du nombre d'objets connectés dans le monde entre 2011 et 2015. La cellule B6 est au format pourcentage avec une décimale (<i>source&nbsp;: IDATE DigiWorld</i>).
+<div class="c"><img src="img-sequence4/ex82.png" alt="" loading="lazy"></div>
+<ol><li> Quelle formule faut-il entrer en C3, puis recopier vers la droite, pour calculer le coefficient multiplicateur associé au taux d'évolution du dessus&nbsp;?
+</li><li> Quelles formules faut-il entrer en B5 et B6 pour calculer le coefficient multiplicateur global et le taux d'évolution global&nbsp;?
+</li><li> Recopier et compléter le tableau dans un tableur.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> C3&nbsp;: <code>=1+C2</code>
+</li><li> B5&nbsp;: <code>=C3*D3*E3*F3</code> &emsp; B6&nbsp;: <code>=B5-1</code>
+</li><li> Coefficients&nbsp;: \(1{,}5789\)&nbsp;; \(1{,}4667\)&nbsp;; \(1{,}4091\)&nbsp;; \(1{,}3548\).<br>
+\(\textsf{CM}_g\approx4{,}421\)&nbsp;; taux global \(\approx342{,}1\,\%\).
+</li></ol></div></details></div></article><article class="exo" id="ex83"><div class="exo-h"><span class="pill">Ex 83 p 265</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="comp">Modéliser</span></div><div class="exo-b"><div class="consigne">
+<b>Python.</b> Le programme ci-dessous permet de calculer le pourcentage d'évolution global, connaissant les deux pourcentages d'évolution successifs \(p_1\) et \(p_2\).
+<div class="c">
+<pre class="code">1  def evolution(p1, p2):
+2      t1 = p1 / 100
+3      t2 = p2 / 100
+4      CM = …
+5      p = …
+6      return p</pre>
+</div>
+<ol><li> Expliquer pourquoi, dans les lignes 2 et 3, on divise \(p_1\) et \(p_2\) par \(100\).
+</li><li> Compléter les lignes 4 et 5.
+</li><li> Tester ce programme avec \(p_1=24\) et \(p_2=-35\).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<ol><li> \(p_1\) et \(p_2\) sont des pourcentages&nbsp;: on les divise par \(100\) pour obtenir les taux sous forme décimale (par exemple \(24\,\%\to0{,}24\)).
+</li><li> Ligne&nbsp;4&nbsp;: <code>CM = (1 + t1) * (1 + t2)</code><br>
+Ligne&nbsp;5&nbsp;: <code>p = (CM - 1) * 100</code>
+</li><li> \(\textsf{CM}=1{,}24\times0{,}65=0{,}806\)&nbsp;; le programme renvoie \(-19{,}4\)&nbsp;: baisse globale de \(19{,}4\,\%\).
+</li></ol></div></details></div></article>
+</main>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] } }, svg: { fontCache: 'global' } };
+document.getElementById('tout').onclick = () => document.querySelectorAll('details.corr').forEach(d => d.open = true);
+document.getElementById('rien').onclick = () => document.querySelectorAll('details.corr').forEach(d => d.open = false);
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+</body>
+</html>
