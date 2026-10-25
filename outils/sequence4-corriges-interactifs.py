@@ -194,12 +194,12 @@ def conv(s):
         c = s[i]
         if c == "$":
             j = s.index("$", i + 1)
-            out.append("\\(" + maths(s[i + 1:j]) + "\\)")
+            out.append("\\(" + esc(maths(s[i + 1:j])) + "\\)")
             i = j + 1
             continue
         if s.startswith("\\[", i):
             j = s.index("\\]", i)
-            out.append("\\[" + maths(s[i + 2:j]) + "\\]")
+            out.append("\\[" + esc(maths(s[i + 2:j])) + "\\]")
             i = j + 2
             continue
         if c == "\\":

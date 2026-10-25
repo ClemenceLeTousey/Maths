@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feuille 7 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Même habillage que la page de remédiation DS1 : une colonne de lecture, thème clair fixe (projection en classe). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs de la feuille */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* sinon display:grid (rappel, entraînement) l’emporte sur hidden */
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons d'exercices */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.green.on { background: var(--green); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .sheet .item .resline, .item.raw .resline { display: block; }
+
+/* Réponse de l'élève (entraînement avec nouvelles valeurs) */
+.aide { margin: 0; font-size: 15px; color: var(--muted); }
+.aide code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.answer { display: grid; gap: 6px; min-width: 0; }
+.ans-row, .ab { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; min-width: 0; }
+.ans-row label, .ab label { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 260px; max-width: 480px; }
+.ab label { flex: 0 1 180px; }
+.answer input[type="text"] { font: inherit; font-size: 17px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); min-width: 0; width: 100%; }
+.answer input[type="text"]:focus { outline: none; border-color: var(--calc); box-shadow: 0 0 0 2px var(--calc-soft); }
+.ans-prev { min-height: 1.5em; color: var(--muted); font-size: 15px; overflow-x: auto; }
+.choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.choices label { display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; background: var(--paper); }
+.choices label:has(input:checked) { border-color: var(--calc); background: var(--calc-soft); }
+.ans-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb { border-radius: 4px; padding: 6px 12px; font-size: 15px; overflow-x: auto; }
+.fb.ok { background: var(--green-soft); border-left: 3px solid var(--green); }
+.fb.warn { background: var(--amber-soft); border-left: 3px solid #F59F00; }
+.fb.ko { background: var(--red-soft); border-left: 3px solid var(--red); }
+.train .item.good { border-color: var(--green); }
+.qfig { overflow-x: auto; }
+.qfig svg, .fig svg { display: block; max-width: none; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+/* Tableau de double distributivité (Ex. 4) : termes de la 1re parenthèse en colonnes, de la 2de en lignes */
+.tdd { border-collapse: collapse; margin: 4px 0 6px; }
+.tdd th, .tdd td { border: 1px solid var(--line); padding: 4px 14px; text-align: center; min-width: 56px; }
+.tdd th { background: var(--bg); font-weight: 400; }
+.tdd th.coin { color: var(--muted); }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+
+.rub { margin: 22px 0 6px; font-size: 17px; color: var(--calc); border-bottom: 1px solid #CFE2F7; padding-bottom: 2px; }
+.rub.red { color: var(--red); border-color: #F8C9C9; }
+.objs { margin: 26px 0 4px; background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 8px 14px; border-radius: 0 8px 8px 0; display: grid; gap: 2px; }
+.objs b { color: var(--calc); font-weight: 600; }
+.pill.red { background: var(--star-red); }
+.pill.gris { background: #868E96; }
+.graph { max-width: 620px; margin: 6px auto; }
+.graph97 { max-width: 560px; margin: 8px auto; font-size: 13px; }
+.g97-t { color: var(--ink); margin-bottom: 6px; line-height: 1.35; }
+.g97-c { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.leg97 { display: grid; gap: 2px; }
+.leg97 i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+.graph img { width: 100%; margin: 0; }
+.leg61 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 2px 14px; font-size: 13px; color: var(--ink); margin-top: 6px; padding-left: 8%; }
+.leg61 i { display: inline-block; width: 18px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.codes { display: flex; gap: 14px; flex-wrap: wrap; margin: 8px 0; }
+.codeb { flex: 1 1 240px; min-width: 0; }
+.codeb-t { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px; }
+.codeb pre.code { margin: 0; font-size: 15px; line-height: 1.45; }
+.temps { font-size: 14px; color: var(--muted); white-space: nowrap; }
+.objn { font-family: var(--f-body); font-size: 14px; font-weight: 600; color: var(--calc); }
+.pill.maison { background: #E8A200; color: #1D2733; }
+.legende { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); margin-top: 10px; align-items: center; }
+.legende span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; background: var(--c); }
+.blk { border-radius: 0 8px 8px 0; padding: 6px 12px; margin: 8px 0; border-left: 3px solid; overflow-x: auto; }
+.blk-t { font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px; }
+.blk-c ul, .blk-c ol { margin: 2px 0; }
+.blk.rep { background: #FFF4E6; border-color: #F76707; } .blk.rep .blk-t { color: #D9480F; }
+.blk.form { background: #F3F0FF; border-color: #7048E8; } .blk.form .blk-t { color: #6741D9; }
+.blk.calc { background: #fff; border-color: #ADB5BD; } .blk.calc .blk-t { color: #495057; }
+.blk.conc { background: #EBFBEE; border-color: #2F9E44; } .blk.conc .blk-t { color: #2B8A3E; }
+.blk.pg { background: #FFF5F5; border-color: #E03131; } .blk.pg .blk-t { color: #C92A2A; }
+.qq { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 10px 0; background: #fff; }
+.qq-n { font-weight: 600; color: var(--calc); margin-bottom: 2px; }
+.corr-b { background: #F8F9FA; border-left-color: var(--green); }
+.exo { margin-top: 12px; scroll-margin-top: 110px; }
+.exo-b img { max-width: 100%; height: auto; display: block; margin: 4px auto; }
+.exo-b ol, .exo-b ul { margin: 4px 0; padding-left: 24px; }
+.exo-b li { margin: 2px 0; }
+.c { text-align: center; }
+.c > * { margin-inline: auto; }
+.tw { overflow-x: auto; }
+table.t { border-collapse: collapse; margin: 6px auto; font-size: 15px; }
+table.t td { border: 1px solid var(--line); padding: 3px 10px; text-align: center; }
+table.t td.hd { background: #FFE8CC; font-weight: 500; }
+.nc { color: var(--calc); font-weight: 500; margin-right: 2px; }
+.cm { font-family: var(--f-body); }
+.fbox { border: 1px solid var(--ink); padding: 1px 6px; }
+pre.code { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; font-size: 14px; overflow-x: auto; margin: 6px 0; }
+details.corr { border-top: 1px dashed var(--line); padding-top: 10px; }
+details.corr > summary { list-style: none; cursor: pointer; display: inline-block; border: 1px solid var(--green); color: var(--green); border-radius: 6px; padding: 4px 14px; font-weight: 500; font-size: 15px; }
+details.corr > summary::-webkit-details-marker { display: none; }
+details.corr[open] > summary { background: var(--green); color: #fff; }
+.corr-b { margin-top: 10px; background: var(--green-soft); border-left: 3px solid var(--green); padding: 10px 14px; border-radius: 0 8px 8px 0; overflow-x: auto; }
+.avec { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.avec > div:first-child { flex: 1 1 280px; min-width: 0; }
+.figs { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.figs.c { margin-top: 6px; flex-direction: row; flex-wrap: wrap; justify-content: center; }
+.fig svg { display: block; max-width: none; }
+.toutes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+
+.tikz { display: inline-block; max-width: 100%; vertical-align: middle; }
+.tikz img { max-width: 100%; height: auto; display: inline-block; margin: 2px 0; }
+.exo-b ol[type="a"] { list-style-type: lower-alpha; }
+.exnav a.nb { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 3px 10px; text-decoration: none; font-weight: 500; font-size: 15px; }
+.exnav a.nb:hover { background: var(--calc-soft); }
+.exnav a.nb.red { border-color: var(--star-red); color: var(--star-red); }
+.exnav a.nb.gris { border-color: #868E96; color: #868E96; }
+.exnav a.nb.maison { border-color: #E8A200; color: #9C6B00; }
+</style>
+<script src="../../barre.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Séquence 5 — Feuille 7 — Corrigé</b><span>Ensembles de nombres et intervalles</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" aria-label="Exercices"><a class="nb" href="#ex1">1</a><a class="nb" href="#ex2">2</a><a class="nb" href="#ex5">5</a><a class="nb" href="#ex8">8</a><a class="nb" href="#ex12">12</a><a class="nb" href="#ex14">14</a><a class="nb" href="#ex16">16</a><a class="nb gris" href="#ex9">9</a><a class="nb gris" href="#ex13">13</a><a class="nb maison" href="#ex3">3</a><a class="nb maison" href="#ex4">4</a><a class="nb maison" href="#ex10">10</a><a class="nb maison" href="#ex11">11</a><a class="nb maison" href="#ex15">15</a><a class="nb red" href="#ex6">6</a><a class="nb red" href="#ex7">7</a><a class="nb red" href="#ex17">17</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<div class="legende"><span style="--c:#339AF0">en classe</span><span style="--c:#868E96">si le temps le permet</span><span style="--c:#E8A200">à la maison</span><span style="--c:#FA5252">approfondissement</span></div>
+<div class="toutes"><button class="btn green" id="tout">Afficher tous les corrigés</button><button class="btn ghost" id="rien">Masquer tous les corrigés</button></div>
+<div class="objs"><div><b>Objectif 1&nbsp;:</b> Reconnaître les ensembles de nombres (\(\mathbb{N}\), \(\mathbb{Z}\), \(\mathbb{D}\), \(\mathbb{Q}\), \(\mathbb{R}\)) et utiliser \(\in\), \(\notin\), \(\subset\)</div><div><b>Objectif 2&nbsp;:</b> Raisonner sur les ensembles de nombres (contre-exemple, raisonnement par l'absurde)</div><div><b>Objectif 3&nbsp;:</b> Lire et placer un nombre réel sur la droite numérique</div><div><b>Objectif 4&nbsp;:</b> Représenter un intervalle, passer d'une inégalité à un intervalle, tester l'appartenance</div></div><h2 class="rub">En classe</h2><article class="exo" id="ex1"><div class="exo-h"><span class="pill">Exercice 1</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 1</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+Cocher, pour chaque nombre, <b>tous</b> les ensembles auxquels il appartient.
+
+<div class="tw"><table class="t"><tr><td><b>Nombre</b></td><td>\(\mathbb{N}\)</td><td>\(\mathbb{Z}\)</td><td>\(\mathbb{D}\)</td><td>\(\mathbb{Q}\)</td><td>\(\mathbb{R}\)</td></tr><tr><td>\(7\)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>\(-4\)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>\(0{,}25\)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>\(-\dfrac{12}{3}\)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>\(\dfrac23\)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>\(\sqrt{49}\)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>\(\pi\)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>\(3{,}1\times10^{-2}\)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>\(\dfrac{\sqrt8}{\sqrt2}\)</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>\(1-\sqrt2\)</td><td></td><td></td><td></td><td></td><td></td></tr></table></div></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Pour chaque nombre, on le <b>simplifie</b> si possible, puis on cherche le plus petit ensemble qui le contient. Comme \(\mathbb{N}\subset\mathbb{Z}\subset\mathbb{D}\subset\mathbb{Q}\subset\mathbb{R}\), toutes les colonnes à sa droite sont aussi cochées.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> \(7\)&nbsp;: entier naturel&nbsp;: \(\mathbb{N}\), \(\mathbb{Z}\), \(\mathbb{D}\), \(\mathbb{Q}\), \(\mathbb{R}\).
+</li><li> \(-4\)&nbsp;: entier négatif&nbsp;: \(\mathbb{Z}\), \(\mathbb{D}\), \(\mathbb{Q}\), \(\mathbb{R}\).
+</li><li> \(0{,}25=\dfrac{25}{100}\)&nbsp;: décimal&nbsp;: \(\mathbb{D}\), \(\mathbb{Q}\), \(\mathbb{R}\).
+</li><li> \(-\dfrac{12}{3}=-4\)&nbsp;: \(\mathbb{Z}\), \(\mathbb{D}\), \(\mathbb{Q}\), \(\mathbb{R}\).
+</li><li> \(\dfrac23=0{,}666\dots\) (écriture illimitée)&nbsp;: \(\mathbb{Q}\), \(\mathbb{R}\).
+</li><li> \(\sqrt{49}=7\)&nbsp;: \(\mathbb{N}\), \(\mathbb{Z}\), \(\mathbb{D}\), \(\mathbb{Q}\), \(\mathbb{R}\).
+</li><li> \(\pi\)&nbsp;: irrationnel&nbsp;: \(\mathbb{R}\) seulement.
+</li><li> \(3{,}1\times10^{-2}=0{,}031\)&nbsp;: \(\mathbb{D}\), \(\mathbb{Q}\), \(\mathbb{R}\).
+</li><li> \(\dfrac{\sqrt8}{\sqrt2}=\sqrt{\dfrac82}=\sqrt4=2\)&nbsp;: \(\mathbb{N}\), \(\mathbb{Z}\), \(\mathbb{D}\), \(\mathbb{Q}\), \(\mathbb{R}\).
+</li><li> \(1-\sqrt2\)&nbsp;: irrationnel&nbsp;: \(\mathbb{R}\) seulement.
+</li></ul></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Une écriture compliquée peut cacher un entier (\(-\frac{12}{3}\), \(\sqrt{49}\), \(\frac{\sqrt8}{\sqrt2}\))&nbsp;: on simplifie toujours avant de cocher.</div></div></div></details></div></article><article class="exo" id="ex2"><div class="exo-h"><span class="pill">Exercice 2</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 4 min</span><span class="comp"><span class="objn">Objectif 1</span> · Communiquer</span></div><div class="exo-b"><div class="consigne">
+Compléter avec le symbole qui convient&nbsp;: \(\in\), \(\notin\) ou \(\subset\).
+
+<ol><li> \(-3\ \dots\ \mathbb{Z}\)
+</li><li> \(\mathbb{N}\ \dots\ \mathbb{Z}\)
+</li><li> \(\dfrac13\ \dots\ \mathbb{D}\)
+</li><li> \(\mathbb{Q}\ \dots\ \mathbb{R}\)
+</li><li> \(\sqrt9\ \dots\ \mathbb{N}\)
+</li><li> \(\pi\ \dots\ \mathbb{Q}\)
+</li><li> \(\{-1~;~0~;~1\}\ \dots\ \mathbb{Z}\)
+</li><li> \(0{,}5\ \dots\ \mathbb{D}\)
+</li></ol>
+
+ Rappel&nbsp;: \(\in\) relie un <b>nombre</b> à un ensemble, \(\subset\) relie deux <b>ensembles</b>.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">\(\in\) (« appartient à ») relie un <b>nombre</b> à un ensemble&nbsp;; \(\subset\) (« est inclus dans ») relie deux <b>ensembles</b>.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(-3\in\mathbb{Z}\) &emsp; <span class="nc">②</span> \(\mathbb{N}\subset\mathbb{Z}\) &emsp; <span class="nc">③</span> \(\frac13\notin\mathbb{D}\) &emsp; <span class="nc">④</span> \(\mathbb{Q}\subset\mathbb{R}\)<br>
+<span class="nc">⑤</span> \(\sqrt9=3\in\mathbb{N}\) &emsp; <span class="nc">⑥</span> \(\pi\notin\mathbb{Q}\) &emsp; <span class="nc">⑦</span> \(\{-1~;~0~;~1\}\subset\mathbb{Z}\) &emsp; <span class="nc">⑧</span> \(0{,}5\in\mathbb{D}\)</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">⑦</span>, \(\{-1~;~0~;~1\}\) est un ensemble (les accolades)&nbsp;: on écrit \(\subset\), pas \(\in\).</div></div></div></details></div></article><article class="exo" id="ex5"><div class="exo-h"><span class="pill">Exercice 5</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span><span class="comp"><span class="objn">Objectif 2</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+<b>Vrai / Faux.</b> Si l'affirmation est fausse, donner un contre-exemple.
+<ol><li> La somme de deux nombres irrationnels est irrationnelle.
+</li><li> Le carré d'un nombre irrationnel est irrationnel.
+</li><li> L'inverse d'un nombre décimal non nul est décimal.
+</li><li> Tout entier relatif est un nombre décimal.
+</li><li> Le produit de deux nombres décimaux est un nombre décimal.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Une affirmation « toujours vraie » est <b>fausse</b> dès qu'on trouve <b>un seul</b> contre-exemple. Pour montrer qu'elle est vraie, il faut un raisonnement général.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> <span class="nc">①</span> Faux&nbsp;: \(\sqrt2\) et \(-\sqrt2\) sont irrationnels, mais \(\sqrt2+(-\sqrt2)=0\in\mathbb{N}\).
+</li><li> <span class="nc">②</span> Faux&nbsp;: \(\sqrt2\) est irrationnel, mais \(\left(\sqrt2\right)^2=2\).
+</li><li> <span class="nc">③</span> Faux&nbsp;: \(3\) est décimal, mais \(\frac13=0{,}333\dots\) ne l'est pas.
+</li><li> <span class="nc">④</span> Vrai&nbsp;: tout entier relatif \(a\) s'écrit \(\frac{a}{10^0}\), donc \(\mathbb{Z}\subset\mathbb{D}\).
+</li><li> <span class="nc">⑤</span> Vrai&nbsp;: \(\dfrac{a}{10^n}\times\dfrac{b}{10^p}=\dfrac{ab}{10^{n+p}}\) avec \(ab\in\mathbb{Z}\).
+</li></ul></div></div></div></details></div></article><article class="exo" id="ex8"><div class="exo-h"><span class="pill">Exercice 8</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 3</span> · Représenter</span></div><div class="exo-b"><div class="consigne">
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-fd33042755.svg" alt="" loading="lazy"></span>
+</div>
+<ol><li> Donner l'abscisse des points \(A\), \(B\) et \(C\) (sous forme décimale puis sous forme de fraction).
+</li><li> Placer les points \(E\left(-\dfrac54\right)\), \(F(1{,}5)\) et \(G\left(\dfrac34\right)\).
+</li><li> Placer, le plus précisément possible, le point \(H\) d'abscisse \(\sqrt3\).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> Entre deux entiers consécutifs, il y a \(4\) intervalles&nbsp;: chaque graduation vaut \(\frac14=0{,}25\).</li></ul></div></div>
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(A(-1{,}75)=A\left(-\dfrac74\right)\)&nbsp;;  \(B(-0{,}5)=B\left(-\dfrac12\right)\)&nbsp;;  \(C(1{,}25)=C\left(\dfrac54\right)\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(-\dfrac54=-1{,}25\)&nbsp;: une graduation à gauche de \(-1\)&nbsp;; \(F\) au milieu de \(1\) et \(2\)&nbsp;; \(\dfrac34=0{,}75\)&nbsp;: trois graduations après \(0\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\sqrt3\approx1{,}73\)&nbsp;: \(H\) est juste avant la graduation \(1{,}75\).</div></div>
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-e6702e0790.svg" alt="" loading="lazy"></span>
+</div></div></div></details></div></article><article class="exo" id="ex12"><div class="exo-h"><span class="pill">Exercice 12</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 5 min</span><span class="comp"><span class="objn">Objectif 4</span> · Représenter</span></div><div class="exo-b"><div class="consigne">
+Pour chaque représentation, écrire l'intervalle, puis l'inégalité vérifiée par \(x\).
+<div class="tw"><table class="t"><tr><td>(a)</td><td><span class="tikz"><img src="img-sequence5/fig-674531edd4.svg" alt="" loading="lazy"></span></td></tr><tr><td>(b)</td><td><span class="tikz"><img src="img-sequence5/fig-9ef5c5c42e.svg" alt="" loading="lazy"></span></td></tr><tr><td>(c)</td><td><span class="tikz"><img src="img-sequence5/fig-56d713396b.svg" alt="" loading="lazy"></span></td></tr><tr><td>(d)</td><td><span class="tikz"><img src="img-sequence5/fig-4b8a179dcf.svg" alt="" loading="lazy"></span></td></tr></table></div></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On lit les bornes, puis le sens de chaque crochet. Un trait qui va jusqu'à la flèche correspond à \(+\infty\) (ou \(-\infty\) à gauche).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">(a) \([-1~;~3[\)&nbsp;: \(-1\leqslant x&lt;3\).<br>
+(b) \(]{-\infty}~;~2]\)&nbsp;: \(x\leqslant2\).<br>
+(c) \(]0~;~4]\)&nbsp;: \(0&lt;x\leqslant4\).<br>
+(d) \(]{-2}~;~+\infty[\)&nbsp;: \(x&gt;-2\).</div></div></div></details></div></article><article class="exo" id="ex14"><div class="exo-h"><span class="pill">Exercice 14</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 5 min</span><span class="comp"><span class="objn">Objectif 4</span> · Modéliser</span></div><div class="exo-b"><div class="consigne">
+Traduire chaque situation par l'appartenance à un intervalle.
+<ol><li> Température \(T\) d'un frigo&nbsp;: entre \(2\)&nbsp;°C et \(6\)&nbsp;°C.
+</li><li> Durée \(t\) d'un trajet&nbsp;: strictement moins de \(2\)&nbsp;h.
+</li><li> Âge \(a\) d'un spectateur d'un film « interdit aux moins de \(12\) ans ».
+</li><li> Note \(n\) sur \(20\) d'un candidat admis (au moins \(10\)).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(T\in[2~;~6]\)  (entre \(2\) et \(6\) compris).<br>
+<span class="nc">②</span> \(t\in[0~;~2[\)  (strictement moins de \(2\)&nbsp;h, et une durée est positive).<br>
+<span class="nc">③</span> \(a\in[12~;~+\infty[\)  (à partir de \(12\) ans).<br>
+<span class="nc">④</span> \(n\in[10~;~20]\)  (au moins \(10\), et une note est au plus \(20\)).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Le contexte donne souvent une deuxième borne « naturelle »&nbsp;: \(0\) pour une durée, \(20\) pour une note.</div></div></div></details></div></article><article class="exo" id="ex16"><div class="exo-h"><span class="pill">Exercice 16</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 12 min</span><span class="comp"><span class="objn">Objectif 4</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Résoudre chaque inéquation, donner l'ensemble des solutions sous forme d'intervalle, puis le représenter sur une droite graduée.
+
+<ol><li> \(2x-5\leqslant3\)
+</li><li> \(-3x+1&gt;7\)
+</li><li> \(4-x\geqslant2x+10\)
+</li><li> \(5x-2\geqslant3x+7\)
+</li><li> \(\dfrac{x+1}{2}&gt;-3\)
+</li><li> \(-1\leqslant2x+3&lt;9\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On isole \(x\)&nbsp;: on ajoute ou soustrait le même nombre aux deux membres, puis on divise par le coefficient de \(x\). <b>Si on divise par un nombre négatif, l'ordre change.</b></div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(2x-5\leqslant3\Longleftrightarrow2x\leqslant8\Longleftrightarrow x\leqslant4\)&nbsp;: \(S=\,]{-\infty}~;~4]\).<br>
+<span class="nc">②</span> \(-3x+1&gt;7\Longleftrightarrow-3x&gt;6\Longleftrightarrow x&lt;-2\)&nbsp;: \(S=\,]{-\infty}~;~-2[\).<br>
+<span class="nc">③</span> \(4-x\geqslant2x+10\Longleftrightarrow-3x\geqslant6\Longleftrightarrow x\leqslant-2\)&nbsp;: \(S=\,]{-\infty}~;~-2]\).<br>
+<span class="nc">④</span> \(5x-2\geqslant3x+7\Longleftrightarrow2x\geqslant9\Longleftrightarrow x\geqslant\dfrac92\)&nbsp;: \(S=\left[\dfrac92~;~+\infty\right[\).<br>
+<span class="nc">⑤</span> \(\dfrac{x+1}{2}&gt;-3\Longleftrightarrow x+1&gt;-6\Longleftrightarrow x&gt;-7\)&nbsp;: \(S=\,]{-7}~;~+\infty[\).<br>
+<span class="nc">⑥</span> \(-1\leqslant2x+3&lt;9\Longleftrightarrow-4\leqslant2x&lt;6\Longleftrightarrow-2\leqslant x&lt;3\)&nbsp;: \(S=[-2~;~3[\).</div></div>
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-b2d7f8b544.svg" alt="" loading="lazy"></span>&emsp; question <span class="nc">⑥</span>
+</div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Aux <span class="nc">②</span> et <span class="nc">③</span>, on divise par \(-3\)&nbsp;: \(&gt;\) devient \(&lt;\) et \(\geqslant\) devient \(\leqslant\).</div></div></div></details></div></article><article class="exo" id="ex9"><div class="exo-h"><span class="pill gris">Exercice 9</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 3</span> · Représenter</span></div><div class="exo-b"><div class="consigne">
+<ol><li> À l'aide de la calculatrice, placer le plus précisément possible les nombres suivants sur la droite graduée&nbsp;:<br>
+\(-\sqrt2\)&nbsp;; \(\dfrac{\pi}{2}\)&nbsp;; \(-\dfrac73\)&nbsp;; \(1{,}6\)&nbsp;; \(\dfrac34\).
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-57d7982a4d.svg" alt="" loading="lazy"></span>
+</div>
+</li><li> Ranger ces cinq nombres dans l'ordre croissant.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On calcule une valeur approchée de chaque nombre à la calculatrice.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(-\sqrt2\approx-1{,}41\)&nbsp;;  \(\dfrac\pi2\approx1{,}57\)&nbsp;;  \(-\dfrac73\approx-2{,}33\)&nbsp;;  \(1{,}6\)&nbsp;;  \(\dfrac34=0{,}75\).</div></div>
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-5c20c5f550.svg" alt="" loading="lazy"></span>
+</div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(-\dfrac73&lt;-\sqrt2&lt;\dfrac34&lt;\dfrac\pi2&lt;1{,}6\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">\(\frac\pi2\approx1{,}5708\) et \(1{,}6\) sont proches&nbsp;: il faut assez de décimales pour les départager.</div></div></div></div></details></div></article><article class="exo" id="ex13"><div class="exo-h"><span class="pill gris">Exercice 13</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 5 min</span><span class="comp"><span class="objn">Objectif 4</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+On considère les nombres&nbsp;:  \(-2\)&nbsp;;  \(-1{,}5\)&nbsp;;  \(0\)&nbsp;;  \(\sqrt3\)&nbsp;;  \(2\)&nbsp;;  \(\pi\)&nbsp;;  \(\dfrac{10}{3}\).<br>
+Lesquels appartiennent à \(I=\,]{-2}~;~\pi]\)&nbsp;? Lesquels appartiennent à \(J=\left[1{,}7~;~\dfrac{10}{3}\right[\)&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> \(\sqrt3\approx1{,}73\)&nbsp;;  \(\pi\approx3{,}14\)&nbsp;;  \(\dfrac{10}{3}\approx3{,}33\).
+</li><li> \(I=\,]{-2}~;~\pi]\)&nbsp;: \(-2\) exclu, \(\pi\) compris.
+</li><li> \(J=\left[1{,}7~;~\dfrac{10}{3}\right[\)&nbsp;: \(1{,}7\) compris, \(\frac{10}{3}\) exclu.</li></ul></div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Dans \(I\)&nbsp;: \(-1{,}5\)&nbsp;; \(0\)&nbsp;; \(\sqrt3\)&nbsp;; \(2\)&nbsp;; \(\pi\).<br>
+Dans \(J\)&nbsp;: \(\sqrt3\)&nbsp;; \(2\)&nbsp;; \(\pi\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">\(-2\notin I\) et \(\frac{10}{3}\notin J\)&nbsp;: les bornes sont exclues. Et \(\frac{10}{3}&gt;\pi\), donc \(\frac{10}{3}\notin I\).</div></div></div></details></div></article><h2 class="rub">À la maison</h2><article class="exo" id="ex3"><div class="exo-h"><span class="pill maison">Exercice 3</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span> 🏠<span class="comp"><span class="objn">Objectif 1</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+Simplifier si besoin, puis donner le plus petit ensemble (\(\mathbb{N}\), \(\mathbb{Z}\), \(\mathbb{D}\), \(\mathbb{Q}\) ou \(\mathbb{R}\)) auquel appartient chaque nombre.
+
+<ol><li> \((-3)^2\)
+</li><li> \(-\dfrac{7}{14}\)
+</li><li> \(\sqrt{0{,}25}\)
+</li><li> \(\dfrac{22}{7}\)
+</li><li> \(10^{-2}\)
+</li><li> \(\dfrac{2\pi}{\pi}\)
+</li><li> \(\dfrac{\sqrt{12}}{\sqrt3}\)
+</li><li> \(\left(1+\sqrt2\right)^2\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On simplifie chaque nombre, puis on regarde son écriture&nbsp;: entier positif (\(\mathbb{N}\)), entier (\(\mathbb{Z}\)), nombre fini de décimales (\(\mathbb{D}\)), fraction (\(\mathbb{Q}\)), sinon \(\mathbb{R}\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> \((-3)^2=9\)&nbsp;: \(\mathbb{N}\).
+</li><li> \(-\dfrac{7}{14}=-\dfrac12=-0{,}5\)&nbsp;: \(\mathbb{D}\).
+</li><li> \(\sqrt{0{,}25}=0{,}5\) (car \(0{,}5^2=0{,}25\))&nbsp;: \(\mathbb{D}\).
+</li><li> \(\dfrac{22}{7}=3{,}142\,857\,142\,857\dots\) (périodique)&nbsp;: \(\mathbb{Q}\).
+</li><li> \(10^{-2}=0{,}01\)&nbsp;: \(\mathbb{D}\).
+</li><li> \(\dfrac{2\pi}{\pi}=2\)&nbsp;: \(\mathbb{N}\).
+</li><li> \(\dfrac{\sqrt{12}}{\sqrt3}=\sqrt{\dfrac{12}{3}}=\sqrt4=2\)&nbsp;: \(\mathbb{N}\).
+</li><li> \(\left(1+\sqrt2\right)^2=1+2\sqrt2+2=3+2\sqrt2\)&nbsp;: \(\mathbb{R}\).
+</li></ul></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">\(\frac{22}{7}\) est une valeur approchée de \(\pi\), mais c'est un quotient d'entiers&nbsp;: il est rationnel. Et \(\pi\) peut disparaître&nbsp;: \(\frac{2\pi}{\pi}=2\).</div></div></div></details></div></article><article class="exo" id="ex4"><div class="exo-h"><span class="pill maison">Exercice 4</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span> 🏠<span class="comp"><span class="objn">Objectif 1</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+<ol><li> Montrer que \(\dfrac{7}{20}\), \(\dfrac{13}{8}\) et \(-\dfrac{3}{25}\) sont des nombres décimaux en les écrivant sous la forme \(\dfrac{a}{10^n}\).
+</li><li> Le nombre \(\dfrac56\) est-il décimal&nbsp;? Justifier à l'aide de son écriture décimale.
+</li><li> Le nombre \(\dfrac{21}{12}\) est-il décimal&nbsp;?
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On cherche une fraction égale dont le dénominateur est une puissance de \(10\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\dfrac{7}{20}=\dfrac{7\times5}{20\times5}=\dfrac{35}{100}=\dfrac{35}{10^2}\).<br>
+\(\dfrac{13}{8}=\dfrac{13\times125}{8\times125}=\dfrac{1\,625}{1\,000}=\dfrac{1\,625}{10^3}\).<br>
+\(-\dfrac{3}{25}=-\dfrac{3\times4}{25\times4}=\dfrac{-12}{100}=\dfrac{-12}{10^2}\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Ces trois nombres s'écrivent \(\dfrac{a}{10^n}\) avec \(a\in\mathbb{Z}\) et \(n\in\mathbb{N}\)&nbsp;: ils sont décimaux.</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\dfrac56=0{,}833\,333\dots\)</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">L'écriture décimale est illimitée&nbsp;: \(\frac56\) n'est pas décimal.</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\dfrac{21}{12}=\dfrac{7}{4}=\dfrac{175}{100}=1{,}75\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(\frac{21}{12}\) est décimal.</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">On simplifie d'abord&nbsp;: le dénominateur \(12\) ne permet pas de conclure, mais \(\frac{21}{12}=\frac74\).</div></div></div></div></details></div></article><article class="exo" id="ex10"><div class="exo-h"><span class="pill maison">Exercice 10</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 10 min</span> 🏠<span class="comp"><span class="objn">Objectif 3</span> · Représenter</span></div><div class="exo-b"><div class="consigne">
+<div>
+Sur la droite graduée ci-contre, on a construit le carré \(OABC\) de côté \(1\) (\(O\) d'abscisse \(0\), \(A\) d'abscisse \(1\)).
+</div>
+<div>
+<span class="tikz"><img src="img-sequence5/fig-109da7dfbe.svg" alt="" loading="lazy"></span>
+</div>
+<ol><li> Calculer la longueur \(OB\).
+</li><li> Le cercle de centre \(O\) et de rayon \(OB\) coupe la demi-droite graduée positive en \(M\). Quelle est l'abscisse de \(M\)&nbsp;?
+</li><li> Expliquer comment construire, avec la même méthode, le point d'abscisse \(\sqrt5\).
+</li><li> Pourquoi ne pourrait-on pas placer \(M\) exactement en graduant la droite en dixièmes, puis en centièmes, etc.&nbsp;?
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> Le triangle \(OAB\) est rectangle en \(A\), avec \(OA=AB=1\).</li></ul></div></div>
+<div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">Théorème de Pythagore.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(OB^2=OA^2+AB^2=1^2+1^2=2\), donc \(OB=\sqrt2\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(OM=OB=\sqrt2\) (rayon du cercle) et \(M\) est sur la demi-droite positive&nbsp;: \(M\) a pour abscisse \(\sqrt2\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On construit sur la droite un rectangle de côtés \(2\) et \(1\), de sommet \(O\)&nbsp;: sa diagonale mesure \(\sqrt{2^2+1^2}=\sqrt5\). On la reporte au compas depuis \(O\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 4</div><div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(\sqrt2\) est irrationnel, donc il n'est pas décimal&nbsp;: son écriture décimale est illimitée et aucune graduation en dixièmes, centièmes… ne tombe exactement sur \(M\). Le compas, lui, le place exactement.</div></div></div></div></details></div></article><article class="exo" id="ex11"><div class="exo-h"><span class="pill maison">Exercice 11</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span> 🏠<span class="comp"><span class="objn">Objectif 4</span> · Représenter</span></div><div class="exo-b"><div class="consigne">
+<ol><li> Écrire sous forme d'intervalle l'ensemble des réels \(x\) tels que&nbsp;:<br>
+<div class="tw"><table class="t"><tr><td>(a) \(x\geqslant-2\)</td><td>(b) \(-1&lt;x\leqslant7\)</td></tr><tr><td>(c) \(x&lt;\pi\)</td><td>(d) \(0\leqslant x&lt;0{,}5\)</td></tr></table></div>
+</li><li> Traduire par une ou deux inégalités&nbsp;:<br>
+<div class="tw"><table class="t"><tr><td>(a) \(x\in\,]{-\infty}~;~3]\)</td><td>(b) \(x\in[-4~;~-1[\)</td></tr><tr><td>(c) \(x\in\,]2~;~+\infty[\)</td><td>(d) \(x\in\left]-\dfrac12~;~\dfrac12\right[\)</td></tr></table></div>
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Crochet tourné <b>vers</b> le nombre&nbsp;: borne comprise (\(\leqslant\))&nbsp;; tourné vers l'extérieur&nbsp;: borne exclue (\(&lt;\)). Du côté de \(\pm\infty\), le crochet est toujours ouvert.</div></div>
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">(a) \([-2~;~+\infty[\) &emsp; (b) \(]{-1}~;~7]\) &emsp; (c) \(]{-\infty}~;~\pi[\) &emsp; (d) \([0~;~0{,}5[\)</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">(a) \(x\leqslant3\) &emsp; (b) \(-4\leqslant x&lt;-1\) &emsp; (c) \(x&gt;2\) &emsp; (d) \(-\dfrac12&lt;x&lt;\dfrac12\)</div></div></div></div></details></div></article><article class="exo" id="ex15"><div class="exo-h"><span class="pill maison">Exercice 15</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span> 🏠<span class="comp"><span class="objn">Objectif 4</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+<b>Vrai / Faux.</b> Justifier chaque réponse.
+<ol><li> \(3{,}5\in\{2~;~5\}\)
+</li><li> \(3{,}5\in[2~;~5]\)
+</li><li> \(5\in\,]{-\infty}~;~5[\)
+</li><li> \([2~;~5]\subset\,]1~;~6[\)
+
+</li><li> \(]{-\infty}~;~3[\,\subset\,]{-\infty}~;~3]\)
+</li><li> \([2~;~5]\) contient exactement \(4\) nombres entiers.
+</li><li> \(]2~;~5[\) contient exactement \(4\) nombres entiers.
+</li><li> \([2~;~5]\) contient exactement \(4\) nombres réels.
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> <span class="nc">①</span> Faux&nbsp;: \(\{2~;~5\}\) ne contient que les deux nombres \(2\) et \(5\).
+</li><li> <span class="nc">②</span> Vrai&nbsp;: \(2\leqslant3{,}5\leqslant5\).
+</li><li> <span class="nc">③</span> Faux&nbsp;: le crochet est tourné vers l'extérieur, \(5\) est exclu.
+</li><li> <span class="nc">④</span> Vrai&nbsp;: si \(2\leqslant x\leqslant5\), alors \(1&lt;x&lt;6\).
+</li><li> <span class="nc">⑤</span> Vrai&nbsp;: tout réel \(x&lt;3\) vérifie aussi \(x\leqslant3\).
+</li><li> <span class="nc">⑥</span> Vrai&nbsp;: \(2\), \(3\), \(4\) et \(5\) (bornes comprises).
+</li><li> <span class="nc">⑦</span> Faux&nbsp;: seulement \(3\) et \(4\) (bornes exclues).
+</li><li> <span class="nc">⑧</span> Faux&nbsp;: il contient une infinité de réels (\(2{,}1\)&nbsp;; \(2{,}01\)&nbsp;; \(\pi\)…).
+</li></ul></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Ne pas confondre l'intervalle \([2~;~5]\) (tous les réels entre \(2\) et \(5\)) et l'ensemble \(\{2~;~5\}\) (deux nombres).</div></div></div></details></div></article><h2 class="rub red">Approfondissement</h2><article class="exo" id="ex6"><div class="exo-h"><span class="pill red">Exercice 6</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="temps">⏱ 15 min</span><span class="comp"><span class="objn">Objectif 2</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+<b>Raisonner par l'absurde.</b> On admet que \(\sqrt2\) est irrationnel.
+<ol><li> Montrer que \(1+\sqrt2\) est irrationnel.
+</li><li> Montrer que \(3\sqrt2\) est irrationnel.
+</li><li> Sur le modèle de la démonstration du cours pour \(\dfrac13\), montrer que \(\dfrac17\) n'est pas décimal.<br>
+ Aide&nbsp;: \(10^n=2^n\times5^n\).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c"><b>Raisonnement par l'absurde</b>&nbsp;: on suppose le contraire de ce qu'on veut montrer et on aboutit à une contradiction.</div></div>
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Supposons \(1+\sqrt2=r\) avec \(r\) rationnel. Alors \(\sqrt2=r-1\). Or la différence de deux rationnels est un rationnel, donc \(\sqrt2\) serait rationnel.</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">C'est faux&nbsp;: \(1+\sqrt2\) est irrationnel.</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Supposons \(3\sqrt2=r\) avec \(r\) rationnel. Alors \(\sqrt2=\dfrac r3\), quotient de deux rationnels, donc rationnel.</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Contradiction&nbsp;: \(3\sqrt2\) est irrationnel.</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Supposons \(\dfrac17=\dfrac{a}{10^n}\) avec \(a\in\mathbb{Z}\) et \(n\in\mathbb{N}\). Alors \(10^n=7a\)&nbsp;: \(7\) divise \(10^n\).<br>
+Or \(10^n=2^n\times5^n\)&nbsp;: ses seuls facteurs premiers sont \(2\) et \(5\), et \(7\) est premier.</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Contradiction&nbsp;: \(\frac17\) n'est pas décimal.</div></div></div></div></details></div></article><article class="exo" id="ex7"><div class="exo-h"><span class="pill red">Exercice 7</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="temps">⏱ 15 min</span><span class="comp"><span class="objn">Objectif 2</span> · Chercher</span></div><div class="exo-b"><div class="consigne">
+<b>Écriture décimale d'un rationnel.</b>
+<ol><li> À la calculatrice, donner l'écriture décimale de \(\dfrac17\), \(\dfrac27\) et \(\dfrac{3}{11}\). Que remarque-t-on&nbsp;?
+</li><li> On pose \(x=0{,}272\,727\dots\) (le bloc « \(27\) » se répète indéfiniment).<br>
+Calculer \(100x-x\), puis en déduire \(x\) sous la forme d'une fraction irréductible.
+</li><li> Avec la même méthode, écrire sous forme de fraction \(y=0{,}454\,545\dots\) puis \(z=1{,}232\,323\dots\)
+</li><li> On pose \(w=0{,}999\,9\dots\) (une infinité de \(9\)). Calculer \(10w-w\). Que peut-on en conclure&nbsp;?
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\dfrac17=0{,}142857\,142857\dots\) &emsp; \(\dfrac27=0{,}285714\,285714\dots\) &emsp; \(\dfrac{3}{11}=0{,}27\,27\,27\dots\)</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Les écritures sont illimitées, mais un bloc de chiffres se répète&nbsp;: elles sont <b>périodiques</b>. C'est le cas de tous les rationnels.</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Multiplier par \(100\) décale le bloc de deux chiffres&nbsp;: les parties décimales de \(100x\) et de \(x\) sont alors identiques et disparaissent dans la différence.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(100x=27{,}272\,727\dots\) et \(x=0{,}272\,727\dots\), donc \(100x-x=27\), soit \(99x=27\) et \(x=\dfrac{27}{99}=\dfrac{3}{11}\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(100y-y=45{,}4545\dots-0{,}4545\dots=45\), donc \(y=\dfrac{45}{99}=\dfrac{5}{11}\).<br>
+\(100z=123{,}2323\dots\), donc \(99z=123{,}2323\dots-1{,}2323\dots=122\) et \(z=\dfrac{122}{99}\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 4</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(10w=9{,}999\dots\), donc \(10w-w=9\), soit \(9w=9\) et \(w=1\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(0{,}999\dots\) et \(1\) sont deux écritures du même nombre.</div></div></div></div></details></div></article><article class="exo" id="ex17"><div class="exo-h"><span class="pill red">Exercice 17</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="temps">⏱ 12 min</span><span class="comp"><span class="objn">Objectif 4</span> · Chercher</span></div><div class="exo-b"><div class="consigne">
+On sait que \(x\in[-1~;~3]\). Dans chaque cas, déterminer le plus petit intervalle auquel appartient le nombre&nbsp;:
+
+<ol><li> \(2x+5\)
+</li><li> \(1-x\)
+</li><li> \(\dfrac{x}{2}-1\)
+</li><li> \(x^2\)   (attention&nbsp;!)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On part de \(-1\leqslant x\leqslant3\) et on fait les mêmes opérations sur les trois membres.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(-2\leqslant2x\leqslant6\), donc \(3\leqslant2x+5\leqslant11\)&nbsp;: \([3~;~11]\).<br>
+<span class="nc">②</span> \(-3\leqslant-x\leqslant1\) (on multiplie par \(-1\)&nbsp;: l'ordre change), donc \(-2\leqslant1-x\leqslant2\)&nbsp;: \([-2~;~2]\).<br>
+<span class="nc">③</span> \(-0{,}5\leqslant\dfrac x2\leqslant1{,}5\), donc \(-1{,}5\leqslant\dfrac x2-1\leqslant0{,}5\)&nbsp;: \([-1{,}5~;~0{,}5]\).<br>
+<span class="nc">④</span> Si \(-1\leqslant x\leqslant0\), alors \(0\leqslant x^2\leqslant1\)&nbsp;; si \(0\leqslant x\leqslant3\), alors \(0\leqslant x^2\leqslant9\). Donc \(x^2\in[0~;~9]\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">On ne peut pas « élever au carré » l'encadrement&nbsp;: \((-1)^2=1\), mais \(x=0\) est possible et donne \(x^2=0\). La réponse n'est pas \([1~;~9]\).</div></div></div></details></div></article>
+</main>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] } }, svg: { fontCache: 'global' } };
+document.getElementById('tout').onclick = () => document.querySelectorAll('details.corr').forEach(d => d.open = true);
+document.getElementById('rien').onclick = () => document.querySelectorAll('details.corr').forEach(d => d.open = false);
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+</body>
+</html>

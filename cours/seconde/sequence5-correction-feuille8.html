@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feuille 8 – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Même habillage que la page de remédiation DS1 : une colonne de lecture, thème clair fixe (projection en classe). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs de la feuille */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* sinon display:grid (rappel, entraînement) l’emporte sur hidden */
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons d'exercices */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.green.on { background: var(--green); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .sheet .item .resline, .item.raw .resline { display: block; }
+
+/* Réponse de l'élève (entraînement avec nouvelles valeurs) */
+.aide { margin: 0; font-size: 15px; color: var(--muted); }
+.aide code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.answer { display: grid; gap: 6px; min-width: 0; }
+.ans-row, .ab { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; min-width: 0; }
+.ans-row label, .ab label { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 260px; max-width: 480px; }
+.ab label { flex: 0 1 180px; }
+.answer input[type="text"] { font: inherit; font-size: 17px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); min-width: 0; width: 100%; }
+.answer input[type="text"]:focus { outline: none; border-color: var(--calc); box-shadow: 0 0 0 2px var(--calc-soft); }
+.ans-prev { min-height: 1.5em; color: var(--muted); font-size: 15px; overflow-x: auto; }
+.choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.choices label { display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; background: var(--paper); }
+.choices label:has(input:checked) { border-color: var(--calc); background: var(--calc-soft); }
+.ans-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb { border-radius: 4px; padding: 6px 12px; font-size: 15px; overflow-x: auto; }
+.fb.ok { background: var(--green-soft); border-left: 3px solid var(--green); }
+.fb.warn { background: var(--amber-soft); border-left: 3px solid #F59F00; }
+.fb.ko { background: var(--red-soft); border-left: 3px solid var(--red); }
+.train .item.good { border-color: var(--green); }
+.qfig { overflow-x: auto; }
+.qfig svg, .fig svg { display: block; max-width: none; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+/* Tableau de double distributivité (Ex. 4) : termes de la 1re parenthèse en colonnes, de la 2de en lignes */
+.tdd { border-collapse: collapse; margin: 4px 0 6px; }
+.tdd th, .tdd td { border: 1px solid var(--line); padding: 4px 14px; text-align: center; min-width: 56px; }
+.tdd th { background: var(--bg); font-weight: 400; }
+.tdd th.coin { color: var(--muted); }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+
+.rub { margin: 22px 0 6px; font-size: 17px; color: var(--calc); border-bottom: 1px solid #CFE2F7; padding-bottom: 2px; }
+.rub.red { color: var(--red); border-color: #F8C9C9; }
+.objs { margin: 26px 0 4px; background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 8px 14px; border-radius: 0 8px 8px 0; display: grid; gap: 2px; }
+.objs b { color: var(--calc); font-weight: 600; }
+.pill.red { background: var(--star-red); }
+.pill.gris { background: #868E96; }
+.graph { max-width: 620px; margin: 6px auto; }
+.graph97 { max-width: 560px; margin: 8px auto; font-size: 13px; }
+.g97-t { color: var(--ink); margin-bottom: 6px; line-height: 1.35; }
+.g97-c { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.leg97 { display: grid; gap: 2px; }
+.leg97 i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+.graph img { width: 100%; margin: 0; }
+.leg61 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 2px 14px; font-size: 13px; color: var(--ink); margin-top: 6px; padding-left: 8%; }
+.leg61 i { display: inline-block; width: 18px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.codes { display: flex; gap: 14px; flex-wrap: wrap; margin: 8px 0; }
+.codeb { flex: 1 1 240px; min-width: 0; }
+.codeb-t { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px; }
+.codeb pre.code { margin: 0; font-size: 15px; line-height: 1.45; }
+.temps { font-size: 14px; color: var(--muted); white-space: nowrap; }
+.objn { font-family: var(--f-body); font-size: 14px; font-weight: 600; color: var(--calc); }
+.pill.maison { background: #E8A200; color: #1D2733; }
+.legende { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); margin-top: 10px; align-items: center; }
+.legende span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; background: var(--c); }
+.blk { border-radius: 0 8px 8px 0; padding: 6px 12px; margin: 8px 0; border-left: 3px solid; overflow-x: auto; }
+.blk-t { font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px; }
+.blk-c ul, .blk-c ol { margin: 2px 0; }
+.blk.rep { background: #FFF4E6; border-color: #F76707; } .blk.rep .blk-t { color: #D9480F; }
+.blk.form { background: #F3F0FF; border-color: #7048E8; } .blk.form .blk-t { color: #6741D9; }
+.blk.calc { background: #fff; border-color: #ADB5BD; } .blk.calc .blk-t { color: #495057; }
+.blk.conc { background: #EBFBEE; border-color: #2F9E44; } .blk.conc .blk-t { color: #2B8A3E; }
+.blk.pg { background: #FFF5F5; border-color: #E03131; } .blk.pg .blk-t { color: #C92A2A; }
+.qq { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 10px 0; background: #fff; }
+.qq-n { font-weight: 600; color: var(--calc); margin-bottom: 2px; }
+.corr-b { background: #F8F9FA; border-left-color: var(--green); }
+.exo { margin-top: 12px; scroll-margin-top: 110px; }
+.exo-b img { max-width: 100%; height: auto; display: block; margin: 4px auto; }
+.exo-b ol, .exo-b ul { margin: 4px 0; padding-left: 24px; }
+.exo-b li { margin: 2px 0; }
+.c { text-align: center; }
+.c > * { margin-inline: auto; }
+.tw { overflow-x: auto; }
+table.t { border-collapse: collapse; margin: 6px auto; font-size: 15px; }
+table.t td { border: 1px solid var(--line); padding: 3px 10px; text-align: center; }
+table.t td.hd { background: #FFE8CC; font-weight: 500; }
+.nc { color: var(--calc); font-weight: 500; margin-right: 2px; }
+.cm { font-family: var(--f-body); }
+.fbox { border: 1px solid var(--ink); padding: 1px 6px; }
+pre.code { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; font-size: 14px; overflow-x: auto; margin: 6px 0; }
+details.corr { border-top: 1px dashed var(--line); padding-top: 10px; }
+details.corr > summary { list-style: none; cursor: pointer; display: inline-block; border: 1px solid var(--green); color: var(--green); border-radius: 6px; padding: 4px 14px; font-weight: 500; font-size: 15px; }
+details.corr > summary::-webkit-details-marker { display: none; }
+details.corr[open] > summary { background: var(--green); color: #fff; }
+.corr-b { margin-top: 10px; background: var(--green-soft); border-left: 3px solid var(--green); padding: 10px 14px; border-radius: 0 8px 8px 0; overflow-x: auto; }
+.avec { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.avec > div:first-child { flex: 1 1 280px; min-width: 0; }
+.figs { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.figs.c { margin-top: 6px; flex-direction: row; flex-wrap: wrap; justify-content: center; }
+.fig svg { display: block; max-width: none; }
+.toutes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+
+.tikz { display: inline-block; max-width: 100%; vertical-align: middle; }
+.tikz img { max-width: 100%; height: auto; display: inline-block; margin: 2px 0; }
+.exo-b ol[type="a"] { list-style-type: lower-alpha; }
+.exnav a.nb { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 3px 10px; text-decoration: none; font-weight: 500; font-size: 15px; }
+.exnav a.nb:hover { background: var(--calc-soft); }
+.exnav a.nb.red { border-color: var(--star-red); color: var(--star-red); }
+.exnav a.nb.gris { border-color: #868E96; color: #868E96; }
+.exnav a.nb.maison { border-color: #E8A200; color: #9C6B00; }
+</style>
+<script src="../../barre.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Séquence 5 — Feuille 8 — Corrigé</b><span>Intersection, réunion, valeur absolue et encadrements</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" aria-label="Exercices"><a class="nb" href="#ex2">2</a><a class="nb" href="#ex3">3</a><a class="nb" href="#ex4">4</a><a class="nb" href="#ex5">5</a><a class="nb" href="#ex7">7</a><a class="nb" href="#ex8">8</a><a class="nb" href="#ex10">10</a><a class="nb" href="#ex13">13</a><a class="nb" href="#ex15">15</a><a class="nb" href="#ex16">16</a><a class="nb gris" href="#ex11">11</a><a class="nb gris" href="#ex14">14</a><a class="nb gris" href="#ex17">17</a><a class="nb maison" href="#ex1">1</a><a class="nb maison" href="#ex6">6</a><a class="nb maison" href="#ex9">9</a><a class="nb maison" href="#ex18">18</a><a class="nb maison" href="#ex19">19</a><a class="nb red" href="#ex12">12</a><a class="nb red" href="#ex20">20</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<div class="legende"><span style="--c:#339AF0">en classe</span><span style="--c:#868E96">si le temps le permet</span><span style="--c:#E8A200">à la maison</span><span style="--c:#FA5252">approfondissement</span></div>
+<div class="toutes"><button class="btn green" id="tout">Afficher tous les corrigés</button><button class="btn ghost" id="rien">Masquer tous les corrigés</button></div>
+<div class="objs"><div><b>Objectif 5&nbsp;:</b> Déterminer l'intersection et la réunion d'intervalles</div><div><b>Objectif 6&nbsp;:</b> Calculer une valeur absolue et une distance entre deux réels</div><div><b>Objectif 7&nbsp;:</b> Caractériser un intervalle par une inégalité \(|x-a|\leqslant r\)</div><div><b>Objectif 8&nbsp;:</b> Encadrer un réel par des décimaux, arrondir avec un nombre de chiffres significatifs adapté</div></div><h2 class="rub">En classe</h2><article class="exo" id="ex2"><div class="exo-h"><span class="pill">Exercice 2</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 5 min</span><span class="comp"><span class="objn">Objectif 5</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+Compléter avec \(\cap\) ou \(\cup\).
+<ol><li> \([1~;~5]\ \dots\ [3~;~8]=[3~;~5]\)
+</li><li> \([1~;~5]\ \dots\ [3~;~8]=[1~;~8]\)
+</li><li> \(]{-\infty}~;~2]\ \dots\ [0~;~+\infty[\;=\mathbb{R}\)
+</li><li> \(]{-\infty}~;~2]\ \dots\ [0~;~+\infty[\;=[0~;~2]\)
+</li><li> \([-3~;~0[\ \dots\ [0~;~4]=[-3~;~4]\)
+</li><li> \([-3~;~0[\ \dots\ [0~;~4]=\emptyset\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">\(I\cap J\) est inclus dans \(I\) et dans \(J\)&nbsp;; \(I\cup J\) contient \(I\) et \(J\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(\cap\)  (\([3~;~5]\) est la partie commune) &emsp; <span class="nc">②</span> \(\cup\)<br>
+<span class="nc">③</span> \(\cup\) &emsp; <span class="nc">④</span> \(\cap\) &emsp; <span class="nc">⑤</span> \(\cup\) &emsp; <span class="nc">⑥</span> \(\cap\)</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">⑥</span>, \(0\notin[-3~;~0[\) (crochet ouvert)&nbsp;: les deux intervalles n'ont aucun point commun, leur intersection est vide.</div></div></div></details></div></article><article class="exo" id="ex3"><div class="exo-h"><span class="pill">Exercice 3</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span><span class="comp"><span class="objn">Objectif 5</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+On considère les intervalles \(I=[-3~;~5]\), \(J=\,]0~;~+\infty[\) et \(K=\,]{-\infty}~;~-1]\).
+<ol><li> Déterminer \(I\cap J\), \(I\cap K\) et \(J\cap K\).
+</li><li> Déterminer \(I\cup K\) et \(J\cup K\).
+</li><li> Le nombre \(-0{,}5\) appartient-il à \(J\cup K\)&nbsp;? Et à \(I\)&nbsp;?
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-bf92c8112a.svg" alt="" loading="lazy"></span><br>
+\(I\),  \(J\),  \(K\)
+</div>
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(I\cap J=\,]0~;~5]\)&nbsp;;  \(I\cap K=[-3~;~-1]\)&nbsp;;  \(J\cap K=\emptyset\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(I\cup K=\,]{-\infty}~;~5]\)&nbsp;;  \(J\cup K=\,]{-\infty}~;~-1]\cup\,]0~;~+\infty[\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(-1&lt;-0{,}5\leqslant0\)&nbsp;: \(-0{,}5\) n'est ni dans \(J\) ni dans \(K\), donc \(-0{,}5\notin J\cup K\). En revanche \(-3\leqslant-0{,}5\leqslant5\), donc \(-0{,}5\in I\).</div></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">\(J\cup K\) n'est pas un intervalle&nbsp;: il y a un « trou » entre \(-1\) et \(0\).</div></div></div></details></div></article><article class="exo" id="ex4"><div class="exo-h"><span class="pill">Exercice 4</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 4 min</span><span class="comp"><span class="objn">Objectif 6</span> · Communiquer</span></div><div class="exo-b"><div class="consigne">
+De la même façon que \(|x-3|\) représente la distance entre le nombre réel \(x\) et \(3\), exprimer en termes de distance&nbsp;:
+
+<ol><li> \(|x-100|\)
+</li><li> \(\left|x-\dfrac13\right|\)
+</li><li> \(|x+5|\)
+</li><li> \(|1{,}35+x|\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">La distance entre deux réels \(a\) et \(b\) est \(|a-b|\).</div></div>
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On écrit l'expression sous la forme \(|x-a|\)&nbsp;: c'est la distance entre \(x\) et \(a\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> La distance entre \(x\) et \(100\).<br>
+<span class="nc">②</span> La distance entre \(x\) et \(\frac13\).<br>
+<span class="nc">③</span> \(|x+5|=|x-(-5)|\)&nbsp;: la distance entre \(x\) et \(-5\).<br>
+<span class="nc">④</span> \(|1{,}35+x|=|x-(-1{,}35)|\)&nbsp;: la distance entre \(x\) et \(-1{,}35\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">\(|x+5|\) n'est pas la distance entre \(x\) et \(5\)&nbsp;: le « \(+\) » cache un « \(-(-5)\) ».</div></div></div></details></div></article><article class="exo" id="ex5"><div class="exo-h"><span class="pill">Exercice 5</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 6</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-1e6dff1b30.svg" alt="" loading="lazy"></span>
+</div>
+<ol><li> Lire les abscisses des points \(A\), \(B\), \(C\) et \(D\).
+</li><li> Calculer, à l'aide de valeurs absolues, les distances \(AB\), \(AC\), \(BD\) et \(CD\).
+</li><li> Quel point est le plus proche de \(C\)&nbsp;?
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(A(-3)\)&nbsp;;  \(B(2{,}5)\)&nbsp;;  \(C(-0{,}5)\)&nbsp;;  \(D(4)\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">\(AB=|x_B-x_A|\) (on peut soustraire dans l'ordre que l'on veut).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(AB=|2{,}5-(-3)|=|5{,}5|=5{,}5\)<br>
+\(AC=|-0{,}5-(-3)|=|2{,}5|=2{,}5\)<br>
+\(BD=|4-2{,}5|=1{,}5\)<br>
+\(CD=|4-(-0{,}5)|=4{,}5\)</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(CA=2{,}5\)&nbsp;;  \(CB=|2{,}5-(-0{,}5)|=3\)&nbsp;;  \(CD=4{,}5\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Le point le plus proche de \(C\) est \(A\).</div></div></div></div></details></div></article><article class="exo" id="ex7"><div class="exo-h"><span class="pill">Exercice 7</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span><span class="comp"><span class="objn">Objectif 6</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+On rappelle que, pour tout réel \(a\), \(\sqrt{a^2}=|a|\).
+<ol><li> Simplifier&nbsp;:&emsp; \(\sqrt{(-7)^2}\)&nbsp;;&emsp; \(\sqrt{2{,}5^2}\)&nbsp;;&emsp; \(\sqrt{\left(2-\sqrt5\right)^2}\)&nbsp;;&emsp; \(\sqrt{(\pi-4)^2}\)&nbsp;;&emsp; \(\sqrt{\left(3-\sqrt2\right)^2}\).
+</li><li> Pour quels réels \(x\) a-t-on \(\sqrt{x^2}=x\)&nbsp;? Donner un contre-exemple montrant que l'égalité n'est pas toujours vraie.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">Pour tout réel \(a\), \(\sqrt{a^2}=|a|\).</div></div>
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On cherche le signe du nombre élevé au carré&nbsp;: s'il est positif, on le garde&nbsp;; s'il est négatif, on prend son opposé.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\sqrt{(-7)^2}=|-7|=7\)&nbsp;;  \(\sqrt{2{,}5^2}=2{,}5\).<br>
+\(2-\sqrt5&lt;0\) (car \(\sqrt5\approx2{,}24\))&nbsp;: \(\sqrt{\left(2-\sqrt5\right)^2}=\sqrt5-2\).<br>
+\(\pi-4&lt;0\)&nbsp;: \(\sqrt{(\pi-4)^2}=4-\pi\).<br>
+\(3-\sqrt2&gt;0\)&nbsp;: \(\sqrt{\left(3-\sqrt2\right)^2}=3-\sqrt2\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(\sqrt{x^2}=|x|=x\) si et seulement si \(x\geqslant0\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Contre-exemple&nbsp;: \(\sqrt{(-2)^2}=\sqrt4=2\neq-2\).</div></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">\(\sqrt{(2-\sqrt5)^2}\) n'est pas \(2-\sqrt5\), qui est négatif&nbsp;: une racine carrée est toujours positive.</div></div></div></details></div></article><article class="exo" id="ex8"><div class="exo-h"><span class="pill">Exercice 8</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 4 min</span><span class="comp"><span class="objn">Objectif 7</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Déterminer l'ensemble (sous forme d'intervalle) des réels \(x\) vérifiant&nbsp;:
+
+<ol><li> \(|x-10|\leqslant1\)
+</li><li> \(|x-2{,}5|\leqslant0{,}2\)
+</li><li> \(\left|x-\dfrac12\right|\leqslant\dfrac52\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">Pour \(r&gt;0\)&nbsp;: \(|x-a|\leqslant r\Longleftrightarrow a-r\leqslant x\leqslant a+r\Longleftrightarrow x\in[a-r~;~a+r]\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> Centre \(10\), rayon \(1\)&nbsp;: \(x\in[9~;~11]\).<br>
+<span class="nc">②</span> Centre \(2{,}5\), rayon \(0{,}2\)&nbsp;: \(x\in[2{,}3~;~2{,}7]\).<br>
+<span class="nc">③</span> Centre \(\frac12\), rayon \(\frac52\)&nbsp;: \(x\in\left[\frac12-\frac52~;~\frac12+\frac52\right]=[-2~;~3]\).</div></div></div></details></div></article><article class="exo" id="ex10"><div class="exo-h"><span class="pill">Exercice 10</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span><span class="comp"><span class="objn">Objectif 7</span> · Représenter</span></div><div class="exo-b"><div class="consigne">
+<ol><li> <ol type="a"><li> Sur une droite graduée, placer les points d'abscisses \(2\) et \(6\).
+  </li><li> Déterminer le centre de l'intervalle \([2~;~6]\) puis le rayon de cet intervalle.
+  </li><li> Traduire \(|x-4|\) en termes de distance entre deux réels.
+  </li><li> Compléter&nbsp;: \(x\in[2~;~6]\Longleftrightarrow|x-4|\leqslant\dots\)
+  </li></ol>
+</li><li> De la même manière, compléter&nbsp;:
+  <ol type="a"><li> \(x\in[1~;~25]\Longleftrightarrow|x-13|\leqslant\dots\)
+  </li><li> \(x\in[6~;~20]\Longleftrightarrow|x-\dots|\leqslant\dots\)
+  </li><li> \(x\in[1{,}2~;~3]\Longleftrightarrow|x-\dots|\leqslant\dots\)
+  </li></ol>
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Pour \([a~;~b]\)&nbsp;: le centre est le milieu \(\dfrac{a+b}{2}\), le rayon est la moitié de la longueur \(\dfrac{b-a}{2}\).</div></div>
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">(b) Centre&nbsp;: \(\dfrac{2+6}{2}=4\)&nbsp;; rayon&nbsp;: \(\dfrac{6-2}{2}=2\).<br>
+(c) \(|x-4|\) est la distance entre \(x\) et \(4\).<br>
+(d) \(x\in[2~;~6]\Longleftrightarrow|x-4|\leqslant2\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">(a) Centre \(13\), rayon \(\dfrac{25-1}{2}=12\)&nbsp;: \(|x-13|\leqslant12\).<br>
+(b) Centre \(\dfrac{6+20}{2}=13\), rayon \(\dfrac{20-6}{2}=7\)&nbsp;: \(|x-13|\leqslant7\).<br>
+(c) Centre \(\dfrac{1{,}2+3}{2}=2{,}1\), rayon \(\dfrac{3-1{,}2}{2}=0{,}9\)&nbsp;: \(|x-2{,}1|\leqslant0{,}9\).</div></div></div></div></details></div></article><article class="exo" id="ex13"><div class="exo-h"><span class="pill">Exercice 13</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 8</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+À l'aide de la calculatrice, pour chacun des nombres suivants, donner un encadrement d'amplitude \(10^{-2}\) puis l'arrondi au centième.
+
+<ol><li> \(\sqrt7\)
+</li><li> \(\dfrac{22}{7}\)
+</li><li> \(\pi^2\)
+</li><li> \(\dfrac53\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">L'encadrement d'amplitude \(10^{-2}\) s'obtient en gardant deux décimales (borne inférieure) puis en ajoutant \(0{,}01\). L'arrondi au centième est la borne la plus proche.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(\sqrt7\approx2{,}645\,8\)&nbsp;: \(2{,}64&lt;\sqrt7&lt;2{,}65\)&nbsp;; arrondi \(2{,}65\).<br>
+<span class="nc">②</span> \(\frac{22}{7}\approx3{,}142\,9\)&nbsp;: \(3{,}14&lt;\frac{22}{7}&lt;3{,}15\)&nbsp;; arrondi \(3{,}14\).<br>
+<span class="nc">③</span> \(\pi^2\approx9{,}869\,6\)&nbsp;: \(9{,}86&lt;\pi^2&lt;9{,}87\)&nbsp;; arrondi \(9{,}87\).<br>
+<span class="nc">④</span> \(\frac53\approx1{,}666\,7\)&nbsp;: \(1{,}66&lt;\frac53&lt;1{,}67\)&nbsp;; arrondi \(1{,}67\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">L'arrondi n'est pas toujours la borne inférieure&nbsp;: on regarde la troisième décimale.</div></div></div></details></div></article><article class="exo" id="ex15"><div class="exo-h"><span class="pill">Exercice 15</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 8</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+<ol><li> Donner le nombre de chiffres significatifs de&nbsp;:<br>
+\(3{,}07\)&nbsp;;&emsp; \(0{,}045\,0\)&nbsp;;&emsp; \(1\,200{,}5\)&nbsp;;&emsp; \(6{,}02\times10^{23}\).
+</li><li> Arrondir avec \(2\) chiffres significatifs&nbsp;:<br>
+\(0{,}004\,638\)&nbsp;;&emsp; \(7\,382\)&nbsp;;&emsp; \(\pi\)&nbsp;;&emsp; \(\dfrac23\).
+</li><li> Arrondir avec \(3\) chiffres significatifs&nbsp;:<br>
+\(12{,}345\,6\)&nbsp;;&emsp; \(0{,}098\,76\)&nbsp;;&emsp; \(\sqrt2\).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">Les chiffres significatifs sont tous les chiffres à partir du premier chiffre non nul (les zéros de tête ne comptent pas, ceux de fin comptent).</div></div>
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(3{,}07\)&nbsp;: \(3\)  ;  \(0{,}045\,0\)&nbsp;: \(3\) (\(4\), \(5\), \(0\))  ;  \(1\,200{,}5\)&nbsp;: \(5\)  ;  \(6{,}02\times10^{23}\)&nbsp;: \(3\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(0{,}004\,638\approx0{,}004\,6\)  ;  \(7\,382\approx7\,400\)  ;  \(\pi\approx3{,}1\)  ;  \(\frac23\approx0{,}67\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(12{,}345\,6\approx12{,}3\)  ;  \(0{,}098\,76\approx0{,}098\,8\)  ;  \(\sqrt2\approx1{,}41\).</div></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Pour \(7\,382\) avec \(2\) chiffres significatifs, on garde l'ordre de grandeur&nbsp;: \(7\,400\), pas \(74\).</div></div></div></details></div></article><article class="exo" id="ex16"><div class="exo-h"><span class="pill">Exercice 16</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 10 min</span><span class="comp"><span class="objn">Objectif 8</span> · Modéliser</span></div><div class="exo-b"><div class="consigne">
+Dans chaque cas, faire le calcul puis donner un résultat avec un nombre de chiffres significatifs adapté aux données.
+<ol><li> Un rectangle mesure \(4{,}2\)&nbsp;cm sur \(3{,}1\)&nbsp;cm. Calculer son aire et la longueur de sa diagonale.
+</li><li> Un cycliste parcourt \(42{,}5\)&nbsp;km en \(1{,}75\)&nbsp;h. Calculer sa vitesse moyenne.
+</li><li> Léa affirme que l'aire d'un disque de rayon \(3{,}0\)&nbsp;cm vaut \(28{,}274\,333\)&nbsp;cm\(^2\). Commenter.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On fait le calcul exact, puis on arrondit le résultat avec autant de chiffres significatifs que la donnée la moins précise.</div></div>
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Aire&nbsp;: \(4{,}2\times3{,}1=13{,}02\)&nbsp;cm\(^2\).<br>
+Diagonale (Pythagore)&nbsp;: \(\sqrt{4{,}2^2+3{,}1^2}=\sqrt{27{,}25}\approx5{,}220\,2\)&nbsp;cm.</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Données à \(2\) chiffres significatifs&nbsp;: aire \(\approx13\)&nbsp;cm\(^2\), diagonale \(\approx5{,}2\)&nbsp;cm.</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(v=\dfrac{42{,}5}{1{,}75}\approx24{,}285\,7\)&nbsp;km/h.</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Données à \(3\) chiffres significatifs&nbsp;: \(v\approx24{,}3\)&nbsp;km/h.</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\pi\times3{,}0^2\approx28{,}274\,3\)&nbsp;cm\(^2\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Le calcul est juste, mais le rayon n'a que \(2\) chiffres significatifs&nbsp;: on écrit \(\mathcal A\approx28\)&nbsp;cm\(^2\). Les autres décimales n'ont pas de sens.</div></div></div></div></details></div></article><article class="exo" id="ex11"><div class="exo-h"><span class="pill gris">Exercice 11</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 7</span> · Modéliser</span></div><div class="exo-b"><div class="consigne">
+Une usine fabrique des vis censées mesurer \(25\)&nbsp;mm. Une vis est acceptée si sa longueur \(L\), en mm, vérifie \(|L-25|\leqslant0{,}05\).
+<ol><li> Traduire cette condition par un intervalle.
+</li><li> Les vis de longueur \(24{,}96\)&nbsp;mm, \(25{,}06\)&nbsp;mm et \(24{,}95\)&nbsp;mm sont-elles acceptées&nbsp;?
+</li><li> Un client exige des vis dont la longueur est comprise entre \(24{,}98\)&nbsp;mm et \(25{,}02\)&nbsp;mm. Traduire cette exigence à l'aide d'une valeur absolue.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Centre \(25\), rayon \(0{,}05\)&nbsp;: \(L\in[25-0{,}05~;~25+0{,}05]=[24{,}95~;~25{,}05]\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(24{,}96\in[24{,}95~;~25{,}05]\)&nbsp;: acceptée.<br>
+\(25{,}06&gt;25{,}05\)&nbsp;: refusée.<br>
+\(24{,}95\)&nbsp;: acceptée (borne comprise).</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Centre \(\dfrac{24{,}98+25{,}02}{2}=25\), rayon \(\dfrac{25{,}02-24{,}98}{2}=0{,}02\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(|L-25|\leqslant0{,}02\).</div></div></div></div></details></div></article><article class="exo" id="ex14"><div class="exo-h"><span class="pill gris">Exercice 14</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 8</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Ranger dans l'ordre croissant les nombres suivants, après en avoir donné un encadrement d'amplitude suffisamment petite.<br>
+ \(\pi\)&nbsp;;&emsp; \(\dfrac{22}{7}\)&nbsp;;&emsp; \(\sqrt{10}\)&nbsp;;&emsp; \(3{,}14\)&nbsp;;&emsp; \(\dfrac{355}{113}\)</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\pi\approx3{,}141\,592\,65\) &emsp; \(\dfrac{355}{113}\approx3{,}141\,592\,92\) &emsp; \(\dfrac{22}{7}\approx3{,}142\,857\) &emsp; \(\sqrt{10}\approx3{,}162\,28\)</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(3{,}14&lt;\pi&lt;\dfrac{355}{113}&lt;\dfrac{22}{7}&lt;\sqrt{10}\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">À \(10^{-4}\) près, \(\pi\) et \(\frac{355}{113}\) ont le même encadrement \([3{,}1415~;~3{,}1416]\)&nbsp;: il faut aller jusqu'à la septième décimale pour les départager.</div></div></div></details></div></article><article class="exo" id="ex17"><div class="exo-h"><span class="pill gris">Exercice 17</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span><span class="comp"><span class="objn">Objectif 8</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+<ol><li> Un nombre \(x\) a pour arrondi au dixième \(3{,}7\). À quel intervalle appartient \(x\)&nbsp;?
+</li><li> En déduire que \(|x-3{,}7|\leqslant0{,}05\).
+</li><li> Une longueur \(L\), mesurée au millimètre près, vaut \(12{,}4\)&nbsp;cm. Encadrer \(L\).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Les nombres dont l'arrondi au dixième est \(3{,}7\) vont de \(3{,}65\) (inclus) à \(3{,}75\) (exclu).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(x\in[3{,}65~;~3{,}75[\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\([3{,}65~;~3{,}75[\,\subset[3{,}7-0{,}05~;~3{,}7+0{,}05]\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Donc \(|x-3{,}7|\leqslant0{,}05\)&nbsp;: un arrondi au dixième est à une distance au plus \(0{,}05\) du nombre.</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(12{,}35\leqslant L&lt;12{,}45\).</div></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">À partir de \(3{,}75\), l'arrondi au dixième est \(3{,}8\)&nbsp;: la borne \(3{,}75\) est exclue.</div></div></div></details></div></article><h2 class="rub">À la maison</h2><article class="exo" id="ex1"><div class="exo-h"><span class="pill maison">Exercice 1</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 8 min</span> 🏠<span class="comp"><span class="objn">Objectif 5</span> · Représenter</span></div><div class="exo-b"><div class="consigne">
+Dans chaque cas, représenter \(I\) et \(J\) sur une même droite graduée avec deux couleurs, puis déterminer \(I\cap J\) et \(I\cup J\).
+
+<ol><li> \(I=[-2~;~4]\) et \(J=\,]1~;~7]\)
+</li><li> \(I=\,]{-\infty}~;~3[\) et \(J=[0~;~+\infty[\)
+</li><li> \(I=[-5~;~-1]\) et \(J=\,]2~;~6]\)
+</li><li> \(I=[1~;~8]\) et \(J=[3~;~5]\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On représente \(I\) et \(J\) sur la même droite avec deux couleurs. \(I\cap J\)&nbsp;: là où il y a <b>les deux</b> couleurs&nbsp;; \(I\cup J\)&nbsp;: là où il y a <b>au moins une</b> couleur.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(I\) en bleu, \(J\) en rouge.<br>
+<span class="nc">①</span> <span class="tikz"><img src="img-sequence5/fig-a96dcba8ee.svg" alt="" loading="lazy"></span><br>
+<span class="nc">②</span> <span class="tikz"><img src="img-sequence5/fig-0c853ea616.svg" alt="" loading="lazy"></span><br>
+<span class="nc">③</span> <span class="tikz"><img src="img-sequence5/fig-a44ee523ad.svg" alt="" loading="lazy"></span><br>
+<span class="nc">④</span> <span class="tikz"><img src="img-sequence5/fig-2e5fbbb228.svg" alt="" loading="lazy"></span></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">③</span>, les deux intervalles n'ont aucun point commun&nbsp;: \(I\cap J=\emptyset\), et la réunion n'est pas un intervalle. Au <span class="nc">④</span>, \(J\subset I\).</div></div></div></details></div></article><article class="exo" id="ex6"><div class="exo-h"><span class="pill maison">Exercice 6</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span> 🏠<span class="comp"><span class="objn">Objectif 6</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Traduire chaque équation en termes de distance, puis la résoudre.
+
+<ol><li> \(|x-4|=2\)
+</li><li> \(|x+3|=5\)
+</li><li> \(|x|=0\)
+</li><li> \(|x-1|=-2\)
+</li><li> \(\left|x-\dfrac12\right|=\dfrac32\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">\(|x-a|=r\) signifie « la distance entre \(x\) et \(a\) vaut \(r\) »&nbsp;: si \(r&gt;0\), il y a deux solutions, \(a-r\) et \(a+r\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> Distance \(2\) à \(4\)&nbsp;: \(4-2=2\) et \(4+2=6\)&nbsp;: \(S=\{2~;~6\}\).<br>
+<span class="nc">②</span> \(|x-(-3)|=5\)&nbsp;: distance \(5\) à \(-3\)&nbsp;: \(S=\{-8~;~2\}\).<br>
+<span class="nc">③</span> Distance \(0\) à \(0\)&nbsp;: \(S=\{0\}\).<br>
+<span class="nc">④</span> Une distance n'est jamais négative&nbsp;: \(S=\emptyset\).<br>
+<span class="nc">⑤</span> Distance \(\frac32\) à \(\frac12\)&nbsp;: \(\frac12-\frac32=-1\) et \(\frac12+\frac32=2\)&nbsp;: \(S=\{-1~;~2\}\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Les solutions s'écrivent entre accolades&nbsp;: ce sont deux nombres, pas un intervalle.</div></div></div></details></div></article><article class="exo" id="ex9"><div class="exo-h"><span class="pill maison">Exercice 9</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 5 min</span> 🏠<span class="comp"><span class="objn">Objectif 7</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Déterminer l'ensemble (sous forme d'intervalle) des réels \(x\) vérifiant&nbsp;:
+
+<ol><li> \(|x+15|\leqslant3\)
+</li><li> \(|x+1|\leqslant2\)
+</li><li> \(|x-3|&lt;1\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On écrit d'abord \(|x+b|\) sous la forme \(|x-(-b)|\) pour lire le centre.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(|x-(-15)|\leqslant3\)&nbsp;: centre \(-15\), rayon \(3\)&nbsp;: \(x\in[-18~;~-12]\).<br>
+<span class="nc">②</span> \(|x-(-1)|\leqslant2\)&nbsp;: centre \(-1\), rayon \(2\)&nbsp;: \(x\in[-3~;~1]\).<br>
+<span class="nc">③</span> Centre \(3\), rayon \(1\), inégalité stricte&nbsp;: \(x\in\,]2~;~4[\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Avec \(&lt;\), les bornes sont exclues&nbsp;: l'intervalle est ouvert.</div></div></div></details></div></article><article class="exo" id="ex18"><div class="exo-h"><span class="pill maison">Exercice 18</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span> 🏠<span class="comp"><span class="objn">Objectif 8</span> · Modéliser</span></div><div class="exo-b"><div class="consigne">
+La distance moyenne entre la Terre et le Soleil est \(d=1{,}496\times10^{8}\)&nbsp;km et la lumière se déplace à la vitesse \(c=3{,}00\times10^{5}\)&nbsp;km/s.
+<ol><li> Calculer la durée mise par la lumière du Soleil pour nous parvenir, avec un nombre de chiffres significatifs adapté.
+</li><li> Convertir cette durée en minutes et secondes.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> \(d=1{,}496\times10^8\)&nbsp;km (\(4\) chiffres significatifs)&nbsp;; \(c=3{,}00\times10^5\)&nbsp;km/s (\(3\) chiffres significatifs).</li></ul></div></div>
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">Durée \(=\dfrac{\text{distance}}{\text{vitesse}}\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(t=\dfrac{1{,}496\times10^8}{3{,}00\times10^5}=\dfrac{1{,}496}{3{,}00}\times10^3\approx498{,}67\)&nbsp;s.</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Avec \(3\) chiffres significatifs&nbsp;: \(t\approx499\)&nbsp;s, soit \(4{,}99\times10^2\)&nbsp;s.</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(499=8\times60+19\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">La lumière du Soleil met environ \(8\)&nbsp;min \(19\)&nbsp;s pour nous parvenir.</div></div></div></div></details></div></article><article class="exo" id="ex19"><div class="exo-h"><span class="pill maison">Exercice 19</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 15 min</span> 🏠<span class="comp"><span class="objn">Objectif 8</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+<b>Python – algorithme de balayage.</b> On considère la fonction suivante, où \(n\) est un entier naturel.
+<pre class="code">def balayage(n):
+    pas = 10**(-n)
+    x = 1
+    while (x + pas)**2 &lt;= 2:
+        x = x + pas
+    return x, x + pas</pre>
+<ol><li> On appelle <code>balayage(1)</code>. Donner les valeurs successives prises par <code>x</code>, puis ce que renvoie la fonction.
+</li><li> Quel encadrement de \(\sqrt2\) obtient-on&nbsp;? Quelle est son amplitude&nbsp;?
+</li><li> Python affiche en réalité <code>(1.4000000000000004, 1.5000000000000004)</code>. Pourquoi, à votre avis&nbsp;?
+</li><li> Que renvoie <code>balayage(3)</code>&nbsp;? Combien de fois la boucle est-elle parcourue&nbsp;?
+</li><li> Modifier la fonction pour qu'elle donne un encadrement de \(\sqrt{a}\) pour un réel \(a\geqslant0\) quelconque.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(x=1\), puis \(1{,}1\)&nbsp;; \(1{,}2\)&nbsp;; \(1{,}3\)&nbsp;; \(1{,}4\). On s'arrête car \((1{,}4+0{,}1)^2=2{,}25&gt;2\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">La fonction renvoie \((1{,}4~;~1{,}5)\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(1{,}4\leqslant\sqrt2\leqslant1{,}5\)&nbsp;: encadrement d'amplitude \(10^{-1}\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">L'ordinateur écrit les nombres en binaire&nbsp;; \(0{,}1\) n'a pas d'écriture binaire finie&nbsp;: il est stocké de façon approchée, et les petites erreurs s'additionnent à chaque passage.</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Les nombres de la machine ne sont pas les nombres réels.</div></div></div>
+<div class="qq"><div class="qq-n">Question 4</div><div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c"><code>balayage(3)</code> renvoie \((1{,}414~;~1{,}415)\)&nbsp;: \(1{,}414\leqslant\sqrt2\leqslant1{,}415\). La boucle est parcourue \(414\) fois.</div></div></div>
+<div class="qq"><div class="qq-n">Question 5</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On remplace \(2\) par <code>a</code> et on part de \(0\) (pour que tout \(a\geqslant0\) convienne).</div></div>
+<pre class="code">def balayage(a, n):
+    pas = 10**(-n)
+    x = 0
+    while (x + pas)**2 &lt;= a:
+        x = x + pas
+    return x, x + pas
+
+print(balayage(3, 2))</pre>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Résultat&nbsp;: \(1{,}73\leqslant\sqrt3\leqslant1{,}74\).</div></div></div></div></details></div></article><h2 class="rub red">Approfondissement</h2><article class="exo" id="ex12"><div class="exo-h"><span class="pill red">Exercice 12</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="temps">⏱ 15 min</span><span class="comp"><span class="objn">Objectif 7</span> · Chercher</span></div><div class="exo-b"><div class="consigne">
+<ol><li> Représenter sur une droite graduée l'ensemble des réels \(x\) dont la distance à \(3\) est <b>supérieure ou égale</b> à \(2\).
+</li><li> En déduire, sous forme de réunion d'intervalles, l'ensemble des solutions de \(|x-3|\geqslant2\).
+</li><li> Résoudre de même \(|x+1|&gt;4\).
+</li><li> Résoudre \(1\leqslant|x-2|\leqslant3\).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Les réels à distance au moins \(2\) de \(3\) sont « avant \(3-2=1\) » ou « après \(3+2=5\) ».</div></div>
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-b6a91ddb31.svg" alt="" loading="lazy"></span>
+</div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(S=\,]{-\infty}~;~1]\cup[5~;~+\infty[\), c'est-à-dire tout sauf \(]1~;~5[\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(|x-(-1)|&gt;4\)&nbsp;: distance à \(-1\) strictement supérieure à \(4\)&nbsp;; \(-1-4=-5\) et \(-1+4=3\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(S=\,]{-\infty}~;~-5[\,\cup\,]3~;~+\infty[\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 4</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Distance à \(2\) entre \(1\) et \(3\)&nbsp;: \(x\in[2-3~;~2-1]\) ou \(x\in[2+1~;~2+3]\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(S=[-1~;~1]\cup[3~;~5]\).</div></div></div></div></details></div></article><article class="exo" id="ex20"><div class="exo-h"><span class="pill red">Exercice 20</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="temps">⏱ 15 min</span><span class="comp"><span class="objn">Objectif 8</span> · Chercher</span></div><div class="exo-b"><div class="consigne">
+<b>Dichotomie.</b> On sait que \(\sqrt2\in[1~;~2]\). À chaque étape, on coupe l'intervalle en son milieu \(m\) et on garde la moitié qui contient \(\sqrt2\) (on compare \(m^2\) à \(2\)).
+<ol><li> Effectuer les quatre premières étapes en donnant chaque fois l'intervalle obtenu et son amplitude.
+</li><li> Combien d'étapes faut-il pour obtenir une amplitude inférieure ou égale à \(10^{-3}\)&nbsp;?
+</li><li> Comparer avec l'algorithme de balayage de l'exercice précédent.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(m=1{,}5\)&nbsp;: \(1{,}5^2=2{,}25&gt;2\)&nbsp;: on garde \([1~;~1{,}5]\) (amplitude \(0{,}5\)).<br>
+\(m=1{,}25\)&nbsp;: \(1{,}562\,5&lt;2\)&nbsp;: \([1{,}25~;~1{,}5]\) (\(0{,}25\)).<br>
+\(m=1{,}375\)&nbsp;: \(1{,}890\,6&lt;2\)&nbsp;: \([1{,}375~;~1{,}5]\) (\(0{,}125\)).<br>
+\(m=1{,}437\,5\)&nbsp;: \(2{,}066\,4&gt;2\)&nbsp;: \([1{,}375~;~1{,}437\,5]\) (\(0{,}062\,5\)).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">L'amplitude est divisée par \(2\) à chaque étape&nbsp;: après \(n\) étapes, elle vaut \(\dfrac{1}{2^n}\). Or \(2^9=512&lt;1\,000\leqslant2^{10}=1\,024\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Il faut \(10\) étapes.</div></div></div>
+<div class="qq"><div class="qq-n">Question 3</div><div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Le balayage demande \(414\) passages pour la même précision&nbsp;: la dichotomie est beaucoup plus rapide.</div></div></div></div></details></div></article>
+</main>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] } }, svg: { fontCache: 'global' } };
+document.getElementById('tout').onclick = () => document.querySelectorAll('details.corr').forEach(d => d.open = true);
+document.getElementById('rien').onclick = () => document.querySelectorAll('details.corr').forEach(d => d.open = false);
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+</body>
+</html>
