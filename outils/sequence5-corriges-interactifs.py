@@ -1,6 +1,7 @@
-"""Génère les corrigés interactifs (HTML) des Feuilles d'exercices 7 et 8 de la
-Séquence 5 (Ensembles de nombres) à partir des sources LaTeX : énoncés et
-corrigés courts (« Feuille d'exercices 7/8 - commun.tex »), corrigés détaillés
+"""Génère les corrigés interactifs (HTML) des Feuilles d'exercices 7 et 8 et des
+exercices du manuel de la Séquence 5 (Ensembles de nombres) à partir des sources
+LaTeX : énoncés et corrigés courts (« Feuille d'exercices 7/8 - commun.tex »,
+« Exercices manuel - commun.tex » et « Exercices manuel - corrigés.tex »), corrigés détaillés
 (« Séquence 5 - Corrigés interactifs - détails.tex »), objectifs (fichiers des
 feuilles) et rubriques en classe / maison / approfondissement (plan de travail).
 Adapté de sequence4-corriges-interactifs.py ; les figures TikZ sont compilées
@@ -14,6 +15,7 @@ MODELE = os.path.join(SITE, "sequence3-correction-feuille4.html")
 FEUILLES = {
     "7": ("Ensembles de nombres et intervalles", "Séquence 5 - Feuille d'exercices 7 - Ensembles de nombres et intervalles.tex", "sequence5-correction-feuille7.html"),
     "8": ("Intersection, réunion, valeur absolue et encadrements", "Séquence 5 - Feuille d'exercices 8 - Intersection, réunion, valeur absolue et encadrements.tex", "sequence5-correction-feuille8.html"),
+    "manuel": ("Ensembles de nombres (p. 16 et 18)", "Séquence 5 - Exercices manuel.tex", "sequence5-correction-exercices-manuel.html"),
 }
 
 def N(s): return unicodedata.normalize("NFC", s)
@@ -60,7 +62,9 @@ def sans_commentaires(s):
     return re.sub(r"(?<!\\)%[^\n]*", "", s)
 
 # ---------------------------------------------------------------- données
-COMMUN = lire("Séquence 5 - Feuille d'exercices 7 - commun.tex") + lire("Séquence 5 - Feuille d'exercices 8 - commun.tex")
+COMMUN = (lire("Séquence 5 - Feuille d'exercices 7 - commun.tex") + lire("Séquence 5 - Feuille d'exercices 8 - commun.tex")
+          + sans_commentaires(lire("Séquence 5 - Exercices manuel - commun.tex"))
+          + sans_commentaires(lire("Séquence 5 - Exercices manuel - corrigés.tex")))
 EXOS, CORRS = {}, {}
 for m in re.finditer(r"\\DefExo\{", COMMUN):
     i = m.end() - 1
@@ -92,6 +96,8 @@ for m in re.finditer(r"\\SectionExos(?:\[\w+\])?\{([^}]*)\}|\\SiTemps|\\ExoCorr(
         _r = "temps"
     elif _r and m.group(2) not in RUB:
         RUB[m.group(2)] = _r
+# Exercices du manuel absents du plan : Python en salle informatique (18, 19), le 17 en entraînement.
+RUB.setdefault("18", "info"); RUB.setdefault("19", "info"); RUB.setdefault("17", "plus")
 
 # ---------------------------------------------------------------- texte brut (schémas SVG)
 SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
@@ -345,6 +351,8 @@ def trait(nom, s, i, out):
         except Exception:
             out.append(f"({esc(c)})")
         return i
+    if nom in MACROS_TEXTE:
+        out.append(conv(MACROS_TEXTE[nom])); return i
     if nom == "Pointilles":
         out.append("……"); return i
     if nom in ("quad", "qquad"):
@@ -408,9 +416,9 @@ def trait(nom, s, i, out):
         return i
     if nom == "begin":
         e, i = arg(s, i)
-        if e == "tikzpicture":
+        if e in ("tikzpicture", "scratch"):
             contenu, i = env(e, s, i)
-            out.append(figure("\\begin{tikzpicture}" + contenu + "\\end{tikzpicture}"))
+            out.append(figure("\\begin{" + e + "}" + contenu + "\\end{" + e + "}"))
             return i
         if e in ("enumerate", "itemize"):
             o, i = opt(s, i)
@@ -471,6 +479,7 @@ def trait(nom, s, i, out):
     INCONNUES.add(nom)
     return i
 INCONNUES = set()
+MACROS_TEXTE = {"ConsignePlusPetit": "\\textit{« Plus petit ensemble »~: on choisit parmi les ensembles du cours $\\N$, $\\Z$, $\\D$, $\\Q$ et $\\R$.}\n\n"}
 BLOCS = {"Reperage": ("On repère", "rep"), "Formule": ("Formule utilisée", "form"), "Calcul": ("Calculs", "calc"),
          "Conclusion": ("Conclusion", "conc"), "Piege": ("Attention", "pg"),
          "Methode": ("Méthode", "form"), "Propriete": ("Propriété utilisée", "form")}
@@ -592,7 +601,8 @@ STYLE_PLUS += """
 .tikz img { max-width: 100%; height: auto; display: inline-block; margin: 2px 0; }
 .exo-b ol[type="a"] { list-style-type: lower-alpha; }
 """
-RUBS = [("classe", "En classe", ""), ("temps", None, " gris"), ("maison", "À la maison", " maison"), ("approf", "Approfondissement", " red")]
+RUBS = [("classe", "En classe", ""), ("temps", None, " gris"), ("maison", "À la maison", " maison"), ("approf", "Approfondissement", " red"),
+        ("info", "En salle informatique (Python)", ""), ("plus", "Pour s'entraîner", "")]
 def objectifs(nom):
     s = sans_commentaires(lire(nom)); s = s[s.index("\\begin{document}"):]
     objs, obj_exo, cur = [], {}, None
@@ -607,6 +617,7 @@ def objectifs(nom):
 
 def page(fn, theme, nom_feuille, sortie):
     objs, obj_exo = objectifs(nom_feuille)
+    nom_page = "Exercices du manuel" if fn == "manuel" else f"Feuille {fn}"
     cles = list(obj_exo)
     modele = open(MODELE, encoding="utf-8").read()
     style = modele[modele.index("<style>") + 7:modele.index("</style>")]
@@ -619,8 +630,9 @@ def page(fn, theme, nom_feuille, sortie):
         if titre:
             corps.append(f'<h2 class="rub{" red" if code == "approf" else ""}">{esc(titre)}</h2>')
         for k in groupe:
-            n = k.split("-")[1]
+            n = k.split("-")[1] if "-" in k else k
             e = EXOS[k]
+            etiquette = f'Ex {n} p {esc(e["page"])}' if e["page"] else f"Exercice {n}"
             maison = " 🏠" if code == "maison" else ""
             temps = f'<span class="temps">⏱ {TEMPS[k]} min</span>' if k in TEMPS else ""
             nav.append(f'<a class="nb{coul}" href="#ex{n}">{n}</a>')
@@ -628,7 +640,7 @@ def page(fn, theme, nom_feuille, sortie):
             corr_html = (f'<details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">{conv(corr)}</div></details>'
                          if corr else '<p class="aide">Corrigé à venir.</p>')
             corps.append(
-                f'<article class="exo" id="ex{n}"><div class="exo-h"><span class="pill{coul}">Exercice {n}</span>'
+                f'<article class="exo" id="ex{n}"><div class="exo-h"><span class="pill{coul}">{etiquette}</span>'
                 f'{etoiles(e["niv"])}{temps}{maison}<span class="comp"><span class="objn">Objectif {obj_exo.get(k, "?")}</span> · {esc(e["comp"])}</span></div>'
                 f'<div class="exo-b"><div class="consigne">{conv(e["corps"])}</div>{corr_html}</div></article>')
     nav_css = (".exnav a.nb { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 3px 10px; text-decoration: none; font-weight: 500; font-size: 15px; }\n"
@@ -638,7 +650,7 @@ def page(fn, theme, nom_feuille, sortie):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Feuille {fn} – Corrigé</title>
+<title>{nom_page} – Corrigé</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
@@ -648,7 +660,7 @@ def page(fn, theme, nom_feuille, sortie):
 <body>
 <header class="top">
   <div class="wrap">
-    <div class="brand"><b>Séquence 5 — Feuille {fn} — Corrigé</b><span>{esc(theme)}</span><a href="../../seconde/">Page des Secondes</a></div>
+    <div class="brand"><b>Séquence 5 — {nom_page} — Corrigé</b><span>{esc(theme)}</span><a href="../../seconde/">Page des Secondes</a></div>
     <nav class="exnav" aria-label="Exercices">{"".join(nav)}</nav>
   </div>
 </header>

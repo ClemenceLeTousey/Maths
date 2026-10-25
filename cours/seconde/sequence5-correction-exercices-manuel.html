@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Exercices du manuel – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Même habillage que la page de remédiation DS1 : une colonne de lecture, thème clair fixe (projection en classe). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs de la feuille */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* sinon display:grid (rappel, entraînement) l’emporte sur hidden */
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons d'exercices */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.green.on { background: var(--green); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .sheet .item .resline, .item.raw .resline { display: block; }
+
+/* Réponse de l'élève (entraînement avec nouvelles valeurs) */
+.aide { margin: 0; font-size: 15px; color: var(--muted); }
+.aide code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.answer { display: grid; gap: 6px; min-width: 0; }
+.ans-row, .ab { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; min-width: 0; }
+.ans-row label, .ab label { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 260px; max-width: 480px; }
+.ab label { flex: 0 1 180px; }
+.answer input[type="text"] { font: inherit; font-size: 17px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); min-width: 0; width: 100%; }
+.answer input[type="text"]:focus { outline: none; border-color: var(--calc); box-shadow: 0 0 0 2px var(--calc-soft); }
+.ans-prev { min-height: 1.5em; color: var(--muted); font-size: 15px; overflow-x: auto; }
+.choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.choices label { display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; background: var(--paper); }
+.choices label:has(input:checked) { border-color: var(--calc); background: var(--calc-soft); }
+.ans-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb { border-radius: 4px; padding: 6px 12px; font-size: 15px; overflow-x: auto; }
+.fb.ok { background: var(--green-soft); border-left: 3px solid var(--green); }
+.fb.warn { background: var(--amber-soft); border-left: 3px solid #F59F00; }
+.fb.ko { background: var(--red-soft); border-left: 3px solid var(--red); }
+.train .item.good { border-color: var(--green); }
+.qfig { overflow-x: auto; }
+.qfig svg, .fig svg { display: block; max-width: none; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+/* Tableau de double distributivité (Ex. 4) : termes de la 1re parenthèse en colonnes, de la 2de en lignes */
+.tdd { border-collapse: collapse; margin: 4px 0 6px; }
+.tdd th, .tdd td { border: 1px solid var(--line); padding: 4px 14px; text-align: center; min-width: 56px; }
+.tdd th { background: var(--bg); font-weight: 400; }
+.tdd th.coin { color: var(--muted); }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+
+.rub { margin: 22px 0 6px; font-size: 17px; color: var(--calc); border-bottom: 1px solid #CFE2F7; padding-bottom: 2px; }
+.rub.red { color: var(--red); border-color: #F8C9C9; }
+.objs { margin: 26px 0 4px; background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 8px 14px; border-radius: 0 8px 8px 0; display: grid; gap: 2px; }
+.objs b { color: var(--calc); font-weight: 600; }
+.pill.red { background: var(--star-red); }
+.pill.gris { background: #868E96; }
+.graph { max-width: 620px; margin: 6px auto; }
+.graph97 { max-width: 560px; margin: 8px auto; font-size: 13px; }
+.g97-t { color: var(--ink); margin-bottom: 6px; line-height: 1.35; }
+.g97-c { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.leg97 { display: grid; gap: 2px; }
+.leg97 i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+.graph img { width: 100%; margin: 0; }
+.leg61 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 2px 14px; font-size: 13px; color: var(--ink); margin-top: 6px; padding-left: 8%; }
+.leg61 i { display: inline-block; width: 18px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.codes { display: flex; gap: 14px; flex-wrap: wrap; margin: 8px 0; }
+.codeb { flex: 1 1 240px; min-width: 0; }
+.codeb-t { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px; }
+.codeb pre.code { margin: 0; font-size: 15px; line-height: 1.45; }
+.temps { font-size: 14px; color: var(--muted); white-space: nowrap; }
+.objn { font-family: var(--f-body); font-size: 14px; font-weight: 600; color: var(--calc); }
+.pill.maison { background: #E8A200; color: #1D2733; }
+.legende { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); margin-top: 10px; align-items: center; }
+.legende span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; background: var(--c); }
+.blk { border-radius: 0 8px 8px 0; padding: 6px 12px; margin: 8px 0; border-left: 3px solid; overflow-x: auto; }
+.blk-t { font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px; }
+.blk-c ul, .blk-c ol { margin: 2px 0; }
+.blk.rep { background: #FFF4E6; border-color: #F76707; } .blk.rep .blk-t { color: #D9480F; }
+.blk.form { background: #F3F0FF; border-color: #7048E8; } .blk.form .blk-t { color: #6741D9; }
+.blk.calc { background: #fff; border-color: #ADB5BD; } .blk.calc .blk-t { color: #495057; }
+.blk.conc { background: #EBFBEE; border-color: #2F9E44; } .blk.conc .blk-t { color: #2B8A3E; }
+.blk.pg { background: #FFF5F5; border-color: #E03131; } .blk.pg .blk-t { color: #C92A2A; }
+.qq { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 10px 0; background: #fff; }
+.qq-n { font-weight: 600; color: var(--calc); margin-bottom: 2px; }
+.corr-b { background: #F8F9FA; border-left-color: var(--green); }
+.exo { margin-top: 12px; scroll-margin-top: 110px; }
+.exo-b img { max-width: 100%; height: auto; display: block; margin: 4px auto; }
+.exo-b ol, .exo-b ul { margin: 4px 0; padding-left: 24px; }
+.exo-b li { margin: 2px 0; }
+.c { text-align: center; }
+.c > * { margin-inline: auto; }
+.tw { overflow-x: auto; }
+table.t { border-collapse: collapse; margin: 6px auto; font-size: 15px; }
+table.t td { border: 1px solid var(--line); padding: 3px 10px; text-align: center; }
+table.t td.hd { background: #FFE8CC; font-weight: 500; }
+.nc { color: var(--calc); font-weight: 500; margin-right: 2px; }
+.cm { font-family: var(--f-body); }
+.fbox { border: 1px solid var(--ink); padding: 1px 6px; }
+pre.code { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; font-size: 14px; overflow-x: auto; margin: 6px 0; }
+details.corr { border-top: 1px dashed var(--line); padding-top: 10px; }
+details.corr > summary { list-style: none; cursor: pointer; display: inline-block; border: 1px solid var(--green); color: var(--green); border-radius: 6px; padding: 4px 14px; font-weight: 500; font-size: 15px; }
+details.corr > summary::-webkit-details-marker { display: none; }
+details.corr[open] > summary { background: var(--green); color: #fff; }
+.corr-b { margin-top: 10px; background: var(--green-soft); border-left: 3px solid var(--green); padding: 10px 14px; border-radius: 0 8px 8px 0; overflow-x: auto; }
+.avec { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.avec > div:first-child { flex: 1 1 280px; min-width: 0; }
+.figs { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.figs.c { margin-top: 6px; flex-direction: row; flex-wrap: wrap; justify-content: center; }
+.fig svg { display: block; max-width: none; }
+.toutes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+
+.tikz { display: inline-block; max-width: 100%; vertical-align: middle; }
+.tikz img { max-width: 100%; height: auto; display: inline-block; margin: 2px 0; }
+.exo-b ol[type="a"] { list-style-type: lower-alpha; }
+.exnav a.nb { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 3px 10px; text-decoration: none; font-weight: 500; font-size: 15px; }
+.exnav a.nb:hover { background: var(--calc-soft); }
+.exnav a.nb.red { border-color: var(--star-red); color: var(--star-red); }
+.exnav a.nb.gris { border-color: #868E96; color: #868E96; }
+.exnav a.nb.maison { border-color: #E8A200; color: #9C6B00; }
+</style>
+<script src="../../barre.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Séquence 5 — Exercices du manuel — Corrigé</b><span>Ensembles de nombres (p. 16 et 18)</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" aria-label="Exercices"><a class="nb" href="#ex2">2</a><a class="nb" href="#ex5">5</a><a class="nb" href="#ex7">7</a><a class="nb" href="#ex8">8</a><a class="nb" href="#ex12">12</a><a class="nb" href="#ex13">13</a><a class="nb" href="#ex14">14</a><a class="nb" href="#ex21">21</a><a class="nb" href="#ex22">22</a><a class="nb" href="#ex23">23</a><a class="nb" href="#ex26">26</a><a class="nb" href="#ex30">30</a><a class="nb" href="#ex31">31</a><a class="nb gris" href="#ex6">6</a><a class="nb gris" href="#ex4">4</a><a class="nb gris" href="#ex15">15</a><a class="nb gris" href="#ex33">33</a><a class="nb gris" href="#ex20">20</a><a class="nb gris" href="#ex24">24</a><a class="nb gris" href="#ex29">29</a><a class="nb maison" href="#ex3">3</a><a class="nb maison" href="#ex1">1</a><a class="nb maison" href="#ex16">16</a><a class="nb maison" href="#ex32">32</a><a class="nb maison" href="#ex25">25</a><a class="nb maison" href="#ex27">27</a><a class="nb red" href="#ex9">9</a><a class="nb red" href="#ex10">10</a><a class="nb red" href="#ex11">11</a><a class="nb red" href="#ex28">28</a><a class="nb" href="#ex18">18</a><a class="nb" href="#ex19">19</a><a class="nb" href="#ex17">17</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<div class="legende"><span style="--c:#339AF0">en classe</span><span style="--c:#868E96">si le temps le permet</span><span style="--c:#E8A200">à la maison</span><span style="--c:#FA5252">approfondissement</span></div>
+<div class="toutes"><button class="btn green" id="tout">Afficher tous les corrigés</button><button class="btn ghost" id="rien">Masquer tous les corrigés</button></div>
+<div class="objs"><div><b>Objectif 1&nbsp;:</b> Reconnaître les ensembles de nombres (\(\mathbb{N}\), \(\mathbb{Z}\), \(\mathbb{D}\), \(\mathbb{Q}\), \(\mathbb{R}\)) et utiliser \(\in\), \(\notin\), \(\subset\)</div><div><b>Objectif 2&nbsp;:</b> Raisonner sur les ensembles de nombres (contre-exemple, raisonnement par l'absurde)</div><div><b>Objectif 3&nbsp;:</b> Lire et placer un nombre réel sur la droite numérique</div><div><b>Objectif 4&nbsp;:</b> Représenter un intervalle, passer d'une inégalité à un intervalle, tester l'appartenance</div><div><b>Objectif 5&nbsp;:</b> Déterminer l'intersection et la réunion d'intervalles</div><div><b>Objectif 6&nbsp;:</b> Calculer une valeur absolue et une distance entre deux réels</div><div><b>Objectif 7&nbsp;:</b> Caractériser un intervalle par une inégalité \(|x-a|\leqslant r\)</div><div><b>Objectif 8&nbsp;:</b> Encadrer un réel par des décimaux, arrondir avec un nombre de chiffres significatifs adapté</div></div><h2 class="rub">En classe</h2><article class="exo" id="ex2"><div class="exo-h"><span class="pill">Ex 2 p 16</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 4 min</span><span class="comp"><span class="objn">Objectif 1</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+<i>« Plus petit ensemble »&nbsp;: on choisit parmi les ensembles du cours \(\mathbb{N}\), \(\mathbb{Z}\), \(\mathbb{D}\), \(\mathbb{Q}\) et \(\mathbb{R}\).</i><br>
+Quel est le plus petit ensemble de nombres auquel appartient chacun des nombres suivants&nbsp;?
+
+<ol><li> \(\dfrac12\)
+</li><li> \(\sqrt5\)
+</li><li> \(\dfrac{10-4}{3}\)
+</li><li> \(-\sqrt{16}\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On <b>simplifie</b> d'abord chaque nombre, puis on cherche le plus petit ensemble&nbsp;: \(\mathbb{N}\subset\mathbb{Z}\subset\mathbb{D}\subset\mathbb{Q}\subset\mathbb{R}\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> <span class="nc">①</span> \(\dfrac12=0{,}5\)&nbsp;: nombre fini de décimales&nbsp;: \(\mathbb{D}\).
+</li><li> <span class="nc">②</span> \(5\) n'est pas un carré parfait, donc \(\sqrt5\) est irrationnel&nbsp;: \(\mathbb{R}\).
+</li><li> <span class="nc">③</span> \(\dfrac{10-4}{3}=\dfrac63=2\)&nbsp;: \(\mathbb{N}\).
+</li><li> <span class="nc">④</span> \(-\sqrt{16}=-4\)&nbsp;: \(\mathbb{Z}\).
+</li></ul></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">\(\frac{10-4}{3}\) a l'air d'une fraction, mais c'est l'entier \(2\)&nbsp;: on calcule avant de conclure.</div></div></div></details></div></article><article class="exo" id="ex5"><div class="exo-h"><span class="pill">Ex 5 p 16</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 4 min</span><span class="comp"><span class="objn">Objectif 1</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+Dans chaque cas, trouver, lorsque cela est possible, un nombre \(x\) qui remplit les critères suivants.
+
+<ol><li> \(x\in\mathbb{Q}\) et \(x\notin\mathbb{N}\)
+</li><li> \(x\in\mathbb{Q}\) et \(x\notin\mathbb{Z}\)
+</li><li> \(x\in\mathbb{R}\) et \(x\notin\mathbb{Q}\)
+</li><li> \(x\in\mathbb{Q}\) et \(x\notin\mathbb{R}\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On cherche un nombre qui est dans le premier ensemble mais pas dans le second.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> <span class="nc">①</span> \(x=-3\) (rationnel, mais négatif) ou \(x=\dfrac12\).
+</li><li> <span class="nc">②</span> \(x=\dfrac12\) (rationnel, mais pas entier).
+</li><li> <span class="nc">③</span> \(x=\sqrt2\) ou \(x=\pi\) (irrationnels).
+</li><li> <span class="nc">④</span> Impossible&nbsp;: \(\mathbb{Q}\subset\mathbb{R}\), tout rationnel est un réel.
+</li></ul></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">« Lorsque cela est possible »&nbsp;: la réponse « impossible » est attendue au <span class="nc">④</span>, avec sa justification.</div></div></div></details></div></article><article class="exo" id="ex7"><div class="exo-h"><span class="pill">Ex 7 p 16</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span><span class="comp"><span class="objn">Objectif 2</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+<b>Vrai / Faux.</b> Pour chacune des affirmations suivantes, dire si elle est toujours vraie. Si elle est fausse, donner un contre-exemple.
+<ol><li> La différence de deux nombres entiers naturels est un entier naturel.
+</li><li> Le quotient de deux nombres décimaux est un nombre décimal.
+</li><li> Le quotient de deux nombres réels est un nombre rationnel.
+</li><li> Le produit d'un nombre rationnel par un nombre entier relatif est un nombre rationnel.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Pour montrer qu'une affirmation est fausse, un contre-exemple suffit&nbsp;; pour montrer qu'elle est vraie, il faut un raisonnement général.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> <span class="nc">①</span> Faux&nbsp;: \(2\) et \(5\) sont des entiers naturels, mais \(2-5=-3\notin\mathbb{N}\).
+</li><li> <span class="nc">②</span> Faux&nbsp;: \(1\) et \(3\) sont décimaux, mais \(\dfrac13=0{,}333\dots\) ne l'est pas.
+</li><li> <span class="nc">③</span> Faux&nbsp;: \(\sqrt2\) et \(1\) sont réels, mais \(\dfrac{\sqrt2}{1}=\sqrt2\notin\mathbb{Q}\).
+</li><li> <span class="nc">④</span> Vrai&nbsp;: si \(r=\dfrac ab\) (\(a\in\mathbb{Z}\), \(b\in\mathbb{Z}^*\)) et \(k\in\mathbb{Z}\), alors \(r\times k=\dfrac{a\times k}{b}\) avec \(a\times k\in\mathbb{Z}\)&nbsp;: c'est un rationnel.
+</li></ul></div></div></div></details></div></article><article class="exo" id="ex8"><div class="exo-h"><span class="pill">Ex 8 p 16</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 4 min</span><span class="comp"><span class="objn">Objectif 2</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+Le professeur de mathématiques propose l'affirmation&nbsp;:<br>
+« Le produit de deux nombres irrationnels est toujours un nombre rationnel. »<br>
+Josy répond&nbsp;: « Vrai, par exemple, \(\sqrt2\times\sqrt2=2\in\mathbb{Q}\) ».<br>
+Marc répond&nbsp;: « Faux, par exemple, \(\sqrt5\times\sqrt2\notin\mathbb{Q}\) ».<br>
+Quel élève a raison&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> L'affirmation contient « toujours »&nbsp;: elle parle de <b>tous</b> les produits de deux irrationnels.</li></ul></div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Josy donne un exemple où ça marche&nbsp;: il montre seulement que le produit <i>peut</i> être rationnel.<br>
+Marc donne un contre-exemple&nbsp;: \(\sqrt5\times\sqrt2=\sqrt{10}\), et \(10\) n'est pas un carré parfait, donc \(\sqrt{10}\) est irrationnel.</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">C'est <b>Marc</b> qui a raison&nbsp;: un seul contre-exemple suffit pour prouver qu'une affirmation « toujours vraie » est fausse.</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Un exemple ne démontre jamais une propriété générale.</div></div></div></details></div></article><article class="exo" id="ex12"><div class="exo-h"><span class="pill">Ex 12 p 16</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 4 min</span><span class="comp"><span class="objn">Objectif 2</span> · Chercher</span></div><div class="exo-b"><div class="consigne">
+Trouver deux nombres irrationnels différents dont le produit est un nombre irrationnel.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On essaie avec des racines carrées&nbsp;: \(\sqrt a\times\sqrt b=\sqrt{a\times b}\), irrationnel si \(a\times b\) n'est pas un carré parfait.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\sqrt2\times\sqrt3=\sqrt6\), et \(6\) n'est pas un carré parfait&nbsp;: \(\sqrt6\) est irrationnel.</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(\sqrt2\) et \(\sqrt3\) conviennent (autre exemple&nbsp;: \(\sqrt2\) et \(\pi\)).</div></div></div></details></div></article><article class="exo" id="ex13"><div class="exo-h"><span class="pill">Ex 13 p 16</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 4 min</span><span class="comp"><span class="objn">Objectif 2</span> · Chercher</span></div><div class="exo-b"><div class="consigne">
+Trouver deux nombres irrationnels différents dont le produit est un nombre entier naturel.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On cherche \(\sqrt a\times\sqrt b=\sqrt{a\times b}\) avec \(a\times b\) carré parfait, mais \(a\) et \(b\) non carrés parfaits.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\sqrt2\times\sqrt8=\sqrt{16}=4\)&nbsp;;  \(\sqrt3\times\sqrt{12}=\sqrt{36}=6\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(\sqrt2\) et \(\sqrt8\) conviennent&nbsp;: deux irrationnels différents dont le produit est l'entier naturel \(4\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">\(\sqrt2\times\sqrt2=2\) ne convient pas&nbsp;: les deux nombres doivent être différents.</div></div></div></details></div></article><article class="exo" id="ex14"><div class="exo-h"><span class="pill">Ex 14 p 18</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 8 min</span><span class="comp"><span class="objn">Objectif 4</span> · Représenter</span></div><div class="exo-b"><div class="consigne">
+Recopier et compléter le tableau comme dans l'exemple de la première ligne.
+
+<div class="tw"><table class="t"><tr><td><b>Inégalité</b></td><td><b>Intervalle</b></td><td><b>Représentation graphique</b></td></tr><tr><td>\(2\leqslant x\leqslant4\)</td><td>\(x\in[2~;~4]\)</td><td><span class="tikz"><img src="img-sequence5/fig-d54cdedc1e.svg" alt="" loading="lazy"></span></td></tr><tr><td>\(0&lt;x\leqslant5\)</td><td>\(x\in\,]0~;~5]\)</td><td><span class="tikz"><img src="img-sequence5/fig-bce7afb0b7.svg" alt="" loading="lazy"></span></td></tr><tr><td></td><td>\(x\in\,]{-3}~;~7[\)</td><td><span class="tikz"><img src="img-sequence5/fig-bce7afb0b7.svg" alt="" loading="lazy"></span></td></tr><tr><td></td><td>\(x\in\,]{-\infty}~;~4]\)</td><td><span class="tikz"><img src="img-sequence5/fig-bce7afb0b7.svg" alt="" loading="lazy"></span></td></tr><tr><td>\(3\leqslant x\)</td><td></td><td><span class="tikz"><img src="img-sequence5/fig-bce7afb0b7.svg" alt="" loading="lazy"></span></td></tr><tr><td></td><td></td><td><span class="tikz"><img src="img-sequence5/fig-10bb54a295.svg" alt="" loading="lazy"></span></td></tr><tr><td></td><td></td><td><span class="tikz"><img src="img-sequence5/fig-fc6bfac739.svg" alt="" loading="lazy"></span></td></tr></table></div></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Crochet tourné <b>vers</b> le nombre&nbsp;: borne comprise (\(\leqslant\))&nbsp;; tourné vers l'extérieur&nbsp;: borne exclue (\(&lt;\)). Du côté de \(\pm\infty\), le crochet est toujours ouvert.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">
+<div class="tw"><table class="t"><tr><td>\(0&lt;x\leqslant5\)</td><td>\(]0~;~5]\)</td><td><span class="tikz"><img src="img-sequence5/fig-497b07dc8f.svg" alt="" loading="lazy"></span></td></tr><tr><td>\(-3&lt;x&lt;7\)</td><td>\(]{-3}~;~7[\)</td><td><span class="tikz"><img src="img-sequence5/fig-0f2fd67f14.svg" alt="" loading="lazy"></span></td></tr><tr><td>\(x\leqslant4\)</td><td>\(]{-\infty}~;~4]\)</td><td><span class="tikz"><img src="img-sequence5/fig-e337f5c668.svg" alt="" loading="lazy"></span></td></tr><tr><td>\(3\leqslant x\)</td><td>\([3~;~+\infty[\)</td><td><span class="tikz"><img src="img-sequence5/fig-bb4f544dc2.svg" alt="" loading="lazy"></span></td></tr><tr><td>\(-1&lt;x\leqslant1\)</td><td>\(]{-1}~;~1]\)</td><td>droite donnée</td></tr><tr><td>\(x\geqslant2\)</td><td>\([2~;~+\infty[\)</td><td>droite donnée</td></tr></table></div></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Avant-dernière ligne&nbsp;: le crochet en \(-1\) est tourné vers l'extérieur (\(-1\) exclu), celui en \(1\) vers le nombre (\(1\) compris).</div></div></div></details></div></article><article class="exo" id="ex21"><div class="exo-h"><span class="pill">Ex 21 p 18</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 10 min</span><span class="comp"><span class="objn">Objectif 5</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+Écrire chaque condition sous forme d'intersection et trouver l'ensemble des réels \(a\) appartenant à cette intersection.
+
+<ol><li> \(a&lt;3\) et \(a&gt;-6\)
+</li><li> \(a\geqslant-5\) et \(-a\geqslant-7\)
+</li><li> \(2a+1&lt;3\) et \(3a-1\geqslant0\)
+</li><li> \(3(2-a)&lt;3\) et \(a-1\geqslant2\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">« et » donne l'<b>intersection</b> \(\cap\)&nbsp;: on garde les réels qui vérifient les deux conditions à la fois.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(]{-\infty}~;~3[\,\cap\,]{-6}~;~+\infty[\;=\;]{-6}~;~3[\).<br>
+<span class="nc">②</span> \(-a\geqslant-7\Longleftrightarrow a\leqslant7\)&nbsp;: \([-5~;~+\infty[\,\cap\,]{-\infty}~;~7]=[-5~;~7]\).<br>
+<span class="nc">③</span> \(2a&lt;2\Longleftrightarrow a&lt;1\)&nbsp;; \(3a\geqslant1\Longleftrightarrow a\geqslant\dfrac13\)&nbsp;: \(]{-\infty}~;~1[\,\cap\left[\dfrac13~;~+\infty\right[\;=\left[\dfrac13~;~1\right[\).<br>
+<span class="nc">④</span> \(3(2-a)&lt;3\Longleftrightarrow2-a&lt;1\Longleftrightarrow a&gt;1\)&nbsp;; \(a-1\geqslant2\Longleftrightarrow a\geqslant3\)&nbsp;: \(]1~;~+\infty[\,\cap[3~;~+\infty[\;=[3~;~+\infty[\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">②</span>, on multiplie par \(-1\)&nbsp;: \(\geqslant\) devient \(\leqslant\).</div></div></div></details></div></article><article class="exo" id="ex22"><div class="exo-h"><span class="pill">Ex 22 p 18</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 6</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Parmi les nombres suivants, lesquels sont égaux à leur valeur absolue&nbsp;?
+
+<ol><li> \(2\)
+</li><li> \(3-\dfrac83\)
+</li><li> \(25-9\pi\)
+</li><li> \(\dfrac12-\dfrac13\)
+</li><li> \(\sqrt2-\sqrt5\)
+</li><li> \(-2+9\times(-3)\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">Un nombre est égal à sa valeur absolue si et seulement s'il est <b>positif</b> (ou nul).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> <span class="nc">①</span> \(2&gt;0\)&nbsp;: oui.
+</li><li> <span class="nc">②</span> \(3-\dfrac83=\dfrac93-\dfrac83=\dfrac13&gt;0\)&nbsp;: oui.
+</li><li> <span class="nc">③</span> \(9\pi\approx28{,}27\), donc \(25-9\pi\approx-3{,}27&lt;0\)&nbsp;: non.
+</li><li> <span class="nc">④</span> \(\dfrac12-\dfrac13=\dfrac16&gt;0\)&nbsp;: oui.
+</li><li> <span class="nc">⑤</span> \(\sqrt2&lt;\sqrt5\), donc \(\sqrt2-\sqrt5&lt;0\)&nbsp;: non.
+</li><li> <span class="nc">⑥</span> \(-2+9\times(-3)=-2-27=-29&lt;0\)&nbsp;: non.
+</li></ul></div></div></div></details></div></article><article class="exo" id="ex23"><div class="exo-h"><span class="pill">Ex 23 p 18</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 5 min</span><span class="comp"><span class="objn">Objectif 6</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Donner la valeur absolue des nombres suivants.
+
+<ol><li> \(-5\)
+</li><li> \(\dfrac{-2}{-3}\)
+</li><li> \(-\sqrt{289}\)
+</li><li> \(3-\dfrac23\times(6-4)\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On simplifie le nombre, puis&nbsp;: s'il est positif, on le garde&nbsp;; s'il est négatif, on prend son opposé.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(|-5|=5\).<br>
+<span class="nc">②</span> \(\dfrac{-2}{-3}=\dfrac23&gt;0\)&nbsp;: \(\left|\dfrac23\right|=\dfrac23\).<br>
+<span class="nc">③</span> \(-\sqrt{289}=-17\)&nbsp;: \(|-17|=17\).<br>
+<span class="nc">④</span> \(3-\dfrac23\times(6-4)=3-\dfrac43=\dfrac53&gt;0\)&nbsp;: \(\left|\dfrac53\right|=\dfrac53\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">④</span>, la multiplication est prioritaire sur la soustraction.</div></div></div></details></div></article><article class="exo" id="ex26"><div class="exo-h"><span class="pill">Ex 26 p 18</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 4 min</span><span class="comp"><span class="objn">Objectif 7</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+Pour chacune des inégalités suivantes, justifier si elle est vérifiée par le nombre \(2\) ou non.
+
+<ol><li> \(|x-3|\leqslant2\)
+</li><li> \(|x-3|&lt;1\)
+</li><li> \(|x+3|\leqslant2\)
+</li><li> \(|x-2|&lt;1\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On remplace \(x\) par \(2\) et on compare.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(|2-3|=|-1|=1\) et \(1\leqslant2\)&nbsp;: oui.<br>
+<span class="nc">②</span> \(|2-3|=1\) et \(1&lt;1\) est faux&nbsp;: non.<br>
+<span class="nc">③</span> \(|2+3|=5\) et \(5&gt;2\)&nbsp;: non.<br>
+<span class="nc">④</span> \(|2-2|=0\) et \(0&lt;1\)&nbsp;: oui.</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">②</span>, l'inégalité est stricte&nbsp;: \(1\) n'est pas strictement inférieur à \(1\).</div></div></div></details></div></article><article class="exo" id="ex30"><div class="exo-h"><span class="pill">Ex 30 p 18</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 8</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Donner un encadrement des nombres suivants à \(10^{-3}\) près.
+
+<ol><li> \(\dfrac17\)
+</li><li> \(0{,}758\,6\)
+</li><li> \(\sqrt{17}\)
+</li><li> \(2{,}356\times10^{-3}\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">« À \(10^{-3}\) près »&nbsp;: on encadre par deux décimaux à trois décimales qui se suivent (amplitude \(0{,}001\)).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(\dfrac17\approx0{,}142\,857\)&nbsp;: \(0{,}142&lt;\dfrac17&lt;0{,}143\).<br>
+<span class="nc">②</span> \(0{,}758&lt;0{,}758\,6&lt;0{,}759\).<br>
+<span class="nc">③</span> \(\sqrt{17}\approx4{,}123\,1\)&nbsp;: \(4{,}123&lt;\sqrt{17}&lt;4{,}124\).<br>
+<span class="nc">④</span> \(2{,}356\times10^{-3}=0{,}002\,356\)&nbsp;: \(0{,}002&lt;0{,}002\,356&lt;0{,}003\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">④</span>, on écrit d'abord le nombre en écriture décimale.</div></div></div></details></div></article><article class="exo" id="ex31"><div class="exo-h"><span class="pill">Ex 31 p 18</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 8</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Donner un encadrement d'amplitude \(10^{-2}\) des nombres suivants.
+
+<ol><li> \(-327{,}426\)
+</li><li> \(\dfrac58\)
+</li><li> \(\sqrt2\)
+</li><li> \(4{,}526\,86\times10^{2}\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">« Amplitude \(10^{-2}\) »&nbsp;: les deux bornes ont deux décimales et diffèrent de \(0{,}01\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(-327{,}43&lt;-327{,}426&lt;-327{,}42\).<br>
+<span class="nc">②</span> \(\dfrac58=0{,}625\)&nbsp;: \(0{,}62&lt;\dfrac58&lt;0{,}63\).<br>
+<span class="nc">③</span> \(\sqrt2\approx1{,}414\)&nbsp;: \(1{,}41&lt;\sqrt2&lt;1{,}42\).<br>
+<span class="nc">④</span> \(4{,}526\,86\times10^2=452{,}686\)&nbsp;: \(452{,}68&lt;452{,}686&lt;452{,}69\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">①</span>, le nombre est négatif&nbsp;: la borne de gauche est \(-327{,}43\) (plus petit que \(-327{,}42\)).</div></div></div></details></div></article><article class="exo" id="ex6"><div class="exo-h"><span class="pill gris">Ex 6 p 16</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 5 min</span><span class="comp"><span class="objn">Objectif 1</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+Lesquels de ces nombres sont décimaux&nbsp;?
+
+<ol><li> \(-5\)
+</li><li> \(\dfrac57\)
+</li><li> \(\dfrac{3}{40}\)
+</li><li> \(\dfrac{40}{3}\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Un nombre est décimal s'il s'écrit \(\dfrac{a}{10^n}\) (\(a\in\mathbb{Z}\), \(n\in\mathbb{N}\)), c'est-à-dire avec un nombre fini de décimales. Pour une fraction irréductible, le dénominateur ne doit contenir que des facteurs \(2\) et \(5\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> <span class="nc">①</span> \(-5=\dfrac{-5}{10^0}\)&nbsp;: décimal.
+</li><li> <span class="nc">②</span> \(\dfrac57=0{,}714\,285\,714\,285\dots\) (écriture illimitée)&nbsp;: non décimal.
+</li><li> <span class="nc">③</span> \(\dfrac{3}{40}=\dfrac{3\times25}{40\times25}=\dfrac{75}{1\,000}=0{,}075\)&nbsp;: décimal.
+</li><li> <span class="nc">④</span> \(\dfrac{40}{3}=13{,}333\dots\)&nbsp;: non décimal.
+</li></ul></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">\(\frac{3}{40}\) et \(\frac{40}{3}\) se ressemblent, mais seul le dénominateur compte&nbsp;: \(40=2^3\times5\) convient, \(3\) non.</div></div></div></details></div></article><article class="exo" id="ex4"><div class="exo-h"><span class="pill gris">Ex 4 p 16</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 10 min</span><span class="comp"><span class="objn">Objectif 2</span> · Communiquer</span></div><div class="exo-b"><div class="consigne">
+<b>Vrai / Faux.</b> Soit \(x\in\mathbb{N}\). Pour chacune des affirmations suivantes, dire si elle est fausse ou toujours vraie. Si elle est fausse, donner un contre-exemple et donner le plus petit ensemble qui la rende toujours vraie.
+
+<ol><li> \(2x+1\in\mathbb{N}\)
+</li><li> \(2x+1\in\mathbb{Q}\)
+</li><li> \(3x-7\in\mathbb{N}\)
+</li><li> \(\dfrac{x-6}{2}\in\mathbb{Z}\)
+</li><li> \(\dfrac{x+1}{\sqrt2}\in\mathbb{R}\)
+</li><li> \(\sqrt{x}\in\mathbb{Q}\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">« Toujours vraie » se démontre par un raisonnement général&nbsp;; « fausse » se prouve avec <b>un seul</b> contre-exemple. On teste \(x=0\), \(x=1\), \(x=2\)…</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> <span class="nc">①</span> Vrai&nbsp;: \(2x\) est un entier positif, donc \(2x+1\) aussi.
+</li><li> <span class="nc">②</span> Vrai&nbsp;: \(2x+1\in\mathbb{N}\) et \(\mathbb{N}\subset\mathbb{Q}\).
+</li><li> <span class="nc">③</span> Faux&nbsp;: pour \(x=0\), \(3x-7=-7\notin\mathbb{N}\). C'est toujours un entier&nbsp;: toujours vrai avec \(\mathbb{Z}\).
+</li><li> <span class="nc">④</span> Faux&nbsp;: pour \(x=1\), \(\dfrac{1-6}{2}=-2{,}5\notin\mathbb{Z}\). Un entier divisé par \(2\) a au plus une décimale&nbsp;: toujours vrai avec \(\mathbb{D}\).
+</li><li> <span class="nc">⑤</span> Vrai&nbsp;: c'est le quotient de deux réels, avec \(\sqrt2\neq0\).
+</li><li> <span class="nc">⑥</span> Faux&nbsp;: pour \(x=2\), \(\sqrt2\notin\mathbb{Q}\). Toujours vrai avec \(\mathbb{R}\) (\(x\geqslant0\)).
+</li></ul></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">⑥</span>, \(x=0\), \(1\), \(4\), \(9\) donnent des entiers&nbsp;: un seul exemple qui marche ne prouve rien.</div></div></div></details></div></article><article class="exo" id="ex15"><div class="exo-h"><span class="pill gris">Ex 15 p 18</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 5 min</span><span class="comp"><span class="objn">Objectif 4</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+Compléter avec \(\in\) ou \(\notin\).
+
+<ol><li> \(2\ \dots\ ]1~;~3[\)
+</li><li> \(0\ \dots\ [-1~;~2[\)
+</li><li> \(\dfrac13\ \dots\ [0~;~3]\)
+</li><li> \(2\ \dots\ ]{-2}~;~2[\)
+</li><li> \(\sqrt2\ \dots\ [-3~;~1]\)
+</li><li> \(0\ \dots\ ]0~;~+\infty[\)
+</li><li> \(-100\ \dots\ ]{-\infty}~;~1[\)
+</li><li> \(\dfrac{1}{10}\ \dots\ [0{,}01~;~0{,}2[\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On regarde si le nombre est entre les bornes, puis, s'il est sur une borne, le sens du crochet.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> <span class="nc">①</span> \(2\in\,]1~;~3[\) &emsp; <span class="nc">②</span> \(0\in[-1~;~2[\)
+</li><li> <span class="nc">③</span> \(\frac13\in[0~;~3]\) &emsp; <span class="nc">④</span> \(2\notin\,]{-2}~;~2[\) (borne exclue)
+</li><li> <span class="nc">⑤</span> \(\sqrt2\approx1{,}41\)&nbsp;: \(\sqrt2\notin[-3~;~1]\) &emsp; <span class="nc">⑥</span> \(0\notin\,]0~;~+\infty[\) (borne exclue)
+</li><li> <span class="nc">⑦</span> \(-100\in\,]{-\infty}~;~1[\) &emsp; <span class="nc">⑧</span> \(\frac{1}{10}=0{,}1\) et \(0{,}01\leqslant0{,}1&lt;0{,}2\)&nbsp;: \(\frac1{10}\in[0{,}01~;~0{,}2[\)
+</li></ul></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Aux <span class="nc">④</span> et <span class="nc">⑥</span>, le nombre est sur la borne&nbsp;: c'est le crochet qui décide.</div></div></div></details></div></article><article class="exo" id="ex33"><div class="exo-h"><span class="pill gris">Ex 33 p 18</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 4 min</span><span class="comp"><span class="objn">Objectif 4</span> · Modéliser</span></div><div class="exo-b"><div class="consigne">
+L'Insee estime qu'un couple avec deux enfants appartient à la classe moyenne quand les revenus du foyer sont situés dans l'intervalle \([3\,253~;~5\,609]\).<br>
+M.&nbsp;Martin gagne \(2\,731\)&nbsp;€ et Mme&nbsp;Martin gagne \(2\,732\)&nbsp;€. Ils ont deux enfants qui ne rapportent aucun revenu. La famille appartient-elle à la classe moyenne&nbsp;?</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> On compare les revenus <b>du foyer</b> (la somme des deux salaires) à l'intervalle \([3\,253~;~5\,609]\).</li></ul></div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(2\,731+2\,732=5\,463\)&nbsp;€, et \(3\,253\leqslant5\,463\leqslant5\,609\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(5\,463\in[3\,253~;~5\,609]\)&nbsp;: la famille appartient à la classe moyenne.</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Chaque salaire seul est en dehors de l'intervalle&nbsp;: c'est le revenu du foyer qui compte.</div></div></div></details></div></article><article class="exo" id="ex20"><div class="exo-h"><span class="pill gris">Ex 20 p 18</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 12 min</span><span class="comp"><span class="objn">Objectif 5</span> · Représenter</span></div><div class="exo-b"><div class="consigne">
+Chaque assertion suivante est supposée vraie. Dans chaque cas, écrire, sous forme d'intervalle ou de réunion d'intervalles, le plus petit ensemble auquel appartient \(x\).
+
+<ol><li> \(x\geqslant3\) ou \(x\leqslant0\)
+</li><li> \(x-6&gt;0\) ou \(5x\leqslant5\)
+</li><li> \(x\leqslant2\) ou \(-4x\leqslant-20\)
+</li><li> \(x\geqslant3\) ou \(3x\geqslant12\)
+</li><li> \(7x-4\geqslant3\) ou \(1-x&gt;0\)
+</li><li> \(1-x&gt;-3\) ou \(2x+1\leqslant7\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On résout chaque inégalité, puis « ou » donne la <b>réunion</b> \(\cup\)&nbsp;: on garde les réels qui vérifient au moins une des deux conditions.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(x\geqslant3\) ou \(x\leqslant0\)&nbsp;: \(]{-\infty}~;~0]\cup[3~;~+\infty[\).<br>
+<span class="nc">②</span> \(x&gt;6\) ou \(x\leqslant1\)&nbsp;: \(]{-\infty}~;~1]\cup\,]6~;~+\infty[\).<br>
+<span class="nc">③</span> \(-4x\leqslant-20\Longleftrightarrow x\geqslant5\) (on divise par \(-4\))&nbsp;: \(x\leqslant2\) ou \(x\geqslant5\)&nbsp;: \(]{-\infty}~;~2]\cup[5~;~+\infty[\).<br>
+<span class="nc">④</span> \(x\geqslant3\) ou \(x\geqslant4\)&nbsp;: \([3~;~+\infty[\), car \([4~;~+\infty[\,\subset[3~;~+\infty[\).<br>
+<span class="nc">⑤</span> \(7x\geqslant7\Longleftrightarrow x\geqslant1\)&nbsp;; \(1-x&gt;0\Longleftrightarrow x&lt;1\)&nbsp;: tout réel vérifie l'une des deux&nbsp;: \(\mathbb{R}\).<br>
+<span class="nc">⑥</span> \(1-x&gt;-3\Longleftrightarrow x&lt;4\)&nbsp;; \(2x\leqslant6\Longleftrightarrow x\leqslant3\)&nbsp;: \(]{-\infty}~;~4[\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">⑥</span>, la réunion de \(]{-\infty}~;~4[\) et de \(]{-\infty}~;~3]\) est le plus grand des deux&nbsp;: \(]{-\infty}~;~4[\).</div></div></div></details></div></article><article class="exo" id="ex24"><div class="exo-h"><span class="pill gris">Ex 24 p 18</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 6</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Calculer les valeurs absolues suivantes.
+
+<ol><li> \(\left|10^{-7}-10^{-3}\right|\)
+</li><li> \(|17-25|\)
+</li><li> \(|1-\sqrt2|\)
+</li><li> \(|-3-\pi|\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On cherche le <b>signe</b> de ce qui est dans la valeur absolue&nbsp;: si c'est négatif, on écrit l'opposé (on échange les deux termes).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(10^{-7}&lt;10^{-3}\), donc \(\left|10^{-7}-10^{-3}\right|=10^{-3}-10^{-7}=0{,}001-0{,}000\,000\,1=0{,}000\,999\,9\).<br>
+<span class="nc">②</span> \(|17-25|=|-8|=8\).<br>
+<span class="nc">③</span> \(\sqrt2\approx1{,}41&gt;1\), donc \(1-\sqrt2&lt;0\) et \(|1-\sqrt2|=\sqrt2-1\).<br>
+<span class="nc">④</span> \(-3-\pi&lt;0\), donc \(|-3-\pi|=3+\pi\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">On garde les valeurs exactes&nbsp;: \(\sqrt2-1\) et \(3+\pi\), pas des valeurs approchées.</div></div></div></details></div></article><article class="exo" id="ex29"><div class="exo-h"><span class="pill gris">Ex 29 p 18</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 5 min</span><span class="comp"><span class="objn">Objectif 7</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Quel est le plus grand intervalle auquel appartient \(x\) dans chacun des cas suivants&nbsp;?
+
+<ol><li> \(|x-2|\leqslant3\)
+</li><li> \(x\leqslant15\)
+</li><li> \(|x|\leqslant1\)
+</li><li> \(0\leqslant x\leqslant2\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">Pour \(r&gt;0\)&nbsp;: \(|x-a|\leqslant r\Longleftrightarrow a-r\leqslant x\leqslant a+r\Longleftrightarrow x\in[a-r~;~a+r]\) (centre \(a\), rayon \(r\)).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> Centre \(2\), rayon \(3\)&nbsp;: \(x\in[-1~;~5]\).<br>
+<span class="nc">②</span> \(x\in\,]{-\infty}~;~15]\).<br>
+<span class="nc">③</span> \(|x-0|\leqslant1\)&nbsp;: centre \(0\), rayon \(1\)&nbsp;: \(x\in[-1~;~1]\).<br>
+<span class="nc">④</span> \(x\in[0~;~2]\).</div></div></div></details></div></article><h2 class="rub">À la maison</h2><article class="exo" id="ex3"><div class="exo-h"><span class="pill maison">Ex 3 p 16</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 5 min</span> 🏠<span class="comp"><span class="objn">Objectif 1</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+<i>« Plus petit ensemble »&nbsp;: on choisit parmi les ensembles du cours \(\mathbb{N}\), \(\mathbb{Z}\), \(\mathbb{D}\), \(\mathbb{Q}\) et \(\mathbb{R}\).</i><br>
+Quel est le plus petit ensemble de nombres auquel appartient chacun des nombres suivants&nbsp;?
+
+<ol><li> \(\dfrac12+\dfrac13+\dfrac16\)
+</li><li> \(\sqrt{16}-\sqrt{25}\)
+</li><li> \(\dfrac{91}{7}\)
+</li><li> \(\dfrac{34}{2}-\sqrt{289}\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On effectue les calculs jusqu'au bout&nbsp;: une écriture compliquée peut cacher un entier.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> <span class="nc">①</span> \(\dfrac12+\dfrac13+\dfrac16=\dfrac36+\dfrac26+\dfrac16=\dfrac66=1\)&nbsp;: \(\mathbb{N}\).
+</li><li> <span class="nc">②</span> \(\sqrt{16}-\sqrt{25}=4-5=-1\)&nbsp;: \(\mathbb{Z}\).
+</li><li> <span class="nc">③</span> \(\dfrac{91}{7}=13\) (car \(7\times13=91\))&nbsp;: \(\mathbb{N}\).
+</li><li> <span class="nc">④</span> \(\dfrac{34}{2}-\sqrt{289}=17-17=0\)&nbsp;: \(\mathbb{N}\).
+</li></ul></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">\(\sqrt{289}=17\) car \(17^2=289\)&nbsp;: penser aux carrés parfaits.</div></div></div></details></div></article><article class="exo" id="ex1"><div class="exo-h"><span class="pill maison">Ex 1 p 16</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 8 min</span> 🏠<span class="comp"><span class="objn">Objectif 3</span> · Représenter</span></div><div class="exo-b"><div class="consigne">
+<ol><li> Quelles sont les abscisses des points placés sur la droite numérique ci-dessous&nbsp;?
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-1d86ed1db8.svg" alt="" loading="lazy"></span>
+</div>
+</li><li> Sur la droite numérique, placer les nombres suivants&nbsp;: \(3\)&nbsp;; \(-1{,}5\)&nbsp;; \(\dfrac54\)&nbsp;; \(\dfrac{-2}{5}\)&nbsp;; \(\sqrt2\).
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-91cee30c70.svg" alt="" loading="lazy"></span>
+</div>
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> Entre \(0\) et \(1\) (en rouge), il y a \(3\) intervalles&nbsp;: chaque graduation vaut \(\frac13\).
+</li><li> Le point \(N\) est sur la petite graduation ajoutée, au milieu de \(\frac43\) et \(\frac53\).</li></ul></div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(K(-1)\)&nbsp;;  \(L\left(-\dfrac23\right)\)&nbsp;;  \(M\left(\dfrac13\right)\)&nbsp;;  \(N\left(\dfrac32\right)\)&nbsp;;  \(O\left(\dfrac73\right)\)&nbsp;;  \(P(3)\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Pour \(N\)&nbsp;: \(\frac43\approx1{,}33\) et \(\frac53\approx1{,}67\)&nbsp;; le milieu est \(\frac{1}{2}\left(\frac43+\frac53\right)=\frac32=1{,}5\).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Chaque graduation de la droite vaut \(0{,}5\)&nbsp;: on écrit chaque nombre sous forme décimale (exacte ou approchée).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\dfrac54=1{,}25\) (au milieu de \(1\) et \(1{,}5\))&nbsp;;  \(\dfrac{-2}{5}=-0{,}4\) (juste après \(-0{,}5\))&nbsp;;  \(\sqrt2\approx1{,}41\) (juste avant \(1{,}5\)).</div></div>
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-98b13660c6.svg" alt="" loading="lazy"></span>
+</div></div></div></details></div></article><article class="exo" id="ex16"><div class="exo-h"><span class="pill maison">Ex 16 p 18</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 12 min</span> 🏠<span class="comp"><span class="objn">Objectif 4</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Recopier et compléter comme dans l'exemple puis écrire sous forme mathématique en utilisant le symbole \(\Longleftrightarrow\).<br>
+<b>Exemple&nbsp;:</b> \(x\in[1~;~2]\) si et seulement si \(3x\in[3~;~6]\),  soit  \(x\in[1~;~2]\Longleftrightarrow3x\in[3~;~6]\).
+<ol><li> \(x\in[7~;~20]\) si et seulement si \(7x\in\dots\)
+</li><li> \(x\in\,]{-1}~;~3]\) si et seulement si \(7-x\in\dots\)
+</li><li> \(x\in[-5~;~7]\) si et seulement si \(2x+3\in\dots\)
+</li><li> \(x\in\dots\) si et seulement si \(-2x\in[1~;~+\infty[\)
+</li><li> \(x\in\dots\) si et seulement si \(3-x\in\,]{-\infty}~;~6]\)
+</li><li> \(x\in\dots\) si et seulement si \(7+2x\in[-1~;~1]\)
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">On part de l'encadrement de \(x\) et on fait les mêmes opérations sur les trois membres. <b>Si on multiplie ou divise par un nombre négatif, l'ordre change</b> (et les crochets s'échangent).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(7\leqslant x\leqslant20\Longleftrightarrow49\leqslant7x\leqslant140\)&nbsp;: \(x\in[7~;~20]\Longleftrightarrow7x\in[49~;~140]\).<br>
+<span class="nc">②</span> \(-1&lt;x\leqslant3\Longleftrightarrow-3\leqslant-x&lt;1\Longleftrightarrow4\leqslant7-x&lt;8\)&nbsp;: \(x\in\,]{-1}~;~3]\Longleftrightarrow7-x\in[4~;~8[\).<br>
+<span class="nc">③</span> \(-5\leqslant x\leqslant7\Longleftrightarrow-10\leqslant2x\leqslant14\Longleftrightarrow-7\leqslant2x+3\leqslant17\)&nbsp;: \(x\in[-5~;~7]\Longleftrightarrow2x+3\in[-7~;~17]\).<br>
+<span class="nc">④</span> \(-2x\geqslant1\Longleftrightarrow x\leqslant-\dfrac12\)&nbsp;: \(x\in\left]{-\infty}~;~-\dfrac12\right]\Longleftrightarrow-2x\in[1~;~+\infty[\).<br>
+<span class="nc">⑤</span> \(3-x\leqslant6\Longleftrightarrow-x\leqslant3\Longleftrightarrow x\geqslant-3\)&nbsp;: \(x\in[-3~;~+\infty[\Longleftrightarrow3-x\in\,]{-\infty}~;~6]\).<br>
+<span class="nc">⑥</span> \(-1\leqslant7+2x\leqslant1\Longleftrightarrow-8\leqslant2x\leqslant-6\Longleftrightarrow-4\leqslant x\leqslant-3\)&nbsp;: \(x\in[-4~;~-3]\Longleftrightarrow7+2x\in[-1~;~1]\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">②</span>, en multipliant par \(-1\)&nbsp;: \(-1&lt;x\) devient \(-x&lt;1\) et \(x\leqslant3\) devient \(-3\leqslant-x\).</div></div></div></details></div></article><article class="exo" id="ex32"><div class="exo-h"><span class="pill maison">Ex 32 p 18</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span> 🏠<span class="comp"><span class="objn">Objectif 5</span> · Modéliser</span></div><div class="exo-b"><div class="consigne">
+Dans la boîte de nuit le Macumba, il faut avoir strictement plus de \(32\) ans pour entrer. Dans la boîte de nuit la Playa, il faut avoir au plus \(40\) ans.
+<ol><li> Dans quel intervalle d'âge doit se situer une personne qui veut pouvoir rentrer dans les deux boîtes de nuit&nbsp;?
+</li><li> Dans quel ensemble doit se situer l'âge d'une personne qui veut pouvoir entrer dans l'une des deux boîtes de nuit&nbsp;?
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> Macumba&nbsp;: âge \(&gt;32\)&nbsp;: \(]32~;~+\infty[\).
+</li><li> Playa&nbsp;: âge \(\leqslant40\) (et un âge est positif)&nbsp;: \([0~;~40]\).</li></ul></div></div>
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">« Dans les deux »&nbsp;: intersection.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(]32~;~+\infty[\,\cap[0~;~40]=\,]32~;~40]\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Il faut avoir strictement plus de \(32\) ans et au plus \(40\) ans.</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">« Dans l'une des deux » (au moins)&nbsp;: réunion.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\([0~;~40]\cup\,]32~;~+\infty[\;=[0~;~+\infty[\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Tout le monde peut entrer dans au moins une des deux boîtes de nuit.</div></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Si on comprend « dans une seule des deux exactement »&nbsp;: \([0~;~32]\cup\,]40~;~+\infty[\).</div></div></div></details></div></article><article class="exo" id="ex25"><div class="exo-h"><span class="pill maison">Ex 25 p 18</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 5 min</span> 🏠<span class="comp"><span class="objn">Objectif 6</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Dans chaque cas, donner la distance entre les deux nombres réels donnés.
+
+<ol><li> \(-2\) et \(-12\)
+</li><li> \(\dfrac53\) et \(\dfrac76\)
+</li><li> \(-\pi\) et \(2\pi\)
+</li><li> \(-4\) et \(6\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">La distance entre deux réels \(a\) et \(b\) est \(|a-b|\) (ou \(|b-a|\), c'est pareil).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> \(|-2-(-12)|=|-2+12|=|10|=10\).<br>
+<span class="nc">②</span> \(\left|\dfrac53-\dfrac76\right|=\left|\dfrac{10}{6}-\dfrac76\right|=\dfrac36=\dfrac12\).<br>
+<span class="nc">③</span> \(|-\pi-2\pi|=|-3\pi|=3\pi\).<br>
+<span class="nc">④</span> \(|-4-6|=|-10|=10\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Une distance est toujours positive&nbsp;: au <span class="nc">④</span>, la réponse est \(10\), pas \(-10\).</div></div></div></details></div></article><article class="exo" id="ex27"><div class="exo-h"><span class="pill maison">Ex 27 p 18</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 8 min</span> 🏠<span class="comp"><span class="objn">Objectif 6</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+Résoudre les équations suivantes.
+
+<ol><li> \(|x|=8\)
+</li><li> \(|x|=-5\)
+</li><li> \(|x-1|=3\)
+</li><li> \(|2x+1|=4\)
+</li></ol>
+</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">\(|x-a|=r\) signifie « la distance entre \(x\) et \(a\) vaut \(r\) »&nbsp;: si \(r&gt;0\), deux solutions \(a-r\) et \(a+r\)&nbsp;; si \(r&lt;0\), aucune.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><span class="nc">①</span> Réels à distance \(8\) de \(0\)&nbsp;: \(S=\{-8~;~8\}\).<br>
+<span class="nc">②</span> Une valeur absolue est toujours positive&nbsp;: \(S=\emptyset\).<br>
+<span class="nc">③</span> Réels à distance \(3\) de \(1\)&nbsp;: \(1-3=-2\) et \(1+3=4\)&nbsp;: \(S=\{-2~;~4\}\).<br>
+<span class="nc">④</span> \(2x+1=4\) ou \(2x+1=-4\), soit \(x=\dfrac32\) ou \(x=-\dfrac52\)&nbsp;: \(S=\left\{-\dfrac52~;~\dfrac32\right\}\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Les solutions s'écrivent entre accolades&nbsp;: ce sont deux nombres, pas un intervalle.</div></div></div></details></div></article><h2 class="rub red">Approfondissement</h2><article class="exo" id="ex9"><div class="exo-h"><span class="pill red">Ex 9 p 16</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="temps">⏱ 8 min</span><span class="comp"><span class="objn">Objectif 2</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+<b>Démo.</b> On considère un cercle dont le périmètre est rationnel. Prouver que son diamètre est nécessairement irrationnel.</div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> Périmètre d'un cercle&nbsp;: \(P=\pi\times d\), avec \(P\) rationnel (et non nul).</li></ul></div></div>
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c"><b>Raisonnement par l'absurde</b>&nbsp;: on suppose le contraire de ce qu'on veut montrer et on aboutit à une contradiction.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Supposons que \(d\) soit rationnel. Alors \(\pi=\dfrac{P}{d}\) est le quotient de deux rationnels non nuls&nbsp;: \(\pi\) serait rationnel.</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">C'est faux, car \(\pi\) est irrationnel. Donc le diamètre \(d\) est irrationnel.</div></div></div></details></div></article><article class="exo" id="ex10"><div class="exo-h"><span class="pill red">Ex 10 p 16</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="temps">⏱ 15 min</span><span class="comp"><span class="objn">Objectif 2</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+<b>Algo.</b> On dit qu'un triangle rectangle est <i>presque isocèle</i> lorsque son hypoténuse est un nombre entier et que les côtés de son angle droit sont des nombres entiers consécutifs.
+<ol><li> Montrer qu'un triangle dont les côtés mesurent \(3\)&nbsp;; \(4\) et \(5\) est un triangle rectangle presque isocèle.
+</li><li> Donner un algorithme permettant d'en trouver d'autres.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk form"><div class="blk-t">Propriété utilisée</div><div class="blk-c">Réciproque du théorème de Pythagore.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Le plus grand côté est \(5\)&nbsp;: \(5^2=25\) et \(3^2+4^2=9+16=25\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">\(5^2=3^2+4^2\)&nbsp;: le triangle est rectangle, d'hypoténuse \(5\) (entier), et les côtés de l'angle droit \(3\) et \(4\) sont deux entiers consécutifs&nbsp;: il est presque isocèle.</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Pour chaque entier \(n\), les côtés de l'angle droit sont \(n\) et \(n+1\)&nbsp;; l'hypoténuse vaut \(c=\sqrt{n^2+(n+1)^2}\). On garde \(n\) si \(c\) est entier.</div></div>
+<pre class="code">from math import sqrt
+
+def presque_isoceles(N):
+    for n in range(1, N + 1):
+        c = sqrt(n**2 + (n + 1)**2)
+        if c == int(c):
+            print(n, n + 1, int(c))
+
+presque_isoceles(1000)</pre>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">On obtient \((3~;~4~;~5)\), \((20~;~21~;~29)\), \((119~;~120~;~169)\), \((696~;~697~;~985)\).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Vérification&nbsp;: \(20^2+21^2=400+441=841=29^2\).</div></div></div></div></details></div></article><article class="exo" id="ex11"><div class="exo-h"><span class="pill red">Ex 11 p 16</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="temps">⏱ 8 min</span><span class="comp"><span class="objn">Objectif 2</span> · Raisonner</span></div><div class="exo-b"><div class="consigne">
+<b>Vrai / Faux.</b> Les affirmations suivantes sont-elles vraies ou fausses&nbsp;? Justifier.
+<ol><li> Le quotient de deux nombres premiers distincts peut être un entier relatif.
+</li><li> Le quotient de deux nombres premiers distincts peut être un nombre décimal.
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> Un nombre premier a exactement deux diviseurs positifs&nbsp;: \(1\) et lui-même (\(2\), \(3\), \(5\), \(7\), \(11\)…).</li></ul></div></div>
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Soient \(p\) et \(q\) deux nombres premiers distincts. Si \(\dfrac pq\) était un entier, \(q\) diviserait \(p\). Or les seuls diviseurs positifs de \(p\) sont \(1\) et \(p\), et \(q\neq1\), \(q\neq p\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Faux&nbsp;: le quotient ne peut pas être un entier.</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(\dfrac32=1{,}5\) (ou \(\dfrac75=1{,}4\)).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Vrai&nbsp;: le quotient peut être un nombre décimal (un exemple suffit, car on dit « peut être »).</div></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">« Peut être »&nbsp;: un exemple suffit pour dire vrai. « Toujours »&nbsp;: un contre-exemple suffit pour dire faux.</div></div></div></details></div></article><article class="exo" id="ex28"><div class="exo-h"><span class="pill red">Ex 28 p 18</span><span class="stars" style="color:var(--star-red)">★★★<span style="color:#CED4DA"></span></span><span class="temps">⏱ 10 min</span><span class="comp"><span class="objn">Objectif 6</span> · Chercher</span></div><div class="exo-b"><div class="consigne">
+<b>Vrai / Faux.</b> Pour chaque proposition, dire si elle est vraie ou fausse en justifiant.
+<ol><li> Pour tout \(x\in\mathbb{R}\), \(1+x^2=\left|1+x^2\right|\).
+</li><li> Pour tout \(k\in\mathbb{Z}\), \(|k|=-k\).
+</li><li> Pour tout \(x\in\mathbb{R}\), \(\left|(-x)^2\right|=-x^2\).
+</li><li> Pour tout \(n\in\mathbb{N}\), \(\left|n^2-n\right|=n^2-n\).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Pour « pour tout… », il faut une preuve générale si c'est vrai, et un seul contre-exemple si c'est faux.</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c"><ul><li> <span class="nc">①</span> Vrai&nbsp;: \(x^2\geqslant0\), donc \(1+x^2\geqslant1&gt;0\)&nbsp;; un nombre positif est égal à sa valeur absolue.
+</li><li> <span class="nc">②</span> Faux&nbsp;: pour \(k=1\), \(|1|=1\neq-1\). (C'est vrai seulement pour \(k\leqslant0\).)
+</li><li> <span class="nc">③</span> Faux&nbsp;: pour \(x=1\), \(\left|(-1)^2\right|=1\neq-1\). (C'est vrai seulement pour \(x=0\).)
+</li><li> <span class="nc">④</span> Vrai&nbsp;: \(n^2-n=n(n-1)\). Si \(n=0\), il vaut \(0\)&nbsp;; si \(n\geqslant1\), \(n\geqslant0\) et \(n-1\geqslant0\), donc \(n(n-1)\geqslant0\) et \(\left|n^2-n\right|=n^2-n\).
+</li></ul></div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">Au <span class="nc">②</span>, \(|k|=-k\) est vrai pour \(k=-3\) (\(|-3|=3=-(-3)\)), mais pas pour tout \(k\).</div></div></div></details></div></article><h2 class="rub">En salle informatique (Python)</h2><article class="exo" id="ex18"><div class="exo-h"><span class="pill">Ex 18 p 18</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 12 min</span><span class="comp"><span class="objn">Objectif 4</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+<b>Python.</b> On donne ci-dessous le même programme en Scratch et en Python.
+
+<span class="tikz"><img src="img-sequence5/fig-774c2f4dc5.svg" alt="" loading="lazy"></span>
+<pre class="code">def DansIntervalle(a, b, x):
+    if x &gt; a and x &lt; b:
+        print("VRAI")
+    else:
+        print("FAUX")</pre>
+<ol><li> Que fait ce programme&nbsp;?
+</li><li> Modifier ce programme pour qu'il teste si un nombre appartient à l'intervalle \([a~;~b]\), puis à l'intervalle \(]a~;~b]\) et enfin à l'intervalle \([a~;~b[\).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> Le test est « \(x&gt;a\) et \(x&lt;b\) », c'est-à-dire \(a&lt;x&lt;b\).</li></ul></div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Le programme affiche VRAI si \(x\in\,]a~;~b[\), et FAUX sinon.</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">Une borne comprise correspond à une inégalité large&nbsp;: <code>&gt;=</code> ou <code>&lt;=</code> en Python.</div></div>
+<pre class="code">def DansIntervalle1(a, b, x):  # [a ; b]
+    if x &gt;= a and x &lt;= b:
+        print("VRAI")
+    else:
+        print("FAUX")
+
+def DansIntervalle2(a, b, x):  # ]a ; b]
+    if x &gt; a and x &lt;= b:
+        print("VRAI")
+    else:
+        print("FAUX")
+
+def DansIntervalle3(a, b, x):  # [a ; b[
+    if x &gt;= a and x &lt; b:
+        print("VRAI")
+    else:
+        print("FAUX")</pre>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">En Scratch, il n'y a pas de bloc « \(\geqslant\) »&nbsp;: « \(x\geqslant a\) » s'écrit « non (\(x&lt;a\)) ».</div></div></div></div></details></div></article><article class="exo" id="ex19"><div class="exo-h"><span class="pill">Ex 19 p 18</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 10 min</span><span class="comp"><span class="objn">Objectif 4</span> · Calculer</span></div><div class="exo-b"><div class="consigne">
+<b>Python.</b> On donne ci-dessous le même programme en Scratch et en Python.
+
+<span class="tikz"><img src="img-sequence5/fig-dde0252881.svg" alt="" loading="lazy"></span>
+<pre class="code">def DansIntervalleBis(a, x):
+    if a &lt; x:
+        print("VRAI")
+    else:
+        print("FAUX")</pre>
+<ol><li> Que fait ce programme&nbsp;?
+</li><li> Modifier ce programme pour qu'il teste si un nombre appartient à l'intervalle \([a~;~+\infty[\), puis à l'intervalle \(]{-\infty}~;~a]\) et enfin à l'intervalle \(]{-\infty}~;~a[\).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> Le test est « \(a&lt;x\) », c'est-à-dire \(x&gt;a\)&nbsp;; il n'y a pas de borne à droite.</li></ul></div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Le programme affiche VRAI si \(x\in\,]a~;~+\infty[\), et FAUX sinon.</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk form"><div class="blk-t">Méthode</div><div class="blk-c">\([a~;~+\infty[\)&nbsp;: \(x\geqslant a\)&nbsp;;  \(]{-\infty}~;~a]\)&nbsp;: \(x\leqslant a\)&nbsp;;  \(]{-\infty}~;~a[\)&nbsp;: \(x&lt;a\).</div></div>
+<pre class="code">def DansIntervalleBis1(a, x):  # [a ; +inf[
+    if a &lt;= x:
+        print("VRAI")
+    else:
+        print("FAUX")
+
+def DansIntervalleBis2(a, x):  # ]-inf ; a]
+    if x &lt;= a:
+        print("VRAI")
+    else:
+        print("FAUX")
+
+def DansIntervalleBis3(a, x):  # ]-inf ; a[
+    if x &lt; a:
+        print("VRAI")
+    else:
+        print("FAUX")</pre></div></div></details></div></article><h2 class="rub">Pour s'entraîner</h2><article class="exo" id="ex17"><div class="exo-h"><span class="pill">Ex 17 p 18</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 12 min</span><span class="comp"><span class="objn">Objectif 4</span> · Représenter</span></div><div class="exo-b"><div class="consigne">
+On considère, dans le plan muni d'un repère orthonormé, l'ensemble des points \(M(x~;~y)\) tels que&nbsp;: \(1&lt;x&lt;4\) et \(5\leqslant y\leqslant6\).
+<ol><li> Représenter graphiquement cet ensemble.
+</li><li> Reprendre la question précédente avec l'ensemble des points \(N(x~;~y)\) tels que&nbsp;: \(1\leqslant2x+1\leqslant4\) et \(5&lt;2-5y&lt;6\).
+</li></ol></div><details class="corr"><summary>Voir le corrigé</summary><div class="corr-b">
+<div class="qq"><div class="qq-n">Question 1</div><div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> \(1&lt;x&lt;4\)&nbsp;: bandes verticales \(x=1\) et \(x=4\) <b>exclues</b> (pointillés).
+</li><li> \(5\leqslant y\leqslant6\)&nbsp;: droites horizontales \(y=5\) et \(y=6\) <b>comprises</b> (traits pleins).</li></ul></div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">L'ensemble est l'intérieur du rectangle de sommets \((1~;~5)\), \((4~;~5)\), \((4~;~6)\), \((1~;~6)\), avec ses côtés horizontaux mais sans ses côtés verticaux (en bleu ci-dessous).</div></div></div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(1\leqslant2x+1\leqslant4\Longleftrightarrow0\leqslant2x\leqslant3\Longleftrightarrow0\leqslant x\leqslant1{,}5\).<br>
+\(5&lt;2-5y&lt;6\Longleftrightarrow3&lt;-5y&lt;4\Longleftrightarrow-0{,}8&lt;y&lt;-0{,}6\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Rectangle \(0\leqslant x\leqslant1{,}5\) et \(-0{,}8&lt;y&lt;-0{,}6\)&nbsp;: côtés verticaux compris, côtés horizontaux exclus (en rouge).</div></div>
+<div class="blk pg"><div class="blk-t">Attention</div><div class="blk-c">On divise par \(-5\)&nbsp;: l'ordre change, \(3&lt;-5y\) devient \(y&lt;-0{,}6\).</div></div></div>
+<div class="c">
+<span class="tikz"><img src="img-sequence5/fig-89988711e1.svg" alt="" loading="lazy"></span>
+</div></div></details></div></article>
+</main>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] } }, svg: { fontCache: 'global' } };
+document.getElementById('tout').onclick = () => document.querySelectorAll('details.corr').forEach(d => d.open = true);
+document.getElementById('rien').onclick = () => document.querySelectorAll('details.corr').forEach(d => d.open = false);
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+</body>
+</html>
