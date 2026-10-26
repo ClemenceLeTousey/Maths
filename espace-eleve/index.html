@@ -86,18 +86,6 @@
             <select id="choix-ancienne"></select>
             <div class="tableau-defile"><table class="res" id="liste-anciennes"></table></div>
         </div>
-        <div class="anciennes" data-niveau="seconde">
-            <label for="choix-projection">Diaporamas vus en classe :</label>
-            <select id="choix-projection" onchange="if (this.value) { window.open(this.value, '_blank'); this.value = ''; }">
-                <option value=""></option>
-                <option value="../automatismes-seconde/Série 1 - semaine du 07 au 11 septembre/Série1-sommaire.html">Série 1 · semaine du 07/09 au 11/09</option>
-                <option value="../automatismes-seconde/Série 2 - semaine du 14 au 18 septembre/Série2-sommaire.html">Série 2 · semaine du 14/09 au 18/09</option>
-                <option value="../automatismes-seconde/Série 3 - semaine du 21 au 25 septembre/Série3-sommaire.html">Série 3 · semaine du 21/09 au 25/09</option>
-                <option value="../automatismes-seconde/Série 4 - semaine du 28 septembre au 02 octobre/Série4-sommaire.html">Série 4 · semaine du 28/09 au 02/10</option>
-                <option value="../automatismes-seconde/Série 5 - semaine du 05 au 09 octobre/Série5-sommaire.html">Série 5 · semaine du 05/10 au 09/10</option>
-                <option value="../automatismes-seconde/Série 7 - semaine du 02 au 06 novembre/Série7-sommaire.html">Série 7 · semaine du 02/11 au 06/11</option>
-            </select>
-        </div>
         <p class="aide">Tu peux refaire un exercice autant de fois que tu veux : les nombres changent à chaque fois.</p>
         <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>
         </div>
@@ -107,18 +95,30 @@
             <h2>Évaluations déjà faites</h2>
             <p class="aide">Les sujets et leurs corrigés, pour revoir tes erreurs et préparer les prochains devoirs.</p>
             <ul class="evals">
-                <li><div class="eval-titre">Évaluation formative 1<span>Calculs numériques</span></div>
+                <li><div class="eval-titre">Interrogation 1<span>Calculs numériques</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef1-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef1-corrige.html">Corrigé</a></div></li>
-                <li><div class="eval-titre">Évaluation formative 2<span>Racines carrées et vecteurs</span></div>
+                <li><div class="eval-titre">Interrogation 2<span>Racines carrées et vecteurs</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef2-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef2-corrige.html">Corrigé</a></div></li>
                 <li><div class="eval-titre">Devoir surveillé 1 · Contrat<span>Le sujet d'entraînement, même structure que le DS</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ds1-contrat.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ds1-contrat-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
                 <li><div class="eval-titre">Devoir surveillé 1<span>Sujets A et B</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ds1-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ds1-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
-                <li><div class="eval-titre">Évaluation formative 3<span>Équations et vecteurs</span></div>
+                <li><div class="eval-titre">Interrogation 3<span>Équations et vecteurs</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef3-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef3-corrige.html">Corrigé</a></div></li>
-                <li><div class="eval-titre">Remédiation du DS1<span>Page interactive pour retravailler tes erreurs</span></div>
-                    <div class="eval-liens"><a class="bouton" href="../remediation-seconde/remediation-ds1.html" target="_blank" rel="noopener">Ouvrir</a></div></li>
+            </ul>
+        </section>
+        <section class="soutien">
+            <h2>Évaluations à venir</h2>
+            <p class="aide">Ce qui t'attend jusqu'aux vacances de Noël : le sujet et le corrigé seront ajoutés ici une fois l'évaluation faite.</p>
+            <ul class="evals">
+                <li><div class="eval-titre">Interrogation 4<span>Identités remarquables · semaine du 2 novembre</span></div></li>
+                <li><div class="eval-titre">Devoir surveillé 2 · Contrat<span>Le sujet d'entraînement, même structure que le DS</span></div>
+                    <div class="eval-liens"><a class="bouton" href="https://nuage02.apps.education.fr/index.php/s/QNXZsnGpAqH4KCH" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="https://nuage02.apps.education.fr/index.php/s/RSK94G8c3ZFqiS3" target="_blank" rel="noopener">Corrigé</a></div></li>
+                <li><div class="eval-titre">Devoir surveillé 2<span>Calcul littéral, vecteurs et Python · mardi 10 novembre</span></div></li>
+                <li><div class="eval-titre">Interrogation 5<span>Inégalités et proportions · semaine du 16 novembre</span></div></li>
+                <li><div class="eval-titre">Interrogation 6<span>Évolutions · semaine du 23 novembre</span></div></li>
+                <li><div class="eval-titre">Interrogation 7<span>Ensembles de nombres et intervalles · semaine du 30 novembre</span></div></li>
+                <li><div class="eval-titre">Devoir surveillé 3<span>Bilan depuis la rentrée, surtout équations, inéquations, problèmes, information chiffrée et ensembles de nombres · semaine du 30 novembre</span></div></li>
             </ul>
         </section>
         </div>
@@ -128,6 +128,8 @@
             <h2>Fiches de remédiation</h2>
             <p class="aide">Pour revoir une notion qui pose problème : fais la fiche, puis vérifie avec le corrigé.</p>
             <ul class="evals">
+                <li><div class="eval-titre">Remédiation du DS1<span>Page interactive pour retravailler tes erreurs</span></div>
+                    <div class="eval-liens"><a class="bouton" href="../remediation-seconde/remediation-ds1.html" target="_blank" rel="noopener">Ouvrir</a></div></li>
                 <li><div class="eval-titre">Fractions</div>
                     <div class="eval-liens"><a class="bouton" href="../remediation-seconde/Remédiation - Fractions.pdf" target="_blank" rel="noopener">Fiche</a><a class="bouton" href="../remediation-seconde/Remédiation - Fractions - Corrigé.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
                 <li><div class="eval-titre">Puissances</div>
