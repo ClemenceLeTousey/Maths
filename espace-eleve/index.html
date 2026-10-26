@@ -207,7 +207,7 @@
                 var cs = document.createElement('td');
                 if (b && b.couleurs) Interactif.pastilles(cs, b.couleurs, true); else cs.textContent = b ? b.meilleur.score + ' / ' + b.meilleur.total : '—';
                 tr.appendChild(cs);
-                var cn = document.createElement('td'); cn.textContent = b ? b.series : 0; tr.appendChild(cn);
+                var cn = document.createElement('td'); cn.textContent = ex.tp ? '—' : b ? b.series : 0; tr.appendChild(cn);
                 t.appendChild(tr);
             });
         }
@@ -218,7 +218,9 @@
             (resultats || []).forEach(function (r) { (parExercice[r.exercice] = parExercice[r.exercice] || []).push(r); });
             var s = Interactif.session(), niv = s && Interactif.niveauClasse(s.classe);
             var GROUPES = window.INTERACTIF_GROUPES || {};
-            var liste = INTERACTIF_CATALOGUE.filter(function (ex) { return !ex.archive && (!niv || ex.niveau === niv); });
+            var code = s ? String(s.code || '').toUpperCase() : '';
+            // « comptes » : exercice réservé à certains comptes (séries préparées à l'avance, testées avec TEST-01)
+            var liste = INTERACTIF_CATALOGUE.filter(function (ex) { return !ex.archive && (!niv || ex.niveau === niv) && (!ex.comptes || ex.comptes.indexOf(code) >= 0); });
             var enCours = liste.filter(function (ex) { return !(GROUPES[ex.groupe] || {}).section; });
             remplir(table, enCours, parExercice);
             if (!liste.length) {

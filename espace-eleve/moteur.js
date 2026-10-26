@@ -235,7 +235,7 @@
                     prefixe();
                     var c = champ(); saisie.appendChild(c);
                     var lettres = type === 'expr' ? (q.variables || 'x') : '';
-                    var attendu = type === 'expr' ? Expr.lire(q.attendu) : null;
+                    var attendu = type === 'expr' ? Expr.lire(q.attendu, lettres) : null;
                     c.addEventListener('input', function () {
                         if (!c.value.trim()) { apercu.textContent = ''; return; }
                         try { maths(apercu, (q.prefixe ? q.prefixe + ' ' : '') + Expr.tex(Expr.lire(c.value, lettres))); apercu.classList.remove('illisible'); }
@@ -254,9 +254,10 @@
                             // un produit, dont une parenthèse est le facteur attendu (q.facteur), au signe près
                             var n = arbre, fs = [];
                             while (n.t === 'neg') n = n.a;
-                            (function facteurs(m) { if (m.t === '*') { facteurs(m.a); facteurs(m.b); } else fs.push(m); })(n);
+                            // (x-5)^2 compte comme le produit (x-5)(x-5)
+                            (function facteurs(m) { if (m.t === '*') { facteurs(m.a); facteurs(m.b); } else if (m.t === '^' && m.a.t === 'par') fs.push(m.a); else fs.push(m); })(n);
                             var pars = fs.filter(function (f) { return f.t === 'par'; });
-                            if (n.t !== '*' || !pars.length)
+                            if ((n.t !== '*' && !(n.t === '^' && n.a.t === 'par')) || !pars.length)
                                 return { attention: 'C\'est égal, mais ce n\'est pas un produit : factorise !' };
                             if (q.facteur) {
                                 var fa = Expr.lire(q.facteur, lettres), oppose = { t: 'neg', a: fa };
@@ -284,7 +285,7 @@
                     saisie.appendChild(cc);
                     lire = function () {
                         var r = cc.value.toUpperCase().replace(/[^A-Z]/g, '');
-                        if (r.length !== q.attendu.length) return { attention: 'Écris les ' + q.attendu.length + ' lettres, du plus petit au plus grand.' };
+                        if (r.length !== q.attendu.length) return { attention: q.aideLettres || 'Écris les ' + q.attendu.length + ' lettres, du plus petit au plus grand.' };
                         return { ok: r === q.attendu, r: r };
                     };
                 } else if (type === 'qcm') {

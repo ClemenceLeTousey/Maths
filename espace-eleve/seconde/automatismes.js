@@ -599,7 +599,7 @@
         q.type = 'nombre'; q.prefixe = 'n =';
         if (niveau === 2) {
             var b = A.choix([2, 3, 5, 10]), p, k, e, d;
-            do { p = A.nonNul(-5, 7); k = A.entier(2, 3); e = A.nonNul(-4, 3); d = A.nonNul(-4, 4); } while (p + k * e - d === 0);
+            do { p = A.nonNul(-5, 7); k = A.entier(2, 3); e = A.nonNul(-4, 3); d = A.nonNul(-4, 4); } while (p + k * e - d === 0 || p === 1 || e === 1 || d === 1);
             var res = p + k * e - d;
             q.texte = 'Écrire sous la forme $' + b + '^n$ : $' + frac(pw(b, p) + '\\times(' + pw(b, e) + ')^{' + k + '}', pw(b, d)) + '$. Donner $n$.';
             q.attendu = res;
@@ -1905,6 +1905,897 @@
     };
 
     /* =====================================================================
+       Série 8 (semaine du 9 au 13 novembre) : les trois QCM révisent le DS 2
+       (identités remarquables, Chasles, if / else) ; puis puissances, repère, images
+       (questions simples) ; pourcentages, ordre de grandeur, ranger (automatismes finaux)
+       ===================================================================== */
+    /* ===== A9 · Identités remarquables ===== */
+    Auto.identitesRemarquables = function (niveau) {
+        var poly = Interactif.poly, a, k, b, s, q;
+        if (niveau === 1) {
+            q = { niveau: 1, objectif: 'A9 · Identités remarquables' };
+            a = A.entier(2, 9);
+            var cas = A.choix(['plus', 'moins', 'produit']), tx, bon, faux, regle;
+            if (cas === 'plus') {
+                tx = '(x+' + a + ')^2'; bon = poly([1, 2 * a, a * a]); regle = '(a+b)^2=a^2+2ab+b^2';
+                faux = ['x^2+' + a * a, 'x^2+' + a + 'x+' + a * a, '2x+' + 2 * a];
+            } else if (cas === 'moins') {
+                tx = '(x-' + a + ')^2'; bon = poly([1, -2 * a, a * a]); regle = '(a-b)^2=a^2-2ab+b^2';
+                faux = ['x^2-' + a * a, 'x^2+' + 2 * a + 'x+' + a * a, 'x^2-' + 2 * a + 'x-' + a * a];
+            } else {
+                tx = '(x+' + a + ')(x-' + a + ')'; bon = poly([1, 0, -a * a]); regle = '(a+b)(a-b)=a^2-b^2';
+                faux = ['x^2+' + a * a, 'x^2-' + a * a + 'x', 'x^2-' + 2 * a + 'x-' + a * a];
+            }
+            q.texte = 'Le développement de $' + tx + '$ est :';
+            q.explication = '$' + regle + '$ avec $a=x$ et $b=' + a + '$ : $' + tx + '=' + bon + '$.' +
+                (cas === 'produit' ? '' : '<br>Il ne faut pas oublier le double produit $2ab=2\\times x\\times' + a + '=' + 2 * a + 'x$.');
+            return qcm(q, [{ t: '$' + bon + '$', ok: true }].concat(faux.map(function (f) { return { t: '$' + f + '$', ok: false }; })));
+        }
+        if (niveau === 2) {
+            k = A.entier(2, 5); b = A.entier(1, 9); s = A.signe();
+            q = { niveau: 2, objectif: 'A9 · Identités remarquables', type: 'expr', forme: 'developpee', consigne: 'Développer et réduire :', prefixe: 'A =' };
+            q.enonce = 'A = (' + poly([k, s * b]) + ')^2';
+            q.attendu = poly([k * k, 2 * k * s * b, b * b]);
+            q.correction = ['A&=(' + k + 'x)^2' + (s > 0 ? '+' : '-') + '2\\times ' + k + 'x\\times ' + b + '+' + b + '^2', '&=' + q.attendu];
+            return q;
+        }
+        do { k = A.entier(2, 7); b = A.entier(1, 9); } while (pgcd(k, b) !== 1);
+        var kx = k + 'x';
+        q = factoQ(3, poly([k * k, 0, -b * b]), '(' + poly([k, -b]) + ')(' + poly([k, b]) + ')', poly([k, b]));
+        q.objectif = 'A9 · Identités remarquables';
+        q.explication = '$' + poly([k * k, 0, 0]) + '=(' + kx + ')^2$ et $' + b * b + '=' + b + '^2$ : on reconnaît $a^2-b^2=(a-b)(a+b)$ avec $a=' + kx + '$ et $b=' + b + '$.<br>' +
+            '$A=(' + poly([k, -b]) + ')(' + poly([k, b]) + ')$.';
+        return q;
+    };
+
+    /* ===== A3 · Puissances (sans choix proposés) ===== */
+    Auto.puissancesSimple = function (niveau) {
+        function pw(x, n) { return n === 1 ? String(x) : x + '^{' + n + '}'; }
+        if (niveau === 2) return Auto.puissances(2);
+        var q = { niveau: niveau, objectif: 'A3 · Puissances' };
+        if (niveau === 1) {
+            var a = A.entier(2, 9), m, n, produit = Math.random() < 0.5;
+            do { m = A.nonNul(-6, 8); n = A.nonNul(-6, 8); } while (m === n || (produit ? m + n : m - n) === 0 || (m > 0 && n > 0 && produit));
+            var r = produit ? m + n : m - n;
+            q.type = 'nombre'; q.prefixe = 'n =';
+            q.texte = 'Écrire sous la forme $' + a + '^n$ : $' + (produit ? a + '^{' + m + '}\\times' + a + '^{' + n + '}' : frac(a + '^{' + m + '}', a + '^{' + n + '}')) + '$. Donner $n$.';
+            q.attendu = r;
+            q.explication = (produit ? '$a^m\\times a^n=a^{m+n}$ : $' + m + '+' + Interactif.par(n) : '$' + frac('a^m', 'a^n') + '=a^{m-n}$ : $' + m + '-' + Interactif.par(n)) + '=' + r + '$, donc le résultat est $' + a + '^{' + r + '}$.';
+            return q;
+        }
+        // c^u / (p^v × r^w) = p^(u-v) × r^(u-w), avec c = p × r
+        var cas = A.choix([[2, 3], [2, 5], [3, 5]]), p = cas[0], rr = cas[1], c = p * rr, u = A.entier(3, 4), v = A.entier(1, u - 1), w = A.entier(1, u - 1);
+        q.type = 'champs';
+        q.texte = 'Écrire sous la forme $' + p + '^a\\times' + rr + '^b$ : $C=' + frac(pw(c, u), pw(p, v) + '\\times' + pw(rr, w)) + '$.';
+        q.gabarit = '$a=$ [] et $b=$ []';
+        q.attendus = [u - v, u - w];
+        q.explication = '$' + c + '^{' + u + '}=(' + p + '\\times' + rr + ')^{' + u + '}=' + p + '^{' + u + '}\\times' + rr + '^{' + u + '}$.<br>' +
+            '$C=' + p + '^{' + u + '-' + v + '}\\times' + rr + '^{' + u + '-' + w + '}=' + p + '^{' + (u - v) + '}\\times' + rr + '^{' + (u - w) + '}$ : $a=' + (u - v) + '$ et $b=' + (u - w) + '$.';
+        return q;
+    };
+
+    /* ===== A13 · Pourcentages (automatisme final) ===== */
+    Auto.pourcentageFinal = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A13 · Proportions', type: 'nombre' }, p, N;
+        function detail(p, N) {
+            var dix = N / 10, cinq = N / 20, k = Math.floor(p / 10);
+            return '$10\\,\\%$ de $' + fr(N) + '$ : $' + fr(dix) + '$ ; $5\\,\\%$ : $' + fr(cinq) + '$.<br>$' + pct(p) + '=' + (k > 1 ? k + '\\times' : '') + '10\\,\\%+5\\,\\%$ : $' + (k > 1 ? k + '\\times' : '') + fr(dix) + '+' + fr(cinq) + '=' + fr(p * N / 100) + '$.';
+        }
+        if (niveau < 3) {
+            p = A.choix(niveau === 1 ? [15, 35, 45, 55] : [45, 55, 65, 85, 95]);
+            N = A.entier(niveau === 1 ? 3 : 6, niveau === 1 ? 20 : 30) * 20;
+            q.texte = 'Calculer $' + pct(p) + '$ de $' + fr(N) + '$.';
+            q.attendu = p * N / 100;
+            q.explication = detail(p, N);
+            return q;
+        }
+        var g = A.choix(GROUPES_ELEVES);
+        do { N = A.choix([200, 250, 400, 480, 500, 600, 800, 1200, 1250]); p = A.entier(1, 19) * 5; } while ((p * N / 100) % 1 || p === 50);
+        var n = p * N / 100;
+        q.type = 'champs';
+        q.texte = 'Dans un groupe de $' + fr(N) + '$ ' + g[0] + ', $' + fr(n) + '$ ' + g[1] + '. Quel est le pourcentage ' + g[2] + ' ?';
+        q.gabarit = '[] $\\,\\%$';
+        q.attendus = [p];
+        q.explication = 'Proportion : $' + frac(fr(n), fr(N)) + '=' + fr(p / 100) + '$, soit $' + pct(p) + '$.';
+        return q;
+    };
+
+    /* ===== Vecteurs · Relation de Chasles ===== */
+    Auto.chasles = function (niveau) {
+        if (niveau === 3) { var q3 = Auto.normeSimplifier(2); q3.niveau = 3; q3.objectif = 'Vecteurs · Chasles et norme'; return q3; }
+        var q = { niveau: niveau, objectif: 'Vecteurs · Relation de Chasles' };
+        var L = melanger(LETTRES_RESEAU.split('')).slice(0, 4), X = L[0], Y = L[1], Z = L[2], W = L[3];
+        var termes, explication;
+        if (niveau === 1) {
+            termes = melanger(['+' + vec(X + Y), '+' + vec(Y + Z), '+' + vec(Z + W)]);
+            if (termes.join('') === '+' + vec(X + Y) + '+' + vec(Y + Z) + '+' + vec(Z + W)) termes = [termes[1], termes[0], termes[2]];
+            explication = 'On remet les vecteurs bout à bout : $' + vec(X + Y) + '+' + vec(Y + Z) + '+' + vec(Z + W) + '=' + vec(X + Z) + '+' + vec(Z + W) + '=' + vec(X + W) + '$.';
+        } else {
+            termes = ['+' + vec(X + Y), '-' + vec(Z + Y), '+' + vec(Z + W)];
+            explication = '$-' + vec(Z + Y) + '=' + vec(Y + Z) + '$ (vecteur opposé), donc $' + vec(X + Y) + '+' + vec(Y + Z) + '+' + vec(Z + W) + '=' + vec(X + W) + '$.';
+        }
+        q.texte = (niveau === 1 ? '' : 'Simplifier : ') + '$' + termes.join('').replace(/^\+/, '') + '$' + (niveau === 1 ? ' est égal à :' : '');
+        q.explication = explication;
+        return qcm(q, [{ t: '$' + vec(X + W) + '$', ok: true }, { t: '$' + vec(W + X) + '$', ok: false },
+            { t: '$' + vec(X + Z) + '$', ok: false }, { t: niveau === 1 ? '$' + vec(Y + W) + '$' : '$\\vec{0}$', ok: false }]);
+    };
+
+    /* ===== A20 · Lire des coordonnées (sans choix proposés) ===== */
+    Auto.lireCoordonneesSimple = function (niveau) {
+        if (niveau === 2) return Auto.lireCoordonnees(2);
+        var q = { niveau: niveau, objectif: 'A20 · Repère orthogonal', type: 'champs' }, x, y;
+        do { x = A.nonNul(-3, 3); y = A.nonNul(-2, 2); } while (Math.abs(x) === Math.abs(y));
+        if (niveau === 1) {
+            q.figure = repere({ xmin: -4, xmax: 4, ymin: -3, ymax: 3, points: [{ nom: 'A', x: x, y: y }] });
+            q.figureNote = 'A(' + x + ' ; ' + y + ')';
+            q.texte = 'Lire les coordonnées du point $A$.';
+            q.gabarit = '$A\\Big($ [] $;$ [] $\\Big)$';
+            q.attendus = [x, y];
+            q.explication = 'On lit d\'abord l\'abscisse (axe horizontal), puis l\'ordonnée (axe vertical) : $A' + coord(x, y) + '$.';
+            return q;
+        }
+        var bx, by;
+        do { bx = A.nonNul(-7, 7) / 2; by = A.nonNul(-5, 5) / 2; } while (bx % 1 === 0 || by % 1 === 0 || Math.abs(bx) > 3.5 || Math.abs(by) > 2.5 || Math.sign(bx) === Math.sign(x));
+        var abscB = Math.random() < 0.5, ex = abscB ? bx : x, ey = abscB ? y : by;
+        q.figure = repere({ xmin: -4, xmax: 4, ymin: -3, ymax: 3, sub: 2, points: [{ nom: 'A', x: x, y: y }, { nom: 'B', x: bx, y: by }] });
+        q.figureNote = 'A(' + x + ' ; ' + y + ') B(' + bx + ' ; ' + by + ')';
+        q.texte = 'Chaque unité est partagée en deux carreaux. Le point $E$ a la même abscisse que $' + (abscB ? 'B' : 'A') + '$ et la même ordonnée que $' + (abscB ? 'A' : 'B') + '$. Donner ses coordonnées.';
+        q.gabarit = '$E\\Big($ [] $;$ [] $\\Big)$';
+        q.attendus = [ex, ey];
+        q.explication = '$A' + coord(x, y) + '$ et $B' + coord(bx, by) + '$. Abscisse de $' + (abscB ? 'B' : 'A') + '$, ordonnée de $' + (abscB ? 'A' : 'B') + '$ : $E' + coord(ex, ey) + '$.';
+        return q;
+    };
+
+    /* ===== A5 · Ordre de grandeur (automatisme final) ===== */
+    Auto.ordreGrandeurFinal = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A5 · Encadrer, ordre de grandeur', type: 'nombre' };
+        function proche(v0, ecart) { return arrondi(v0 + A.choix([-1, 1]) * A.entier(1, ecart)); }
+        if (niveau === 1) {
+            var p0 = A.choix([10, 25, 50, 75]), N0 = A.entier(2, 12) * 400, p = arrondi(p0 + A.choix([-1, 1]) * A.entier(1, 9) / 10), N = proche(N0, Math.round(N0 / 100));
+            var nom = { 10: 'le dixième', 25: 'le quart', 50: 'la moitié', 75: 'les trois quarts' }[p0];
+            q.texte = 'Donner un ordre de grandeur de $' + pct(p) + '$ de $' + fr(N) + '$.';
+            q.attendu = p0 * N0 / 100;
+            q.explication = '$' + pct(p) + '\\approx' + pct(p0) + '$ (' + nom + ') et $' + fr(N) + '\\approx' + fr(N0) + '$ : environ $' + fr(q.attendu) + '$.';
+            return q;
+        }
+        if (niveau === 2) {
+            var a0 = A.entier(2, 9) * 10, b0 = A.choix([20, 25, 40, 50]), a = arrondi(a0 + A.choix([-1, 1]) * A.entier(1, 4) / 10), b = arrondi(b0 + A.choix([-1, 1]) * A.entier(1, 4) / 10);
+            q.texte = 'Donner un ordre de grandeur de $' + fr(a) + '\\times' + fr(b) + '$.';
+            q.attendu = a0 * b0;
+            q.explication = '$' + fr(a) + '\\approx' + a0 + '$ et $' + fr(b) + '\\approx' + b0 + '$ : environ $' + a0 + '\\times' + b0 + '=' + fr(a0 * b0) + '$.';
+            return q;
+        }
+        var M0 = A.entier(1, 9) * 1000, d0 = A.choix([0.5, 0.25, 0.2]), M = proche(M0, 15), d = arrondi(d0 + A.choix([-1, 1]) * (d0 === 0.5 ? 0.01 : 0.001));
+        var inv = Math.round(1 / d0);
+        q.texte = 'Donner un ordre de grandeur de $' + frac(fr(M), fr(d)) + '$.';
+        q.attendu = M0 * inv;
+        q.explication = '$' + fr(M) + '\\approx' + fr(M0) + '$ et $' + fr(d) + '\\approx' + fr(d0) + '$. Diviser par $' + fr(d0) + '$, c\'est multiplier par $' + inv + '$ : environ $' + fr(M0) + '\\times' + inv + '=' + fr(q.attendu) + '$.';
+        return q;
+    };
+
+    /* ===== Algo · if / else et affectations ===== */
+    Auto.scriptSiSinon = function (niveau) {
+        var q = { niveau: niveau, objectif: 'Algo · Structures conditionnelles' };
+        var AIDE = '<span class="q-aide-code"><code>if</code> signifie « si » et <code>else</code> signifie « sinon ».</span>';
+        if (niveau === 1) {
+            var a, b, sup, vrai, bon, autre, opts;
+            do {
+                a = A.entier(3, 20); b = A.entier(3, 20); sup = Math.random() < 0.6;
+                vrai = sup ? a > b : a < b;
+                bon = vrai ? [a - b, b] : [a, b - a];
+                autre = vrai ? [a, b - a] : [a - b, b];
+                opts = [bon, autre, [bon[1], bon[0]], [a, b]];
+            } while (a === b || opts.some(function (o, k) { return opts.some(function (p, j) { return j < k && p[0] === o[0] && p[1] === o[1]; }); }));
+            var lignes = ['a = ' + a, 'b = ' + b, 'if a ' + (sup ? '>' : '<') + ' b:', '    a = a - b', 'else:', '    b = b - a', 'print(a, b)'];
+            q.texte = 'Qu\'affiche ce script ?' + AIDE + code(lignes);
+            q.explication = '$' + a + (sup ? '>' : '<') + b + '$ est ' + (vrai ? '<b>vrai</b> : on exécute seulement <code>a = a - b</code>, <code>a</code> devient $' + a + '-' + b + '=' + (a - b) + '$'
+                : '<b>faux</b> : on exécute seulement le bloc <code>else</code>, <code>b</code> devient $' + b + '-' + a + '=' + (b - a) + '$') +
+                '.<br>Le script affiche ' + console2(bon[0], bon[1]) + '.';
+            return qcm(q, opts.map(function (o, k) { return { t: console2(o[0], o[1]), ok: k === 0 }; }));
+        }
+        // f(x) : y = c x - d ; renvoie y si y >= 0, sinon -y (c'est la distance entre c x et d)
+        var c = A.entier(2, 4), m = A.entier(1, 5), d = c * m;
+        var fonction = ['def f(x):', '    y = ' + lin(c, -d), '    if y >= 0:', '        return y', '    else:', '        return -y'];
+        q.type = 'champs';
+        if (niveau === 2) {
+            var x1 = m + A.entier(1, 4), x2 = m - A.entier(1, 5), y1 = c * x1 - d, y2 = c * x2 - d;
+            q.texte = 'Que renvoient <code>f(' + x1 + ')</code> et <code>f(' + x2 + ')</code> ?' + code(fonction);
+            q.gabarit = '<code>f(' + x1 + ')</code> renvoie [] et <code>f(' + x2 + ')</code> renvoie []';
+            q.attendus = [y1, -y2];
+            q.explication = '<code>f(' + x1 + ')</code> : $y=' + c + '\\times' + Interactif.par(x1) + '-' + d + '=' + y1 + '\\geqslant0$, la fonction renvoie $' + y1 + '$.<br>' +
+                '<code>f(' + x2 + ')</code> : $y=' + c + '\\times' + Interactif.par(x2) + '-' + d + '=' + y2 + '<0$, la fonction renvoie $-' + Interactif.par(y2) + '=' + (-y2) + '$.';
+            return q;
+        }
+        var t = A.entier(1, 5), k = c * t;
+        q.texte = 'Trouver <b>tous</b> les nombres $x$ pour lesquels <code>f(x)</code> renvoie $' + k + '$ (du plus petit au plus grand).' + code(fonction);
+        q.gabarit = '$x=$ [] et $x=$ []';
+        q.attendus = [m - t, m + t];
+        q.explication = 'Si $y\\geqslant0$ : $' + Interactif.poly([c, -d]) + '=' + k + '$ donne $x=' + (m + t) + '$ (alors $y=' + k + '\\geqslant0$ ✓).<br>' +
+            'Si $y<0$ : $-(' + Interactif.poly([c, -d]) + ')=' + k + '$, donc $' + Interactif.poly([c, -d]) + '=-' + k + '$ et $x=' + (m - t) + '$ (alors $y=-' + k + '<0$ ✓).<br>Deux nombres : $' + (m - t) + '$ et $' + (m + t) + '$.';
+        return q;
+    };
+
+    /* ===== A16 · Image par une fonction (sans choix proposés) ===== */
+    Auto.imageSimple = function (niveau) {
+        if (niveau === 2) return Auto.imageFonction(2);
+        var poly = Interactif.poly, par = Interactif.par, q = { niveau: niveau, objectif: 'A16 · Images et antécédents' };
+        if (niveau === 1) {
+            var a = A.entier(2, 7) * A.signe(), b = A.nonNul(-9, 9), x0 = -A.entier(2, 6);
+            q.type = 'nombre';
+            q.texte = 'Soit $f$ la fonction définie par $f(x)=' + poly([a, b]) + '$. Calculer $f(' + x0 + ')$.';
+            q.prefixe = 'f(' + x0 + ')=';
+            q.attendu = a * x0 + b;
+            q.explication = '$f(' + x0 + ')=' + a + '\\times' + par(x0) + (b > 0 ? '+' : '') + b + '=' + a * x0 + (b > 0 ? '+' : '') + b + '=' + q.attendu + '$.';
+            return q;
+        }
+        var r = A.entier(2, 9), c = A.nonNul(-9, 9), k = r * r + c;
+        q.type = 'champs';
+        q.texte = 'Soit $h$ la fonction définie par $h(x)=' + poly([1, 0, c]) + '$. Déterminer les antécédents de $' + k + '$ par $h$ (du plus petit au plus grand).';
+        q.gabarit = '$x=$ [] et $x=$ []';
+        q.attendus = [-r, r];
+        q.explication = '$' + poly([1, 0, c]) + '=' + k + '$, donc $x^2=' + k + (c > 0 ? '-' + c : '+' + -c) + '=' + r * r + '$ : $x=' + r + '$ ou $x=-' + r + '$.<br>' +
+            '$' + k + '$ a deux antécédents : $-' + r + '$ et $' + r + '$.';
+        return q;
+    };
+
+    /* ===== A1 · Ranger des nombres (automatisme final) ===== */
+    Auto.rangerFinal = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A1 · Comparer deux nombres', type: 'ordre' }, vals;
+        do {
+            if (niveau < 3) {
+                var base = A.entier(1, 3) + A.choix([0.25, 0.75]), s = niveau === 1 ? 1 : -1, dixieme = Math.floor(base * 10) / 10;
+                vals = [ecrFraction(s * base, 4), ecrDecimal(arrondi(s * (base + A.choix([-0.03, -0.04, 0.02])))),
+                        ecrPuissance(arrondi(s * dixieme), 1), ecrDecimal(arrondi(s * (dixieme + A.choix([0.005, 0.01]))))];
+            } else {
+                var f = A.choix([[5, 7], [4, 7], [3, 7], [2, 7], [2, 3], [5, 6], [5, 9], [7, 9]]), v = f[0] / f[1];
+                var d = Math.floor(v * 100) / 100, t = Math.floor(v * 10) / 10;
+                if (arrondi(t) === arrondi(d)) t = arrondi(t + 0.1);
+                vals = [{ v: v, t: '$' + frac(f[0], f[1]) + '$' }, ecrDecimal(d), ecrDecimal(arrondi(d + 0.01)), { v: t, t: '$' + fracTex(Math.round(t * 10), 10) + '$' }];
+            }
+            vals = vals.map(function (x) { x.v = arrondi(x.v); return x; });
+        } while (!distincts(vals.map(function (x) { return x.v; })));
+        vals = melanger(vals);
+        var L = 'ABCD';
+        q.texte = 'Ranger dans l\'ordre croissant (écris les lettres, du plus petit au plus grand) :<br>' +
+            vals.map(function (x, k) { return '<b>' + L[k] + '</b> : ' + x.t; }).join(' &nbsp; ');
+        var ordre = vals.map(function (x, k) { return { v: x.v, l: L[k], t: x.t }; }).sort(function (u, w) { return u.v - w.v; });
+        q.attendu = ordre.map(function (o) { return o.l; }).join('');
+        q.explication = ordre.map(function (o) { return o.t === '$' + fr(o.v) + '$' ? o.t : o.t.replace(/\$$/, '') + (o.v * 1000 % 1 ? '\\approx' + fr(Math.round(o.v * 1000) / 1000) : '=' + fr(o.v)) + '$'; }).join(' $<$ ') +
+            ', donc <b>' + q.attendu + '</b>.' + (niveau === 2 ? '<br>Chez les négatifs, le plus petit est le plus éloigné de $0$.' : '');
+        return q;
+    };
+
+    /* =====================================================================
+       Série 9 (semaine du 16 au 20 novembre) : arithmétique, isoler une variable,
+       produit nul (QCM) ; identités remarquables, Chasles, if / else (questions simples) ;
+       puissances, repère, images (automatismes finaux)
+       ===================================================================== */
+    /* ===== Arithmétique : nombres premiers, décomposition ===== */
+    var PREMIERS = [53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113];
+    var FAUX_PREMIERS = [[51, 3, 17], [57, 3, 19], [69, 3, 23], [87, 3, 29], [93, 3, 31], [111, 3, 37], [77, 7, 11], [91, 7, 13], [119, 7, 17], [133, 7, 19], [143, 11, 13]];
+    function decompTex(e) {                 // e = {2: a, 3: b, 5: c} -> 2^{3}\times3\times5^{2}
+        return [2, 3, 5].filter(function (p) { return e[p]; }).map(function (p) { return e[p] === 1 ? String(p) : p + '^{' + e[p] + '}'; }).join('\\times');
+    }
+    Auto.arithmetique = function (niveau) {
+        var q = { niveau: niveau, objectif: 'Arithmétique · Nombres premiers' };
+        if (niveau === 1) {
+            var p = A.choix(PREMIERS), faux = melanger(FAUX_PREMIERS).slice(0, 3);
+            q.texte = 'Parmi les nombres suivants, lequel est un nombre premier ?';
+            q.explication = faux.map(function (f) { return '$' + f[0] + '=' + f[1] + '\\times' + f[2] + '$'; }).join(' ; ') + ' : ces nombres ne sont pas premiers.<br>' +
+                '$' + p + '$ n\'a que deux diviseurs, $1$ et lui-même : il est premier.';
+            return qcm(q, [{ t: '$' + p + '$', ok: true }].concat(faux.map(function (f) { return { t: '$' + f[0] + '$', ok: false }; })));
+        }
+        if (niveau === 2) {
+            var a, b, c, n;
+            do { a = A.entier(1, 3); b = A.entier(1, 3); c = A.entier(1, 2); n = Math.pow(2, a) * Math.pow(3, b) * Math.pow(5, c); } while (n > 1000);
+            q.type = 'champs';
+            q.texte = 'Décomposer $' + fr(n) + '$ en produit de facteurs premiers sous la forme $2^a\\times3^b\\times5^c$.';
+            q.gabarit = '$a=$ [] ; $b=$ [] ; $c=$ []';
+            q.attendus = [a, b, c];
+            var etapes = [], m = n;
+            [2, 3, 5].forEach(function (pr) { while (m % pr === 0) { etapes.push('$' + fr(m) + '=' + pr + '\\times' + fr(m / pr) + '$'); m /= pr; } });
+            q.explication = 'On divise par $2$ tant que c\'est possible, puis par $3$, puis par $5$ :<br>' + etapes.join(' ; ') + '.<br>Donc $' + fr(n) + '=' + decompTex({ 2: a, 3: b, 5: c }) + '$.';
+            return q;
+        }
+        var e, k, r;
+        do {
+            e = { 2: A.entier(0, 4), 3: A.entier(0, 3), 5: A.entier(0, 2) };
+            k = Math.pow(2, e[2]) * Math.pow(3, e[3]) * Math.pow(5, e[5]);
+            r = (e[2] % 2 ? 2 : 1) * (e[3] % 2 ? 3 : 1) * (e[5] % 2 ? 5 : 1);
+        } while (k < 12 || k > 400 || r === 1 || [2, 3, 5].filter(function (pr) { return e[pr]; }).length < 2);
+        q.type = 'nombre'; q.prefixe = 'n =';
+        q.texte = 'Quel est le plus petit entier $n\\geqslant1$ tel que $' + k + '\\times n$ soit le carré d\'un nombre entier ?';
+        q.attendu = r;
+        var e2 = { 2: e[2] + (e[2] % 2), 3: e[3] + (e[3] % 2), 5: e[5] + (e[5] % 2) };
+        q.explication = '$' + k + '=' + decompTex(e) + '$. Dans un carré, tous les exposants de la décomposition sont pairs : il faut multiplier par $' + r + '$.<br>' +
+            '$' + k + '\\times' + r + '=' + fr(k * r) + '=' + decompTex(e2) + '=' + Math.sqrt(k * r) + '^2$.';
+        return q;
+    };
+
+    /* ===== A9 · Identités remarquables (sans choix proposés) ===== */
+    Auto.identitesSimple = function (niveau) {
+        if (niveau === 2) { var q2 = Auto.identitesRemarquables(3); q2.niveau = 2; return q2; }
+        var poly = Interactif.poly, q = { niveau: niveau, objectif: 'A9 · Identités remarquables' };
+        if (niveau === 1) {
+            var a = A.entier(2, 9), cas = A.choix(['plus', 'moins', 'produit']), tx, ligne;
+            q.type = 'expr'; q.forme = 'developpee'; q.consigne = 'Développer et réduire :'; q.prefixe = 'A =';
+            if (cas === 'plus') { tx = '(x+' + a + ')^2'; q.attendu = poly([1, 2 * a, a * a]); ligne = 'x^2+2\\times x\\times ' + a + '+' + a + '^2'; }
+            else if (cas === 'moins') { tx = '(x-' + a + ')^2'; q.attendu = poly([1, -2 * a, a * a]); ligne = 'x^2-2\\times x\\times ' + a + '+' + a + '^2'; }
+            else { tx = '(x+' + a + ')(x-' + a + ')'; q.attendu = poly([1, 0, -a * a]); ligne = 'x^2-' + a + '^2'; }
+            q.enonce = 'A = ' + tx;
+            q.correction = ['A&=' + ligne, '&=' + q.attendu];
+            return q;
+        }
+        var m = A.entier(2, 10) * 10, forme = A.choix(['produit', 'plus', 'moins']), tx3, v, det;
+        if (forme === 'produit') { tx3 = (m - 1) + '\\times' + (m + 1); v = m * m - 1; det = '(' + m + '-1)(' + m + '+1)=' + m + '^2-1^2=' + fr(m * m) + '-1'; }
+        else if (forme === 'plus') { tx3 = (m + 1) + '^2'; v = (m + 1) * (m + 1); det = '(' + m + '+1)^2=' + m + '^2+2\\times' + m + '\\times1+1^2=' + fr(m * m) + '+' + 2 * m + '+1'; }
+        else { tx3 = (m - 1) + '^2'; v = (m - 1) * (m - 1); det = '(' + m + '-1)^2=' + m + '^2-2\\times' + m + '\\times1+1^2=' + fr(m * m) + '-' + 2 * m + '+1'; }
+        q.type = 'nombre';
+        q.texte = 'Calculer <b>de tête</b> $' + tx3 + '$ à l\'aide d\'une identité remarquable.';
+        q.attendu = v;
+        q.explication = '$' + tx3 + '=' + det + '=' + fr(v) + '$.';
+        return q;
+    };
+
+    /* ===== A3 · Puissances (automatisme final) ===== */
+    Auto.puissancesFinal = function (niveau) {
+        if (niveau === 2) return Auto.puissances(2);
+        var q = { niveau: niveau, objectif: 'A3 · Puissances' };
+        function pw(x, n) { return n === 1 ? String(x) : x + '^{' + n + '}'; }
+        if (niveau === 1) {
+            var a = A.entier(2, 9), m, n, produit = Math.random() < 0.5, r;
+            do { m = A.nonNul(-8, 8); n = A.nonNul(-8, 8); r = produit ? m + n : m - n; } while (m === n || r === 0 || (m > 0 && n > 0) || Math.abs(r) > 12);
+            q.type = 'nombre'; q.prefixe = 'n =';
+            q.texte = 'Écrire sous la forme $' + a + '^n$ : $' + (produit ? a + '^{' + m + '}\\times' + a + '^{' + n + '}' : frac(a + '^{' + m + '}', a + '^{' + n + '}')) + '$. Donner $n$.';
+            q.attendu = r;
+            q.explication = (produit ? '$a^m\\times a^n=a^{m+n}$ : $' + m + '+' + Interactif.par(n) : '$' + frac('a^m', 'a^n') + '=a^{m-n}$ : $' + m + '-' + Interactif.par(n)) + '=' + r + '$, donc le résultat est $' + a + '^{' + r + '}$.';
+            return q;
+        }
+        // c1 = p²r, c2 = pr² : c1^u / c2^v = p^(2u-v) × r^(u-2v)
+        var cas = A.choix([[12, 18, 2, 3], [20, 50, 2, 5], [45, 75, 3, 5]]), u, v;
+        do { u = A.entier(2, 3); v = A.entier(1, 2); } while (u - 2 * v === 0);
+        var ea = 2 * u - v, eb = u - 2 * v;
+        q.type = 'champs';
+        q.texte = 'Écrire sous la forme $' + cas[2] + '^a\\times' + cas[3] + '^b$ : $C=' + frac(pw(cas[0], u), pw(cas[1], v)) + '$.';
+        q.gabarit = '$a=$ [] et $b=$ []';
+        q.attendus = [ea, eb];
+        q.explication = '$' + cas[0] + '=' + cas[2] + '^2\\times' + cas[3] + '$ et $' + cas[1] + '=' + cas[2] + '\\times' + cas[3] + '^2$.<br>' +
+            '$C=' + frac(cas[2] + '^{' + 2 * u + '}\\times' + cas[3] + '^{' + u + '}', pw(cas[2], v) + '\\times' + cas[3] + '^{' + 2 * v + '}') + '=' + cas[2] + '^{' + ea + '}\\times' + cas[3] + '^{' + eb + '}$ : $a=' + ea + '$ et $b=' + eb + '$.';
+        return q;
+    };
+
+    /* ===== A11 · Isoler une variable ===== */
+    var CTX_PROPORTION = ' ($p$ : proportion, $n$ : effectif de la partie, $N$ : effectif total)';
+    var FORMULES = [
+        { f: 'v=\\dfrac{d}{t}', l: 'd', ok: 'v\\times t', faux: ['\\dfrac{v}{t}', '\\dfrac{t}{v}', 'v+t'], ex: 'On multiplie les deux membres par $t$ : $v\\times t=d$.' },
+        { f: 'v=\\dfrac{d}{t}', l: 't', ok: '\\dfrac{d}{v}', faux: ['d\\times v', '\\dfrac{v}{d}', 'd-v'], ex: 'On multiplie par $t$ : $v\\times t=d$, puis on divise par $v$ : $t=\\dfrac{d}{v}$.' },
+        { f: 'p=\\dfrac{n}{N}', l: 'N', ok: '\\dfrac{n}{p}', faux: ['n\\times p', '\\dfrac{p}{n}', 'n-p'], ctx: CTX_PROPORTION,
+          ex: 'Proportion $=\\dfrac{\\text{partie}}{\\text{total}}$, donc total $=\\dfrac{\\text{partie}}{\\text{proportion}}$ : $N=\\dfrac{n}{p}$.' },
+        { f: 'p=\\dfrac{n}{N}', l: 'n', ok: 'p\\times N', faux: ['\\dfrac{p}{N}', '\\dfrac{N}{p}', 'N-p'], ctx: CTX_PROPORTION,
+          ex: 'Partie $=$ proportion $\\times$ total : $n=p\\times N$.' },
+        { f: 'V=\\dfrac{B\\times h}{3}', l: 'B', ok: '\\dfrac{3V}{h}', faux: ['\\dfrac{V}{3h}', '3Vh', '\\dfrac{V\\times h}{3}'], ctx: ' (volume d\'un cône)',
+          ex: 'On multiplie par $3$ : $3V=B\\times h$, puis on divise par $h$ : $B=\\dfrac{3V}{h}$.' },
+        { f: 'U=R\\times I', l: 'I', ok: '\\dfrac{U}{R}', faux: ['U\\times R', '\\dfrac{R}{U}', 'U-R'], ctx: ' (loi d\'Ohm)',
+          ex: 'On divise les deux membres par $R$ : $I=\\dfrac{U}{R}$.' }
+    ];
+    Auto.isolerVariable = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A11 · Isoler une variable' };
+        if (niveau === 1) {
+            var F = A.choix(FORMULES);
+            q.texte = 'On sait que $' + F.f + '$' + (F.ctx || '') + '. Alors :';
+            q.explication = F.ex;
+            return qcm(q, [{ t: '$' + F.l + '=' + F.ok + '$', ok: true }].concat(F.faux.map(function (f) { return { t: '$' + F.l + '=' + f + '$', ok: false }; })));
+        }
+        q.type = 'expr';
+        if (niveau === 2) {             // a z - b y = c  ->  y = (a z - c) / b
+            var a, b, c;
+            do { a = A.entier(2, 9); b = A.entier(2, 9); c = A.nonNul(-9, 9); } while (a === b || pgcd(pgcd(a, b), Math.abs(c)) !== 1);
+            var num = a + 'z' + (c > 0 ? '-' + c : '+' + -c);
+            q.variables = 'yz'; q.prefixe = 'y =';
+            q.texte = 'On donne la relation $' + a + 'z-' + b + 'y=' + c + '$. Exprimer $y$ en fonction de $z$.';
+            q.attendu = '(' + num + ')/' + b;
+            q.explication = 'On isole le terme en $y$ : $-' + b + 'y=' + c + '-' + a + 'z$, donc $' + b + 'y=' + num + '$.<br>On divise par $' + b + '$ : $y=' + frac(num, b) + '$.';
+            return q;
+        }
+        if (Math.random() < 0.5) {      // w = (u - v) t  ->  u = w/t + v
+            q.variables = 'tuvw'; q.prefixe = 'u =';
+            q.texte = 'Les nombres $w$, $u$, $v$ et $t$ (avec $t\\neq0$) vérifient $w=(u-v)t$. Exprimer $u$ en fonction de $w$, $v$ et $t$.';
+            q.attendu = 'w/t+v';
+            q.explication = 'On divise par $t$ : $' + frac('w', 't') + '=u-v$, puis on ajoute $v$ : $u=' + frac('w', 't') + '+v$ (ou $u=' + frac('w+vt', 't') + '$).';
+            return q;
+        }
+        var k = A.entier(2, 4), kb = (k - 1 === 1 ? '' : k - 1) + 'b';   // m = (a + (k-1) b) / k  ->  a = k m - (k-1) b
+        q.variables = 'abm'; q.prefixe = 'a =';
+        q.texte = 'Les nombres $a$, $b$ et $m$ vérifient $m=' + frac('a+' + kb, k) + '$. Exprimer $a$ en fonction de $m$ et $b$.';
+        q.attendu = k + 'm-' + kb;
+        q.explication = 'On multiplie par $' + k + '$ : $' + k + 'm=a+' + kb + '$, puis on soustrait $' + kb + '$ : $a=' + k + 'm-' + kb + '$.';
+        return q;
+    };
+
+    /* ===== Vecteurs · Relation de Chasles (réponse à écrire) ===== */
+    Auto.chaslesSimple = function (niveau) {
+        var q = { niveau: niveau, objectif: 'Vecteurs · Relation de Chasles', type: 'ordre' };
+        var L = melanger(LETTRES_RESEAU.split('')).slice(0, 4), X = L[0], Y = L[1], Z = L[2], W = L[3], expr, rep, ex;
+        if (niveau === 1) {
+            var t = melanger([vec(X + Y), vec(Y + Z), vec(Z + W)]);
+            if (t[0] === vec(X + Y) && t[1] === vec(Y + Z)) t = [t[1], t[0], t[2]];
+            expr = t.join('+'); rep = X + W;
+            ex = 'On remet les vecteurs bout à bout : $' + vec(X + Y) + '+' + vec(Y + Z) + '+' + vec(Z + W) + '=' + vec(X + W) + '$.';
+        } else if (niveau === 2) {
+            expr = vec(X + Y) + '-' + vec(Z + Y) + '+' + vec(Z + W); rep = X + W;
+            ex = '$-' + vec(Z + Y) + '=' + vec(Y + Z) + '$, donc $' + vec(X + Y) + '+' + vec(Y + Z) + '+' + vec(Z + W) + '=' + vec(X + W) + '$.';
+        } else {
+            expr = vec(X + Y) + '+' + vec(Z + X) + '-' + vec(Z + W); rep = W + Y;
+            ex = '$' + vec(Z + X) + '+' + vec(X + Y) + '=' + vec(Z + Y) + '$, puis $' + vec(Z + Y) + '-' + vec(Z + W) + '=' + vec(W + Z) + '+' + vec(Z + Y) + '=' + vec(W + Y) + '$.';
+        }
+        q.texte = 'Simplifier $' + expr + '$ en un seul vecteur. Écris ses deux lettres dans l\'ordre (par exemple <b>AB</b> pour $\\overrightarrow{AB}$).';
+        q.aideLettres = 'Écris les deux lettres du vecteur, dans l\'ordre (par exemple AB).';
+        q.attendu = rep;
+        q.explication = ex;
+        return q;
+    };
+
+    /* ===== A20 · Repère (automatisme final) ===== */
+    Auto.repereFinal = function (niveau) {
+        if (niveau === 1) { var q1 = Auto.lireCoordonneesSimple(1); delete q1.rappel; return q1; }
+        if (niveau === 2) { var q2 = Auto.lireCoordonnees(3); q2.niveau = 2; return q2; }
+        var q = { niveau: 3, objectif: 'A20 · Repère orthogonal', type: 'champs' }, x1, x2, y1, y2;
+        do { x1 = A.entier(-4, 3); x2 = A.entier(-3, 4); y1 = A.entier(-3, 3); y2 = A.entier(-3, 3); } while (Math.abs(x1 - x2) < 2 || Math.abs(y1 - y2) < 2 || !x1 || !x2 || !y1 || !y2);
+        q.figure = repere({ xmin: -5, xmax: 5, ymin: -4, ymax: 4, points: [{ nom: 'A', x: x1, y: y1 }, { nom: 'B', x: x2, y: y1 }, { nom: 'C', x: x2, y: y2 }] });
+        q.figureNote = 'A(' + x1 + ' ; ' + y1 + ') B(' + x2 + ' ; ' + y1 + ') C(' + x2 + ' ; ' + y2 + ')';
+        q.texte = 'Donner les coordonnées du point $D$ tel que $ABCD$ soit un rectangle.';
+        q.gabarit = '$D\\Big($ [] $;$ [] $\\Big)$';
+        q.attendus = [x1, y2];
+        q.explication = '$[AB]$ est horizontal et $[BC]$ vertical. $D$ a la même abscisse que $A$ ($' + x1 + '$) et la même ordonnée que $C$ ($' + y2 + '$) : $D' + coord(x1, y2) + '$.';
+        return q;
+    };
+
+    /* ===== A10 · Équation produit nul ===== */
+    Auto.produitNul = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A10 · Équation produit nul' }, poly = Interactif.poly;
+        if (niveau === 1) {
+            var a, b;
+            do { a = A.nonNul(-9, 9); b = A.nonNul(-9, 9); } while (Math.abs(a) === Math.abs(b));
+            var s = [a, b].sort(function (u, v) { return u - v; });
+            var paire = function (u, v) { var t = [u, v].sort(function (x, y) { return x - y; }); return '$' + t[0] + '$ et $' + t[1] + '$'; };
+            var bon = paire(a, b), vus = {}, opts = [{ t: bon, ok: true }];
+            vus[bon] = 1;
+            [paire(-a, -b), paire(Math.abs(a), Math.abs(b)), paire(-s[0], s[1]), paire(s[0], -s[1]), '$' + a * b + '$'].forEach(function (t) {
+                if (!vus[t] && opts.length < 4) { vus[t] = 1; opts.push({ t: t, ok: false }); }
+            });
+            q.texte = 'Les solutions de l\'équation $(' + poly([1, -a]) + ')(' + poly([1, -b]) + ')=0$ sont :';
+            q.explication = 'Un produit est nul si et seulement si l\'un de ses facteurs est nul : $' + poly([1, -a]) + '=0$ ou $' + poly([1, -b]) + '=0$, donc $x=' + a + '$ ou $x=' + b + '$.';
+            return qcm(q, opts);
+        }
+        q.type = 'champs';
+        q.gabarit = '$x=$ [] et $x=$ []';
+        if (niveau === 2) {
+            var k, p, c;
+            do { k = A.entier(2, 5); p = A.nonNul(-7, 7); c = A.nonNul(-7, 7); } while (pgcd(k, Math.abs(p)) !== 1);
+            var r1 = -p / k, sol = [r1, c].sort(function (u, v) { return u - v; });
+            q.texte = 'Résoudre l\'équation $(' + poly([k, p]) + ')(' + poly([1, -c]) + ')=0$ (solutions du plus petit au plus grand ; une fraction s\'écrit par exemple <code>-2/3</code>).';
+            q.attendus = sol;
+            q.explication = '$' + poly([k, p]) + '=0$ donne $x=' + fracTex(-p, k) + '$ ; $' + poly([1, -c]) + '=0$ donne $x=' + c + '$.<br>Solutions : $' +
+                (sol[0] === r1 ? fracTex(-p, k) + '$ et $' + c : c + '$ et $' + fracTex(-p, k)) + '$.';
+            return q;
+        }
+        var m = A.nonNul(-9, 9);
+        if (Math.abs(m) === 1) m *= 3;
+        q.texte = 'Résoudre l\'équation $x^2=' + m + 'x$ (solutions du plus petit au plus grand).';
+        q.attendus = [Math.min(0, m), Math.max(0, m)];
+        q.explication = 'On ramène tout dans un membre et on factorise : $' + poly([1, -m, 0]) + '=0$, soit $x(' + poly([1, -m]) + ')=0$.<br>' +
+            'Produit nul : $x=0$ ou $x=' + m + '$. Attention : diviser par $x$ ferait perdre la solution $0$.';
+        return q;
+    };
+
+    /* ===== Algo · if / else (réponse à écrire) ===== */
+    Auto.scriptSiSinonSimple = function (niveau) {
+        if (niveau > 1) return Auto.scriptConditionnel(niveau);
+        var q = { niveau: 1, objectif: 'Algo · Structures conditionnelles', type: 'champs' }, a, b, sup;
+        do { a = A.entier(3, 20); b = A.entier(3, 20); sup = Math.random() < 0.6; } while (a === b);
+        var vrai = sup ? a > b : a < b, res = vrai ? [a - b, b] : [a, b - a];
+        q.texte = 'Qu\'affiche ce script ?' + code(['a = ' + a, 'b = ' + b, 'if a ' + (sup ? '>' : '<') + ' b:', '    a = a - b', 'else:', '    b = b - a', 'print(a, b)']);
+        q.gabarit = 'La console affiche : [] []';
+        q.attendus = res;
+        q.explication = '$' + a + (sup ? '>' : '<') + b + '$ est ' + (vrai ? '<b>vrai</b> : seul <code>a</code> change, il vaut $' + a + '-' + b + '=' + (a - b) + '$'
+            : '<b>faux</b> : on exécute seulement le bloc <code>else</code>, <code>b</code> vaut $' + b + '-' + a + '=' + (b - a) + '$') + '.<br>Le script affiche ' + console2(res[0], res[1]) + '.';
+        return q;
+    };
+
+    /* ===== A16 · Images et antécédents (automatisme final) ===== */
+    Auto.imageFinal = function (niveau) {
+        if (niveau === 1) { var q1 = Auto.imageSimple(1); delete q1.rappel; return q1; }
+        var poly = Interactif.poly, par = Interactif.par, q = { niveau: niveau, objectif: 'A16 · Images et antécédents', type: 'nombre' };
+        if (niveau === 2) {             // h(x) = (a x + b) / (x + c) en x0, avec x0 + c = ±1 ou ±2
+            var a, b, x0, d, c;
+            do { a = A.entier(2, 5) * A.signe(); b = A.nonNul(-9, 9); x0 = -A.entier(1, 5); d = A.choix([1, 2, -1, -2]); c = d - x0; } while (c === 0 || a * x0 + b === 0);
+            q.texte = 'Soit $h$ la fonction définie par $h(x)=' + frac(poly([a, b]), poly([1, c])) + '$. Calculer $h(' + x0 + ')$ (valeur exacte).';
+            q.prefixe = 'h(' + x0 + ')=';
+            q.attendu = (a * x0 + b) / d;
+            q.explication = '$h(' + x0 + ')=' + frac(a + '\\times' + par(x0) + (b > 0 ? '+' : '') + b, x0 + (c > 0 ? '+' : '') + c) + '=' + frac(a * x0 + b, d) + '=' + fr(arrondi(q.attendu)) + '$.';
+            return q;
+        }
+        var a3, b3, k;
+        do { a3 = A.entier(2, 8) * A.signe(); b3 = A.nonNul(-9, 9); k = A.nonNul(-12, 12); } while ((k - b3) % a3 === 0);
+        q.texte = 'Soit $f$ la fonction définie par $f(x)=' + poly([a3, b3]) + '$. Déterminer l\'antécédent de $' + k + '$ par $f$ (valeur exacte : une fraction s\'écrit par exemple <code>-5/2</code>).';
+        q.prefixe = 'x =';
+        q.attendu = (k - b3) / a3;
+        q.correction = [poly([a3, b3]) + '&=' + k, a3 + 'x&=' + (k - b3), 'x&=' + fracTex(k - b3, a3)];
+        return q;
+    };
+
+    /* =====================================================================
+       Série 10 (semaine du 23 au 27 novembre) : moyenne et médiane, inéquations,
+       Pythagore (QCM) ; arithmétique, isoler une variable, produit nul (questions simples) ;
+       identités remarquables, Chasles, if / else (automatismes finaux)
+       ===================================================================== */
+    function serieTex(t) { return t.map(function (x) { return fr(x); }).join('\\ ;\\ '); }
+
+    /* ===== A25 · Moyenne, médiane ===== */
+    Auto.moyenneMediane = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A25 · Moyenne, médiane' }, t, s;
+        if (niveau === 1) {
+            var tri, med, moy, et, vus;
+            do {
+                t = []; while (t.length < 5) { var v = A.entier(3, 20); if (t.indexOf(v) < 0) t.push(v); }
+                t = melanger(t); tri = t.slice().sort(function (a, b) { return a - b; });
+                med = tri[2]; s = t.reduce(function (a, b) { return a + b; }, 0); moy = arrondi(s / 5); et = tri[4] - tri[0];
+                vus = {}; [med, t[2], moy, et].forEach(function (x) { vus[x] = 1; });
+            } while (Object.keys(vus).length < 4);
+            q.texte = 'On considère la série : $' + serieTex(t) + '$. Sa médiane est :';
+            q.explication = 'On range d\'abord les valeurs dans l\'ordre croissant : $' + serieTex(tri) + '$. Il y a $5$ valeurs : la médiane est la $3^{\\text{e}}$, soit $' + med + '$.<br>' +
+                'Pièges : $' + t[2] + '$ (valeur du milieu sans ranger), $' + fr(moy) + '$ (c\'est la moyenne), $' + et + '$ (c\'est l\'étendue).';
+            return qcm(q, [{ t: '$' + med + '$', ok: true }, { t: '$' + t[2] + '$', ok: false }, { t: '$' + fr(moy) + '$', ok: false }, { t: '$' + et + '$', ok: false }]);
+        }
+        q.type = 'nombre';
+        if (niveau === 2) {
+            var n = A.choix([5, 6]), m = A.entier(9, 14);
+            do { t = []; for (var k = 0; k < n - 1; k++) t.push(m + A.entier(-5, 5)); t.push(n * m - t.reduce(function (a, b) { return a + b; }, 0)); } while (t[n - 1] < 2 || t[n - 1] > 20);
+            q.texte = 'Calculer la moyenne de la série : $' + serieTex(t) + '$.';
+            q.attendu = m;
+            q.explication = 'Somme : $' + t.join('+') + '=' + n * m + '$. Il y a $' + n + '$ valeurs : moyenne $=' + frac(n * m, n) + '=' + m + '$.';
+            return q;
+        }
+        var kk = A.entier(3, 5), m1, M, need;
+        do { m1 = A.entier(8, 14); M = m1 + A.entier(1, 2); need = (kk + 1) * M - kk * m1; } while (need > 20);
+        q.texte = 'Après $' + kk + '$ contrôles, Léa a $' + m1 + '$ de moyenne. Quelle note doit-elle avoir au contrôle suivant pour avoir $' + M + '$ de moyenne sur les $' + (kk + 1) + '$ contrôles ?';
+        q.attendu = need;
+        q.explication = 'Somme de ses $' + kk + '$ notes : $' + kk + '\\times' + m1 + '=' + kk * m1 + '$. Pour $' + M + '$ de moyenne sur $' + (kk + 1) + '$ notes, il faut une somme de $' + (kk + 1) + '\\times' + M + '=' + (kk + 1) * M + '$.<br>' +
+            'Note nécessaire : $' + (kk + 1) * M + '-' + kk * m1 + '=' + need + '$.';
+        return q;
+    };
+
+    /* ===== Arithmétique (sans choix proposés) ===== */
+    Auto.arithmetiqueSimple = function (niveau) {
+        if (niveau > 1) { return Auto.arithmetique(niveau); }
+        var f = A.choix(FAUX_PREMIERS), q = { niveau: 1, objectif: 'Arithmétique · Nombres premiers', type: 'nombre' };
+        q.texte = 'Le nombre $' + f[0] + '$ n\'est pas premier. Donner son plus petit diviseur autre que $1$.';
+        q.attendu = f[1];
+        q.explication = 'On teste $2$, $3$, $5$, $7$… dans l\'ordre : $' + f[0] + '=' + f[1] + '\\times' + f[2] + '$. Le plus petit diviseur autre que $1$ est $' + f[1] + '$.' +
+            (f[1] === 3 ? '<br>Critère : la somme des chiffres est un multiple de $3$.' : '');
+        return q;
+    };
+
+    /* ===== A9 · Identités remarquables (automatisme final) ===== */
+    Auto.identitesFinal = function (niveau) {
+        if (niveau === 1) { var q1 = Auto.identitesSimple(1); delete q1.rappel; return q1; }
+        if (niveau === 3) return Auto.identitesSimple(3);
+        var poly = Interactif.poly, a = A.entier(2, 9), s = A.signe();
+        var q = factoQ(2, poly([1, 2 * s * a, a * a]), '(' + poly([1, s * a]) + ')^2', poly([1, s * a]));
+        q.objectif = 'A9 · Identités remarquables';
+        q.explication = '$x^2=x^2$, $' + a * a + '=' + a + '^2$ et $' + 2 * a + 'x=2\\times x\\times' + a + '$ : on reconnaît $a^2' + (s > 0 ? '+' : '-') + '2ab+b^2=(a' + (s > 0 ? '+' : '-') + 'b)^2$.<br>' +
+            '$A=(' + poly([1, s * a]) + ')^2$.';
+        return q;
+    };
+
+    /* ===== A10 · Inéquations ===== */
+    function signeIneg(s) { return { '<': '<', '>': '>', '<=': '\\leqslant', '>=': '\\geqslant' }[s]; }
+    function inverse(s) { return { '<': '>', '>': '<', '<=': '>=', '>=': '<=' }[s]; }
+    Auto.inequation = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A10 · Inéquations' }, poly = Interactif.poly, a, b, c, s, x0;
+        if (niveau < 3) {
+            s = A.choix(['<', '>', '<=', '>=']);
+            do { a = A.entier(2, 6) * (niveau === 1 ? 1 : -1); x0 = A.nonNul(-6, 6); b = A.nonNul(-9, 9); c = a * x0 + b; } while (c === 0);
+            var sol = niveau === 1 ? s : inverse(s), tex = function (sg, v) { return '$x' + signeIneg(sg) + v + '$'; };
+            q.texte = 'Les solutions de l\'inéquation $' + poly([a, b]) + signeIneg(s) + c + '$ sont les nombres $x$ tels que :';
+            q.explication = '$' + poly([a, 0]) + signeIneg(s) + c + (b > 0 ? '-' + b : '+' + -b) + '$, soit $' + poly([a, 0]) + signeIneg(s) + (c - b) + '$.<br>' +
+                (niveau === 1 ? 'On divise par $' + a + '$, qui est <b>positif</b> : le sens ne change pas, $x' + signeIneg(s) + x0 + '$.'
+                    : 'On divise par $' + a + '$, qui est <b>négatif</b> : le sens de l\'inégalité <b>change</b>, $x' + signeIneg(sol) + x0 + '$.');
+            var faux = [tex(inverse(sol), x0), tex(sol, -x0), tex(sol, fracTex(c, a))];
+            var vus = {}; vus[tex(sol, x0)] = 1;
+            faux = faux.filter(function (f) { if (vus[f]) return false; vus[f] = 1; return true; });
+            if (faux.length < 3) faux.push(tex(sol, x0 + (x0 > 0 ? 1 : -1) * Math.abs(b)));
+            return qcm(q, [{ t: tex(sol, x0), ok: true }].concat(faux.slice(0, 3).map(function (f) { return { t: f, ok: false }; })));
+        }
+        var d, num, den;
+        do { a = A.entier(3, 8); c = A.entier(1, a - 1); b = A.nonNul(-9, 9); d = A.nonNul(-15, 15); num = d - b; den = a - c; } while (num % den === 0);
+        var borne = num / den, rep = Math.floor(borne) + 1;
+        q.type = 'nombre';
+        q.texte = 'Quel est le plus petit nombre <b>entier</b> solution de l\'inéquation $' + poly([a, b]) + '>' + poly([c, d]) + '$ ?';
+        q.attendu = rep;
+        q.explication = '$' + poly([a - c, 0]) + '>' + num + '$, donc $x>' + fracTex(num, den) + '$ (division par $' + den + '>0$, le sens ne change pas).<br>' +
+            '$' + fracTex(num, den) + '\\approx' + fr(Math.round(borne * 100) / 100) + '$ : le plus petit entier strictement supérieur est $' + rep + '$.';
+        return q;
+    };
+
+    /* ===== A11 · Isoler une variable (réponse à écrire) ===== */
+    var FORMULES_SIMPLES = [
+        { f: 'v=\\dfrac{d}{t}', l: 'd', att: 'v*t', vars: 'dtv', ex: 'On multiplie les deux membres par $t$ : $d=v\\times t$.' },
+        { f: 'v=\\dfrac{d}{t}', l: 't', att: 'd/v', vars: 'dtv', ex: 'On multiplie par $t$ : $v\\times t=d$, puis on divise par $v$ : $t=\\dfrac{d}{v}$.' },
+        { f: 'a=\\dfrac{b\\times h}{2}', l: 'h', att: '2a/b', vars: 'abh', ex: 'On multiplie par $2$ : $2a=b\\times h$, puis on divise par $b$ : $h=\\dfrac{2a}{b}$.', ctx: ' (aire $a$ d\'un triangle de base $b$ et de hauteur $h$)' },
+        { f: 'y=3x-2', l: 'x', att: '(y+2)/3', vars: 'xy', ex: 'On ajoute $2$ : $y+2=3x$, puis on divise par $3$ : $x=\\dfrac{y+2}{3}$.' },
+        { f: 'y=5x+4', l: 'x', att: '(y-4)/5', vars: 'xy', ex: 'On soustrait $4$ : $y-4=5x$, puis on divise par $5$ : $x=\\dfrac{y-4}{5}$.' }
+    ];
+    Auto.isolerSimple = function (niveau) {
+        if (niveau > 1) return Auto.isolerVariable(niveau);
+        var F = A.choix(FORMULES_SIMPLES), q = { niveau: 1, objectif: 'A11 · Isoler une variable', type: 'expr' };
+        q.variables = F.vars; q.prefixe = F.l + ' =';
+        q.texte = 'On sait que $' + F.f + '$' + (F.ctx || '') + '. Exprimer $' + F.l + '$ en fonction des autres lettres.';
+        q.attendu = F.att;
+        q.explication = F.ex;
+        return q;
+    };
+
+    /* ===== Vecteurs (automatisme final) ===== */
+    Auto.chaslesFinal = function (niveau) {
+        var q;
+        if (niveau === 1) { q = Auto.chaslesSimple(1); delete q.rappel; return q; }
+        if (niveau === 2) { q = Auto.chaslesSimple(3); q.niveau = 2; return q; }
+        q = Auto.normeSimplifier(2); q.niveau = 3; q.objectif = 'Vecteurs · Chasles et norme';
+        return q;
+    };
+
+    /* ===== A22 · Pythagore (longueurs entières, puis valeur exacte) ===== */
+    var TRIPLETS_PYTHAGORE = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 15, 17], [9, 12, 15], [12, 16, 20], [7, 24, 25], [15, 20, 25]];
+    Auto.pythagoreQCM = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A22 · Pythagore' }, N = nomsTriangle(), c1 = N[0] + N[1], c2 = N[0] + N[2], hyp = N[1] + N[2], t = A.choix(TRIPLETS_PYTHAGORE);
+        if (niveau === 1) {
+            q.figure = triangleRectangle(N, t[0], t[1], [t[0] + ' cm', t[1] + ' cm', '?']); q.figureNote = c1 + '=' + t[0] + ' ' + c2 + '=' + t[1];
+            q.texte = 'Le triangle $' + N.join('') + '$ est rectangle en $' + N[0] + '$, avec $' + c1 + '=' + t[0] + '$ cm et $' + c2 + '=' + t[1] + '$ cm. La longueur $' + hyp + '$ est égale à :';
+            q.explication = 'Pythagore ($[' + hyp + ']$ est l\'hypoténuse) : $' + hyp + '^2=' + t[0] + '^2+' + t[1] + '^2=' + t[0] * t[0] + '+' + t[1] * t[1] + '=' + t[2] * t[2] + '$, donc $' + hyp + '=\\sqrt{' + t[2] * t[2] + '}=' + t[2] + '$ cm.<br>' +
+                'Pièges : $' + (t[0] + t[1]) + '$ cm (on a additionné les longueurs), $' + t[2] * t[2] + '$ cm (on a oublié la racine).';
+            return qcm(q, [{ t: '$' + t[2] + '$ cm', ok: true }, { t: '$' + (t[0] + t[1]) + '$ cm', ok: false }, { t: '$' + t[2] * t[2] + '$ cm', ok: false }, { t: '$\\sqrt{' + (t[0] + t[1]) + '}$ cm', ok: false }]);
+        }
+        q.type = 'nombre';
+        if (niveau === 2) {
+            q.figure = triangleRectangle(N, t[0], t[1], [t[0] + ' cm', '?', t[2] + ' cm']); q.figureNote = hyp + '=' + t[2] + ' ' + c1 + '=' + t[0];
+            q.texte = 'Le triangle $' + N.join('') + '$ est rectangle en $' + N[0] + '$, avec $' + hyp + '=' + t[2] + '$ cm et $' + c1 + '=' + t[0] + '$ cm. Calculer $' + c2 + '$ (en cm).';
+            q.attendu = t[1];
+            q.explication = 'Pythagore : $' + hyp + '^2=' + c1 + '^2+' + c2 + '^2$, donc $' + c2 + '^2=' + t[2] + '^2-' + t[0] + '^2=' + t[2] * t[2] + '-' + t[0] * t[0] + '=' + t[1] * t[1] + '$ et $' + c2 + '=' + t[1] + '$ cm.';
+            return q;
+        }
+        var a, b, h2;
+        do { a = A.entier(1, 7); b = A.entier(2, 8); h2 = a * a + b * b; } while (a === b || racine(h2)[0] === 1 || racine(h2)[1] === 1);
+        q.type = 'champs';
+        q.figure = triangleRectangle(N, a, b, [a + ' cm', b + ' cm', '?']); q.figureNote = c1 + '=' + a + ' ' + c2 + '=' + b;
+        q.texte = 'Le triangle $' + N.join('') + '$ est rectangle en $' + N[0] + '$, avec $' + c1 + '=' + a + '$ cm et $' + c2 + '=' + b + '$ cm. Donner la valeur exacte de $' + hyp + '$ sous la forme $a\\sqrt{b}$ ($b$ le plus petit possible).';
+        q.gabarit = '$a=$ [] et $b=$ []';
+        q.attendus = racine(h2);
+        q.explication = '$' + hyp + '^2=' + a * a + '+' + b * b + '=' + h2 + '$, donc $' + hyp + '=\\sqrt{' + h2 + '}=\\sqrt{' + racine(h2)[0] * racine(h2)[0] + '\\times' + racine(h2)[1] + '}=' + racineTex(h2) + '$ cm.';
+        return q;
+    };
+
+    /* ===== A10 · Produit nul (réponse à écrire) ===== */
+    Auto.produitNulSimple = function (niveau) {
+        var poly = Interactif.poly, q = { niveau: niveau, objectif: 'A10 · Équation produit nul', type: 'champs', gabarit: '$x=$ [] et $x=$ []' }, a, b;
+        if (niveau === 1) {
+            do { a = A.nonNul(-9, 9); b = A.nonNul(-9, 9); } while (Math.abs(a) === Math.abs(b));
+            q.texte = 'Résoudre l\'équation $(' + poly([1, -a]) + ')(' + poly([1, -b]) + ')=0$ (solutions du plus petit au plus grand).';
+            q.attendus = [Math.min(a, b), Math.max(a, b)];
+            q.explication = 'Un produit est nul si l\'un de ses facteurs est nul : $' + poly([1, -a]) + '=0$ ou $' + poly([1, -b]) + '=0$, donc $x=' + a + '$ ou $x=' + b + '$.';
+            return q;
+        }
+        if (niveau === 2) return Auto.produitNul(2);
+        var p, r;                       // x(x - p) = r x  ->  x(x - p - r) = 0
+        do { p = A.nonNul(-6, 6); r = A.nonNul(-6, 6); } while (p + r === 0);
+        var s = p + r;
+        q.texte = 'Résoudre l\'équation $x(' + poly([1, -p]) + ')=' + (r === 1 ? '' : r === -1 ? '-' : r) + 'x$ (solutions du plus petit au plus grand).';
+        q.attendus = [Math.min(0, s), Math.max(0, s)];
+        q.explication = 'On ne divise surtout pas par $x$ (on perdrait la solution $0$). On ramène tout dans un membre et on factorise par $x$ :<br>' +
+            '$x(' + poly([1, -p]) + ')-' + (r < 0 ? '(' + poly([r, 0]) + ')' : poly([r, 0])) + '=0$, soit $x(' + poly([1, -p]) + (r > 0 ? '-' + r : '+' + -r) + ')=0$, c\'est-à-dire $x(' + poly([1, -s]) + ')=0$.<br>' +
+            'Donc $x=0$ ou $x=' + s + '$.';
+        return q;
+    };
+
+    /* ===== Algo · if / else (automatisme final) ===== */
+    Auto.scriptFinal = function (niveau) {
+        var q;
+        if (niveau === 1) { q = Auto.scriptSiSinonSimple(1); delete q.rappel; return q; }
+        if (niveau === 2) return Auto.scriptConditionnel(2);
+        return Auto.scriptSiSinon(3);
+    };
+
+    /* =====================================================================
+       Série 11 (semaine du 30 novembre au 4 décembre ; J4 = bilan à la maison, DS 3) :
+       probabilités, milieu, proportion de proportion (QCM) ; médiane, inéquations,
+       Pythagore (questions simples) ; arithmétique, isoler, produit nul (automatismes finaux)
+       ===================================================================== */
+    /* ===== A30 · Probabilités : tirage dans une urne ===== */
+    var COULEURS = [['rouge', 'rouges'], ['verte', 'vertes'], ['bleue', 'bleues'], ['jaune', 'jaunes'], ['noire', 'noires']];
+    Auto.probaUrne = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A30 · Probabilités' }, c = melanger(COULEURS).slice(0, 3), n, N, i;
+        do { n = [A.entier(1, 9), A.entier(1, 9), A.entier(1, 9)]; N = n[0] + n[1] + n[2]; } while (N < 8 || n[0] === n[1] || n[1] === n[2] || n[0] === n[2]);
+        var urne = 'Une urne contient ' + n.map(function (k, j) { return '$' + k + '$ boule' + (k > 1 ? 's ' + c[j][1] : ' ' + c[j][0]); }).join(', ').replace(/, ([^,]*)$/, ' et $1') +
+            ', indiscernables au toucher. On tire une boule au hasard.';
+        i = A.entier(0, 2);
+        if (niveau === 1) {
+            q.texte = urne + ' La probabilité de tirer une boule ' + c[i][0] + ' est :';
+            q.explication = 'Il y a $' + N + '$ boules, toutes ont la même chance d\'être tirées (équiprobabilité) : $P=' + frac('\\text{nombre de boules ' + c[i][1] + '}', '\\text{nombre total de boules}') + '=' + frac(n[i], N) +
+                (pgcd(n[i], N) > 1 ? '=' + fracTex(n[i], N) : '') + '$.';
+            var vus = {}, opts = [];
+            [['$' + fracTex(n[i], N) + '$', true], ['$' + n[i] + '$'], ['$' + fracTex(n[i], N - n[i]) + '$'], ['$' + fracTex(1, n[i]) + '$'], ['$' + fracTex(N - n[i], N) + '$']].forEach(function (o) {
+                if (!vus[o[0]] && opts.length < 4) { vus[o[0]] = 1; opts.push({ t: o[0], ok: !!o[1] }); }
+            });
+            return qcm(q, opts);
+        }
+        q.type = 'nombre';
+        if (niveau === 2) {
+            q.texte = urne + ' Quelle est la probabilité de <b>ne pas</b> tirer une boule ' + c[i][0] + ' ? (fraction, par exemple <code>3/8</code>)';
+            q.attendu = (N - n[i]) / N;
+            q.explication = '$P(\\text{' + c[i][0] + '})=' + frac(n[i], N) + '$. Évènement contraire : $1-' + frac(n[i], N) + '=' + frac(N - n[i], N) + (pgcd(N - n[i], N) > 1 ? '=' + fracTex(N - n[i], N) : '') + '$.';
+            return q;
+        }
+        var k = N - 2 * n[i];
+        if (k <= 0) return Auto.probaUrne(3);
+        q.texte = urne + ' Combien de boules ' + c[i][1] + ' faut-il ajouter pour que la probabilité de tirer une boule ' + c[i][0] + ' soit égale à $' + frac(1, 2) + '$ ?';
+        q.attendu = k;
+        q.explication = 'Il faut autant de boules ' + c[i][1] + ' que d\'autres boules. Il y a $' + (N - n[i]) + '$ boules d\'une autre couleur et $' + n[i] + '$ boules ' + c[i][1] + ' : on en ajoute $' + (N - n[i]) + '-' + n[i] + '=' + k + '$.<br>' +
+            'Vérification : $' + frac(n[i] + k, N + k) + '=' + frac(1, 2) + '$.';
+        return q;
+    };
+
+    /* ===== A25 · Médiane, moyenne (sans choix proposés) ===== */
+    Auto.medianeSimple = function (niveau) {
+        if (niveau === 2) return Auto.moyenneMediane(2);
+        var q = { niveau: niveau, objectif: 'A25 · Moyenne, médiane', type: 'nombre' }, t = [], nb = niveau === 1 ? 5 : 6;
+        while (t.length < nb) { var v = A.entier(2, 20); if (t.indexOf(v) < 0) t.push(v); }
+        var tri = t.slice().sort(function (a, b) { return a - b; });
+        if (niveau === 1 && t[2] === tri[2]) { t = [t[2], t[0], t[1], t[3], t[4]]; }
+        q.texte = 'Donner la médiane de la série : $' + serieTex(t) + '$.';
+        if (niveau === 1) {
+            q.attendu = tri[2];
+            q.explication = 'Rangée : $' + serieTex(tri) + '$. Avec $5$ valeurs, la médiane est la $3^{\\text{e}}$ : $' + tri[2] + '$.';
+        } else {
+            q.attendu = (tri[2] + tri[3]) / 2;
+            q.explication = 'Rangée : $' + serieTex(tri) + '$. Avec $6$ valeurs (nombre pair), la médiane est la moyenne des $3^{\\text{e}}$ et $4^{\\text{e}}$ valeurs : $' + frac(tri[2] + '+' + tri[3], 2) + '=' + fr(q.attendu) + '$.';
+        }
+        return q;
+    };
+
+    /* ===== Arithmétique (automatisme final) ===== */
+    Auto.arithmetiqueFinal = function (niveau) {
+        var q = niveau === 1 ? Auto.arithmetiqueSimple(1) : Auto.arithmetique(niveau);
+        if (niveau === 1) delete q.rappel;
+        return q;
+    };
+
+    /* ===== Repère · Milieu d'un segment ===== */
+    Auto.milieu = function (niveau) {
+        var q = { niveau: niveau, objectif: 'Repère · Milieu d\'un segment' }, xa, ya, xb, yb;
+        function m(u, v) { return arrondi((u + v) / 2); }
+        if (niveau === 1) {
+            do { xa = A.entier(-6, 8); ya = A.entier(-6, 8); xb = xa + 2 * A.nonNul(-4, 4); yb = ya + 2 * A.nonNul(-4, 4); } while (xa === ya || Math.abs(xb) > 9 || Math.abs(yb) > 9);
+            var M = [m(xa, xb), m(ya, yb)];
+            q.texte = 'Dans un repère, $A' + coord(xa, ya) + '$ et $B' + coord(xb, yb) + '$. Le milieu $M$ de $[AB]$ a pour coordonnées :';
+            q.explication = '$x_M=' + frac('x_A+x_B', 2) + '=' + frac(xa + (xb < 0 ? '' : '+') + xb, 2) + '=' + M[0] + '$ et $y_M=' + frac('y_A+y_B', 2) + '=' + frac(ya + (yb < 0 ? '' : '+') + yb, 2) + '=' + M[1] + '$.<br>' +
+                'On fait la <b>moyenne</b> des coordonnées : $M' + coord(M[0], M[1]) + '$.';
+            var vus = {}, opts = [];
+            [[M, true], [[xa + xb, ya + yb]], [[(xb - xa) / 2, (yb - ya) / 2]], [[M[1], M[0]]], [[(xa - xb) / 2, (ya - yb) / 2]], [[M[0] + 1, M[1] - 1]], [[-M[0] + 2, M[1] + 2]]].forEach(function (o) {
+                var t = '$' + coord(o[0][0], o[0][1]) + '$';
+                if (!vus[t] && opts.length < 4) { vus[t] = 1; opts.push({ t: t, ok: !!o[1] }); }
+            });
+            return qcm(q, opts);
+        }
+        q.type = 'champs';
+        if (niveau === 2) {
+            do { xa = A.entier(-6, 6); ya = A.entier(-6, 6); xb = A.entier(-6, 6); yb = A.entier(-6, 6); } while ((xa + xb) % 2 === 0 || (ya + yb) % 2 === 0 || xa === xb || ya === yb);
+            q.texte = 'Dans un repère, $A' + coord(xa, ya) + '$ et $B' + coord(xb, yb) + '$. Donner les coordonnées du milieu $M$ de $[AB]$ (écriture décimale).';
+            q.gabarit = '$M\\Big($ [] $;$ [] $\\Big)$';
+            q.attendus = [m(xa, xb), m(ya, yb)];
+            q.explication = '$x_M=' + frac(xa + (xb < 0 ? '' : '+') + xb, 2) + '=' + fr(q.attendus[0]) + '$ et $y_M=' + frac(ya + (yb < 0 ? '' : '+') + yb, 2) + '=' + fr(q.attendus[1]) + '$ : $M' + coord(q.attendus[0], q.attendus[1]) + '$.';
+            return q;
+        }
+        var xm, ym;
+        do { xa = A.entier(-5, 5); ya = A.entier(-5, 5); xm = A.entier(-5, 5); ym = A.entier(-5, 5); } while (xa === xm || ya === ym);
+        q.texte = 'Dans un repère, $A' + coord(xa, ya) + '$ et $M' + coord(xm, ym) + '$. Le point $M$ est le milieu de $[AB]$. Donner les coordonnées de $B$.';
+        q.gabarit = '$B\\Big($ [] $;$ [] $\\Big)$';
+        q.attendus = [2 * xm - xa, 2 * ym - ya];
+        q.explication = '$x_M=' + frac('x_A+x_B', 2) + '$ donne $x_B=2x_M-x_A=2\\times' + Interactif.par(xm) + '-' + Interactif.par(xa) + '=' + q.attendus[0] + '$ ; de même $y_B=2\\times' + Interactif.par(ym) + '-' + Interactif.par(ya) + '=' + q.attendus[1] + '$.<br>' +
+            'Astuce : de $A$ à $M$, on se déplace de $' + (xm - xa) + '$ et $' + (ym - ya) + '$ ; on refait le même déplacement à partir de $M$.';
+        return q;
+    };
+
+    /* ===== A10 · Inéquations (sans choix proposés) ===== */
+    Auto.inequationSimple = function (niveau) {
+        if (niveau === 3) return Auto.inequation(3);
+        var poly = Interactif.poly, q = { niveau: niveau, objectif: 'A10 · Inéquations' }, a, b, c, x0;
+        if (niveau === 1) {
+            var s = A.choix(['<', '>', '<=', '>=']);
+            do { a = A.entier(2, 7); x0 = A.nonNul(-8, 8); b = A.nonNul(-9, 9); c = a * x0 + b; } while (c === 0);
+            q.type = 'champs';
+            q.texte = 'Résoudre l\'inéquation $' + poly([a, b]) + signeIneg(s) + c + '$ en complétant.';
+            q.gabarit = '$x' + signeIneg(s) + '$ []';
+            q.attendus = [x0];
+            q.explication = '$' + poly([a, 0]) + signeIneg(s) + (c - b) + '$, puis division par $' + a + '>0$ (le sens ne change pas) : $x' + signeIneg(s) + x0 + '$.';
+            return q;
+        }
+        var d, num;           // -a x + b >= c  ->  x <= (b - c)/a : plus grand entier solution
+        do { a = A.entier(2, 6); b = A.nonNul(-9, 9); c = A.nonNul(-15, 15); num = b - c; } while (num % a === 0 || c === b);
+        var borne = num / a, rep = Math.floor(borne);
+        q.type = 'nombre';
+        q.texte = 'Quel est le plus grand nombre <b>entier</b> solution de l\'inéquation $' + poly([-a, b]) + '\\geqslant' + c + '$ ?';
+        q.attendu = rep;
+        q.explication = '$' + poly([-a, 0]) + '\\geqslant' + (c - b) + '$. On divise par $' + -a + '<0$ : le sens <b>change</b>, $x\\leqslant' + fracTex(num, a) + '\\approx' + fr(Math.round(borne * 100) / 100) + '$.<br>Le plus grand entier solution est $' + rep + '$.';
+        return q;
+    };
+
+    /* ===== A11 · Isoler une variable (automatisme final) ===== */
+    Auto.isolerFinal = function (niveau) {
+        if (niveau === 1) { var q1 = Auto.isolerSimple(1); delete q1.rappel; return q1; }
+        return Auto.isolerVariable(niveau);
+    };
+
+    /* ===== A14 · Proportion de proportion (pourcentages) ===== */
+    // [population (avec « d'un… »), population (avec « du… »), sous-groupe, pronom, propriété]
+    var GROUPES_PP = [
+        ['élèves d\'un lycée', 'élèves du lycée', 'sont demi-pensionnaires', 'eux', 'prennent le bus'],
+        ['spectateurs d\'un concert', 'spectateurs', 'sont des enfants', 'eux', 'ont moins de $8$ ans'],
+        ['adhérents d\'un club', 'adhérents du club', 'sont des filles', 'elles', 'font de la compétition'],
+        ['salariés d\'une entreprise', 'salariés de l\'entreprise', 'travaillent à temps partiel', 'eux', 'sont des femmes']
+    ];
+    Auto.proportionPourcent = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A14 · Proportion de proportion' }, g = A.choix(GROUPES_PP), p1, p2;
+        if (niveau === 1) {
+            do { p1 = A.choix([20, 30, 40, 50, 60, 80]); p2 = A.choix([10, 20, 25, 50]); } while (p1 * p2 % 100 || p1 === p2);
+            var r = p1 * p2 / 100;
+            q.texte = '$' + pct(p1) + '$ des ' + g[0] + ' ' + g[2] + '. Parmi ' + g[3] + ', $' + pct(p2) + '$ ' + g[4] + '. Quelle proportion des ' + g[1] + ' cela représente-t-il ?';
+            q.explication = 'Proportion de proportion : on <b>multiplie</b>, $' + fr(p1 / 100) + '\\times' + fr(p2 / 100) + '=' + fr(r / 100) + '$, soit $' + pct(r) + '$.<br>' +
+                'Pièges : $' + pct(p1 + p2) + '$ (on a additionné), $' + pct(p2) + '$ (c\'est la proportion parmi le sous-groupe seulement).';
+            var vus = {}, opts = [];
+            [[r, true], [p1 + p2], [p2], [Math.abs(p1 - p2)], [p1]].forEach(function (o) { if (!vus[o[0]] && opts.length < 4) { vus[o[0]] = 1; opts.push({ t: '$' + pct(o[0]) + '$', ok: !!o[1] }); } });
+            return qcm(q, opts);
+        }
+        if (niveau === 2) {
+            var N, n, f = A.choix([[1, 4], [3, 4], [2, 5], [3, 5], [1, 3], [2, 3]]);
+            do { N = A.entier(4, 30) * 50; p2 = A.choix([10, 20, 25, 30, 40, 50]); n = N * f[0] / f[1] * p2 / 100; } while (n % 1 || (N * f[0] / f[1]) % 1);
+            q.type = 'nombre';
+            q.texte = 'Un club compte $' + fr(N) + '$ adhérents. Les $' + frac(f[0], f[1]) + '$ des adhérents sont des filles et, parmi elles, $' + pct(p2) + '$ font de la compétition. Combien de filles font de la compétition ?';
+            q.attendu = n;
+            q.explication = 'Filles : $' + frac(f[0], f[1]) + '\\times' + fr(N) + '=' + fr(N * f[0] / f[1]) + '$. Parmi elles : $' + fr(p2 / 100) + '\\times' + fr(N * f[0] / f[1]) + '=' + fr(n) + '$.';
+            return q;
+        }
+        var pf, af, ag;
+        do { pf = A.choix([40, 60, 70, 80, 30]); af = A.choix([10, 20, 30, 40, 50]); ag = A.choix([10, 20, 30, 40]); } while (af === ag);
+        var tot = arrondi(pf * af / 100 + (100 - pf) * ag / 100);
+        q.type = 'champs';
+        q.texte = 'Dans un club, $' + pct(pf) + '$ des adhérents sont des filles. $' + pct(af) + '$ des filles et $' + pct(ag) + '$ des garçons font de la compétition. Quel pourcentage des adhérents font de la compétition ?';
+        q.gabarit = '[] $\\,\\%$';
+        q.attendus = [tot];
+        q.explication = 'Filles en compétition : $' + fr(af / 100) + '\\times' + fr(pf / 100) + '=' + fr(arrondi(pf * af / 10000)) + '$. Garçons ($' + pct(100 - pf) + '$) en compétition : $' + fr(ag / 100) + '\\times' + fr((100 - pf) / 100) + '=' + fr(arrondi((100 - pf) * ag / 10000)) + '$.<br>' +
+            'Total : $' + fr(arrondi(tot / 100)) + '$, soit $' + pct(tot) + '$ (et non la moyenne des deux pourcentages).';
+        return q;
+    };
+
+    /* ===== A22 · Pythagore (sans choix proposés) ===== */
+    Auto.pythagoreSimple = function (niveau) {
+        if (niveau > 1) return Auto.pythagoreQCM(niveau);
+        var q = { niveau: 1, objectif: 'A22 · Pythagore', type: 'nombre' }, N = nomsTriangle(), c1 = N[0] + N[1], c2 = N[0] + N[2], hyp = N[1] + N[2], t = A.choix(TRIPLETS_PYTHAGORE);
+        q.figure = triangleRectangle(N, t[0], t[1], [t[0] + ' cm', t[1] + ' cm', '?']); q.figureNote = c1 + '=' + t[0] + ' ' + c2 + '=' + t[1];
+        q.texte = 'Le triangle $' + N.join('') + '$ est rectangle en $' + N[0] + '$, avec $' + c1 + '=' + t[0] + '$ cm et $' + c2 + '=' + t[1] + '$ cm. Calculer $' + hyp + '$ (en cm).';
+        q.attendu = t[2];
+        q.explication = 'Pythagore ($[' + hyp + ']$ est l\'hypoténuse) : $' + hyp + '^2=' + t[0] * t[0] + '+' + t[1] * t[1] + '=' + t[2] * t[2] + '$, donc $' + hyp + '=' + t[2] + '$ cm.';
+        return q;
+    };
+
+    /* ===== A10 · Produit nul (automatisme final) ===== */
+    Auto.produitNulFinal = function (niveau) {
+        if (niveau === 2) return Auto.produitNul(2);
+        var q = Auto.produitNulSimple(niveau);
+        if (niveau === 1) delete q.rappel;
+        return q;
+    };
+
+    /* =====================================================================
        Rappels des questions vertes (bouton « Je ne sais pas, j'ai besoin d'un rappel ») :
        la méthode et un exemple différent de la question. Texte mixte HTML + $maths$.
        ===================================================================== */
@@ -1922,6 +2813,18 @@
         'Exemple : $30\\,\\%$ de $200$ $=' + frac('30\\times200', 100) + '=60$.';
     var RAPPEL_RACINE = 'Pour encadrer $\\sqrt{a}$, on cherche les deux carrés parfaits qui entourent $a$.<br>' +
         'Exemple : $25<30<36$, c\'est-à-dire $5^2<30<6^2$, donc $5<\\sqrt{30}<6$.';
+    var RAPPELS_TRIANGLE = 'Le <b>triangle magique</b> de $v=' + frac('d', 't') + '$ : on cache la lettre cherchée, ce qui reste donne la formule.<br>' +
+            '<svg viewBox="0 0 180 150" width="180" height="150" role="img" aria-label="Triangle magique : d en haut, v et t en bas" style="display:block;margin:8px 0">' +
+            '<polygon points="90,6 6,144 174,144" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>' +
+            '<line x1="47" y1="76" x2="133" y2="76" stroke="currentColor" stroke-width="2"/>' +
+            '<line x1="90" y1="76" x2="90" y2="144" stroke="currentColor" stroke-width="2"/>' +
+            '<g font-family="Georgia, serif" font-style="italic" font-size="30" fill="currentColor" text-anchor="middle">' +
+            '<text x="90" y="62">d</text><text x="62" y="124">v</text><text x="118" y="124">t</text></g>' +
+            '<text x="90" y="104" font-size="16" fill="currentColor" text-anchor="middle" font-family="system-ui, sans-serif">×</text></svg>' +
+            '• On cache $d$ : il reste $v$ à côté de $t$, donc $d=v\\times t$.<br>' +
+            '• On cache $t$ : il reste $d$ au-dessus de $v$, donc $t=' + frac('d', 'v') + '$.<br>' +
+            '• On cache $v$ : il reste $d$ au-dessus de $t$, donc $v=' + frac('d', 't') + '$.<br>' +
+            'Exemple : une voiture roule à $v=60$ km/h pendant $t=2$ h. On cherche $d$ : $d=v\\times t=60\\times2=120$ km.';
     var RAPPELS = {
         plusGrand: RAPPEL_ECRITURES,
         pourcentage: RAPPEL_POURCENTAGE,
@@ -2016,7 +2919,75 @@
         notationScientifique: 'Multiplier par $10^n$ ($n>0$), c\'est décaler la virgule de $n$ rangs vers la <b>droite</b> ; par $10^{-n}$, de $n$ rangs vers la <b>gauche</b>.<br>' +
             'Exemple : $3{,}7\\times10^{2}=370$ et $3{,}7\\times10^{-2}=0{,}037$.',
         pythagore: 'Dans un triangle rectangle, le carré de l\'<b>hypoténuse</b> (le côté opposé à l\'angle droit, le plus long) est égal à la somme des carrés des deux autres côtés.<br>' +
-            'Exemple : triangle rectangle de côtés $5$ et $12$ : hypoténuse$^2=5^2+12^2=169$, donc hypoténuse $=\\sqrt{169}=13$.'
+            'Exemple : triangle rectangle de côtés $5$ et $12$ : hypoténuse$^2=5^2+12^2=169$, donc hypoténuse $=\\sqrt{169}=13$.',
+        identitesRemarquables: 'Les trois identités remarquables : $(a+b)^2=a^2+2ab+b^2$ ; $(a-b)^2=a^2-2ab+b^2$ ; $(a+b)(a-b)=a^2-b^2$.<br>' +
+            'Exemple : $(x+5)^2=x^2+2\\times x\\times5+5^2=x^2+10x+25$. Attention à ne pas oublier le double produit $2ab$.',
+        puissancesSimple: 'Règles de calcul : $a^m\\times a^n=a^{m+n}$ et $' + frac('a^m', 'a^n') + '=a^{m-n}$.<br>' +
+            'Exemples : $3^{-2}\\times3^{5}=3^{-2+5}=3^3$ et $' + frac('3^{2}', '3^{-4}') + '=3^{2-(-4)}=3^6$.',
+        pourcentageFinal: RAPPEL_POURCENTAGE + '<br>De tête : $10\\,\\%$, c\'est diviser par $10$ ; $5\\,\\%$, c\'est la moitié de $10\\,\\%$.<br>' +
+            'Exemple : $35\\,\\%$ de $120$ : $10\\,\\%$ font $12$, $5\\,\\%$ font $6$, donc $35\\,\\%$ font $3\\times12+6=42$.',
+        chasles: 'Relation de Chasles : $\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$ (l\'extrémité du premier vecteur est l\'origine du second).<br>' +
+            'On peut changer l\'ordre des termes pour les mettre bout à bout : $\\overrightarrow{BC}+\\overrightarrow{AB}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$.',
+        lireCoordonneesSimple: 'Les coordonnées d\'un point s\'écrivent $(x\\ ;\\ y)$ : d\'abord l\'<b>abscisse</b>, lue sur l\'axe horizontal, puis l\'<b>ordonnée</b>, lue sur l\'axe vertical.<br>' +
+            'Exemple : un point situé $3$ carreaux à droite de l\'origine et $2$ carreaux en dessous a pour coordonnées $(3\\ ;\\ -2)$.',
+        ordreGrandeurFinal: RAPPEL_ORDRE_GRANDEUR + '<br>$25\\,\\%$, c\'est le quart ; $75\\,\\%$, les trois quarts.',
+        scriptSiSinon: 'Avec <code>if</code> … <code>else</code>, on teste la condition avec les valeurs <b>actuelles</b> des variables : si elle est vraie, on exécute seulement le bloc sous <code>if</code> ; sinon, seulement celui sous <code>else</code>.<br>' +
+            'Exemple : <code>a = 4</code>, <code>b = 10</code>, <code>if a &gt; b:</code> <code>a = a - b</code> <code>else:</code> <code>b = b - a</code>. Comme $4>10$ est faux, seul <code>b</code> change : il vaut $6$. <code>print(a, b)</code> affiche ' + console2(4, 6) + '.',
+        imageSimple: 'L\'image de $a$ par $f$, c\'est $f(a)$ : on remplace $x$ par $a$ dans l\'expression, avec des parenthèses si $a$ est négatif.<br>' +
+            'Exemple : si $f(x)=-2x+5$, alors $f(-3)=-2\\times(-3)+5=6+5=11$.',
+        rangerFinal: RAPPEL_ECRITURES + '<br>Réponds avec les lettres, du plus petit au plus grand.',
+        arithmetique: 'Un nombre <b>premier</b> a exactement deux diviseurs : $1$ et lui-même ($2$, $3$, $5$, $7$, $11$, $13$, $17$, $19$, $23$…).<br>' +
+            'Pour vérifier, on cherche s\'il est divisible par $2$, $3$, $5$, $7$, $11$… Astuce pour $3$ : la somme des chiffres est un multiple de $3$.<br>' +
+            'Exemple : $57$ : $5+7=12$, donc $57=3\\times19$ n\'est pas premier.',
+        identitesSimple: 'Les trois identités remarquables : $(a+b)^2=a^2+2ab+b^2$ ; $(a-b)^2=a^2-2ab+b^2$ ; $(a+b)(a-b)=a^2-b^2$.<br>' +
+            'Exemple : $(x-4)^2=x^2-2\\times x\\times4+4^2=x^2-8x+16$.',
+        puissancesFinal: 'Règles de calcul : $a^m\\times a^n=a^{m+n}$ et $' + frac('a^m', 'a^n') + '=a^{m-n}$.<br>' +
+            'Exemples : $7^{-5}\\times7^{3}=7^{-5+3}=7^{-2}$ et $' + frac('7^{-1}', '7^{4}') + '=7^{-1-4}=7^{-5}$.',
+        isolerVariable: RAPPELS_TRIANGLE,
+        chaslesSimple: 'Relation de Chasles : $\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$. On change l\'ordre des termes pour mettre les vecteurs bout à bout.<br>' +
+            'Exemple : $\\overrightarrow{BC}+\\overrightarrow{AB}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$ : on répond <b>AC</b>.',
+        repereFinal: 'Les coordonnées d\'un point s\'écrivent $(x\\ ;\\ y)$ : d\'abord l\'<b>abscisse</b> (axe horizontal), puis l\'<b>ordonnée</b> (axe vertical).<br>' +
+            'Exemple : $2$ carreaux à gauche de l\'origine et $3$ au-dessus : $(-2\\ ;\\ 3)$.',
+        produitNul: 'Un produit est nul si et seulement si l\'un au moins de ses facteurs est nul.<br>' +
+            'Exemple : $(x-2)(x+7)=0$ : $x-2=0$ ou $x+7=0$, donc $x=2$ ou $x=-7$.',
+        scriptSiSinonSimple: 'Avec <code>if</code> … <code>else</code>, on teste la condition avec les valeurs actuelles : si elle est vraie, on exécute seulement le bloc sous <code>if</code> ; sinon, seulement celui sous <code>else</code>.<br>' +
+            'Exemple : <code>a = 4</code>, <code>b = 10</code>, <code>if a &gt; b:</code> <code>a = a - b</code> <code>else:</code> <code>b = b - a</code> : $4>10$ est faux, <code>b</code> vaut $6$, la console affiche ' + console2(4, 6) + '.',
+        imageFinal: 'L\'image de $a$ par $f$, c\'est $f(a)$ : on remplace $x$ par $a$, avec des parenthèses si $a$ est négatif.<br>' +
+            'Exemple : si $f(x)=-4x+1$, alors $f(-2)=-4\\times(-2)+1=8+1=9$.',
+        moyenneMediane: 'La <b>médiane</b> partage la série rangée en deux groupes de même effectif : on <b>range d\'abord</b> les valeurs dans l\'ordre croissant, puis on prend celle du milieu.<br>' +
+            'Exemple : $9\\ ;\\ 2\\ ;\\ 7\\ ;\\ 4\\ ;\\ 12$ rangée donne $2\\ ;\\ 4\\ ;\\ 7\\ ;\\ 9\\ ;\\ 12$ : la médiane est $7$ (et la moyenne $' + frac(34, 5) + '=6{,}8$).',
+        arithmetiqueSimple: 'Pour trouver le plus petit diviseur d\'un nombre (autre que $1$), on teste $2$, puis $3$, puis $5$, puis $7$…<br>' +
+            'Divisible par $3$ : la somme des chiffres est un multiple de $3$. Exemple : $87$ : $8+7=15$, donc $87=3\\times29$ ; le plus petit diviseur est $3$.',
+        identitesFinal: 'Les trois identités remarquables : $(a+b)^2=a^2+2ab+b^2$ ; $(a-b)^2=a^2-2ab+b^2$ ; $(a+b)(a-b)=a^2-b^2$.<br>' +
+            'Exemple : $(x+3)^2=x^2+2\\times x\\times3+3^2=x^2+6x+9$.',
+        inequation: 'On résout une inéquation comme une équation, avec une règle en plus : quand on multiplie ou divise par un nombre <b>négatif</b>, on <b>change le sens</b> de l\'inégalité.<br>' +
+            'Exemple : $2x+1<7$ ; $2x<6$ ; $x<3$ (division par $2>0$). Mais $-2x<6$ donne $x>-3$ (division par $-2<0$).',
+        isolerSimple: RAPPELS_TRIANGLE,
+        chaslesFinal: 'Relation de Chasles : $\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$. On change l\'ordre des termes pour mettre les vecteurs bout à bout.<br>' +
+            'Exemple : $\\overrightarrow{BC}+\\overrightarrow{AB}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$ : on répond <b>AC</b>.',
+        pythagoreQCM: 'Dans un triangle rectangle, le carré de l\'<b>hypoténuse</b> (côté opposé à l\'angle droit) est égal à la somme des carrés des deux autres côtés.<br>' +
+            'Exemple : côtés de l\'angle droit $3$ cm et $4$ cm : hypoténuse$^2=9+16=25$, donc hypoténuse $=\\sqrt{25}=5$ cm.',
+        produitNulSimple: 'Un produit est nul si et seulement si l\'un au moins de ses facteurs est nul.<br>' +
+            'Exemple : $(x+3)(x-8)=0$ : $x+3=0$ ou $x-8=0$, donc $x=-3$ ou $x=8$.',
+        scriptFinal: 'Avec <code>if</code> … <code>else</code>, on teste la condition avec les valeurs actuelles : si elle est vraie, on exécute seulement le bloc sous <code>if</code> ; sinon, seulement celui sous <code>else</code>.<br>' +
+            'Exemple : <code>a = 4</code>, <code>b = 10</code>, <code>if a &gt; b:</code> <code>a = a - b</code> <code>else:</code> <code>b = b - a</code> : $4>10$ est faux, <code>b</code> vaut $6$, la console affiche ' + console2(4, 6) + '.',
+        probaUrne: 'Quand toutes les issues ont la même chance (équiprobabilité) : $P=' + frac('\\text{nombre d\'issues favorables}', '\\text{nombre total d\'issues}') + '$.<br>' +
+            'Exemple : $3$ boules rouges et $5$ vertes ($8$ boules) : $P(\\text{rouge})=' + frac(3, 8) + '$ et $P(\\text{pas rouge})=1-' + frac(3, 8) + '=' + frac(5, 8) + '$.',
+        medianeSimple: 'La <b>médiane</b> : on <b>range d\'abord</b> les valeurs dans l\'ordre croissant, puis on prend celle du milieu.<br>' +
+            'Exemple : $9\\ ;\\ 2\\ ;\\ 7\\ ;\\ 4\\ ;\\ 12$ rangée donne $2\\ ;\\ 4\\ ;\\ 7\\ ;\\ 9\\ ;\\ 12$ : la médiane est $7$. Avec un nombre pair de valeurs, on prend la moyenne des deux valeurs du milieu.',
+        arithmetiqueFinal: 'Pour trouver le plus petit diviseur d\'un nombre (autre que $1$), on teste $2$, puis $3$, puis $5$, puis $7$…<br>' +
+            'Divisible par $3$ : la somme des chiffres est un multiple de $3$. Exemple : $91$ n\'est divisible ni par $2$, ni par $3$, ni par $5$, mais $91=7\\times13$.',
+        milieu: 'Le milieu $M$ de $[AB]$ a pour coordonnées la <b>moyenne</b> des coordonnées de $A$ et de $B$ : $M\\left(' + frac('x_A+x_B', 2) + '\\ ;\\ ' + frac('y_A+y_B', 2) + '\\right)$.<br>' +
+            'Exemple : $A(1\\ ;\\ 4)$ et $B(5\\ ;\\ -2)$ : $M\\left(' + frac('1+5', 2) + '\\ ;\\ ' + frac('4+(-2)', 2) + '\\right)=M(3\\ ;\\ 1)$.',
+        inequationSimple: 'On résout une inéquation comme une équation ; quand on divise par un nombre <b>positif</b>, le sens de l\'inégalité ne change pas.<br>' +
+            'Exemple : $3x-4\\geqslant8$ ; $3x\\geqslant12$ ; $x\\geqslant4$.',
+        isolerFinal: RAPPELS_TRIANGLE,
+        proportionPourcent: 'Pour une proportion de proportion, on <b>multiplie</b> les deux proportions.<br>' +
+            'Exemple : $50\\,\\%$ des élèves sont des filles et, parmi elles, $40\\,\\%$ font du sport : $0{,}5\\times0{,}4=0{,}2$, soit $20\\,\\%$ des élèves.',
+        pythagoreSimple: 'Dans un triangle rectangle, le carré de l\'<b>hypoténuse</b> (côté opposé à l\'angle droit) est égal à la somme des carrés des deux autres côtés.<br>' +
+            'Exemple : côtés de l\'angle droit $6$ cm et $8$ cm : hypoténuse$^2=36+64=100$, donc hypoténuse $=10$ cm.',
+        produitNulFinal: 'Un produit est nul si et seulement si l\'un au moins de ses facteurs est nul.<br>' +
+            'Exemple : $(x-5)(x+1)=0$ : $x-5=0$ ou $x+1=0$, donc $x=5$ ou $x=-1$.'
     };
     // chaque question verte reçoit son rappel
     Object.keys(RAPPELS).forEach(function (nom) {

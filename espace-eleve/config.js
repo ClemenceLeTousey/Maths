@@ -9,9 +9,27 @@ window.INTERACTIF_CONFIG = {
 /* Liste des exercices : regroupés par semaine (groupe), dans l'ordre d'affichage.
    « niveau » (seconde, premiere, terminale) : un élève ne voit que ceux de sa classe.
    « court » sert d'en-tête de colonne sur la page prof.
+   « comptes: ['TEST-01'] » : visible seulement de ces comptes (séries préparées à l'avance, pour les tester) ;
    « archive: true » : retiré du site (invisible pour les élèves et dans le suivi prof) ;
    les résultats restent dans la base. */
 window.INTERACTIF_CATALOGUE = [
+    // Séries préparées à l'avance : visibles seulement des comptes listés dans « comptes » (à retirer à la publication)
+    { niveau: 'seconde', id: 'seconde/serie8-j1', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 1', court: 'S8 · J1', url: 'seconde/serie8.html?j=1', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie8-j2', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 2', court: 'S8 · J2', url: 'seconde/serie8.html?j=2', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie8-j3', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 3', court: 'S8 · J3', url: 'seconde/serie8.html?j=3', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie8-bilan', groupe: 'Facultatif · Série 8 en temps limité ⏱', titre: 'Bilan Série 8 (10 questions chronométrées)', court: 'S8 · Bilan', url: 'seconde/serie8-bilan.html', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie9-j1', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 1', court: 'S9 · J1', url: 'seconde/serie9.html?j=1', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie9-j2', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 2', court: 'S9 · J2', url: 'seconde/serie9.html?j=2', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie9-j3', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 3', court: 'S9 · J3', url: 'seconde/serie9.html?j=3', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie9-bilan', groupe: 'Facultatif · Série 9 en temps limité ⏱', titre: 'Bilan Série 9 (10 questions chronométrées)', court: 'S9 · Bilan', url: 'seconde/serie9-bilan.html', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie10-j1', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 1', court: 'S10 · J1', url: 'seconde/serie10.html?j=1', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie10-j2', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 2', court: 'S10 · J2', url: 'seconde/serie10.html?j=2', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie10-j3', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 3', court: 'S10 · J3', url: 'seconde/serie10.html?j=3', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie10-bilan', groupe: 'Facultatif · Série 10 en temps limité ⏱', titre: 'Bilan Série 10 (10 questions chronométrées)', court: 'S10 · Bilan', url: 'seconde/serie10-bilan.html', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie11-j1', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 1', court: 'S11 · J1', url: 'seconde/serie11.html?j=1', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie11-j2', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 2', court: 'S11 · J2', url: 'seconde/serie11.html?j=2', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie11-j3', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 3', court: 'S11 · J3', url: 'seconde/serie11.html?j=3', comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/serie11-j4', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 4 · bilan (à la maison)', court: 'S11 · J4', url: 'seconde/serie11.html?j=4', comptes: ['TEST-01'] },
     { niveau: 'seconde', id: 'seconde/serie7-j1', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 1', court: 'S7 · J1', url: 'seconde/serie7.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie7-j2', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 2', court: 'S7 · J2', url: 'seconde/serie7.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie7-j3', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 3', court: 'S7 · J3', url: 'seconde/serie7.html?j=3' },
@@ -46,6 +64,13 @@ window.INTERACTIF_CATALOGUE = [
    section = 'Anciennes séries' (absente pour la série en cours) ; serie = entrée du menu déroulant des anciennes séries.
    Quand une nouvelle série arrive, mettre la précédente et son bilan facultatif en section: 'Anciennes séries', avec le même serie: 'Série N'. */
 window.INTERACTIF_GROUPES = {
+    'Facultatif · Série 8 en temps limité ⏱': {},
+    'Série 8 · semaine du 9 au 13 novembre': {},
+    'Facultatif · Série 9 en temps limité ⏱': {},
+    'Série 9 · semaine du 16 au 20 novembre': {},
+    'Facultatif · Série 10 en temps limité ⏱': {},
+    'Série 10 · semaine du 23 au 27 novembre': {},
+    'Série 11 · semaine du 30 novembre au 4 décembre': {},
     'Série 7 · semaine du 2 au 6 novembre': {
         themes: ['A1 · Comparer deux nombres', 'A3 · Puissances', 'A4 · Écritures d\'un nombre', 'A5 · Encadrer, ordre de grandeur',
                  'A10 · Équations', 'A13 · Proportions', 'A16 · Images et antécédents', 'A20 · Repère orthogonal']
