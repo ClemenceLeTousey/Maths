@@ -133,22 +133,28 @@
             } catch (e) {}
         }
 
-        /* ---------- Choix de la série : la série en cours par défaut, les anciennes dans le menu ---------- */
-        // '' = série en cours (groupes sans section 'Anciennes séries'), 'Série N' = ancienne série, '*' = tout
+        /* ---------- Choix de la série : une seule série affichée, la série en cours par défaut ---------- */
+        // 'Série N' (bilan facultatif compris), sinon le nom du groupe (TP…) ; '*' = tout
         function serieDe(ex) {
             var g = (window.INTERACTIF_GROUPES || {})[ex.groupe] || {};
-            return g.section === 'Anciennes séries' ? (g.serie || ex.groupe) : '';
+            var m = /Série \d+/.exec(ex.groupe);
+            return g.serie || (m ? m[0] : ex.groupe);
         }
         function remplirSeries() {
-            var sel = document.getElementById('serie'), vues = [], enCours = null;
+            var sel = document.getElementById('serie'), vues = [], enTest = {}, enCours = null;
             INTERACTIF_CATALOGUE.forEach(function (ex) {
                 if (ex.archive) return;
-                var s = serieDe(ex);
-                if (!s && !enCours) { var m = /^Série \d+/.exec(ex.groupe); if (m) enCours = m[0]; }
-                if (s && vues.indexOf(s) < 0) vues.push(s);
+                var s = serieDe(ex), g = (window.INTERACTIF_GROUPES || {})[ex.groupe] || {};
+                if (vues.indexOf(s) < 0) { vues.push(s); enTest[s] = true; }
+                if (!ex.comptes) enTest[s] = false;
+                // série en cours : la première série ouverte aux élèves hors « Anciennes séries »
+                if (!enCours && !ex.comptes && g.section !== 'Anciennes séries' && /^Série \d+$/.test(s)) enCours = s;
             });
-            [['', (enCours || 'Série') + ' (en cours)']].concat(vues.map(function (s) { return [s, s]; }), [['*', 'Toutes les séries']])
+            vues.map(function (s) {
+                return [s, s + (s === enCours ? ' (en cours)' : enTest[s] ? ' (en test)' : '')];
+            }).concat([['*', 'Toutes les séries']])
                 .forEach(function (c) { var o = document.createElement('option'); o.value = c[0]; o.textContent = c[1]; sel.appendChild(o); });
+            if (enCours) sel.value = enCours;
         }
 
         /* ---------- Tableau ---------- */
