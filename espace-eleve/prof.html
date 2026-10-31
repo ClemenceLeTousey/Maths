@@ -26,6 +26,28 @@
         .tentative li { margin: 2px 0; }
         .rep { font-family: var(--f-mono); }
         .ok { color: var(--ok); } .ko { color: var(--ko); }
+        .onglets { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 18px; }
+        .interactif .onglets button {
+            background: none; color: var(--muted); border: 1px solid transparent; border-bottom: none;
+            border-radius: 8px 8px 0 0; padding: 8px 16px; margin-bottom: -2px; font-size: 1rem;
+        }
+        .interactif .onglets button:hover { color: var(--c-seconde); }
+        .interactif .onglets button[aria-selected="true"] {
+            color: var(--c-seconde); background: var(--surface); border-color: var(--line);
+            border-bottom: 2px solid var(--surface); font-weight: 600;
+        }
+        .interactif .onglets button:focus-visible { outline: 2px solid var(--c-seconde); outline-offset: -2px; }
+        /* Onglet DNL : bingo de la Séquence 1 */
+        .bingo { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
+        .bingo-tirage { display: flex; flex-wrap: wrap; gap: 6px 24px; align-items: baseline; margin: 10px 0 14px; min-height: 4.2rem; }
+        .bingo-n { font-size: 3.4rem; font-weight: 700; color: var(--c-seconde); font-variant-numeric: tabular-nums; }
+        .bingo-mots { font-size: 1.6rem; }
+        .bingo-piege { color: var(--ko); font-size: 1rem; }
+        .bingo .ligne { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 8px 0; }
+        .bingo input[type="text"] { font: inherit; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--text); width: 16em; }
+        .bingo-liste { font-family: var(--f-mono); line-height: 1.8; }
+        .bingo-liste .piege { color: var(--ko); }
+        .bingo pre { font-family: var(--f-mono); font-size: 0.85rem; overflow-x: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
     </style>
 </head>
 <body>
@@ -49,6 +71,53 @@
         </form>
 
         <div id="vue" hidden>
+            <div class="onglets" role="tablist" aria-label="Rubriques de l'espace professeure">
+                <button type="button" role="tab" id="onglet-suivi" aria-controls="panneau-suivi" data-onglet="suivi">Suivi</button>
+                <button type="button" role="tab" id="onglet-dnl" aria-controls="panneau-dnl" data-onglet="dnl">DNL</button>
+                <button type="button" role="tab" id="onglet-tp-photo" aria-controls="panneau-tp-photo" data-onglet="tp-photo">TP Photo</button>
+            </div>
+
+            <div class="panneau" role="tabpanel" id="panneau-dnl" aria-labelledby="onglet-dnl" hidden>
+                <h2>Séquence 1 · Lesson 1 · Number bingo</h2>
+                <p class="aide">À ne pas projeter : les élèves doivent <b>entendre</b> le nombre. Le script Python de la séquence s'exécute ici, dans le navigateur. Après un nombre piège (13…19 ou 30…90), son « jumeau » sort souvent juste après.</p>
+                <div class="bingo">
+                    <p class="aide" id="bingo-etat" aria-live="polite">Python n'est pas encore chargé.</p>
+                    <div class="bingo-tirage" aria-live="polite">
+                        <span class="bingo-n" id="bingo-n"></span>
+                        <span class="bingo-mots" id="bingo-mots"></span>
+                        <button type="button" id="bingo-lire" class="secondaire" title="Lire le nombre (voix anglaise)" hidden>▶ Play</button>
+                        <span class="bingo-piege" id="bingo-piege"></span>
+                    </div>
+                    <div class="ligne">
+                        <button type="button" id="bingo-tirer" disabled>Tirer un nombre</button>
+                        <button type="button" id="bingo-nouvelle" class="secondaire" disabled>Nouvelle partie</button>
+                        <label><input type="checkbox" id="bingo-auto"> lire automatiquement à chaque tirage</label>
+                        <span class="aide">Raccourcis : espace ou Entrée pour tirer, R pour réécouter.</span>
+                    </div>
+                    <div class="ligne">
+                        <label>Ligne de l'élève qui crie « Bingo! » <input type="text" id="bingo-grille" placeholder="ses 3 nombres, ex. 14 50 72"></label>
+                        <button type="button" id="bingo-verifier" disabled>Vérifier</button>
+                        <span id="bingo-verif" aria-live="polite"></span>
+                    </div>
+                    <p class="aide">L'élève lit ses trois nombres alignés ; tapez-les pour vérifier qu'ils ont bien tous été tirés (sinon, il a sans doute confondu fifteen et fifty…).</p>
+                    <p><b>Nombres tirés</b> <span class="aide" id="bingo-compte"></span></p>
+                    <div class="bingo-liste" id="bingo-liste"></div>
+                    <details>
+                        <summary>Voir le script Python</summary>
+                        <p><a href="dnl/S1-L1-number-bingo.py" download>Télécharger le script</a> (il marche aussi dans Thonny ou EduPython, au clavier).</p>
+                        <pre id="bingo-source"></pre>
+                    </details>
+                </div>
+            </div>
+
+            <div class="panneau" role="tabpanel" id="panneau-tp-photo" aria-labelledby="onglet-tp-photo" hidden>
+                <h2>TP Python · Créer et modifier une image</h2>
+                <p class="aide">En préparation : le TP n'est visible que du compte TEST-01, les élèves ne le voient pas encore. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi.</p>
+                <p><a class="bouton" href="seconde/tp-photo.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
+                <iframe id="tp-photo-apercu" title="Aperçu du TP Photo" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
+            </div>
+
+            <div class="panneau" role="tabpanel" id="panneau-suivi" aria-labelledby="onglet-suivi">
             <div class="outils">
                 <label>Classe <select id="classe"></select></label>
                 <label>Série <select id="serie"></select></label>
@@ -66,6 +135,7 @@
             <h2>Soutien · inscriptions de la classe</h2>
             <p class="aide" id="soutien-etat"></p>
             <div class="tableau-defile"><table class="res" id="soutien"></table></div>
+            </div>
         </div>
     </main>
 
@@ -383,6 +453,166 @@
             a.download = 'resultats-' + classe + '.csv';
             a.click();
         };
+    })();
+    </script>
+
+    <script>
+    (function () {
+        /* ---------- Onglets : Suivi par défaut ; #dnl ou #tp-photo dans l'adresse ouvre l'onglet correspondant ---------- */
+        var onglets = Array.prototype.slice.call(document.querySelectorAll('.onglets [role="tab"]'));
+        var $tp = document.getElementById('tp-photo-apercu');
+        function ouvrirOnglet(nom, focus) {
+            if (!onglets.some(function (o) { return o.dataset.onglet === nom; })) nom = 'suivi';
+            onglets.forEach(function (o) {
+                var actif = o.dataset.onglet === nom;
+                o.setAttribute('aria-selected', actif ? 'true' : 'false');
+                o.tabIndex = actif ? 0 : -1;
+                document.getElementById(o.getAttribute('aria-controls')).hidden = !actif;
+                if (actif && focus) o.focus();
+            });
+            try { history.replaceState(null, '', nom === 'suivi' ? location.pathname + location.search : '#' + nom); } catch (e) {}
+            if (nom === 'dnl') Bingo.demarrer();
+            // l'aperçu du TP (et son Python) ne se charge qu'à la première ouverture de l'onglet
+            if (nom === 'tp-photo' && !$tp.src) $tp.src = 'seconde/tp-photo.html';
+        }
+        onglets.forEach(function (o) {
+            o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };
+            o.onkeydown = function (e) {
+                var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+                if (!d) return;
+                e.preventDefault();
+                var k = onglets.indexOf(o);
+                ouvrirOnglet(onglets[(k + d + onglets.length) % onglets.length].dataset.onglet, true);
+            };
+        });
+        window.addEventListener('hashchange', function () { ouvrirOnglet(location.hash.slice(1)); });
+
+        /* ---------- DNL · Number bingo : le script Python de la séquence, exécuté avec Pyodide ---------- */
+        // Pyodide n'est chargé qu'à la première ouverture de l'onglet DNL.
+        // Le script garde sa boucle input() sous "if __name__ == '__main__'" : ici on n'importe que ses fonctions.
+        var PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/';
+        var SCRIPT = 'dnl/S1-L1-number-bingo.py';
+        var PARTIE = [
+            'def nouvelle_partie():',
+            '    global restants, tires, dernier',
+            '    restants, tires, dernier = list(range(11, 100)), [], None',
+            'def tirage():',
+            '    global dernier',
+            '    if not restants:',
+            '        return None',
+            '    n = tirer(restants, dernier)',
+            '    restants.remove(n); tires.append(n); dernier = n',
+            '    j = jumeau(n)',
+            '    return [n, in_words(n), in_words(j) if j is not None else ""]',
+            'def absents(texte):',
+            '    nombres = [int(x) for x in texte.replace(",", " ").split() if x.isdigit()]',
+            '    return [nombres, [n for n in nombres if n not in tires]]',
+            'nouvelle_partie()'
+        ].join('\n');
+        var $ = function (id) { return document.getElementById(id); };
+        var py = null, ns = null, lance = false, liste = [];
+
+        function chargerScript(url) {
+            return new Promise(function (ok, ko) {
+                var s = document.createElement('script');
+                s.src = url; s.onload = ok; s.onerror = function () { ko(new Error('réseau')); };
+                document.head.appendChild(s);
+            });
+        }
+        function boutons(actifs) { ['bingo-tirer', 'bingo-nouvelle', 'bingo-verifier'].forEach(function (id) { $(id).disabled = !actifs; }); }
+        function afficherListe() {
+            var zone = $('bingo-liste'); zone.innerHTML = '';
+            liste.forEach(function (t, i) {
+                var s = document.createElement('span');
+                if (t[2]) s.className = 'piege';
+                s.textContent = t[0] + (i < liste.length - 1 ? ' · ' : '');
+                zone.appendChild(s);
+            });
+            $('bingo-compte').textContent = liste.length ? '(' + liste.length + ' sur 89, piège en rouge)' : '';
+        }
+
+        var Bingo = window.Bingo = {
+            demarrer: function () {
+                if (lance) return;
+                lance = true;
+                $('bingo-etat').textContent = 'Chargement de Python… (quelques secondes la première fois)';
+                var source;
+                Promise.all([
+                    fetch(SCRIPT).then(function (r) { if (!r.ok) throw new Error('script introuvable'); return r.text(); }),
+                    window.loadPyodide ? Promise.resolve() : chargerScript(PYODIDE + 'pyodide.js')
+                ]).then(function (res) {
+                    source = res[0];
+                    $('bingo-source').textContent = source;
+                    return loadPyodide({ indexURL: PYODIDE });
+                }).then(function (p) {
+                    py = p;
+                    ns = py.globals.get('dict')();
+                    ns.set('__name__', 'bingo');
+                    py.runPython(source, { globals: ns });
+                    py.runPython(PARTIE, { globals: ns });
+                    $('bingo-etat').textContent = 'Python ' + py.version + ' prêt. Cliquez sur « Tirer un nombre ».';
+                    boutons(true);
+                    $('bingo-tirer').focus();
+                }).catch(function (e) {
+                    lance = false;
+                    $('bingo-etat').textContent = 'Impossible de charger Python (' + (e.message || e) + '). Rouvrez l\'onglet pour réessayer.';
+                });
+            },
+            tirer: function () {
+                if (!ns) return;
+                var r = ns.get('tirage')();
+                if (!r) { $('bingo-etat').textContent = 'Les 89 nombres sont sortis !'; return; }
+                var t = r.toJs(); r.destroy();
+                liste.push(t);
+                $('bingo-n').textContent = t[0];
+                $('bingo-mots').textContent = t[1];
+                $('bingo-piege').textContent = t[2] ? '(trap! not ' + t[2] + ')' : '';
+                $('bingo-lire').hidden = !window.speechSynthesis;
+                afficherListe();
+                if ($('bingo-auto').checked) Bingo.lire();
+            },
+            // lecture du nombre avec la synthèse vocale du navigateur (voix britannique si possible)
+            lire: function () {
+                var mots = $('bingo-mots').textContent;
+                if (!mots || !window.speechSynthesis) return;
+                var voix = speechSynthesis.getVoices(), u = new SpeechSynthesisUtterance(mots);
+                var v = voix.filter(function (x) { return x.lang === 'en-GB'; })[0] || voix.filter(function (x) { return /^en/.test(x.lang); })[0];
+                u.lang = v ? v.lang : 'en-GB'; if (v) u.voice = v;
+                u.rate = 0.85;
+                speechSynthesis.cancel(); speechSynthesis.speak(u);
+            },
+            nouvelle: function () {
+                if (!ns || (liste.length && !confirm('Recommencer une partie ?'))) return;
+                ns.get('nouvelle_partie')();
+                liste = [];
+                $('bingo-n').textContent = $('bingo-mots').textContent = $('bingo-piege').textContent = $('bingo-verif').textContent = '';
+                afficherListe();
+            },
+            verifier: function () {
+                if (!ns) return;
+                var r = ns.get('absents')($('bingo-grille').value), t = r.toJs(); r.destroy();
+                var v = $('bingo-verif');
+                if (!t[0].length) { v.textContent = 'Tapez les nombres du gagnant.'; v.className = ''; }
+                else if (!t[1].length) { v.textContent = 'Bingo ! Tous ces nombres ont été tirés.'; v.className = 'ok'; }
+                else { v.textContent = 'Pas encore tirés : ' + t[1].join(', '); v.className = 'ko'; }
+            }
+        };
+        $('bingo-tirer').onclick = Bingo.tirer;
+        $('bingo-lire').onclick = Bingo.lire;
+        if (window.speechSynthesis) speechSynthesis.getVoices();   // précharge la liste des voix (Chrome)
+        try { $('bingo-auto').checked = localStorage.getItem('bingo-auto') === '1'; } catch (e) {}
+        $('bingo-auto').onchange = function () { try { localStorage.setItem('bingo-auto', this.checked ? '1' : '0'); } catch (e) {} };
+        $('bingo-nouvelle').onclick = Bingo.nouvelle;
+        $('bingo-verifier').onclick = Bingo.verifier;
+        $('bingo-grille').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); Bingo.verifier(); } };
+        // barre d'espace ou Entrée : tirer (sauf si on écrit dans un champ)
+        document.addEventListener('keydown', function (e) {
+            if ($('panneau-dnl').hidden || !ns || /INPUT|TEXTAREA|SELECT|BUTTON/.test(e.target.tagName)) return;
+            if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); Bingo.tirer(); }
+            else if (e.key === 'r' || e.key === 'R') { e.preventDefault(); Bingo.lire(); }
+        });
+
+        ouvrirOnglet(location.hash.slice(1));
     })();
     </script>
 </body>
