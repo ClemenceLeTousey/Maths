@@ -10,7 +10,7 @@
     var script = document.currentScript;
     var base = script ? script.src.replace(/barre\.js(\?.*)?$/, '') : '';
     var CLE_THEME = 'site-maths-theme', CLE_MODE = 'site-maths-mode';
-    var HALLOWEEN_EN_LIGNE = false;   // comme dans site.js : true pour remettre le mode Halloween (prévu le 31 octobre)
+    var HALLOWEEN_EN_LIGNE = true;   // comme dans site.js : true pour remettre le mode Halloween (prévu le 31 octobre)
 
     function lire(cle) { try { return localStorage.getItem(cle) || ''; } catch (e) { return ''; } }
     function ecrire(cle, v) { try { localStorage.setItem(cle, v); } catch (e) {} }

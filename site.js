@@ -168,7 +168,7 @@ document.addEventListener('click', function (e) {
 
     /* Mode Halloween (citrouille, Pac-Man…) : mettre true pour le remettre en ligne (prévu le 31 octobre).
        À false, la citrouille du logo disparaît et le mode ne peut pas s'activer ; tout le code reste en place. */
-    var HALLOWEEN_EN_LIGNE = false;
+    var HALLOWEEN_EN_LIGNE = true;
     if (!HALLOWEEN_EN_LIGNE) {
         document.documentElement.classList.add('sans-halloween');
         document.addEventListener('DOMContentLoaded', function () {
