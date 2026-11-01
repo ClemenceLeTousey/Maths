@@ -772,21 +772,31 @@ document.addEventListener('click', function (e) {
     });
 })();
 
-/* Lien « Espace élève » (page espace-eleve/) dans la barre de navigation de toutes les pages (après « Accueil ») */
+/* Liens « Espace élève » (page espace-eleve/) et « Espace professeure » (espace-eleve/prof.html)
+   dans la barre de navigation de toutes les pages (après « Accueil ») */
 (function () {
     var script = document.currentScript;
     var base = script ? script.src.replace(/site\.js(\?.*)?$/, '') : '';
+    var LIENS = [
+        { texte: 'Espace élève', href: 'espace-eleve/', actif: /\/espace-eleve\/(index\.html)?$/ },
+        { texte: 'Espace professeure', href: 'espace-eleve/prof.html', actif: /\/espace-eleve\/prof\.html$/ }
+    ];
     document.addEventListener('DOMContentLoaded', function () {
         var menu = document.querySelector('.nav-links');
         if (!menu || !base) return;
-        var deja = Array.from(menu.querySelectorAll('a')).some(function (a) { return a.textContent.trim() === 'Espace élève'; });
-        if (deja) return;
-        var li = document.createElement('li'), a = document.createElement('a');
-        a.href = base + 'espace-eleve/';
-        a.textContent = 'Espace élève';
-        if (/\/espace-eleve\/(index\.html)?$/.test(location.pathname)) a.className = 'active';
-        li.appendChild(a);
-        var premier = menu.querySelector(':scope > li');
-        menu.insertBefore(li, premier ? premier.nextSibling : menu.firstChild);
+        var liens = Array.from(menu.querySelectorAll(':scope > li > a'));
+        var apres = menu.querySelector(':scope > li');
+        LIENS.forEach(function (l) {
+            // lien déjà écrit dans la page : on le garde et on place le suivant après lui
+            var deja = liens.filter(function (a) { return a.textContent.trim() === l.texte; })[0];
+            if (deja) { apres = deja.parentNode; return; }
+            var li = document.createElement('li'), a = document.createElement('a');
+            a.href = base + l.href;
+            a.textContent = l.texte;
+            if (l.actif.test(location.pathname)) a.className = 'active';
+            li.appendChild(a);
+            menu.insertBefore(li, apres ? apres.nextSibling : menu.firstChild);
+            apres = li;
+        });
     });
 })();

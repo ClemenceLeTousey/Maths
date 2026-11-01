@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>Suivi des résultats</title>
+    <title>Espace professeure</title>
     <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="interactif.css">
@@ -119,14 +119,14 @@
     </nav>
 
     <header>
-        <h1>Suivi des résultats</h1>
-        <p>Espace professeure</p>
+        <h1>Espace professeure</h1>
+        <p>Suivi, plan de travail, DNL et TP</p>
     </header>
 
     <main class="interactif">
         <form class="connexion" id="f-prof">
             <label>Mot de passe professeure <input name="mdp" type="password" autocomplete="current-password" required></label>
-            <button type="submit">Afficher les résultats</button>
+            <button type="submit">Entrer</button>
             <p class="erreur" aria-live="polite"></p>
         </form>
 
@@ -247,7 +247,7 @@
                 form.hidden = true; document.getElementById('vue').hidden = false;
                 if (!document.getElementById('panneau-plan').hidden) PlanTravail.demarrer();
                 var sel = document.getElementById('classe'), avant = sel.value;
-                var classes = Array.from(new Set(d.eleves.map(function (e) { return e.classe; }))).sort();
+                var classes = Array.from(new Set(d.eleves.map(function (e) { return e.classe; }))).sort(ordreClasses);
                 sel.innerHTML = '';
                 classes.forEach(function (c) { var o = document.createElement('option'); o.textContent = c; sel.appendChild(o); });
                 if (classes.indexOf(avant) >= 0) sel.value = avant;
@@ -260,6 +260,23 @@
                 form.hidden = false;
                 try { sessionStorage.removeItem('interactif-prof'); } catch (e) {}
             });
+        }
+
+        /* ---------- Ordre d'affichage ---------- */
+        // classes : 2B (par défaut), 2F, 2H, puis les autres (2-DEMO…) par ordre alphabétique
+        var CLASSES_EN_TETE = ['2B', '2F', '2H'];
+        function ordreClasses(a, b) {
+            var ia = CLASSES_EN_TETE.indexOf(a), ib = CLASSES_EN_TETE.indexOf(b);
+            if (ia < 0) ia = CLASSES_EN_TETE.length;
+            if (ib < 0) ib = CLASSES_EN_TETE.length;
+            return ia - ib || a.localeCompare(b, 'fr');
+        }
+        // élèves : par nom (fichiers comptes-*.csv) ; ceux sans nom à la fin, par identifiant
+        function ordreEleves(a, b) {
+            var na = noms[a.code] || '', nb = noms[b.code] || '';
+            if (na && !nb) return -1;
+            if (nb && !na) return 1;
+            return na.localeCompare(nb, 'fr', { sensitivity: 'base' }) || a.code.localeCompare(b.code, 'fr', { numeric: true });
         }
 
         /* ---------- Noms (fichiers locaux, jamais envoyés) ---------- */
@@ -342,7 +359,7 @@
 
         function afficher() {
             var classe = document.getElementById('classe').value;
-            var eleves = donnees.eleves.filter(function (e) { return e.classe === classe; });
+            var eleves = donnees.eleves.filter(function (e) { return e.classe === classe; }).sort(ordreEleves);
             var ids = exercices();
             var table = document.getElementById('tableau');
             table.innerHTML = '';
@@ -519,7 +536,7 @@
         document.getElementById('export').onclick = function () {
             var classe = document.getElementById('classe').value, ids = exercices();
             var lignes = [['Classe', 'Code', 'Nom'].concat(ids.map(titre))];
-            donnees.eleves.filter(function (e) { return e.classe === classe; }).forEach(function (e) {
+            donnees.eleves.filter(function (e) { return e.classe === classe; }).sort(ordreEleves).forEach(function (e) {
                 lignes.push([e.classe, e.code, noms[e.code] || ''].concat(ids.map(function (id) {
                     var b = bilan(e.code, id);
                     if (!b) return '';
