@@ -364,41 +364,6 @@ header h1.titre-stylo {
     to   { clip-path: inset(-20% -10% -20% 0); }
 }
 
-/* Pastilles vers les pages des classes, façon « arrêts » de ligne */
-.raccourcis-classes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 14px;
-}
-
-.raccourcis-classes a {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 3px 12px 3px 8px;
-    border: 1.5px solid var(--line);
-    border-radius: 999px;
-    color: var(--text);
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: border-color 0.15s;
-}
-
-.raccourcis-classes a b {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    border: 2.5px solid var(--c);
-}
-
-.raccourcis-classes a:hover,
-.raccourcis-classes a:focus-visible {
-    border-color: var(--c);
-    outline: none;
-}
-
 footer {
     text-align: center;
     padding: 30px 20px;
@@ -1048,9 +1013,8 @@ header p + .flammes { margin: -16px 0 -4px; }
     border-radius: 2px;
 }
 
-/* Accueil en mode BTTF : ni raccourcis, ni archives, ni pied de page ; seulement les trois menus,
+/* Accueil en mode BTTF : ni archives, ni pied de page ; seulement les trois menus,
    cachés pendant le démarrage (88 mph et feu) puis affichés en fondu (site.js retire .futur-intro) */
-:root.futur-accueil .raccourcis-classes,
 :root.futur-accueil .archives,
 :root.futur-accueil footer { display: none; }
 
