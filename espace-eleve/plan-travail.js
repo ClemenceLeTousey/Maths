@@ -131,6 +131,31 @@
         ] }
     ];
 
+    // Questions des exercices des feuilles F4 à F6 (Séquence 3) : une case par question, sous l'exercice.
+    // Clé : texte exact de l'élément dans SEMAINES (sans le « ? » des facultatifs).
+    // Cocher toutes les questions coche l'exercice ; cocher l'exercice coche toutes ses questions.
+    function N(debut, fin) { var t = []; for (var i = debut; i <= fin; i++) t.push('Q' + i); return t; }
+    var SOUS = {
+        'F4 ex 8': ['x² − 49', 'x² − 12x + 36', '25x² − 30x + 9', '1 − 16x²', '49 + 14x + x²'],
+        'F4 ex 9': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
+        'F4 ex 9 (J, K, L)': ['J', 'K', 'L'],
+        'F5 ex 1': ['3x − 5 = 7', '2x + 1 = 5x − 8', 'x² − 3 = 2x', '5(x − 2) = 3x', '4x − 1 > 2x + 5', '−2x + 7 ≤ 1'],
+        'F5 ex 3': ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+        'F5 ex 4': ['1', '2', '3', '4', '5', '6'],
+        'F5 ex 4 (7 à 11)': ['7', '8', '9', '10', '11'],
+        'F5 ex 5': ['1 (a à h)', '2 (a à d)'],
+        'F5 ex 6': ['1', '2', '3', '4', '5', '6'],
+        'F5 ex 7': ['1', '2'],
+        'F5 ex 8': ['1', '2', '3', '4'],
+        'F5 ex 9 (bilan : la copie de Tom)': N(1, 2),
+        'F5 ex 10': ['1', '2', '3', '4', '5', '6', '7', '8'],
+        'F5 ex 10 (9, 10)': ['9', '10'],
+        'F6 ex 1': ['Q1', 'Q2', 'Q3', 'Q4', 'Plus loin'],
+        'F6 ex 2': N(1, 3), 'F6 ex 3': N(1, 2), 'F6 ex 4': N(1, 4), 'F6 ex 5': N(1, 3), 'F6 ex 6': N(1, 2),
+        'F6 ex 7': N(1, 3), 'F6 ex 8': N(1, 5), 'F6 ex 9': N(1, 5),
+        'F6 ex 10': N(1, 2), 'F6 ex 11': N(1, 2), 'F6 ex 12': N(1, 3)
+    };
+
     var GROUPES = [
         { cle: 'ev', nom: 'Évaluation', ex: false },
         { cle: 'co', nom: 'Cours', ex: false },
@@ -149,6 +174,7 @@
                     var facultatif = brut.charAt(0) === '?', texte = facultatif ? brut.slice(1) : brut;
                     var it = { id: s.k + ':' + g.cle + ':' + texte, g: g.cle, texte: texte, facultatif: facultatif,
                                essentiel: !facultatif && g.cle !== 'ap', s: s, w: w };
+                    it.sous = (SOUS[texte] || []).map(function (q) { return { id: it.id + '#' + q, texte: q, parent: it }; });
                     s.items.push(it); TOUS.push(it);
                 });
             });
@@ -159,6 +185,16 @@
     var etat = {};
     CLASSES.forEach(function (c) { etat[c] = { coches: {}, notes: {} }; });
     function fait(c, id) { return !!etat[c].coches[id]; }
+    // Exercice coché avant l'ajout des questions : ses questions sont considérées comme faites.
+    function completer() {
+        CLASSES.forEach(function (c) {
+            var co = etat[c].coches;
+            TOUS.forEach(function (it) {
+                if (it.sous.length && co[it.id] && !it.sous.some(function (q) { return co[q.id]; }))
+                    it.sous.forEach(function (q) { co[q.id] = 1; });
+            });
+        });
+    }
 
     var $ = function (id) { return document.getElementById(id); };
     var racine, lance = false, mdp = null, filtre = '';
@@ -201,8 +237,12 @@
                                 return '<div class="pt-groupe pt-' + g.cle + '"><div class="pt-groupe-t"><span>' + g.nom + '</span>' + COLONNES + '</div>' +
                                     '<div class="pt-liste' + (g.ex ? ' pt-ex' : '') + '">' +
                                     s.items.filter(function (i) { return i.g === g.cle; }).map(function (it) {
-                                        return '<div class="pt-item' + (it.facultatif ? ' pt-facultatif' : '') + '" data-ligne="' + esc(it.id) + '">' +
-                                               '<span class="pt-texte">' + esc(it.texte) + '</span>' + cases(it) + '</div>';
+                                        var ligne = '<div class="pt-item' + (it.facultatif ? ' pt-facultatif' : '') + '" data-ligne="' + esc(it.id) + '">' +
+                                                    '<span class="pt-texte">' + esc(it.texte) + '</span>' + cases(it) + '</div>';
+                                        if (!it.sous.length) return ligne;
+                                        return '<div class="pt-avec-sous">' + ligne + '<div class="pt-sous">' + it.sous.map(function (q) {
+                                            return '<div class="pt-item" data-ligne="' + esc(q.id) + '"><span class="pt-texte">' + esc(q.texte) + '</span>' + cases(q) + '</div>';
+                                        }).join('') + '</div></div>';
                                     }).join('') + '</div></div>';
                             }).join('') +
                             CLASSES.map(function (c) {
@@ -242,8 +282,10 @@
     function rafraichir() {
         racine.querySelectorAll('.pt-cases input').forEach(function (inp) { inp.checked = fait(inp.dataset.c, inp.dataset.id); });
         TOUS.forEach(function (it) {
-            var tout = filtre ? fait(filtre, it.id) : CLASSES.every(function (c) { return fait(c, it.id); });
-            racine.querySelector('[data-ligne="' + CSS.escape(it.id) + '"]').classList.toggle('pt-tout', tout);
+            [it].concat(it.sous).forEach(function (x) {
+                var tout = filtre ? fait(filtre, x.id) : CLASSES.every(function (c) { return fait(c, x.id); });
+                racine.querySelector('[data-ligne="' + CSS.escape(x.id) + '"]').classList.toggle('pt-tout', tout);
+            });
         });
         SEMAINES.forEach(function (w) {
             w.s.forEach(function (s) {
@@ -298,7 +340,7 @@
                 if (enLigne[c]) etat[c] = { coches: enLigne[c].coches || {}, notes: enLigne[c].notes || {} };
                 else if (Object.keys(etat[c].coches).length || Object.keys(etat[c].notes).length) programmer(c);   // coches locales pas encore en ligne
             });
-            copieLocale(); rafraichir();
+            completer(); copieLocale(); rafraichir();
             if (!CLASSES.some(function (k) { return aEnvoyer[k]; })) etatTexte('Enregistré.');
         }, function (x) {
             etatTexte('Plan de travail indisponible en ligne (' + x.message + ') : le script maj-plan-travail.sql a-t-il été lancé dans Supabase ? En attendant, les coches restent sur cet ordinateur.', true);
@@ -321,8 +363,16 @@
         racine.addEventListener('change', function (e) {
             var t = e.target;
             if (!t.matches('.pt-cases input')) return;
-            if (t.checked) etat[t.dataset.c].coches[t.dataset.id] = 1; else delete etat[t.dataset.c].coches[t.dataset.id];
-            programmer(t.dataset.c); rafraichir();
+            var c = t.dataset.c, coches = etat[c].coches;
+            function poser(id, oui) { if (oui) coches[id] = 1; else delete coches[id]; }
+            poser(t.dataset.id, t.checked);
+            var it = TOUS.find(function (i) { return i.id === t.dataset.id; });
+            if (it) it.sous.forEach(function (q) { poser(q.id, t.checked); });      // exercice : toutes ses questions
+            else {                                                                 // question : l'exercice suit ses questions
+                var parent = TOUS.find(function (i) { return i.sous.some(function (q) { return q.id === t.dataset.id; }); });
+                if (parent) poser(parent.id, parent.sous.every(function (q) { return coches[q.id]; }));
+            }
+            programmer(c); rafraichir();
         });
         racine.addEventListener('input', function (e) {
             var t = e.target;
@@ -364,7 +414,7 @@
                 var local = JSON.parse(localStorage.getItem(CLE_LOCAL));
                 if (local) CLASSES.forEach(function (c) { if (local[c]) etat[c] = { coches: local[c].coches || {}, notes: local[c].notes || {} }; });
             } catch (e) {}
-            construire(); brancher();
+            completer(); construire(); brancher();
             var f = ''; try { f = localStorage.getItem(CLE_FILTRE) || ''; $('pt-masquer').checked = !!localStorage.getItem(CLE_MASQUER); } catch (e) {}
             racine.classList.toggle('pt-masquer', $('pt-masquer').checked);
             choisir(CLASSES.indexOf(f) >= 0 ? f : '');

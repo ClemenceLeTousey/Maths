@@ -95,6 +95,10 @@
         .pt-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 3px 6px; border-radius: 6px; min-width: 0; }
         .pt-item:hover { background: var(--bleu-doux); }
         .pt-texte { min-width: 0; overflow-wrap: anywhere; }
+        /* Exercice détaillé question par question : toute la largeur, questions en retrait */
+        .pt-avec-sous { grid-column: 1 / -1; }
+        .pt-sous { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); column-gap: 14px; margin: 0 0 4px 18px; padding-left: 8px; border-left: 2px solid var(--line); font-size: 0.9rem; }
+        .pt-sous .pt-cases input { width: 16px; height: 16px; }
         .pt-facultatif .pt-texte { color: var(--muted); }
         .pt-facultatif .pt-texte::after { content: " · si le temps"; font-size: 0.8em; font-style: italic; }
         .pt-tout .pt-texte { text-decoration: line-through; color: var(--muted); }
