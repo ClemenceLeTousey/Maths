@@ -37,6 +37,8 @@
         .interactif .sommaire button.fait { background: var(--ok); border-color: var(--ok); color: #fff; }
         .interactif .sommaire button.courante { border: 2px solid var(--c-seconde); }
         .interactif .sommaire button:disabled { opacity: .4; cursor: default; }
+        .interactif .sommaire button.acces-quiz { margin-left: auto; border-radius: 999px; padding: 0 14px; background: var(--c-seconde); border-color: var(--c-seconde); color: var(--badge-text); letter-spacing: .05em; }
+        .interactif .sommaire button.acces-quiz.fait { background: var(--ok); border-color: var(--ok); }
 
         .etapes { display: flex; flex-direction: column; gap: 14px; }
         .etape { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
@@ -804,6 +806,7 @@ def _console(ligne, n):
               bilan: 'Pour 14 : si <i>x</i> &gt; 3, 2<i>x</i> = 14 donne <i>x</i> = 7, et 7 &gt; 3 ✓ ; si <i>x</i> ⩽ 3, <i>x</i> + 10 = 14 donne <i>x</i> = 4, mais 4 &gt; 3 : <b>refusé</b>. Une seule solution : 7.<br>Pour 7 : 2<i>x</i> = 7 donne 3,5 &gt; 3 ✓ et <i>x</i> + 10 = 7 donne −3 ⩽ 3 ✓. Deux solutions : −3 et 3,5.' }
         ];
         var NB = ETAPES.length;
+        var N_QUIZ = ETAPES.findIndex(function (e) { return e.type === 'quiz'; }) + 1;   // 0 s'il n'y a pas de quiz
 
         /* ---------- Python (Pyodide dans un worker) ---------- */
         var SOURCE_WORKER = [
@@ -942,7 +945,9 @@ def _console(ligne, n):
             var s = Interactif.session();
             if (VUE) return Promise.resolve('Vue professeure : rien n’est enregistré.');
             if (!s) return Promise.resolve('Tu n’es pas connecté(e) : ta progression est gardée seulement sur cet appareil.');
-            var details = ETAPES.slice(0, faites).map(function (e, k) {
+            var nbDetails = N_QUIZ > faites && quizRepondu() ? N_QUIZ : faites;   // + le quiz s'il est fait en avance
+            var details = ETAPES.slice(0, nbDetails).map(function (e, k) {
+                if (k >= faites && k + 1 !== N_QUIZ) return null;
                 var n = k + 1, d = { t: 'Étape ' + n + ' · ' + e.titre, r: lisible(e, n).slice(0, 2500), ok: !passees[n] };
                 if (e.type !== 'code') d.v = reponses[n] || [];
                 if (e.code && e.type !== 'code' && codes[n]) d.c = codes[n].slice(0, 2500);
@@ -987,6 +992,21 @@ def _console(ligne, n):
                 };
                 nav.appendChild(b);
             });
+            // accès direct au quiz, à tout moment (sans faire avancer la progression)
+            if (N_QUIZ) {
+                var fait = quizRepondu();
+                var bq = el('button', 'acces-quiz' + (fait ? ' fait' : ''), fait ? 'QUIZ ✓' : 'QUIZ'); bq.type = 'button';
+                bq.title = fait ? 'Revoir le quiz final (déjà validé)' : 'Aller directement au quiz final';
+                bq.onclick = ouvrirQuiz;
+                nav.appendChild(bq);
+            }
+        }
+        function quizRepondu() { var v = reponses[N_QUIZ]; return !!(v && v.length && v.every(function (x) { return x !== ''; })); }
+        function ouvrirQuiz() {
+            var c = zone.querySelector('[data-n="' + N_QUIZ + '"]');
+            if (!c) { c = carte(N_QUIZ); zone.appendChild(c); }
+            c.ouvrir();
+            c.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function afficher() {
@@ -1342,6 +1362,9 @@ def _console(ligne, n):
                     if (dejaQ && dejaQ.length === e.questions.length && dejaQ.every(function (v) { return v !== ''; })) {
                         var scQ = corriger(dejaQ);
                         retour.className = 'retour ok'; retour.textContent = 'Score : ' + scQ + ' / ' + e.questions.length;
+                        // quiz fait en avance : l'étape est validée dès qu'on y arrive
+                        c.quizFait = function () { if (n === faites + 1) { reussi(); retour.textContent = 'Score : ' + scQ + ' / ' + e.questions.length + '. ' + retour.textContent; } };
+                        if (n === faites + 1) setTimeout(c.quizFait, 0);
                     }
                 }
                 if (e.type === 'qcm') {
@@ -1372,6 +1395,13 @@ def _console(ligne, n):
             }
 
             function reussi(force) {
+                if (n > faites + 1) {   // quiz fait en avance : enregistré, sans faire avancer la progression
+                    retour.className = 'retour ok'; retour.textContent = '✓ Réponses enregistrées.';
+                    sommaire();
+                    var et = el('p', 'aide', 'Enregistrement…'); corps.appendChild(et);
+                    enregistrer().then(function (t) { et.textContent = t; });
+                    return;
+                }
                 retour.className = 'retour ok';
                 if (n <= faites) { retour.textContent = '✓ Toujours juste !'; return; }
                 faites = n; ecrireLocal();
@@ -1388,8 +1418,10 @@ def _console(ligne, n):
                 var ouvrirSuite = function () {
                     if (attenteBilan) attenteBilan.remove();
                     if (n < NB) {
-                        var suivante = carte(n + 1);
+                        var suivante = zone.querySelector('[data-n="' + (n + 1) + '"]');
+                        if (suivante) suivante.remove(); else suivante = carte(n + 1);
                         zone.appendChild(suivante); suivante.rafraichir();
+                        if (suivante.quizFait) setTimeout(suivante.quizFait, 0);
                         setTimeout(function () { suivante.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 600);
                     } else zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé le TP sur les structures conditionnelles !'));
                 };
@@ -1415,7 +1447,7 @@ def _console(ligne, n):
             }
 
             // compte TEST-01 : bouton pour passer l'étape en cours sans y répondre
-            if (!faite && modeTest()) {
+            if (n === faites + 1 && modeTest()) {
                 var bPasser = el('button', 'lien passer', '⏭ Passer (test)'); bPasser.type = 'button';
                 bPasser.onclick = function () { construire(); passees[n] = true; reussi(true); };
                 tete.appendChild(bPasser);

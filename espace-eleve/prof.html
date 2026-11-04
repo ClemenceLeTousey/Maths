@@ -473,7 +473,7 @@
                     } else c.textContent = rep;
                     tab.appendChild(tr);
                 });
-                var reste = b.r.total - (b.r.details || []).length;
+                var reste = b.r.total - (b.r.score || 0) - (b.quiz !== null && (b.r.details || []).length > (b.r.score || 0) ? 1 : 0);   // quiz fait en avance : déjà listé
                 if (reste > 0) { var tr = document.createElement('tr'); cell(tr, reste + ' étape(s) pas encore faite(s)', 'passee'); cell(tr, ''); cell(tr, ''); cell(tr, ''); cell(tr, ''); tab.appendChild(tr); }
                 var w = document.createElement('div'); w.className = 'tableau-defile'; w.appendChild(tab); $detail.appendChild(w);
             }
