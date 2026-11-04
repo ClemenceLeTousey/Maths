@@ -82,10 +82,20 @@
         .reponses input { width: 6em; font-family: var(--f-mono); }
         .reponses input.long { width: 10em; }
         .reponses.une-par-une { flex-direction: column; align-items: stretch; gap: 8px; }
-        .case-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
-        .case-ligne label { min-width: 15em; justify-content: space-between; }
-        .case-ligne input.long { width: 12em; }
-        .retour.case-retour { margin: 0; flex: 1 1 14em; }
+        /* lignes « étiquette | case | Valider | ✓/✗ » alignées en colonnes */
+        .case-ligne { display: grid; grid-template-columns: 13.5em 12em auto 1fr; align-items: center; gap: 6px 10px; }
+        .case-ligne label { display: contents; }
+        .case-ligne input.long { width: 100%; box-sizing: border-box; }
+        .retour.case-retour { margin: 0; line-height: 1.3; }
+        @media (max-width: 640px) {
+            .case-ligne { grid-template-columns: 1fr auto; }
+            .case-ligne .retour.case-retour { grid-column: 1 / -1; }
+        }
+        .bloc-script { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 12px; }
+        .bloc-script h3 { font-size: 1rem; margin: 4px 0; }
+        .bloc-script pre.code { width: fit-content; min-width: 16em; max-width: 100%; }
+        .verif-script { margin-left: 14px; padding-left: 12px; border-left: 3px solid var(--ok); }
+        .verif-script .reponses { margin-top: 8px; }
         .qcm { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
         .qcm label { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
         .qcm label:has(input:checked) { border-color: var(--c-seconde); background: var(--bleu-doux); }
@@ -109,7 +119,7 @@
             .duo.avec-console .console { min-height: 0; }
         }
         .console { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-family: var(--f-mono); font-size: 14px; }
-        .console-titre { font-family: var(--f-sans, inherit); font-size: 0.8rem; color: var(--muted); padding: 4px 12px 0; }
+        .console-titre { font-family: var(--f-texte); font-size: 0.8rem; color: var(--muted); padding: 4px 12px 0; }
         .console-histo { max-height: 14em; overflow-y: auto; padding: 0 12px; }
         .console pre.sep { color: var(--muted); }
         .console-ligne { display: flex; align-items: center; gap: 6px; padding: 4px 12px 6px; }
@@ -398,17 +408,66 @@ def _console(ligne, n):
         function liste(s) {
             return String(s).split(/;|\bet\b/).map(function (x) { return x.trim(); }).filter(Boolean).map(num);
         }
-        // vérification automatique avec e.attendus (nombres ou textes) et e.aides (indices case par case)
-        function controle(v, e) {
-            for (var k = 0; k < e.attendus.length; k++) {
-                var a = e.attendus[k];
-                var ok = typeof a === 'number' ? Math.abs(num(v[k]) - a) < 1e-6 : txt(v[k]) === txt(a);
-                if (!ok) {
-                    if (typeof a === 'number' && isNaN(num(v[k]))) return '« ' + e.champs[k] + ' » : écris un nombre (avec un point ou une virgule).';
-                    return (e.aides && e.aides[k]) || '« ' + e.champs[k] + ' » : ce n’est pas ça. Vérifie avec la console.';
-                }
+        // vérification d'une case avec e.attendus (nombres ou textes) et e.aides (indices case par case)
+        function controleCase(k, v, e) {
+            var a = e.attendus[k];
+            var ok = typeof a === 'number' ? Math.abs(num(v) - a) < 1e-6 : txt(v) === txt(a);
+            if (ok) return null;
+            if (typeof a === 'number' && isNaN(num(v))) return 'Écris un nombre (avec un point ou une virgule).';
+            return (e.aides && e.aides[k]) || 'Ce n’est pas ça. Vérifie avec la console.';
+        }
+
+        // une ligne « étiquette [case] Valider ✓/✗ » ; apres(v, ok) à chaque validation ; init(ok) au chargement
+        function ligneCase(parent, etiquette, valeur, verif, apres, init, afficherEtat) {
+            var f = el('form', 'case-ligne');
+            var l = el('label', null, etiquette + ' ');
+            var i = el('input'); i.autocomplete = 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', 'off');
+            i.className = 'long'; i.value = valeur || '';
+            l.appendChild(i); f.appendChild(l);
+            var b = el('button', null, 'Valider'); b.type = 'submit'; f.appendChild(b);
+            var r = el('span', 'retour case-retour'); f.appendChild(r);
+            var juste = false;
+            function marquer(m) { juste = !m; r.className = 'retour case-retour ' + (m ? 'ko' : 'ok'); r.textContent = m ? '✗ ' + m : '✓'; }
+            if (valeur && afficherEtat !== false && !verif(valeur)) { marquer(null); init(true); }
+            i.oninput = function () { if (juste) { juste = false; r.textContent = ''; init(false); } };
+            f.onsubmit = function (ev) {
+                ev.preventDefault();
+                var v = i.value.trim();
+                if (!v) { marquer('Écris ta réponse.'); return; }
+                var m = verif(v);
+                marquer(m);
+                apres(v, !m);
+            };
+            parent.appendChild(f);
+        }
+
+        // petit éditeur exécutable (sans console) : renvoie l'objet CodeMirror
+        function miniEditeur(parent, code, cleNs) {
+            var boite = el('div', 'editeur'); parent.appendChild(boite);
+            var actions = el('div', 'actions'), sortie = el('div', 'sortie');
+            var bLancer = el('button', null, '▶ Exécuter'); bLancer.type = 'button';
+            var bStop = el('button', 'stop', '■ Stop'); bStop.type = 'button'; bStop.hidden = true; bStop.onclick = arreterPython;
+            actions.appendChild(bLancer); actions.appendChild(bStop);
+            var marque = null;
+            function lancer() {
+                if (bLancer.disabled) return;
+                bLancer.disabled = true; bLancer.textContent = 'Exécution…';
+                var arret = setTimeout(function () { bStop.hidden = false; }, 2500);
+                envoyer({ type: 'run', src: cm.getValue(), n: cleNs, v: false }).then(function (r) {
+                    clearTimeout(arret); bStop.hidden = true;
+                    bLancer.disabled = false; bLancer.textContent = '▶ Exécuter';
+                    montrer(sortie, r);
+                    if (r.ligne) { marque = r.ligne - 1; cm.addLineClass(marque, 'background', 'ligne-erreur'); }
+                });
             }
-            return null;
+            var cm = CodeMirror(boite, {
+                value: code, mode: 'python', lineNumbers: true, indentUnit: 4, matchBrackets: true, viewportMargin: Infinity,
+                extraKeys: { 'Ctrl-Enter': lancer, 'Cmd-Enter': lancer, Tab: function (x) { x.replaceSelection('    '); } }
+            });
+            cm.on('change', function () { if (marque !== null) { cm.removeLineClass(marque, 'background', 'ligne-erreur'); marque = null; } });
+            bLancer.onclick = lancer;
+            parent.appendChild(actions); parent.appendChild(sortie);
+            return cm;
         }
 
         var SUPPLEMENT = 'def supplement(masse):\n    if masse > 23:\n        return 50\n    else:\n        return 0\n';
@@ -442,7 +501,7 @@ def _console(ligne, n):
               consigne: '<p>Pour écrire une condition, on compare deux valeurs :</p>' + TABLE_COMP +
                 encadre('attention', 'Attention !', 'Pour <b>tester</b> une égalité, on écrit <code>==</code> ; le simple <code>=</code> est réservé à l’affectation : <code>x = 3</code> affecte la valeur 3 à <code>x</code>.') +
                 '<p>✍️ Écris en Python le test de chaque condition, puis valide-les une par une.</p>',
-              champs: ['si age ⩾ 18', 'si note ≠ 20', 'si t = 0', 'si masse ⩽ 23'], unParUn: true,
+              champs: ['si age ⩾ 18', 'si note ≠ 20', 'si t = 0', 'si masse ⩽ 23'], etiquettesTexte: true,
               // réponse attendue : la ligne complète « if condition: »
               verifierCase: function (k, v) {
                   var FORME = 'La réponse attendue est de la forme : if condition:';
@@ -470,12 +529,13 @@ def _console(ligne, n):
               aides: ['-5 < 0 est vrai : quel bloc est exécuté ?', '0 < 0 est faux… et 0 < 100 ?', '100 < 0 est faux, 100 < 100 est faux aussi : on arrive au else.'],
               bilan: 'On peut écrire autant de <code>elif</code> que nécessaire : un seul bloc est exécuté, celui de la <b>première</b> condition vraie.' },
 
-            { titre: 'Ex. 1 · Prévoir, puis vérifier', type: 'question', console: false,
-              consigne: '<p>Le programme contient trois scripts à la suite. Pour chacun, <b>prévois d’abord</b> ce qui va s’afficher et écris-le dans les cases, <b>puis</b> vérifie en exécutant le programme.</p>',
-              code: '# Script A\nx = 7\nif x > 5:\n    print("grand")\nelse:\n    print("petit")\n\n# Script B\n' + SCRIPT_B + '\n# Script C\n' + SCRIPT_C,
-              champs: ['Script A affiche', 'Script B affiche', 'Script C affiche'], long: true,
-              attendus: ['grand', 'refusé', '1'],
-              aides: ['7 > 5 est-il vrai ?', '10 > 10 est-il vrai ?', 'Les deux if sont testés l’un après l’autre : le second avec la nouvelle valeur de a.'] },
+            { titre: 'Ex. 1 · Prévoir, puis vérifier', type: 'prevoir',
+              consigne: '<p>Pour chaque script, <b>prévois d’abord</b> ce qui va s’afficher, sans ordinateur. Une fois ta prévision écrite (juste ou fausse), tu pourras exécuter le script pour vérifier, et te corriger si besoin.</p>',
+              scripts: [
+                  { nom: 'Script A', code: 'x = 7\nif x > 5:\n    print("grand")\nelse:\n    print("petit")\n', attendu: 'grand' },
+                  { nom: 'Script B', code: SCRIPT_B, attendu: 'refusé' },
+                  { nom: 'Script C', code: SCRIPT_C, attendu: '1' }
+              ] },
 
             { titre: 'Ex. 1 · Corriger le script B', type: 'code',
               consigne: '<p>Dans le script B, un élève qui a exactement 10 devrait être <b>admis</b>. Or 10 &gt; 10 est faux : le script affiche <code>refusé</code>.</p>' +
@@ -509,7 +569,7 @@ def _console(ligne, n):
               consigne: '<p>Un élève tape <code>prix(18, 1.82)</code> pour la personne de 18 ans qui mesure 1,82 m.</p><p>✍️ Quel résultat obtient-il ? (arrondi au centième)</p>',
               code: PRIX, exemple: 'prix(18, 1.82)',
               champs: ['prix(18, 1.82) renvoie environ'],
-              verifier: function (v) { return Math.abs(num(v[0]) - 2.002) < 0.01 ? null : 'Tape prix(18, 1.82) dans la console, puis arrondis au centième.'; },
+              verifierCase: function (k, v) { return Math.abs(num(v) - 2.002) < 0.01 ? null : 'Tape prix(18, 1.82) dans la console, puis arrondis au centième.'; },
               bilan: 'Environ 2 € : c’est absurde ! Python prend <code>taille = 18</code> et <code>age = 1.82</code>. Comme 18 &lt; 1,30 est faux, il calcule 1,82 × 1,1 ≈ 2. <b>L’ordre des arguments doit suivre l’ordre des paramètres.</b><br>(Le « 0000000000002 » final vient de la façon dont l’ordinateur stocke les nombres à virgule : c’est une minuscule erreur d’arrondi.)' },
 
             { titre: 'Ex. 3 · Au cinéma', type: 'code',
@@ -606,13 +666,16 @@ def _console(ligne, n):
                 encadre('astuce', 'Plusieurs solutions ?', 'Sépare-les par un point-virgule, par exemple : <code>-2 ; 4.5</code>'),
               code: 'def f(x):\n    if x > 3:\n        return 2 * x\n    else:\n        return x + 10\n', exemple: 'f(7)',
               champs: ['f(x) = 14 pour x =', 'f(x) = 7 pour x ='], long: true,
-              verifier: function (v) {
-                  var a = liste(v[0]), b = liste(v[1]).sort(function (p, q) { return p - q; });
-                  if (a.some(isNaN) || b.some(isNaN)) return 'Écris des nombres, séparés par un point-virgule.';
-                  if (a.indexOf(4) >= 0) return 'Vérifie f(4) avec la console : 4 vérifie-t-il la condition du cas x ⩽ 3 ?';
-                  if (a.length !== 1 || a[0] !== 7) return 'Pour 14 : étudie le cas x > 3 (2x = 14), puis le cas x ⩽ 3 (x + 10 = 14), en vérifiant à chaque fois la condition.';
-                  if (b.length < 2) return 'Pour 7 : il y a une solution dans chaque cas !';
-                  if (b.length !== 2 || b[0] !== -3 || b[1] !== 3.5) return 'Pour 7 : résous 2x = 7 (cas x > 3), puis x + 10 = 7 (cas x ⩽ 3).';
+              verifierCase: function (k, v) {
+                  var l = liste(v).sort(function (p, q) { return p - q; });
+                  if (l.some(isNaN)) return 'Écris des nombres, séparés par un point-virgule.';
+                  if (k === 0) {
+                      if (l.indexOf(4) >= 0) return 'Vérifie f(4) avec la console : 4 vérifie-t-il la condition du cas x ⩽ 3 ?';
+                      if (l.length !== 1 || l[0] !== 7) return 'Étudie le cas x > 3 (2x = 14), puis le cas x ⩽ 3 (x + 10 = 14), en vérifiant à chaque fois la condition.';
+                      return null;
+                  }
+                  if (l.length < 2) return 'Il y a une solution dans chaque cas !';
+                  if (l.length !== 2 || l[0] !== -3 || l[1] !== 3.5) return 'Résous 2x = 7 (cas x > 3), puis x + 10 = 7 (cas x ⩽ 3).';
                   return null;
               },
               bilan: 'Pour 14 : si <i>x</i> &gt; 3, 2<i>x</i> = 14 donne <i>x</i> = 7, et 7 &gt; 3 ✓ ; si <i>x</i> ⩽ 3, <i>x</i> + 10 = 14 donne <i>x</i> = 4, mais 4 &gt; 3 : <b>refusé</b>. Une seule solution : 7.<br>Pour 7 : 2<i>x</i> = 7 donne 3,5 &gt; 3 ✓ et <i>x</i> + 10 = 7 donne −3 ⩽ 3 ✓. Deux solutions : −3 et 3,5.' }
@@ -765,7 +828,7 @@ def _console(ligne, n):
             tete.appendChild(el('h2', null, esc(e.titre)));
             var corps = el('div', 'etape-corps', e.consigne);
             c.appendChild(tete); c.appendChild(corps);
-            var cm = null, construit = false, bilanMontre = false, retour;
+            var cm = null, cms = [], construit = false, bilanMontre = false, retour;
 
             function montrerBilan() {
                 if (!e.bilan || bilanMontre) return;
@@ -868,54 +931,63 @@ def _console(ligne, n):
                     }
                     bLancer.onclick = lancer;
                 }
-                if (e.type === 'question' && e.unParUn) {
+                if (e.type === 'question') {
                     // une case = une ligne avec son propre bouton Valider ; l'étape est réussie quand toutes sont justes
                     var cases = el('div', 'reponses une-par-une');
                     var valeurs = e.champs.map(function (x, k) { return (reponses[n] || [])[k] || ''; }), oks = [];
+                    var verif = e.verifierCase || function (k, v) { return controleCase(k, v, e); };
                     e.champs.forEach(function (lib, k) {
-                        var f = el('form', 'case-ligne');
-                        var l = el('label', null, esc(lib) + ' ');
-                        var i = el('input'); i.autocomplete = 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', 'off');
-                        i.className = 'long'; i.value = valeurs[k];
-                        l.appendChild(i); f.appendChild(l);
-                        var b = el('button', null, 'Valider'); b.type = 'submit'; f.appendChild(b);
-                        var r = el('span', 'retour case-retour'); f.appendChild(r);
-                        function marquer(m) { oks[k] = !m; r.className = 'retour case-retour ' + (m ? 'ko' : 'ok'); r.textContent = m ? '✗ ' + m : '✓'; }
-                        if (valeurs[k] && !e.verifierCase(k, valeurs[k])) marquer(null);
-                        i.oninput = function () { if (oks[k]) { oks[k] = false; r.textContent = ''; } };
-                        f.onsubmit = function (ev) {
-                            ev.preventDefault();
-                            var v = i.value.trim();
-                            if (!v) { marquer('Écris ta réponse.'); return; }
-                            valeurs[k] = v; reponses[n] = valeurs.slice(); ecrireLocal();
-                            marquer(e.verifierCase(k, v));
-                            if (e.champs.every(function (x, j) { return oks[j]; })) reussi();
-                        };
-                        cases.appendChild(f);
+                        ligneCase(cases, e.etiquettesTexte ? esc(lib) : '<code>' + esc(lib) + '</code>', valeurs[k],
+                            function (v) { return verif(k, v); },
+                            function (v, ok) {
+                                oks[k] = ok; valeurs[k] = v; reponses[n] = valeurs.slice(); ecrireLocal();
+                                if (ok && e.champs.every(function (x, j) { return oks[j]; })) reussi();
+                            }, function (ok) { oks[k] = ok; });
                     });
                     corps.appendChild(cases);
-                } else if (e.type === 'question') {
-                    var form = el('form', 'reponses');
-                    var champs = e.champs.map(function (lib, k) {
-                        var l = el('label', null, '<code>' + esc(lib) + '</code> ');
-                        var i = el('input'); i.autocomplete = 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', 'off');
-                        if (e.long) i.className = 'long';
-                        if (reponses[n]) i.value = reponses[n][k] || '';
-                        l.appendChild(i); form.appendChild(l);
-                        return i;
+                }
+                if (e.type === 'prevoir') {
+                    // pour chaque script : prévision d'abord (verrouillée, non notée), puis un éditeur pour vérifier,
+                    // et une ligne « Python affiche » pour se corriger (notée). reponses[n] = [prév. A, corr. A, prév. B, …]
+                    var rep = e.scripts.map(function (x, k) { return [(reponses[n] || [])[2 * k] || '', (reponses[n] || [])[2 * k + 1] || '']; });
+                    var justes = [];
+                    function sauver() { reponses[n] = [].concat.apply([], rep); ecrireLocal(); }
+                    e.scripts.forEach(function (sc, k) {
+                        var bloc = el('div', 'bloc-script');
+                        bloc.appendChild(el('h3', null, esc(sc.nom)));
+                        bloc.appendChild(el('div', null, py(sc.code)));
+                        var fp = el('form', 'case-ligne');
+                        var lp = el('label', null, 'Je prévois qu’il affiche ');
+                        var ip = el('input'); ip.autocomplete = 'off'; ip.spellcheck = false; ip.className = 'long'; ip.value = rep[k][0];
+                        lp.appendChild(ip); fp.appendChild(lp);
+                        var bp = el('button', null, 'Valider ma prévision'); bp.type = 'submit'; fp.appendChild(bp);
+                        bloc.appendChild(fp);
+                        var suite = el('div', 'verif-script');
+                        bloc.appendChild(suite);
+                        function devoiler() {
+                            ip.readOnly = true; bp.hidden = true;
+                            suite.appendChild(el('p', 'aide', 'Ta prévision : « ' + esc(rep[k][0]) + ' ». Exécute le script pour vérifier :'));
+                            cms.push(miniEditeur(suite, sc.code, n + '-' + k));
+                            var cases2 = el('div', 'reponses une-par-une');
+                            ligneCase(cases2, 'Python affiche', rep[k][1] || rep[k][0],
+                                function (v) { return txt(v) === txt(sc.attendu) ? null : 'Exécute le script et recopie exactement ce que Python affiche.'; },
+                                function (v, ok) {
+                                    justes[k] = ok; rep[k][1] = v; sauver();
+                                    if (ok && e.scripts.every(function (x, j) { return justes[j]; })) reussi();
+                                }, function (ok) { justes[k] = ok; }, !!rep[k][1]);
+                            suite.appendChild(cases2);
+                            if (sc.aide) suite.appendChild(el('p', 'aide', sc.aide));
+                        }
+                        fp.onsubmit = function (ev) {
+                            ev.preventDefault();
+                            var v = ip.value.trim();
+                            if (!v || ip.readOnly) return;
+                            rep[k][0] = v; sauver(); devoiler();
+                            cms.forEach(function (x) { x.refresh(); });
+                        };
+                        if (rep[k][0]) devoiler();
+                        corps.appendChild(bloc);
                     });
-                    var bOk = el('button', null, 'Valider'); bOk.type = 'submit';
-                    form.appendChild(bOk);
-                    form.onsubmit = function (ev) {
-                        ev.preventDefault();
-                        var v = champs.map(function (i) { return i.value.trim(); });
-                        if (v.some(function (x) { return !x; })) { retour.className = 'retour ko'; retour.textContent = 'Complète toutes les cases.'; return; }
-                        reponses[n] = v; ecrireLocal();
-                        var m = e.verifier ? e.verifier(v) : controle(v, e);
-                        if (m) { retour.className = 'retour ko'; retour.textContent = '✗ Pas encore. ' + m; }
-                        else reussi();
-                    };
-                    corps.appendChild(form);
                 }
                 if (e.type === 'qcm') {
                     var q = el('form', 'qcm');
@@ -972,11 +1044,12 @@ def _console(ligne, n):
                 c.classList.toggle('ouverte', ouvrir);
                 var b = tete.querySelector('button');
                 if (b) b.textContent = ouvrir ? 'Replier' : 'Reprendre';
-                if (ouvrir) { construire(); if (cm) cm.refresh(); }
+                if (ouvrir) { construire(); rafraichir(); }
             }
 
             c.ouvrir = function () { if (c.classList.contains('faite')) basculer(true); };
-            c.rafraichir = function () { if (cm) cm.refresh(); };
+            function rafraichir() { if (cm) cm.refresh(); cms.forEach(function (x) { x.refresh(); }); }
+            c.rafraichir = rafraichir;
             if (faite) ajouterRevoir(); else construire();
             return c;
         }
