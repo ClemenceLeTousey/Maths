@@ -53,7 +53,11 @@
         .evals .eval-titre { font-weight: 600; }
         .evals .eval-titre span { display: block; font-weight: 400; font-size: 0.9rem; color: var(--muted); }
         .evals .eval-liens { display: flex; flex-wrap: wrap; gap: 6px; }
-    </style>
+            #liste-tp td { vertical-align: middle; text-align: left; }
+        .code-tp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+        .code-tp input { width: 9em; font-family: var(--f-mono); text-transform: uppercase; }
+        .code-tp .erreur { color: var(--ko); font-weight: 600; }
+</style>
 </head>
 <body>
     <nav class="navbar">
@@ -73,6 +77,7 @@
         <div id="contenu" hidden>
         <div class="onglets" role="tablist" aria-label="Rubriques de l'espace élève">
             <button type="button" role="tab" id="onglet-automatismes" aria-controls="panneau-automatismes" data-onglet="automatismes">Automatismes</button>
+            <button type="button" role="tab" id="onglet-tp" aria-controls="panneau-tp" data-onglet="tp">TP Python</button>
             <button type="button" role="tab" id="onglet-evaluations" aria-controls="panneau-evaluations" data-onglet="evaluations" data-niveau="seconde" hidden>Évaluations</button>
             <button type="button" role="tab" id="onglet-remediation" aria-controls="panneau-remediation" data-onglet="remediation" data-niveau="seconde" hidden>Remédiation</button>
             <button type="button" role="tab" id="onglet-echange" aria-controls="panneau-echange" data-onglet="echange">Espace d'échange</button>
@@ -90,6 +95,12 @@
         <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>
         </div>
 
+        <div class="panneau" role="tabpanel" id="panneau-tp" aria-labelledby="onglet-tp" hidden>
+            <div class="tableau-defile"><table class="res" id="liste-tp"></table></div>
+            <p class="aide">Certains TP demandent un <b>code d'accès</b>, donné en classe. Une fois entré, il est retenu sur cet appareil.</p>
+            <p class="aide">Ta progression est enregistrée à chaque étape réussie : tu peux t'arrêter et reprendre plus tard, ici ou à la maison.</p>
+        </div>
+
         <div class="panneau" role="tabpanel" id="panneau-evaluations" aria-labelledby="onglet-evaluations" hidden>
         <section class="soutien">
             <h2>Évaluations déjà faites</h2>
@@ -105,15 +116,16 @@
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ds1-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ds1-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
                 <li><div class="eval-titre">Interrogation 3<span>Équations et vecteurs</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef3-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef3-corrige.html">Corrigé</a></div></li>
+                <li><div class="eval-titre">Interrogation 4<span>Identités remarquables</span></div>
+                    <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef4-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef4-corrige.html">Corrigé</a></div></li>
+                <li><div class="eval-titre">Devoir surveillé 2 · Contrat<span>Le sujet d'entraînement, même structure que le DS</span></div>
+                    <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ds2-contrat.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ds2-contrat-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
             </ul>
         </section>
         <section class="soutien">
             <h2>Évaluations à venir</h2>
             <p class="aide">Ce qui t'attend jusqu'aux vacances de Noël : le sujet et le corrigé seront ajoutés ici une fois l'évaluation faite.</p>
             <ul class="evals">
-                <li><div class="eval-titre">Interrogation 4<span>Identités remarquables · semaine du 2 novembre</span></div></li>
-                <li><div class="eval-titre">Devoir surveillé 2 · Contrat<span>Le sujet d'entraînement, même structure que le DS</span></div>
-                    <div class="eval-liens"><a class="bouton" href="https://nuage02.apps.education.fr/index.php/s/QNXZsnGpAqH4KCH" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="https://nuage02.apps.education.fr/index.php/s/RSK94G8c3ZFqiS3" target="_blank" rel="noopener">Corrigé</a></div></li>
                 <li><div class="eval-titre">Devoir surveillé 2<span>Calcul littéral, vecteurs et Python · mardi 10 novembre</span></div></li>
                 <li><div class="eval-titre">Interrogation 5<span>Inégalités et proportions · semaine du 16 novembre</span></div></li>
                 <li><div class="eval-titre">Interrogation 6<span>Évolutions · semaine du 23 novembre</span></div></li>
@@ -214,6 +226,65 @@
             });
         }
 
+        /* ---------- Onglet TP Python : un TP par ligne ; code d'accès (empreinte SHA-256 dans config.js) ---------- */
+        function normaliserCode(t) { return String(t).toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+        function empreinte(t) {
+            return crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function (b) {
+                return Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+            });
+        }
+        function accesTP(ex) {
+            if (!ex.codeAcces) return true;
+            var s = Interactif.session();
+            if (s && String(s.code || '').toUpperCase() === 'TEST-01') return true;
+            try { return localStorage.getItem('tp-acces:' + ex.id) === ex.codeAcces; } catch (e) { return false; }
+        }
+        function remplirTP(listeTP, parExercice) {
+            var t = document.getElementById('liste-tp');
+            t.innerHTML = '';
+            var te = document.createElement('tr');
+            te.innerHTML = '<th>TP</th><th>Progression</th><th></th>';
+            t.appendChild(te);
+            if (!listeTP.length) {
+                var v = document.createElement('tr'), c0 = document.createElement('td');
+                c0.colSpan = 3; c0.textContent = 'Pas encore de TP pour ta classe.'; v.appendChild(c0); t.appendChild(v);
+                return;
+            }
+            listeTP.forEach(function (ex) {
+                var tr = document.createElement('tr');
+                var c1 = document.createElement('td'), titre = document.createElement('b');
+                titre.textContent = ex.groupe.replace(/^TP Python · /, '');
+                c1.appendChild(titre); c1.appendChild(document.createElement('br'));
+                c1.appendChild(document.createTextNode(ex.titre));
+                tr.appendChild(c1);
+                var res = (parExercice[ex.id] || []).slice().sort(function (a, b) { return b.score - a.score; })[0];
+                var c2 = document.createElement('td'); c2.textContent = res ? res.score + ' / ' + res.total + ' étapes' : '—'; tr.appendChild(c2);
+                var c3 = document.createElement('td');
+                if (accesTP(ex)) {
+                    var a = document.createElement('a'); a.href = ex.url; a.className = 'bouton'; a.textContent = res ? 'Continuer' : 'Commencer';
+                    c3.appendChild(a);
+                } else {
+                    var f = document.createElement('form'); f.className = 'code-tp';
+                    var i = document.createElement('input'); i.placeholder = 'Code d’accès'; i.autocomplete = 'off'; i.spellcheck = false;
+                    i.setAttribute('autocapitalize', 'characters'); i.setAttribute('aria-label', 'Code d’accès du TP');
+                    var b = document.createElement('button'); b.type = 'submit'; b.textContent = 'Ouvrir';
+                    var m = document.createElement('span'); m.className = 'erreur';
+                    f.appendChild(i); f.appendChild(b); f.appendChild(m);
+                    f.onsubmit = function (e) {
+                        e.preventDefault();
+                        empreinte(normaliserCode(i.value)).then(function (h) {
+                            if (h !== ex.codeAcces) { m.textContent = 'Code incorrect.'; return; }
+                            try { localStorage.setItem('tp-acces:' + ex.id, h); } catch (x) {}
+                            location.href = ex.url;
+                        }, function () { m.textContent = 'Impossible de vérifier le code sur ce navigateur.'; });
+                    };
+                    c3.appendChild(f);
+                }
+                tr.appendChild(c3);
+                t.appendChild(tr);
+            });
+        }
+
         function afficher(resultats) {
             derniersResultats = resultats;
             var parExercice = {};
@@ -223,6 +294,9 @@
             var code = s ? String(s.code || '').toUpperCase() : '';
             // « comptes » : exercice réservé à certains comptes (séries préparées à l'avance, testées avec TEST-01)
             var liste = INTERACTIF_CATALOGUE.filter(function (ex) { return !ex.archive && (!niv || ex.niveau === niv) && (!ex.comptes || ex.comptes.indexOf(code) >= 0); });
+            var listeTP = liste.filter(function (ex) { return ex.tp; });
+            liste = liste.filter(function (ex) { return !ex.tp; });
+            remplirTP(listeTP, parExercice);
             var enCours = liste.filter(function (ex) { return !(GROUPES[ex.groupe] || {}).section; });
             remplir(table, enCours, parExercice);
             if (!liste.length) {
@@ -381,7 +455,7 @@
             });
         }
 
-        /* ---------- Onglets : Automatismes par défaut ; #evaluations, #echange ou #soutien dans l'adresse ouvre l'onglet voulu ---------- */
+        /* ---------- Onglets : Automatismes par défaut ; #tp, #evaluations, #echange ou #soutien dans l'adresse ouvre l'onglet voulu ---------- */
         var onglets = Array.prototype.slice.call(document.querySelectorAll('.onglets [role="tab"]'));
         function ouvrirOnglet(nom, focus) {
             if (!onglets.some(function (o) { return o.dataset.onglet === nom && !o.hidden; })) nom = 'automatismes';
