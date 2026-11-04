@@ -20,7 +20,15 @@
         .progression .barre { flex: 1; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
         .progression .barre i { display: block; height: 100%; background: var(--ok); border-radius: 4px; transition: width .4s; }
         .py-etat { color: var(--muted); font-size: 0.85rem; margin: -8px 0 16px; }
-        .sommaire { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: -6px 0 18px; }
+        /* progression et pastilles toujours visibles, juste sous la barre du site (hauteurs mesurées en JS) */
+        .barre-etapes { position: sticky; top: var(--haut-nav, 0px); z-index: 900; background: var(--bg); padding: 10px 0 8px; margin: 0 0 14px; border-bottom: 1px solid var(--line); }
+        .barre-etapes .progression { margin: 0 0 8px; }
+        .etape, .bloc-script, .zone-code, .encadre { scroll-margin-top: calc(var(--haut-nav, 0px) + var(--haut-barre, 0px) + 10px); }
+        .sommaire { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; }
+        @media (max-width: 640px) {
+            .sommaire { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+            .interactif .sommaire button { flex: 0 0 auto; }
+        }
         .sommaire .aide { margin: 0 4px 0 0; font-size: 0.85rem; }
         .interactif .sommaire button {
             min-width: 2.2em; height: 2.2em; padding: 0 4px; border-radius: 50%; font-size: 0.85rem; font-weight: 600;
@@ -173,8 +181,10 @@
 
     <main class="interactif">
         <div id="bandeau"></div>
-        <div class="progression"><span id="progres-texte"></span><div class="barre"><i id="progres-barre"></i></div></div>
-        <nav class="sommaire" id="sommaire" aria-label="Étapes du TP"></nav>
+        <div class="barre-etapes" id="barre-etapes">
+            <div class="progression"><span id="progres-texte"></span><div class="barre"><i id="progres-barre"></i></div></div>
+            <nav class="sommaire" id="sommaire" aria-label="Étapes du TP"></nav>
+        </div>
         <p class="py-etat" id="py-etat">Chargement de Python… (quelques secondes la première fois)</p>
         <div class="etapes" id="etapes"></div>
     </main>
@@ -304,20 +314,6 @@ def _e14(ns, src, out):
                      "Pense aux âges frontières : 8, 10, 12, 14 et 16 ans sont inclus dans le groupe du dessus.")
 
 
-def _morceaux(x):
-    if x <= -1:
-        return 2 * x + 1
-    if x <= 0:
-        return -x + 2
-    return -3 * x + 2
-
-
-def _e16(ns, src, out):
-    xs = [-4, -1, -0.5, 0, 0.5, 2, 3, -2, 1]
-    return _verifier(ns, src, "f", 1, [((x,), _morceaux(x)) for x in xs],
-                     "Vérifie la formule utilisée dans chaque cas.")
-
-
 def _e18(ns, src, out):
     hs = [0, 1, 2, 4, 5, 6, 8, 10]
     return (_verifier(ns, src, "tarif_A", 1, [((h,), 3 * h) for h in hs], "Le tarif A coûte 3 € par heure.")
@@ -343,7 +339,7 @@ def _e21(ns, src, out):
         ((2,), "A"), ((4,), "A"), ((6,), "B"), ((8,), "B")])
 
 
-_ETAPES = {5: _e5, 9: _e9, 11: _e11, 13: _e13, 14: _e14, 16: _e16, 18: _e18, 19: _e19, 21: _e21}
+_ETAPES = {5: _e5, 8: _e9, 10: _e11, 12: _e13, 13: _e14, 15: _e18, 16: _e19, 18: _e21}
 
 
 def _erreur(e, src):
@@ -576,7 +572,6 @@ def _console(ligne, n):
         var SCRIPT_C = 'a = 8\nif a > 4:\n    a = 2 * a - 5\nif a > 10:\n    a = a - 10\nprint(a)\n';
         var PRIX = 'def prix(taille, age):\n    if taille < 1.30:\n        entree = age * 0.5\n    else:\n        entree = age * 1.1\n    return entree\n';
         var TARIF = 'def tarif(age):\n    if age < 18:\n        return 6\n    else:\n        return 9\n';
-        var F_MORCEAUX = 'def f(x):\n    if x <= -1:\n        return 2 * x + 1\n    elif x <= 0:\n        return -x + 2\n    else:\n        return -3 * x + 2\n';
         var VELOS = 'def tarif_A(h):\n    return 3 * h\n\ndef tarif_B(h):\n    return 10 + h\n';
         var PREVOIR_SCRIPT = '<p>✍️ <b>Prévois d’abord</b> ce qui va s’afficher, sans ordinateur. Si ta prévision est fausse, tu exécuteras le script pour vérifier, puis tu te corrigeras.</p>';
         var TABLE_COMP = '<div class="tableau"><table>' +
@@ -686,22 +681,6 @@ def _console(ligne, n):
               ],
               bilan: 'La fonction a deux paramètres, <code>taille</code> et <code>age</code>, <b>dans cet ordre</b>.' },
 
-            { titre: 'Ex. 2 · L’ordre des arguments', type: 'prevoir',
-              consigne: '<p>Un élève tape <code>prix(18, 1.82)</code> pour la personne de 18 ans qui mesure 1,82 m.</p>' +
-                '<p>✍️ <b>Prévois d’abord</b>, sans ordinateur, ce que renvoie cet appel (une valeur approchée suffit). Si ta prévision est fausse, tu exécuteras le script pour vérifier, puis tu te corrigeras.</p>',
-              commun: PRIX, exemple: 'prix(1.50, 12)',
-              blocs: [['if', 'if taille < 1.30'], ['else', 'else']],
-              scripts: [
-                  { nom: 'Les arguments dans l’autre ordre', appel: 'prix(18, 1.82)', attendu: 2.002, tol: 0.01,
-                    variable: 'taille', valeur: '18',
-                    intro: 'Python range les arguments <b>dans l’ordre des paramètres</b> : <code>taille</code> vaut 18 et <code>age</code> vaut 1.82 !',
-                    car: [{ cond: 'if taille < 1.30', vraie: false, raison: '18 n’est pas plus petit que 1,30' },
-                          { bloc: 'else' },
-                          { valeur: '2.002', tol: 0.001, avant: 'Donc <code>entree</code> prend la valeur', raison: '1,82 × 1,1 ≈ 2,002', aide: 'Calcule age × 1.1 avec age = 1.82.' },
-                          { fin: 'L’appel renvoie donc environ 2 € : absurde pour une personne de 18 ans, les arguments sont dans le mauvais ordre !' }] }
-              ],
-              bilan: 'Environ 2 € : c’est absurde ! Python prend <code>taille = 18</code> et <code>age = 1.82</code>. Comme 18 &lt; 1,30 est faux, il calcule 1,82 × 1,1 ≈ 2. <b>L’ordre des arguments doit suivre l’ordre des paramètres.</b><br>(Le « 0000000000002 » final vient de la façon dont l’ordinateur stocke les nombres à virgule : c’est une minuscule erreur d’arrondi.)' },
-
             { titre: 'Ex. 3 · Au cinéma', type: 'code',
               consigne: '<p>Un cinéma propose un tarif réduit de 6 € aux personnes de <b>moins de 18 ans</b> ; les autres paient 9 €.</p>' +
                 '<p>✍️ Remplace les pointillés par la bonne condition et exécute. Teste ensuite avec la console : <code>tarif(15)</code>, <code>tarif(18)</code>, <code>tarif(40)</code>.</p>',
@@ -742,55 +721,41 @@ def _console(ligne, n):
               exemple: 'groupe(9)' },
 
             { titre: 'Ex. 5 · Pourquoi si simple ?', type: 'qcm',
-              consigne: '<p>Dans la fonction <code>groupe</code>, le groupe U8 correspond à 8 ⩽ âge &lt; 10. Pourtant, on a écrit simplement <code>elif age &lt; 10:</code> et pas <code>elif 8 &lt;= age and age &lt; 10:</code>.</p><p>✍️ Pourquoi est-ce correct ?</p>',
+              consigne: '<p>Dans la fonction <code>groupe</code>, le groupe U8 correspond à 8 ⩽ âge &lt; 10. Pourtant, on a écrit simplement <code>elif age &lt; 10:</code> et pas une condition <code>8 &lt;= age</code> et une condition <code>age &lt; 10</code>.</p><p>✍️ Pourquoi est-ce correct ?</p>',
               choix: ['Parce que Python ne sait pas tester deux conditions à la fois.',
                       'Si Python arrive au premier <code>elif</code>, c’est que <code>age &lt; 8</code> était faux : on sait déjà que l’âge est supérieur ou égal à 8.',
                       'Parce que les joueurs ont toujours au moins 8 ans.',
                       'Parce que <code>elif</code> teste toutes les conditions en même temps.'],
               bonne: 1,
-              pourquoi: { 0: 'Python sait le faire (avec and), mais ici ce n’est pas utile : pourquoi ?',
+              pourquoi: { 0: 'Python sait le faire, mais ici ce n’est pas utile : pourquoi ?',
                           2: 'Non : groupe(5) renvoie bien "Trop jeune". Que sait-on quand on arrive au premier elif ?',
                           3: 'Au contraire : Python teste les conditions dans l’ordre, une par une.' },
               bilan: 'C’est tout l’intérêt de <code>elif</code> : chaque test profite des tests précédents, qui ont été faux.' },
 
-            { titre: 'Ex. 6 · Une fonction définie par morceaux', type: 'code',
-              consigne: '<p>On considère la fonction <i>f</i> définie par :</p>' +
-                '<div class="morceaux"><span><i>f</i>(<i>x</i>) =</span><span class="accolade"><span>2<i>x</i> + 1 &nbsp;si <i>x</i> ⩽ −1</span><span>−<i>x</i> + 2 &nbsp;si −1 &lt; <i>x</i> ⩽ 0</span><span>−3<i>x</i> + 2 &nbsp;si <i>x</i> &gt; 0</span></span></div>' +
-                '<p>✍️ Complète la traduction en Python.</p>' +
-                encadre('astuce', 'Rappel', 'En Python, le signe × s’écrit <code>*</code> : 2<i>x</i> s’écrit <code>2 * x</code>.'),
-              code: 'def f(x):\n    if x <= -1:\n        return 2 * x + 1\n    elif x <= 0:\n        return ...\n    else:\n        return ...\n', exemple: 'f(10)',
-              bilan: 'La condition −1 &lt; <i>x</i> ⩽ 0 s’écrit simplement <code>x &lt;= 0</code> : on n’arrive au <code>elif</code> que si <code>x &lt;= -1</code> est faux, c’est-à-dire si <i>x</i> &gt; −1.' },
-
-            { titre: 'Ex. 6 · Tableau de valeurs', type: 'question',
-              consigne: '<p>✍️ Complète le tableau de valeurs de <i>f</i> à l’aide de la console (exécute d’abord le programme).</p>',
-              code: function () { return codes[16] || F_MORCEAUX; }, exemple: 'f(10)',
-              champs: ['f(-4) =', 'f(-1) =', 'f(-0.5) =', 'f(0) =', 'f(0.5) =', 'f(2) =', 'f(3) ='],
-              attendus: [-7, -1, 2.5, 2, 0.5, -4, -7] },
-
-            { titre: 'Ex. 7 · Location de vélos', type: 'code',
+            { titre: 'Ex. 6 · Location de vélos', type: 'code',
               consigne: '<p>Un loueur propose deux tarifs :</p><ul><li><b>tarif A</b> : 3 € par heure ;</li><li><b>tarif B</b> : un abonnement de 10 €, puis 1 € par heure.</li></ul>' +
                 '<p>✍️ Complète les fonctions <code>tarif_A(h)</code> et <code>tarif_B(h)</code>, qui renvoient le prix payé pour <code>h</code> heures de location.</p>' +
                 '<p>Compare ensuite les deux tarifs pour 2, 4, 5, 6 et 8 heures avec la console.</p>',
               code: 'def tarif_A(h):\n    return ...\n\ndef tarif_B(h):\n    return ...\n', exemple: 'tarif_A(3)' },
 
-            { titre: 'Ex. 7 · Le meilleur tarif', type: 'code',
+            { titre: 'Ex. 6 · Le meilleur tarif', type: 'code',
               consigne: '<p>Une fonction peut aussi renvoyer du <b>texte</b>, écrit entre guillemets.</p>' +
                 '<p>✍️ Complète la condition pour que <code>meilleur_tarif(h)</code> renvoie <code>"A"</code> ou <code>"B"</code> selon le tarif le moins cher, puis teste-la.</p>' +
                 encadre('astuce', 'Indice', 'Une fonction peut en appeler une autre : <code>tarif_A(h)</code> donne le prix avec le tarif A.'),
               code: VELOS + '\ndef meilleur_tarif(h):\n    if ...:\n        return "A"\n    else:\n        return "B"\n', exemple: 'meilleur_tarif(9)' },
 
-            { titre: 'Ex. 7 · Strictement plus avantageux', type: 'question',
+            { titre: 'Ex. 6 · Strictement plus avantageux', type: 'question',
               consigne: '<p>✍️ À partir de combien d’heures le tarif B est-il <b>strictement</b> plus avantageux ? Résous l’inéquation 10 + <i>h</i> &lt; 3<i>h</i> sur ton cahier.</p>',
               champs: ['Le tarif B est strictement moins cher lorsque h >'], attendus: [5],
               aides: ['Résous 10 + h < 3h : passe les h du même côté.'],
               bilan: '10 + <i>h</i> &lt; 3<i>h</i> ⇔ 10 &lt; 2<i>h</i> ⇔ <i>h</i> &gt; 5 : le tarif B est strictement plus avantageux <b>au-delà de 5 heures</b>.' },
 
-            { titre: 'Ex. 7 · Bonus : l’égalité', type: 'code',
+            { titre: 'Ex. 6 · Bonus : l’égalité', type: 'code',
               consigne: '<p>Pour <i>h</i> = 5, les deux tarifs valent 15 € : la condition 15 &lt; 15 est fausse, donc <code>meilleur_tarif(5)</code> renvoie <code>"B"</code>. Ce n’est pas faux, mais c’est trompeur.</p>' +
                 '<p>✍️ À l’aide de <code>elif</code>, modifie la fonction pour qu’elle renvoie <code>"égalité"</code> dans ce cas.</p>',
               code: VELOS + '\ndef meilleur_tarif(h):\n    if tarif_A(h) < tarif_B(h):\n        return "A"\n    else:\n        return "B"\n', exemple: 'meilleur_tarif(9)' },
 
-            { titre: 'Ex. 8 · Pour aller plus loin', type: 'question',
+            { titre: 'Ex. 7 · Pour aller plus loin', type: 'question',
               consigne: '<p>On considère la fonction <code>f</code> suivante (automatisme de la Série 4).</p>' +
                 '<p>✍️ Trouve <b>tous</b> les nombres <i>x</i> tels que <code>f(x)</code> renvoie 14, puis tous ceux tels que <code>f(x)</code> renvoie 7. Étudie les deux cas (<i>x</i> &gt; 3 et <i>x</i> ⩽ 3) sur ton cahier, puis vérifie avec la console.</p>' +
                 encadre('astuce', 'Plusieurs solutions ?', 'Sépare-les par un point-virgule, par exemple : <code>-2 ; 4.5</code>'),
@@ -875,6 +840,7 @@ def _console(ligne, n):
         function cle() { var s = Interactif.session(); return 'tp-conditions:' + (s ? s.code : 'invite'); }
         function lireLocal() { try { return JSON.parse(localStorage.getItem(cle())) || {}; } catch (e) { return {}; } }
         function ecrireLocal() { try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, codes: codes, reponses: reponses, lus: lus })); } catch (e) {} }
+        function modeTest() { var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'TEST-01'; }
         function depart(e) { return typeof e.code === 'function' ? e.code() : e.code; }
 
         function charger() {
@@ -1275,11 +1241,12 @@ def _console(ligne, n):
                 brancherLus();
             }
 
-            function reussi() {
+            function reussi(force) {
                 retour.className = 'retour ok';
                 if (n <= faites) { retour.textContent = '✓ Toujours juste !'; return; }
                 faites = n; ecrireLocal();
-                retour.textContent = '✓ Bravo, c’est réussi !';
+                var bp = tete.querySelector('.passer'); if (bp) bp.remove();
+                retour.textContent = force ? '⏭ Étape passée (mode test).' : '✓ Bravo, c’est réussi !';
                 montrerBilan();
                 c.classList.remove('courante'); c.classList.add('faite', 'ouverte');
                 tete.querySelector('.etape-num').textContent = '✓';
@@ -1297,7 +1264,7 @@ def _console(ligne, n):
                     } else zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé le TP sur les structures conditionnelles !'));
                 };
                 var bilanCase = corps.querySelector('.encadre.bilan .lu input'), attenteBilan = null;
-                if (bilanCase && !bilanCase.checked) {
+                if (bilanCase && !bilanCase.checked && !force) {
                     attenteBilan = el('p', 'retour ko', 'Coche « J’ai lu » dans l’encadré « À retenir » pour passer à l’étape suivante.');
                     corps.appendChild(attenteBilan);
                     suite = ouvrirSuite;
@@ -1305,16 +1272,23 @@ def _console(ligne, n):
             }
 
             function ajouterRevoir() {
-                if (tete.querySelector('button')) return;
-                var b = el('button', 'lien', c.classList.contains('ouverte') ? 'Replier' : 'Reprendre'); b.type = 'button';
+                if (tete.querySelector('.revoir')) return;
+                var b = el('button', 'lien revoir', c.classList.contains('ouverte') ? 'Replier' : 'Reprendre'); b.type = 'button';
                 b.onclick = function () { basculer(!c.classList.contains('ouverte')); };
                 tete.appendChild(b);
             }
             function basculer(ouvrir) {
                 c.classList.toggle('ouverte', ouvrir);
-                var b = tete.querySelector('button');
+                var b = tete.querySelector('.revoir');
                 if (b) b.textContent = ouvrir ? 'Replier' : 'Reprendre';
                 if (ouvrir) { construire(); rafraichir(); }
+            }
+
+            // compte TEST-01 : bouton pour passer l'étape en cours sans y répondre
+            if (!faite && modeTest()) {
+                var bPasser = el('button', 'lien passer', '⏭ Passer (test)'); bPasser.type = 'button';
+                bPasser.onclick = function () { construire(); reussi(true); };
+                tete.appendChild(bPasser);
             }
 
             c.ouvrir = function () { if (c.classList.contains('faite')) basculer(true); };
@@ -1329,6 +1303,18 @@ def _console(ligne, n):
             if (r.out) sortie.appendChild(el('pre', null, esc(r.out)));
             if (r.err) sortie.appendChild(el('pre', 'err', esc((r.ligne ? 'Ligne ' + r.ligne + ' · ' : '') + r.err)));
         }
+
+        // hauteurs de la barre du site et de la barre d'étapes, pour le collage et les défilements
+        (function () {
+            var nav = document.querySelector('.navbar'), barre = document.getElementById('barre-etapes');
+            function mesurer() {
+                document.documentElement.style.setProperty('--haut-nav', (nav ? nav.offsetHeight : 0) + 'px');
+                document.documentElement.style.setProperty('--haut-barre', barre.offsetHeight + 'px');
+            }
+            mesurer();
+            addEventListener('resize', mesurer);
+            if (window.ResizeObserver) new ResizeObserver(mesurer).observe(barre);
+        })();
 
         Interactif.bandeau(document.getElementById('bandeau'), charger);
         charger();
