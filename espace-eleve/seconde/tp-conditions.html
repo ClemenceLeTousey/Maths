@@ -172,6 +172,10 @@
         .retour.ok { color: var(--ok); }
         .retour.ko { color: var(--ko); }
         .fin { text-align: center; font-size: 1.1rem; }
+        .solution-prof { border: 2px dashed var(--ok); border-radius: 10px; padding: 8px 14px; margin: 14px 0 6px; background: var(--surface); }
+        .solution-prof ul, .solution-prof ol { margin: 6px 0; padding-left: 22px; }
+        .solution-prof li { margin: 3px 0; }
+        .interactif button.developper { margin: 4px 0 8px; }
         .vue-prof { background: var(--bleu-doux); border: 2px solid var(--c-seconde); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; }
     </style>
 </head>
@@ -608,6 +612,7 @@ def _console(ligne, n):
                 encadre('attention', 'Attention !', 'Pour <b>tester</b> une égalité, on écrit <code>==</code> ; le simple <code>=</code> est réservé à l’affectation : <code>x = 3</code> affecte la valeur 3 à <code>x</code>.') +
                 '<p>✍️ Écris en Python le test de chaque condition, puis valide-les une par une.</p>',
               champs: ['si age ⩾ 18', 'si note ≠ 20', 'si t = 0', 'si masse ⩽ 23'], etiquettesTexte: true,
+              solution: ['if age >= 18:', 'if note != 20:', 'if t == 0:', 'if masse <= 23:'],
               // réponse attendue : la ligne complète « if condition: »
               verifierCase: function (k, v) {
                   var FORME = '\nLa réponse attendue est de la forme :\n`if condition sur variable :`';
@@ -650,7 +655,7 @@ def _console(ligne, n):
               consigne: PREVOIR_SCRIPT,
               scripts: [{ nom: 'Script B', code: SCRIPT_B, attendu: 'refusé' }],
               // une fois la prévision faite : correction du script, vérifiée par Python (_e5)
-              code: SCRIPT_B, verifCode: true,
+              code: SCRIPT_B, verifCode: true, solutionCode: 'note = 10\nif note >= 10:\n    print("admis")\nelse:\n    print("refusé")\n',
               consigneCode: '<h3>Corriger le script B</h3><p>Un élève qui a exactement 10 devrait être <b>admis</b>. Or 10 &gt; 10 est faux : le script affiche <code>refusé</code>.</p>' +
                 '<p>✍️ Corrige la condition pour que le script affiche <code>admis</code>, sans changer la note.</p>',
               bilan: 'Pour inclure la valeur frontière, on remplace <code>&gt;</code> par <code>&gt;=</code> (⩾) : <code>if note &gt;= 10:</code>.' },
@@ -694,7 +699,7 @@ def _console(ligne, n):
             { titre: 'Ex. 3 · Au cinéma', type: 'code',
               consigne: '<p>Un cinéma propose un tarif réduit de 6 € aux personnes de <b>moins de 18 ans</b> ; les autres paient 9 €.</p>' +
                 '<p>✍️ Remplace les pointillés par la bonne condition et exécute. Teste ensuite avec la console : <code>tarif(15)</code>, <code>tarif(18)</code>, <code>tarif(40)</code>.</p>',
-              code: 'def tarif(age):\n    if ...:\n        return 6\n    else:\n        return 9\n', exemple: 'tarif(30)' },
+              code: 'def tarif(age):\n    if ...:\n        return 6\n    else:\n        return 9\n', exemple: 'tarif(30)', solutionCode: TARIF },
 
             { titre: 'Ex. 3 · La valeur frontière', type: 'question',
               consigne: '<p>Un élève a écrit <code>age &lt;= 18</code> comme condition. Sa fonction se trompe pour <b>un seul âge</b>.</p><p>✍️ Lequel ? Teste avec la console.</p>',
@@ -707,7 +712,8 @@ def _console(ligne, n):
               consigne: '<p>Le cinéma crée un <b>tarif enfant</b> de 4,50 € pour les <b>moins de 14 ans</b>.</p>' +
                 '<p>✍️ Modifie la fonction <code>tarif</code> à l’aide de <code>elif</code> pour qu’elle distingue les trois cas. Teste ensuite <code>tarif(10)</code>, <code>tarif(14)</code>, <code>tarif(17)</code> et <code>tarif(18)</code>.</p>' +
                 encadre('astuce', 'Rappel', '4,50 s’écrit <code>4.5</code> en Python.'),
-              code: TARIF, exemple: 'tarif(30)' },
+              code: TARIF, exemple: 'tarif(30)',
+              solutionCode: 'def tarif(age):\n    if age < 14:\n        return 4.5\n    elif age < 18:\n        return 6\n    else:\n        return 9\n' },
 
             { titre: 'Ex. 3 · L’ordre des tests', type: 'question',
               consigne: '<p>Un élève a écrit les deux tests dans l’autre ordre : d’abord <code>if age &lt; 18:</code>, puis <code>elif age &lt; 14:</code>.</p><p>✍️ Que renvoie alors <code>tarif(10)</code> ? Prévois, puis vérifie avec la console.</p>',
@@ -720,6 +726,7 @@ def _console(ligne, n):
               consigne: '<p>✍️ Complète la fonction <code>maximum(a, b)</code> pour qu’elle renvoie le plus grand des deux nombres <code>a</code> et <code>b</code>, à l’aide de <code>if</code> et <code>else</code>.</p>' +
                 '<p>Teste-la avec <code>maximum(3, 7)</code>, <code>maximum(7, 3)</code>, <code>maximum(-2, -5)</code> et <code>maximum(5, 5)</code>.</p>',
               code: 'def maximum(a, b):\n    if ...:\n        return ...\n    else:\n        return ...\n', exemple: 'maximum(10, 4)',
+              solutionCode: 'def maximum(a, b):\n    if a > b:\n        return a\n    else:\n        return b\n',
               bilan: 'Pour l’appel <code>maximum(5, 5)</code>, 5 &gt; 5 est faux : l’appel renvoie <code>b</code>, c’est-à-dire 5. Comme les deux nombres sont égaux, peu importe la branche choisie.' },
 
             { titre: 'Ex. 5 · École de rugby', type: 'code',
@@ -728,7 +735,8 @@ def _console(ligne, n):
                 '<li>groupe <b>U12</b> de 12 ans inclus à 14 ans exclus ;</li><li>groupe <b>U14</b> de 14 ans inclus à 16 ans exclus ;</li><li>à partir de 16 ans : « Hors école ».</li></ul>' +
                 '<p>✍️ Remplace les pointillés, puis teste la fonction, en particulier aux <b>âges frontières</b> : <code>groupe(7)</code>, <code>groupe(8)</code>, <code>groupe(12)</code>, <code>groupe(16)</code>…</p>',
               code: 'def groupe(age):\n    if age < 8:\n        return "Trop jeune"\n    elif age < 10:\n        return "U8"\n    elif ...:\n        return ...\n    elif ...:\n        return ...\n    elif ...:\n        return ...\n    else:\n        return ...\n',
-              exemple: 'groupe(9)' },
+              exemple: 'groupe(9)',
+              solutionCode: 'def groupe(age):\n    if age < 8:\n        return "Trop jeune"\n    elif age < 10:\n        return "U8"\n    elif age < 12:\n        return "U10"\n    elif age < 14:\n        return "U12"\n    elif age < 16:\n        return "U14"\n    else:\n        return "Hors école"\n' },
 
             { titre: 'Ex. 5 · Pourquoi si simple ?', type: 'qcm',
               consigne: '<p>Dans la fonction <code>groupe</code>, le groupe U8 correspond à 8 ⩽ âge &lt; 10. Pourtant, on a écrit simplement <code>elif age &lt; 10:</code> et pas une condition <code>8 &lt;= age</code> et une condition <code>age &lt; 10</code>.</p><p>✍️ Pourquoi est-ce correct ?</p>',
@@ -746,13 +754,14 @@ def _console(ligne, n):
               consigne: '<p>Un loueur propose deux tarifs :</p><ul><li><b>tarif A</b> : 3 € par heure ;</li><li><b>tarif B</b> : un abonnement de 10 €, puis 1 € par heure.</li></ul>' +
                 '<p>✍️ Complète les fonctions <code>tarif_A(h)</code> et <code>tarif_B(h)</code>, qui renvoient le prix payé pour <code>h</code> heures de location.</p>' +
                 '<p>Compare ensuite les deux tarifs pour 2, 4, 5, 6 et 8 heures avec la console.</p>',
-              code: 'def tarif_A(h):\n    return ...\n\ndef tarif_B(h):\n    return ...\n', exemple: 'tarif_A(3)' },
+              code: 'def tarif_A(h):\n    return ...\n\ndef tarif_B(h):\n    return ...\n', exemple: 'tarif_A(3)', solutionCode: VELOS },
 
             { titre: 'Ex. 6 · Le meilleur tarif', type: 'code',
               consigne: '<p>Une fonction peut aussi renvoyer du <b>texte</b>, écrit entre guillemets.</p>' +
                 '<p>✍️ Complète la condition pour que <code>meilleur_tarif(h)</code> renvoie <code>"A"</code> ou <code>"B"</code> selon le tarif le moins cher, puis teste-la.</p>' +
                 encadre('astuce', 'Indice', 'Une fonction peut en appeler une autre : <code>tarif_A(h)</code> donne le prix avec le tarif A.'),
-              code: VELOS + '\ndef meilleur_tarif(h):\n    if ...:\n        return "A"\n    else:\n        return "B"\n', exemple: 'meilleur_tarif(9)' },
+              code: VELOS + '\ndef meilleur_tarif(h):\n    if ...:\n        return "A"\n    else:\n        return "B"\n', exemple: 'meilleur_tarif(9)',
+              solutionCode: VELOS + '\ndef meilleur_tarif(h):\n    if tarif_A(h) < tarif_B(h):\n        return "A"\n    else:\n        return "B"\n' },
 
             { titre: 'Ex. 6 · Strictement plus avantageux', type: 'question',
               consigne: '<p>✍️ À partir de combien d’heures le tarif B est-il <b>strictement</b> plus avantageux ? Résous l’inéquation 10 + <i>h</i> &lt; 3<i>h</i> sur ton cahier.</p>',
@@ -783,14 +792,15 @@ def _console(ligne, n):
             { titre: 'Bonus · Ex. 6 : l’égalité', type: 'code',
               consigne: '<p>Pour <i>h</i> = 5, les deux tarifs valent 15 € : la condition 15 &lt; 15 est fausse, donc <code>meilleur_tarif(5)</code> renvoie <code>"B"</code>. Ce n’est pas faux, mais c’est trompeur.</p>' +
                 '<p>✍️ À l’aide de <code>elif</code>, modifie la fonction pour qu’elle renvoie <code>"égalité"</code> dans ce cas.</p>',
-              code: VELOS + '\ndef meilleur_tarif(h):\n    if tarif_A(h) < tarif_B(h):\n        return "A"\n    else:\n        return "B"\n', exemple: 'meilleur_tarif(9)' },
+              code: VELOS + '\ndef meilleur_tarif(h):\n    if tarif_A(h) < tarif_B(h):\n        return "A"\n    else:\n        return "B"\n', exemple: 'meilleur_tarif(9)',
+              solutionCode: VELOS + '\ndef meilleur_tarif(h):\n    if tarif_A(h) == tarif_B(h):\n        return "égalité"\n    elif tarif_A(h) < tarif_B(h):\n        return "A"\n    else:\n        return "B"\n' },
 
             { titre: 'Bonus · Ex. 7 : pour aller plus loin', type: 'question',
               consigne: '<p>On considère la fonction <code>f</code> suivante (automatisme de la Série 4).</p>' +
                 '<p>✍️ Trouve <b>tous</b> les nombres <i>x</i> tels que <code>f(x)</code> renvoie 14, puis tous ceux tels que <code>f(x)</code> renvoie 7. Étudie les deux cas (<i>x</i> &gt; 3 et <i>x</i> ⩽ 3) sur ton cahier, puis vérifie avec la console.</p>' +
                 encadre('astuce', 'Plusieurs solutions ?', 'Sépare-les par un point-virgule, par exemple : <code>-2 ; 4.5</code>'),
               code: 'def f(x):\n    if x > 3:\n        return 2 * x\n    else:\n        return x + 10\n', exemple: 'f(0)',
-              champs: ['f(x) = 14 pour x =', 'f(x) = 7 pour x ='], long: true,
+              champs: ['f(x) = 14 pour x =', 'f(x) = 7 pour x ='], long: true, solution: ['7', '−3 ; 3,5'],
               verifierCase: function (k, v) {
                   var l = liste(v).sort(function (p, q) { return p - q; });
                   if (l.some(isNaN)) return 'Écris des nombres, séparés par un point-virgule.';
@@ -902,6 +912,37 @@ def _console(ligne, n):
         function scoreQuiz(e, n) { var v = reponses[n] || []; return e.questions.filter(function (q, i) { return String(q.bonne) === v[i]; }).length; }
         function egalVal(v, a, tol) { return typeof a === 'number' ? Math.abs(num(v) - a) < (tol || 1e-6) : txt(v) === txt(a); }
 
+        // encadré « Solution » (mode test et vue professeure)
+        function boiteSolution(e) {
+            var h = '<b>🔑 Solution</b> <span class="aide">(visible seulement en mode test)</span>';
+            function li(t) { return '<li>' + t + '</li>'; }
+            function code(t) { return '<code>' + esc(t) + '</code>'; }
+            if (e.type === 'question') {
+                h += '<ul>' + e.champs.map(function (c, k) {
+                    var sol = e.solution ? e.solution[k] : e.attendus ? String(e.attendus[k]) : '?';
+                    return li(esc(c) + ' → <b>' + esc(sol) + '</b>' + (e.aides && e.aides[k] ? '<br><span class="aide">si faux : « ' + esc(e.aides[k]) + ' »</span>' : ''));
+                }).join('') + '</ul>';
+            } else if (e.type === 'qcm') {
+                h += '<p>Bonne réponse : <b>' + e.choix[e.bonne] + '</b></p>';
+            } else if (e.type === 'quiz') {
+                h += '<ol>' + e.questions.map(function (q) { return li(q.choix[q.bonne]); }).join('') + '</ol>';
+            } else if (e.type === 'prevoir') {
+                h += '<ul>' + e.scripts.map(function (sc) {
+                    var t = sc.question ? sc.question + ' → <b>' + esc(sc.attendu) + '</b>'
+                          : esc(sc.appel || sc.nom) + ' → <b>' + esc(sc.attendu) + '</b>';
+                    if (sc.car) t += '<ul>' + sc.car.map(function (it) {
+                        if (it.cond) return li(code(it.cond) + ' : ' + (it.vraie ? 'est vérifiée' : 'n’est pas vérifiée') + ' (' + esc(it.raison) + ')');
+                        if (it.valeur) return li(it.avant + ' <b>' + esc(it.valeur) + '</b> (' + esc(it.raison) + ')');
+                        if (it.bloc) return li('bloc exécuté : sous ' + code(it.bloc));
+                        return '';
+                    }).join('') + '</ul>';
+                    return li(t);
+                }).join('') + '</ul>';
+            }
+            if (e.solutionCode) h += '<pre class="code">' + esc(e.solutionCode) + '</pre>';
+            return el('div', 'solution-prof', h);
+        }
+        function modeProf() { return !!VUE || modeTest(); }   // solutions et « Développer » visibles
         function modeTest() { if (VUE) return false; var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'TEST-01'; }
         function depart(e) { return typeof e.code === 'function' ? e.code() : e.code; }
 
@@ -1307,8 +1348,24 @@ def _console(ligne, n):
                         charge = true;      // reconstruction depuis les réponses gardées : on ne valide rien
                         if (rep[k][0]) apresPrevision(false);
                         charge = false;
-                        // au rechargement : on rouvre aussi les cas suivants déjà commencés
-                        if ((finis[k] || faite) && k + 1 < e.scripts.length && !blocs[k + 1]) montrerCas(k + 1);
+                        // mode professeure : « Développer » montre le chemin d'un élève qui s'est trompé (rien n'est enregistré)
+                        if (modeProf() && !rep[k][0]) {
+                            var bd = el('button', 'secondaire developper', '🔍 Développer (si l’élève se trompe)'); bd.type = 'button';
+                            bd.onclick = function () {
+                                bd.remove();
+                                var garde = rep[k].slice(), etaitFini = finis[k];
+                                rep[k] = ['(aperçu)', String(sc.attendu)].concat((sc.car || []).map(function (it) {
+                                    return it.cond ? (it.vraie ? 'est vérifiée' : 'n’est pas vérifiée') : it.valeur ? String(it.valeur) : it.bloc || '';
+                                }));
+                                ip.value = '(aperçu professeure)';
+                                charge = true; apresPrevision(false); charge = false;
+                                rep[k] = garde; finis[k] = etaitFini;
+                                rafraichir();
+                            };
+                            bloc.insertBefore(bd, suite);
+                        }
+                        // au rechargement : on rouvre aussi les cas suivants déjà commencés (tous, en mode professeure)
+                        if ((finis[k] || faite || modeProf()) && k + 1 < e.scripts.length && !blocs[k + 1]) montrerCas(k + 1);
                     }
                     montrerCas(0);
                     // étape « prévoir » avec correction : l'éditeur vient après les cas, et n'apparaît qu'une fois ceux-ci finis
@@ -1390,6 +1447,7 @@ def _console(ligne, n):
                     corps.appendChild(q);
                 }
                 corps.appendChild(retour);
+                if (modeProf()) corps.appendChild(boiteSolution(e));
                 if (faite) montrerBilan();
                 brancherLus();
             }
