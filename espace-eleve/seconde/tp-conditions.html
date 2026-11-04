@@ -163,6 +163,7 @@
         .retour.ok { color: var(--ok); }
         .retour.ko { color: var(--ko); }
         .fin { text-align: center; font-size: 1.1rem; }
+        .vue-prof { background: var(--bleu-doux); border: 2px solid var(--c-seconde); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; }
     </style>
 </head>
 <body>
@@ -837,9 +838,13 @@ def _console(ligne, n):
 
         /* ---------- Progression : sur l'appareil, et dans la base si l'élève est connecté ---------- */
         var debut = Date.now(), faites = 0, codes = {}, reponses = {}, lus = {}, erreurs = {}, passees = {};
+        /* Vue professeure (onglet Suivi TP) : ?vue-eleve=1 ouvre le TP tel que l'élève l'a laissé
+           (résultat préparé par prof.html dans localStorage « tp-vue-eleve ») ; rien n'est enregistré. */
+        var VUE = null;
+        try { if (/[?&]vue-eleve=/.test(location.search)) VUE = JSON.parse(localStorage.getItem('tp-vue-eleve')); } catch (e) {}
         function cle() { var s = Interactif.session(); return 'tp-conditions:' + (s ? s.code : 'invite'); }
         function lireLocal() { try { return JSON.parse(localStorage.getItem(cle())) || {}; } catch (e) { return {}; } }
-        function ecrireLocal() { try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, codes: codes, reponses: reponses, lus: lus, erreurs: erreurs, passees: passees })); } catch (e) {} }
+        function ecrireLocal() { if (VUE) return; try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, codes: codes, reponses: reponses, lus: lus, erreurs: erreurs, passees: passees })); } catch (e) {} }
         // réponse d'une étape, en clair, pour le suivi de la professeure
         function sansBalises(h) { var d = document.createElement('div'); d.innerHTML = h; return d.textContent; }
         function lisible(e, n) {
@@ -863,10 +868,16 @@ def _console(ligne, n):
         }
         function egalVal(v, a, tol) { return typeof a === 'number' ? Math.abs(num(v) - a) < (tol || 1e-6) : txt(v) === txt(a); }
 
-        function modeTest() { var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'TEST-01'; }
+        function modeTest() { if (VUE) return false; var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'TEST-01'; }
         function depart(e) { return typeof e.code === 'function' ? e.code() : e.code; }
 
         function charger() {
+            if (VUE) {
+                faites = Math.min(VUE.score || 0, NB); codes = {}; reponses = {}; lus = {}; erreurs = {}; passees = {};
+                restaurer(VUE.details);
+                afficher();
+                return;
+            }
             var l = lireLocal();
             faites = l.faites || 0; codes = l.codes || {}; reponses = l.reponses || {}; lus = l.lus || {}; erreurs = l.erreurs || {}; passees = l.passees || {};
             afficher();
@@ -877,7 +888,14 @@ def _console(ligne, n):
                     .sort(function (a, b) { return b.score - a.score; })[0];
                 if (!meilleur || meilleur.score <= faites) return;
                 faites = Math.min(meilleur.score, NB);
-                (meilleur.details || []).forEach(function (d, k) {
+                restaurer(meilleur.details);
+                ecrireLocal(); afficher();
+            }, function () {});
+        }
+
+        // réponses, programmes, erreurs et étapes passées, à partir des détails enregistrés dans la base
+        function restaurer(details) {
+                (details || []).forEach(function (d, k) {
                     if (!d || !ETAPES[k]) return;
                     if (d.e) erreurs[k + 1] = Math.max(erreurs[k + 1] || 0, d.e);
                     if (d.p) passees[k + 1] = true;
@@ -887,12 +905,11 @@ def _console(ligne, n):
                     else reponses[k + 1] = String(d.r).split(' ; ');
                     if (ETAPES[k].type === 'code' && d.c) codes[k + 1] = String(d.c);
                 });
-                ecrireLocal(); afficher();
-            }, function () {});
         }
 
         function enregistrer() {
             var s = Interactif.session();
+            if (VUE) return Promise.resolve('Vue professeure : rien n’est enregistré.');
             if (!s) return Promise.resolve('Tu n’es pas connecté(e) : ta progression est gardée seulement sur cet appareil.');
             var details = ETAPES.slice(0, faites).map(function (e, k) {
                 var n = k + 1, d = { t: 'Étape ' + n + ' · ' + e.titre, r: lisible(e, n).slice(0, 2500), ok: !passees[n] };
@@ -943,7 +960,7 @@ def _console(ligne, n):
         function afficher() {
             zone.innerHTML = '';
             progression();
-            for (var n = 1; n <= Math.min(faites + 1, NB); n++) { var c = carte(n); zone.appendChild(c); c.rafraichir(); }
+            for (var n = 1; n <= Math.min(faites + 1, NB); n++) { var c = carte(n); zone.appendChild(c); if (VUE && n <= faites) c.ouvrir(); c.rafraichir(); }
             if (faites >= NB) zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé le TP sur les structures conditionnelles !'));
         }
 
@@ -963,7 +980,7 @@ def _console(ligne, n):
             function brancherLus() {
                 Array.prototype.forEach.call(corps.querySelectorAll('.encadre .lu input'), function (i, k) {
                     var cadre = i.closest('.encadre');
-                    i.checked = (lus[n] || []).indexOf(k) >= 0;
+                    i.checked = VUE ? true : (lus[n] || []).indexOf(k) >= 0;
                     cadre.classList.toggle('est-lu', i.checked);
                     i.onchange = function () {
                         var l = (lus[n] || []).filter(function (x) { return x !== k; });
@@ -984,6 +1001,7 @@ def _console(ligne, n):
             }
             function toutLu() { return !nonLus().length; }
             function exigerLu() {
+                if (VUE) return true;
                 var l = nonLus();
                 if (!l.length) return true;
                 l.forEach(function (x) { x.classList.add('a-cocher'); });
@@ -1350,7 +1368,13 @@ def _console(ligne, n):
             if (window.ResizeObserver) new ResizeObserver(mesurer).observe(barre);
         })();
 
-        Interactif.bandeau(document.getElementById('bandeau'), charger);
+        if (VUE) {
+            var bv = document.getElementById('bandeau');
+            bv.className = 'vue-prof';
+            bv.innerHTML = '👩‍🏫 <b>Vue professeure</b> : TP de <b></b> tel qu’il a été laissé (étapes validées : ' + Math.min(VUE.score || 0, NB) + ' / ' + NB + '). Tu peux tout consulter et réexécuter ; rien n’est enregistré.';
+            bv.querySelectorAll('b')[1].textContent = VUE.nom || VUE.code || 'l’élève';
+            document.title = 'Vue professeure · ' + (VUE.nom || VUE.code || '') + ' · ' + document.title;
+        } else Interactif.bandeau(document.getElementById('bandeau'), charger);
         charger();
     })();
     </script>

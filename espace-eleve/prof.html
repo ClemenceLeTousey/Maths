@@ -426,6 +426,18 @@
                 var a = document.createElement('span'); a.className = 'aide';
                 a.textContent = b.reussies + ' étape(s) réussie(s) sur ' + b.comptees + (b.nbBonus ? ', bonus ' + b.bonusOk + '/' + b.nbBonus : '') + ' · ' + b.erreurs + ' erreur(s) · ' + minutes(b.duree);
                 t.appendChild(a);
+                // ouvrir le TP tel que l'élève l'a laissé (pages qui le permettent : vueProf dans le catalogue)
+                var ex = TPS.find(function (x) { return x.id === id; });
+                if (ex && ex.vueProf) {
+                    var bo = document.createElement('button'); bo.type = 'button'; bo.className = 'secondaire';
+                    bo.textContent = 'Ouvrir le TP tel que l’élève l’a laissé';
+                    bo.onclick = function () {
+                        try { localStorage.setItem('tp-vue-eleve', JSON.stringify({ code: code, nom: noms[code] || '', id: id, score: b.r.score, details: b.r.details })); }
+                        catch (x) { alert('Impossible de préparer la vue (' + x.message + ').'); return; }
+                        window.open(ex.url + (ex.url.indexOf('?') >= 0 ? '&' : '?') + 'vue-eleve=1', '_blank');
+                    };
+                    t.appendChild(bo);
+                }
                 $detail.appendChild(t);
                 var bonus = ((window.INTERACTIF_BAREMES || {})[id] || {}).bonus || [];
                 var tab = document.createElement('table'); tab.className = 'res tp-etapes';
