@@ -517,7 +517,7 @@ def _console(ligne, n):
               champs: ['si age ⩾ 18', 'si note ≠ 20', 'si t = 0', 'si masse ⩽ 23'], etiquettesTexte: true,
               // réponse attendue : la ligne complète « if condition: »
               verifierCase: function (k, v) {
-                  var FORME = '\nLa réponse attendue est de la forme :\n`if condition :`';
+                  var FORME = '\nLa réponse attendue est de la forme :\n`if condition sur variable :`';
                   var s = v.replace(/\s+/g, ' ').trim();
                   if (/^if\b/i.test(s) && !/^if\b/.test(s)) return '`if` s’écrit en minuscules.';
                   if (!/^if\b/.test(s)) return 'Il manque le `if`.' + FORME;
@@ -525,7 +525,7 @@ def _console(ligne, n):
                   var c = s.replace(/^if/, '').replace(/:$/, '').replace(/\s/g, '');
                   if (c === ['age>=18', 'note!=20', 't==0', 'masse<=23'][k]) return null;
                   if (/=>|=</.test(c)) return 'On écrit d’abord < ou >, puis = : <= et >=.';
-                  if (k === 2 && c === 't=0') return 'Le simple = sert à affecter ; pour tester une égalité, on écrit ==.';
+                  if (k === 2 && c === 't=0') return 'Le simple `=` sert à affecter.\nPour tester une égalité, on écrit `==`.';
                   if (/<>|≠/.test(c)) return 'Regarde le tableau : ≠ s’écrit avec un point d’exclamation.';
                   if (/[⩽⩾≤≥]/.test(c)) return 'Ce symbole n’existe pas en Python : regarde le tableau.';
                   return 'Regarde bien le tableau (et garde le même nom de variable).' + FORME;
