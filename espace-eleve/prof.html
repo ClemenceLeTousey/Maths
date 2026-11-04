@@ -160,6 +160,7 @@
                 <button type="button" role="tab" id="onglet-plan" aria-controls="panneau-plan" data-onglet="plan">Plan de travail</button>
                 <button type="button" role="tab" id="onglet-dnl" aria-controls="panneau-dnl" data-onglet="dnl">DNL</button>
                 <button type="button" role="tab" id="onglet-tp-photo" aria-controls="panneau-tp-photo" data-onglet="tp-photo">TP Photo</button>
+                <button type="button" role="tab" id="onglet-tp-conditions" aria-controls="panneau-tp-conditions" data-onglet="tp-conditions">TP Conditions</button>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-suivi-eval" aria-labelledby="onglet-suivi-eval" hidden>
@@ -233,6 +234,13 @@
                 <p class="aide">En préparation : le TP n'est visible que du compte TEST-01, les élèves ne le voient pas encore. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi.</p>
                 <p><a class="bouton" href="seconde/tp-photo.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
                 <iframe id="tp-photo-apercu" title="Aperçu du TP Photo" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
+            </div>
+
+            <div class="panneau" role="tabpanel" id="panneau-tp-conditions" aria-labelledby="onglet-tp-conditions" hidden>
+                <h2>TP Python · Les structures conditionnelles</h2>
+                <p class="aide">En préparation : le TP n'est visible que du compte TEST-01, les élèves ne le voient pas encore. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi.</p>
+                <p><a class="bouton" href="seconde/tp-conditions.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
+                <iframe id="tp-conditions-apercu" title="Aperçu du TP Conditions" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-suivi" aria-labelledby="onglet-suivi">
@@ -641,7 +649,7 @@
 
     <script>
     (function () {
-        /* ---------- Onglets : Suivi QF par défaut ; #suivi-eval, #plan, #dnl ou #tp-photo dans l'adresse ouvre l'onglet correspondant ---------- */
+        /* ---------- Onglets : Suivi QF par défaut ; #suivi-eval, #plan, #dnl, #tp-photo ou #tp-conditions dans l'adresse ouvre l'onglet correspondant ---------- */
         var onglets = Array.prototype.slice.call(document.querySelectorAll('.onglets [role="tab"]'));
         var $tp = document.getElementById('tp-photo-apercu');
         function ouvrirOnglet(nom, focus) {
@@ -659,6 +667,8 @@
             if (nom === 'suivi-eval') SuiviEval.demarrer();
             // l'aperçu du TP (et son Python) ne se charge qu'à la première ouverture de l'onglet
             if (nom === 'tp-photo' && !$tp.src) $tp.src = 'seconde/tp-photo.html';
+            var $tpc = document.getElementById('tp-conditions-apercu');
+            if (nom === 'tp-conditions' && !$tpc.src) $tpc.src = 'seconde/tp-conditions.html';
         }
         onglets.forEach(function (o) {
             o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };
