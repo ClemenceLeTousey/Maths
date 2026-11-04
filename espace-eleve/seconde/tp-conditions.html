@@ -531,15 +531,18 @@ def _console(ligne, n):
                   return 'Regarde bien le tableau (et garde le même nom de variable).' + FORME;
               } },
 
-            { titre: 'Cours · Plus de deux cas avec « sinon si » (elif)', type: 'question',
+            { titre: 'Cours · Plus de deux cas avec « sinon si » (elif)', type: 'prevoir',
               consigne: '<p>La fonction <code>etat_eau</code> renvoie l’état de l’eau selon sa température <code>t</code> (en °C).</p>' +
                 encadre('', 'Nouveau : elif', '<ul><li><code>elif</code> est la contraction de « <i>else if</i> » (sinon si).</li><li>Python teste les conditions <b>dans l’ordre</b>, de haut en bas, et exécute <b>seulement le premier bloc</b> dont la condition est vraie.</li><li>Le bloc <code>else</code> n’est exécuté que si aucune condition n’est vraie.</li></ul>') +
+                py(ETAT_EAU) +
                 '<p>Par exemple, pour <code>t = 20</code> : 20 &lt; 0 est faux, puis 20 &lt; 100 est vrai, donc la fonction renvoie <code>"liquide"</code>.</p>' +
-                '<p>✍️ Prévois les résultats, puis vérifie avec la console.</p>',
-              code: ETAT_EAU, exemple: 'etat_eau(20)',
-              champs: ['etat_eau(-5) renvoie', 'etat_eau(0) renvoie', 'etat_eau(100) renvoie'], long: true,
-              attendus: ['glace', 'liquide', 'vapeur'],
-              aides: ['-5 < 0 est vrai : quel bloc est exécuté ?', '0 < 0 est faux… et 0 < 100 ?', '100 < 0 est faux, 100 < 100 est faux aussi : on arrive au else.'],
+                '<p>✍️ Pour chaque instruction, <b>prévois d’abord</b> ce qui va s’afficher, sans ordinateur. Une fois ta prévision écrite (juste ou fausse), tu pourras exécuter pour vérifier, et te corriger si besoin.</p>',
+              commun: ETAT_EAU,   // la fonction, ajoutée devant chaque instruction dans l'éditeur
+              scripts: [
+                  { nom: 'Température −5 °C', code: 'print(etat_eau(-5))\n', attendu: 'glace', aide: '-5 < 0 est vrai : quel bloc est exécuté ?' },
+                  { nom: 'Température 0 °C', code: 'print(etat_eau(0))\n', attendu: 'liquide', aide: '0 < 0 est faux… et 0 < 100 ?' },
+                  { nom: 'Température 100 °C', code: 'print(etat_eau(100))\n', attendu: 'vapeur', aide: '100 < 0 est faux, 100 < 100 est faux aussi : on arrive au else.' }
+              ],
               bilan: 'On peut écrire autant de <code>elif</code> que nécessaire : un seul bloc est exécuté, celui de la <b>première</b> condition vraie.' },
 
             { titre: 'Ex. 1 · Prévoir, puis vérifier', type: 'prevoir',
@@ -1015,16 +1018,15 @@ def _console(ligne, n):
                         function devoiler() {
                             ip.readOnly = true; bp.hidden = true;
                             suite.appendChild(el('p', 'aide', 'Ta prévision : « ' + esc(rep[k][0]) + ' ». Exécute le script pour vérifier :'));
-                            cms.push(miniEditeur(suite, sc.code, n + '-' + k));
+                            cms.push(miniEditeur(suite, (e.commun ? e.commun + '\n' : '') + sc.code, n + '-' + k));
                             var cases2 = el('div', 'reponses une-par-une');
                             ligneCase(cases2, 'Python affiche', rep[k][1] || rep[k][0],
-                                function (v) { return txt(v) === txt(sc.attendu) ? null : 'Exécute le script et recopie exactement ce que Python affiche.'; },
+                                function (v) { return txt(v) === txt(sc.attendu) ? null : (sc.aide ? sc.aide + '\n' : '') + 'Exécute le script et recopie exactement ce que Python affiche.'; },
                                 function (v, ok) {
                                     justes[k] = ok; rep[k][1] = v; sauver();
                                     if (ok && e.scripts.every(function (x, j) { return justes[j]; })) reussi();
                                 }, function (ok) { justes[k] = ok; }, !!rep[k][1], exigerLu);
                             suite.appendChild(cases2);
-                            if (sc.aide) suite.appendChild(el('p', 'aide', sc.aide));
                         }
                         fp.onsubmit = function (ev) {
                             ev.preventDefault();
