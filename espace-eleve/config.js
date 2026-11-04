@@ -9,8 +9,9 @@ window.INTERACTIF_CONFIG = {
 /* Liste des exercices : regroupés par semaine (groupe), dans l'ordre d'affichage.
    « niveau » (seconde, premiere, terminale) : un élève ne voit que ceux de sa classe.
    « court » sert d'en-tête de colonne sur la page prof.
-   « codeAcces » : empreinte SHA-256 du code d'accès d'un TP (majuscules, sans tiret ni espace) ; sans le code, le TP reste fermé
-     (sauf TEST-01 et vue professeure). Empreinte d'un nouveau code : python3 -c "import hashlib;print(hashlib.sha256(b'ABC234').hexdigest())" ;
+   « codeAcces » : empreinte SHA-256 du code d'accès d'un TP, à taper EXACTEMENT (majuscules et tiret compris) ;
+     sans le code, le TP reste fermé (sauf TEST-01 et vue professeure).
+     Empreinte d'un nouveau code : python3 -c "import hashlib;print(hashlib.sha256(b'ABC-234').hexdigest())" ;
    « vueProf: true » : la page sait s'ouvrir telle que l'élève l'a laissée (bouton dans Suivi TP) ;
    « tp: true » : TP en plusieurs étapes (score = étapes réussies, une ligne enregistrée par étape : pas de compteur de séries).
    « comptes: ['TEST-01'] » : visible seulement de ces comptes (séries préparées à l'avance, pour les tester) ;
@@ -40,7 +41,7 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie11-j4', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 4 · bilan (à la maison)', court: 'S11 · J4', url: 'seconde/serie11.html?j=4', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/tp-photo', groupe: 'TP Python · Photographie numérique', titre: 'Créer et modifier une image (10 étapes)', court: 'TP Photo', url: 'seconde/tp-photo.html', tp: true, comptes: ['TEST-01'] },
     { niveau: 'seconde', id: 'seconde/tp-conditions', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (20 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions.html', tp: true, vueProf: true,
-      codeAcces: '340bc9dfce8b2f99a041b84e86124300c8de22011e8e70608921cd77f46d1de4' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
+      codeAcces: 'd7c6ed760ed5b07f0c2766b06a63c0d5ddcec26f17c19db9e3d2a541645aca9c' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
     { niveau: 'seconde', id: 'seconde/serie6-j1', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 1', court: 'S6 · J1', url: 'seconde/serie6.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie6-j2', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 2', court: 'S6 · J2', url: 'seconde/serie6.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie6-j3', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 3', court: 'S6 · J3', url: 'seconde/serie6.html?j=3' },

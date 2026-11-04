@@ -442,15 +442,15 @@ def _console(ligne, n):
                 var zv = document.getElementById('etapes');
                 zv.innerHTML = '<section class="etape courante"><div class="etape-tete"><span class="etape-num">🔒</span><h2>TP verrouillé</h2></div>' +
                     '<div class="etape-corps"><p>Ce TP s’ouvre avec le <b>code d’accès</b> donné en classe.</p>' +
-                    '<form class="reponses" id="f-code"><label>Code d’accès <input class="long" id="code-tp" autocomplete="off" spellcheck="false" autocapitalize="characters"></label>' +
+                    '<form class="reponses" id="f-code"><label>Code d’accès <input class="long" id="code-tp" autocomplete="off" spellcheck="false" autocapitalize="off"></label>' +
                     '<button type="submit">Ouvrir le TP</button></form><p class="retour" id="code-retour"></p></div></section>';
                 document.getElementById('f-code').onsubmit = function (ev) {
                     ev.preventDefault();
-                    var t = document.getElementById('code-tp').value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                    var t = document.getElementById('code-tp').value.trim();   // casse et tiret comptent
                     crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function (b) {
                         var h = Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
                         var r = document.getElementById('code-retour');
-                        if (h !== FICHE.codeAcces) { r.className = 'retour ko'; r.textContent = '✗ Code incorrect.'; return; }
+                        if (h !== FICHE.codeAcces) { r.className = 'retour ko'; r.textContent = '✗ Code incorrect : les majuscules et le tiret comptent.'; return; }
                         try { localStorage.setItem('tp-acces:' + ID, h); } catch (x) {}
                         location.reload();
                     });

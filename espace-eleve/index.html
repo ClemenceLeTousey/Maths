@@ -55,7 +55,7 @@
         .evals .eval-liens { display: flex; flex-wrap: wrap; gap: 6px; }
             #liste-tp td { vertical-align: middle; text-align: left; }
         .code-tp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-        .code-tp input { width: 9em; font-family: var(--f-mono); text-transform: uppercase; }
+        .code-tp input { width: 9em; font-family: var(--f-mono); font-variant-ligatures: none; }
         .code-tp .erreur { color: var(--ko); font-weight: 600; }
 </style>
 </head>
@@ -227,7 +227,7 @@
         }
 
         /* ---------- Onglet TP Python : un TP par ligne ; code d'accès (empreinte SHA-256 dans config.js) ---------- */
-        function normaliserCode(t) { return String(t).toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+        function normaliserCode(t) { return String(t).trim(); }   // casse et tiret comptent : le code se tape exactement
         function empreinte(t) {
             return crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function (b) {
                 return Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
@@ -266,14 +266,14 @@
                 } else {
                     var f = document.createElement('form'); f.className = 'code-tp';
                     var i = document.createElement('input'); i.placeholder = 'Code d’accès'; i.autocomplete = 'off'; i.spellcheck = false;
-                    i.setAttribute('autocapitalize', 'characters'); i.setAttribute('aria-label', 'Code d’accès du TP');
+                    i.setAttribute('autocapitalize', 'off'); i.setAttribute('aria-label', 'Code d’accès du TP');
                     var b = document.createElement('button'); b.type = 'submit'; b.textContent = 'Ouvrir';
                     var m = document.createElement('span'); m.className = 'erreur';
                     f.appendChild(i); f.appendChild(b); f.appendChild(m);
                     f.onsubmit = function (e) {
                         e.preventDefault();
                         empreinte(normaliserCode(i.value)).then(function (h) {
-                            if (h !== ex.codeAcces) { m.textContent = 'Code incorrect.'; return; }
+                            if (h !== ex.codeAcces) { m.textContent = 'Code incorrect : les majuscules et le tiret comptent.'; return; }
                             try { localStorage.setItem('tp-acces:' + ex.id, h); } catch (x) {}
                             location.href = ex.url;
                         }, function () { m.textContent = 'Impossible de vérifier le code sur ce navigateur.'; });
