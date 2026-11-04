@@ -661,21 +661,45 @@ def _console(ligne, n):
                           { fin: 'Le script affiche donc 1.' }] }],
               bilan: 'Deux <code>if</code> à la suite sont <b>indépendants</b> : ils sont testés l’un après l’autre, et le second porte sur la <b>nouvelle</b> valeur de <code>a</code>. Avec <code>elif</code>, au contraire, un seul bloc est exécuté.' },
 
-            { titre: 'Ex. 2 · Parc d’attractions', type: 'question',
+            { titre: 'Ex. 2 · Parc d’attractions', type: 'prevoir',
               consigne: '<p>Dans un parc d’attractions, une personne qui mesure moins de 1,30 m n’a pas accès à tous les manèges : elle paie moins cher. La fonction ci-dessous calcule le prix d’entrée (en euros) selon la taille (en mètres) et l’âge.</p>' +
+                py(PRIX) +
                 encadre('astuce', 'Nombres à virgule', 'En Python, on écrit un <b>point</b> : 1,82 s’écrit <code>1.82</code>.') +
-                '<p>✍️ Calcule d’abord <b>sans ordinateur</b> le prix payé par une personne de 18 ans qui mesure 1,82 m, puis par un enfant de 8 ans qui mesure 1,20 m. Vérifie ensuite avec la console.</p>',
-              code: PRIX, exemple: 'prix(1.50, 12)',
-              champs: ['Nombre de paramètres', 'prix(1.82, 18) renvoie', 'prix(1.20, 8) renvoie'],
-              attendus: [2, 19.8, 4],
-              aides: ['Les paramètres sont les noms écrits entre les parenthèses, après def prix.', '1,82 < 1,30 est faux : on passe dans le else.', '1,20 < 1,30 est vrai : entree = 8 × 0,5.'],
+                '<p>✍️ Pour chaque appel, <b>prévois d’abord</b>, sans ordinateur, ce qu’il renvoie. Si ta prévision est fausse, tu exécuteras le script pour vérifier, puis tu te corrigeras.</p>',
+              commun: PRIX, exemple: 'prix(1.50, 12)',
+              blocs: [['if', 'if taille < 1.30'], ['else', 'else']],
+              scripts: [
+                  { question: 'La fonction <code>prix</code> possède combien de paramètres ?', attendu: 2,
+                    aide: 'Les paramètres sont les noms écrits entre les parenthèses, après def prix.' },
+                  { nom: 'Une personne de 18 ans qui mesure 1,82 m', appel: 'prix(1.82, 18)', attendu: 19.8,
+                    variable: 'taille', valeur: '1.82', intro: '<code>taille</code> vaut 1.82 et <code>age</code> vaut 18.',
+                    car: [{ cond: 'if taille < 1.30', vraie: false, raison: '1,82 n’est pas plus petit que 1,30' },
+                          { bloc: 'else' },
+                          { valeur: '19.8', avant: 'Donc <code>entree</code> prend la valeur', raison: '18 × 1,1 = 19,8', aide: 'Calcule age × 1.1 avec age = 18.' },
+                          { fin: 'L’appel prix(1.82, 18) renvoie donc 19.8.' }] },
+                  { nom: 'Un enfant de 8 ans qui mesure 1,20 m', appel: 'prix(1.20, 8)', attendu: 4,
+                    variable: 'taille', valeur: '1.20', intro: '<code>taille</code> vaut 1.20 et <code>age</code> vaut 8.',
+                    car: [{ cond: 'if taille < 1.30', vraie: true, raison: '1,20 est plus petit que 1,30' },
+                          { bloc: 'if' },
+                          { valeur: '4', avant: 'Donc <code>entree</code> prend la valeur', raison: '8 × 0,5 = 4', aide: 'Calcule age × 0.5 avec age = 8.' },
+                          { fin: 'L’appel prix(1.20, 8) renvoie donc 4.0 (Python écrit 4.0 : c’est le nombre 4).' }] }
+              ],
               bilan: 'La fonction a deux paramètres, <code>taille</code> et <code>age</code>, <b>dans cet ordre</b>.' },
 
-            { titre: 'Ex. 2 · L’ordre des arguments', type: 'question',
-              consigne: '<p>Un élève tape <code>prix(18, 1.82)</code> pour la personne de 18 ans qui mesure 1,82 m.</p><p>✍️ Quel résultat obtient-il ? (arrondi au centième)</p>',
-              code: PRIX, exemple: 'prix(1.50, 12)',
-              champs: ['prix(18, 1.82) renvoie environ'],
-              verifierCase: function (k, v) { return Math.abs(num(v) - 2.002) < 0.01 ? null : 'Tape prix(18, 1.82) dans la console, puis arrondis au centième.'; },
+            { titre: 'Ex. 2 · L’ordre des arguments', type: 'prevoir',
+              consigne: '<p>Un élève tape <code>prix(18, 1.82)</code> pour la personne de 18 ans qui mesure 1,82 m.</p>' +
+                '<p>✍️ <b>Prévois d’abord</b>, sans ordinateur, ce que renvoie cet appel (une valeur approchée suffit). Si ta prévision est fausse, tu exécuteras le script pour vérifier, puis tu te corrigeras.</p>',
+              commun: PRIX, exemple: 'prix(1.50, 12)',
+              blocs: [['if', 'if taille < 1.30'], ['else', 'else']],
+              scripts: [
+                  { nom: 'Les arguments dans l’autre ordre', appel: 'prix(18, 1.82)', attendu: 2.002, tol: 0.01,
+                    variable: 'taille', valeur: '18',
+                    intro: 'Python range les arguments <b>dans l’ordre des paramètres</b> : <code>taille</code> vaut 18 et <code>age</code> vaut 1.82 !',
+                    car: [{ cond: 'if taille < 1.30', vraie: false, raison: '18 n’est pas plus petit que 1,30' },
+                          { bloc: 'else' },
+                          { valeur: '2.002', tol: 0.001, avant: 'Donc <code>entree</code> prend la valeur', raison: '1,82 × 1,1 ≈ 2,002', aide: 'Calcule age × 1.1 avec age = 1.82.' },
+                          { fin: 'L’appel renvoie donc environ 2 € : absurde pour une personne de 18 ans, les arguments sont dans le mauvais ordre !' }] }
+              ],
               bilan: 'Environ 2 € : c’est absurde ! Python prend <code>taille = 18</code> et <code>age = 1.82</code>. Comme 18 &lt; 1,30 est faux, il calcule 1,82 × 1,1 ≈ 2. <b>L’ordre des arguments doit suivre l’ordre des paramètres.</b><br>(Le « 0000000000002 » final vient de la façon dont l’ordinateur stocke les nombres à virgule : c’est une minuscule erreur d’arrondi.)' },
 
             { titre: 'Ex. 3 · Au cinéma', type: 'code',
@@ -1098,6 +1122,7 @@ def _console(ligne, n):
                     });
                     var finis = [];
                     function sauver() { reponses[n] = [].concat.apply([], rep); ecrireLocal(); }
+                    function egal(v, a, tol) { return typeof a === 'number' ? Math.abs(num(v) - a) < (tol || 1e-6) : txt(v) === txt(a); }
                     function caseFinie(k) {
                         finis[k] = true;
                         if (k + 1 < e.scripts.length) { if (!blocs[k + 1]) montrerCas(k + 1); }
@@ -1107,6 +1132,19 @@ def _console(ligne, n):
                     function montrerCas(k) {
                         var sc = e.scripts[k];
                         var bloc = el('div', 'bloc-script'); blocs[k] = bloc;
+                        if (sc.question) {
+                            // simple question à valider avant les prévisions
+                            var lq = el('div', 'reponses une-par-une'); bloc.appendChild(lq);
+                            corps.appendChild(bloc);
+                            charge = true;
+                            ligneCase(lq, sc.question, rep[k][0],
+                                function (v) { return egal(v, sc.attendu, sc.tol) ? null : sc.aide; },
+                                function (v, ok) { rep[k][0] = v; sauver(); if (ok) caseFinie(k); },
+                                function (ok) { if (ok) finis[k] = true; }, true, exigerLu);
+                            charge = false;
+                            if ((finis[k] || faite) && k + 1 < e.scripts.length && !blocs[k + 1]) montrerCas(k + 1);
+                            return;
+                        }
                         bloc.appendChild(el('h3', null, esc(sc.nom)));
                         if (!sc.appel) bloc.appendChild(el('div', null, py(sc.code)));
                         var fp = el('form', 'case-ligne prevision');
@@ -1121,7 +1159,7 @@ def _console(ligne, n):
 
                         function apresPrevision(direct) {
                             ip.readOnly = true; bp.hidden = true;
-                            if (txt(rep[k][0]) === txt(sc.attendu)) {
+                            if (egal(rep[k][0], sc.attendu, sc.tol)) {
                                 rp.className = 'retour case-retour ok'; rp.textContent = '✓ Bonne prévision !';
                                 if (direct) caseFinie(k); else finis[k] = true;
                                 return;
@@ -1132,10 +1170,10 @@ def _console(ligne, n):
                             var lignes = el('div', 'reponses une-par-une');
                             suite.appendChild(lignes);
                             ligneCase(lignes, sc.appel ? 'L’appel <code>' + esc(sc.appel) + '</code> renvoie' : 'La console affiche', rep[k][1],
-                                function (v) { return txt(v) === txt(sc.attendu) ? null : sc.appel ? 'Tape ' + sc.appel + ' dans la console et regarde ce que l’appel renvoie.' : 'Exécute le programme et recopie exactement ce que la console affiche.'; },
+                                function (v) { return egal(v, sc.attendu, sc.tol) ? null : sc.appel ? 'Tape ' + sc.appel + ' dans la console et regarde ce que l’appel renvoie.' : 'Exécute le programme et recopie exactement ce que la console affiche.'; },
                                 function (v, ok) { rep[k][1] = v; sauver(); if (ok) apresConsole(true); },
                                 function () {}, true, exigerLu);
-                            if (rep[k][1] && txt(rep[k][1]) === txt(sc.attendu)) apresConsole(false);
+                            if (rep[k][1] && egal(rep[k][1], sc.attendu, sc.tol)) apresConsole(false);
 
                             function apresConsole(direct) {
                                 if (!sc.car) { if (direct) caseFinie(k); else finis[k] = true; return; }
@@ -1148,7 +1186,7 @@ def _console(ligne, n):
                                    réponses rangées dans rep[k][2], rep[k][3], … */
                                 var nomVar = sc.variable || e.variable;
                                 var pq = el('div', 'pourquoi');
-                                pq.appendChild(el('p', null, '<b>Pourquoi ?</b> La variable <code>' + esc(nomVar) + '</code> vaut ' + esc(sc.valeur) + '.'));
+                                pq.appendChild(el('p', null, '<b>Pourquoi ?</b> ' + (sc.intro || 'La variable <code>' + esc(nomVar) + '</code> vaut ' + esc(sc.valeur) + '.')));
                                 suite.appendChild(pq);
                                 var nbCond = 0, faits = [];
                                 function libelleBloc(v) { var b = (e.blocs || []).filter(function (x) { return (Array.isArray(x) ? x[0] : x) === v; })[0]; return Array.isArray(b) ? b[1] : v; }
@@ -1167,13 +1205,13 @@ def _console(ligne, n):
                                     } else if (it.valeur) {
                                         var lc = el('div', 'reponses une-par-une'); pq.appendChild(lc);
                                         ligneCase(lc, it.avant, rep[k][idx],
-                                            function (v) { return num(v) === num(it.valeur) ? null : it.aide; },
+                                            function (v) { return Math.abs(num(v) - num(it.valeur)) < (it.tol || 1e-9) ? null : it.aide; },
                                             function (v, ok) { suivant(v, ok); if (ok) marquerRaison(lc, it.raison); },
                                             function (ok) { if (ok) { marquerRaison(lc, it.raison); auChargement(true); } }, true, exigerLu);
                                     } else if (it.bloc) {
                                         ligneChoix(pq, 'Donc le bloc sous ', e.blocs, rep[k][idx], it.bloc,
                                             'C’est le bloc sous la première condition vérifiée (le bloc sous else si aucune ne l’est).',
-                                            'Le bloc sous ' + libelleBloc(it.bloc) + ' est exécuté' + (sc.appel ? ' : l’appel ' + sc.appel + ' renvoie « ' + sc.attendu + ' »' : '') + '.',
+                                            'Le bloc sous ' + libelleBloc(it.bloc) + ' est exécuté' + (sc.appel && j === sc.car.length - 1 ? ' : l’appel ' + sc.appel + ' renvoie « ' + sc.attendu + ' »' : '') + '.',
                                             suivant, auChargement, ' est exécuté.', 'ligne-bloc');
                                     } else if (it.fin) {
                                         pq.appendChild(el('p', 'retour ok', '✓ ' + it.fin));
