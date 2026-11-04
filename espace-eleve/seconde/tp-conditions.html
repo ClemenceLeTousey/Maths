@@ -82,10 +82,20 @@
         .sortie { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--bg); }
         .sortie pre, .console pre { margin: 0; font-family: var(--f-mono); font-size: 14px; white-space: pre-wrap; word-break: break-word; }
         .sortie pre.err, .console pre.err { color: var(--ko); }
+        main.interactif { max-width: 1100px; }
+        /* JetBrains Mono afficherait != <= >= sous forme de ligatures ≠ ≤ ≥ : on montre les vrais caractères à taper */
+        .interactif code, .interactif pre, .interactif input, .editeur .CodeMirror, .console { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+        /* script à gauche, console à droite (comme dans Capytale) ; l'une sous l'autre sur petit écran */
+        .duo.avec-console { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 12px; align-items: stretch; }
+        .duo.avec-console .console { display: flex; flex-direction: column; min-height: 12em; }
+        .duo.avec-console .console-histo { flex: 1 1 auto; max-height: 26em; }
+        @media (max-width: 760px) {
+            .duo.avec-console { grid-template-columns: 1fr; }
+            .duo.avec-console .console { min-height: 0; }
+        }
         .console { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-family: var(--f-mono); font-size: 14px; }
         .console-titre { font-family: var(--f-sans, inherit); font-size: 0.8rem; color: var(--muted); padding: 4px 12px 0; }
         .console-histo { max-height: 14em; overflow-y: auto; padding: 0 12px; }
-        .console-histo:empty { display: none; }
         .console pre.sep { color: var(--muted); }
         .console-ligne { display: flex; align-items: center; gap: 6px; padding: 4px 12px 6px; }
         .console-ligne span { color: var(--muted); }
@@ -416,7 +426,7 @@ def _console(ligne, n):
               consigne: '<p>Pour écrire une condition, on compare deux valeurs :</p>' + TABLE_COMP +
                 encadre('attention', 'Attention !', 'Pour <b>tester</b> une égalité, on écrit <code>==</code> ; le simple <code>=</code> est réservé à l’affectation (<code>x = 3</code> range 3 dans <code>x</code>).') +
                 '<p>✍️ Traduis ces conditions en Python (sans le <code>if</code> ni les deux-points).</p>',
-              champs: ['age ⩾ 18', 'note ≠ 20', 't = 0', 'masse ⩽ 23'], long: true,
+              champs: ['age ⩾ 18', 'note ≠ 20', 't = 0', 'masse ⩽ 23'], long: true, etiquettesMaths: true,
               verifier: function (v) {
                   var attendus = ['age>=18', 'note!=20', 't==0', 'masse<=23'];
                   for (var k = 0; k < 4; k++) {
@@ -731,8 +741,11 @@ def _console(ligne, n):
                 var sortie = el('div', 'sortie');
                 retour = el('p', 'retour');
                 if (e.code) {
+                    var duo = el('div', 'duo' + (e.console !== false ? ' avec-console' : ''));
+                    var gauche = el('div', 'duo-script');
+                    duo.appendChild(gauche); corps.appendChild(duo);
                     var boite = el('div', 'editeur');
-                    corps.appendChild(boite);
+                    gauche.appendChild(boite);
                     cm = CodeMirror(boite, {
                         value: codes[n] || depart(e), mode: 'python', lineNumbers: true, indentUnit: 4, matchBrackets: true, viewportMargin: Infinity,
                         extraKeys: {
@@ -751,8 +764,7 @@ def _console(ligne, n):
                     var bDepart = el('button', 'secondaire', 'Revenir au programme de départ'); bDepart.type = 'button';
                     actions.appendChild(bLancer); actions.appendChild(bStop); actions.appendChild(bDepart);
                     actions.appendChild(el('span', 'aide', 'Ctrl+Entrée pour exécuter'));
-                    corps.appendChild(actions);
-                    corps.appendChild(sortie);
+                    gauche.appendChild(actions);
                     bDepart.onclick = function () { if (confirm('Effacer ton programme et revenir à celui de départ ?')) cm.setValue(depart(e)); };
                     bStop.onclick = arreterPython;
 
@@ -760,14 +772,15 @@ def _console(ligne, n):
                     var histo = null;
                     if (e.console !== false) {
                         var cons = el('div', 'console');
-                        cons.appendChild(el('div', 'console-titre', 'Console : exécute le programme, puis tape un appel et appuie sur Entrée'));
+                        cons.appendChild(el('div', 'console-titre', 'Console : exécute le script (▶), puis tape un appel et appuie sur Entrée'));
                         histo = el('div', 'console-histo');
                         var fc = el('form', 'console-ligne');
                         fc.appendChild(el('span', null, '&gt;&gt;&gt;'));
                         var ci = el('input'); ci.autocomplete = 'off'; ci.spellcheck = false; ci.setAttribute('autocapitalize', 'off');
                         ci.setAttribute('aria-label', 'Console Python'); ci.placeholder = e.exemple ? 'par exemple : ' + e.exemple : '';
                         fc.appendChild(ci); cons.appendChild(histo); cons.appendChild(fc);
-                        corps.appendChild(cons);
+                        duo.appendChild(cons);
+                        cons.onclick = function (ev) { if (ev.target === cons || ev.target === histo) ci.focus(); };
                         var pile = [], pos = 0;
                         fc.onsubmit = function (ev) {
                             ev.preventDefault();
@@ -785,7 +798,7 @@ def _console(ligne, n):
                             if (ev.key === 'ArrowUp' && pos > 0) { pos--; ci.value = pile[pos]; ev.preventDefault(); }
                             else if (ev.key === 'ArrowDown') { pos = Math.min(pile.length, pos + 1); ci.value = pile[pos] || ''; ev.preventDefault(); }
                         };
-                    }
+                    } else gauche.appendChild(sortie);
                     function ligneHisto(t, classe) {
                         histo.appendChild(el('pre', classe || null, esc(t)));
                         histo.scrollTop = histo.scrollHeight;
@@ -799,8 +812,12 @@ def _console(ligne, n):
                         envoyer({ type: 'run', src: cm.getValue(), n: n, v: e.type === 'code' }).then(function (r) {
                             clearTimeout(arret); bStop.hidden = true;
                             bLancer.disabled = false; bLancer.textContent = '▶ Exécuter';
-                            montrer(sortie, r);
-                            if (histo && !r.err) ligneHisto('— programme exécuté —', 'sep');
+                            if (histo) {
+                                // comme dans Capytale : affichages et erreurs du script dans la console
+                                ligneHisto('— exécution du script —', 'sep');
+                                if (r.out) ligneHisto(r.out.replace(/\n$/, ''));
+                                if (r.err) ligneHisto((r.ligne ? 'Ligne ' + r.ligne + ' · ' : '') + r.err, 'err');
+                            } else montrer(sortie, r);
                             if (r.ligne) { marque = r.ligne - 1; cm.addLineClass(marque, 'background', 'ligne-erreur'); }
                             if (e.type !== 'code' || r.err) return;
                             if (r.ok) reussi();
@@ -812,7 +829,8 @@ def _console(ligne, n):
                 if (e.type === 'question') {
                     var form = el('form', 'reponses');
                     var champs = e.champs.map(function (lib, k) {
-                        var l = el('label', null, '<code>' + esc(lib) + '</code> ');
+                        // étiquette en police de code, sauf si c'est une condition écrite en maths (étape 2)
+                        var l = el('label', null, e.etiquettesMaths ? esc(lib) + ' → <code>if</code>' : '<code>' + esc(lib) + '</code> ');
                         var i = el('input'); i.autocomplete = 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', 'off');
                         if (e.long) i.className = 'long';
                         if (reponses[n]) i.value = reponses[n][k] || '';
