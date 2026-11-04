@@ -50,7 +50,13 @@
         .encadre { border-left: 4px solid var(--c-seconde); background: var(--bleu-doux); border-radius: 0 8px 8px 0; padding: 8px 12px; margin: 10px 0; }
         .encadre.astuce { border-left-color: var(--ok); }
         .encadre.attention { border-left-color: var(--ko); }
-        .encadre b:first-child { display: block; margin-bottom: 2px; }
+        .encadre .lu { display: flex; justify-content: flex-end; align-items: center; gap: 6px; margin-top: 4px; font-size: 0.85rem; color: var(--muted); cursor: pointer; }
+        .encadre .lu input { margin: 0; cursor: pointer; }
+        .encadre.est-lu .lu { color: var(--ok); font-weight: 600; }
+        .encadre.a-cocher { outline: 2px solid var(--ko); outline-offset: 2px; }
+        .encadre.a-cocher .lu { color: var(--ko); font-weight: 600; }
+        /* titre du cadre seulement (le <b> placé directement dedans), pas les mots en gras des paragraphes */
+        .encadre > b:first-child { display: block; margin-bottom: 2px; }
         .tableau { overflow-x: auto; margin: 8px 0; }
         .tableau table { border-collapse: collapse; }
         .tableau th, .tableau td { border: 1px solid var(--line); padding: 4px 10px; text-align: center; white-space: nowrap; }
@@ -87,6 +93,7 @@
         .case-ligne label { display: contents; }
         .case-ligne input.long { width: 100%; box-sizing: border-box; }
         .retour.case-retour { margin: 0; line-height: 1.3; }
+        .retour code.forme { font-family: var(--f-mono); color: var(--c-seconde); background: var(--bleu-doux); padding: 1px 6px; border-radius: 4px; font-variant-ligatures: none; }
         @media (max-width: 640px) {
             .case-ligne { grid-template-columns: 1fr auto; }
             .case-ligne .retour.case-retour { grid-column: 1 / -1; }
@@ -396,7 +403,9 @@ def _console(ligne, n):
         var PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/';
 
         /* ---------- Outils pour les consignes et la vérification des réponses ---------- */
-        function encadre(classe, titre, corps) { return '<div class="encadre ' + classe + '"><b>' + titre + '</b>' + corps + '</div>'; }
+        // chaque encadré se termine par une case « J'ai lu » (état gardé sur l'appareil, voir brancherLus)
+        var CASE_LU = '<label class="lu"><input type="checkbox"> J’ai lu</label>';
+        function encadre(classe, titre, corps) { return '<div class="encadre ' + classe + '"><b>' + titre + '</b>' + corps + CASE_LU + '</div>'; }
         function py(code) { return '<pre class="code">' + esc(code) + '</pre>'; }
         function sansAccent(t) { return t.normalize('NFD').replace(/[̀-ͯ]/g, ''); }
         // texte : sans majuscules, accents, guillemets ni espaces superflus
@@ -417,8 +426,11 @@ def _console(ligne, n):
             return (e.aides && e.aides[k]) || 'Ce n’est pas ça. Vérifie avec la console.';
         }
 
+        // message d'aide : \n = retour à la ligne, `…` = code (en bleu)
+        function miseEnForme(m) { return esc(m).replace(/\n/g, '<br>').replace(/`([^`]+)`/g, '<code class="forme">$1</code>'); }
+
         // une ligne « étiquette [case] Valider ✓/✗ » ; apres(v, ok) à chaque validation ; init(ok) au chargement
-        function ligneCase(parent, etiquette, valeur, verif, apres, init, afficherEtat) {
+        function ligneCase(parent, etiquette, valeur, verif, apres, init, afficherEtat, garde) {
             var f = el('form', 'case-ligne');
             var l = el('label', null, etiquette + ' ');
             var i = el('input'); i.autocomplete = 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', 'off');
@@ -427,11 +439,12 @@ def _console(ligne, n):
             var b = el('button', null, 'Valider'); b.type = 'submit'; f.appendChild(b);
             var r = el('span', 'retour case-retour'); f.appendChild(r);
             var juste = false;
-            function marquer(m) { juste = !m; r.className = 'retour case-retour ' + (m ? 'ko' : 'ok'); r.textContent = m ? '✗ ' + m : '✓'; }
+            function marquer(m) { juste = !m; r.className = 'retour case-retour ' + (m ? 'ko' : 'ok'); r.innerHTML = m ? '✗ ' + miseEnForme(m) : '✓'; }
             if (valeur && afficherEtat !== false && !verif(valeur)) { marquer(null); init(true); }
             i.oninput = function () { if (juste) { juste = false; r.textContent = ''; init(false); } };
             f.onsubmit = function (ev) {
                 ev.preventDefault();
+                if (garde && !garde()) return;
                 var v = i.value.trim();
                 if (!v) { marquer('Écris ta réponse.'); return; }
                 var m = verif(v);
@@ -487,9 +500,9 @@ def _console(ligne, n):
            type 'qcm' : une réponse à choisir ; type 'code' : programme vérifié par Python (_ETAPES). */
         var ETAPES = [
             { titre: 'Cours · L’instruction « si… sinon… »', type: 'question',
-              consigne: '<p>Une compagnie aérienne fait payer un <b>supplément de 50 €</b> lorsqu’une valise pèse <b>plus de 23 kg</b> ; sinon, il n’y a rien à payer. La fonction <code>supplement</code> ci-dessous calcule ce supplément.</p>' +
-                encadre('', 'L’instruction « si… sinon… »', '<ul><li>Si la condition est vraie, Python exécute le bloc sous <code>if</code> ; sinon, le bloc sous <code>else</code>.</li><li>Deux-points <code>:</code> après la condition et après <code>else</code>, puis on décale les lignes (indentation).</li></ul>') +
-                encadre('', 'Vocabulaire', 'Le <b>nom</b> de la fonction est <code>supplement</code> ; elle possède <b>un seul paramètre</b>, <code>masse</code>. Dans la console, on <b>appelle</b> la fonction en donnant une valeur au paramètre, par exemple <code>supplement(25)</code> : elle <b>renvoie</b> un résultat.') +
+              consigne: '<p>Une compagnie aérienne fait payer un <b>supplément de 50 €</b> lorsqu’une valise pèse <b>plus de 23 kg</b> ; sinon, il n’y a rien à payer.</p><p> La fonction <code>supplement</code> ci-dessous calcule ce supplément.</p>' +
+                encadre('', 'L’instruction « si… sinon… »', '<ul><li>Si la condition est vraie, Python exécute le bloc sous <code>if</code> ; sinon, le bloc sous <code>else</code>.</li><li>Attention aux deux-points <code>:</code> après la condition et après <code>else</code>, puis on décale les lignes (indentation).</li></ul>') +
+                encadre('', 'Vocabulaire', '<p> Le <b>nom</b> de la fonction ci-dessous est <code>supplement</code> ; elle possède <b>un seul paramètre</b>, <code>masse</code>. </p><p> Dans la console, on <b>appelle</b> la fonction en donnant une valeur au paramètre, par exemple <code>supplement(25)</code> : elle <b>renvoie</b> un résultat.</p>') +
                 '<p>✍️ Exécute le programme (▶), puis tape les appels dans la console pour compléter les cases.</p>',
               code: SUPPLEMENT, exemple: 'supplement(25)',
               champs: ['supplement(25) renvoie', 'supplement(23) renvoie', 'supplement(23.5) renvoie'],
@@ -504,18 +517,18 @@ def _console(ligne, n):
               champs: ['si age ⩾ 18', 'si note ≠ 20', 'si t = 0', 'si masse ⩽ 23'], etiquettesTexte: true,
               // réponse attendue : la ligne complète « if condition: »
               verifierCase: function (k, v) {
-                  var FORME = 'La réponse attendue est de la forme : if condition:';
+                  var FORME = '\nLa réponse attendue est de la forme :\n`if condition :`';
                   var s = v.replace(/\s+/g, ' ').trim();
-                  if (/^if\b/i.test(s) && !/^if\b/.test(s)) return 'if s’écrit en minuscules.';
-                  if (!/^if\b/.test(s)) return 'Il manque le if. ' + FORME;
-                  if (!/:$/.test(s)) return 'Il manque les deux-points à la fin de la ligne. ' + FORME;
+                  if (/^if\b/i.test(s) && !/^if\b/.test(s)) return '`if` s’écrit en minuscules.';
+                  if (!/^if\b/.test(s)) return 'Il manque le `if`.' + FORME;
+                  if (!/:$/.test(s)) return 'Il manque les deux-points `:` à la fin de la ligne.' + FORME;
                   var c = s.replace(/^if/, '').replace(/:$/, '').replace(/\s/g, '');
                   if (c === ['age>=18', 'note!=20', 't==0', 'masse<=23'][k]) return null;
                   if (/=>|=</.test(c)) return 'On écrit d’abord < ou >, puis = : <= et >=.';
                   if (k === 2 && c === 't=0') return 'Le simple = sert à affecter ; pour tester une égalité, on écrit ==.';
                   if (/<>|≠/.test(c)) return 'Regarde le tableau : ≠ s’écrit avec un point d’exclamation.';
                   if (/[⩽⩾≤≥]/.test(c)) return 'Ce symbole n’existe pas en Python : regarde le tableau.';
-                  return 'Regarde bien le tableau (et garde le même nom de variable). ' + FORME;
+                  return 'Regarde bien le tableau (et garde le même nom de variable).' + FORME;
               } },
 
             { titre: 'Cours · Plus de deux cas avec « sinon si » (elif)', type: 'question',
@@ -741,15 +754,15 @@ def _console(ligne, n):
         demarrerPython();
 
         /* ---------- Progression : sur l'appareil, et dans la base si l'élève est connecté ---------- */
-        var debut = Date.now(), faites = 0, codes = {}, reponses = {};
+        var debut = Date.now(), faites = 0, codes = {}, reponses = {}, lus = {};
         function cle() { var s = Interactif.session(); return 'tp-conditions:' + (s ? s.code : 'invite'); }
         function lireLocal() { try { return JSON.parse(localStorage.getItem(cle())) || {}; } catch (e) { return {}; } }
-        function ecrireLocal() { try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, codes: codes, reponses: reponses })); } catch (e) {} }
+        function ecrireLocal() { try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, codes: codes, reponses: reponses, lus: lus })); } catch (e) {} }
         function depart(e) { return typeof e.code === 'function' ? e.code() : e.code; }
 
         function charger() {
             var l = lireLocal();
-            faites = l.faites || 0; codes = l.codes || {}; reponses = l.reponses || {};
+            faites = l.faites || 0; codes = l.codes || {}; reponses = l.reponses || {}; lus = l.lus || {};
             afficher();
             var s = Interactif.session();
             if (!s) return;
@@ -830,10 +843,45 @@ def _console(ligne, n):
             c.appendChild(tete); c.appendChild(corps);
             var cm = null, cms = [], construit = false, bilanMontre = false, retour;
 
+            // cases « J'ai lu » : lus[n] = numéros (dans l'ordre de la page) des encadrés cochés de l'étape n
+            function brancherLus() {
+                Array.prototype.forEach.call(corps.querySelectorAll('.encadre .lu input'), function (i, k) {
+                    var cadre = i.closest('.encadre');
+                    i.checked = (lus[n] || []).indexOf(k) >= 0;
+                    cadre.classList.toggle('est-lu', i.checked);
+                    i.onchange = function () {
+                        var l = (lus[n] || []).filter(function (x) { return x !== k; });
+                        if (i.checked) l.push(k);
+                        lus[n] = l; ecrireLocal();
+                        cadre.classList.toggle('est-lu', i.checked);
+                        if (i.checked) cadre.classList.remove('a-cocher');
+                        if (i.checked && toutLu() && retour && retour.dataset.lu) { retour.textContent = ''; retour.className = 'retour'; delete retour.dataset.lu; }
+                        if (i.checked && cadre.classList.contains('bilan') && suite) { var f = suite; suite = null; f(); }
+                    };
+                });
+            }
+
+            // « J'ai lu » obligatoire : tous les encadrés de la consigne cochés avant de répondre ou d'exécuter
+            var suite = null;   // étape suivante en attente du « J'ai lu » de l'encadré « À retenir »
+            function nonLus() {
+                return Array.prototype.filter.call(corps.querySelectorAll('.encadre:not(.bilan)'), function (x) { return !x.querySelector('.lu input').checked; });
+            }
+            function toutLu() { return !nonLus().length; }
+            function exigerLu() {
+                var l = nonLus();
+                if (!l.length) return true;
+                l.forEach(function (x) { x.classList.add('a-cocher'); });
+                retour.className = 'retour ko'; retour.dataset.lu = '1';
+                retour.textContent = '✗ Coche d’abord « J’ai lu » dans chaque encadré (' + l.length + ' à cocher).';
+                l[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+
             function montrerBilan() {
                 if (!e.bilan || bilanMontre) return;
                 bilanMontre = true;
-                corps.appendChild(el('div', 'encadre astuce', '<b>À retenir</b>' + e.bilan));
+                corps.appendChild(el('div', 'encadre astuce bilan', '<b>À retenir</b>' + e.bilan + CASE_LU));
+                brancherLus();
             }
 
             function construire() {
@@ -907,7 +955,7 @@ def _console(ligne, n):
                     }
 
                     function lancer() {
-                        if (bLancer.disabled) return;
+                        if (bLancer.disabled || !exigerLu()) return;
                         bLancer.disabled = true; bLancer.textContent = 'Exécution…';
                         var arret = setTimeout(function () { bStop.hidden = false; }, 2500);
                         if (e.type === 'code') { retour.textContent = ''; retour.className = 'retour'; }
@@ -942,7 +990,7 @@ def _console(ligne, n):
                             function (v, ok) {
                                 oks[k] = ok; valeurs[k] = v; reponses[n] = valeurs.slice(); ecrireLocal();
                                 if (ok && e.champs.every(function (x, j) { return oks[j]; })) reussi();
-                            }, function (ok) { oks[k] = ok; });
+                            }, function (ok) { oks[k] = ok; }, true, exigerLu);
                     });
                     corps.appendChild(cases);
                 }
@@ -974,12 +1022,13 @@ def _console(ligne, n):
                                 function (v, ok) {
                                     justes[k] = ok; rep[k][1] = v; sauver();
                                     if (ok && e.scripts.every(function (x, j) { return justes[j]; })) reussi();
-                                }, function (ok) { justes[k] = ok; }, !!rep[k][1]);
+                                }, function (ok) { justes[k] = ok; }, !!rep[k][1], exigerLu);
                             suite.appendChild(cases2);
                             if (sc.aide) suite.appendChild(el('p', 'aide', sc.aide));
                         }
                         fp.onsubmit = function (ev) {
                             ev.preventDefault();
+                            if (!exigerLu()) return;
                             var v = ip.value.trim();
                             if (!v || ip.readOnly) return;
                             rep[k][0] = v; sauver(); devoiler();
@@ -1002,6 +1051,7 @@ def _console(ligne, n):
                     q.appendChild(bQ);
                     q.onsubmit = function (ev) {
                         ev.preventDefault();
+                        if (!exigerLu()) return;
                         var k = radios.findIndex(function (i) { return i.checked; });
                         if (k < 0) { retour.className = 'retour ko'; retour.textContent = 'Choisis une réponse.'; return; }
                         reponses[n] = [e.choix[k]]; ecrireLocal();
@@ -1012,6 +1062,7 @@ def _console(ligne, n):
                 }
                 corps.appendChild(retour);
                 if (faite) montrerBilan();
+                brancherLus();
             }
 
             function reussi() {
@@ -1027,11 +1078,20 @@ def _console(ligne, n):
                 var etat = el('p', 'aide', 'Enregistrement…');
                 corps.appendChild(etat);
                 enregistrer().then(function (t) { etat.textContent = t; });
-                if (n < NB) {
-                    var suivante = carte(n + 1);
-                    zone.appendChild(suivante); suivante.rafraichir();
-                    setTimeout(function () { suivante.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, e.bilan ? 1500 : 600);
-                } else zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé le TP sur les structures conditionnelles !'));
+                var ouvrirSuite = function () {
+                    if (attenteBilan) attenteBilan.remove();
+                    if (n < NB) {
+                        var suivante = carte(n + 1);
+                        zone.appendChild(suivante); suivante.rafraichir();
+                        setTimeout(function () { suivante.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 600);
+                    } else zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé le TP sur les structures conditionnelles !'));
+                };
+                var bilanCase = corps.querySelector('.encadre.bilan .lu input'), attenteBilan = null;
+                if (bilanCase && !bilanCase.checked) {
+                    attenteBilan = el('p', 'retour ko', 'Coche « J’ai lu » dans l’encadré « À retenir » pour passer à l’étape suivante.');
+                    corps.appendChild(attenteBilan);
+                    suite = ouvrirSuite;
+                } else ouvrirSuite();
             }
 
             function ajouterRevoir() {
