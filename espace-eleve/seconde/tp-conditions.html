@@ -20,6 +20,15 @@
         .progression .barre { flex: 1; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
         .progression .barre i { display: block; height: 100%; background: var(--ok); border-radius: 4px; transition: width .4s; }
         .py-etat { color: var(--muted); font-size: 0.85rem; margin: -8px 0 16px; }
+        .sommaire { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: -6px 0 18px; }
+        .sommaire .aide { margin: 0 4px 0 0; font-size: 0.85rem; }
+        .interactif .sommaire button {
+            min-width: 2.2em; height: 2.2em; padding: 0 4px; border-radius: 50%; font-size: 0.85rem; font-weight: 600;
+            background: var(--surface); color: var(--text); border: 1px solid var(--line); cursor: pointer;
+        }
+        .interactif .sommaire button.fait { background: var(--ok); border-color: var(--ok); color: #fff; }
+        .interactif .sommaire button.courante { border: 2px solid var(--c-seconde); }
+        .interactif .sommaire button:disabled { opacity: .4; cursor: default; }
 
         .etapes { display: flex; flex-direction: column; gap: 14px; }
         .etape { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
@@ -72,6 +81,11 @@
         .reponses label code { white-space: nowrap; }
         .reponses input { width: 6em; font-family: var(--f-mono); }
         .reponses input.long { width: 10em; }
+        .reponses.une-par-une { flex-direction: column; align-items: stretch; gap: 8px; }
+        .case-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+        .case-ligne label { min-width: 15em; justify-content: space-between; }
+        .case-ligne input.long { width: 12em; }
+        .retour.case-retour { margin: 0; flex: 1 1 14em; }
         .qcm { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
         .qcm label { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
         .qcm label:has(input:checked) { border-color: var(--c-seconde); background: var(--bleu-doux); }
@@ -88,7 +102,8 @@
         /* script à gauche, console à droite (comme dans Capytale) ; l'une sous l'autre sur petit écran */
         .duo.avec-console { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 12px; align-items: stretch; }
         .duo.avec-console .console { display: flex; flex-direction: column; min-height: 12em; }
-        .duo.avec-console .console-histo { flex: 1 1 auto; max-height: 26em; }
+        .duo.avec-console .console-histo { flex: 0 1 auto; max-height: 26em; }
+        .console-histo { padding-top: 6px; }
         @media (max-width: 760px) {
             .duo.avec-console { grid-template-columns: 1fr; }
             .duo.avec-console .console { min-height: 0; }
@@ -124,6 +139,7 @@
     <main class="interactif">
         <div id="bandeau"></div>
         <div class="progression"><span id="progres-texte"></span><div class="barre"><i id="progres-barre"></i></div></div>
+        <nav class="sommaire" id="sommaire" aria-label="Étapes du TP"></nav>
         <p class="py-etat" id="py-etat">Chargement de Python… (quelques secondes la première fois)</p>
         <div class="etapes" id="etapes"></div>
     </main>
@@ -424,22 +440,23 @@ def _console(ligne, n):
 
             { titre: 'Cours · Écrire une condition', type: 'question',
               consigne: '<p>Pour écrire une condition, on compare deux valeurs :</p>' + TABLE_COMP +
-                encadre('attention', 'Attention !', 'Pour <b>tester</b> une égalité, on écrit <code>==</code> ; le simple <code>=</code> est réservé à l’affectation (<code>x = 3</code> range 3 dans <code>x</code>).') +
-                '<p>✍️ Traduis ces conditions en Python (sans le <code>if</code> ni les deux-points).</p>',
-              champs: ['age ⩾ 18', 'note ≠ 20', 't = 0', 'masse ⩽ 23'], long: true, etiquettesMaths: true,
-              verifier: function (v) {
-                  var attendus = ['age>=18', 'note!=20', 't==0', 'masse<=23'];
-                  for (var k = 0; k < 4; k++) {
-                      var s = v[k].replace(/\s/g, '').replace(/^if/, '').replace(/:$/, '');
-                      if (s === attendus[k]) continue;
-                      var lib = '« ' + this.champs[k] + ' » : ';
-                      if (/=>|=</.test(s)) return lib + 'on écrit d’abord < ou >, puis = : <= et >=.';
-                      if (k === 2 && s === 't=0') return lib + 'le simple = sert à affecter ; pour tester une égalité, on écrit ==.';
-                      if (/<>|≠/.test(s)) return lib + 'regarde le tableau : ≠ s’écrit avec un point d’exclamation.';
-                      if (/[⩽⩾≤≥]/.test(s)) return lib + 'ce symbole n’existe pas en Python : regarde le tableau.';
-                      return lib + 'regarde bien le tableau (et garde les mêmes noms de variables).';
-                  }
-                  return null;
+                encadre('attention', 'Attention !', 'Pour <b>tester</b> une égalité, on écrit <code>==</code> ; le simple <code>=</code> est réservé à l’affectation : <code>x = 3</code> affecte la valeur 3 à <code>x</code>.') +
+                '<p>✍️ Écris en Python le test de chaque condition, puis valide-les une par une.</p>',
+              champs: ['si age ⩾ 18', 'si note ≠ 20', 'si t = 0', 'si masse ⩽ 23'], unParUn: true,
+              // réponse attendue : la ligne complète « if condition: »
+              verifierCase: function (k, v) {
+                  var FORME = 'La réponse attendue est de la forme : if condition:';
+                  var s = v.replace(/\s+/g, ' ').trim();
+                  if (/^if\b/i.test(s) && !/^if\b/.test(s)) return 'if s’écrit en minuscules.';
+                  if (!/^if\b/.test(s)) return 'Il manque le if. ' + FORME;
+                  if (!/:$/.test(s)) return 'Il manque les deux-points à la fin de la ligne. ' + FORME;
+                  var c = s.replace(/^if/, '').replace(/:$/, '').replace(/\s/g, '');
+                  if (c === ['age>=18', 'note!=20', 't==0', 'masse<=23'][k]) return null;
+                  if (/=>|=</.test(c)) return 'On écrit d’abord < ou >, puis = : <= et >=.';
+                  if (k === 2 && c === 't=0') return 'Le simple = sert à affecter ; pour tester une égalité, on écrit ==.';
+                  if (/<>|≠/.test(c)) return 'Regarde le tableau : ≠ s’écrit avec un point d’exclamation.';
+                  if (/[⩽⩾≤≥]/.test(c)) return 'Ce symbole n’existe pas en Python : regarde le tableau.';
+                  return 'Regarde bien le tableau (et garde le même nom de variable). ' + FORME;
               } },
 
             { titre: 'Cours · Plus de deux cas avec « sinon si » (elif)', type: 'question',
@@ -710,6 +727,26 @@ def _console(ligne, n):
             var n = Math.min(faites, NB);
             document.getElementById('progres-texte').textContent = n >= NB ? 'TP terminé : ' + NB + ' étapes sur ' + NB + ' ✓' : 'Étape ' + (n + 1) + ' sur ' + NB;
             document.getElementById('progres-barre').style.width = (100 * n / NB) + '%';
+            sommaire();
+        }
+
+        // barre des étapes : un clic sur une étape déjà faite la rouvre pour la reprendre
+        function sommaire() {
+            var nav = document.getElementById('sommaire');
+            nav.innerHTML = '';
+            nav.appendChild(el('span', 'aide', 'Aller à l’étape :'));
+            ETAPES.forEach(function (e, k) {
+                var n = k + 1, b = el('button', n <= faites ? 'fait' : n === faites + 1 ? 'courante' : null, String(n));
+                b.type = 'button'; b.title = 'Étape ' + n + ' · ' + e.titre;
+                b.disabled = n > faites + 1;
+                b.onclick = function () {
+                    var c = zone.querySelector('[data-n="' + n + '"]');
+                    if (!c) return;
+                    c.ouvrir();
+                    c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                };
+                nav.appendChild(b);
+            });
         }
 
         function afficher() {
@@ -722,6 +759,7 @@ def _console(ligne, n):
         function carte(n) {
             var e = ETAPES[n - 1], faite = n <= faites;
             var c = el('section', 'etape' + (faite ? ' faite' : ' courante'));
+            c.dataset.n = n;
             var tete = el('div', 'etape-tete');
             tete.appendChild(el('span', 'etape-num', faite ? '✓' : String(n)));
             tete.appendChild(el('h2', null, esc(e.titre)));
@@ -769,10 +807,11 @@ def _console(ligne, n):
                     bStop.onclick = arreterPython;
 
                     /* console « >>> », comme dans Capytale : elle travaille avec le dernier programme exécuté */
-                    var histo = null;
+                    var histo = null, titreConsole = null;
                     if (e.console !== false) {
                         var cons = el('div', 'console');
-                        cons.appendChild(el('div', 'console-titre', 'Console : exécute le script (▶), puis tape un appel et appuie sur Entrée'));
+                        titreConsole = el('div', 'console-titre', 'Console : exécute le script (▶), puis tape un appel et appuie sur Entrée');
+                        cons.appendChild(titreConsole);
                         histo = el('div', 'console-histo');
                         var fc = el('form', 'console-ligne');
                         fc.appendChild(el('span', null, '&gt;&gt;&gt;'));
@@ -814,7 +853,10 @@ def _console(ligne, n):
                             bLancer.disabled = false; bLancer.textContent = '▶ Exécuter';
                             if (histo) {
                                 // comme dans Capytale : affichages et erreurs du script dans la console
-                                ligneHisto('— exécution du script —', 'sep');
+                                // console repartie de zéro, comme après un redémarrage : « Script exécuté » en haut, puis >>>
+                                titreConsole.hidden = true;
+                                histo.innerHTML = '';
+                                ligneHisto('Script exécuté', 'sep');
                                 if (r.out) ligneHisto(r.out.replace(/\n$/, ''));
                                 if (r.err) ligneHisto((r.ligne ? 'Ligne ' + r.ligne + ' · ' : '') + r.err, 'err');
                             } else montrer(sortie, r);
@@ -826,11 +868,36 @@ def _console(ligne, n):
                     }
                     bLancer.onclick = lancer;
                 }
-                if (e.type === 'question') {
+                if (e.type === 'question' && e.unParUn) {
+                    // une case = une ligne avec son propre bouton Valider ; l'étape est réussie quand toutes sont justes
+                    var cases = el('div', 'reponses une-par-une');
+                    var valeurs = e.champs.map(function (x, k) { return (reponses[n] || [])[k] || ''; }), oks = [];
+                    e.champs.forEach(function (lib, k) {
+                        var f = el('form', 'case-ligne');
+                        var l = el('label', null, esc(lib) + ' ');
+                        var i = el('input'); i.autocomplete = 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', 'off');
+                        i.className = 'long'; i.value = valeurs[k];
+                        l.appendChild(i); f.appendChild(l);
+                        var b = el('button', null, 'Valider'); b.type = 'submit'; f.appendChild(b);
+                        var r = el('span', 'retour case-retour'); f.appendChild(r);
+                        function marquer(m) { oks[k] = !m; r.className = 'retour case-retour ' + (m ? 'ko' : 'ok'); r.textContent = m ? '✗ ' + m : '✓'; }
+                        if (valeurs[k] && !e.verifierCase(k, valeurs[k])) marquer(null);
+                        i.oninput = function () { if (oks[k]) { oks[k] = false; r.textContent = ''; } };
+                        f.onsubmit = function (ev) {
+                            ev.preventDefault();
+                            var v = i.value.trim();
+                            if (!v) { marquer('Écris ta réponse.'); return; }
+                            valeurs[k] = v; reponses[n] = valeurs.slice(); ecrireLocal();
+                            marquer(e.verifierCase(k, v));
+                            if (e.champs.every(function (x, j) { return oks[j]; })) reussi();
+                        };
+                        cases.appendChild(f);
+                    });
+                    corps.appendChild(cases);
+                } else if (e.type === 'question') {
                     var form = el('form', 'reponses');
                     var champs = e.champs.map(function (lib, k) {
-                        // étiquette en police de code, sauf si c'est une condition écrite en maths (étape 2)
-                        var l = el('label', null, e.etiquettesMaths ? esc(lib) + ' → <code>if</code>' : '<code>' + esc(lib) + '</code> ');
+                        var l = el('label', null, '<code>' + esc(lib) + '</code> ');
                         var i = el('input'); i.autocomplete = 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', 'off');
                         if (e.long) i.className = 'long';
                         if (reponses[n]) i.value = reponses[n][k] || '';
@@ -897,15 +964,18 @@ def _console(ligne, n):
 
             function ajouterRevoir() {
                 if (tete.querySelector('button')) return;
-                var b = el('button', 'lien', c.classList.contains('ouverte') ? 'Replier' : 'Revoir'); b.type = 'button';
-                b.onclick = function () {
-                    var ouvrir = c.classList.toggle('ouverte');
-                    b.textContent = ouvrir ? 'Replier' : 'Revoir';
-                    if (ouvrir) { construire(); if (cm) cm.refresh(); }
-                };
+                var b = el('button', 'lien', c.classList.contains('ouverte') ? 'Replier' : 'Reprendre'); b.type = 'button';
+                b.onclick = function () { basculer(!c.classList.contains('ouverte')); };
                 tete.appendChild(b);
             }
+            function basculer(ouvrir) {
+                c.classList.toggle('ouverte', ouvrir);
+                var b = tete.querySelector('button');
+                if (b) b.textContent = ouvrir ? 'Replier' : 'Reprendre';
+                if (ouvrir) { construire(); if (cm) cm.refresh(); }
+            }
 
+            c.ouvrir = function () { if (c.classList.contains('faite')) basculer(true); };
             c.rafraichir = function () { if (cm) cm.refresh(); };
             if (faite) ajouterRevoir(); else construire();
             return c;
