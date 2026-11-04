@@ -836,16 +836,39 @@ def _console(ligne, n):
         demarrerPython();
 
         /* ---------- Progression : sur l'appareil, et dans la base si l'élève est connecté ---------- */
-        var debut = Date.now(), faites = 0, codes = {}, reponses = {}, lus = {};
+        var debut = Date.now(), faites = 0, codes = {}, reponses = {}, lus = {}, erreurs = {}, passees = {};
         function cle() { var s = Interactif.session(); return 'tp-conditions:' + (s ? s.code : 'invite'); }
         function lireLocal() { try { return JSON.parse(localStorage.getItem(cle())) || {}; } catch (e) { return {}; } }
-        function ecrireLocal() { try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, codes: codes, reponses: reponses, lus: lus })); } catch (e) {} }
+        function ecrireLocal() { try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, codes: codes, reponses: reponses, lus: lus, erreurs: erreurs, passees: passees })); } catch (e) {} }
+        // réponse d'une étape, en clair, pour le suivi de la professeure
+        function sansBalises(h) { var d = document.createElement('div'); d.innerHTML = h; return d.textContent; }
+        function lisible(e, n) {
+            var v = reponses[n] || [];
+            if (passees[n]) return '(étape passée en mode test)';
+            if (e.type === 'code') return codes[n] || depart(e);
+            if (e.type === 'qcm') return sansBalises(v[0] || '');
+            if (e.type === 'question') return e.champs.map(function (c, k) { return c + ' → ' + (v[k] || '…'); }).join('\n');
+            if (e.type === 'prevoir') {
+                var lignes = e.scripts.map(function (sc, k) {
+                    var r = v.slice(8 * k, 8 * k + 8), nom = sc.question ? sansBalises(sc.question) : sc.appel || sc.nom;
+                    if (!r[0]) return null;
+                    if (sc.question) return nom + ' → ' + r[0];
+                    return egalVal(r[0], sc.attendu, sc.tol) ? nom + ' : prévu « ' + r[0] + ' » ✓'
+                                                             : nom + ' : prévu « ' + r[0] + ' » ✗, corrigé « ' + (r[1] || '…') + ' »';
+                }).filter(Boolean);
+                if (e.code && codes[n]) lignes.push('Programme corrigé :\n' + codes[n]);
+                return lignes.join('\n');
+            }
+            return v.join(' ; ');
+        }
+        function egalVal(v, a, tol) { return typeof a === 'number' ? Math.abs(num(v) - a) < (tol || 1e-6) : txt(v) === txt(a); }
+
         function modeTest() { var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'TEST-01'; }
         function depart(e) { return typeof e.code === 'function' ? e.code() : e.code; }
 
         function charger() {
             var l = lireLocal();
-            faites = l.faites || 0; codes = l.codes || {}; reponses = l.reponses || {}; lus = l.lus || {};
+            faites = l.faites || 0; codes = l.codes || {}; reponses = l.reponses || {}; lus = l.lus || {}; erreurs = l.erreurs || {}; passees = l.passees || {};
             afficher();
             var s = Interactif.session();
             if (!s) return;
@@ -855,9 +878,14 @@ def _console(ligne, n):
                 if (!meilleur || meilleur.score <= faites) return;
                 faites = Math.min(meilleur.score, NB);
                 (meilleur.details || []).forEach(function (d, k) {
-                    if (!d || d.r == null || !ETAPES[k]) return;
-                    if (ETAPES[k].type === 'code') codes[k + 1] = String(d.r);
+                    if (!d || !ETAPES[k]) return;
+                    if (d.e) erreurs[k + 1] = Math.max(erreurs[k + 1] || 0, d.e);
+                    if (d.p) passees[k + 1] = true;
+                    if (d.v) { reponses[k + 1] = d.v.slice(); if (ETAPES[k].type !== 'code' && d.c) codes[k + 1] = String(d.c); }
+                    else if (d.r == null) return;
+                    else if (ETAPES[k].type === 'code') codes[k + 1] = String(d.r);
                     else reponses[k + 1] = String(d.r).split(' ; ');
+                    if (ETAPES[k].type === 'code' && d.c) codes[k + 1] = String(d.c);
                 });
                 ecrireLocal(); afficher();
             }, function () {});
@@ -867,8 +895,12 @@ def _console(ligne, n):
             var s = Interactif.session();
             if (!s) return Promise.resolve('Tu n’es pas connecté(e) : ta progression est gardée seulement sur cet appareil.');
             var details = ETAPES.slice(0, faites).map(function (e, k) {
-                var r = e.type === 'code' ? (codes[k + 1] || depart(e)) : (reponses[k + 1] || []).join(' ; ');
-                return { t: 'Étape ' + (k + 1) + ' · ' + e.titre, r: r.slice(0, 2500), ok: true };
+                var n = k + 1, d = { t: 'Étape ' + n + ' · ' + e.titre, r: lisible(e, n).slice(0, 2500), ok: !passees[n] };
+                if (e.type !== 'code') d.v = reponses[n] || [];
+                if (e.code && e.type !== 'code' && codes[n]) d.c = codes[n].slice(0, 2500);
+                if (erreurs[n]) d.e = erreurs[n];
+                if (passees[n]) d.p = 1;
+                return d;
             });
             return Interactif.rpc('enregistrer', {
                 p_jeton: s.jeton, p_exercice: ID, p_score: faites, p_total: NB, p_details: details,
@@ -925,6 +957,7 @@ def _console(ligne, n):
             var corps = el('div', 'etape-corps', e.consigne);
             c.appendChild(tete); c.appendChild(corps);
             var cm = null, cms = [], construit = false, bilanMontre = false, retour;
+            function faux() { if (n > faites) { erreurs[n] = (erreurs[n] || 0) + 1; ecrireLocal(); } }   // réponse fausse avant la réussite
 
             // cases « J'ai lu » : lus[n] = numéros (dans l'ordre de la page) des encadrés cochés de l'étape n
             function brancherLus() {
@@ -1058,7 +1091,7 @@ def _console(ligne, n):
                             if (r.ligne) { marque = r.ligne - 1; cm.addLineClass(marque, 'background', 'ligne-erreur'); }
                             if (!(e.type === 'code' || e.verifCode) || r.err) return;
                             if (r.ok) reussi();
-                            else { retour.className = 'retour ko'; retour.textContent = '✗ Pas encore. ' + r.msg; }
+                            else { faux(); retour.className = 'retour ko'; retour.textContent = '✗ Pas encore. ' + r.msg; }
                         });
                     }
                     bLancer.onclick = lancer;
@@ -1072,6 +1105,7 @@ def _console(ligne, n):
                         ligneCase(cases, e.etiquettesTexte ? esc(lib) : '<code>' + esc(lib) + '</code>', valeurs[k],
                             function (v) { return verif(k, v); },
                             function (v, ok) {
+                                if (!ok) faux();
                                 oks[k] = ok; valeurs[k] = v; reponses[n] = valeurs.slice(); ecrireLocal();
                                 if (ok && e.champs.every(function (x, j) { return oks[j]; })) reussi();
                             }, function (ok) { oks[k] = ok; }, true, exigerLu);
@@ -1105,7 +1139,7 @@ def _console(ligne, n):
                             charge = true;
                             ligneCase(lq, sc.question, rep[k][0],
                                 function (v) { return egal(v, sc.attendu, sc.tol) ? null : sc.aide; },
-                                function (v, ok) { rep[k][0] = v; sauver(); if (ok) caseFinie(k); },
+                                function (v, ok) { rep[k][0] = v; sauver(); if (ok) caseFinie(k); else faux(); },
                                 function (ok) { if (ok) finis[k] = true; }, true, exigerLu);
                             charge = false;
                             if ((finis[k] || faite) && k + 1 < e.scripts.length && !blocs[k + 1]) montrerCas(k + 1);
@@ -1137,7 +1171,7 @@ def _console(ligne, n):
                             suite.appendChild(lignes);
                             ligneCase(lignes, sc.appel ? 'L’appel <code>' + esc(sc.appel) + '</code> renvoie' : 'La console affiche', rep[k][1],
                                 function (v) { return egal(v, sc.attendu, sc.tol) ? null : sc.appel ? 'Tape ' + sc.appel + ' dans la console et regarde ce que l’appel renvoie.' : 'Exécute le programme et recopie exactement ce que la console affiche.'; },
-                                function (v, ok) { rep[k][1] = v; sauver(); if (ok) apresConsole(true); },
+                                function (v, ok) { rep[k][1] = v; sauver(); if (ok) apresConsole(true); else faux(); },
                                 function () {}, true, exigerLu);
                             if (rep[k][1] && egal(rep[k][1], sc.attendu, sc.tol)) apresConsole(false);
 
@@ -1161,7 +1195,7 @@ def _console(ligne, n):
                                     faits[j] = true;
                                     var it = sc.car[j], idx = 2 + j;
                                     if (!it) { if (charge) finis[k] = true; else caseFinie(k); return; }
-                                    var suivant = function (v, ok) { if (v !== undefined) { rep[k][idx] = v; sauver(); } if (ok) element(j + 1); };
+                                    var suivant = function (v, ok) { if (v !== undefined) { rep[k][idx] = v; sauver(); } if (ok) element(j + 1); else faux(); };
                                     var auChargement = function (ok) { if (ok) { if (j + 1 === sc.car.length) finis[k] = true; else element(j + 1); } };
                                     if (it.cond) {
                                         var avant = it.avant || (nbCond ? 'On teste la condition suivante, <code>' + esc(it.cond) + '</code> : elle ' : '<code>' + esc(it.cond) + '</code> : la condition ');
@@ -1196,7 +1230,7 @@ def _console(ligne, n):
                             if (!exigerLu()) return;
                             var v = ip.value.trim();
                             if (!v || ip.readOnly) return;
-                            rep[k][0] = v; sauver(); apresPrevision(true);
+                            rep[k][0] = v; sauver(); if (!egal(v, sc.attendu, sc.tol)) faux(); apresPrevision(true);
                             rafraichir();
                         };
                         corps.appendChild(bloc);
@@ -1232,7 +1266,7 @@ def _console(ligne, n):
                         if (k < 0) { retour.className = 'retour ko'; retour.textContent = 'Choisis une réponse.'; return; }
                         reponses[n] = [e.choix[k]]; ecrireLocal();
                         if (k === e.bonne) reussi();
-                        else { retour.className = 'retour ko'; retour.textContent = '✗ Pas encore. ' + (e.pourquoi[k] || 'Relis bien la consigne.'); }
+                        else { faux(); retour.className = 'retour ko'; retour.textContent = '✗ Pas encore. ' + (e.pourquoi[k] || 'Relis bien la consigne.'); }
                     };
                     corps.appendChild(q);
                 }
@@ -1287,7 +1321,7 @@ def _console(ligne, n):
             // compte TEST-01 : bouton pour passer l'étape en cours sans y répondre
             if (!faite && modeTest()) {
                 var bPasser = el('button', 'lien passer', '⏭ Passer (test)'); bPasser.type = 'button';
-                bPasser.onclick = function () { construire(); reussi(true); };
+                bPasser.onclick = function () { construire(); passees[n] = true; reussi(true); };
                 tete.appendChild(bPasser);
             }
 

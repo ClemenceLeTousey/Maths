@@ -131,6 +131,16 @@
         .cours-passe.fait { background: var(--ko); border-color: var(--ko); color: #fff; }
         table.res td.non-fait { background: var(--ko); color: #fff; font-weight: 600; }
         table.res td.non-fait .n-tent { color: #fff; }
+        /* Suivi TP */
+        #tp-tableau tr.cliquable { cursor: pointer; }
+        #tp-tableau tr.cliquable:hover td { background: var(--bleu-doux); }
+        #tp-tableau td.note { font-weight: 700; }
+        .tp-etapes td { vertical-align: top; }
+        .tp-etapes td:first-child, .tp-etapes td:last-child, .tp-etapes th:first-child, .tp-etapes th:last-child { text-align: left; }
+        .tp-etapes pre { margin: 0; white-space: pre-wrap; font-family: var(--f-mono); font-size: 0.85rem; font-variant-ligatures: none; }
+        .tp-etapes td.passee { color: var(--muted); font-style: italic; }
+        .tp-entete { display: flex; flex-wrap: wrap; gap: 6px 24px; align-items: baseline; margin: 18px 0 8px; }
+        .tp-entete h3 { margin: 0; }
     </style>
 </head>
 <body>
@@ -157,6 +167,7 @@
             <div class="onglets" role="tablist" aria-label="Rubriques de l'espace professeure">
                 <button type="button" role="tab" id="onglet-suivi" aria-controls="panneau-suivi" data-onglet="suivi">Suivi QF</button>
                 <button type="button" role="tab" id="onglet-suivi-eval" aria-controls="panneau-suivi-eval" data-onglet="suivi-eval">Suivi Eval</button>
+                <button type="button" role="tab" id="onglet-suivi-tp" aria-controls="panneau-suivi-tp" data-onglet="suivi-tp">Suivi TP</button>
                 <button type="button" role="tab" id="onglet-plan" aria-controls="panneau-plan" data-onglet="plan">Plan de travail</button>
                 <button type="button" role="tab" id="onglet-dnl" aria-controls="panneau-dnl" data-onglet="dnl">DNL</button>
                 <button type="button" role="tab" id="onglet-tp-photo" aria-controls="panneau-tp-photo" data-onglet="tp-photo">TP Photo</button>
@@ -243,6 +254,19 @@
                 <iframe id="tp-conditions-apercu" title="Aperçu du TP Conditions" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
             </div>
 
+            <div class="panneau" role="tabpanel" id="panneau-suivi-tp" aria-labelledby="onglet-suivi-tp" hidden>
+                <h2>Suivi des TP</h2>
+                <p class="aide">Barème automatique : note sur 20 = 20 × étapes réussies / étapes comptées. Les étapes bonus ajoutent des points (note plafonnée à 20) ; une étape passée en mode test ne compte pas. Les erreurs (réponses fausses avant la bonne) sont indiquées pour information. Barème réglable dans <code>config.js</code> (INTERACTIF_BAREMES).</p>
+                <div class="outils">
+                    <label>Classe <select id="tp-classe"></select></label>
+                    <label>TP <select id="tp-choix"></select></label>
+                    <label>Élève <select id="tp-eleve"></select></label>
+                    <button type="button" id="tp-csv" class="secondaire">Exporter les notes (CSV)</button>
+                </div>
+                <div class="tableau-defile"><table class="res" id="tp-tableau"></table></div>
+                <div id="tp-detail"></div>
+            </div>
+
             <div class="panneau" role="tabpanel" id="panneau-suivi" aria-labelledby="onglet-suivi">
             <div class="outils">
                 <label>Classe <select id="classe"></select></label>
@@ -302,6 +326,7 @@
                 classes.forEach(function (c) { var o = document.createElement('option'); o.textContent = c; sel.appendChild(o); });
                 if (classes.indexOf(avant) >= 0) sel.value = avant;
                 afficher();
+                SuiviTP.remplir();
                 Interactif.rpc('prof_creneaux', { p_mdp: mdp }).then(function (l) { inscriptions = l || []; afficherSoutien(); },
                     function (x) { inscriptions = null; document.getElementById('soutien-etat').textContent = 'Inscriptions indisponibles (' + x.message + ') : le script maj-soutien.sql a-t-il été lancé dans Supabase ?'; });
                 chargerMessages();
@@ -311,6 +336,138 @@
                 try { sessionStorage.removeItem('interactif-prof'); } catch (e) {}
             });
         }
+
+        /* ---------- Suivi TP : classe, TP, élève ; note automatique (barème INTERACTIF_BAREMES) ---------- */
+        var SuiviTP = (function () {
+            var $classe = document.getElementById('tp-classe'), $tp = document.getElementById('tp-choix'), $eleve = document.getElementById('tp-eleve');
+            var $table = document.getElementById('tp-tableau'), $detail = document.getElementById('tp-detail');
+            var TPS = INTERACTIF_CATALOGUE.filter(function (e) { return e.tp && !e.archive; });
+            TPS.forEach(function (e) { $tp.appendChild(new Option(e.titre.replace(/\s*\(.*\)$/, '') + ' · ' + e.groupe.replace(/^TP Python · /, '') + (e.comptes ? ' (en test)' : ''), e.id)); });
+            if (TPS.length) $tp.value = TPS[TPS.length - 1].id;   // par défaut : le TP le plus récent du catalogue
+
+            // meilleure tentative (plus d'étapes, puis la plus récente) et note
+            function resultat(code, id) {
+                var liste = donnees.resultats.filter(function (r) { return r.code === code && r.exercice === id; });
+                if (!liste.length) return null;
+                var r = liste.slice().sort(function (a, b) { return b.score - a.score || new Date(b.fait_le) - new Date(a.fait_le); })[0];
+                var bonus = ((window.INTERACTIF_BAREMES || {})[id] || {}).bonus || [];
+                var total = r.total, comptees = total - bonus.filter(function (k) { return k <= total; }).length;
+                var reussies = 0, bonusOk = 0, err = 0, passees = 0;
+                (r.details || []).forEach(function (d, k) {
+                    if (!d) return;
+                    err += d.e || 0;
+                    if (d.p || d.ok === false) { passees++; return; }
+                    if (bonus.indexOf(k + 1) >= 0) bonusOk++; else reussies++;
+                });
+                var note = comptees > 0 ? Math.min(20, 20 * (reussies + bonusOk) / comptees) : 0;
+                return { r: r, note: Math.round(note * 10) / 10, reussies: reussies, bonusOk: bonusOk, nbBonus: bonus.length, comptees: comptees,
+                         erreurs: err, passees: passees, duree: Math.max.apply(null, liste.map(function (x) { return x.duree_s || 0; })),
+                         dernier: liste.reduce(function (m, x) { return new Date(x.fait_le) > m ? new Date(x.fait_le) : m; }, new Date(0)) };
+            }
+            function nomDe(e) { return noms[e.code] || ''; }
+            function cell(tr, t, cl) { var c = document.createElement('td'); c.textContent = t; if (cl) c.className = cl; tr.appendChild(c); return c; }
+            function entete(t, cols) { var tr = document.createElement('tr'); cols.forEach(function (x) { var th = document.createElement('th'); th.textContent = x; tr.appendChild(th); }); t.appendChild(tr); }
+            function minutes(s) { return s ? Math.round(s / 60) + ' min' : '—'; }
+            function date(d) { return d && d.getTime() ? d.toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '—'; }
+            function fmt(x) { return String(x).replace('.', ','); }
+            function eleves() { return donnees.eleves.filter(function (e) { return e.classe === $classe.value; }).sort(ordreEleves); }
+
+            function remplir() {
+                var avant = $classe.value;
+                var classes = Array.from(new Set(donnees.eleves.map(function (e) { return e.classe; }))).sort(ordreClasses);
+                $classe.innerHTML = '';
+                classes.forEach(function (c) { $classe.appendChild(new Option(c, c)); });
+                if (classes.indexOf(avant) >= 0) $classe.value = avant;
+                remplirEleves(); afficher();
+            }
+            function remplirEleves() {
+                var avant = $eleve.value;
+                $eleve.innerHTML = '';
+                $eleve.appendChild(new Option('Toute la classe', ''));
+                eleves().forEach(function (e) { $eleve.appendChild(new Option((nomDe(e) ? nomDe(e) + ' · ' : '') + e.code, e.code)); });
+                if (Array.prototype.some.call($eleve.options, function (o) { return o.value === avant; })) $eleve.value = avant;
+            }
+            function afficher() {
+                if (!donnees) return;
+                $table.innerHTML = ''; $detail.innerHTML = '';
+                var id = $tp.value, liste = eleves();
+                if ($eleve.value) liste = liste.filter(function (e) { return e.code === $eleve.value; });
+                entete($table, ['Code', 'Nom', 'Étapes réussies', 'Bonus', 'Erreurs', 'Note /20', 'Temps', 'Dernière activité']);
+                var notes = [];
+                liste.forEach(function (e) {
+                    var b = resultat(e.code, id), tr = document.createElement('tr');
+                    cell(tr, e.code); cell(tr, nomDe(e));
+                    if (!b) { cell(tr, 'pas commencé'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); }
+                    else {
+                        cell(tr, b.reussies + ' / ' + b.comptees + (b.passees ? ' (' + b.passees + ' passée' + (b.passees > 1 ? 's' : '') + ')' : ''));
+                        cell(tr, b.nbBonus ? b.bonusOk + ' / ' + b.nbBonus : '—');
+                        cell(tr, b.erreurs); cell(tr, fmt(b.note), 'note'); cell(tr, minutes(b.duree)); cell(tr, date(b.dernier));
+                        notes.push(b.note);
+                        tr.className = 'cliquable'; tr.title = 'Voir le détail des étapes';
+                        tr.onclick = function () { $eleve.value = e.code; afficher(); };
+                    }
+                    $table.appendChild(tr);
+                });
+                if (!$eleve.value && notes.length) {
+                    var tr = document.createElement('tr');
+                    cell(tr, 'Moyenne'); cell(tr, notes.length + ' élève' + (notes.length > 1 ? 's' : ''));
+                    cell(tr, ''); cell(tr, ''); cell(tr, '');
+                    cell(tr, fmt(Math.round(notes.reduce(function (s, x) { return s + x; }, 0) / notes.length * 10) / 10), 'note');
+                    cell(tr, ''); cell(tr, '');
+                    $table.appendChild(tr);
+                }
+                if ($eleve.value) detail($eleve.value, id);
+            }
+            function detail(code, id) {
+                var b = resultat(code, id);
+                if (!b) return;
+                var t = document.createElement('div'); t.className = 'tp-entete';
+                var h = document.createElement('h3'); h.textContent = (noms[code] || code) + ' · ' + fmt(b.note) + ' / 20'; t.appendChild(h);
+                var a = document.createElement('span'); a.className = 'aide';
+                a.textContent = b.reussies + ' étape(s) réussie(s) sur ' + b.comptees + (b.nbBonus ? ', bonus ' + b.bonusOk + '/' + b.nbBonus : '') + ' · ' + b.erreurs + ' erreur(s) · ' + minutes(b.duree);
+                t.appendChild(a);
+                $detail.appendChild(t);
+                var bonus = ((window.INTERACTIF_BAREMES || {})[id] || {}).bonus || [];
+                var tab = document.createElement('table'); tab.className = 'res tp-etapes';
+                entete(tab, ['Étape', 'État', 'Erreurs', 'Réponse']);
+                (b.r.details || []).forEach(function (d, k) {
+                    if (!d) return;
+                    var tr = document.createElement('tr');
+                    cell(tr, (d.t || 'Étape ' + (k + 1)) + (bonus.indexOf(k + 1) >= 0 ? ' (bonus)' : ''));
+                    var passee = d.p || d.ok === false;
+                    cell(tr, passee ? '⏭ passée' : '✓', passee ? 'passee' : '');
+                    cell(tr, d.e || 0);
+                    var c = cell(tr, ''), rep = String(d.r || '');
+                    if (rep.indexOf('\n') >= 0 || rep.length > 80) {
+                        var det = document.createElement('details'), sm = document.createElement('summary'), pre = document.createElement('pre');
+                        sm.textContent = rep.split('\n')[0].slice(0, 60) + ' …'; pre.textContent = rep;
+                        det.appendChild(sm); det.appendChild(pre); c.appendChild(det);
+                    } else c.textContent = rep;
+                    tab.appendChild(tr);
+                });
+                var reste = b.r.total - (b.r.details || []).length;
+                if (reste > 0) { var tr = document.createElement('tr'); cell(tr, reste + ' étape(s) pas encore faite(s)', 'passee'); cell(tr, ''); cell(tr, ''); cell(tr, ''); tab.appendChild(tr); }
+                var w = document.createElement('div'); w.className = 'tableau-defile'; w.appendChild(tab); $detail.appendChild(w);
+            }
+            // export CSV (séparateur ; pour le tableur) : toute la classe, pour le TP choisi
+            document.getElementById('tp-csv').onclick = function () {
+                if (!donnees) return;
+                var id = $tp.value, lignes = [['Code', 'Nom', 'Étapes réussies', 'Étapes comptées', 'Bonus', 'Erreurs', 'Note /20']];
+                eleves().forEach(function (e) {
+                    var b = resultat(e.code, id);
+                    lignes.push([e.code, nomDe(e), b ? b.reussies : 0, b ? b.comptees : '', b ? b.bonusOk : 0, b ? b.erreurs : '', b ? fmt(b.note) : '']);
+                });
+                var csv = '﻿' + lignes.map(function (l) { return l.map(function (x) { return '"' + String(x).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+                a.download = 'notes-' + id.replace(/\//g, '-') + '-' + $classe.value + '.csv';
+                a.click();
+            };
+            $classe.onchange = function () { remplirEleves(); afficher(); };
+            $tp.onchange = afficher;
+            $eleve.onchange = afficher;
+            return { remplir: remplir, afficher: afficher };
+        })();
 
         /* ---------- Ordre d'affichage ---------- */
         // classes : 2B (par défaut), 2F, 2H, puis les autres (2-DEMO…) par ordre alphabétique
@@ -339,7 +496,7 @@
                         if (c.length >= 2 && c[1]) noms[c[1].trim().toUpperCase()] = c[0].replace(/^"|"$/g, '').trim();
                     });
                 });
-                memoriser(); afficher();
+                memoriser(); afficher(); SuiviTP.remplir();
             });
         };
         document.getElementById('memoriser').onchange = memoriser;

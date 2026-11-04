@@ -111,6 +111,14 @@ window.INTERACTIF_GROUPES = {
     'TP Python · Les structures conditionnelles': {}
 };
 
+/* Barème automatique des TP (onglet « Suivi TP » de l'espace professeure) :
+   note sur 20 = 20 × étapes réussies / étapes comptées ; une étape passée en mode test ne compte pas.
+   « bonus » : numéros des étapes en bonus (hors total, elles ajoutent des points ; note plafonnée à 20).
+   Un TP absent de cette liste : toutes ses étapes comptent. */
+window.INTERACTIF_BAREMES = {
+    'seconde/tp-conditions': { bonus: [18, 19] }
+};
+
 /* Exercices retirés qui ne sont plus au catalogue : masqués dans le suivi prof
    (leurs résultats restent dans la base). */
 window.INTERACTIF_MASQUES_PROF = ['seconde/s3-developper'];
