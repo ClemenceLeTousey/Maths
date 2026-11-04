@@ -250,7 +250,7 @@
             <div class="panneau" role="tabpanel" id="panneau-tp-conditions" aria-labelledby="onglet-tp-conditions" hidden>
                 <h2>TP Python · Les structures conditionnelles</h2>
                 <p class="aide">En préparation : le TP n'est visible que du compte TEST-01, les élèves ne le voient pas encore. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi.</p>
-                <p><a class="bouton" href="seconde/tp-conditions.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
+                <p><a class="bouton" href="seconde/tp-conditions-v2.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
                 <iframe id="tp-conditions-apercu" title="Aperçu du TP Conditions" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
             </div>
 
@@ -853,7 +853,7 @@
             // l'aperçu du TP (et son Python) ne se charge qu'à la première ouverture de l'onglet
             if (nom === 'tp-photo' && !$tp.src) $tp.src = 'seconde/tp-photo.html';
             var $tpc = document.getElementById('tp-conditions-apercu');
-            if (nom === 'tp-conditions' && !$tpc.src) $tpc.src = 'seconde/tp-conditions.html';
+            if (nom === 'tp-conditions' && !$tpc.src) $tpc.src = 'seconde/tp-conditions-v2.html';
         }
         onglets.forEach(function (o) {
             o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };

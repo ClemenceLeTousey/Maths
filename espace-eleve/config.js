@@ -40,8 +40,11 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie11-j3', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 3', court: 'S11 · J3', url: 'seconde/serie11.html?j=3', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/serie11-j4', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 4 · bilan (à la maison)', court: 'S11 · J4', url: 'seconde/serie11.html?j=4', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/tp-photo', groupe: 'TP Python · Photographie numérique', titre: 'Créer et modifier une image (10 étapes)', court: 'TP Photo', url: 'seconde/tp-photo.html', tp: true, comptes: ['TEST-01'] },
-    { niveau: 'seconde', id: 'seconde/tp-conditions', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (20 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions.html', tp: true, vueProf: true,
+    // TP Conditions V1 (20 étapes) : archivé, la page reste dans seconde/tp-conditions.html
+    { niveau: 'seconde', id: 'seconde/tp-conditions', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (20 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions.html', tp: true, vueProf: true, archive: true,
       codeAcces: 'd7c6ed760ed5b07f0c2766b06a63c0d5ddcec26f17c19db9e3d2a541645aca9c' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
+    { niveau: 'seconde', id: 'seconde/tp-conditions-v2', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (13 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions-v2.html', tp: true, vueProf: true,
+      codeAcces: '7bceb7c3c796d4df2b37ee3dbeaf01030c22455f16ffb3f942d3a83c96b01460' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
     { niveau: 'seconde', id: 'seconde/serie6-j1', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 1', court: 'S6 · J1', url: 'seconde/serie6.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie6-j2', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 2', court: 'S6 · J2', url: 'seconde/serie6.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie6-j3', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 3', court: 'S6 · J3', url: 'seconde/serie6.html?j=3' },
@@ -125,11 +128,17 @@ window.INTERACTIF_GROUPES = {
    TP Conditions : cumul 4 après le cours, 8 après l'Ex. 1, 9,5 après l'Ex. 2, 14 après l'Ex. 3, 15 après l'Ex. 4,
    17 après l'Ex. 5, 20 après l'Ex. 6 ; quiz final noté sur 5 (1 point par bonne réponse). */
 window.INTERACTIF_BAREMES = {
-    'seconde/tp-conditions': {
+    'seconde/tp-conditions': {   // V1 archivée
         //       cours        Ex. 1        Ex. 2  Ex. 3              Ex. 4  Ex. 5     Ex. 6     quiz  bonus
         points: [1.5, 1, 1.5, 1, 1.5, 1.5, 1.5,   1, 1, 1.5, 1,      1,     1.5, 0.5, 1, 1, 1,  0,    0.5, 0.5],
         bonus: [19, 20],
         quiz: [18], quizSur: 5
+    },
+    'seconde/tp-conditions-v2': {
+        // A : lire et prévoir (4,5) · B : modifier (5,5) · C : créer (5) · quiz à part · D : défis (5)
+        //       A              B                          C       quiz  D
+        points: [1.5, 1.5, 1.5, 1.5, 1.5, 0.5, 1, 1,       2, 3,   0,    2.5, 2.5],
+        quiz: [11], quizSur: 5
     }
 };
 
