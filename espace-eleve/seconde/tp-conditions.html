@@ -1171,9 +1171,9 @@ def _console(ligne, n):
                                             function (v, ok) { suivant(v, ok); if (ok) marquerRaison(lc, it.raison); },
                                             function (ok) { if (ok) { marquerRaison(lc, it.raison); auChargement(true); } }, true, exigerLu);
                                     } else if (it.bloc) {
-                                        ligneChoix(pq, 'Donc le bloc ', e.blocs, rep[k][idx], it.bloc,
-                                            'C’est le bloc de la première condition vérifiée (le bloc else si aucune ne l’est).',
-                                            'Le bloc ' + libelleBloc(it.bloc) + ' est exécuté' + (sc.appel ? ' : l’appel ' + sc.appel + ' renvoie « ' + sc.attendu + ' »' : '') + '.',
+                                        ligneChoix(pq, 'Donc le bloc sous ', e.blocs, rep[k][idx], it.bloc,
+                                            'C’est le bloc sous la première condition vérifiée (le bloc sous else si aucune ne l’est).',
+                                            'Le bloc sous ' + libelleBloc(it.bloc) + ' est exécuté' + (sc.appel ? ' : l’appel ' + sc.appel + ' renvoie « ' + sc.attendu + ' »' : '') + '.',
                                             suivant, auChargement, ' est exécuté.', 'ligne-bloc');
                                     } else if (it.fin) {
                                         pq.appendChild(el('p', 'retour ok', '✓ ' + it.fin));
