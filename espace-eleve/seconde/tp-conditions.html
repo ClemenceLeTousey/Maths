@@ -129,6 +129,13 @@
         .qcm label:has(input:checked) { border-color: var(--c-seconde); background: var(--bleu-doux); }
         .qcm input { margin-top: 4px; }
         .qcm button { align-self: flex-start; }
+        .quiz { display: flex; flex-direction: column; gap: 6px; }
+        .quiz-q { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+        .quiz-q p { margin: 4px 0; }
+        .quiz-q label { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; max-width: 36em; }
+        .quiz-q label:has(input:checked) { border-color: var(--c-seconde); background: var(--bleu-doux); }
+        .quiz-q input { margin-top: 4px; }
+        .quiz > button { align-self: flex-start; margin-top: 8px; }
 
         .sortie:empty { display: none; }
         .sortie { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--bg); }
@@ -340,7 +347,7 @@ def _e21(ns, src, out):
         ((2,), "A"), ((4,), "A"), ((6,), "B"), ((8,), "B")])
 
 
-_ETAPES = {5: _e5, 8: _e9, 10: _e11, 12: _e13, 13: _e14, 15: _e18, 16: _e19, 18: _e21}
+_ETAPES = {5: _e5, 8: _e9, 10: _e11, 12: _e13, 13: _e14, 15: _e18, 16: _e19, 19: _e21}
 
 
 def _erreur(e, src):
@@ -751,12 +758,32 @@ def _console(ligne, n):
               aides: ['Résous 10 + h < 3h : passe les h du même côté.'],
               bilan: '10 + <i>h</i> &lt; 3<i>h</i> ⇔ 10 &lt; 2<i>h</i> ⇔ <i>h</i> &gt; 5 : le tarif B est strictement plus avantageux <b>au-delà de 5 heures</b>.' },
 
-            { titre: 'Ex. 6 · Bonus : l’égalité', type: 'code',
+            { titre: 'Quiz final · 5 questions', type: 'quiz',
+              consigne: '<p>Pour finir, 5 questions rapides sur tout le TP. ✍️ Réponds à chaque question <b>sans ordinateur</b>, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
+              questions: [
+                  { texte: 'Que renvoie l’appel <code>f(5)</code> ?', code: 'def f(x):\n    if x > 5:\n        return "A"\n    else:\n        return "B"\n',
+                    choix: ['<code>"A"</code>', '<code>"B"</code>', 'une erreur', 'rien'], bonne: 1,
+                    explication: '5 &gt; 5 est faux : on passe dans le <code>else</code>.' },
+                  { texte: 'Pour tester si une personne a <b>au moins</b> 18 ans, on écrit :',
+                    choix: ['<code>if age &gt; 18:</code>', '<code>if age &gt;= 18:</code>', '<code>if age =&gt; 18:</code>', '<code>if age &lt; 18:</code>'], bonne: 1,
+                    explication: '« au moins 18 » inclut 18 : on écrit <code>&gt;=</code> (dans cet ordre).' },
+                  { texte: 'Dans une suite <code>if</code> … <code>elif</code> … <code>else</code>, combien de blocs sont exécutés ?',
+                    choix: ['un seul', 'deux', 'tous ceux dont la condition est vraie', 'aucun'], bonne: 0,
+                    explication: 'Python exécute seulement le bloc de la <b>première</b> condition vraie (ou le <code>else</code>).' },
+                  { texte: 'Que renvoie l’appel <code>g(10)</code> ?', code: 'def g(a):\n    if a < 10:\n        return 1\n    elif a < 20:\n        return 2\n    else:\n        return 3\n',
+                    choix: ['1', '2', '3', 'une erreur'], bonne: 1,
+                    explication: '10 &lt; 10 est faux, puis 10 &lt; 20 est vrai : l’appel renvoie 2.' },
+                  { texte: 'Qu’affiche ce script ?', code: 'x = 4\nif x > 3:\n    x = x + 1\nif x > 4:\n    x = x * 2\nprint(x)\n',
+                    choix: ['4', '5', '8', '10'], bonne: 3,
+                    explication: '4 &gt; 3 : x devient 5 ; le second <code>if</code> teste la nouvelle valeur, 5 &gt; 4 : x devient 10.' }
+              ] },
+
+            { titre: 'Bonus · Ex. 6 : l’égalité', type: 'code',
               consigne: '<p>Pour <i>h</i> = 5, les deux tarifs valent 15 € : la condition 15 &lt; 15 est fausse, donc <code>meilleur_tarif(5)</code> renvoie <code>"B"</code>. Ce n’est pas faux, mais c’est trompeur.</p>' +
                 '<p>✍️ À l’aide de <code>elif</code>, modifie la fonction pour qu’elle renvoie <code>"égalité"</code> dans ce cas.</p>',
               code: VELOS + '\ndef meilleur_tarif(h):\n    if tarif_A(h) < tarif_B(h):\n        return "A"\n    else:\n        return "B"\n', exemple: 'meilleur_tarif(9)' },
 
-            { titre: 'Ex. 7 · Pour aller plus loin', type: 'question',
+            { titre: 'Bonus · Ex. 7 : pour aller plus loin', type: 'question',
               consigne: '<p>On considère la fonction <code>f</code> suivante (automatisme de la Série 4).</p>' +
                 '<p>✍️ Trouve <b>tous</b> les nombres <i>x</i> tels que <code>f(x)</code> renvoie 14, puis tous ceux tels que <code>f(x)</code> renvoie 7. Étudie les deux cas (<i>x</i> &gt; 3 et <i>x</i> ⩽ 3) sur ton cahier, puis vérifie avec la console.</p>' +
                 encadre('astuce', 'Plusieurs solutions ?', 'Sépare-les par un point-virgule, par exemple : <code>-2 ; 4.5</code>'),
@@ -852,6 +879,9 @@ def _console(ligne, n):
             if (passees[n]) return '(étape passée en mode test)';
             if (e.type === 'code') return codes[n] || depart(e);
             if (e.type === 'qcm') return sansBalises(v[0] || '');
+            if (e.type === 'quiz') return e.questions.map(function (q, i) {
+                return 'Q' + (i + 1) + ' : « ' + sansBalises(q.choix[v[i]] || '…') + ' » ' + (String(q.bonne) === v[i] ? '✓' : '✗');
+            }).join('\n') + '\nScore : ' + scoreQuiz(e, n) + ' / ' + e.questions.length;
             if (e.type === 'question') return e.champs.map(function (c, k) { return c + ' → ' + (v[k] || '…'); }).join('\n');
             if (e.type === 'prevoir') {
                 var lignes = e.scripts.map(function (sc, k) {
@@ -866,6 +896,7 @@ def _console(ligne, n):
             }
             return v.join(' ; ');
         }
+        function scoreQuiz(e, n) { var v = reponses[n] || []; return e.questions.filter(function (q, i) { return String(q.bonne) === v[i]; }).length; }
         function egalVal(v, a, tol) { return typeof a === 'number' ? Math.abs(num(v) - a) < (tol || 1e-6) : txt(v) === txt(a); }
 
         function modeTest() { if (VUE) return false; var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'TEST-01'; }
@@ -916,6 +947,7 @@ def _console(ligne, n):
                 if (e.type !== 'code') d.v = reponses[n] || [];
                 if (e.code && e.type !== 'code' && codes[n]) d.c = codes[n].slice(0, 2500);
                 if (erreurs[n]) d.e = erreurs[n];
+                if (e.type === 'quiz' && !passees[n]) { d.q = scoreQuiz(e, n); d.qmax = e.questions.length; }
                 if (passees[n]) d.p = 1;
                 return d;
             });
@@ -1264,6 +1296,52 @@ def _console(ligne, n):
                     if (zoneCode) {
                         corps.appendChild(zoneCode);
                         zoneCode.hidden = !(faite || e.scripts.every(function (x, j) { return finis[j]; }));
+                    }
+                }
+                if (e.type === 'quiz') {
+                    // une seule validation, puis correction question par question ; score gardé dans les détails (q / qmax)
+                    var fq = el('form', 'quiz');
+                    var choixQ = e.questions.map(function (q, i) {
+                        var bq0 = el('div', 'quiz-q');
+                        bq0.appendChild(el('p', null, '<b>Question ' + (i + 1) + '.</b> ' + q.texte));
+                        if (q.code) bq0.appendChild(el('div', null, py(q.code)));
+                        var radios = q.choix.map(function (t, j) {
+                            var l = el('label'), inp = el('input'); inp.type = 'radio'; inp.name = 'quiz-' + n + '-' + i; inp.value = j;
+                            l.appendChild(inp); l.appendChild(el('span', null, t)); bq0.appendChild(l); return inp;
+                        });
+                        var corr = el('p', 'retour'); bq0.appendChild(corr);
+                        fq.appendChild(bq0);
+                        return { radios: radios, corr: corr };
+                    });
+                    var bValQ = el('button', null, 'Valider mes réponses'); bValQ.type = 'submit'; fq.appendChild(bValQ);
+                    var avQ = el('p', 'aide', 'Attention : une seule validation, tes réponses ne pourront plus être modifiées.'); fq.appendChild(avQ);
+                    var corriger = function (vals) {
+                        var sc = 0;
+                        e.questions.forEach(function (q, i) {
+                            var ch = choixQ[i], ok = String(q.bonne) === vals[i];
+                            ch.radios.forEach(function (r, j) { r.disabled = true; r.checked = String(j) === vals[i]; });
+                            if (ok) sc++;
+                            ch.corr.className = 'retour ' + (ok ? 'ok' : 'ko');
+                            ch.corr.innerHTML = (ok ? '✓ ' : '✗ La bonne réponse : ' + q.choix[q.bonne] + '. ') + (q.explication || '');
+                        });
+                        bValQ.hidden = true; avQ.hidden = true;
+                        return sc;
+                    };
+                    fq.onsubmit = function (ev) {
+                        ev.preventDefault();
+                        var vals = choixQ.map(function (ch) { var k = ch.radios.findIndex(function (r) { return r.checked; }); return k < 0 ? '' : String(k); });
+                        if (vals.some(function (v) { return v === ''; })) { retour.className = 'retour ko'; retour.textContent = 'Réponds à toutes les questions.'; return; }
+                        if (!VUE && !confirm('Valider définitivement tes réponses ?')) return;
+                        reponses[n] = vals; ecrireLocal();
+                        var sc = corriger(vals);
+                        reussi();
+                        retour.textContent = 'Score : ' + sc + ' / ' + e.questions.length + '. ' + retour.textContent;
+                    };
+                    corps.appendChild(fq);
+                    var dejaQ = reponses[n];
+                    if (dejaQ && dejaQ.length === e.questions.length && dejaQ.every(function (v) { return v !== ''; })) {
+                        var scQ = corriger(dejaQ);
+                        retour.className = 'retour ok'; retour.textContent = 'Score : ' + scQ + ' / ' + e.questions.length;
                     }
                 }
                 if (e.type === 'qcm') {

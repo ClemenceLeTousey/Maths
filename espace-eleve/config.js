@@ -37,7 +37,7 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie11-j3', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 3', court: 'S11 · J3', url: 'seconde/serie11.html?j=3', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/serie11-j4', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 4 · bilan (à la maison)', court: 'S11 · J4', url: 'seconde/serie11.html?j=4', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/tp-photo', groupe: 'TP Python · Photographie numérique', titre: 'Créer et modifier une image (10 étapes)', court: 'TP Photo', url: 'seconde/tp-photo.html', tp: true, comptes: ['TEST-01'] },
-    { niveau: 'seconde', id: 'seconde/tp-conditions', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (19 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions.html', tp: true, vueProf: true, comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/tp-conditions', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (20 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions.html', tp: true, vueProf: true, comptes: ['TEST-01'] },
     { niveau: 'seconde', id: 'seconde/serie6-j1', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 1', court: 'S6 · J1', url: 'seconde/serie6.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie6-j2', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 2', court: 'S6 · J2', url: 'seconde/serie6.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie6-j3', groupe: 'Série 6 · semaine du 12 au 16 octobre', titre: 'Jour 3', court: 'S6 · J3', url: 'seconde/serie6.html?j=3' },
@@ -112,12 +112,21 @@ window.INTERACTIF_GROUPES = {
     'TP Python · Les structures conditionnelles': {}
 };
 
-/* Barème automatique des TP (onglet « Suivi TP » de l'espace professeure) :
-   note sur 20 = 20 × étapes réussies / étapes comptées ; une étape passée en mode test ne compte pas.
-   « bonus » : numéros des étapes en bonus (hors total, elles ajoutent des points ; note plafonnée à 20).
-   Un TP absent de cette liste : toutes ses étapes comptent. */
+/* Barème automatique des TP (onglet « Suivi TP » de l'espace professeure).
+   « points » : points de chaque étape, dans l'ordre (étape 1 en premier) ; note du TP = somme des points
+   des étapes réussies, plafonnée à 20. Une étape passée en mode test ne rapporte rien.
+   « bonus » : numéros des étapes en bonus (affichées à part ; leurs points rattrapent une étape manquée).
+   « quiz » : numéros des étapes de quiz, notées à part sur « quizSur » points (au prorata des bonnes réponses).
+   Sans « points » : note = 20 × étapes réussies / étapes comptées (hors bonus et quiz).
+   TP Conditions : cumul 4 après le cours, 8 après l'Ex. 1, 9,5 après l'Ex. 2, 14 après l'Ex. 3, 15 après l'Ex. 4,
+   17 après l'Ex. 5, 20 après l'Ex. 6 ; quiz final noté sur 5 (1 point par bonne réponse). */
 window.INTERACTIF_BAREMES = {
-    'seconde/tp-conditions': { bonus: [18, 19] }
+    'seconde/tp-conditions': {
+        //       cours        Ex. 1        Ex. 2  Ex. 3              Ex. 4  Ex. 5     Ex. 6     quiz  bonus
+        points: [1.5, 1, 1.5, 1, 1.5, 1.5, 1.5,   1, 1, 1.5, 1,      1,     1.5, 0.5, 1, 1, 1,  0,    0.5, 0.5],
+        bonus: [19, 20],
+        quiz: [18], quizSur: 5
+    }
 };
 
 /* Exercices retirés qui ne sont plus au catalogue : masqués dans le suivi prof

@@ -256,7 +256,7 @@
 
             <div class="panneau" role="tabpanel" id="panneau-suivi-tp" aria-labelledby="onglet-suivi-tp" hidden>
                 <h2>Suivi des TP</h2>
-                <p class="aide">Barème automatique : note sur 20 = 20 × étapes réussies / étapes comptées. Les étapes bonus ajoutent des points (note plafonnée à 20) ; une étape passée en mode test ne compte pas. Les erreurs (réponses fausses avant la bonne) sont indiquées pour information. Barème réglable dans <code>config.js</code> (INTERACTIF_BAREMES).</p>
+                <p class="aide">Barème automatique : chaque étape réussie rapporte ses points (colonne « Points » du détail), note plafonnée à 20 ; une étape passée en mode test ne rapporte rien. TP Conditions : note du TP selon l'avancée (4 après le cours, 8 après l'Ex. 1, 15 après l'Ex. 4, 20 après l'Ex. 6, bonus 0,5) ; quiz final noté à part sur 5. Les erreurs (réponses fausses avant la bonne) sont indiquées pour information. Barème réglable dans <code>config.js</code> (INTERACTIF_BAREMES).</p>
                 <div class="outils">
                     <label>Classe <select id="tp-classe"></select></label>
                     <label>TP <select id="tp-choix"></select></label>
@@ -350,19 +350,30 @@
                 var liste = donnees.resultats.filter(function (r) { return r.code === code && r.exercice === id; });
                 if (!liste.length) return null;
                 var r = liste.slice().sort(function (a, b) { return b.score - a.score || new Date(b.fait_le) - new Date(a.fait_le); })[0];
-                var bonus = ((window.INTERACTIF_BAREMES || {})[id] || {}).bonus || [];
-                var total = r.total, comptees = total - bonus.filter(function (k) { return k <= total; }).length;
-                var reussies = 0, bonusOk = 0, err = 0, passees = 0;
+                var bareme = (window.INTERACTIF_BAREMES || {})[id] || {}, bonus = bareme.bonus || [], quizE = bareme.quiz || [];
+                var total = r.total, comptees = total - bonus.concat(quizE).filter(function (k) { return k <= total; }).length;
+                var reussies = 0, bonusOk = 0, err = 0, passees = 0, points = 0, quiz = null;
                 (r.details || []).forEach(function (d, k) {
                     if (!d) return;
                     err += d.e || 0;
+                    if (quizE.indexOf(k + 1) >= 0) {   // quiz : noté à part
+                        if (!(d.p || d.ok === false) && d.qmax) quiz = (quiz || 0) + (bareme.quizSur || 5) * (d.q || 0) / d.qmax / quizE.length;
+                        else if (quiz === null) quiz = 0;
+                        return;
+                    }
                     if (d.p || d.ok === false) { passees++; return; }
                     if (bonus.indexOf(k + 1) >= 0) bonusOk++; else reussies++;
+                    points += pointsEtape(bareme, k + 1, comptees);
                 });
-                var note = comptees > 0 ? Math.min(20, 20 * (reussies + bonusOk) / comptees) : 0;
-                return { r: r, note: Math.round(note * 10) / 10, reussies: reussies, bonusOk: bonusOk, nbBonus: bonus.length, comptees: comptees,
+                var note = Math.min(20, points);
+                return { r: r, note: Math.round(note * 10) / 10, quiz: quiz === null ? null : Math.round(quiz * 10) / 10, quizSur: quizE.length ? bareme.quizSur || 5 : 0, reussies: reussies, bonusOk: bonusOk, nbBonus: bonus.length, comptees: comptees,
                          erreurs: err, passees: passees, duree: Math.max.apply(null, liste.map(function (x) { return x.duree_s || 0; })),
                          dernier: liste.reduce(function (m, x) { return new Date(x.fait_le) > m ? new Date(x.fait_le) : m; }, new Date(0)) };
+            }
+            // points d'une étape : liste « points » du barème, sinon 20 / nombre d'étapes comptées
+            function pointsEtape(bareme, n, comptees) {
+                if ((bareme.quiz || []).indexOf(n) >= 0) return 0;
+                return bareme.points ? bareme.points[n - 1] || 0 : comptees > 0 ? 20 / comptees : 0;
             }
             function nomDe(e) { return noms[e.code] || ''; }
             function cell(tr, t, cl) { var c = document.createElement('td'); c.textContent = t; if (cl) c.className = cl; tr.appendChild(c); return c; }
@@ -392,17 +403,19 @@
                 $table.innerHTML = ''; $detail.innerHTML = '';
                 var id = $tp.value, liste = eleves();
                 if ($eleve.value) liste = liste.filter(function (e) { return e.code === $eleve.value; });
-                entete($table, ['Code', 'Nom', 'Étapes réussies', 'Bonus', 'Erreurs', 'Note /20', 'Temps', 'Dernière activité']);
-                var notes = [];
+                entete($table, ['Code', 'Nom', 'Étapes réussies', 'Bonus', 'Erreurs', 'Note TP /20', 'Quiz', 'Temps', 'Dernière activité']);
+                var notes = [], quizs = [];
                 liste.forEach(function (e) {
                     var b = resultat(e.code, id), tr = document.createElement('tr');
                     cell(tr, e.code); cell(tr, nomDe(e));
-                    if (!b) { cell(tr, 'pas commencé'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); }
+                    if (!b) { cell(tr, 'pas commencé'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); }
                     else {
                         cell(tr, b.reussies + ' / ' + b.comptees + (b.passees ? ' (' + b.passees + ' passée' + (b.passees > 1 ? 's' : '') + ')' : ''));
                         cell(tr, b.nbBonus ? b.bonusOk + ' / ' + b.nbBonus : '—');
-                        cell(tr, b.erreurs); cell(tr, fmt(b.note), 'note'); cell(tr, minutes(b.duree)); cell(tr, date(b.dernier));
-                        notes.push(b.note);
+                        cell(tr, b.erreurs); cell(tr, fmt(b.note), 'note');
+                        cell(tr, b.quizSur ? (b.quiz === null ? '—' : fmt(b.quiz) + ' / ' + b.quizSur) : '—', 'note');
+                        cell(tr, minutes(b.duree)); cell(tr, date(b.dernier));
+                        notes.push(b.note); if (b.quiz !== null) quizs.push(b.quiz);
                         tr.className = 'cliquable'; tr.title = 'Voir le détail des étapes';
                         tr.onclick = function () { $eleve.value = e.code; afficher(); };
                     }
@@ -413,6 +426,7 @@
                     cell(tr, 'Moyenne'); cell(tr, notes.length + ' élève' + (notes.length > 1 ? 's' : ''));
                     cell(tr, ''); cell(tr, ''); cell(tr, '');
                     cell(tr, fmt(Math.round(notes.reduce(function (s, x) { return s + x; }, 0) / notes.length * 10) / 10), 'note');
+                    cell(tr, quizs.length ? fmt(Math.round(quizs.reduce(function (s, x) { return s + x; }, 0) / quizs.length * 10) / 10) : '—', 'note');
                     cell(tr, ''); cell(tr, '');
                     $table.appendChild(tr);
                 }
@@ -422,7 +436,7 @@
                 var b = resultat(code, id);
                 if (!b) return;
                 var t = document.createElement('div'); t.className = 'tp-entete';
-                var h = document.createElement('h3'); h.textContent = (noms[code] || code) + ' · ' + fmt(b.note) + ' / 20'; t.appendChild(h);
+                var h = document.createElement('h3'); h.textContent = (noms[code] || code) + ' · TP ' + fmt(b.note) + ' / 20' + (b.quizSur ? ' · Quiz ' + (b.quiz === null ? '—' : fmt(b.quiz)) + ' / ' + b.quizSur : ''); t.appendChild(h);
                 var a = document.createElement('span'); a.className = 'aide';
                 a.textContent = b.reussies + ' étape(s) réussie(s) sur ' + b.comptees + (b.nbBonus ? ', bonus ' + b.bonusOk + '/' + b.nbBonus : '') + ' · ' + b.erreurs + ' erreur(s) · ' + minutes(b.duree);
                 t.appendChild(a);
@@ -441,13 +455,15 @@
                 $detail.appendChild(t);
                 var bonus = ((window.INTERACTIF_BAREMES || {})[id] || {}).bonus || [];
                 var tab = document.createElement('table'); tab.className = 'res tp-etapes';
-                entete(tab, ['Étape', 'État', 'Erreurs', 'Réponse']);
+                var bareme = (window.INTERACTIF_BAREMES || {})[id] || {};
+                entete(tab, ['Étape', 'État', 'Points', 'Erreurs', 'Réponse']);
                 (b.r.details || []).forEach(function (d, k) {
                     if (!d) return;
                     var tr = document.createElement('tr');
                     cell(tr, (d.t || 'Étape ' + (k + 1)) + (bonus.indexOf(k + 1) >= 0 ? ' (bonus)' : ''));
                     var passee = d.p || d.ok === false;
-                    cell(tr, passee ? '⏭ passée' : '✓', passee ? 'passee' : '');
+                    cell(tr, passee ? '⏭ passée' : d.qmax ? '✓ ' + (d.q || 0) + ' / ' + d.qmax : '✓', passee ? 'passee' : '');
+                    cell(tr, d.qmax ? 'quiz' : passee ? '0' : fmt(Math.round(pointsEtape(bareme, k + 1, b.comptees) * 100) / 100));
                     cell(tr, d.e || 0);
                     var c = cell(tr, ''), rep = String(d.r || '');
                     if (rep.indexOf('\n') >= 0 || rep.length > 80) {
@@ -458,16 +474,16 @@
                     tab.appendChild(tr);
                 });
                 var reste = b.r.total - (b.r.details || []).length;
-                if (reste > 0) { var tr = document.createElement('tr'); cell(tr, reste + ' étape(s) pas encore faite(s)', 'passee'); cell(tr, ''); cell(tr, ''); cell(tr, ''); tab.appendChild(tr); }
+                if (reste > 0) { var tr = document.createElement('tr'); cell(tr, reste + ' étape(s) pas encore faite(s)', 'passee'); cell(tr, ''); cell(tr, ''); cell(tr, ''); cell(tr, ''); tab.appendChild(tr); }
                 var w = document.createElement('div'); w.className = 'tableau-defile'; w.appendChild(tab); $detail.appendChild(w);
             }
             // export CSV (séparateur ; pour le tableur) : toute la classe, pour le TP choisi
             document.getElementById('tp-csv').onclick = function () {
                 if (!donnees) return;
-                var id = $tp.value, lignes = [['Code', 'Nom', 'Étapes réussies', 'Étapes comptées', 'Bonus', 'Erreurs', 'Note /20']];
+                var id = $tp.value, lignes = [['Code', 'Nom', 'Étapes réussies', 'Étapes comptées', 'Bonus', 'Erreurs', 'Note TP /20', 'Quiz']];
                 eleves().forEach(function (e) {
                     var b = resultat(e.code, id);
-                    lignes.push([e.code, nomDe(e), b ? b.reussies : 0, b ? b.comptees : '', b ? b.bonusOk : 0, b ? b.erreurs : '', b ? fmt(b.note) : '']);
+                    lignes.push([e.code, nomDe(e), b ? b.reussies : 0, b ? b.comptees : '', b ? b.bonusOk : 0, b ? b.erreurs : '', b ? fmt(b.note) : '', b && b.quiz !== null ? fmt(b.quiz) : '']);
                 });
                 var csv = '﻿' + lignes.map(function (l) { return l.map(function (x) { return '"' + String(x).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
                 var a = document.createElement('a');
