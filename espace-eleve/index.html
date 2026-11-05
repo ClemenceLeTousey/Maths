@@ -54,6 +54,8 @@
         .evals .eval-titre span { display: block; font-weight: 400; font-size: 0.9rem; color: var(--muted); }
         .evals .eval-liens, #liste-tp .eval-liens { display: flex; flex-wrap: wrap; gap: 6px; }
             #liste-tp td { vertical-align: middle; text-align: left; }
+            #liste-tp th.coin { border: none; background: var(--bg); }   /* case vide en haut à gauche */
+            #liste-tp .tp-num { color: var(--c-seconde); }
         .code-tp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
         .code-tp input { width: 9em; font-family: var(--f-mono); font-variant-ligatures: none; }
         .code-tp .erreur { color: var(--ko); font-weight: 600; }
@@ -239,11 +241,18 @@
             if (s && String(s.code || '').toUpperCase() === 'TEST-01') return true;
             try { return localStorage.getItem('tp-acces:' + ex.id) === ex.codeAcces; } catch (e) { return false; }
         }
+        // « TP3 · Les boucles » : seul « TP3 » est en couleur
+        function nomTP(el, nom) {
+            var m = /^(TP\s*\d+)(.*)$/.exec(nom);
+            if (!m) { el.textContent = nom; return; }
+            var n = document.createElement('span'); n.className = 'tp-num'; n.textContent = m[1];
+            el.appendChild(n); el.appendChild(document.createTextNode(m[2]));
+        }
         function remplirTP(listeTP, parExercice) {
             var t = document.getElementById('liste-tp');
             t.innerHTML = '';
             var te = document.createElement('tr');
-            te.innerHTML = '<th>TP</th><th>Progression</th><th></th>';
+            te.innerHTML = '<th class="coin"></th><th>Progression</th><th></th>';
             t.appendChild(te);
             // ordre et TP sans page interactive (PDF, à venir) : INTERACTIF_TP_ORDRE dans config.js
             var s = Interactif.session(), niv = s && Interactif.niveauClasse(s.classe), vus = {}, lignes = [];
@@ -266,7 +275,7 @@
                 var c1 = document.createElement('td'), titre = document.createElement('b');
                 if (l.fiche) {
                     var o = l.fiche;
-                    titre.textContent = o.nom; c1.appendChild(titre);
+                    nomTP(titre, o.nom); c1.appendChild(titre);
                     if (o.texte || o.aVenir) { c1.appendChild(document.createElement('br')); var st = document.createElement('i'); st.textContent = o.aVenir ? 'À venir' : o.texte; c1.appendChild(st); }
                     tr.appendChild(c1);
                     var d2 = document.createElement('td'); d2.textContent = o.aVenir ? '' : '—'; tr.appendChild(d2);
@@ -285,7 +294,7 @@
                     return;
                 }
                 var ex = l.ex;
-                titre.textContent = l.nom || ex.groupe.replace(/^TP Python · /, '');
+                nomTP(titre, l.nom || ex.groupe.replace(/^TP Python · /, ''));
                 c1.appendChild(titre); c1.appendChild(document.createElement('br'));
                 var st2 = document.createElement('i'); st2.textContent = ex.titre.replace(/\s*\(\d+ étapes?\)\s*$/, ''); c1.appendChild(st2);   // nombre d'étapes : déjà dans la colonne Progression
                 tr.appendChild(c1);
