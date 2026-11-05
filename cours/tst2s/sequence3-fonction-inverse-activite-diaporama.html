@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fonction inverse — Diaporama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --paper:      #f4f5f1;
+    --surface:    #ffffff;
+    --ink:        #20232b;
+    --ink-soft:   #565a66;
+    --muted:      #8b8f99;
+    --line:       #dce1ea;
+    --rule:       #b9c2d1;
+    --statblue:   #1C7ED6;
+    --skyblue:    #339AF0;
+    --blue-soft:  #e6f1fc;
+    --green:      #2F9E44;
+    --green-soft: #eaf6ec;
+    --orange:     #FF7F0E;
+    --yellow:     #FFF200;
+  }
+  * { box-sizing: border-box; }
+  html { font-size: 21px; }
+  body {
+    margin: 0; height: 100vh; overflow: hidden;
+    background: var(--paper); color: var(--ink);
+    font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.45;
+    display: flex; flex-direction: column;
+  }
+
+  /* ---------- barre des étapes ---------- */
+  .steps {
+    display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+    padding: 8px 24px; background: var(--surface);
+    border-bottom: 1px solid var(--line); font-size: 0.72rem;
+  }
+  .steps .grp { display: flex; gap: 4px; align-items: center; }
+  .steps .grp-name { color: var(--muted); font-weight: 600; margin-right: 4px; white-space: nowrap; }
+  .steps button {
+    font: inherit; border: 1px solid var(--line); background: #fff; color: var(--ink-soft);
+    border-radius: 5px; padding: 1px 7px; cursor: pointer; min-width: 28px;
+  }
+  .steps button.done { background: var(--blue-soft); border-color: var(--blue-soft); color: var(--statblue); }
+  .steps button.on { background: var(--skyblue); border-color: var(--skyblue); color: #fff; font-weight: 600; }
+
+  /* ---------- diapositive ---------- */
+  main { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 16px 32px 10px; gap: 12px; max-width: 1500px; width: 100%; margin: 0 auto; }
+  .head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .pill {
+    background: var(--skyblue); color: #fff; font-size: 0.8rem; font-weight: 600;
+    padding: 2px 10px; border-radius: 5px; white-space: nowrap;
+  }
+  .head h1 { margin: 0; font-size: 1.3rem; font-weight: 600; }
+  .head .ctx { margin-left: auto; color: var(--muted); font-size: 0.8rem; }
+
+  .question {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 20px; font-size: 1.05rem;
+  }
+  .question p { margin: 0 0 8px; }
+  .question p:last-child { margin-bottom: 0; }
+  .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.6em; height: 1.6em; border: 1.5px solid var(--ink); border-radius: 50%;
+    font-weight: 700; font-size: 0.8em; margin-right: 6px; vertical-align: 0.1em;
+  }
+  .sub { color: var(--ink-soft); font-weight: 600; margin-right: 4px; }
+  .rappel {
+    background: var(--blue-soft); border-left: 4px solid var(--statblue);
+    padding: 8px 14px; margin: 8px 0; font-size: 0.95rem;
+  }
+  .rappel b.t { color: var(--statblue); }
+  .aide {
+    background: #fdf0e8; border-left: 4px solid #E8590C;
+    padding: 8px 14px; margin-top: 10px; font-size: 0.9rem; color: var(--ink);
+  }
+  .aide b.t { color: #E8590C; display: block; margin-bottom: 4px; }
+  .aide p { margin: 0 0 5px; }
+  a.capy {
+    display: inline-block; margin-left: 12px; padding: 3px 12px; border-radius: 6px;
+    background: var(--statblue); color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: 600;
+  }
+  a.capy span { font-family: ui-monospace, Menlo, monospace; font-weight: 400; opacity: 0.85; margin-left: 4px; }
+  a.capy:hover { background: var(--skyblue); }
+  .qcm { display: flex; gap: 34px; flex-wrap: wrap; margin-top: 6px; }
+
+  table.t { border-collapse: collapse; margin: 6px 0; font-size: 0.95rem; }
+  table.t th, table.t td { border: 1px solid var(--rule); padding: 4px 12px; text-align: center; min-width: 58px; font-weight: 400; }
+  table.t th { background: #fafbf9; text-align: left; }
+  table.t td.g { color: var(--green); font-weight: 600; }
+
+  /* ---------- corrigé ---------- */
+  .corr {
+    display: none; background: var(--green-soft); border: 1.5px solid var(--green);
+    border-radius: 8px; padding: 12px 20px; font-size: 1.02rem;
+  }
+  .corr.show { display: block; }
+  .corr .lab { color: var(--green); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+  .corr p { margin: 0 0 6px; }
+  .corr p:last-child { margin-bottom: 0; }
+  .corr .sideby { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; }
+
+  /* ---------- zone d'écriture ---------- */
+  .trace {
+    flex: 1; min-height: 120px; border: 2px dashed var(--rule); border-radius: 10px;
+    background: rgba(255,255,255,0.55); position: relative;
+  }
+  .trace .lab {
+    position: absolute; top: 8px; left: 14px; color: var(--muted);
+    font-weight: 600; font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+
+  /* ---------- page de titre ---------- */
+  .cover { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; }
+  .cover .frame {
+    border: 1.5px solid var(--ink); border-radius: 14px 0 14px 0; padding: 22px 60px 18px; position: relative; background: #fff;
+  }
+  .cover .frame .tag { position: absolute; top: -0.8em; left: 22px; background: var(--paper); padding: 0 8px; font-size: 0.9rem; }
+  .cover h1 { margin: 0; font-size: 2rem; font-weight: 600; }
+  .cover ul { list-style: none; padding: 0; margin: 0; color: var(--ink-soft); font-size: 1.05rem; }
+  .cover li { margin: 4px 0; }
+
+  /* ---------- barre du bas ---------- */
+  footer {
+    display: flex; align-items: center; gap: 10px; padding: 8px 24px;
+    background: var(--surface); border-top: 1px solid var(--line); font-size: 0.8rem;
+  }
+  footer button {
+    font: inherit; border: 1px solid var(--rule); background: #fff; color: var(--ink);
+    border-radius: 6px; padding: 4px 14px; cursor: pointer;
+  }
+  footer button.corrbtn { border-color: var(--green); color: var(--green); font-weight: 600; }
+  footer button.corrbtn.on { background: var(--green); color: #fff; }
+  footer .count { color: var(--muted); margin: 0 6px; }
+  footer .keys { margin-left: auto; color: var(--muted); }
+  kbd { border: 1px solid var(--rule); border-radius: 3px; padding: 0 4px; font-family: inherit; font-size: 0.75rem; }
+  svg text { font-family: "Source Sans 3", Arial, sans-serif; }
+</style>
+</head>
+<body>
+
+<nav class="steps" id="steps"></nav>
+<main id="slide"></main>
+<footer>
+  <button id="prev">← Précédent</button>
+  <span class="count" id="count"></span>
+  <button id="next">Suivant →</button>
+  <button class="corrbtn" id="corrbtn">Corrigé</button>
+  <span class="keys"><kbd>←</kbd> <kbd>→</kbd> naviguer · <kbd>C</kbd> corrigé · <kbd>F</kbd> plein écran</span>
+</footer>
+
+<script>
+/* ---------- petits dessins ---------- */
+function camembert(orange, jaune) {
+  const r = 34, cx = 40, cy = 40;
+  const pt = a => [cx + r * Math.cos(a * Math.PI / 180), cy - r * Math.sin(a * Math.PI / 180)];
+  let s = `<svg width="80" height="80" viewBox="0 0 80 80" style="vertical-align:middle">`;
+  const part = (k, col) => {
+    const [x1, y1] = pt(k * 60), [x2, y2] = pt(k * 60 + 60);
+    return `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 0 0 ${x2},${y2} Z" fill="${col}"/>`;
+  };
+  orange.forEach(k => s += part(k, "var(--orange)"));
+  jaune.forEach(k => s += part(k, "var(--yellow)"));
+  for (let k = 0; k < 6; k++) { const [x, y] = pt(k * 60); s += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#20232b" stroke-width="1.2"/>`; }
+  return s + `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#20232b" stroke-width="1.4"/></svg>`;
+}
+
+const CTX1 = "Bus : 600 € la journée · Test : 3 € · 400 tests au maximum";
+
+/* ---------- contenu ---------- */
+const SLIDES = [
+{ cover: true },
+
+{ act: 1, title: "Le coût moyen", step: "Énoncé", ctx: "",
+  q: String.raw`<p>Une association de prévention organise une journée de dépistage du diabète.<br>Liste des coûts :</p>
+  <p>⋆ La location du bus médicalisé coûte 600 € pour la journée, quel que soit le nombre de personnes dépistées.<br>
+  ⋆ Chaque test (bandelette, lancette, coton) coûte 3 €.</p>
+  <p>Le bus permet de réaliser au maximum 400 tests dans la journée.</p>
+  <p>On note $n$ le nombre de tests réalisés dans la journée.</p>`,
+  corr: String.raw`<p><b>Données de l'énoncé :</b></p>
+  <p>⋆ Bus : <b>600 €</b> pour la journée, quel que soit le nombre de tests.<br>
+  ⋆ Test : <b>3 €</b> par test.<br>
+  ⋆ Au maximum <b>400 tests</b> dans la journée.<br>
+  ⋆ $n$ = nombre de tests réalisés.</p>
+  <div class="aide"><b class="t">Si un élève bloque : « chaque test coûte 3 € » (et l'analyse ?)</b>
+  <p><b>Il n'y a pas d'analyse « après ».</b> Glycémie capillaire : on pique le doigt, la goutte va sur la bandelette, le lecteur affiche le résultat en quelques secondes. Les 3 € couvrent <b>tout</b> le coût d'un test. Le lecteur sert toute la journée : il fait partie du bus (600 €).</p>
+  <p><b>Même avec une analyse, la méthode serait la même</b> : ce qu'on paie <b>une seule fois</b> (le bus) / ce qu'on paie <b>à chaque test</b>. 3 € de matériel + 2 € d'analyse = 5 € par test, et $\mathsf{T}(n)=600+5n$.</p>
+  <p><b>Questions qui débloquent :</b> « Un test de plus, combien ça coûte en plus ? » (3 €) — « Est-ce qu'on repaie le bus ? » (non).</p></div>` },
+
+{ act: 1, title: "Le coût moyen", step: "Q1 a-b", ctx: CTX1,
+  q: String.raw`<p><span class="num">1</span>On va calculer le <b>coût moyen</b> d'un test, c'est-à-dire le coût total divisé par le nombre de tests.</p>
+  <p><span class="sub">(a)</span>On suppose que l'association réalise un seul test.<br>Calculer le coût total de la journée, puis le coût moyen d'un test.</p>
+  <p><span class="sub">(b)</span>On suppose que l'association réalise 10 tests.<br>Calculer le coût total de la journée, puis le coût moyen d'un test.</p>`,
+  corr: String.raw`<p>(a) Coût total : $600+3\times1=603$ €. &nbsp;&nbsp; Coût moyen : $\dfrac{603}{1}=603$ € par test.</p>
+  <p>(b) Coût total : $600+3\times10=630$ €. &nbsp;&nbsp; Coût moyen : $\dfrac{630}{10}=63$ € par test.</p>` },
+
+{ act: 1, title: "Le coût moyen", step: "Q2 a-b", ctx: CTX1,
+  q: String.raw`<p><span class="num">2</span>On utilise un tableur pour étudier le coût moyen selon le nombre de tests. <a class="capy" href="https://capytale2.ac-paris.fr/web/c/98a9-12564638/edn" target="_blank" rel="noopener">💻 Ouvrir le tableur Capytale <span>98a9-12564638</span></a></p>
+  <table class="t"><tr><th></th><th style="text-align:center">A</th><th style="text-align:center">B</th><th style="text-align:center">C</th></tr>
+  <tr><th>1</th><td>Nombre de tests $n$</td><td>Coût total (€)</td><td>Coût moyen (€)</td></tr>
+  <tr><th>2</th><td>10</td><td></td><td></td></tr><tr><th>3</th><td>20</td><td></td><td></td></tr></table>
+  <p><span class="sub">(a)</span>Quelle formule peut-on saisir en <b>A3</b> puis recopier vers le bas pour obtenir les nombres 10 ; 20 ; 30 ; … ; 400 ?</p>
+  <p><span class="sub">(b)</span>Quelle formule peut-on saisir dans le but de les recopier vers le bas en <b>B2</b> ? en <b>C2</b> ?</p>`,
+  corr: String.raw`<p>(a) En A3 : <code>=A2+10</code> &nbsp;(on ajoute 10 d'une ligne à la suivante)</p>
+  <p>(b) En B2 : <code>=600+3*A2</code> (coût du bus + coût des tests) &nbsp;&nbsp; En C2 : <code>=B2/A2</code> (coût total divisé par le nombre de tests)</p>` },
+
+{ act: 1, title: "Le coût moyen", step: "Q2 c", ctx: CTX1,
+  q: String.raw`<p><span class="sub">(c)</span>Compléter le tableau à l'aide du tableur (arrondir au centime).</p>
+  <table class="t"><tr><th>Nombre de tests $n$</th><td>10</td><td>50</td><td>100</td><td>150</td><td>200</td><td>300</td><td>400</td></tr>
+  <tr><th>Coût moyen (€)</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>`,
+  corr: String.raw`<table class="t"><tr><th>Nombre de tests $n$</th><td>10</td><td>50</td><td>100</td><td>150</td><td>200</td><td>300</td><td>400</td></tr>
+  <tr><th>Coût moyen (€)</th><td class="g">63</td><td class="g">15</td><td class="g">9</td><td class="g">7</td><td class="g">6</td><td class="g">5</td><td class="g">4,50</td></tr></table>` },
+
+{ act: 1, title: "Le coût moyen", step: "Q3", ctx: CTX1,
+  q: String.raw`<p><span class="num">3</span>Comment évolue le coût moyen quand le nombre de tests augmente ? Expliquer pourquoi avec le contexte.</p>`,
+  corr: String.raw`<p>Le coût moyen <b>diminue</b> quand le nombre de tests augmente : très vite au début, puis de plus en plus lentement.</p>
+  <p>Les 600 € du bus sont payés une seule fois, quel que soit le nombre de tests. Plus on fait de tests, plus cette somme est <b>partagée</b>, et plus la part du bus dans chaque test est petite.</p>` },
+
+{ act: 1, title: "Le coût moyen", step: "Q4 a", ctx: CTX1,
+  q: String.raw`<p><span class="num">4</span>On note $\mathsf{T}(n)$ le coût total et $\mathsf{M}(n)$ le coût moyen d'un test, lorsque l'association réalise $n$ tests.</p>
+  <p><span class="sub">(a)</span>En utilisant les questions précédentes et le tableau, donner $\mathsf{T}(1)$, $\mathsf{M}(1)$, $\mathsf{T}(10)$, $\mathsf{M}(10)$ et $\mathsf{M}(100)$.</p>`,
+  corr: String.raw`<p>$\mathsf{T}(1)=603$ et $\mathsf{M}(1)=603$ &nbsp;·&nbsp; $\mathsf{T}(10)=630$ et $\mathsf{M}(10)=63$ &nbsp;·&nbsp; $\mathsf{M}(100)=9$</p>` },
+
+{ act: 1, title: "Le coût moyen", step: "Q4 b-c", ctx: CTX1,
+  q: String.raw`<p><span class="sub">(b)</span>Parmi les expressions suivantes, laquelle donne le coût total $\mathsf{T}(n)$ ? Cocher la bonne réponse.</p>
+  <div class="qcm"><span>☐ $\mathsf{T}(n)=600n+3$</span><span>☐ $\mathsf{T}(n)=603n$</span><span>☐ $\mathsf{T}(n)=600+3n$</span><span>☐ $\mathsf{T}(n)=3n$</span></div>
+  <p style="margin-top:8px"><span class="sub">(c)</span>Justifier ce choix.</p>`,
+  corr: String.raw`<p>(b) $\mathsf{T}(n)=600+3n$.</p>
+  <p>(c) Le bus coûte 600 € une seule fois, et chacun des $n$ tests coûte 3 € : $\mathsf{T}(n)=600+3\times n$. Vérification : $600+3\times10=630=\mathsf{T}(10)$.</p>
+  <p>Les autres ne conviennent pas pour $n=10$ : $600\times10+3=6\,003$ ; $603\times10=6\,030$ ; $3\times10=30$. <i>(Avec $n=1$, trois formules donnent 603 : il faut tester une autre valeur !)</i></p>` },
+
+{ act: 1, title: "Le coût moyen", step: "Q5 a-b", ctx: CTX1,
+  q: String.raw`<p><span class="num">5</span>On cherche maintenant une expression du coût moyen $\mathsf{M}(n)$.</p>
+  <p><span class="sub">(a)</span>Le coût moyen s'obtient en divisant le coût total par le nombre de tests. Compléter : $\mathsf{M}(n)=\dfrac{\ldots\ldots\ldots\ldots}{n}$</p>
+  <p><span class="sub">(b)</span>En utilisant le rappel ci-dessous, compléter : $\mathsf{M}(n)=\dfrac{\ldots\ldots\ldots\ldots}{n}=\dfrac{600}{n}+\dfrac{\ldots\ldots}{n}=\dfrac{600}{n}+\ldots\ldots$</p>
+  <div class="rappel"><b class="t">Rappel : séparer une fraction en deux</b>
+    <div style="display:flex;gap:40px;align-items:center;flex-wrap:wrap;margin-top:6px">
+      <div style="text-align:center">
+      <div style="display:grid;grid-template-columns:repeat(5,auto);gap:4px 18px;align-items:center;justify-items:center">
+        <span>$\dfrac{a+b}{c}$</span><span>$=$</span><span>$\dfrac{a}{c}$</span><span>$+$</span><span>$\dfrac{b}{c}$</span>
+        ${camembert([0,1,2],[4,5])}<span>$=$</span>${camembert([0,1,2],[])}<span>$+$</span>${camembert([],[4,5])}
+        <span>$\dfrac{5}{6}=\dfrac{3+2}{6}$</span><span>$=$</span><span>$\dfrac{3}{6}$</span><span>$+$</span><span>$\dfrac{2}{6}$</span>
+      </div><small>(avec $c\neq0$)</small></div>
+      <div>Une fraction dont le numérateur est une somme se <b>sépare</b> en deux fractions de même dénominateur.<br><br>
+      <b>Exemple avec une lettre</b> : pour $x\neq0$, $\dfrac{10+4x}{x}=\dfrac{10}{x}+\dfrac{4x}{x}=\dfrac{10}{x}+4$.<br>
+      <small>On a simplifié $\dfrac{4x}{x}=4$.</small></div>
+    </div></div>`,
+  corr: String.raw`<p>(a) $\mathsf{M}(n)=\dfrac{\mathsf{T}(n)}{n}=\dfrac{600+3n}{n}$ &nbsp;&nbsp;&nbsp; (b) $\mathsf{M}(n)=\dfrac{600+3n}{n}=\dfrac{600}{n}+\dfrac{3n}{n}=\dfrac{600}{n}+3$ &nbsp;(car $\dfrac{3n}{n}=3$)</p>` },
+
+{ act: 1, title: "Le coût moyen", step: "Q6", ctx: CTX1,
+  q: String.raw`<p><span class="num">6</span>Le coût moyen peut-il descendre en dessous de 3 € ? Expliquer.</p>`,
+  corr: String.raw`<p><b>Non.</b> Chaque test coûte déjà 3 € de matériel, auxquels s'ajoute la part du bus $\dfrac{600}{n}$, qui est toujours strictement positive.</p>
+  <p>Donc $\mathsf{M}(n)=\dfrac{600}{n}+3>3$ : le coût moyen se rapproche de 3 € quand $n$ augmente, mais il ne l'atteint jamais.</p>` },
+
+{ act: 1, title: "Le coût moyen", step: "Q7", ctx: CTX1,
+  q: String.raw`<p><span class="num">7</span>L'association espère un coût moyen inférieur à 4 € par test. Est-ce possible ? Justifier.</p>`,
+  corr: String.raw`<p>On cherche $n$ tel que $\mathsf{M}(n)<4$ : $\dfrac{600}{n}+3<4 \iff \dfrac{600}{n}<1 \iff 600<n$ (car $n>0$).</p>
+  <p>Il faudrait réaliser plus de 600 tests. Or le bus permet d'en faire au maximum 400 : <b>ce n'est pas possible</b>. Au mieux, avec 400 tests, le coût moyen est de 4,50 €.</p>` },
+];
+
+/* ---------- moteur ---------- */
+const STEP_GROUPS = { 1: "Activité 1" };
+let cur = 0, showCorr = false;
+try { const h = parseInt(location.hash.slice(1), 10); if (h >= 0 && h < SLIDES.length) cur = h; } catch (e) {}
+
+function buildSteps() {
+  const nav = document.getElementById("steps");
+  let html = `<div class="grp"><button data-i="0">Titre</button></div>`;
+  [1].forEach(a => {
+    html += `<div class="grp"><span class="grp-name">${STEP_GROUPS[a]}</span>`;
+    SLIDES.forEach((s, i) => { if (s.act === a) html += `<button data-i="${i}">${s.step}</button>`; });
+    html += `</div>`;
+  });
+  nav.innerHTML = html;
+  nav.querySelectorAll("button").forEach(b => b.onclick = () => go(+b.dataset.i));
+}
+
+function render() {
+  const s = SLIDES[cur], main = document.getElementById("slide");
+  if (s.cover) {
+    main.innerHTML = `<div class="cover">
+      <div class="frame"><span class="tag">Séquence 3 – Activité 1</span><h1>Le coût moyen</h1></div>
+    </div>`;
+  } else {
+    main.innerHTML = `
+      <div class="head"><span class="pill">Séquence 3 – Activité ${s.act}</span><h1>${s.title}</h1>${s.ctx ? `<span class="ctx">${s.ctx}</span>` : ""}</div>
+      <div class="question">${s.q}</div>
+      ${s.corr ? `<div class="corr${showCorr ? " show" : ""}"><span class="lab">Corrigé</span>${s.corr}</div>` : ""}
+      ${s.noTrace ? "" : `<div class="trace"><span class="lab">Trace écrite</span></div>`}`;
+  }
+  renderMathInElement(main, {
+    delimiters: [{ left: "$", right: "$", display: false }, { left: "\\[", right: "\\]", display: true }],
+    throwOnError: false
+  });
+  document.getElementById("count").textContent = `${cur + 1} / ${SLIDES.length}`;
+  const cb = document.getElementById("corrbtn");
+  cb.disabled = !s.corr; cb.style.opacity = s.corr ? 1 : 0.35;
+  cb.classList.toggle("on", showCorr && !!s.corr);
+  document.querySelectorAll("#steps button").forEach(b => {
+    const i = +b.dataset.i; b.classList.toggle("on", i === cur); b.classList.toggle("done", i < cur);
+  });
+  try { history.replaceState(null, "", "#" + cur); } catch (e) {}
+}
+
+function go(i) { if (i < 0 || i >= SLIDES.length) return; cur = i; showCorr = false; render(); }
+function toggleCorr() { if (!SLIDES[cur].corr) return; showCorr = !showCorr; render(); }
+
+document.getElementById("prev").onclick = () => go(cur - 1);
+document.getElementById("next").onclick = () => go(cur + 1);
+document.getElementById("corrbtn").onclick = toggleCorr;
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); go(cur + 1); }
+  else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(cur - 1); }
+  else if (e.key === "c" || e.key === "C") toggleCorr();
+  else if (e.key === "f" || e.key === "F") {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.();
+  }
+});
+
+buildSteps();
+render();
+</script>
+</body>
+</html>
