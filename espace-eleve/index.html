@@ -267,7 +267,7 @@
                 if (l.fiche) {
                     var o = l.fiche;
                     titre.textContent = o.nom; c1.appendChild(titre);
-                    if (o.texte || o.aVenir) { c1.appendChild(document.createElement('br')); c1.appendChild(document.createTextNode(o.aVenir ? 'À venir' : o.texte)); }
+                    if (o.texte || o.aVenir) { c1.appendChild(document.createElement('br')); var st = document.createElement('i'); st.textContent = o.aVenir ? 'À venir' : o.texte; c1.appendChild(st); }
                     tr.appendChild(c1);
                     var d2 = document.createElement('td'); d2.textContent = o.aVenir ? '' : '—'; tr.appendChild(d2);
                     var d3 = document.createElement('td');
@@ -287,7 +287,7 @@
                 var ex = l.ex;
                 titre.textContent = l.nom || ex.groupe.replace(/^TP Python · /, '');
                 c1.appendChild(titre); c1.appendChild(document.createElement('br'));
-                c1.appendChild(document.createTextNode(ex.titre));
+                var st2 = document.createElement('i'); st2.textContent = ex.titre.replace(/\s*\(\d+ étapes?\)\s*$/, ''); c1.appendChild(st2);   // nombre d'étapes : déjà dans la colonne Progression
                 tr.appendChild(c1);
                 var res = (parExercice[ex.id] || []).slice().sort(function (a, b) { return b.score - a.score; })[0];
                 var c2 = document.createElement('td'); c2.textContent = res ? res.score + ' / ' + res.total + ' étapes' : '—'; tr.appendChild(c2);
