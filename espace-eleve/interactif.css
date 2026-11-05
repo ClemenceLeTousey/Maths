@@ -153,6 +153,7 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .q-figure .fig-vnom.v2 { stroke: var(--surface); }
 .q-figure .fig-vfleche { fill: none; stroke: var(--c-seconde); stroke-width: 1.5; }
 .q-figure .fig-vfleche.v2 { stroke: #d9480f; }
+.q-figure .fig-courbe { fill: none; stroke: var(--c-tst2s, #e8740c); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 .q-figure .fig-var { font-style: italic; font-family: 'Times New Roman', serif; font-size: 18px; }
 
 /* ==========================================================================
