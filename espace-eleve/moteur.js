@@ -236,17 +236,30 @@
                     var c = champ(); saisie.appendChild(c);
                     var lettres = type === 'expr' ? (q.variables || 'x') : '';
                     var attendu = type === 'expr' ? Expr.lire(q.attendu, lettres) : null;
+                    // type 'nombre' : calcul intermédiaire permis (0,4+0,23=0,63), la réponse est le dernier membre
+                    function membres() {
+                        return type === 'nombre' ? c.value.split('=') : [c.value];
+                    }
                     c.addEventListener('input', function () {
                         if (!c.value.trim()) { apercu.textContent = ''; return; }
-                        try { maths(apercu, (q.prefixe ? q.prefixe + ' ' : '') + Expr.tex(Expr.lire(c.value, lettres))); apercu.classList.remove('illisible'); }
+                        var ms = membres();
+                        if (ms.length > 1 && !ms[ms.length - 1].trim()) ms.pop(); // « = » qu'on vient de taper
+                        try { maths(apercu, (q.prefixe ? q.prefixe + ' ' : '') + ms.map(function (m) { return Expr.tex(Expr.lire(m, lettres)); }).join('=')); apercu.classList.remove('illisible'); }
                         catch (x) { apercu.textContent = x.message; apercu.classList.add('illisible'); }
                     });
                     lire = function () {
-                        var arbre = Expr.lire(c.value, lettres);
                         if (type === 'nombre') {
-                            if (q.decimal && /[\/]/.test(c.value)) return { attention: 'Donne l\'écriture décimale (sans fraction).' };
-                            return { ok: proche(Expr.valeur(arbre, {}), q.attendu), r: c.value };
+                            var ms = membres();
+                            if (ms.some(function (m) { return !m.trim(); })) return { attention: 'Termine ton calcul : il manque un nombre autour d\'un signe « = ».' };
+                            var arbres = ms.map(function (m) { return Expr.lire(m, ''); }), fin = arbres[arbres.length - 1];
+                            if (q.decimal) {
+                                if (/[\/]/.test(ms[ms.length - 1])) return { attention: 'Donne l\'écriture décimale (sans fraction).' };
+                                if (ms.length > 1 && fin.t !== 'num' && !(fin.t === 'neg' && fin.a.t === 'num'))
+                                    return { attention: 'Termine le calcul : écris un seul nombre après le dernier « = ».' };
+                            }
+                            return { ok: arbres.every(function (a) { return proche(Expr.valeur(a, {}), q.attendu); }), r: c.value };
                         }
+                        var arbre = Expr.lire(c.value, lettres);
                         var juste = Expr.egales(arbre, attendu, lettres);
                         if (juste && q.forme === 'developpee' && !Expr.developpeeReduite(arbre))
                             return { attention: 'C\'est égal, mais ce n\'est pas encore développé et réduit : continue !' };

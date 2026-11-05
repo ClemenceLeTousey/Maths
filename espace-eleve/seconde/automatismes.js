@@ -453,6 +453,7 @@
     };
 
     /* ===== A4 · Sommes de fractions décimales ===== */
+    var MILLE = '1\\,000';
     Auto.sommeDecimale = function (niveau) {
         var q = { niveau: niveau, objectif: 'A4 · Écritures d\'un nombre', type: 'nombre', decimal: true };
         if (niveau === 1) {
@@ -461,7 +462,8 @@
             q.texte = 'Écrire sous forme décimale : $A=' + t.map(function (u) { return frac(u[0], fr(u[1])); }).join('+') + '$.';
             q.prefixe = 'A=';
             q.attendu = arrondi(a / 10 + b / 100 + c / 1000);
-            q.explication = '$A=' + fr(a / 10) + '+' + fr(b / 100) + '+' + fr(c / 1000) + '=' + fr(q.attendu) + '$.';
+            q.explication = '<b>Méthode 1</b> (tout en décimal) : $A=' + fr(a / 10) + '+' + fr(b / 100) + '+' + fr(c / 1000) + '=' + fr(q.attendu) + '$.<br>' +
+                '<b>Méthode 2</b> (tout en millièmes) : $A=' + frac(fr(100 * a), MILLE) + '+' + frac(fr(10 * b), MILLE) + '+' + frac(c, MILLE) + '=' + frac(fr(100 * a + 10 * b + c), MILLE) + '=' + fr(q.attendu) + '$.';
             return q;
         }
         if (niveau === 2) {
@@ -469,7 +471,8 @@
             q.texte = 'Écrire sous forme décimale : $B=' + n + '-' + frac(b2, 100) + '+' + frac(c2, fr(1000)) + '$.';
             q.prefixe = 'B=';
             q.attendu = arrondi(n - b2 / 100 + c2 / 1000);
-            q.explication = '$B=' + n + '-' + fr(b2 / 100) + '+' + fr(c2 / 1000) + '=' + fr(arrondi(n - b2 / 100)) + '+' + fr(c2 / 1000) + '=' + fr(q.attendu) + '$.';
+            q.explication = '<b>Méthode 1</b> (tout en décimal) : $B=' + n + '-' + fr(b2 / 100) + '+' + fr(c2 / 1000) + '=' + fr(arrondi(n - b2 / 100)) + '+' + fr(c2 / 1000) + '=' + fr(q.attendu) + '$.<br>' +
+                '<b>Méthode 2</b> (tout en millièmes) : $B=' + frac(fr(1000 * n), MILLE) + '-' + frac(10 * b2, MILLE) + '+' + frac(c2, MILLE) + '=' + frac(fr(1000 * n - 10 * b2 + c2), MILLE) + '=' + fr(q.attendu) + '$.';
             return q;
         }
         var cas = A.choix([[4, [1, 3]], [8, [1, 3, 5, 7]], [5, [1, 2, 3, 4]], [20, [1, 3, 7, 9]]]), d = cas[0], num = A.choix(cas[1]);
@@ -477,7 +480,10 @@
         q.texte = 'Écrire sous forme décimale : $C=' + m + '\\times10^{-' + e + '}+' + frac(num, d) + '$.';
         q.prefixe = 'C=';
         q.attendu = arrondi(m / 100 + num / d);
-        q.explication = '$' + m + '\\times10^{-2}=' + fr(m / 100) + '$ et $' + frac(num, d) + '=' + fr(num / d) + '$, donc $C=' + fr(q.attendu) + '$.';
+        // méthode 2 : même dénominateur 100 (ou 1 000 pour les huitièmes)
+        var D = d === 8 ? 1000 : 100, Dt = D === 1000 ? MILLE : 100;
+        q.explication = '<b>Méthode 1</b> (tout en décimal) : $' + m + '\\times10^{-2}=' + fr(m / 100) + '$ et $' + frac(num, d) + '=' + fr(num / d) + '$, donc $C=' + fr(m / 100) + '+' + fr(num / d) + '=' + fr(q.attendu) + '$.<br>' +
+            '<b>Méthode 2</b> (même dénominateur) : $C=' + frac(m, 100) + '+' + frac(num, d) + '=' + frac(m * D / 100, Dt) + '+' + frac(num * D / d, Dt) + '=' + frac(fr(m * D / 100 + num * D / d), Dt) + '=' + fr(q.attendu) + '$.';
         return q;
     };
 
@@ -2848,8 +2854,11 @@
         lireCoordonnees: 'Les coordonnées d\'un point s\'écrivent $(x\\ ;\\ y)$ : d\'abord l\'<b>abscisse</b>, lue sur l\'axe horizontal, puis l\'<b>ordonnée</b>, lue sur l\'axe vertical.<br>' +
             'Exemple : un point situé $2$ carreaux à gauche de l\'origine et $1$ carreau au-dessus a pour coordonnées $(-2\\ ;\\ 1)$.',
         ordreGrandeurNombre: RAPPEL_ORDRE_GRANDEUR,
-        sommeDecimale: 'On écrit chaque fraction en décimal, puis on additionne en alignant les virgules.<br>' +
-            'Exemple : $' + frac(3, 10) + '+' + frac(45, 100) + '+' + frac(7, '1\\,000') + '=0{,}3+0{,}45+0{,}007=0{,}757$.',
+        sommeDecimale: 'Deux méthodes, au choix :<br>' +
+            '• <b>Tout en décimal</b> : on écrit chaque fraction en décimal, puis on additionne en alignant les virgules.<br>' +
+            'Exemple : $' + frac(3, 10) + '+' + frac(45, 100) + '+' + frac(7, '1\\,000') + '=0{,}3+0{,}45+0{,}007=0{,}757$.<br>' +
+            '• <b>Tout en millièmes</b> : on écrit chaque fraction avec le dénominateur $1\\,000$, on additionne les numérateurs, puis on passe en décimal.<br>' +
+            'Exemple : $' + frac(3, 10) + '+' + frac(45, 100) + '+' + frac(7, '1\\,000') + '=' + frac(300, '1\\,000') + '+' + frac(450, '1\\,000') + '+' + frac(7, '1\\,000') + '=' + frac(757, '1\\,000') + '=0{,}757$.',
         imageFonction: 'L\'image de $a$ par $f$, c\'est $f(a)$ : on remplace $x$ par $a$ dans l\'expression, avec des parenthèses si $a$ est négatif.<br>' +
             'Exemple : si $f(x)=3x-5$, alors $f(-2)=3\\times(-2)-5=-6-5=-11$.',
         rangerEcritures: RAPPEL_ECRITURES + '<br>Réponds avec les lettres, du plus petit au plus grand.',

@@ -105,7 +105,9 @@
             case '+': return tex(n.a) + '+' + tex(n.b);
             case '-': return tex(n.a) + '-' + tex(n.b);
             case '*': return tex(n.a) + (n.imp ? '' : '\\times ') + tex(n.b);
-            case '/': return '\\dfrac{' + tex(sansPar(n.a)) + '}{' + tex(sansPar(n.b)) + '}';
+            case '/':
+                if (n.a.t === 'neg') return '-\\dfrac{' + tex(sansPar(n.a.a)) + '}{' + tex(sansPar(n.b)) + '}';
+                return '\\dfrac{' + tex(sansPar(n.a)) + '}{' + tex(sansPar(n.b)) + '}';
             case '^': return '{' + tex(n.a) + '}^{' + tex(sansPar(n.b)) + '}';
         }
     }
