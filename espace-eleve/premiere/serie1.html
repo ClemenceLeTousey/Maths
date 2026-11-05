@@ -31,9 +31,9 @@
 
     <main class="interactif">
         <div id="bandeau"></div>
-        <p class="aide">45 questions : 15 <span class="q-niveau n1">vertes</span>, puis 15 <span class="q-niveau n2">bleues</span>, puis 15 <span class="q-niveau n3">rouges</span> (3 questions par thème).<br>
+        <p class="aide">30 questions : 10 <span class="q-niveau n1">vertes</span>, puis 10 <span class="q-niveau n2">bleues</span>, puis 10 <span class="q-niveau n3">rouges</span>.<br>
             Tu peux valider chaque question dès que tu y as répondu : la correction s'affiche tout de suite. Sur les questions vertes, un bouton te donne un rappel si tu en as besoin.<br>
-            Chaque série de couleur est enregistrée dès que ses 15 questions sont validées. Tu peux la refaire avec d'autres nombres : c'est ton meilleur essai qui compte.<br>
+            Chaque série de couleur est enregistrée dès que ses 10 questions sont validées. Tu peux la refaire avec d'autres nombres : c'est ton meilleur essai qui compte.<br>
             Sans calculatrice, avec un brouillon. Vendredi 13 novembre, en classe : automatismes sur feuille, sur ces mêmes thèmes.</p>
         <div id="exercice"></div>
     </main>
@@ -45,9 +45,18 @@
     <script>
     (function () {
         // Série 1 : proportions, appliquer un taux d'évolution, fractions, équations, lire un diagramme
-        // 15 questions par couleur : 3 par thème, regroupées par thème (sans doublon dans une même couleur)
+        // 10 questions par couleur : 2 par thème, mélangées (jamais deux fois le même thème à la suite), sans doublon
         var TYPES = [AutoP.proportions, AutoP.appliquerTaux, AutoP.fractions, AutoP.equation, AutoP.lireDiagramme];
-        var PAR_THEME = 3, PAR_COULEUR = TYPES.length * PAR_THEME, vus = {};
+        var PAR_THEME = 2, PAR_COULEUR = TYPES.length * PAR_THEME, vus = {}, ordre = [];
+        function melanger() {
+            var t;
+            do {
+                t = [];
+                for (var k = 0; k < PAR_COULEUR; k++) t.push(k % TYPES.length);
+                for (var i = t.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = t[i]; t[i] = t[j]; t[j] = x; }
+            } while (t.some(function (v, i) { return i > 0 && v === t[i - 1]; }));
+            return t;
+        }
         Interactif.exercice({
             id: 'premiere/serie1',
             nb: 3 * PAR_COULEUR,
@@ -55,8 +64,9 @@
             parQuestion: true,
             niveau: function (i) { return Math.floor(i / PAR_COULEUR) + 1; },
             generer: function (i) {
-                var n = Math.floor(i / PAR_COULEUR) + 1, t = Math.floor((i % PAR_COULEUR) / PAR_THEME), q;
-                if (i % PAR_COULEUR === 0) vus = {};          // nouvelle série de couleur (ou nouvel essai)
+                var n = Math.floor(i / PAR_COULEUR) + 1, q;
+                if (i % PAR_COULEUR === 0) { vus = {}; ordre = melanger(); }   // nouvelle série de couleur (ou nouvel essai)
+                var t = ordre[i % PAR_COULEUR];
                 for (var k = 0; k < 30; k++) { q = TYPES[t](n); if (!vus[q.texte]) break; }
                 vus[q.texte] = true;
                 return q;

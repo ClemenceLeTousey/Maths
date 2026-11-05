@@ -78,8 +78,8 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'terminale', id: 'terminale/serie7-j2', groupe: 'Série 7 · semaine du 16 au 20 novembre', titre: 'Jour 2', court: 'T · S7 · J2', url: 'terminale/serie7.html?j=2', comptes: ['TEST-01', 'TTEST-02'] },
     { niveau: 'terminale', id: 'terminale/serie7-j3', groupe: 'Série 7 · semaine du 16 au 20 novembre', titre: 'Jour 3', court: 'T · S7 · J3', url: 'terminale/serie7.html?j=3', comptes: ['TEST-01', 'TTEST-02'] },
     { niveau: 'terminale', id: 'terminale/serie7-bilan', groupe: 'Facultatif · Série 7 TST2S en temps limité ⏱', titre: 'Bilan Série 7 (10 questions chronométrées)', court: 'T · S7 · Bilan', url: 'terminale/serie7-bilan.html', comptes: ['TEST-01', 'TTEST-02'] },
-    // Première (1TC) : une série par semaine, à faire à la maison pour le vendredi suivant (15 questions par couleur, validation question par question)
-    { niveau: 'premiere', id: 'premiere/serie1', groupe: 'Série 1 · à faire pour le vendredi 13 novembre', titre: '45 questions (15 vertes, 15 bleues, 15 rouges)', court: '1 · S1', url: 'premiere/serie1.html' }
+    // Première (1TC) : une série par semaine, à faire à la maison pour le vendredi suivant (10 questions par couleur, validation question par question)
+    { niveau: 'premiere', id: 'premiere/serie1', groupe: 'Série 1 · à faire pour le vendredi 13 novembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S1', url: 'premiere/serie1.html' }
 ];
 
 /* Description de chaque groupe (même libellé que « groupe » ci-dessus), affichée sous son titre sur la page élève :
