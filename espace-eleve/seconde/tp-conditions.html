@@ -50,6 +50,12 @@
             background: var(--c-seconde); color: var(--badge-text); font-size: 0.85rem; font-weight: 600;
         }
         .etape.faite .etape-num { background: var(--ok); }
+        /* étape passée (bouton « Passer ») : gris, tant qu'elle n'est pas réussie */
+        .etape.passee .etape-num { background: var(--muted); }
+        .interactif .sommaire button.fait.passee { background: var(--muted); border-color: var(--muted); }
+        .zone-passer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); }
+        .zone-passer .aide { margin: 0; }
+        .interactif .zone-passer button { background: var(--surface); color: var(--text); border-color: var(--line); }
         .interactif .etape-tete button.lien { font-size: 0.85rem; }
         .etape.faite:not(.ouverte) .etape-corps { display: none; }
         .etape-corps { margin-top: 10px; }
@@ -283,6 +289,13 @@ def _verifier(ns, src, nom, nb, cas, aide=None):
 def _e5(ns, src, out):
     if ns.get("note") != 10:
         return "Garde note = 10 : c'est le cas qu'on veut tester."
+    if re.search(r"\belif\b", src):
+        return "On veut modifier uniquement la ligne 2 : n'ajoute pas de elif, corrige la condition du if."
+    if re.search(r"\bor\b", src):
+        return "Ça marche, mais il y a plus simple : un seul opérateur de comparaison suffit, sans or."
+    lignes = [re.sub(r"\s+", "", l) for l in src.split("\n") if l.strip()]
+    if len(lignes) != 5 or [lignes[0], lignes[2], lignes[3], lignes[4]] != ["note=10", 'print("admis")', "else:", 'print("refusé")']:
+        return "Modifie uniquement la ligne 2 (la condition du if) : les autres lignes doivent rester comme au départ."
     if not re.search(r"if\s+(note\s*>=\s*10|10\s*<=\s*note)\s*:", src):
         if re.search(r"if\s+note\s*>\s*9", src):
             return "Ça marche pour 10, mais un élève qui a 9,5 serait admis ! Garde le seuil 10 et change l'opérateur de comparaison."
@@ -751,7 +764,8 @@ def _console(ligne, n):
               // une fois la prévision faite : correction du script, vérifiée par Python (_e5)
               code: SCRIPT_B, verifCode: true, solutionCode: 'note = 10\nif note >= 10:\n    print("admis")\nelse:\n    print("refusé")\n',
               consigneCode: '<h3>Corriger le script B</h3><p>Un élève qui a exactement 10 devrait être <b>admis</b>. Or 10 &gt; 10 est faux : le script affiche <code>refusé</code>.</p>' +
-                '<p>✍️ Corrige la condition pour que le script affiche <code>admis</code>, sans changer la note.</p>',
+                '<p>Pour écrire une condition, on compare deux valeurs :</p>' + TABLE_COMP +
+                '<p>✍️ Corrige la condition pour que le script affiche <code>admis</code>, sans changer la note.<br>Corrige <b>uniquement</b> la condition de la <b>ligne 2</b>.</p>',
               bilan: [
                   'Pour inclure la valeur frontière, on remplace <code>&gt;</code> par <code>&gt;=</code> (⩾).',
                   'La bonne condition est <code>if note &gt;= 10:</code>.'
@@ -957,7 +971,7 @@ def _console(ligne, n):
         function sansBalises(h) { var d = document.createElement('div'); d.innerHTML = h; return d.textContent; }
         function lisible(e, n) {
             var v = reponses[n] || [];
-            if (passees[n]) return '(étape passée en mode test)';
+            if (passees[n]) return '(étape passée)';
             if (e.type === 'code') return codes[n] || depart(e);
             if (e.type === 'qcm') return sansBalises(v[0] || '');
             if (e.type === 'quiz') return e.questions.map(function (q, i) {
@@ -1046,7 +1060,7 @@ def _console(ligne, n):
             if (!s) return;
             Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(function (liste) {
                 var meilleur = (liste || []).filter(function (r) { return r.exercice === ID; })
-                    .sort(function (a, b) { return b.score - a.score; })[0];
+                    .sort(function (a, b) { return b.score - a.score || new Date(b.fait_le || 0) - new Date(a.fait_le || 0); })[0];
                 if (!meilleur || meilleur.score <= faites) return;
                 faites = Math.min(meilleur.score, NB);
                 restaurer(meilleur.details);
@@ -1108,8 +1122,8 @@ def _console(ligne, n):
             nav.innerHTML = '';
             nav.appendChild(el('span', 'aide', 'Aller à l’étape :'));
             ETAPES.forEach(function (e, k) {
-                var n = k + 1, b = el('button', n <= faites ? 'fait' : n === faites + 1 ? 'courante' : null, String(n));
-                b.type = 'button'; b.title = 'Étape ' + n + ' · ' + e.titre;
+                var n = k + 1, b = el('button', n <= faites ? 'fait' + (passees[n] ? ' passee' : '') : n === faites + 1 ? 'courante' : null, String(n));
+                b.type = 'button'; b.title = 'Étape ' + n + ' · ' + e.titre + (n <= faites && passees[n] ? ' (passée : tu peux y revenir)' : '');
                 b.disabled = n > faites + 1;
                 b.onclick = function () {
                     var c = zone.querySelector('[data-n="' + n + '"]');
@@ -1145,10 +1159,10 @@ def _console(ligne, n):
 
         function carte(n) {
             var e = ETAPES[n - 1], faite = n <= faites;
-            var c = el('section', 'etape' + (faite ? ' faite' : ' courante'));
+            var c = el('section', 'etape' + (faite ? ' faite' + (passees[n] ? ' passee' : '') : ' courante'));
             c.dataset.n = n;
             var tete = el('div', 'etape-tete');
-            tete.appendChild(el('span', 'etape-num', faite ? '✓' : String(n)));
+            tete.appendChild(el('span', 'etape-num', faite ? (passees[n] ? '⏭' : '✓') : String(n)));
             tete.appendChild(el('h2', null, esc(e.titre)));
             var corps = el('div', 'etape-corps', accorder(e.consigne));
             c.appendChild(tete); c.appendChild(corps);
@@ -1535,7 +1549,7 @@ def _console(ligne, n):
                 }
                 corps.appendChild(retour);
                 if (modeProf()) corps.appendChild(boiteSolution(e));
-                if (faite) montrerBilan();
+                if (faite && !passees[n]) montrerBilan();   // étape passée : pas d'« À retenir » (il donne la réponse)
                 brancherLus();
             }
 
@@ -1548,13 +1562,25 @@ def _console(ligne, n):
                     return;
                 }
                 retour.className = 'retour ok';
-                if (n <= faites) { retour.textContent = '✓ Toujours juste !'; return; }
+                if (n <= faites) {
+                    if (!passees[n]) { retour.textContent = '✓ Toujours juste !'; return; }
+                    // étape passée plus tôt, réussie maintenant : elle compte
+                    delete passees[n]; ecrireLocal();
+                    retour.textContent = '✓ Bravo, c’est réussi ! Cette étape compte maintenant.';
+                    c.classList.remove('passee'); tete.querySelector('.etape-num').textContent = '✓';
+                    montrerBilan(); sommaire();
+                    var et2 = el('p', 'aide', 'Enregistrement…'); corps.appendChild(et2);
+                    enregistrer().then(function (t) { et2.textContent = t; });
+                    return;
+                }
                 faites = n; ecrireLocal();
-                var bp = tete.querySelector('.passer'); if (bp) bp.remove();
-                retour.textContent = force ? '⏭ Étape passée (mode test).' : '✓ Bravo, c’est réussi !';
-                montrerBilan();
+                var zp = c.querySelector('.zone-passer'); if (zp) zp.remove();
+                retour.className = force ? 'retour' : 'retour ok';
+                retour.textContent = force ? '⏭ Étape passée. Tu pourras y revenir plus tard avec la barre des étapes, en haut.' : '✓ Bravo, c’est réussi !';
+                if (!force) montrerBilan();
                 c.classList.remove('courante'); c.classList.add('faite', 'ouverte');
-                tete.querySelector('.etape-num').textContent = '✓';
+                if (force) c.classList.add('passee');
+                tete.querySelector('.etape-num').textContent = force ? '⏭' : '✓';
                 ajouterRevoir();
                 progression();
                 var etat = el('p', 'aide', 'Enregistrement…');
@@ -1591,11 +1617,16 @@ def _console(ligne, n):
                 if (ouvrir) { construire(); rafraichir(); }
             }
 
-            // compte TEST-01 : bouton pour passer l'étape en cours sans y répondre
-            if (n === faites + 1 && modeTest()) {
-                var bPasser = el('button', 'lien passer', '⏭ Passer (test)'); bPasser.type = 'button';
-                bPasser.onclick = function () { construire(); passees[n] = true; reussi(true); };
-                tete.appendChild(bPasser);
+            // bouton « Passer » sous l'étape en cours : l'étape est marquée passée (0 point) ; on peut y revenir et la réussir plus tard
+            if (n === faites + 1 && !VUE) {
+                var zPasser = el('div', 'zone-passer', '<span class="aide">Bloqué(e) ? Tu peux passer cette étape et y revenir plus tard.</span>');
+                var bPasser = el('button', null, '⏭ Passer'); bPasser.type = 'button';
+                bPasser.onclick = function () {
+                    if (!modeTest() && !confirm('Passer cette étape ?\n\nElle ne comptera pas tant que tu ne l’auras pas réussie. Tu pourras y revenir plus tard avec la barre des étapes, en haut.')) return;
+                    construire(); passees[n] = true; reussi(true);
+                };
+                zPasser.appendChild(bPasser);
+                c.appendChild(zPasser);
             }
 
             c.ouvrir = function () { if (c.classList.contains('faite')) basculer(true); };

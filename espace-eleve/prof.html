@@ -242,7 +242,7 @@
 
             <div class="panneau" role="tabpanel" id="panneau-tp-photo" aria-labelledby="onglet-tp-photo" hidden>
                 <h2>TP Python · Créer et modifier une image</h2>
-                <p class="aide">Publié pour toutes les classes de Seconde. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi. Les solutions, le bouton « Développer » et « Passer (test) » ne s'affichent qu'avec le compte TEST-01 ou dans la vue professeure (onglet Suivi TP).</p>
+                <p class="aide">Publié pour toutes les classes de Seconde. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi. Le bouton « Passer » est proposé à tous les élèves (étape passée = 0 point, rattrapable). Les solutions et le bouton « Développer » ne s'affichent qu'avec le compte TEST-01 ou dans la vue professeure (onglet Suivi TP).</p>
                 <p><a class="bouton" href="seconde/tp-photo.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
                 <iframe id="tp-photo-apercu" title="Aperçu du TP Photo" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
             </div>
@@ -256,7 +256,7 @@
 
             <div class="panneau" role="tabpanel" id="panneau-suivi-tp" aria-labelledby="onglet-suivi-tp" hidden>
                 <h2>Suivi des TP</h2>
-                <p class="aide">Barème automatique : chaque étape réussie rapporte ses points (colonne « Points » du détail), note plafonnée à 20 ; une étape passée en mode test ne rapporte rien. TP Conditions : note du TP selon l'avancée (4 après le cours, 8 après l'Ex. 1, 15 après l'Ex. 4, 20 après l'Ex. 6, bonus 0,5) ; quiz final noté à part sur 5. Les erreurs (réponses fausses avant la bonne) sont indiquées pour information. Barème réglable dans <code>config.js</code> (INTERACTIF_BAREMES).</p>
+                <p class="aide">Barème automatique : chaque étape réussie rapporte ses points (colonne « Points » du détail), note plafonnée à 20 ; une étape passée (bouton « Passer ») ne rapporte rien tant qu’elle n’est pas réussie. TP Conditions : note du TP selon l'avancée (4 après le cours, 8 après l'Ex. 1, 15 après l'Ex. 4, 20 après l'Ex. 6, bonus 0,5) ; quiz final noté à part sur 5. Les erreurs (réponses fausses avant la bonne) sont indiquées pour information. Barème réglable dans <code>config.js</code> (INTERACTIF_BAREMES).</p>
                 <div class="outils">
                     <label>Classe <select id="tp-classe"></select></label>
                     <label>TP <select id="tp-choix"></select></label>

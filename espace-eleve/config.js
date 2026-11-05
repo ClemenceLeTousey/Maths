@@ -151,7 +151,7 @@ window.INTERACTIF_TP_ORDRE = [
 
 /* Barème automatique des TP (onglet « Suivi TP » de l'espace professeure).
    « points » : points de chaque étape, dans l'ordre (étape 1 en premier) ; note du TP = somme des points
-   des étapes réussies, plafonnée à 20. Une étape passée en mode test ne rapporte rien.
+   des étapes réussies, plafonnée à 20. Une étape passée (bouton « Passer ») ne rapporte rien.
    « bonus » : numéros des étapes en bonus (affichées à part ; leurs points rattrapent une étape manquée).
    « quiz » : numéros des étapes de quiz, notées à part sur « quizSur » points (au prorata des bonnes réponses).
    Sans « points » : note = 20 × étapes réussies / étapes comptées (hors bonus et quiz).
