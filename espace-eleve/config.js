@@ -39,7 +39,8 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie11-j2', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 2', court: 'S11 · J2', url: 'seconde/serie11.html?j=2', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/serie11-j3', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 3', court: 'S11 · J3', url: 'seconde/serie11.html?j=3', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/serie11-j4', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 4 · bilan (à la maison)', court: 'S11 · J4', url: 'seconde/serie11.html?j=4', comptes: ['TEST-01', 'JIMMY'] },
-    { niveau: 'seconde', id: 'seconde/tp-photo', groupe: 'TP Python · Photographie numérique', titre: 'Créer et modifier une image (10 étapes)', court: 'TP Photo', url: 'seconde/tp-photo.html', tp: true, comptes: ['TEST-01'] },
+    { niveau: 'seconde', id: 'seconde/tp-photo', groupe: 'TP Python · Photographie numérique', titre: 'Créer et modifier une image (10 étapes)', court: 'TP Photo', url: 'seconde/tp-photo.html', tp: true,
+      codeAcces: '2a04e66a8ad28d6c60b6cd57d4d4b45e894397c1baeb56b20bbe306c107ee99d' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
     // TP Conditions V1 (20 étapes) : archivé, la page reste dans seconde/tp-conditions-v1.html
     { niveau: 'seconde', id: 'seconde/tp-conditions', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (20 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions-v1.html', tp: true, vueProf: true, archive: true,
       codeAcces: 'd7c6ed760ed5b07f0c2766b06a63c0d5ddcec26f17c19db9e3d2a541645aca9c' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
