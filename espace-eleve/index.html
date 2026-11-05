@@ -19,11 +19,17 @@
         .anciennes label { font-weight: 600; color: var(--c-seconde); margin-right: 8px; }
         .anciennes select { font: inherit; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); margin-bottom: 10px; }
         .texte-groupe { margin: 6px 0 2px; font-weight: 400; font-size: 0.9rem; line-height: 1.5; color: var(--text); }
-        .onglets { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 18px; }
+        .onglets { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 4px; box-shadow: inset 0 -2px 0 var(--line); margin-bottom: 18px; }
+        .onglets::-webkit-scrollbar { display: none; }
         .interactif .onglets button {
             background: none; color: var(--muted); border: 1px solid transparent; border-bottom: none;
-            border-radius: 8px 8px 0 0; padding: 8px 16px; margin-bottom: -2px; font-size: 1rem;
+            border-radius: 8px 8px 0 0; padding: 8px 16px; font-size: 1rem; white-space: nowrap; flex: none;
         }
+        /* une seule ligne d'onglets, même sur téléphone : onglets plus serrés sur petit écran */
+        /* (si l'écran est vraiment trop étroit, la ligne défile de côté au lieu de passer à la ligne) */
+        @media (max-width: 760px) { .interactif .onglets button { padding: 7px 9px; font-size: 0.9rem; } .onglets { gap: 2px; } }
+        @media (max-width: 520px) { .interactif .onglets button { padding: 6px 5px; font-size: 0.78rem; } .onglets { gap: 0; } }
+        @media (max-width: 400px) { .interactif .onglets button { padding: 6px 4px; font-size: 0.72rem; } }
         .interactif .onglets button:hover { color: var(--c-seconde); }
         .interactif .onglets button[aria-selected="true"] {
             color: var(--c-seconde); background: var(--surface); border-color: var(--line);
@@ -79,11 +85,11 @@
         <div id="contenu" hidden>
         <div class="onglets" role="tablist" aria-label="Rubriques de l'espace élève">
             <button type="button" role="tab" id="onglet-automatismes" aria-controls="panneau-automatismes" data-onglet="automatismes">Automatismes</button>
-            <button type="button" role="tab" id="onglet-tp" aria-controls="panneau-tp" data-onglet="tp">TP Python</button>
+            <button type="button" role="tab" id="onglet-tp" aria-controls="panneau-tp" data-onglet="tp">Python</button>
             <button type="button" role="tab" id="onglet-evaluations" aria-controls="panneau-evaluations" data-onglet="evaluations" data-niveau="seconde" hidden>Évaluations</button>
-            <button type="button" role="tab" id="onglet-remediation" aria-controls="panneau-remediation" data-onglet="remediation" data-niveau="seconde" hidden>Remédiation</button>
-            <button type="button" role="tab" id="onglet-echange" aria-controls="panneau-echange" data-onglet="echange">Espace d'échange</button>
             <button type="button" role="tab" id="onglet-soutien" aria-controls="panneau-soutien" data-onglet="soutien">Soutien</button>
+            <button type="button" role="tab" id="onglet-echange" aria-controls="panneau-echange" data-onglet="echange">Messages</button>
+            <button type="button" role="tab" id="onglet-remediation" aria-controls="panneau-remediation" data-onglet="remediation" data-niveau="seconde" hidden>Remédiation</button>
         </div>
 
         <div class="panneau" role="tabpanel" id="panneau-automatismes" aria-labelledby="onglet-automatismes">
