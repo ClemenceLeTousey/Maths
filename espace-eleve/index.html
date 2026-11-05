@@ -52,7 +52,7 @@
         .evals li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; }
         .evals .eval-titre { font-weight: 600; }
         .evals .eval-titre span { display: block; font-weight: 400; font-size: 0.9rem; color: var(--muted); }
-        .evals .eval-liens { display: flex; flex-wrap: wrap; gap: 6px; }
+        .evals .eval-liens, #liste-tp .eval-liens { display: flex; flex-wrap: wrap; gap: 6px; }
             #liste-tp td { vertical-align: middle; text-align: left; }
         .code-tp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
         .code-tp input { width: 9em; font-family: var(--f-mono); font-variant-ligatures: none; }
@@ -245,15 +245,47 @@
             var te = document.createElement('tr');
             te.innerHTML = '<th>TP</th><th>Progression</th><th></th>';
             t.appendChild(te);
-            if (!listeTP.length) {
+            // ordre et TP sans page interactive (PDF, à venir) : INTERACTIF_TP_ORDRE dans config.js
+            var s = Interactif.session(), niv = s && Interactif.niveauClasse(s.classe), vus = {}, lignes = [];
+            (window.INTERACTIF_TP_ORDRE || []).forEach(function (o) {
+                if (niv && o.niveau && o.niveau !== niv) return;
+                if (o.id) {
+                    vus[o.id] = true;
+                    var ex = listeTP.filter(function (x) { return x.id === o.id; })[0];
+                    if (ex) lignes.push({ ex: ex, nom: o.nom });
+                } else lignes.push({ fiche: o });
+            });
+            listeTP.forEach(function (ex) { if (!vus[ex.id]) lignes.push({ ex: ex }); });
+            if (!lignes.length) {
                 var v = document.createElement('tr'), c0 = document.createElement('td');
                 c0.colSpan = 3; c0.textContent = 'Pas encore de TP pour ta classe.'; v.appendChild(c0); t.appendChild(v);
                 return;
             }
-            listeTP.forEach(function (ex) {
+            lignes.forEach(function (l) {
                 var tr = document.createElement('tr');
                 var c1 = document.createElement('td'), titre = document.createElement('b');
-                titre.textContent = ex.groupe.replace(/^TP Python · /, '');
+                if (l.fiche) {
+                    var o = l.fiche;
+                    titre.textContent = o.nom; c1.appendChild(titre);
+                    if (o.texte || o.aVenir) { c1.appendChild(document.createElement('br')); c1.appendChild(document.createTextNode(o.aVenir ? 'À venir' : o.texte)); }
+                    tr.appendChild(c1);
+                    var d2 = document.createElement('td'); d2.textContent = o.aVenir ? '' : '—'; tr.appendChild(d2);
+                    var d3 = document.createElement('td');
+                    if (o.pdf || o.corrige) {
+                        var liens = document.createElement('div'); liens.className = 'eval-liens';
+                        [[o.pdf, 'Sujet'], [o.corrige, 'Corrigé']].forEach(function (x) {
+                            if (!x[0]) return;
+                            var la = document.createElement('a'); la.className = 'bouton'; la.href = x[0]; la.target = '_blank'; la.rel = 'noopener'; la.textContent = x[1];
+                            liens.appendChild(la);
+                        });
+                        d3.appendChild(liens);
+                    }
+                    tr.appendChild(d3);
+                    t.appendChild(tr);
+                    return;
+                }
+                var ex = l.ex;
+                titre.textContent = l.nom || ex.groupe.replace(/^TP Python · /, '');
                 c1.appendChild(titre); c1.appendChild(document.createElement('br'));
                 c1.appendChild(document.createTextNode(ex.titre));
                 tr.appendChild(c1);

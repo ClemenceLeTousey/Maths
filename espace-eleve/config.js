@@ -120,6 +120,17 @@ window.INTERACTIF_GROUPES = {
     'TP Python · Les structures conditionnelles': {}
 };
 
+/* Onglet « TP Python » de la page élève : les TP dans l'ordre d'affichage.
+   id = TP interactif du catalogue (ligne affichée seulement si l'élève y a accès, voir « comptes ») ;
+   pdf / corrige = TP sur papier ou Capytale (liens vers les PDF) ; aVenir: true = annoncé, pas encore ouvert.
+   Un TP interactif absent de cette liste s'affiche à la fin. */
+window.INTERACTIF_TP_ORDRE = [
+    { niveau: 'seconde', nom: 'TP1 · Affectations et fonctions', texte: 'Premiers pas en Python avec Capytale', pdf: 'seconde/tp/tp1-sujet.pdf', corrige: 'seconde/tp/tp1-corrige.pdf' },
+    { niveau: 'seconde', nom: 'TP2 · Les structures conditionnelles', id: 'seconde/tp-conditions-v2' },
+    { niveau: 'seconde', nom: 'TP3 · Les boucles en Python', aVenir: true },
+    { niveau: 'seconde', nom: 'TP4 · La photo numérique', id: 'seconde/tp-photo' }
+];
+
 /* Barème automatique des TP (onglet « Suivi TP » de l'espace professeure).
    « points » : points de chaque étape, dans l'ordre (étape 1 en premier) ; note du TP = somme des points
    des étapes réussies, plafonnée à 20. Une étape passée en mode test ne rapporte rien.
