@@ -127,7 +127,7 @@ window.INTERACTIF_GROUPES = {
 window.INTERACTIF_TP_ORDRE = [
     { niveau: 'seconde', nom: 'TP1 · Affectations et fonctions', texte: 'Premiers pas en Python avec Capytale', pdf: 'seconde/tp/tp1-sujet.pdf', corrige: 'seconde/tp/tp1-corrige.pdf' },
     { niveau: 'seconde', nom: 'TP2 · Les structures conditionnelles', id: 'seconde/tp-conditions-v2' },
-    { niveau: 'seconde', nom: 'TP3 · Les boucles en Python', aVenir: true },
+    { niveau: 'seconde', nom: 'TP3 · Les boucles en Python', texte: 'for, range, while', pdf: 'seconde/tp/tp3-sujet.pdf', corrige: 'seconde/tp/corrige-a-venir.html' },
     { niveau: 'seconde', nom: 'TP4 · La photo numérique', id: 'seconde/tp-photo' }
 ];
 
