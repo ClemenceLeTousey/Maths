@@ -31,9 +31,9 @@
 
     <main class="interactif">
         <div id="bandeau"></div>
-        <p class="aide">15 questions : 5 <span class="q-niveau n1">vertes</span>, puis 5 <span class="q-niveau n2">bleues</span>, puis 5 <span class="q-niveau n3">rouges</span>.<br>
+        <p class="aide">45 questions : 15 <span class="q-niveau n1">vertes</span>, puis 15 <span class="q-niveau n2">bleues</span>, puis 15 <span class="q-niveau n3">rouges</span> (3 questions par thème).<br>
             Tu peux valider chaque question dès que tu y as répondu : la correction s'affiche tout de suite. Sur les questions vertes, un bouton te donne un rappel si tu en as besoin.<br>
-            Chaque série de couleur est enregistrée dès que ses 5 questions sont validées. Tu peux la refaire avec d'autres nombres : c'est ton meilleur essai qui compte.<br>
+            Chaque série de couleur est enregistrée dès que ses 15 questions sont validées. Tu peux la refaire avec d'autres nombres : c'est ton meilleur essai qui compte.<br>
             Sans calculatrice, avec un brouillon. Vendredi 13 novembre, en classe : automatismes sur feuille, sur ces mêmes thèmes.</p>
         <div id="exercice"></div>
     </main>
@@ -45,16 +45,22 @@
     <script>
     (function () {
         // Série 1 : proportions, appliquer un taux d'évolution, fractions, équations, lire un diagramme
+        // 15 questions par couleur : 3 par thème, regroupées par thème (sans doublon dans une même couleur)
         var TYPES = [AutoP.proportions, AutoP.appliquerTaux, AutoP.fractions, AutoP.equation, AutoP.lireDiagramme];
-        var n = TYPES.length;
+        var PAR_THEME = 3, PAR_COULEUR = TYPES.length * PAR_THEME, vus = {};
         Interactif.exercice({
             id: 'premiere/serie1',
-            nb: 3 * n,
+            nb: 3 * PAR_COULEUR,
             parNiveau: true,
             parQuestion: true,
-            niveau: function (i) { return Math.floor(i / n) + 1; },
-            // d'abord les 5 questions vertes, puis les bleues, puis les rouges
-            generer: function (i) { return TYPES[i % n](Math.floor(i / n) + 1); }
+            niveau: function (i) { return Math.floor(i / PAR_COULEUR) + 1; },
+            generer: function (i) {
+                var n = Math.floor(i / PAR_COULEUR) + 1, t = Math.floor((i % PAR_COULEUR) / PAR_THEME), q;
+                if (i % PAR_COULEUR === 0) vus = {};          // nouvelle série de couleur (ou nouvel essai)
+                for (var k = 0; k < 30; k++) { q = TYPES[t](n); if (!vus[q.texte]) break; }
+                vus[q.texte] = true;
+                return q;
+            }
         });
     })();
     </script>
