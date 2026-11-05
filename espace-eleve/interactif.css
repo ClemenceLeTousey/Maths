@@ -276,3 +276,4 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .chrono-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
 .interactif .chrono-actions button { font-size: 1rem; padding: 8px 18px; }
 .chrono-msg { margin: 0; color: var(--attention); font-weight: 600; }
+.q-figure .fig-barre { fill: var(--c-premiere); fill-opacity: .7; stroke: currentColor; stroke-width: 1.2; }

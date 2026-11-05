@@ -157,8 +157,10 @@
     }
 
     /* ---------- Déroulé d'un exercice ----------
-       def = { id, titre, nb, generer: function (i) -> question }
+       def = { id, titre, nb, generer: function (i) -> question,
+               parNiveau (séries verte/bleue/rouge), parQuestion (avec parNiveau : chaque question se valide seule) }
        question = { consigne, enonce (TeX), prefixe (TeX), attendu (texte), forme: 'developpee' | 'factorisee' (+ facteur) | null,
+                    irreductible (type 'nombre' : fraction irréductible exigée),
                     correction: [lignes TeX alignées sur =] } */
     function exercice(def) {
         var zone = document.getElementById('exercice');
@@ -219,7 +221,7 @@
                     c.addEventListener('keydown', function (ev) {
                         if (ev.key !== 'Enter') return;
                         if (def.chrono) { if (li.entree) li.entree(); }
-                        else if (!def.parNiveau) valider();
+                        else if (!def.parNiveau || def.parQuestion) valider();
                     });
                     c.addEventListener('input', function () { retour.textContent = ''; retour.className = 'q-retour'; });
                     champs.push(c);
@@ -257,7 +259,15 @@
                                 if (ms.length > 1 && fin.t !== 'num' && !(fin.t === 'neg' && fin.a.t === 'num'))
                                     return { attention: 'Termine le calcul : écris un seul nombre après le dernier « = ».' };
                             }
-                            return { ok: arbres.every(function (a) { return proche(Expr.valeur(a, {}), q.attendu); }), r: c.value };
+                            var okN = arbres.every(function (a) { return proche(Expr.valeur(a, {}), q.attendu); });
+                            if (okN && q.irreductible) {     // fraction attendue sous forme irréductible
+                                var der = ms[ms.length - 1].replace(/\s/g, ''), mf = /^[-+]?\(?(-?\d+)\)?\/\(?(-?\d+)\)?$/.exec(der);
+                                var pg = function (x, y) { x = Math.abs(x); y = Math.abs(y); while (y) { var t = y; y = x % y; x = t; } return x; };
+                                if (mf && pg(+mf[1], +mf[2]) > 1) return { attention: 'C\'est égal, mais simplifie ta fraction (fraction irréductible).' };
+                                if (mf && Math.abs(+mf[2]) === 1) return { attention: 'C\'est égal, mais écris simplement le nombre entier.' };
+                                if (!mf && Math.abs(q.attendu % 1) > 1e-9) return { attention: 'Écris le résultat sous la forme d\'une fraction irréductible, par exemple 7/12.' };
+                            }
+                            return { ok: okN, r: c.value };
                         }
                         var arbre = Expr.lire(c.value, lettres);
                         var juste = Expr.egales(arbre, attendu, lettres);
@@ -321,7 +331,8 @@
                         return { ok: choix === q.bonne, r: 'ABCDEF'[choix] };
                     };
                 }
-                if (!def.parNiveau && !def.chrono) saisie.appendChild(bouton);
+                // parQuestion (avec parNiveau) : un bouton « Valider » par question, en plus du bouton de la série
+                if ((!def.parNiveau || def.parQuestion) && !def.chrono) saisie.appendChild(bouton);
                 li.appendChild(saisie);
                 li.appendChild(apercu); li.appendChild(retour);
 
@@ -385,6 +396,12 @@
                     if (q.niveau) d.n = q.niveau;
                     if (aide) d.aide = 1;
                     li.d = d;
+                    li.fait = true;
+                    if (li.apresValidation) li.apresValidation();
+                    if (def.parQuestion) {           // on passe à la question suivante de la série
+                        var prochaine = li.nextElementSibling && li.nextElementSibling.querySelector('input:not([disabled]), .q-option:not([disabled])');
+                        if (prochaine) prochaine.focus();
+                    }
                     if (essai > 1) {             // série refaite : gardée dans le détail, hors score
                         d.e = essai;
                         if (!enregistre && !def.parNiveau) reprises.push(d);
@@ -428,16 +445,25 @@
                     var ol = el('ol', 'questions');
                     var lis = indices[n].map(function (i) { var li = question(def.generer(i), i, essai); ol.appendChild(li); return li; });
                     bloc.appendChild(ol);
-                    var b = el('button', 'valider-palier', 'Valider mes réponses'); b.type = 'button';
-                    var msg = el('p', 'palier-msg'), t0 = Date.now();
+                    var b = el('button', 'valider-palier', def.parQuestion ? 'Valider toutes mes réponses' : 'Valider mes réponses'); b.type = 'button';
+                    var msg = el('p', 'palier-msg'), t0 = Date.now(), fini = false;
                     var actions = el('div', 'palier-actions');
+                    // parQuestion : la série se termine (score, enregistrement) quand sa dernière question est validée
+                    if (def.parQuestion) lis.forEach(function (li) {
+                        li.apresValidation = function () { if (!fini && lis.every(function (x) { return x.fait; })) finir(); };
+                    });
                     b.onclick = function () {
-                        var reponses = lis.map(function (li) { return li.controler(); });
+                        var restantes = lis.filter(function (li) { return !li.fait; });
+                        var reponses = restantes.map(function (li) { return li.controler(); });
                         if (reponses.some(function (r) { return !r; })) {
                             msg.textContent = 'Réponds à toutes les questions de la série (voir les messages en orange).';
                             return;
                         }
-                        lis.forEach(function (li, j) { li.appliquer(reponses[j]); });
+                        restantes.forEach(function (li, j) { li.appliquer(reponses[j]); });
+                        if (!fini) finir();
+                    };
+                    function finir() {
+                        fini = true;
                         b.remove();
                         var bons = lis.filter(function (li) { return li.classList.contains('juste'); }).length;
                         msg.textContent = (NOMS[n] || 'Niveau ' + n) + ' : ' + bons + ' / ' + lis.length +
@@ -463,7 +489,7 @@
                         }
                         bloc.appendChild(actions);
                         if (Object.keys(meilleurs).length === ordre.length) terminer(total);
-                    };
+                    }
                     bloc.appendChild(b); bloc.appendChild(msg);
                     zone.insertBefore(bloc, bilan);
                     if (k > 0 || essai > 1) bloc.scrollIntoView({ behavior: 'smooth' });
