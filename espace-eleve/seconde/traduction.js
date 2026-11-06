@@ -46,7 +46,7 @@
             '$1 van de leden van een club zijn meisjes. Van hen doet $2 mee aan wedstrijden. Welk deel van de leden van de club is dat?'],
         ['@ des salariés d\'une entreprise travaillent à temps partiel. Parmi eux, @ sont des femmes. Quelle proportion des salariés de l\'entreprise cela représente-t-il ?',
             '$1 of the employees of a company work part-time. Of these, $2 are women. What proportion of the company\'s employees is this?',
-            '$1 van de werknemers van een bedrijf werken deeltijds. Van hen is $2 een vrouw. Welk deel van de werknemers van het bedrijf is dat?'],
+            '$1 van de werknemers van een bedrijf werken parttime. Van hen is $2 een vrouw. Welk deel van de werknemers van het bedrijf is dat?'],
         ['Un club compte @ adhérents. Les @ des adhérents sont des filles et, parmi elles, @ font de la compétition. Combien de filles font de la compétition ?',
             'A club has $1 members. $2 of the members are girls and, of these, $3 take part in competitions. How many girls take part in competitions?',
             'Een club telt $1 leden. $2 van de leden zijn meisjes en van hen doet $3 mee aan wedstrijden. Hoeveel meisjes doen mee aan wedstrijden?'],
@@ -112,9 +112,9 @@
         /* ----- Fonctions ----- */
         ['On considère la fonction @ définie par @.', 'Consider the function $1 defined by $2.', 'Gegeven is de functie $1 met $2.'],
         ['Soit @ la fonction définie par @.', 'Let $1 be the function defined by $2.', 'Gegeven is de functie $1 met $2.'],
-        ['L\'image de @ par @ est :', 'The image of $1 under $2 is:', 'Het beeld van $1 onder $2 is:'],
-        ['Déterminer l\'antécédent de @ par @', 'Find the preimage of $1 under $2', 'Bepaal het origineel van $1 onder $2'],
-        ['Déterminer les antécédents de @ par @', 'Find the preimages of $1 under $2', 'Bepaal de originelen van $1 onder $2'],
+        ['L\'image de @ par @ est :', 'The image of $1 under $2 is:', 'De functiewaarde van $2 bij $1 is:'],
+        ['Déterminer l\'antécédent de @ par @', 'Find the preimage of $1 under $2', 'Bepaal de waarde van $x$ waarvoor de functiewaarde van $2 gelijk is aan $1'],
+        ['Déterminer les antécédents de @ par @', 'Find the preimages of $1 under $2', 'Bepaal de waarden van $x$ waarvoor de functiewaarde van $2 gelijk is aan $1'],
         [' (valeur exacte : une fraction s\'écrit par exemple @)', ' (exact value: a fraction is written, for example, as $1)', ' (exacte waarde: een breuk schrijf je bijvoorbeeld als $1)'],
         [' (valeur exacte)', ' (exact value)', ' (exacte waarde)'],
 
@@ -138,19 +138,19 @@
         [' (@ : proportion, @ : effectif de la partie, @ : effectif total)', ' ($1: proportion, $2: size of the part, $3: total size)', ' ($1: aandeel, $2: aantal in het deel, $3: totaal aantal)'],
         [' (aire @ d\'un triangle de base @ et de hauteur @)', ' (area $1 of a triangle with base $2 and height $3)', ' (oppervlakte $1 van een driehoek met basis $2 en hoogte $3)'],
         ['. Alors :', '. Then:', '. Dan geldt:'],
-        ['Exprimer @ en fonction des autres lettres', 'Express $1 in terms of the other letters', 'Druk $1 uit in functie van de andere letters'],
-        ['On donne la relation @.', 'We are given the relation $1.', 'Gegeven is de betrekking $1.'],
+        ['Exprimer @ en fonction des autres lettres', 'Express $1 in terms of the other letters', 'Druk $1 uit in de andere letters'],
+        ['On donne la relation @.', 'We are given the relation $1.', 'Gegeven is het verband $1.'],
         ['Les nombres @, @ et @ vérifient @.', 'The numbers $1, $2 and $3 satisfy $4.', 'De getallen $1, $2 en $3 voldoen aan $4.'],
         ['Les nombres @, @, @ et @ (avec @) vérifient @.', 'The numbers $1, $2, $3 and $4 (with $5) satisfy $6.', 'De getallen $1, $2, $3 en $4 (met $5) voldoen aan $6.'],
-        ['Exprimer @ en fonction de @, @ et @', 'Express $1 in terms of $2, $3 and $4', 'Druk $1 uit in functie van $2, $3 en $4'],
-        ['Exprimer @ en fonction de @ et @', 'Express $1 in terms of $2 and $3', 'Druk $1 uit in functie van $2 en $3'],
-        ['Exprimer @ en fonction de @', 'Express $1 in terms of $2', 'Druk $1 uit in functie van $2'],
+        ['Exprimer @ en fonction de @, @ et @', 'Express $1 in terms of $2, $3 and $4', 'Druk $1 uit in $2, $3 en $4'],
+        ['Exprimer @ en fonction de @ et @', 'Express $1 in terms of $2 and $3', 'Druk $1 uit in $2 en $3'],
+        ['Exprimer @ en fonction de @', 'Express $1 in terms of $2', 'Druk $1 uit in $2'],
 
         /* ----- Calcul littéral ----- */
         ['Le développement de @ est :', 'The expansion of $1 is:', 'De uitgewerkte vorm van $1 is:'],
         ['Développer et réduire :', 'Expand and simplify:', 'Werk uit en vereenvoudig:'],
         ['Factoriser @', 'Factorise $1', 'Ontbind $1 in factoren'],
-        ['Calculer <b>de tête</b> @ à l\'aide d\'une identité remarquable', 'Calculate $1 <b>in your head</b> using a special product (identity)', 'Bereken $1 <b>uit het hoofd</b> met een merkwaardig product'],
+        ['Calculer <b>de tête</b> @ à l\'aide d\'une identité remarquable', 'Calculate $1 <b>in your head</b> using a special product (identity)', 'Bereken $1 <b>uit het hoofd</b> met een bijzonder product'],
 
         /* ----- Nombres : puissances, écritures, rangement, arithmétique ----- */
         ['Écrire sous la forme @ : @', 'Write in the form $1: $2', 'Schrijf in de vorm $1: $2'],
@@ -166,7 +166,7 @@
         /* ----- Vecteurs, Pythagore ----- */
         ['Simplifier @ en un seul vecteur. Écris ses deux lettres dans l\'ordre (par exemple @ pour @).',
             'Simplify $1 into a single vector. Write its two letters in order (for example $2 for $3).',
-            'Herleid $1 tot één vector. Schrijf de twee letters in de juiste volgorde (bijvoorbeeld $2 voor $3).'],
+            'Vereenvoudig $1 tot één vector. Schrijf de twee letters in de juiste volgorde (bijvoorbeeld $2 voor $3).'],
         ['Les carreaux ont pour côté @.', 'The squares have side length $1.', 'De hokjes hebben zijde $1.'],
         ['Calculer la norme du vecteur @ et l\'écrire sous la forme @', 'Calculate the norm (length) of the vector $1 and write it in the form $2', 'Bereken de norm (lengte) van de vector $1 en schrijf die in de vorm $2'],
         ['Le triangle @ est rectangle en @, avec @ cm et @ cm.', 'Triangle $1 has a right angle at $2, with $3 cm and $4 cm.', 'Driehoek $1 is rechthoekig in $2, met $3 cm en $4 cm.'],
@@ -176,9 +176,9 @@
         [' (en cm)', ' (in cm)', ' (in cm)'],
 
         /* ----- Statistiques ----- */
-        ['On considère la série : @. Sa médiane est :', 'Consider the data set: $1. Its median is:', 'Gegeven is de reeks: $1. De mediaan is:'],
-        ['Calculer la moyenne de la série : @', 'Calculate the mean of the data set: $1', 'Bereken het gemiddelde van de reeks: $1'],
-        ['Donner la médiane de la série : @', 'Give the median of the data set: $1', 'Geef de mediaan van de reeks: $1'],
+        ['On considère la série : @. Sa médiane est :', 'Consider the data set: $1. Its median is:', 'Gegeven zijn de waarnemingsgetallen: $1. De mediaan is:'],
+        ['Calculer la moyenne de la série : @', 'Calculate the mean of the data set: $1', 'Bereken het gemiddelde van de waarnemingsgetallen: $1'],
+        ['Donner la médiane de la série : @', 'Give the median of the data set: $1', 'Geef de mediaan van de waarnemingsgetallen: $1'],
         ['Après @ contrôles, Léa a @ de moyenne. Quelle note doit-elle avoir au contrôle suivant pour avoir @ de moyenne sur les @ contrôles ?',
             'After $1 tests, Léa has an average of $2. What mark does she need on the next test to have an average of $3 over the $4 tests?',
             'Na $1 toetsen heeft Léa een gemiddelde van $2. Welk cijfer moet ze op de volgende toets halen om een gemiddelde van $3 te hebben over de $4 toetsen?'],
