@@ -1059,12 +1059,20 @@ def _console(ligne, n):
             var s = Interactif.session();
             if (!s) return;
             Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(function (liste) {
-                var meilleur = (liste || []).filter(function (r) { return r.exercice === ID; })
-                    .sort(function (a, b) { return b.score - a.score || new Date(b.fait_le || 0) - new Date(a.fait_le || 0); })[0];
-                if (!meilleur || meilleur.score <= faites) return;
-                faites = Math.min(meilleur.score, NB);
-                restaurer(meilleur.details);
-                ecrireLocal(); afficher();
+                var miens = (liste || []).filter(function (r) { return r.exercice === ID; });
+                var meilleur = miens.slice().sort(function (a, b) { return b.score - a.score || new Date(b.fait_le || 0) - new Date(a.fait_le || 0); })[0];
+                var change = false;
+                if (meilleur && meilleur.score > faites) { faites = Math.min(meilleur.score, NB); restaurer(meilleur.details); change = true; }
+                // quiz déjà validé sur le serveur (autre appareil, navigation privée…) : on reprend les PREMIÈRES réponses, verrouillées
+                if (N_QUIZ) {
+                    var premier = miens.filter(function (r) { var d = (r.details || [])[N_QUIZ - 1]; return d && d.qmax && d.v && d.v.length && !d.p; })
+                        .sort(function (a, b) { return new Date(a.fait_le || 0) - new Date(b.fait_le || 0); })[0];
+                    if (premier) {
+                        var v = premier.details[N_QUIZ - 1].v;
+                        if (JSON.stringify(reponses[N_QUIZ] || []) !== JSON.stringify(v)) { reponses[N_QUIZ] = v.slice(); delete passees[N_QUIZ]; change = true; }
+                    }
+                }
+                if (change) { ecrireLocal(); afficher(); }
             }, function () {});
         }
 

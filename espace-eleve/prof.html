@@ -389,14 +389,21 @@
                 var bareme = (window.INTERACTIF_BAREMES || {})[id] || {}, bonus = bareme.bonus || [], quizE = bareme.quiz || [];
                 var total = r.total, comptees = total - bonus.concat(quizE).filter(function (k) { return k <= total; }).length;
                 var reussies = 0, bonusOk = 0, err = 0, passees = 0, points = 0, quiz = null;
+                // quiz : une seule fois ; on retient la PREMIÈRE tentative où il a été validé (pas celle aux plus d'étapes)
+                if (quizE.length) {
+                    var avecQuiz = liste.filter(function (x) { return quizE.some(function (n) { var d = (x.details || [])[n - 1]; return d && d.qmax && !d.p && d.ok !== false; }); })
+                        .sort(function (a, b) { return new Date(a.fait_le) - new Date(b.fait_le); })[0];
+                    var rq = avecQuiz || r;
+                    quizE.forEach(function (n) {
+                        var d = (rq.details || [])[n - 1];
+                        if (d && d.qmax && !d.p && d.ok !== false) quiz = (quiz || 0) + (bareme.quizSur || 5) * (d.q || 0) / d.qmax / quizE.length;
+                        else if (d && quiz === null) quiz = 0;
+                    });
+                }
                 (r.details || []).forEach(function (d, k) {
                     if (!d) return;
                     err += d.e || 0;
-                    if (quizE.indexOf(k + 1) >= 0) {   // quiz : noté à part
-                        if (!(d.p || d.ok === false) && d.qmax) quiz = (quiz || 0) + (bareme.quizSur || 5) * (d.q || 0) / d.qmax / quizE.length;
-                        else if (quiz === null) quiz = 0;
-                        return;
-                    }
+                    if (quizE.indexOf(k + 1) >= 0) return;   // quiz : noté à part (ci-dessus)
                     if (d.p || d.ok === false) { passees++; return; }
                     if (bonus.indexOf(k + 1) >= 0) bonusOk++; else reussies++;
                     points += pointsEtape(bareme, k + 1, comptees);
