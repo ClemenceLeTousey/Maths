@@ -3003,7 +3003,7 @@
         var generer = Auto[nom];
         Auto[nom] = function (niveau) {
             var q = generer(niveau);
-            if (niveau === 1) q.rappel = RAPPELS[nom];
+            if (niveau === 1) { q.rappel = RAPPELS[nom]; q.rappelNom = nom; }   // rappelNom : traduction du rappel (traduction.js)
             return q;
         };
     });

@@ -247,11 +247,12 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 /* Traduction de l'énoncé (English / Nederlands) */
 .q-langues { margin-left: auto; display: flex; gap: 6px; }
 .interactif button.q-langue {
-    font-size: 0.75rem; padding: 2px 9px; border-radius: 999px;
-    background: var(--surface); color: var(--muted); border: 1px solid var(--line);
+    display: inline-flex; align-items: center; padding: 3px; border-radius: 5px; line-height: 0;
+    background: var(--surface); border: 1px solid var(--line); opacity: .75;
 }
-.interactif button.q-langue:hover { border-color: var(--c-seconde); color: var(--c-seconde); }
-.interactif button.q-langue[aria-pressed="true"] { background: var(--c-seconde); border-color: var(--c-seconde); color: var(--badge-text); }
+.interactif button.q-langue svg { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .15); }
+.interactif button.q-langue:hover { opacity: 1; border-color: var(--c-seconde); }
+.interactif button.q-langue[aria-pressed="true"] { opacity: 1; border-color: var(--c-seconde); outline: 2px solid var(--c-seconde); }
 .q-traduction {
     margin: 6px 0 4px 34px; padding: 8px 12px; font-size: 1rem;
     border-left: 4px solid var(--line); color: var(--muted); font-style: italic;

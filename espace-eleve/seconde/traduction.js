@@ -237,5 +237,260 @@
         return s.replace(/[\u0001\u0002]/g, '').replace(/§(\d+)§/g, function (x, k) { return gardes[+k]; }).replace(/^\s+|\s+$/g, '');
     }
 
-    window.Traduction = { traduire: traduire, langues: [['en', 'English'], ['nl', 'Nederlands']] };
+    /* ===== Rappels (questions vertes), par générateur : Traduction.rappel(nom, langue, rappelFrançais) =====
+       {SVG} est remplacé par la figure du rappel français (triangle magique). */
+    var CONSOLE_4_6 = '<span class="q-console">4 6</span>';
+    var CARRES = '$1$, $4$, $9$, $16$, $25$, $36$, $49$, $64$, $81$, $100$, $121$, $144$';
+    var P = {
+        en: {
+            pourc: 'Taking $p\\,\\%$ of a number $N$ means multiplying $N$ by $\\dfrac{p}{100}$: $p\\,\\%$ of $N=\\dfrac{p\\times N}{100}$.<br>' +
+                'Example: $30\\,\\%$ of $200$ $=\\dfrac{30\\times200}{100}=60$.',
+            ordre: 'Replace each number with a nearby “round” value, then calculate in your head.<br>' +
+                '$10\\,\\%$ of a number is that number divided by $10$; $50\\,\\%$ is half of it.<br>' +
+                'Example: $49{,}7\\,\\%$ of $812$: $49{,}7\\,\\%\\approx50\\,\\%$ and $812\\approx800$, so about half of $800$, i.e. $400$.',
+            racine: function (ex) {
+                return 'To place $\\sqrt{a}$ between two whole numbers, look for the two perfect squares on either side of $a$.<br>Example: ' + ex +
+                    '<br>Squares to know: ' + CARRES + '.';
+            },
+            ecritures: 'Write all the numbers as decimals, then compare.<br>' +
+                '• Dividing by $10$, $100$, $1\\,000$: the decimal point moves $1$, $2$, $3$ places to the left: $\\dfrac{237}{100}=2{,}37$.<br>' +
+                '• Fractions to know: $\\dfrac{1}{2}=0{,}5$ ; $\\dfrac{1}{4}=0{,}25$ ; $\\dfrac{3}{4}=0{,}75$ ; $\\dfrac{1}{5}=0{,}2$. For example $\\dfrac{9}{4}=2+\\dfrac{1}{4}=2{,}25$.<br>' +
+                '• $\\times10^{-1}$ means dividing by $10$: $23\\times10^{-1}=2{,}3$.<br>Answer with the letters, from smallest to largest.',
+            triangle: 'The <b>magic triangle</b> for $v=\\dfrac{d}{t}$: cover the letter you are looking for; what remains gives the formula.<br>{SVG}' +
+                '• Cover $d$: $v$ is next to $t$, so $d=v\\times t$.<br>' +
+                '• Cover $t$: $d$ is above $v$, so $t=\\dfrac{d}{v}$.<br>' +
+                '• Cover $v$: $d$ is above $t$, so $v=\\dfrac{d}{t}$.<br>' +
+                'Example: a car travels at $v=60$ km/h for $t=2$ h. We are looking for $d$: $d=v\\times t=60\\times2=120$ km.',
+            image: function (f, calc) {
+                return 'The image of $a$ under $f$ is $f(a)$: replace $x$ with $a$ in the expression, using brackets if $a$ is negative.<br>' +
+                    'Example: if $f(x)=' + f + '$, then $' + calc + '$.';
+            },
+            coord: function (ex) {
+                return 'The coordinates of a point are written $(x\\ ;\\ y)$: first the <b>x-coordinate</b> (abscissa), read on the horizontal axis, then the <b>y-coordinate</b> (ordinate), read on the vertical axis.<br>Example: ' + ex;
+            },
+            puiss: function (ex) { return 'Rules: $a^m\\times a^n=a^{m+n}$ and $\\dfrac{a^m}{a^n}=a^{m-n}$.<br>' + ex; },
+            chasles: 'Chasles’ relation: $\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$. Change the order of the terms to put the vectors head to tail.<br>' +
+                'Example: $\\overrightarrow{BC}+\\overrightarrow{AB}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$: the answer is <b>AC</b>.',
+            identites: function (ex) {
+                return 'The three special products: $(a+b)^2=a^2+2ab+b^2$ ; $(a-b)^2=a^2-2ab+b^2$ ; $(a+b)(a-b)=a^2-b^2$.<br>Example: ' + ex;
+            },
+            script: 'With <code>if</code> … <code>else</code>, the condition is tested with the current values: if it is true, only the block under <code>if</code> is executed; otherwise, only the block under <code>else</code>.<br>' +
+                'Example: <code>a = 4</code>, <code>b = 10</code>, <code>if a &gt; b:</code> <code>a = a - b</code> <code>else:</code> <code>b = b - a</code>: $4>10$ is false, <code>b</code> becomes $6$, the console displays ' + CONSOLE_4_6 + '.',
+            diviseur: function (ex) {
+                return 'To find the smallest divisor of a number (other than $1$), try $2$, then $3$, then $5$, then $7$…<br>' +
+                    'Divisible by $3$: the sum of the digits is a multiple of $3$. Example: ' + ex;
+            },
+            produit: function (eq, a, b, s1, s2) {
+                return 'A product is zero if and only if at least one of its factors is zero.<br>' +
+                    'Example: $' + eq + '$: $' + a + '=0$ or $' + b + '=0$, so $x=' + s1 + '$ or $x=' + s2 + '$.';
+            },
+            pythagore: function (a, b, calc) {
+                return 'In a right-angled triangle, the square of the <b>hypotenuse</b> (the side opposite the right angle) equals the sum of the squares of the other two sides.<br>' +
+                    'Example: sides of the right angle $' + a + '$ cm and $' + b + '$ cm: hypotenuse$^2=' + calc + '$ cm.';
+            }
+        },
+        nl: {
+            pourc: 'Om $p\\,\\%$ van een getal $N$ te nemen, vermenigvuldig je $N$ met $\\dfrac{p}{100}$: $p\\,\\%$ van $N=\\dfrac{p\\times N}{100}$.<br>' +
+                'Voorbeeld: $30\\,\\%$ van $200$ $=\\dfrac{30\\times200}{100}=60$.',
+            ordre: 'Vervang elk getal door een „rond” getal dat er dichtbij ligt en reken dan uit je hoofd.<br>' +
+                '$10\\,\\%$ van een getal is dat getal gedeeld door $10$; $50\\,\\%$ is de helft.<br>' +
+                'Voorbeeld: $49{,}7\\,\\%$ van $812$: $49{,}7\\,\\%\\approx50\\,\\%$ en $812\\approx800$, dus ongeveer de helft van $800$, namelijk $400$.',
+            racine: function (ex) {
+                return 'Om $\\sqrt{a}$ tussen twee gehele getallen te plaatsen, zoek je de twee kwadraten die $a$ insluiten.<br>Voorbeeld: ' + ex +
+                    '<br>Kwadraten die je moet kennen: ' + CARRES + '.';
+            },
+            ecritures: 'Schrijf alle getallen als decimaal getal en vergelijk ze dan.<br>' +
+                '• Delen door $10$, $100$, $1\\,000$: de komma schuift $1$, $2$, $3$ plaatsen naar links: $\\dfrac{237}{100}=2{,}37$.<br>' +
+                '• Breuken die je moet kennen: $\\dfrac{1}{2}=0{,}5$ ; $\\dfrac{1}{4}=0{,}25$ ; $\\dfrac{3}{4}=0{,}75$ ; $\\dfrac{1}{5}=0{,}2$. Bijvoorbeeld $\\dfrac{9}{4}=2+\\dfrac{1}{4}=2{,}25$.<br>' +
+                '• $\\times10^{-1}$ betekent delen door $10$: $23\\times10^{-1}=2{,}3$.<br>Antwoord met de letters, van het kleinste naar het grootste getal.',
+            triangle: 'De <b>magische driehoek</b> van $v=\\dfrac{d}{t}$: bedek de letter die je zoekt; wat overblijft, geeft de formule.<br>{SVG}' +
+                '• Bedek $d$: $v$ staat naast $t$, dus $d=v\\times t$.<br>' +
+                '• Bedek $t$: $d$ staat boven $v$, dus $t=\\dfrac{d}{v}$.<br>' +
+                '• Bedek $v$: $d$ staat boven $t$, dus $v=\\dfrac{d}{t}$.<br>' +
+                'Voorbeeld: een auto rijdt $t=2$ uur met $v=60$ km/u. We zoeken $d$: $d=v\\times t=60\\times2=120$ km.',
+            image: function (f, calc) {
+                return 'De functiewaarde van $f$ bij $a$ is $f(a)$: vervang $x$ door $a$ in het functievoorschrift, met haakjes als $a$ negatief is.<br>' +
+                    'Voorbeeld: als $f(x)=' + f + '$, dan is $' + calc + '$.';
+            },
+            coord: function (ex) {
+                return 'De coördinaten van een punt schrijf je als $(x\\ ;\\ y)$: eerst de <b>x-coördinaat</b>, af te lezen op de horizontale as, dan de <b>y-coördinaat</b>, af te lezen op de verticale as.<br>Voorbeeld: ' + ex;
+            },
+            puiss: function (ex) { return 'Rekenregels: $a^m\\times a^n=a^{m+n}$ en $\\dfrac{a^m}{a^n}=a^{m-n}$.<br>' + ex; },
+            chasles: 'Relatie van Chasles: $\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$. Verander de volgorde van de termen om de vectoren kop aan staart te leggen.<br>' +
+                'Voorbeeld: $\\overrightarrow{BC}+\\overrightarrow{AB}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$: het antwoord is <b>AC</b>.',
+            identites: function (ex) {
+                return 'De drie bijzondere producten: $(a+b)^2=a^2+2ab+b^2$ ; $(a-b)^2=a^2-2ab+b^2$ ; $(a+b)(a-b)=a^2-b^2$.<br>Voorbeeld: ' + ex;
+            },
+            script: 'Bij <code>if</code> … <code>else</code> wordt de voorwaarde getest met de huidige waarden: als die waar is, wordt alleen het blok onder <code>if</code> uitgevoerd; anders alleen het blok onder <code>else</code>.<br>' +
+                'Voorbeeld: <code>a = 4</code>, <code>b = 10</code>, <code>if a &gt; b:</code> <code>a = a - b</code> <code>else:</code> <code>b = b - a</code>: $4>10$ is niet waar, <code>b</code> wordt $6$, de console toont ' + CONSOLE_4_6 + '.',
+            diviseur: function (ex) {
+                return 'Om de kleinste deler van een getal (behalve $1$) te vinden, probeer je $2$, dan $3$, dan $5$, dan $7$…<br>' +
+                    'Deelbaar door $3$: de som van de cijfers is een veelvoud van $3$. Voorbeeld: ' + ex;
+            },
+            produit: function (eq, a, b, s1, s2) {
+                return 'Een product is nul als en slechts als minstens één van de factoren nul is.<br>' +
+                    'Voorbeeld: $' + eq + '$: $' + a + '=0$ of $' + b + '=0$, dus $x=' + s1 + '$ of $x=' + s2 + '$.';
+            },
+            pythagore: function (a, b, calc) {
+                return 'In een rechthoekige driehoek is het kwadraat van de <b>schuine zijde</b> (de zijde tegenover de rechte hoek) gelijk aan de som van de kwadraten van de twee andere zijden.<br>' +
+                    'Voorbeeld: rechthoekszijden $' + a + '$ cm en $' + b + '$ cm: schuine zijde$^2=' + calc + '$ cm.';
+            }
+        }
+    };
+    var E = P.en, N = P.nl;
+    var RAPPELS = {
+        en: {
+            calculPourcentage: E.pourc + '<br>Tips: $10\\,\\%$ means dividing by $10$; $25\\,\\%$ is a quarter; $50\\,\\%$ is half; $75\\,\\%$ is three quarters.<br>' +
+                'Example: $30\\,\\%$ of $140$: $10\\,\\%$ is $14$, so $30\\,\\%$ is $3\\times14=42$.',
+            pourcentageFinal: E.pourc + '<br>In your head: $10\\,\\%$ means dividing by $10$; $5\\,\\%$ is half of $10\\,\\%$.<br>' +
+                'Example: $35\\,\\%$ of $120$: $10\\,\\%$ is $12$, $5\\,\\%$ is $6$, so $35\\,\\%$ is $3\\times12+6=42$.',
+            encadrerRacineFinal: E.racine('$121<130<144$, i.e. $11^2<130<12^2$, so $11<\\sqrt{130}<12$.'),
+            equationDeuxMembres: 'Put the $x$ terms on one side and the numbers on the other, then divide.<br>' +
+                'Example: $5x+3=2x-9$; subtract $2x$ from both sides: $3x+3=-9$; subtract $3$: $3x=-12$; divide by $3$: $x=-4$.',
+            imageFonction: E.image('3x-5', 'f(-2)=3\\times(-2)-5=-6-5=-11'),
+            imageSimple: E.image('-2x+5', 'f(-3)=-2\\times(-3)+5=6+5=11'),
+            imageFinal: E.image('-4x+1', 'f(-2)=-4\\times(-2)+1=8+1=9'),
+            lireCoordonnees: E.coord('a point $2$ squares to the left of the origin and $1$ square up has coordinates $(-2\\ ;\\ 1)$.'),
+            lireCoordonneesSimple: E.coord('a point $3$ squares to the right of the origin and $2$ squares down has coordinates $(3\\ ;\\ -2)$.'),
+            repereFinal: E.coord('$2$ squares to the left of the origin and $3$ up: $(-2\\ ;\\ 3)$.'),
+            ordreGrandeurNombre: E.ordre,
+            ordreGrandeurFinal: E.ordre + '<br>$25\\,\\%$ is a quarter; $75\\,\\%$ is three quarters.',
+            puissances: E.puiss('Watch out for negative exponents: $\\dfrac{5^3}{5^{-2}}=5^{3-(-2)}=5^5$ and $5^3\\times5^{-2}=5^{3+(-2)}=5^1$.'),
+            puissancesSimple: E.puiss('Examples: $3^{-2}\\times3^{5}=3^{-2+5}=3^3$ and $\\dfrac{3^{2}}{3^{-4}}=3^{2-(-4)}=3^6$.'),
+            puissancesFinal: E.puiss('Examples: $7^{-5}\\times7^{3}=7^{-5+3}=7^{-2}$ and $\\dfrac{7^{-1}}{7^{4}}=7^{-1-4}=7^{-5}$.'),
+            rangerEcritures: E.ecritures,
+            rangerFinal: E.ecritures,
+            sommeDecimale: 'Two methods, your choice:<br>' +
+                '• <b>Everything as decimals</b>: write each fraction as a decimal, then add, lining up the decimal points.<br>' +
+                'Example: $\\dfrac{3}{10}+\\dfrac{45}{100}+\\dfrac{7}{1\\,000}=0{,}3+0{,}45+0{,}007=0{,}757$.<br>' +
+                '• <b>Everything in thousandths</b>: write each fraction with denominator $1\\,000$, add the numerators, then write the result as a decimal.<br>' +
+                'Example: $\\dfrac{3}{10}+\\dfrac{45}{100}+\\dfrac{7}{1\\,000}=\\dfrac{300}{1\\,000}+\\dfrac{450}{1\\,000}+\\dfrac{7}{1\\,000}=\\dfrac{757}{1\\,000}=0{,}757$.',
+            chasles: 'Chasles’ relation: $\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$ (the end point of the first vector is the starting point of the second).<br>' +
+                'You may change the order of the terms to put them head to tail: $\\overrightarrow{BC}+\\overrightarrow{AB}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$.',
+            chaslesSimple: E.chasles,
+            chaslesFinal: E.chasles,
+            identitesRemarquables: E.identites('$(x+5)^2=x^2+2\\times x\\times5+5^2=x^2+10x+25$. Don’t forget the middle term $2ab$.'),
+            identitesSimple: E.identites('$(x-4)^2=x^2-2\\times x\\times4+4^2=x^2-8x+16$.'),
+            identitesFinal: E.identites('$(x+3)^2=x^2+2\\times x\\times3+3^2=x^2+6x+9$.'),
+            scriptSiSinon: 'With <code>if</code> … <code>else</code>, the condition is tested with the <b>current</b> values of the variables: if it is true, only the block under <code>if</code> is executed; otherwise, only the block under <code>else</code>.<br>' +
+                'Example: <code>a = 4</code>, <code>b = 10</code>, <code>if a &gt; b:</code> <code>a = a - b</code> <code>else:</code> <code>b = b - a</code>. Since $4>10$ is false, only <code>b</code> changes: it becomes $6$. <code>print(a, b)</code> displays ' + CONSOLE_4_6 + '.',
+            scriptSiSinonSimple: E.script,
+            scriptFinal: E.script,
+            arithmetique: 'A <b>prime</b> number has exactly two divisors: $1$ and itself ($2$, $3$, $5$, $7$, $11$, $13$, $17$, $19$, $23$…).<br>' +
+                'To check, see whether it is divisible by $2$, $3$, $5$, $7$, $11$… Tip for $3$: the sum of the digits is a multiple of $3$.<br>' +
+                'Example: $57$: $5+7=12$, so $57=3\\times19$ is not prime.',
+            arithmetiqueSimple: E.diviseur('$87$: $8+7=15$, so $87=3\\times29$; the smallest divisor is $3$.'),
+            arithmetiqueFinal: E.diviseur('$91$ is not divisible by $2$, $3$ or $5$, but $91=7\\times13$.'),
+            isolerVariable: E.triangle, isolerSimple: E.triangle, isolerFinal: E.triangle,
+            produitNul: E.produit('(x-2)(x+7)=0', 'x-2', 'x+7', '2', '-7'),
+            produitNulSimple: E.produit('(x+3)(x-8)=0', 'x+3', 'x-8', '-3', '8'),
+            produitNulFinal: E.produit('(x-5)(x+1)=0', 'x-5', 'x+1', '5', '-1'),
+            moyenneMediane: 'The <b>median</b> splits the ordered data into two groups of the same size: <b>first put</b> the values in ascending order, then take the middle one.<br>' +
+                'Example: $9\\ ;\\ 2\\ ;\\ 7\\ ;\\ 4\\ ;\\ 12$ in order gives $2\\ ;\\ 4\\ ;\\ 7\\ ;\\ 9\\ ;\\ 12$: the median is $7$ (and the mean is $\\dfrac{34}{5}=6{,}8$).',
+            medianeSimple: 'The <b>median</b>: <b>first put</b> the values in ascending order, then take the middle one.<br>' +
+                'Example: $9\\ ;\\ 2\\ ;\\ 7\\ ;\\ 4\\ ;\\ 12$ in order gives $2\\ ;\\ 4\\ ;\\ 7\\ ;\\ 9\\ ;\\ 12$: the median is $7$. With an even number of values, take the mean of the two middle values.',
+            inequation: 'Solve an inequality like an equation, with one extra rule: when you multiply or divide by a <b>negative</b> number, <b>reverse</b> the inequality sign.<br>' +
+                'Example: $2x+1<7$ ; $2x<6$ ; $x<3$ (dividing by $2>0$). But $-2x<6$ gives $x>-3$ (dividing by $-2<0$).',
+            inequationSimple: 'Solve an inequality like an equation; when you divide by a <b>positive</b> number, the inequality sign stays the same.<br>' +
+                'Example: $3x-4\\geqslant8$ ; $3x\\geqslant12$ ; $x\\geqslant4$.',
+            pythagoreQCM: E.pythagore(3, 4, '9+16=25$, so hypotenuse $=\\sqrt{25}=5'),
+            pythagoreSimple: E.pythagore(6, 8, '36+64=100$, so hypotenuse $=10'),
+            probaUrne: 'When all outcomes are equally likely: $P=\\dfrac{\\text{number of favourable outcomes}}{\\text{total number of outcomes}}$.<br>' +
+                'Example: $3$ red balls and $5$ green balls ($8$ balls): $P(\\text{red})=\\dfrac{3}{8}$ and $P(\\text{not red})=1-\\dfrac{3}{8}=\\dfrac{5}{8}$.',
+            milieu: 'The midpoint $M$ of $[AB]$ has as coordinates the <b>mean</b> of the coordinates of $A$ and $B$: $M\\left(\\dfrac{x_A+x_B}{2}\\ ;\\ \\dfrac{y_A+y_B}{2}\\right)$.<br>' +
+                'Example: $A(1\\ ;\\ 4)$ and $B(5\\ ;\\ -2)$: $M\\left(\\dfrac{1+5}{2}\\ ;\\ \\dfrac{4+(-2)}{2}\\right)=M(3\\ ;\\ 1)$.',
+            proportionPourcent: 'For a proportion of a proportion, <b>multiply</b> the two proportions.<br>' +
+                'Example: $50\\,\\%$ of the students are girls and, of these, $40\\,\\%$ do sport: $0{,}5\\times0{,}4=0{,}2$, i.e. $20\\,\\%$ of the students.'
+        },
+        nl: {
+            calculPourcentage: N.pourc + '<br>Tips: $10\\,\\%$ is delen door $10$; $25\\,\\%$ is een kwart; $50\\,\\%$ de helft; $75\\,\\%$ driekwart.<br>' +
+                'Voorbeeld: $30\\,\\%$ van $140$: $10\\,\\%$ is $14$, dus $30\\,\\%$ is $3\\times14=42$.',
+            pourcentageFinal: N.pourc + '<br>Uit het hoofd: $10\\,\\%$ is delen door $10$; $5\\,\\%$ is de helft van $10\\,\\%$.<br>' +
+                'Voorbeeld: $35\\,\\%$ van $120$: $10\\,\\%$ is $12$, $5\\,\\%$ is $6$, dus $35\\,\\%$ is $3\\times12+6=42$.',
+            encadrerRacineFinal: N.racine('$121<130<144$, dus $11^2<130<12^2$, dus $11<\\sqrt{130}<12$.'),
+            equationDeuxMembres: 'Zet de termen met $x$ aan de ene kant en de getallen aan de andere kant, en deel dan.<br>' +
+                'Voorbeeld: $5x+3=2x-9$; trek aan beide kanten $2x$ af: $3x+3=-9$; trek $3$ af: $3x=-12$; deel door $3$: $x=-4$.',
+            imageFonction: N.image('3x-5', 'f(-2)=3\\times(-2)-5=-6-5=-11'),
+            imageSimple: N.image('-2x+5', 'f(-3)=-2\\times(-3)+5=6+5=11'),
+            imageFinal: N.image('-4x+1', 'f(-2)=-4\\times(-2)+1=8+1=9'),
+            lireCoordonnees: N.coord('een punt $2$ hokjes links van de oorsprong en $1$ hokje omhoog heeft coördinaten $(-2\\ ;\\ 1)$.'),
+            lireCoordonneesSimple: N.coord('een punt $3$ hokjes rechts van de oorsprong en $2$ hokjes omlaag heeft coördinaten $(3\\ ;\\ -2)$.'),
+            repereFinal: N.coord('$2$ hokjes links van de oorsprong en $3$ omhoog: $(-2\\ ;\\ 3)$.'),
+            ordreGrandeurNombre: N.ordre,
+            ordreGrandeurFinal: N.ordre + '<br>$25\\,\\%$ is een kwart; $75\\,\\%$ is driekwart.',
+            puissances: N.puiss('Let op bij negatieve exponenten: $\\dfrac{5^3}{5^{-2}}=5^{3-(-2)}=5^5$ en $5^3\\times5^{-2}=5^{3+(-2)}=5^1$.'),
+            puissancesSimple: N.puiss('Voorbeelden: $3^{-2}\\times3^{5}=3^{-2+5}=3^3$ en $\\dfrac{3^{2}}{3^{-4}}=3^{2-(-4)}=3^6$.'),
+            puissancesFinal: N.puiss('Voorbeelden: $7^{-5}\\times7^{3}=7^{-5+3}=7^{-2}$ en $\\dfrac{7^{-1}}{7^{4}}=7^{-1-4}=7^{-5}$.'),
+            rangerEcritures: N.ecritures,
+            rangerFinal: N.ecritures,
+            sommeDecimale: 'Twee methoden, naar keuze:<br>' +
+                '• <b>Alles als decimaal getal</b>: schrijf elke breuk als decimaal getal en tel op, met de komma’s onder elkaar.<br>' +
+                'Voorbeeld: $\\dfrac{3}{10}+\\dfrac{45}{100}+\\dfrac{7}{1\\,000}=0{,}3+0{,}45+0{,}007=0{,}757$.<br>' +
+                '• <b>Alles in duizendsten</b>: schrijf elke breuk met noemer $1\\,000$, tel de tellers op en schrijf het resultaat als decimaal getal.<br>' +
+                'Voorbeeld: $\\dfrac{3}{10}+\\dfrac{45}{100}+\\dfrac{7}{1\\,000}=\\dfrac{300}{1\\,000}+\\dfrac{450}{1\\,000}+\\dfrac{7}{1\\,000}=\\dfrac{757}{1\\,000}=0{,}757$.',
+            chasles: 'Relatie van Chasles: $\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$ (het eindpunt van de eerste vector is het beginpunt van de tweede).<br>' +
+                'Je mag de volgorde van de termen veranderen om ze kop aan staart te leggen: $\\overrightarrow{BC}+\\overrightarrow{AB}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$.',
+            chaslesSimple: N.chasles,
+            chaslesFinal: N.chasles,
+            identitesRemarquables: N.identites('$(x+5)^2=x^2+2\\times x\\times5+5^2=x^2+10x+25$. Vergeet het dubbele product $2ab$ niet.'),
+            identitesSimple: N.identites('$(x-4)^2=x^2-2\\times x\\times4+4^2=x^2-8x+16$.'),
+            identitesFinal: N.identites('$(x+3)^2=x^2+2\\times x\\times3+3^2=x^2+6x+9$.'),
+            scriptSiSinon: 'Bij <code>if</code> … <code>else</code> wordt de voorwaarde getest met de <b>huidige</b> waarden van de variabelen: als die waar is, wordt alleen het blok onder <code>if</code> uitgevoerd; anders alleen het blok onder <code>else</code>.<br>' +
+                'Voorbeeld: <code>a = 4</code>, <code>b = 10</code>, <code>if a &gt; b:</code> <code>a = a - b</code> <code>else:</code> <code>b = b - a</code>. Omdat $4>10$ niet waar is, verandert alleen <code>b</code>: die wordt $6$. <code>print(a, b)</code> toont ' + CONSOLE_4_6 + '.',
+            scriptSiSinonSimple: N.script,
+            scriptFinal: N.script,
+            arithmetique: 'Een <b>priemgetal</b> heeft precies twee delers: $1$ en zichzelf ($2$, $3$, $5$, $7$, $11$, $13$, $17$, $19$, $23$…).<br>' +
+                'Controleer of het deelbaar is door $2$, $3$, $5$, $7$, $11$… Tip voor $3$: de som van de cijfers is een veelvoud van $3$.<br>' +
+                'Voorbeeld: $57$: $5+7=12$, dus $57=3\\times19$ is geen priemgetal.',
+            arithmetiqueSimple: N.diviseur('$87$: $8+7=15$, dus $87=3\\times29$; de kleinste deler is $3$.'),
+            arithmetiqueFinal: N.diviseur('$91$ is niet deelbaar door $2$, $3$ of $5$, maar $91=7\\times13$.'),
+            isolerVariable: N.triangle, isolerSimple: N.triangle, isolerFinal: N.triangle,
+            produitNul: N.produit('(x-2)(x+7)=0', 'x-2', 'x+7', '2', '-7'),
+            produitNulSimple: N.produit('(x+3)(x-8)=0', 'x+3', 'x-8', '-3', '8'),
+            produitNulFinal: N.produit('(x-5)(x+1)=0', 'x-5', 'x+1', '5', '-1'),
+            moyenneMediane: 'De <b>mediaan</b> verdeelt de geordende waarnemingsgetallen in twee even grote groepen: zet de waarden <b>eerst</b> op volgorde van klein naar groot en neem dan de middelste.<br>' +
+                'Voorbeeld: $9\\ ;\\ 2\\ ;\\ 7\\ ;\\ 4\\ ;\\ 12$ geordend geeft $2\\ ;\\ 4\\ ;\\ 7\\ ;\\ 9\\ ;\\ 12$: de mediaan is $7$ (en het gemiddelde is $\\dfrac{34}{5}=6{,}8$).',
+            medianeSimple: 'De <b>mediaan</b>: zet de waarden <b>eerst</b> op volgorde van klein naar groot en neem dan de middelste.<br>' +
+                'Voorbeeld: $9\\ ;\\ 2\\ ;\\ 7\\ ;\\ 4\\ ;\\ 12$ geordend geeft $2\\ ;\\ 4\\ ;\\ 7\\ ;\\ 9\\ ;\\ 12$: de mediaan is $7$. Bij een even aantal waarden neem je het gemiddelde van de twee middelste waarden.',
+            inequation: 'Een ongelijkheid los je op als een vergelijking, met één extra regel: als je vermenigvuldigt of deelt door een <b>negatief</b> getal, <b>klapt</b> het ongelijkheidsteken <b>om</b>.<br>' +
+                'Voorbeeld: $2x+1<7$ ; $2x<6$ ; $x<3$ (delen door $2>0$). Maar $-2x<6$ geeft $x>-3$ (delen door $-2<0$).',
+            inequationSimple: 'Een ongelijkheid los je op als een vergelijking; als je deelt door een <b>positief</b> getal, blijft het ongelijkheidsteken hetzelfde.<br>' +
+                'Voorbeeld: $3x-4\\geqslant8$ ; $3x\\geqslant12$ ; $x\\geqslant4$.',
+            pythagoreQCM: N.pythagore(3, 4, '9+16=25$, dus schuine zijde $=\\sqrt{25}=5'),
+            pythagoreSimple: N.pythagore(6, 8, '36+64=100$, dus schuine zijde $=10'),
+            probaUrne: 'Als alle uitkomsten even waarschijnlijk zijn: $P=\\dfrac{\\text{aantal gunstige uitkomsten}}{\\text{totaal aantal uitkomsten}}$.<br>' +
+                'Voorbeeld: $3$ rode en $5$ groene knikkers ($8$ knikkers): $P(\\text{rood})=\\dfrac{3}{8}$ en $P(\\text{niet rood})=1-\\dfrac{3}{8}=\\dfrac{5}{8}$.',
+            milieu: 'De coördinaten van het midden $M$ van $[AB]$ zijn het <b>gemiddelde</b> van de coördinaten van $A$ en $B$: $M\\left(\\dfrac{x_A+x_B}{2}\\ ;\\ \\dfrac{y_A+y_B}{2}\\right)$.<br>' +
+                'Voorbeeld: $A(1\\ ;\\ 4)$ en $B(5\\ ;\\ -2)$: $M\\left(\\dfrac{1+5}{2}\\ ;\\ \\dfrac{4+(-2)}{2}\\right)=M(3\\ ;\\ 1)$.',
+            proportionPourcent: 'Voor een deel van een deel <b>vermenigvuldig</b> je de twee delen.<br>' +
+                'Voorbeeld: $50\\,\\%$ van de leerlingen zijn meisjes en van hen sport $40\\,\\%$: $0{,}5\\times0{,}4=0{,}2$, dus $20\\,\\%$ van de leerlingen.'
+        }
+    };
+    function rappel(nom, langue, francais) {
+        var t = RAPPELS[langue] && RAPPELS[langue][nom];
+        if (!t) return null;
+        if (t.indexOf('{SVG}') >= 0) {
+            var svg = /<svg[\s\S]*?<\/svg>/.exec(francais || '');
+            t = t.replace('{SVG}', svg ? svg[0] : '');
+        }
+        return t;
+    }
+    // libellés autour du rappel
+    var TEXTES = {
+        en: { bouton: 'I don’t know, I need a reminder', titre: 'Reminder', fin: 'Your turn now: answer the question.' },
+        nl: { bouton: 'Ik weet het niet, ik heb een geheugensteuntje nodig', titre: 'Geheugensteuntje', fin: 'Nu jij: beantwoord de vraag.' }
+    };
+
+    // petits drapeaux (SVG, lisibles partout, y compris sous Windows où les émojis-drapeaux ne s'affichent pas)
+    var DRAPEAUX = {
+        en: '<svg viewBox="0 0 60 30" width="26" height="16" preserveAspectRatio="none" aria-hidden="true"><rect width="60" height="30" fill="#012169"/>' +
+            '<path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="2"/>' +
+            '<path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6"/></svg>',
+        nl: '<svg viewBox="0 0 9 6" width="24" height="16" aria-hidden="true"><rect width="9" height="2" fill="#AE1C28"/><rect y="2" width="9" height="2" fill="#fff"/><rect y="4" width="9" height="2" fill="#21468B"/></svg>'
+    };
+
+    window.Traduction = {
+        traduire: traduire, rappel: rappel, textes: TEXTES,
+        langues: [['en', 'English', DRAPEAUX.en], ['nl', 'Nederlands', DRAPEAUX.nl]]
+    };
 })();

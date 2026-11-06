@@ -171,11 +171,15 @@
         var barre = el('span', 'q-langues'), boite = el('div', 'q-traduction'), boutons = [];
         boite.hidden = true;
         Traduction.langues.forEach(function (l, k) {
-            var b = el('button', 'q-langue', l[1]);
-            b.type = 'button'; b.lang = l[0]; b.setAttribute('aria-pressed', 'false');
+            var b = el('button', 'q-langue');
+            b.type = 'button'; b.lang = l[0]; b.title = l[1]; b.setAttribute('aria-label', l[1]);
+            b.innerHTML = l[2] || l[1];
+            b.setAttribute('aria-pressed', 'false');
             b.addEventListener('click', function () {
                 var ouvert = b.getAttribute('aria-pressed') === 'true';
                 boutons.forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+                li.langue = ouvert ? null : l[0];       // langue choisie : le rappel suit
+                if (li.majRappel) li.majRappel();
                 if (ouvert) { boite.hidden = true; return; }
                 b.setAttribute('aria-pressed', 'true');
                 boite.lang = l[0];
@@ -372,13 +376,32 @@
                 // questions vertes : rappel de méthode à la demande (noté dans le détail pour la professeure)
                 var aide = false, btnRappel = null;
                 if (q.rappel && !def.chrono) {
-                    btnRappel = el('button', 'secondaire rappel-btn', 'Je ne sais pas, j\'ai besoin d\'un rappel'); btnRappel.type = 'button';
+                    // rappel dans la langue choisie avec les drapeaux (li.langue), s'il est traduit ; sinon en français
+                    var boiteRappel = null;
+                    var rappelTraduit = function () {
+                        var lg = li.langue, t = lg && window.Traduction && Traduction.rappel ? Traduction.rappel(q.rappelNom, lg, q.rappel) : null;
+                        return t ? { lg: lg, texte: t, mots: Traduction.textes[lg] } : null;
+                    };
+                    var libelleRappel = function () {
+                        var tr = rappelTraduit();
+                        btnRappel.textContent = tr ? tr.mots.bouton : 'Je ne sais pas, j\'ai besoin d\'un rappel';
+                        if (tr) btnRappel.lang = tr.lg; else btnRappel.removeAttribute('lang');
+                    };
+                    var remplirRappel = function () {
+                        var tr = rappelTraduit();
+                        boiteRappel.lang = tr ? tr.lg : 'fr';
+                        boiteRappel.innerHTML = tr
+                            ? '<strong>' + tr.mots.titre + '</strong><br>' + mixte(tr.texte) + '<br><em>' + tr.mots.fin + '</em>'
+                            : '<strong>Rappel</strong><br>' + mixte(q.rappel) + '<br><em>À toi maintenant : réponds à la question.</em>';
+                    };
+                    li.majRappel = function () { if (boiteRappel) remplirRappel(); else if (btnRappel) libelleRappel(); };
+                    btnRappel = el('button', 'secondaire rappel-btn'); btnRappel.type = 'button';
+                    libelleRappel();
                     btnRappel.onclick = function () {
                         aide = true;
-                        var r = el('div', 'q-rappel');
-                        r.innerHTML = '<strong>Rappel</strong><br>' + mixte(q.rappel) +
-                            '<br><em>À toi maintenant : réponds à la question.</em>';
-                        btnRappel.replaceWith(r);
+                        boiteRappel = el('div', 'q-rappel');
+                        remplirRappel();
+                        btnRappel.replaceWith(boiteRappel);
                         btnRappel = null;
                         var c0 = li.querySelector('input:not([disabled])');
                         if (c0) c0.focus();
