@@ -291,7 +291,7 @@
 
             <div class="panneau" role="tabpanel" id="panneau-suivi-tp" aria-labelledby="onglet-suivi-tp" hidden>
                 <h2>Suivi des TP</h2>
-                <p class="aide">Barème automatique : chaque étape réussie rapporte ses points (colonne « Points » du détail), note plafonnée à 20 ; une étape passée (bouton « Passer ») ne rapporte rien tant qu’elle n’est pas réussie. TP Conditions : note du TP selon l'avancée (4 après le cours, 8 après l'Ex. 1, 15 après l'Ex. 4, 20 après l'Ex. 6, bonus 0,5) ; quiz final noté à part sur 5. Les erreurs (réponses fausses avant la bonne) sont indiquées pour information. Barème réglable dans <code>config.js</code> (INTERACTIF_BAREMES).</p>
+                <p class="aide">Barème automatique : chaque étape réussie rapporte ses points (colonne « Points » du détail), note plafonnée à 20 ; une étape passée (bouton « Passer ») ne rapporte rien tant qu’elle n’est pas réussie. TP Conditions : note du TP selon l'avancée (4 après le cours, 8 après l'Ex. 1, 15 après l'Ex. 4, 20 après l'Ex. 6, bonus 0,5) ; quiz final noté à part sur 5. Note globale = 0,75 × note TP + 0,25 × quiz ramené sur 20 (quiz pas encore fait : compté 0, signalé par *). Les erreurs (réponses fausses avant la bonne) sont indiquées pour information. Barème réglable dans <code>config.js</code> (INTERACTIF_BAREMES).</p>
                 <div class="outils">
                     <label>Classe <select id="tp-classe"></select></label>
                     <label>TP <select id="tp-choix"></select></label>
@@ -402,7 +402,10 @@
                     points += pointsEtape(bareme, k + 1, comptees);
                 });
                 var note = Math.min(20, points);
-                return { r: r, note: Math.round(note * 10) / 10, quiz: quiz === null ? null : Math.round(quiz * 10) / 10, quizSur: quizE.length ? bareme.quizSur || 5 : 0, reussies: reussies, bonusOk: bonusOk, nbBonus: bonus.length, comptees: comptees,
+                // note globale /20 : 0,75 × note TP + 0,25 × quiz ramené sur 20 (quiz non fait = 0) ; sans quiz = note TP
+                var quizSur = quizE.length ? bareme.quizSur || 5 : 0;
+                var globale = quizSur ? 0.75 * note + 0.25 * (quiz || 0) * 20 / quizSur : note;
+                return { globale: Math.round(globale * 10) / 10, r: r, note: Math.round(note * 10) / 10, quiz: quiz === null ? null : Math.round(quiz * 10) / 10, quizSur: quizE.length ? bareme.quizSur || 5 : 0, reussies: reussies, bonusOk: bonusOk, nbBonus: bonus.length, comptees: comptees,
                          erreurs: err, passees: passees, duree: Math.max.apply(null, liste.map(function (x) { return x.duree_s || 0; })),
                          dernier: liste.reduce(function (m, x) { return new Date(x.fait_le) > m ? new Date(x.fait_le) : m; }, new Date(0)) };
             }
@@ -439,19 +442,21 @@
                 $table.innerHTML = ''; $detail.innerHTML = '';
                 var id = $tp.value, liste = eleves();
                 if ($eleve.value) liste = liste.filter(function (e) { return e.code === $eleve.value; });
-                entete($table, ['Code', 'Nom', 'Étapes réussies', 'Bonus', 'Erreurs', 'Note TP /20', 'Quiz', 'Temps', 'Dernière activité']);
-                var notes = [], quizs = [];
+                entete($table, ['Code', 'Nom', 'Étapes réussies', 'Bonus', 'Erreurs', 'Note TP /20', 'Quiz', 'Note globale /20', 'Temps', 'Dernière activité']);
+                var notes = [], quizs = [], globales = [];
                 liste.forEach(function (e) {
                     var b = resultat(e.code, id), tr = document.createElement('tr');
                     cell(tr, e.code); cell(tr, nomDe(e));
-                    if (!b) { cell(tr, 'pas commencé'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); }
+                    if (!b) { cell(tr, 'pas commencé'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); }
                     else {
                         cell(tr, b.reussies + ' / ' + b.comptees + (b.passees ? ' (' + b.passees + ' passée' + (b.passees > 1 ? 's' : '') + ')' : ''));
                         cell(tr, b.nbBonus ? b.bonusOk + ' / ' + b.nbBonus : '—');
                         cell(tr, b.erreurs); cell(tr, fmt(b.note), 'note');
                         cell(tr, b.quizSur ? (b.quiz === null ? '—' : fmt(b.quiz) + ' / ' + b.quizSur) : '—', 'note');
+                        var cg = cell(tr, fmt(b.globale), 'note');
+                        if (b.quizSur && b.quiz === null) { cg.textContent += ' *'; cg.title = 'Quiz pas encore fait : compté 0'; }
                         cell(tr, minutes(b.duree)); cell(tr, date(b.dernier));
-                        notes.push(b.note); if (b.quiz !== null) quizs.push(b.quiz);
+                        notes.push(b.note); globales.push(b.globale); if (b.quiz !== null) quizs.push(b.quiz);
                         tr.className = 'cliquable'; tr.title = 'Voir le détail des étapes';
                         tr.onclick = function () { $eleve.value = e.code; afficher(); };
                     }
@@ -463,6 +468,7 @@
                     cell(tr, ''); cell(tr, ''); cell(tr, '');
                     cell(tr, fmt(Math.round(notes.reduce(function (s, x) { return s + x; }, 0) / notes.length * 10) / 10), 'note');
                     cell(tr, quizs.length ? fmt(Math.round(quizs.reduce(function (s, x) { return s + x; }, 0) / quizs.length * 10) / 10) : '—', 'note');
+                    cell(tr, fmt(Math.round(globales.reduce(function (s, x) { return s + x; }, 0) / globales.length * 10) / 10), 'note');
                     cell(tr, ''); cell(tr, '');
                     $table.appendChild(tr);
                 }
@@ -472,7 +478,7 @@
                 var b = resultat(code, id);
                 if (!b) return;
                 var t = document.createElement('div'); t.className = 'tp-entete';
-                var h = document.createElement('h3'); h.textContent = (noms[code] || code) + ' · TP ' + fmt(b.note) + ' / 20' + (b.quizSur ? ' · Quiz ' + (b.quiz === null ? '—' : fmt(b.quiz)) + ' / ' + b.quizSur : ''); t.appendChild(h);
+                var h = document.createElement('h3'); h.textContent = (noms[code] || code) + ' · TP ' + fmt(b.note) + ' / 20' + (b.quizSur ? ' · Quiz ' + (b.quiz === null ? '—' : fmt(b.quiz)) + ' / ' + b.quizSur + ' · Note globale ' + fmt(b.globale) + ' / 20' : ''); t.appendChild(h);
                 var a = document.createElement('span'); a.className = 'aide';
                 a.textContent = b.reussies + ' étape(s) réussie(s) sur ' + b.comptees + (b.nbBonus ? ', bonus ' + b.bonusOk + '/' + b.nbBonus : '') + ' · ' + b.erreurs + ' erreur(s) · ' + minutes(b.duree);
                 t.appendChild(a);
@@ -516,10 +522,10 @@
             // export CSV (séparateur ; pour le tableur) : toute la classe, pour le TP choisi
             document.getElementById('tp-csv').onclick = function () {
                 if (!donnees) return;
-                var id = $tp.value, lignes = [['Code', 'Nom', 'Étapes réussies', 'Étapes comptées', 'Bonus', 'Erreurs', 'Note TP /20', 'Quiz']];
+                var id = $tp.value, lignes = [['Code', 'Nom', 'Étapes réussies', 'Étapes comptées', 'Bonus', 'Erreurs', 'Note TP /20', 'Quiz', 'Note globale /20']];
                 eleves().forEach(function (e) {
                     var b = resultat(e.code, id);
-                    lignes.push([e.code, nomDe(e), b ? b.reussies : 0, b ? b.comptees : '', b ? b.bonusOk : 0, b ? b.erreurs : '', b ? fmt(b.note) : '', b && b.quiz !== null ? fmt(b.quiz) : '']);
+                    lignes.push([e.code, nomDe(e), b ? b.reussies : 0, b ? b.comptees : '', b ? b.bonusOk : 0, b ? b.erreurs : '', b ? fmt(b.note) : '', b && b.quiz !== null ? fmt(b.quiz) : '', b ? fmt(b.globale) : '']);
                 });
                 var csv = '﻿' + lignes.map(function (l) { return l.map(function (x) { return '"' + String(x).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
                 var a = document.createElement('a');
