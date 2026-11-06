@@ -6,15 +6,16 @@
     <title>Automatismes Série 7</title>
     <link rel="icon" type="image/png" sizes="32x32" href="../../img/favicon-32.png">
     <link rel="stylesheet" href="../../style.css">
-    <link rel="stylesheet" href="../interactif.css">
+    <link rel="stylesheet" href="../interactif.css?v=20261106">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
     <script src="../../site.js"></script>
     <script src="../config.js"></script>
     <script src="../expr.js"></script>
-    <script src="../moteur.js"></script>
+    <script src="../moteur.js?v=20261106"></script>
     <script src="automatismes.js"></script>
-</head>
+    <script src="traduction.js?v=20261106"></script>
+    </head>
 <body>
     <nav class="navbar">
         <div class="logo"><span class="logo-ligne"><button type="button" data-effet="ecrire" title="Réécrire le titre"></button><button type="button" data-effet="matrix" title="Mode Matrix"></button><button type="button" data-effet="futur" title="Mode BTTF (Back to the Future)"></button><button type="button" data-effet="halloween" title="Mode Halloween"></button></span><a href="../../index.html">Année 2026-2027 - Lycée Lebrun</a></div>
@@ -57,6 +58,7 @@
         var types = JOURS[j];
         Interactif.exercice({
             id: 'seconde/serie7-j' + j,
+            traduction: true,    // boutons English / Nederlands (traduction.js)
             nb: 9,
             parNiveau: true,
             niveau: function (i) { return Math.floor(i / 3) + 1; },

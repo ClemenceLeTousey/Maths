@@ -244,6 +244,23 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 
 @media print { .convecteur, .conv-eclair { display: none !important; } }
 
+/* Traduction de l'énoncé (English / Nederlands) */
+.q-langues { margin-left: auto; display: flex; gap: 6px; }
+.interactif button.q-langue {
+    font-size: 0.75rem; padding: 2px 9px; border-radius: 999px;
+    background: var(--surface); color: var(--muted); border: 1px solid var(--line);
+}
+.interactif button.q-langue:hover { border-color: var(--c-seconde); color: var(--c-seconde); }
+.interactif button.q-langue[aria-pressed="true"] { background: var(--c-seconde); border-color: var(--c-seconde); color: var(--badge-text); }
+.q-traduction {
+    margin: 6px 0 4px 34px; padding: 8px 12px; font-size: 1rem;
+    border-left: 4px solid var(--line); color: var(--muted); font-style: italic;
+}
+.q-traduction[hidden] { display: none; }
+.q-traduction .katex, .q-traduction code { font-style: normal; }
+.q-traduction .q-aide-code { display: block; margin-top: 4px; font-size: 0.9em; }
+@media print { .q-langues, .q-traduction { display: none !important; } }
+
 /* Rappel à la demande (questions vertes) */
 .interactif button.rappel-btn { margin: 8px 0 0 34px; font-size: 0.85rem; padding: 4px 12px; }
 .q-rappel {

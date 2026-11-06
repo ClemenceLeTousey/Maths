@@ -156,6 +156,38 @@
         cible.appendChild(f);
     }
 
+    /* Boutons English / Nederlands (def.traduction, seconde/traduction.js) : traduction de l'énoncé
+       affichée sous la question ; rien n'est affiché si une phrase n'est pas couverte. */
+    function traductions(q, li, tete) {
+        var src = q.texte != null ? q.texte : q.consigne;
+        var trads = Traduction.langues.map(function (l) {
+            var t = Traduction.traduire(src, l[0]);
+            if (t != null && q.texte == null && q.enonce) t += ' $' + q.enonce + '$';
+            return t;
+        });
+        if (trads.some(function (t) { return t == null; })) return;
+        var meta = li.querySelector('.q-meta');
+        if (!meta) { meta = el('div', 'q-meta'); li.insertBefore(meta, tete); }
+        var barre = el('span', 'q-langues'), boite = el('div', 'q-traduction'), boutons = [];
+        boite.hidden = true;
+        Traduction.langues.forEach(function (l, k) {
+            var b = el('button', 'q-langue', l[1]);
+            b.type = 'button'; b.lang = l[0]; b.setAttribute('aria-pressed', 'false');
+            b.addEventListener('click', function () {
+                var ouvert = b.getAttribute('aria-pressed') === 'true';
+                boutons.forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+                if (ouvert) { boite.hidden = true; return; }
+                b.setAttribute('aria-pressed', 'true');
+                boite.lang = l[0];
+                boite.innerHTML = mixte(trads[k]);
+                boite.hidden = false;
+            });
+            boutons.push(b); barre.appendChild(b);
+        });
+        meta.appendChild(barre);
+        tete.parentNode.insertBefore(boite, tete.nextSibling);
+    }
+
     /* ---------- Déroulé d'un exercice ----------
        def = { id, titre, nb, generer: function (i) -> question,
                parNiveau (séries verte/bleue/rouge), parQuestion (avec parNiveau : chaque question se valide seule) }
@@ -205,6 +237,7 @@
                     var e = el('span'); maths(e, q.enonce); tete.appendChild(e);
                 }
                 li.appendChild(tete);
+                if (def.traduction && window.Traduction) traductions(q, li, tete);
                 // figure (SVG) : affichée sous l'énoncé, non enregistrée (seule q.figureNote l'est)
                 if (q.figure) { var fig = el('div', 'q-figure'); fig.innerHTML = q.figure; li.appendChild(fig); }
 
