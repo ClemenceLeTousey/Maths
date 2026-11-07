@@ -219,13 +219,28 @@
         .interactif .etape-tete button.reinit { font-size: 0.8rem; color: var(--muted); }
         .choix-mode label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
         .calc-bouton { position: fixed; right: 16px; bottom: 16px; z-index: 950; width: 48px; height: 48px; border-radius: 50%; font-size: 1.4rem; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 2px 10px rgba(0,0,0,.18); cursor: pointer; }
-        .calc-panneau { position: fixed; right: 16px; bottom: 74px; z-index: 950; width: min(290px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.2); padding: 10px 12px; }
+        .calc-panneau { position: fixed; right: 16px; bottom: 74px; z-index: 950; width: min(280px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.25); padding: 10px 12px 8px; outline: none; }
         .calc-panneau[hidden] { display: none; }
-        .calc-tete { display: flex; justify-content: space-between; align-items: center; }
-        .calc-histo { max-height: 9em; overflow-y: auto; font-family: var(--f-mono); font-size: 0.9rem; margin: 6px 0; font-variant-ligatures: none; }
-        .calc-ligne { display: flex; gap: 6px; }
-        .calc-ligne input { flex: 1; min-width: 0; font-family: var(--f-mono); font-variant-ligatures: none; }
-        .calc-panneau .aide { margin: 6px 0 0; font-size: 0.8rem; }
+        .calc-panneau .calc-fermer { background: none; border: none; color: var(--muted); font-size: 1rem; cursor: pointer; padding: 2px 6px; }
+        .calc-tete { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .calc-ecran { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; text-align: right; font-family: var(--f-mono); font-variant-ligatures: none; }
+        .calc-histo { color: var(--muted); font-size: 0.8rem; min-height: 1.2em; }
+        .calc-expr { font-size: 1.25rem; min-height: 1.9em; line-height: 1.9; overflow-x: auto; white-space: nowrap; }
+        .calc-res { font-size: 1.35rem; font-weight: 700; min-height: 1.5em; color: var(--c-seconde); }
+        .calc-vide { color: var(--muted); }
+        .calc-exp { font-size: 0.7em; vertical-align: 0.9em; padding: 0 2px; }
+        .calc-exp.actif { outline: 1.5px dashed var(--c-seconde); outline-offset: 1px; border-radius: 3px; }
+        .calc-exp.vide { display: inline-block; min-width: 0.9em; }
+        .calc-curseur { display: inline-block; width: 2px; height: 1.1em; background: var(--text); vertical-align: -0.15em; margin-left: 1px; animation: clignote 1.2s steps(1) infinite; }
+        .calc-touches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+        .interactif ~ .calc-panneau .calc-t, .calc-panneau .calc-t { height: 40px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 1.05rem; font-family: var(--f-mono); cursor: pointer; padding: 0; }
+        .calc-panneau .calc-t:hover { background: var(--bleu-doux); }
+        .calc-panneau .calc-t.op { color: var(--c-seconde); font-weight: 700; }
+        .calc-panneau .calc-t.fn { background: var(--bg); }
+        .calc-panneau .calc-t.egal { grid-column: span 3; background: var(--c-seconde); border-color: var(--c-seconde); color: var(--badge-text); font-weight: 700; }
+        .calc-panneau .calc-t:disabled { opacity: .35; cursor: default; }
+        .calc-panneau .aide { margin: 6px 0 0; font-size: 0.75rem; text-align: center; }
+        .calc-panneau kbd { font-family: var(--f-mono); font-size: 0.9em; border: 1px solid var(--line); border-radius: 3px; padding: 0 3px; }
     </style>
 </head>
 <body>
@@ -1894,25 +1909,97 @@ def _console(ligne, n):
             if (window.ResizeObserver) new ResizeObserver(mesurer).observe(barre);
         })();
 
-        /* ---------- Calculatrice (bouton 🧮 en bas à droite) ---------- */
+        /* ---------- Calculatrice : affichage et calcul de l'expression ----------
+           items = caractères tapés, { c: '2', sup: true } pour un caractère écrit dans la fenêtre en exposant. */
+        var CALC_AFF = { '*': '×', '/': '÷', '-': '−', '.': ',' };
+        function calcAff(c) { return esc(CALC_AFF[c] || c); }
+        function calcTexte(items) {   // texte à calculer : chaque exposant devient **(…)
+            var s = '', i = 0;
+            while (i < items.length) {
+                if (items[i].sup) {
+                    var e = '';
+                    while (i < items.length && items[i].sup) { e += items[i].c; i++; }
+                    s += '**(' + e + ')';
+                } else { s += items[i].c; i++; }
+            }
+            return s;
+        }
+        function calcHTML(items, expo) {   // exposants en petit ; fenêtre en pointillés quand on écrit dedans
+            var h = '', i = 0;
+            while (i < items.length) {
+                if (items[i].sup) {
+                    var e = '';
+                    while (i < items.length && items[i].sup) { e += calcAff(items[i].c); i++; }
+                    h += '<sup class="calc-exp' + (expo && i === items.length ? ' actif' : '') + '">' + e + '</sup>';
+                } else { h += calcAff(items[i].c); i++; }
+            }
+            if (expo && (!items.length || !items[items.length - 1].sup)) h += '<sup class="calc-exp actif vide">&nbsp;</sup>';
+            return h;
+        }
+        /* ---------- Calculatrice (bouton 🧮 en bas à droite) : écran + clavier ; x^y ouvre une fenêtre en exposant ---------- */
         (function () {
             var bc = el('button', 'calc-bouton', '🧮'); bc.type = 'button'; bc.title = 'Calculatrice'; bc.setAttribute('aria-label', 'Ouvrir la calculatrice');
-            var pan = el('div', 'calc-panneau'); pan.hidden = true; pan.setAttribute('role', 'dialog'); pan.setAttribute('aria-label', 'Calculatrice');
-            pan.innerHTML = '<div class="calc-tete"><b>🧮 Calculatrice</b><button type="button" class="lien calc-fermer">Fermer</button></div>' +
-                '<div class="calc-histo"></div><form class="calc-ligne"><input aria-label="Calcul" placeholder="ex. 2^10 ou 12,5 / 2" autocomplete="off" spellcheck="false"><button type="submit">=</button></form>' +
-                '<p class="aide">+ − × (ou *) ÷ (ou /), puissance ^, parenthèses.</p>';
-            var histo = pan.querySelector('.calc-histo'), ci = pan.querySelector('input');
-            bc.onclick = function () { pan.hidden = !pan.hidden; if (!pan.hidden) ci.focus(); };
-            pan.querySelector('.calc-fermer').onclick = function () { pan.hidden = true; };
-            pan.querySelector('form').onsubmit = function (ev) {
-                ev.preventDefault();
-                var x = ci.value.trim(); if (!x) return;
-                var r = evalExpr(x);
-                var l = el('div', 'calc-res');
-                l.appendChild(document.createTextNode(x + ' = '));
-                l.appendChild(el('b', null, isNaN(r) ? 'calcul impossible' : esc(String(+r.toPrecision(12)).replace('.', ','))));
-                histo.appendChild(l); histo.scrollTop = histo.scrollHeight; ci.select();
-            };
+            var pan = el('div', 'calc-panneau'); pan.hidden = true; pan.tabIndex = -1;
+            pan.setAttribute('role', 'dialog'); pan.setAttribute('aria-label', 'Calculatrice');
+            pan.innerHTML = '<div class="calc-tete"><b>🧮 Calculatrice</b><button type="button" class="lien calc-fermer" aria-label="Fermer la calculatrice">✕</button></div>' +
+                '<div class="calc-ecran"><div class="calc-histo"></div><div class="calc-expr"></div><div class="calc-res" aria-live="polite"></div></div>' +
+                '<div class="calc-touches"></div>' +
+                '<p class="aide">Clavier : <kbd>^</kbd> puissance, <kbd>→</kbd> sortir de l’exposant, <kbd>Entrée</kbd> =</p>';
+            var ecranH = pan.querySelector('.calc-histo'), ecranE = pan.querySelector('.calc-expr'), ecranR = pan.querySelector('.calc-res');
+            var items = [], expo = false, fini = false;
+            // [libellé, touche, classe, description pour les lecteurs d'écran]
+            var TOUCHES = [
+                ['C', 'efface', 'fn', 'tout effacer'], ['⌫', 'retour', 'fn', 'effacer le dernier caractère'], ['(', '('], [')', ')'],
+                ['7', '7'], ['8', '8'], ['9', '9'], ['÷', '/', 'op', 'divisé par'],
+                ['4', '4'], ['5', '5'], ['6', '6'], ['×', '*', 'op', 'multiplié par'],
+                ['1', '1'], ['2', '2'], ['3', '3'], ['−', '-', 'op', 'moins'],
+                ['0', '0'], [',', '.'], ['x<sup>y</sup>', 'pow', 'fn', 'puissance : ouvre la fenêtre de l’exposant'], ['+', '+', 'op', 'plus'],
+                ['▸', 'sortir', 'fn', 'sortir de l’exposant'], ['=', '=', 'egal', 'égal']
+            ];
+            var zt = pan.querySelector('.calc-touches');
+            TOUCHES.forEach(function (t) {
+                var b = el('button', 'calc-t' + (t[2] ? ' ' + t[2] : ''), t[0]); b.type = 'button';
+                if (t[3]) b.setAttribute('aria-label', t[3]);
+                b.onclick = function () { touche(t[1]); };
+                zt.appendChild(b);
+            });
+            function afficher() {
+                ecranE.innerHTML = (calcHTML(items, expo) || '<span class="calc-vide">0</span>') + '<span class="calc-curseur"></span>';
+                pan.querySelector('.calc-t[aria-label="sortir de l’exposant"]').disabled = !expo;
+            }
+            function touche(k) {
+                if (k === 'efface') { items = []; expo = false; fini = false; ecranR.textContent = ''; }
+                else if (k === 'retour') { if (fini) { fini = false; ecranR.textContent = ''; } var x = items.pop(); expo = !!(x && x.sup); }
+                else if (k === 'pow') { if (fini) reprendre(); if (items.length && !expo) expo = true; }
+                else if (k === 'sortir') expo = false;
+                else if (k === '=') {
+                    if (!items.length) return;
+                    var r = evalExpr(calcTexte(items));
+                    var txt = isNaN(r) ? 'calcul impossible' : String(+r.toPrecision(12)).replace('.', ',');
+                    ecranR.textContent = '= ' + txt;
+                    var l = el('div', 'calc-ligne-h', calcHTML(items, false) + ' = ' + esc(txt));
+                    ecranH.appendChild(l); while (ecranH.childNodes.length > 3) ecranH.removeChild(ecranH.firstChild);
+                    expo = false; fini = !isNaN(r);
+                    if (fini) items.resultat = r;
+                } else {
+                    if (fini) { if (/[+\-*/]/.test(k)) reprendre(); else { items = []; ecranR.textContent = ''; } fini = false; }
+                    items.push({ c: k, sup: expo });
+                }
+                afficher();
+            }
+            // après « = », un opérateur ou une puissance repart du résultat
+            function reprendre() {
+                var r = items.resultat;
+                items = String(+r.toPrecision(12)).split('').map(function (c) { return { c: c, sup: false }; });
+                fini = false; ecranR.textContent = '';
+            }
+            pan.addEventListener('keydown', function (ev) {
+                var k = ev.key, m = { 'Enter': '=', '=': '=', 'Backspace': 'retour', 'Delete': 'efface', '^': 'pow', 'ArrowRight': 'sortir', ',': '.', 'x': '*', 'X': '*', '÷': '/', '×': '*' }[k] || k;
+                if (k === 'Escape') { pan.hidden = true; bc.focus(); ev.preventDefault(); return; }
+                if (/^[0-9.+\-*/()]$/.test(m) || ['=', 'retour', 'efface', 'pow', 'sortir'].indexOf(m) >= 0) { ev.preventDefault(); touche(m); }
+            });
+            bc.onclick = function () { pan.hidden = !pan.hidden; if (!pan.hidden) { afficher(); pan.focus(); } };
+            pan.querySelector('.calc-fermer').onclick = function () { pan.hidden = true; bc.focus(); };
             document.body.appendChild(bc); document.body.appendChild(pan);
         })();
         if (compteProf()) {
