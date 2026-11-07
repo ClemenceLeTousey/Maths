@@ -101,8 +101,8 @@
             $('nt-texte').value = 'Les automatismes de la semaine sont en ligne : 3 jours à faire.';
         } else {
             $('nt-rappel').checked = true; $('nt-categorie').value = 'rappel'; $('nt-lien').value = 'espace-eleve/';
-            $('nt-titre').value = '⏰ ' + s + ' pas finie';
-            $('nt-texte').value = 'Il te reste {n} jour(s) de la ' + s + ' à faire.';
+            $('nt-titre').value = '⏰ Automatismes - ' + s;
+            $('nt-texte').value = 'La série n\'est pas finie. Date limite : vendredi soir.';
         }
         apercu();
     }
