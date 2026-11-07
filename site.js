@@ -777,7 +777,7 @@ document.addEventListener('click', function (e) {
 (function () {
     var script = document.currentScript;
     var base = script ? script.src.replace(/site\.js(\?.*)?$/, '') : '';
-    // Site ouvert comme application installée (écran d'accueil) : pas de lien vers l'espace professeure
+    // Site ouvert comme application installée (écran d'accueil) : pas de lien vers l'espace professeure ni NumWorks
     var appli = (window.matchMedia && (matchMedia('(display-mode: standalone)').matches ||
                  matchMedia('(display-mode: fullscreen)').matches ||
                  matchMedia('(display-mode: minimal-ui)').matches)) || navigator.standalone === true;
@@ -793,9 +793,10 @@ document.addEventListener('click', function (e) {
         LIENS.push({ texte: 'Espace professeure', href: 'espace-eleve/prof.html', actif: /\/espace-eleve\/prof\.html$/ });
     }
     document.addEventListener('DOMContentLoaded', function () {
-        if (appli) {   // lien éventuellement écrit en dur dans la barre de navigation
+        if (appli) {   // liens masqués dans l'appli : Espace professeure, NumWorks
             document.querySelectorAll('.nav-links a').forEach(function (a) {
-                if (a.textContent.trim() === 'Espace professeure') a.parentNode.classList.add('lien-espace-prof');
+                if (a.textContent.trim() === 'Espace professeure' || /numworks\.html$/i.test(a.getAttribute('href') || ''))
+                    a.parentNode.classList.add('lien-espace-prof');
             });
         }
         var menu = document.querySelector('.nav-links');
