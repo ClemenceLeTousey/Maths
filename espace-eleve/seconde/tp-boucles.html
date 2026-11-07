@@ -140,6 +140,10 @@
         .pourquoi { margin-top: 10px; }
         .pourquoi p { margin: 6px 0; }
         .pourquoi .case-ligne { margin: 6px 0; }
+        .pourquoi .pq-titre { color: var(--muted); font-weight: 600; margin: 8px 0 2px; }
+        .pourquoi .case-ligne .retour.case-retour { grid-column: 1 / -1; }
+        pre.code.surligne span.l { display: block; padding: 0 6px; }
+        pre.code.surligne span.boucle { background: rgba(255, 212, 59, .35); box-shadow: inset 3px 0 0 #f59f00; }
         .pourquoi select { font: inherit; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--text); }
         .qcm { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
         .qcm label { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
@@ -576,6 +580,12 @@ def _console(ligne, n):
         var CASE_LU = '<label class="lu"><input type="checkbox"> J’ai lu</label>';
         function encadre(classe, titre, corps) { return '<div class="encadre ' + classe + '"><b>' + titre + '</b>' + corps + CASE_LU + '</div>'; }
         function py(code) { return '<pre class="code">' + esc(code) + '</pre>'; }
+        // script dont les lignes a à b (la boucle) sont surlignées
+        function pySurligne(code, a, b) {
+            return '<pre class="code surligne">' + String(code).replace(/\n$/, '').split('\n').map(function (l, i) {
+                return '<span class="' + (i + 1 >= a && i + 1 <= b ? 'l boucle' : 'l') + '">' + (esc(l) || ' ') + '</span>';
+            }).join('') + '</pre>';
+        }
         function sansAccent(t) { return t.normalize('NFD').replace(/[̀-ͯ]/g, ''); }
         // texte : sans majuscules, accents, guillemets ni espaces superflus
         function txt(s) { return sansAccent(String(s).toLowerCase()).replace(/["'«»“”‘’]/g, '').replace(/\s+/g, ' ').trim(); }
@@ -635,7 +645,7 @@ def _console(ligne, n):
             f.appendChild(l);
             var b = el('button', null, 'Valider'); b.type = 'submit'; f.appendChild(b);
             var r = el('span', 'retour case-retour'); f.appendChild(r);
-            function marquer(ok) { r.className = 'retour case-retour ' + (ok ? 'ok' : 'ko'); r.textContent = ok ? '✓ ' + msgOk : '✗ ' + msgFaux; }
+            function marquer(ok) { r.className = 'retour case-retour ' + (ok ? 'ok' : 'ko'); r.innerHTML = ok ? '✓<br>' + miseEnForme(msgOk) : '✗ ' + miseEnForme(msgFaux); }
             sel.onchange = function () { r.textContent = ''; };
             f.onsubmit = function (ev) {
                 ev.preventDefault();
@@ -752,7 +762,7 @@ def _console(ligne, n):
               scripts: [
                   { nom: 'Script A', code: SCRIPT_A, attendu: '1 2 3 4 5', liste: true },
                   { nom: 'Script B', code: SCRIPT_B, attendu: '0 3 6 9', liste: true,
-                    intro: '<code>k</code> prend successivement les valeurs de <code>range(4)</code>.',
+                    intro: '<code>k</code> prend successivement les valeurs de <code>range(4)</code>.', surligne: [1, 2],
                     car: [{ valeur: '4', avant: 'Nombre de tours de boucle :', raison: 'range(4) donne 4 valeurs : 0, 1, 2 et 3', aide: 'Compte les valeurs de range(4) : on part de 0 et on s’arrête avant 4.' },
                           { valeur: '3', avant: 'Au dernier tour, <code>k</code> vaut', raison: '4 est exclu', aide: 'range(4) s’arrête avant 4.' },
                           { valeur: '9', avant: 'Donc le dernier nombre affiché est', raison: '3 × 3 = 9', aide: 'Calcule 3 × k avec la dernière valeur de k.' },
@@ -771,15 +781,15 @@ def _console(ligne, n):
               scripts: [
                   { nom: 'Script C', code: SCRIPT_C, attendu: 4, libelle: 'Je prévois que le script affiche ', apres: ' lignes.',
                     libelleVerif: 'Nombre de lignes affichées dans la console :', aideVerif: 'Exécute le script et compte les lignes affichées.',
-                    intro: '<code>print("Fin")</code> n’est pas décalé : il est <b>après</b> la boucle.',
-                    car: [{ valeur: '3', avant: 'Nombre de fois où « Bonjour » est affiché :', raison: 'la boucle fait 3 tours', aide: 'Combien de tours fait range(3) ?' },
-                          { valeur: '1', avant: 'Nombre de fois où « Fin » est affiché :', raison: 'il est exécuté une seule fois, après la boucle', aide: 'print("Fin") n’est pas dans la boucle.' },
+                    intro: 'L’instruction <code>print("Fin")</code> n’est pas décalée : elle est <b>après</b> la boucle et n’est donc pas répétée.', surligne: [1, 2],
+                    car: [{ valeur: '3', avant: 'Nombre de fois où « Bonjour » est affiché :', raison: '`for i in range(3):` permet de répéter 3 fois l’instruction décalée `print("Bonjour")`', aide: 'Combien de tours fait range(3) ?' },
+                          { valeur: '1', avant: 'Nombre de fois où « Fin » est affiché :', raison: '`print("Fin")` n’est pas décalée : elle est après la boucle, elle n’est donc exécutée qu’une seule fois', aide: 'print("Fin") n’est pas dans la boucle.' },
                           { fin: '3 + 1 = 4 lignes.' }] },
                   { nom: 'Script D', code: SCRIPT_D, attendu: 6, libelle: 'Je prévois que le script affiche ', apres: ' lignes.',
                     libelleVerif: 'Nombre de lignes affichées dans la console :', aideVerif: 'Exécute le script et compte les lignes affichées.',
-                    intro: 'Cette fois, <code>print("Fin")</code> est décalé : il fait partie de la boucle.',
-                    car: [{ valeur: '3', avant: 'Nombre de tours de boucle :', raison: 'range(3) donne 0, 1 et 2', aide: 'Combien de valeurs donne range(3) ?' },
-                          { valeur: '2', avant: 'Nombre de lignes affichées à chaque tour :', raison: '« Bonjour » puis « Fin »', aide: 'Combien de print sont décalés sous for ?' },
+                    intro: 'Cette fois, l’instruction <code>print("Fin")</code> est décalée : elle fait partie de la boucle et est donc répétée.', surligne: [1, 3],
+                    car: [{ valeur: '3', avant: 'Nombre de tours de boucle :', raison: '`for i in range(3):` fait 3 tours, avec i = 0, 1 puis 2', aide: 'Combien de valeurs donne range(3) ?' },
+                          { valeur: '2', avant: 'Nombre de lignes affichées à chaque tour :', raison: 'les deux instructions décalées, `print("Bonjour")` puis `print("Fin")`, sont répétées à chaque tour', aide: 'Combien de print sont décalés sous for ?' },
                           { fin: '3 × 2 = 6 lignes : « Bonjour », « Fin », trois fois de suite.' }] }
               ],
               bilan: [
@@ -810,14 +820,14 @@ def _console(ligne, n):
                 PREVOIR_SCRIPT,
               scripts: [
                   { nom: 'Script E', code: PUISSANCES, attendu: 1024, variable: 'x',
-                    intro: '<code>x</code> double à chaque tour : 1, 2, 4, 8, 16…',
+                    intro: '<code>x</code> double à chaque tour : 1, 2, 4, 8, 16…', surligne: [2, 3],
                     car: [{ valeur: '512', avant: 'La plus grande valeur de <code>x</code> qui vérifie <code>x &lt;= 1000</code> est', raison: '512 ⩽ 1000, mais 2 × 512 = 1024', aide: 'Écris les valeurs de x : 1, 2, 4, 8, … jusqu’à dépasser 1000.' },
                           { valeur: '1024', avant: 'Au tour suivant, <code>x</code> devient', raison: '2 × 512 = 1024', aide: 'Double 512.' },
                           { cond: 'while x <= 1000', val: '1024', vraie: false, raison: '1024 n’est pas inférieur ou égal à 1000',
                             avant: 'On teste à nouveau <code>while x &lt;= 1000</code> : la condition ' },
                           { fin: 'La boucle s’arrête et le script affiche 1024.' }] },
                   { nom: 'Script F', code: MOITIES, attendu: 4, variable: 'x',
-                    intro: 'Suis les valeurs de <code>x</code> tour par tour. La variable <code>n</code> compte les tours.',
+                    intro: 'Suis les valeurs de <code>x</code> tour par tour. La variable <code>n</code> compte les tours.', surligne: [3, 5],
                     car: [{ valeur: '50', avant: 'Après le 1er tour, <code>x</code> vaut', raison: '100 / 2 = 50', aide: 'Divise 100 par 2.' },
                           { valeur: '25', avant: 'Après le 2e tour, <code>x</code> vaut', raison: '50 / 2 = 25', aide: 'Divise par 2.' },
                           { valeur: '12.5', avant: 'Après le 3e tour, <code>x</code> vaut', raison: '25 / 2 = 12,5', aide: 'Divise 25 par 2.' },
@@ -859,7 +869,7 @@ def _console(ligne, n):
               consigne: '<p>Ce script devrait afficher la somme 1 + 2 + … + 10, c’est-à-dire 55, <b>une seule fois</b>. Il contient deux erreurs.</p>' + PREVOIR_SCRIPT,
               scripts: [{ nom: 'Script G', code: SOMME_BUG, attendu: 45, libelle: 'Je prévois que le dernier nombre affiché est ',
                           libelleVerif: 'Le dernier nombre affiché dans la console est', aideVerif: 'Exécute le script et regarde le dernier nombre affiché.',
-                          intro: '<code>range(1, 10)</code> donne à <code>i</code> les valeurs 1, 2, …',
+                          intro: '<code>range(1, 10)</code> donne à <code>i</code> les valeurs 1, 2, …', surligne: [2, 4],
                           car: [{ valeur: '9', avant: 'Au dernier tour, <code>i</code> vaut', raison: '10 est exclu de range(1, 10)', aide: 'range(1, 10) s’arrête avant 10.' },
                                 { valeur: '9', avant: 'Nombre de nombres affichés :', raison: 'print est décalé : il est exécuté à chaque tour', aide: 'print est-il dans la boucle ? Combien de tours fait-elle ?' },
                                 { fin: '10 n’est jamais ajouté : le dernier nombre affiché est 1 + 2 + … + 9 = 45.' }] }],
@@ -1514,7 +1524,9 @@ def _console(ligne, n):
                                    réponses rangées dans rep[k][2], rep[k][3], … */
                                 var nomVar = sc.variable || e.variable;
                                 var pq = el('div', 'pourquoi');
-                                pq.appendChild(el('p', null, '<b>Pourquoi ?</b> ' + (sc.intro || 'La variable <code>' + esc(nomVar) + '</code> vaut ' + esc(sc.valeur) + '.')));
+                                pq.appendChild(el('p', 'pq-titre', 'Pourquoi ?'));
+                                pq.appendChild(el('p', null, sc.intro || 'La variable <code>' + esc(nomVar) + '</code> vaut ' + esc(sc.valeur) + '.'));
+                                if (sc.surligne && sc.code) pq.appendChild(el('div', null, pySurligne(sc.code, sc.surligne[0], sc.surligne[1])));
                                 suite.appendChild(pq);
                                 var nbCond = 0, faits = [];
                                 function libelleBloc(v) { var b = (e.blocs || []).filter(function (x) { return (Array.isArray(x) ? x[0] : x) === v; })[0]; return Array.isArray(b) ? b[1] : v; }
@@ -1548,7 +1560,7 @@ def _console(ligne, n):
                                 }
                                 function marquerRaison(lc, raison) {
                                     var r = lc.querySelector('.case-retour');
-                                    if (r && raison) r.textContent = '✓ ' + raison + '.';
+                                    if (r && raison) r.innerHTML = '✓<br>' + miseEnForme(raison) + '.';
                                 }
                                 element(0);
                             }

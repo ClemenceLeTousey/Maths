@@ -140,6 +140,10 @@
         .pourquoi { margin-top: 10px; }
         .pourquoi p { margin: 6px 0; }
         .pourquoi .case-ligne { margin: 6px 0; }
+        .pourquoi .pq-titre { color: var(--muted); font-weight: 600; margin: 8px 0 2px; }
+        .pourquoi .case-ligne .retour.case-retour { grid-column: 1 / -1; }
+        pre.code.surligne span.l { display: block; padding: 0 6px; }
+        pre.code.surligne span.boucle { background: rgba(255, 212, 59, .35); box-shadow: inset 3px 0 0 #f59f00; }
         .pourquoi select { font: inherit; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--text); }
         .qcm { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
         .qcm label { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
@@ -549,6 +553,12 @@ def _console(ligne, n):
         var CASE_LU = '<label class="lu"><input type="checkbox"> J’ai lu</label>';
         function encadre(classe, titre, corps) { return '<div class="encadre ' + classe + '"><b>' + titre + '</b>' + corps + CASE_LU + '</div>'; }
         function py(code) { return '<pre class="code">' + esc(code) + '</pre>'; }
+        // script dont les lignes a à b (la boucle) sont surlignées
+        function pySurligne(code, a, b) {
+            return '<pre class="code surligne">' + String(code).replace(/\n$/, '').split('\n').map(function (l, i) {
+                return '<span class="' + (i + 1 >= a && i + 1 <= b ? 'l boucle' : 'l') + '">' + (esc(l) || ' ') + '</span>';
+            }).join('') + '</pre>';
+        }
         function sansAccent(t) { return t.normalize('NFD').replace(/[̀-ͯ]/g, ''); }
         // texte : sans majuscules, accents, guillemets ni espaces superflus
         function txt(s) { return sansAccent(String(s).toLowerCase()).replace(/["'«»“”‘’]/g, '').replace(/\s+/g, ' ').trim(); }
@@ -608,7 +618,7 @@ def _console(ligne, n):
             f.appendChild(l);
             var b = el('button', null, 'Valider'); b.type = 'submit'; f.appendChild(b);
             var r = el('span', 'retour case-retour'); f.appendChild(r);
-            function marquer(ok) { r.className = 'retour case-retour ' + (ok ? 'ok' : 'ko'); r.textContent = ok ? '✓ ' + msgOk : '✗ ' + msgFaux; }
+            function marquer(ok) { r.className = 'retour case-retour ' + (ok ? 'ok' : 'ko'); r.innerHTML = ok ? '✓<br>' + miseEnForme(msgOk) : '✗ ' + miseEnForme(msgFaux); }
             sel.onchange = function () { r.textContent = ''; };
             f.onsubmit = function (ev) {
                 ev.preventDefault();
@@ -1427,7 +1437,9 @@ def _console(ligne, n):
                                    réponses rangées dans rep[k][2], rep[k][3], … */
                                 var nomVar = sc.variable || e.variable;
                                 var pq = el('div', 'pourquoi');
-                                pq.appendChild(el('p', null, '<b>Pourquoi ?</b> ' + (sc.intro || 'La variable <code>' + esc(nomVar) + '</code> vaut ' + esc(sc.valeur) + '.')));
+                                pq.appendChild(el('p', 'pq-titre', 'Pourquoi ?'));
+                                pq.appendChild(el('p', null, sc.intro || 'La variable <code>' + esc(nomVar) + '</code> vaut ' + esc(sc.valeur) + '.'));
+                                if (sc.surligne && sc.code) pq.appendChild(el('div', null, pySurligne(sc.code, sc.surligne[0], sc.surligne[1])));
                                 suite.appendChild(pq);
                                 var nbCond = 0, faits = [];
                                 function libelleBloc(v) { var b = (e.blocs || []).filter(function (x) { return (Array.isArray(x) ? x[0] : x) === v; })[0]; return Array.isArray(b) ? b[1] : v; }
@@ -1461,7 +1473,7 @@ def _console(ligne, n):
                                 }
                                 function marquerRaison(lc, raison) {
                                     var r = lc.querySelector('.case-retour');
-                                    if (r && raison) r.textContent = '✓ ' + raison + '.';
+                                    if (r && raison) r.innerHTML = '✓<br>' + miseEnForme(raison) + '.';
                                 }
                                 element(0);
                             }
