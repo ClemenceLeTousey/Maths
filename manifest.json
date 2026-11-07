@@ -1,6 +1,6 @@
 {
-  "name": "Maths CLT",
-  "short_name": "Maths CLT",
+  "name": "Maths Lebrun",
+  "short_name": "Maths Lebrun",
   "description": "Cours, exercices interactifs et automatismes de mathématiques — Seconde, Première, TST2S.",
   "lang": "fr",
   "start_url": "./",

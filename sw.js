@@ -6,7 +6,7 @@ self.addEventListener('activate', function (e) { e.waitUntil(self.clients.claim(
 self.addEventListener('push', function (e) {
     var d = {};
     try { d = e.data ? e.data.json() : {}; } catch (x) { d = { texte: e.data && e.data.text() }; }
-    e.waitUntil(self.registration.showNotification(d.titre || 'Maths CLT', {
+    e.waitUntil(self.registration.showNotification(d.titre || 'Maths Lebrun', {
         body: d.texte || '',
         icon: 'img/favicon-192.png',
         badge: 'img/favicon-192.png',
