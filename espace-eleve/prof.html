@@ -144,6 +144,7 @@
         .nt-apercu b, .nt-apercu span { display: block; font-size: 0.9rem; }
         .nt-apercu span { color: var(--muted); }
         #nt-etat.ko { color: var(--ko); }
+        .nt-alerte { color: var(--ko); background: var(--ko-fond); border: 1px solid var(--ko); border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; max-width: 640px; }
         /* Suivi : bouton « Cours passé » par jour ; case rouge si la série n'était pas faite à ce moment-là */
         .cours-passe { display: block; margin: 4px auto 0; font: inherit; font-size: 0.75rem; font-weight: 500; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; white-space: nowrap; }
         .cours-passe:hover { border-color: var(--ko); color: var(--ko); }
@@ -258,6 +259,9 @@
                     <p class="aide" id="nt-etat" aria-live="polite"></p>
                 </div>
                 <h3>Règles automatiques (chaque semaine)</h3>
+                <p class="nt-alerte">⚠️ Pour l'instant (essais), les règles peuvent être programmées le <b>samedi et le dimanche</b>.
+                   À retirer avant d'ouvrir les notifications aux élèves : pas de notifications le week-end
+                   (supprimer les règles du week-end, relancer <code>maj-push-regles-weekend.sql</code> avec 5 au lieu de 7, retirer les options « essai »).</p>
                 <p class="aide">Appliquées à la série de la semaine, d'après les dates de config.js (« Série 8 · semaine du 9 au 13 novembre »). <code>{serie}</code> est remplacé par « Série 8 ».</p>
                 <p class="aide" id="nt-serie-cours"></p>
                 <div id="nt-regles"></div>
