@@ -44,15 +44,12 @@
     }
 
     /* ---------- Destinataires ---------- */
-    function classes() {
-        var l = [];
-        (donnees ? donnees.eleves : []).forEach(function (e) { if (l.indexOf(e.classe) < 0) l.push(e.classe); });
-        return l.sort(function (a, b) { return a.localeCompare(b, 'fr', { numeric: true }); });
-    }
+    // Menu « Classes » : valeur = motif de classe, ou « code:XXX » pour un seul compte (élève simulé)
+    var CLASSES = [['2%', 'Toutes les Secondes'], ['2B', '2B'], ['2F', '2F'], ['2H', '2H'], ['1TC', '1TC'],
+                   ['code:PROF-2NDE', 'PROF-2NDE (élève simulé, pour tester)']];
     function remplirClasses() {
         var sel = $('nt-classe'), avant = sel.value;
-        sel.innerHTML = '<option value="2%">Toutes les Secondes</option>' +
-            classes().map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+        sel.innerHTML = CLASSES.map(function (c) { return '<option value="' + esc(c[0]) + '">' + esc(c[1]) + '</option>'; }).join('');
         if (avant && Array.prototype.some.call(sel.options, function (o) { return o.value === avant; })) sel.value = avant;
         remplirEleves();
     }
@@ -62,7 +59,7 @@
         var coupe = {};
         (donnees && donnees.coupees || []).forEach(function (x) { (coupe[x.code] = coupe[x.code] || []).push(emoji(x.categorie)); });
         var liste = (donnees ? donnees.eleves : []).filter(function (e) {
-            return c === '2%' ? /^2/.test(e.classe) : e.classe === c;
+            return c.indexOf('code:') === 0 ? e.code === c.slice(5) : c === '2%' ? /^2/.test(e.classe) : e.classe === c;
         }).sort(function (a, b) { return (n[a.code] || a.code).localeCompare(n[b.code] || b.code, 'fr'); });
         $('nt-eleves').innerHTML = liste.map(function (e) {
             return '<label><input type="checkbox" value="' + esc(e.code) + '"> ' + esc(n[e.code] ? n[e.code] + ' (' + e.code + ')' : e.code) +
@@ -116,7 +113,8 @@
             quand = new Date($('nt-quand-date').value);
             if (quand < new Date()) return etat('Cette date est déjà passée.', true);
         }
-        var codes = codesCoches(), rappel = $('nt-rappel').checked;
+        var codes = codesCoches(), rappel = $('nt-rappel').checked, choix = $('nt-classe').value;
+        if (!codes.length && choix.indexOf('code:') === 0) codes = [choix.slice(5)];
         var ids = rappel ? JSON.parse($('nt-serie').value || '[]') : [];
         if (rappel && !ids.length) return etat('Choisissez la série.', true);
         var dest = codes.length ? codes.length + ' élève(s)' : $('nt-classe').selectedOptions[0].textContent;
@@ -126,7 +124,7 @@
         Interactif.rpc('prof_notif_programmer', {
             p_mdp: mdp(), p_envoyer_le: quand ? quand.toISOString() : null,
             p_titre: $('nt-titre').value, p_texte: $('nt-texte').value, p_url: $('nt-lien').value,
-            p_codes: codes, p_classes: codes.length ? [] : [$('nt-classe').value], p_exercices: ids, p_categorie: $('nt-categorie').value
+            p_codes: codes, p_classes: codes.length ? [] : [choix], p_exercices: ids, p_categorie: $('nt-categorie').value
         }).then(function () {
             if (!plusTard) {
                 // envoi immédiat : on réveille la fonction Edge sans attendre le passage des 15 minutes
