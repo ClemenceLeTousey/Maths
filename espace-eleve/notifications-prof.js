@@ -45,7 +45,7 @@
 
     /* ---------- Destinataires ---------- */
     // Menu « Classes » : valeur = motif de classe, ou « code:XXX » pour un seul compte (élève simulé)
-    var CLASSES = [['2%', 'Toutes les Secondes'], ['2B', '2B'], ['2F', '2F'], ['2H', '2H'], ['1TC', '1TC'],
+    var CLASSES = [['2%', 'Toutes les Secondes'], ['2B', '2B'], ['2F', '2F'], ['2H', '2H'],
                    ['code:PROF-2NDE', 'PROF-2NDE (élève simulé, pour tester)']];
     function remplirClasses() {
         var sel = $('nt-classe'), avant = sel.value;
