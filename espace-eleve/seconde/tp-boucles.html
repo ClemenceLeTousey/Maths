@@ -142,6 +142,9 @@
         .pourquoi .case-ligne { margin: 6px 0; }
         table.trace td { padding: 4px 6px; }
         table.trace td.donnee { font-family: var(--f-mono); color: var(--muted); }
+        table.trace select { font: inherit; padding: 2px 4px; border: 1px solid var(--line); border-radius: 6px; background: var(--bleu-doux); color: var(--text); }
+        table.trace select.juste { outline: 2px solid var(--ok); } table.trace select.fausse { outline: 2px solid var(--ko); }
+        .suivi .case-retour { display: block; margin-top: 6px; }
         table.trace input, .case-ligne input.tour { width: 3.6em; text-align: center; font-family: var(--f-mono); }
         table.trace input.juste, .case-ligne input.juste { outline: 2px solid var(--ok); background: var(--ok-fond); }
         table.trace input.fausse, .case-ligne input.fausse { outline: 2px solid var(--ko); background: var(--ko-fond); }
@@ -898,14 +901,20 @@ def _console(ligne, n):
                             avant: 'On teste à nouveau <code>while x &lt;= 1000</code> : la condition ' },
                           { fin: 'La boucle s’arrête et le script affiche 1024.' }] },
                   { nom: 'Script F', code: MOITIES, attendu: 4, variable: 'x',
-                    intro: 'Suis les valeurs de <code>x</code> tour par tour. La variable <code>n</code> compte les tours.', surligne: [3, 5],
-                    car: [{ valeur: '50', avant: 'Après le 1er tour, <code>x</code> vaut', raison: '100 / 2 = 50', aide: 'Divise 100 par 2.' },
-                          { valeur: '25', avant: 'Après le 2e tour, <code>x</code> vaut', raison: '50 / 2 = 25', aide: 'Divise par 2.' },
-                          { valeur: '12.5', avant: 'Après le 3e tour, <code>x</code> vaut', raison: '25 / 2 = 12,5', aide: 'Divise 25 par 2.' },
-                          { valeur: '6.25', avant: 'Après le 4e tour, <code>x</code> vaut', raison: '12,5 / 2 = 6,25', aide: 'Divise 12,5 par 2.' },
-                          { cond: 'while x > 10', val: '6.25', vraie: false, raison: '6,25 n’est pas plus grand que 10',
-                            avant: 'On teste <code>while x &gt; 10</code> : la condition ' },
-                          { fin: 'La boucle a fait 4 tours : le script affiche 4.' }] }
+                    intro: 'On teste la condition <code>x &gt; 10</code> <b>avant chaque tour</b> : si elle est vérifiée, on entre dans la boucle et on exécute les deux instructions décalées ; sinon, on sort de la boucle. La variable <code>n</code> compte les tours.', surligne: [3, 5],
+                    car: [{ cond: 'while x > 10', val: '100', vraie: true,
+                            avant: 'Au début, <code>x</code> vaut 100. La condition <code>x &gt; 10</code> ',
+                            raison: '`x` vaut 100 et 100 > 10 : on entre dans la boucle et on exécute `x = x / 2` puis `n = n + 1`' },
+                          { suivi: {
+                              consigne: 'Complète le tableau tour par tour. Tant que la condition est vérifiée, la boucle continue : ajoute un tour avec le bouton « + Ajouter un tour ».',
+                              lignes: [{ libelle: 'Condition <code>x &gt; 10</code> vérifiée ?', choix: ['oui', 'non'], aide: 'Compare la valeur de `x` de la même colonne avec 10.' },
+                                       { libelle: 'Valeur de <code>x</code>', aide: '`x = x / 2` : divise par 2 la valeur de `x` de la colonne précédente.' },
+                                       { libelle: 'Valeur de <code>n</code>', aide: '`n = n + 1` : `n` augmente de 1 à chaque tour.' }],
+                              debut: ['oui', '100', '0'],
+                              valeurs: function (t) { var x = 100 / Math.pow(2, t); return [x > 10 ? 'oui' : 'non', String(x), String(t)]; },
+                              stop: 'non', max: 8,
+                              raison: 'Après le 4e tour, `x` vaut 6,25 et 6,25 > 10 est faux : on sort de la boucle' } },
+                          { fin: 'La boucle a fait 4 tours : n vaut 4, le script affiche 4.' }] }
               ],
               bilan: [
                   'Avec <code>while</code>, Python teste la condition <b>avant chaque tour</b>.',
@@ -1201,6 +1210,7 @@ def _console(ligne, n):
                         if (it.cond) return li(code(it.cond) + ' : ' + (it.vraie ? 'est vérifiée' : 'n’est pas vérifiée') + ' (' + esc(it.raison) + ')');
                         if (it.valeur) return li(it.avant + ' <b>' + esc(it.valeur) + '</b> (' + esc(it.raison) + ')');
                         if (it.bloc) return li('bloc exécuté : sous ' + code(it.bloc));
+                        if (it.suivi) { var tt = []; for (var q = 1; q <= it.suivi.max; q++) { var vv = it.suivi.valeurs(q); tt.push('après le tour ' + q + ' : ' + vv.join(' ; ')); if (vv[0] === it.suivi.stop) break; } return li('tableau : ' + esc(tt.join(' · '))); }
                         return '';
                     }).join('') + '</ul>';
                     return li(t);
@@ -1427,6 +1437,84 @@ def _console(ligne, n):
                 return false;
             }
 
+            /* Tableau de suivi d'une boucle while dans le « Pourquoi ? » : une colonne « Au début » donnée, puis une colonne
+               par tour (condition oui / non, valeurs des variables) ; l'élève ajoute des tours tant que la condition est vérifiée.
+               Valeur gardée : colonnes séparées par « | », cases par « ; ». */
+            function suiviTableau(parent, S, garde, suivant, auChargement) {
+                var bloc = el('div', 'suivi'); parent.appendChild(bloc);
+                bloc.appendChild(el('p', null, S.consigne));
+                var wrap = el('div', 'tableau'), t = el('table', 'trace'); wrap.appendChild(t); bloc.appendChild(wrap);
+                var rangs = [el('tr')].concat(S.lignes.map(function () { return el('tr'); }));
+                rangs[0].appendChild(el('th', null, ''));
+                S.lignes.forEach(function (lg, j) { rangs[j + 1].appendChild(el('th', null, lg.libelle)); });
+                rangs.forEach(function (x) { t.appendChild(x); });
+                var cols = [], ordinal = function (k) { return k === 1 ? '1<sup>er</sup>' : k + '<sup>e</sup>'; };
+                function colonne(k, vals, fixe) {
+                    var th = el('th', null, k === 0 ? 'Au début' : 'Après le ' + ordinal(k) + ' tour'); rangs[0].appendChild(th);
+                    var tds = [th];
+                    var ins = S.lignes.map(function (lg, j) {
+                        var td = el('td'); rangs[j + 1].appendChild(td); tds.push(td);
+                        if (fixe) { td.textContent = vals[j]; td.className = 'donnee'; return null; }
+                        var x;
+                        if (lg.choix) { x = el('select'); x.appendChild(new Option('…', '')); lg.choix.forEach(function (o) { x.appendChild(new Option(o, o)); }); x.value = vals[j] || ''; }
+                        else { x = el('input'); x.autocomplete = 'off'; x.spellcheck = false; x.setAttribute('inputmode', 'decimal'); x.value = vals[j] || ''; }
+                        var efface = function () { x.classList.remove('juste', 'fausse'); };
+                        x.addEventListener('input', efface); x.addEventListener('change', efface);
+                        td.appendChild(x); return x;
+                    });
+                    if (!fixe) cols.push({ k: k, ins: ins, tds: tds });
+                }
+                colonne(0, S.debut, true);
+                var memo = garde ? String(garde).split('|').map(function (c) { return c.split(';'); }) : [];
+                memo.forEach(function (v, i) { colonne(i + 1, v, false); });
+                if (!memo.length) colonne(1, [], false);
+                var act = el('div', 'actions');
+                var bAj = el('button', 'secondaire', '+ Ajouter un tour'); bAj.type = 'button';
+                var bRe = el('button', 'secondaire', '− Retirer le dernier tour'); bRe.type = 'button';
+                var bVa = el('button', null, 'Valider le tableau'); bVa.type = 'button';
+                var r = el('span', 'retour case-retour');
+                act.appendChild(bAj); act.appendChild(bRe); act.appendChild(bVa); bloc.appendChild(act); bloc.appendChild(r);
+                function maj() { bAj.disabled = cols.length >= S.max; bRe.disabled = cols.length <= 1; }
+                bAj.onclick = function () { colonne(cols.length + 1, [], false); maj(); var p = cols[cols.length - 1].ins[0]; if (p) p.focus(); };
+                bRe.onclick = function () { var c = cols.pop(); c.tds.forEach(function (x) { x.remove(); }); maj(); };
+                maj();
+                function valeur() { return cols.map(function (c) { return c.ins.map(function (x) { return x.value.trim(); }).join(';'); }).join('|'); }
+                function verifier(marquer) {
+                    var fausses = [];
+                    cols.forEach(function (c) {
+                        var att = S.valeurs(c.k);
+                        c.ins.forEach(function (x, j) {
+                            var v = x.value.trim(), lg = S.lignes[j];
+                            var ok = lg.choix ? v === att[j] : Math.abs(num(v) - num(att[j])) < 1e-9;
+                            if (marquer) { x.classList.toggle('juste', ok); x.classList.toggle('fausse', !ok); }
+                            if (!ok) fausses.push(formeNonSimple(v, num(att[j])) ? FORME_SIMPLE : lg.aide);
+                        });
+                    });
+                    if (fausses.length) return '✗ ' + fausses.length + ' case' + (fausses.length > 1 ? 's' : '') + ' à revoir (en rouge). ' + miseEnForme(fausses[0]);
+                    var derniere = cols[cols.length - 1];
+                    if (S.valeurs(derniere.k)[0] !== S.stop) return '✗ La condition est encore vérifiée : la boucle continue. Ajoute un tour.';
+                    return null;
+                }
+                function bon() {
+                    [bAj, bRe, bVa].forEach(function (b) { b.hidden = true; });
+                    cols.forEach(function (c) { c.ins.forEach(function (x) { x.disabled = true; }); });
+                    r.className = 'retour case-retour ok'; r.innerHTML = '✓<br>' + miseEnForme(S.raison) + '.';
+                }
+                bVa.onclick = function () {
+                    if (!exigerLu()) return;
+                    if (cols.some(function (c) { return c.ins.some(function (x) { return !x.value.trim(); }); })) { r.className = 'retour case-retour ko'; r.textContent = 'Complète toutes les cases du tableau.'; return; }
+                    var m = verifier(true);
+                    if (m) { r.className = 'retour case-retour ko'; r.innerHTML = m; suivant(valeur(), false); return; }
+                    bon(); suivant(valeur(), true);
+                };
+                if (garde && !verifier(false)) { verifier(true); bon(); auChargement(true); }
+            }
+            // réponse attendue d'un « suivi » (aperçu « Développer » du mode professeure)
+            function solutionSuivi(S) {
+                var c = [];
+                for (var k = 1; k <= S.max; k++) { var v = S.valeurs(k); c.push(v.join(';')); if (v[0] === S.stop) break; }
+                return c.join('|');
+            }
             function montrerBilan() {
                 if (!e.bilan || bilanMontre) return;
                 bilanMontre = true;
@@ -1650,6 +1738,8 @@ def _console(ligne, n):
                                             'C’est le bloc sous la première condition vérifiée (le bloc sous else si aucune ne l’est).',
                                             'Le bloc sous ' + libelleBloc(it.bloc) + ' est exécuté' + (sc.appel && j === sc.car.length - 1 ? ' : l’appel ' + sc.appel + ' renvoie « ' + sc.attendu + ' »' : '') + '.',
                                             suivant, auChargement, ' est exécuté.', 'ligne-bloc');
+                                    } else if (it.suivi) {
+                                        suiviTableau(pq, it.suivi, rep[k][idx], suivant, auChargement);
                                     } else if (it.fin) {
                                         pq.appendChild(el('p', 'retour ok', '✓ ' + it.fin));
                                         if (j + 1 < sc.car.length) element(j + 1); else if (charge) finis[k] = true; else caseFinie(k);
@@ -1682,7 +1772,7 @@ def _console(ligne, n):
                                 bd.remove();
                                 var garde = rep[k].slice(), etaitFini = finis[k];
                                 rep[k] = ['(aperçu)', String(sc.attendu)].concat((sc.car || []).map(function (it) {
-                                    return it.cond ? (it.vraie ? 'est vérifiée' : 'n’est pas vérifiée') : it.valeur ? String(it.valeur) : it.bloc || '';
+                                    return it.cond ? (it.vraie ? 'est vérifiée' : 'n’est pas vérifiée') : it.valeur ? String(it.valeur) : it.suivi ? solutionSuivi(it.suivi) : it.bloc || '';
                                 }));
                                 ip.value = '(aperçu professeure)';
                                 charge = true; apresPrevision(false); charge = false;
