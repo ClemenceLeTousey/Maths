@@ -170,6 +170,13 @@
     window.NotifProf = {
         demarrer: function () {
             if (lance) { charger(); return; }
+            // page prof.html restée en cache (plus ancienne que ce script) : le dire au lieu d'échouer en silence
+            var manque = ['nt-classe', 'nt-categorie', 'nt-modele-eval', 'nt-lien', 'nt-serie'].filter(function (id) { return !$(id); });
+            if (manque.length) {
+                var p = $('nt-etat') || $('panneau-notifs');
+                if (p) p.textContent = 'Page pas à jour : rechargez-la en forçant la mise à jour (⌘ + Maj + R, ou Ctrl + F5).';
+                return;
+            }
             lance = true;
             $('nt-categorie').innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + esc(c[1]) + '</option>'; }).join('');
             $('nt-lien').innerHTML = LIENS.map(function (l) { return '<option value="' + l[0] + '">' + esc(l[1]) + '</option>'; }).join('');
