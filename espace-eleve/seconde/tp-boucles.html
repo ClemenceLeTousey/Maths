@@ -140,6 +140,10 @@
         .pourquoi { margin-top: 10px; }
         .pourquoi p { margin: 6px 0; }
         .pourquoi .case-ligne { margin: 6px 0; }
+        table.trace td { padding: 4px 6px; }
+        table.trace input { width: 3.6em; text-align: center; font-family: var(--f-mono); }
+        table.trace input.juste, .case-ligne input.juste { outline: 2px solid var(--ok); background: var(--ok-fond); }
+        table.trace input.fausse, .case-ligne input.fausse { outline: 2px solid var(--ko); background: var(--ko-fond); }
         .pourquoi .pq-titre { color: var(--muted); font-weight: 600; margin: 8px 0 2px; }
         .pourquoi .case-ligne .retour.case-retour { grid-column: 1 / -1; }
         pre.code.surligne span.l { display: block; padding: 0 6px; }
@@ -749,6 +753,24 @@ def _console(ligne, n):
             '<tr><td><code>range(2, 11, 2)</code></td><td>2, 4, 6, 8, 10 (de 2 en 2)</td></tr></table></div>';
         var LISTE = '<p class="aide">Plusieurs nombres ? Sépare-les par des espaces ou des virgules, par exemple : <code>2, 4, 6</code></p>';
 
+        /* Ancienne version de l'étape 3 (cases l'une sous l'autre, éditeur et console visibles dès le départ).
+           Pour y revenir : dans ETAPES, remplacer l'étape « A · Un accumulateur » (type 'trace') par ETAPE3_V1. */
+        var ETAPE3_V1 = { titre: 'A · Un accumulateur', type: 'question', etiquettesTexte: true,
+              consigne: '<p>Le script ci-dessous calcule une somme.</p>' +
+                encadre('', 'Suivre les variables', 'À chaque tour, <code>somme = somme + i</code> remplace <code>somme</code> par sa valeur actuelle <b>plus</b> <code>i</code>.') +
+                '<p>✍️ Complète <b>sans ordinateur</b> la valeur de <code>somme</code> à la fin de chaque tour, puis prévois ce que le script affiche. Tu pourras ensuite exécuter le script pour vérifier ta dernière réponse.</p>',
+              code: SOMME, exemple: 'somme',
+              champs: ['Avant la boucle, somme vaut', 'Après le 1er tour (i = 1), somme vaut', 'Après le 2e tour (i = 2), somme vaut',
+                       'Après le 3e tour (i = 3), somme vaut', 'Après le 4e tour (i = 4), somme vaut', 'Le script affiche'],
+              attendus: [0, 1, 3, 6, 10, 55],
+              aides: ['Regarde la première ligne du script.', '0 + 1 = ?', 'Ajoute 2 à la valeur précédente.', 'Ajoute 3 à la valeur précédente.',
+                      'Ajoute 4 à la valeur précédente.', 'Le script affiche 1 + 2 + 3 + … + 10 : exécute-le pour vérifier.'],
+              bilan: [
+                  'Le script calcule 1 + 2 + 3 + … + 10 = 55.',
+                  'La variable <code>somme</code>, qui « accumule » les valeurs, s’appelle un <b>accumulateur</b>.',
+                  'On l’initialise à 0 <b>avant</b> la boucle.'
+              ] };
+
         /* ---------- Les étapes ----------
            type 'question' : cases à remplir (avec ou sans programme à exécuter) ;
            type 'prevoir' : prévoir, puis vérifier (et se corriger) ; type 'code' : programme vérifié par Python (_ETAPES). */
@@ -797,16 +819,17 @@ def _console(ligne, n):
                   'Une instruction <b>non décalée</b> est exécutée une seule fois, après la boucle.'
               ] },
 
-            { titre: 'A · Un accumulateur', type: 'question', etiquettesTexte: true,
-              consigne: '<p>Le script ci-dessous calcule une somme.</p>' +
-                encadre('', 'Suivre les variables', 'À chaque tour, <code>somme = somme + i</code> remplace <code>somme</code> par sa valeur actuelle <b>plus</b> <code>i</code>.') +
-                '<p>✍️ Complète <b>sans ordinateur</b> la valeur de <code>somme</code> à la fin de chaque tour, puis prévois ce que le script affiche. Tu pourras ensuite exécuter le script pour vérifier ta dernière réponse.</p>',
-              code: SOMME, exemple: 'somme',
-              champs: ['Avant la boucle, somme vaut', 'Après le 1er tour (i = 1), somme vaut', 'Après le 2e tour (i = 2), somme vaut',
-                       'Après le 3e tour (i = 3), somme vaut', 'Après le 4e tour (i = 4), somme vaut', 'Le script affiche'],
-              attendus: [0, 1, 3, 6, 10, 55],
-              aides: ['Regarde la première ligne du script.', '0 + 1 = ?', 'Ajoute 2 à la valeur précédente.', 'Ajoute 3 à la valeur précédente.',
-                      'Ajoute 4 à la valeur précédente.', 'Le script affiche 1 + 2 + 3 + … + 10 : exécute-le pour vérifier.'],
+            { titre: 'A · Un accumulateur', type: 'trace',
+              consigne: '<p>Le script ci-dessous calcule une somme.</p>' + py(SOMME) +
+                encadre('', 'Suivre les variables', 'À chaque tour, <code>i</code> prend la valeur suivante de <code>range(1, 11)</code>, puis <code>somme = somme + i</code> remplace <code>somme</code> par sa valeur actuelle <b>plus</b> <code>i</code>.') +
+                '<p>✍️ <b>Sans ordinateur</b>, complète le tableau : la valeur de <code>i</code> et celle de <code>somme</code> à la fin de chaque tour, puis ce que le script affiche. Tu pourras ensuite exécuter le script pour vérifier.</p>',
+              script: SOMME,
+              colonnes: ['Avant la boucle', '1<sup>er</sup> tour', '2<sup>e</sup> tour', '3<sup>e</sup> tour', '4<sup>e</sup> tour', '5<sup>e</sup> tour'],
+              lignes: [
+                  { nom: 'i', valeurs: [null, 1, 2, 3, 4, 5], aide: '`range(1, 11)` commence à 1 : au 1er tour, i vaut 1, puis 2, 3…' },
+                  { nom: 'somme', valeurs: [0, 1, 3, 6, 10, 15], donnees: [0], aide: '`somme = somme + i` : ajoute la valeur de i du même tour à la valeur précédente de somme.' }
+              ],
+              final: { libelle: 'À la fin, le script affiche', attendu: 55, aide: 'La boucle continue jusqu’à i = 10 : le script affiche 1 + 2 + 3 + … + 10.' },
               bilan: [
                   'Le script calcule 1 + 2 + 3 + … + 10 = 55.',
                   'La variable <code>somme</code>, qui « accumule » les valeurs, s’appelle un <b>accumulateur</b>.',
@@ -1080,6 +1103,7 @@ def _console(ligne, n):
             if (e.type === 'quiz') return e.questions.map(function (q, i) {
                 return 'Q' + (i + 1) + ' : « ' + sansBalises(q.choix[v[i]] || '…') + ' » ' + (String(q.bonne) === v[i] ? '✓' : '✗');
             }).join('\n') + '\nScore : ' + scoreQuiz(e, n) + ' / ' + e.questions.length;
+            if (e.type === 'trace') return 'Tableau de suivi : ' + v.join(' ; ');
             if (e.type === 'question') return e.champs.map(function (c, k) { return c + ' → ' + (v[k] || '…'); }).join('\n');
             if (e.type === 'prevoir') {
                 var lignes = e.scripts.map(function (sc, k) {
@@ -1114,6 +1138,8 @@ def _console(ligne, n):
                     var sol = e.solution ? e.solution[k] : e.attendus ? String(e.attendus[k]) : '?';
                     return li(esc(c) + ' → <b>' + esc(sol) + '</b>' + (e.aides && e.aides[k] ? '<br><span class="aide">si faux : « ' + esc(e.aides[k]) + ' »</span>' : ''));
                 }).join('') + '</ul>';
+            } else if (e.type === 'trace') {
+                h += '<p>' + e.lignes.map(function (lg) { return '<code>' + esc(lg.nom) + '</code> : ' + lg.valeurs.map(function (x) { return x === null ? '—' : x; }).join(', '); }).join('<br>') + '<br>Le script affiche <b>' + e.final.attendu + '</b>.</p>';
             } else if (e.type === 'qcm') {
                 h += '<p>Bonne réponse : <b>' + e.choix[e.bonne] + '</b></p>';
             } else if (e.type === 'quiz') {
@@ -1603,6 +1629,63 @@ def _console(ligne, n):
                         corps.appendChild(zoneCode);
                         zoneCode.hidden = !(faite || e.scripts.every(function (x, j) { return finis[j]; }));
                     }
+                }
+                if (e.type === 'trace') {
+                    var valsT = (reponses[n] || []).slice(), casesT = [];
+                    var tabT = el('div', 'tableau'), t = el('table', 'trace');
+                    var trT = el('tr'); trT.appendChild(el('th', null, 'Tour de boucle'));
+                    e.colonnes.forEach(function (c) { trT.appendChild(el('th', null, c)); }); t.appendChild(trT);
+                    e.lignes.forEach(function (lg) {
+                        var tr = el('tr'); tr.appendChild(el('th', null, 'Valeur de <code>' + esc(lg.nom) + '</code>'));
+                        lg.valeurs.forEach(function (v, j) {
+                            var td = el('td');
+                            if (v === null) td.textContent = '—';
+                            else if ((lg.donnees || []).indexOf(j) >= 0) td.textContent = String(v);
+                            else {
+                                var inp = el('input'); inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('inputmode', 'decimal');
+                                inp.setAttribute('aria-label', lg.nom + ', ' + sansBalises(e.colonnes[j]));
+                                inp.value = valsT[casesT.length] || '';
+                                casesT.push({ i: inp, attendu: v, aide: lg.aide }); td.appendChild(inp);
+                            }
+                            tr.appendChild(td);
+                        });
+                        t.appendChild(tr);
+                    });
+                    tabT.appendChild(t); corps.appendChild(tabT);
+                    var fT = el('form', 'case-ligne prevision'), lT = el('label', null, e.final.libelle + ' ');
+                    var iT = el('input'); iT.className = 'long'; iT.autocomplete = 'off'; iT.spellcheck = false; iT.value = valsT[casesT.length] || '';
+                    lT.appendChild(iT); fT.appendChild(lT); casesT.push({ i: iT, attendu: e.final.attendu, aide: e.final.aide });
+                    var bT = el('button', null, 'Valider le tableau'); bT.type = 'submit'; fT.appendChild(bT);
+                    corps.appendChild(fT);
+                    var verifT = el('div', 'verif-script'); verifT.hidden = true; corps.appendChild(verifT);
+                    var montrerVerifT = function () {
+                        if (verifT.childNodes.length) return;
+                        verifT.hidden = false;
+                        verifT.appendChild(el('p', null, 'Tu peux maintenant exécuter le script pour vérifier :'));
+                        cms.push(miniEditeur(verifT, e.script, n + '-v')); rafraichir();
+                    };
+                    var corrigerT = function (montrerT) {
+                        return casesT.filter(function (c) {
+                            var ok = Math.abs(num(c.i.value) - c.attendu) < 1e-9;
+                            if (montrerT) { c.i.classList.toggle('juste', ok); c.i.classList.toggle('fausse', !ok); }
+                            return !ok;
+                        });
+                    };
+                    casesT.forEach(function (c) { c.i.addEventListener('input', function () { c.i.classList.remove('juste', 'fausse'); }); });
+                    fT.onsubmit = function (ev) {
+                        ev.preventDefault();
+                        if (!exigerLu()) return;
+                        if (casesT.some(function (c) { return !c.i.value.trim(); })) { retour.className = 'retour ko'; retour.textContent = 'Complète toutes les cases du tableau.'; return; }
+                        reponses[n] = casesT.map(function (c) { return c.i.value.trim(); }); ecrireLocal();
+                        var mauvaises = corrigerT(true);
+                        if (mauvaises.length) {
+                            faux(); retour.className = 'retour ko';
+                            retour.innerHTML = '✗ ' + mauvaises.length + ' case' + (mauvaises.length > 1 ? 's' : '') + ' à revoir (en rouge). ' + miseEnForme(mauvaises[0].aide);
+                            return;
+                        }
+                        montrerVerifT(); reussi();
+                    };
+                    if (valsT.length && !corrigerT(false).length) { corrigerT(true); montrerVerifT(); }
                 }
                 if (e.type === 'quiz') {
                     // une seule validation, puis correction question par question ; score gardé dans les détails (q / qmax)
