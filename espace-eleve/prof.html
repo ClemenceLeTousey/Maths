@@ -210,6 +210,8 @@
                 <button type="button" role="tab" id="onglet-dnl" aria-controls="panneau-dnl" data-onglet="dnl">DNL</button>
                 <button type="button" role="tab" id="onglet-tp-photo" aria-controls="panneau-tp-photo" data-onglet="tp-photo">TP Photo</button>
                 <button type="button" role="tab" id="onglet-tp-conditions" aria-controls="panneau-tp-conditions" data-onglet="tp-conditions">TP Conditions</button>
+                <button type="button" role="tab" id="onglet-tp-boucles" aria-controls="panneau-tp-boucles" data-onglet="tp-boucles">TP Boucles</button>
+                <button type="button" role="tab" id="onglet-tp-photo-bis" aria-controls="panneau-tp-photo-bis" data-onglet="tp-photo-bis">TP Photo bis</button>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-suivi-eval" aria-labelledby="onglet-suivi-eval" hidden>
@@ -370,6 +372,20 @@
                 <iframe id="tp-conditions-apercu" title="Aperçu du TP Conditions" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
             </div>
 
+            <div class="panneau" role="tabpanel" id="panneau-tp-boucles" aria-labelledby="onglet-tp-boucles" hidden>
+                <h2>TP3 Python · Les boucles (non noté)</h2>
+                <p class="aide">En préparation : le TP n'est visible que du compte PROF-2NDE (les élèves voient encore le sujet PDF). Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. 16 étapes : A (lire, prévoir) et B (modifier) en classe, C, quiz et défis D à la maison. TP d'entraînement : pas de note dans le Suivi TP (<code>nonNote</code> dans INTERACTIF_BAREMES). Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
+                <p><a class="bouton" href="seconde/tp-boucles.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
+                <iframe id="tp-boucles-apercu" title="Aperçu du TP Boucles" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
+            </div>
+
+            <div class="panneau" role="tabpanel" id="panneau-tp-photo-bis" aria-labelledby="onglet-tp-photo-bis" hidden>
+                <h2>TP4 bis Python · La photo numérique (noté)</h2>
+                <p class="aide">En préparation : visible seulement du compte PROF-2NDE ; les élèves gardent l'ancien TP Photo (seconde/tp-photo.html) tant que celui-ci n'est pas publié. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. 13 étapes sur deux séances : A-B-C (16 points), quiz /5, défis D (4 points), bonus « détecter les contours » (1 point, rattrape une étape manquée) ; « Transforme ta propre photo » est un extra facultatif sous le TP, non noté et non enregistré. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
+                <p><a class="bouton" href="seconde/tp-photo-bis.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
+                <iframe id="tp-photo-bis-apercu" title="Aperçu du TP Photo bis" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
+            </div>
+
             <div class="panneau" role="tabpanel" id="panneau-suivi-tp" aria-labelledby="onglet-suivi-tp" hidden>
                 <h2>Suivi des TP</h2>
                 <p class="aide">Barème automatique : chaque étape réussie rapporte ses points (colonne « Points » du détail), note plafonnée à 20 ; une étape passée (bouton « Passer ») ne rapporte rien tant qu’elle n’est pas réussie. TP Conditions : note du TP selon l'avancée (4 après le cours, 8 après l'Ex. 1, 15 après l'Ex. 4, 20 après l'Ex. 6, bonus 0,5) ; quiz final noté à part sur 5. Note globale = 0,75 × note TP + 0,25 × quiz ramené sur 20 (quiz pas encore fait : compté 0, signalé par *). Les erreurs (réponses fausses avant la bonne) sont indiquées pour information. Barème réglable dans <code>config.js</code> (INTERACTIF_BAREMES).</p>
@@ -494,13 +510,15 @@
                 // note globale /20 : 0,75 × note TP + 0,25 × quiz ramené sur 20 (quiz non fait = 0) ; sans quiz = note TP
                 var quizSur = quizE.length ? bareme.quizSur || 5 : 0;
                 var globale = quizSur ? 0.75 * note + 0.25 * (quiz || 0) * 20 / quizSur : note;
-                return { globale: Math.round(globale * 10) / 10, r: r, note: Math.round(note * 10) / 10, quiz: quiz === null ? null : Math.round(quiz * 10) / 10, quizSur: quizE.length ? bareme.quizSur || 5 : 0, reussies: reussies, bonusOk: bonusOk, nbBonus: bonus.length, comptees: comptees,
+                // « nonNote » (barème) : TP d'entraînement, pas de note (seulement les étapes, le quiz et les erreurs)
+                return { globale: bareme.nonNote ? null : Math.round(globale * 10) / 10, r: r, note: bareme.nonNote ? null : Math.round(note * 10) / 10, quiz: quiz === null ? null : Math.round(quiz * 10) / 10, quizSur: quizE.length ? bareme.quizSur || 5 : 0, reussies: reussies, bonusOk: bonusOk, nbBonus: bonus.length, comptees: comptees,
                          erreurs: err, passees: passees, duree: Math.max.apply(null, liste.map(function (x) { return x.duree_s || 0; })),
                          dernier: liste.reduce(function (m, x) { return new Date(x.fait_le) > m ? new Date(x.fait_le) : m; }, new Date(0)) };
             }
             // points d'une étape : liste « points » du barème, sinon 20 / nombre d'étapes comptées
             function pointsEtape(bareme, n, comptees) {
                 if ((bareme.quiz || []).indexOf(n) >= 0) return 0;
+                if (bareme.nonNote) return 0;
                 return bareme.points ? bareme.points[n - 1] || 0 : comptees > 0 ? 20 / comptees : 0;
             }
             function nomDe(e) { return noms[e.code] || ''; }
@@ -508,7 +526,7 @@
             function entete(t, cols) { var tr = document.createElement('tr'); cols.forEach(function (x) { var th = document.createElement('th'); th.textContent = x; tr.appendChild(th); }); t.appendChild(tr); }
             function minutes(s) { return s ? Math.round(s / 60) + ' min' : '—'; }
             function date(d) { return d && d.getTime() ? d.toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '—'; }
-            function fmt(x) { return String(x).replace('.', ','); }
+            function fmt(x) { return x === null ? 'non noté' : String(x).replace('.', ','); }
             function eleves() { return donnees.eleves.filter(function (e) { return e.classe === $classe.value; }).sort(ordreEleves); }
 
             function remplir() {
@@ -545,7 +563,7 @@
                         var cg = cell(tr, fmt(b.globale), 'note');
                         if (b.quizSur && b.quiz === null) { cg.textContent += ' *'; cg.title = 'Quiz pas encore fait : compté 0'; }
                         cell(tr, minutes(b.duree)); cell(tr, date(b.dernier));
-                        notes.push(b.note); globales.push(b.globale); if (b.quiz !== null) quizs.push(b.quiz);
+                        if (b.note !== null) { notes.push(b.note); globales.push(b.globale); } if (b.quiz !== null) quizs.push(b.quiz);
                         tr.className = 'cliquable'; tr.title = 'Voir le détail des étapes';
                         tr.onclick = function () { $eleve.value = e.code; afficher(); };
                     }
@@ -567,7 +585,7 @@
                 var b = resultat(code, id);
                 if (!b) return;
                 var t = document.createElement('div'); t.className = 'tp-entete';
-                var h = document.createElement('h3'); h.textContent = (noms[code] || code) + ' · TP ' + fmt(b.note) + ' / 20' + (b.quizSur ? ' · Quiz ' + (b.quiz === null ? '—' : fmt(b.quiz)) + ' / ' + b.quizSur + ' · Note globale ' + fmt(b.globale) + ' / 20' : ''); t.appendChild(h);
+                var h = document.createElement('h3'); h.textContent = (noms[code] || code) + ' · TP ' + (b.note === null ? 'non noté' : fmt(b.note) + ' / 20') + (b.quizSur ? ' · Quiz ' + (b.quiz === null ? '—' : fmt(b.quiz)) + ' / ' + b.quizSur + (b.globale === null ? '' : ' · Note globale ' + fmt(b.globale) + ' / 20') : ''); t.appendChild(h);
                 var a = document.createElement('span'); a.className = 'aide';
                 a.textContent = b.reussies + ' étape(s) réussie(s) sur ' + b.comptees + (b.nbBonus ? ', bonus ' + b.bonusOk + '/' + b.nbBonus : '') + ' · ' + b.erreurs + ' erreur(s) · ' + minutes(b.duree);
                 t.appendChild(a);
@@ -988,6 +1006,10 @@
             if (nom === 'tp-photo' && !$tp.src) $tp.src = 'seconde/tp-photo.html';
             var $tpc = document.getElementById('tp-conditions-apercu');
             if (nom === 'tp-conditions' && !$tpc.src) $tpc.src = 'seconde/tp-conditions.html';
+            [['tp-boucles', 'seconde/tp-boucles.html'], ['tp-photo-bis', 'seconde/tp-photo-bis.html']].forEach(function (x) {
+                var f = document.getElementById(x[0] + '-apercu');
+                if (nom === x[0] && !f.src) f.src = x[1];
+            });
         }
         onglets.forEach(function (o) {
             o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };

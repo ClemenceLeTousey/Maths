@@ -43,7 +43,9 @@
         .encadre { border-left: 4px solid var(--c-seconde); background: var(--bleu-doux); border-radius: 0 8px 8px 0; padding: 8px 12px; margin: 10px 0; }
         .encadre.astuce { border-left-color: var(--ok); }
         .encadre.attention { border-left-color: var(--ko); }
-        .encadre b:first-child { display: block; margin-bottom: 2px; }
+        /* titre du cadre seulement (le <b> placé directement dedans) : sans le « > », chaque mot en gras
+           en début de ligne de liste ou de code passait à la ligne */
+        .encadre > b:first-child { display: block; margin-bottom: 2px; }
         .figure { margin: 10px 0; }
         details.couleurs { border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; margin: 10px 0; }
         details.couleurs summary { cursor: pointer; font-weight: 600; }

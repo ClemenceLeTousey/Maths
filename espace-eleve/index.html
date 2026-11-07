@@ -264,7 +264,7 @@
         function accesTP(ex) {
             if (!ex.codeAcces) return true;
             var s = Interactif.session();
-            if (s && String(s.code || '').toUpperCase() === 'TEST-01') return true;
+            if (s && String(s.code || '').toUpperCase() === 'PROF-2NDE') return true;   // compte professeure (TEST-01 supprimé)
             try { return localStorage.getItem('tp-acces:' + ex.id) === ex.codeAcces; } catch (e) { return false; }
         }
         // « TP3 · Les boucles » : seul « TP3 » est en couleur
@@ -285,9 +285,13 @@
             (window.INTERACTIF_TP_ORDRE || []).forEach(function (o) {
                 if (niv && o.niveau && o.niveau !== niv) return;
                 if (o.id) {
-                    vus[o.id] = true;
-                    var ex = listeTP.filter(function (x) { return x.id === o.id; })[0];
+                    // TP interactif en préparation (réservé à PROF-2NDE) : « sinon » = ancienne version interactive,
+                    // ou, à défaut, la fiche PDF (pdf / corrige) de la même ligne
+                    vus[o.id] = true; if (o.sinon) vus[o.sinon] = true;
+                    var trouve = function (id) { return listeTP.filter(function (x) { return x.id === id; })[0]; };
+                    var ex = trouve(o.id) || (o.sinon && trouve(o.sinon));
                     if (ex) lignes.push({ ex: ex, nom: o.nom });
+                    else if (o.pdf || o.texte) lignes.push({ fiche: o });
                 } else lignes.push({ fiche: o });
             });
             listeTP.forEach(function (ex) { if (!vus[ex.id]) lignes.push({ ex: ex }); });

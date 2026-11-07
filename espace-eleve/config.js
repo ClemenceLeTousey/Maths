@@ -45,6 +45,12 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie11-j4', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 4 · bilan (à la maison)', court: 'S11 · J4', url: 'seconde/serie11.html?j=4', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/tp-photo', groupe: 'TP Python · Photographie numérique', titre: 'Créer et modifier une image (10 étapes)', court: 'TP Photo', url: 'seconde/tp-photo.html', tp: true,
       codeAcces: '2a04e66a8ad28d6c60b6cd57d4d4b45e894397c1baeb56b20bbe306c107ee99d' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
+    // TP3 Boucles et TP4 bis Photo : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
+    // Codes d'accès : TP3 BOUCLE-327, TP4 bis PIXEL-482 (seule l'empreinte est dans le site)
+    { niveau: 'seconde', id: 'seconde/tp-boucles', groupe: 'TP Python · Les boucles', titre: 'for, while, range (16 étapes)', court: 'TP Boucles', url: 'seconde/tp-boucles.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
+      codeAcces: 'f6e6d5215e50d0a94a9c4b3278f315616612eca19e6ccf2e48e2576f9485f8d8' },
+    { niveau: 'seconde', id: 'seconde/tp-photo-bis', groupe: 'TP Python · La photo numérique', titre: 'Créer et modifier une image (13 étapes)', court: 'TP Photo bis', url: 'seconde/tp-photo-bis.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
+      codeAcces: '0e9a00530e9b3e7bb719421ed987bc824b42e1415efed2b85a4cefabec7162bc' },
     // TP Conditions V1 (20 étapes) : archivé, la page reste dans seconde/tp-conditions-v1.html
     { niveau: 'seconde', id: 'seconde/tp-conditions', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (20 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions-v1.html', tp: true, vueProf: true, archive: true,
       codeAcces: 'd7c6ed760ed5b07f0c2766b06a63c0d5ddcec26f17c19db9e3d2a541645aca9c' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
@@ -162,8 +168,9 @@ window.INTERACTIF_GROUPES = {
 window.INTERACTIF_TP_ORDRE = [
     { niveau: 'seconde', nom: 'TP1 · Affectations et fonctions', texte: 'Premiers pas en Python avec Capytale', pdf: 'seconde/tp/tp1-sujet.pdf', corrige: 'seconde/tp/tp1-corrige.pdf' },
     { niveau: 'seconde', nom: 'TP2 · Les structures conditionnelles', id: 'seconde/tp-conditions-v2' },
-    { niveau: 'seconde', nom: 'TP3 · Les boucles en Python', texte: 'for, range, while', pdf: 'seconde/tp/tp3-sujet.pdf', corrige: 'seconde/tp/corrige-a-venir.html' },
-    { niveau: 'seconde', nom: 'TP4 · La photo numérique', id: 'seconde/tp-photo' }
+    // id = TP interactif ; tant qu'il est réservé à PROF-2NDE, les élèves voient « sinon » (ancien TP) ou la fiche PDF
+    { niveau: 'seconde', nom: 'TP3 · Les boucles en Python', id: 'seconde/tp-boucles', texte: 'for, range, while', pdf: 'seconde/tp/tp3-sujet.pdf', corrige: 'seconde/tp/corrige-a-venir.html' },
+    { niveau: 'seconde', nom: 'TP4 · La photo numérique', id: 'seconde/tp-photo-bis', sinon: 'seconde/tp-photo' }
 ];
 
 /* Barème automatique des TP (onglet « Suivi TP » de l'espace professeure).
@@ -180,6 +187,14 @@ window.INTERACTIF_BAREMES = {
         points: [1.5, 1, 1.5, 1, 1.5, 1.5, 1.5,   1, 1, 1.5, 1,      1,     1.5, 0.5, 1, 1, 1,  0,    0.5, 0.5],
         bonus: [19, 20],
         quiz: [18], quizSur: 5
+    },
+    'seconde/tp-boucles': { nonNote: true },   // TP3 : entraînement, non noté
+    'seconde/tp-photo-bis': {
+        // A : lire et prévoir (5) · B : modifier (6) · C : créer (5) · quiz à part · D : défis (4) · bonus contours (1) ; « ta photo » = extra hors barème
+        //       A            B          C         quiz  D              bonus
+        points: [1.5, 1.5, 2, 2, 2, 2,   2.5, 2.5, 0,    1.5, 1.5, 1,   1],
+        bonus: [13],
+        quiz: [9], quizSur: 5
     },
     'seconde/tp-conditions-v2': {
         // A : lire et prévoir (4,5) · B : modifier (5,5) · C : créer (5) · quiz à part · D : défis (5)
