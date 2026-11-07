@@ -866,7 +866,12 @@ document.addEventListener('click', function (e) {
         '.cloche svg { width: 20px; height: 20px; }' +
         '.cloche .compte { position: absolute; top: 4px; right: 4px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: #e5383b; color: #fff; font: 700 11px/17px system-ui, sans-serif; text-align: center; }' +
         '.cloche-panneau { position: fixed; right: 12px; width: min(360px, calc(100vw - 24px)); max-height: 65vh; overflow: auto; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.18); z-index: 1100; }' +
-        '.cloche-panneau h2 { font-size: 0.95rem; margin: 0; padding: 12px 14px; border-bottom: 1px solid var(--line); }' +
+        '.cloche-tete { display: flex; align-items: center; gap: 6px; padding: 8px 10px 8px 14px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface); }' +
+        '.cloche-tete h2 { font-size: 0.95rem; margin: 0; flex: 1; }' +
+        '.cloche-tete button { background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); font: inherit; font-size: 0.8rem; padding: 4px 8px; cursor: pointer; }' +
+        '.cloche-tete button:hover, .cloche-tete button:focus-visible { color: var(--text); border-color: var(--muted); outline: none; }' +
+        '.cloche-reglages { display: grid; gap: 8px; padding: 4px 14px 6px; }' +
+        '.cloche-reglages label { font-size: 0.9rem; display: flex; gap: 8px; align-items: center; }' +
         '.cloche-panneau ul { list-style: none; margin: 0; padding: 0; }' +
         '.cloche-panneau li { border-bottom: 1px solid var(--line); margin: 0; }' +
         '.cloche-panneau li:last-child { border-bottom: 0; }' +
@@ -905,10 +910,51 @@ document.addEventListener('click', function (e) {
                 montrerCompte(donnees.non_lues); pastille(donnees.non_lues);
             }, function () { /* base pas prête ou session expirée : pas de cloche active */ });
         }
-        function remplir() {
+        // Catégories (mêmes que maj-push-categories.sql) ; « prof » ne peut pas être coupée
+        var CATEGORIES = [['serie', '📅 Nouvelle série disponible'], ['rappel', '⏰ Série pas finie'], ['note', '📝 Nouvelle note'],
+                          ['eval', '📆 Évaluation à venir'], ['soutien', '🤝 Rappel soutien'], ['prof', '📣 Message de ta professeure']];
+        var reglages = false;
+        function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+        function entete(titre, boutons) {
+            var h = el('div', 'cloche-tete'); h.appendChild(el('h2', null, titre));
+            boutons.forEach(function (b) { var x = el('button', null, b[0]); x.type = 'button'; x.title = b[1]; x.setAttribute('aria-label', b[1]); x.onclick = b[2]; h.appendChild(x); });
+            panneau.appendChild(h);
+        }
+        function remplirReglages() {
             panneau.innerHTML = '';
-            var h = document.createElement('h2'); h.textContent = 'Notifications'; panneau.appendChild(h);
+            entete('Sur ce téléphone', [['←', 'Retour aux notifications', function () { reglages = false; remplir(); }]]);
+            var p = el('p', 'vide', 'Choisis les notifications que tu reçois sur ton téléphone. Elles restent toutes visibles ici, dans la cloche.');
+            panneau.appendChild(p);
+            var zone = el('div', 'cloche-reglages'), etat = el('p', 'vide', 'Chargement…');
+            panneau.appendChild(zone); panneau.appendChild(etat);
+            rpc('mes_preferences', { p_jeton: s.jeton }).then(function (coupees) {
+                coupees = coupees || []; etat.textContent = '';
+                CATEGORIES.forEach(function (c) {
+                    var l = el('label'), cb = el('input');
+                    cb.type = 'checkbox'; cb.value = c[0]; cb.checked = coupees.indexOf(c[0]) < 0;
+                    if (c[0] === 'prof') { cb.disabled = true; cb.checked = true; }
+                    l.appendChild(cb); l.appendChild(document.createTextNode(' ' + c[1] + (c[0] === 'prof' ? ' (toujours)' : '')));
+                    zone.appendChild(l);
+                });
+                zone.onchange = function () {
+                    var off = Array.prototype.filter.call(zone.querySelectorAll('input:not(:disabled)'), function (i) { return !i.checked; }).map(function (i) { return i.value; });
+                    etat.textContent = 'Enregistrement…';
+                    rpc('enregistrer_preferences', { p_jeton: s.jeton, p_coupees: off }).then(function () { etat.textContent = '✓ Enregistré.'; },
+                        function () { etat.textContent = 'Non enregistré, réessaie plus tard.'; });
+                };
+            }, function () { etat.textContent = 'Réglages indisponibles pour l\'instant.'; });
+        }
+        function remplir() {
+            if (reglages) return remplirReglages();
+            panneau.innerHTML = '';
             var liste = (donnees && donnees.liste) || [];
+            var boutons = [['⚙️', 'Choisir les notifications reçues sur le téléphone', function () { reglages = true; remplir(); }]];
+            if (liste.length) boutons.unshift(['Tout effacer', 'Effacer toutes les notifications', function () {
+                rpc('notifications_effacer', { p_jeton: s.jeton }).then(function () {
+                    donnees = { non_lues: 0, liste: [] }; montrerCompte(0); pastille(0); remplir();
+                }).catch(function () {});
+            }]);
+            entete('Notifications', boutons);
             if (!liste.length) { var p = document.createElement('p'); p.className = 'vide'; p.textContent = 'Aucune notification pour l\'instant.'; panneau.appendChild(p); return; }
             var ul = document.createElement('ul');
             liste.forEach(function (n) {
@@ -934,7 +980,8 @@ document.addEventListener('click', function (e) {
                 }).catch(function () {});
             }
         }
-        bt.onclick = function (e) { e.stopPropagation(); ouvrir(panneau.hidden); };
+        bt.onclick = function (e) { e.stopPropagation(); reglages = false; ouvrir(panneau.hidden); };
+        panneau.addEventListener('click', function (e) { e.stopPropagation(); });   // le contenu est redessiné : ne pas fermer le panneau
         document.addEventListener('click', function (e) { if (!panneau.hidden && !panneau.contains(e.target)) ouvrir(false); });
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panneau.hidden) { ouvrir(false); bt.focus(); } });
         // revenu dans l'appli (après une notification) : on met à jour

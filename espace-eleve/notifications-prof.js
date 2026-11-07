@@ -11,6 +11,10 @@
     var LIENS = [['espace-eleve/', 'Espace élève · Automatismes'], ['espace-eleve/#evaluations', 'Espace élève · Évaluations'],
                  ['espace-eleve/#soutien', 'Espace élève · Soutien'], ['espace-eleve/#echange', 'Espace élève · Messages'], ['./', 'Accueil du site']];
     var NIVEAUX = { seconde: 'Seconde', premiere: 'Première', terminale: 'TST2S' };
+    // mêmes catégories que maj-push-categories.sql et que la cloche (site.js) ; « prof » ne peut pas être coupée
+    var CATEGORIES = [['prof', '📣 Message de ta professeure'], ['serie', '📅 Nouvelle série disponible'], ['rappel', '⏰ Série pas finie'],
+                      ['eval', '📆 Évaluation à venir'], ['note', '📝 Nouvelle note'], ['soutien', '🤝 Rappel soutien']];
+    function emoji(c) { var x = CATEGORIES.filter(function (k) { return k[0] === c; })[0]; return x ? x[1].split(' ')[0] : ''; }
 
     function mdp() { try { return sessionStorage.getItem('interactif-prof'); } catch (e) { return null; } }
     function noms() { return window.interactifNoms ? window.interactifNoms() : {}; }
@@ -55,12 +59,14 @@
     function remplirEleves() {
         var c = $('nt-classe').value, n = noms(), abo = {};
         (donnees ? donnees.abonnes : []).forEach(function (a) { abo[a.code] = a.n; });
+        var coupe = {};
+        (donnees && donnees.coupees || []).forEach(function (x) { (coupe[x.code] = coupe[x.code] || []).push(emoji(x.categorie)); });
         var liste = (donnees ? donnees.eleves : []).filter(function (e) {
             return c === '2%' ? /^2/.test(e.classe) : e.classe === c;
         }).sort(function (a, b) { return (n[a.code] || a.code).localeCompare(n[b.code] || b.code, 'fr'); });
         $('nt-eleves').innerHTML = liste.map(function (e) {
             return '<label><input type="checkbox" value="' + esc(e.code) + '"> ' + esc(n[e.code] ? n[e.code] + ' (' + e.code + ')' : e.code) +
-                   (abo[e.code] ? ' <span title="Notifications activées sur ' + abo[e.code] + ' appareil(s)">📱</span>' : '') + '</label>';
+                   (abo[e.code] ? ' <span title="Notifications activées sur ' + abo[e.code] + ' appareil(s)' + (coupe[e.code] ? ' ; coupées sur le téléphone : ' + coupe[e.code].join(' ') : '') + '">📱' + (coupe[e.code] ? '⁻' : '') + '</span>' : '') + '</label>';
         }).join('') || '<p class="aide">Aucun élève.</p>';
         destinataires();
     }
@@ -88,12 +94,16 @@
     }
     function modele(type) {
         var s = serieCourte();
-        if (type === 'dispo') {
-            $('nt-rappel').checked = false;
+        if (type === 'eval') {
+            $('nt-rappel').checked = false; $('nt-categorie').value = 'eval'; $('nt-lien').value = 'espace-eleve/#evaluations';
+            $('nt-titre').value = '📆 Interro demain';
+            $('nt-texte').value = 'N\'oublie pas : interrogation demain. Le sujet d\'entraînement est dans l\'onglet Évaluations.';
+        } else if (type === 'dispo') {
+            $('nt-rappel').checked = false; $('nt-categorie').value = 'serie'; $('nt-lien').value = 'espace-eleve/';
             $('nt-titre').value = '📅 ' + s + ' disponible';
             $('nt-texte').value = 'Les automatismes de la semaine sont en ligne : 3 jours à faire.';
         } else {
-            $('nt-rappel').checked = true;
+            $('nt-rappel').checked = true; $('nt-categorie').value = 'rappel'; $('nt-lien').value = 'espace-eleve/';
             $('nt-titre').value = '⏰ ' + s + ' pas finie';
             $('nt-texte').value = 'Il te reste {n} jour(s) de la ' + s + ' à faire.';
         }
@@ -116,7 +126,7 @@
         Interactif.rpc('prof_notif_programmer', {
             p_mdp: mdp(), p_envoyer_le: quand ? quand.toISOString() : null,
             p_titre: $('nt-titre').value, p_texte: $('nt-texte').value, p_url: $('nt-lien').value,
-            p_codes: codes, p_classes: codes.length ? [] : [$('nt-classe').value], p_exercices: ids
+            p_codes: codes, p_classes: codes.length ? [] : [$('nt-classe').value], p_exercices: ids, p_categorie: $('nt-categorie').value
         }).then(function () {
             if (!plusTard) {
                 // envoi immédiat : on réveille la fonction Edge sans attendre le passage des 15 minutes
@@ -133,7 +143,7 @@
     function afficherListes() {
         var l = donnees.notifs || [], avenir = l.filter(function (n) { return !n.envoye_le; }).reverse(), faites = l.filter(function (n) { return n.envoye_le; });
         function ligne(n, fait) {
-            return '<tr><td>' + esc(date(fait ? n.envoye_le : n.envoyer_le)) + '</td><td><b>' + esc(n.titre) + '</b><br><span class="aide">' + esc(n.texte) + '</span></td>' +
+            return '<tr><td>' + esc(date(fait ? n.envoye_le : n.envoyer_le)) + '</td><td><span title="Catégorie">' + emoji(n.categorie) + '</span> <b>' + esc(n.titre) + '</b><br><span class="aide">' + esc(n.texte) + '</span></td>' +
                    '<td>' + esc(texteDest(n)) + (n.exercices ? '<br><span class="aide">si ' + esc(nomSerie(n.exercices)) + ' pas finie</span>' : '') + '</td>' +
                    (fait ? '<td>' + n.recues + '</td><td>' + n.lues + '</td>'
                          : '<td><button type="button" class="secondaire" data-suppr="' + n.id + '">Supprimer</button></td>') + '</tr>';
@@ -161,6 +171,7 @@
         demarrer: function () {
             if (lance) { charger(); return; }
             lance = true;
+            $('nt-categorie').innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + esc(c[1]) + '</option>'; }).join('');
             $('nt-lien').innerHTML = LIENS.map(function (l) { return '<option value="' + l[0] + '">' + esc(l[1]) + '</option>'; }).join('');
             var l = series(), courante = l.filter(function (g) { return g.niveau === 'seconde'; })[0];
             $('nt-serie').innerHTML = l.map(function (g) {
@@ -171,6 +182,7 @@
             ['nt-titre', 'nt-texte', 'nt-rappel', 'nt-maintenant', 'nt-plus-tard', 'nt-serie'].forEach(function (id) { $(id).addEventListener('input', apercu); $(id).addEventListener('change', apercu); });
             $('nt-modele-dispo').onclick = function () { modele('dispo'); };
             $('nt-modele-rappel').onclick = function () { modele('rappel'); };
+            $('nt-modele-eval').onclick = function () { modele('eval'); };
             $('nt-envoyer').onclick = envoyer;
             $('nt-avenir').onclick = function (e) {
                 var b = e.target.closest('[data-suppr]');

@@ -227,13 +227,16 @@
 
             <div class="panneau" role="tabpanel" id="panneau-notifs" aria-labelledby="onglet-notifs" hidden>
                 <h2>Notifications aux élèves</h2>
-                <p class="aide">Elles arrivent dans la cloche 🔔 du site et, pour les élèves qui les ont activées, sur leur téléphone. Envoi programmé : à l'heure prévue, à 15 minutes près.</p>
+                <p class="aide">Elles arrivent dans la cloche 🔔 du site et, pour les élèves qui les ont activées, sur leur téléphone. Envoi programmé : à l'heure prévue, à 15 minutes près.
+                   Automatiques : 🤝 rappel soutien la veille à 17h (le vendredi pour le lundi), 📝 nouvelle note à la publication dans Suivi Eval.</p>
                 <div class="nt-form">
                     <div class="nt-ligne">
                         <span class="aide" style="margin:0">Modèles :</span>
                         <button type="button" class="secondaire" id="nt-modele-dispo">📅 Série disponible</button>
                         <button type="button" class="secondaire" id="nt-modele-rappel">⏰ Série pas finie</button>
+                        <button type="button" class="secondaire" id="nt-modele-eval">📆 Évaluation demain</button>
                     </div>
+                    <label class="champ">Catégorie (l'élève peut couper chaque catégorie sur son téléphone, sauf 📣) <select id="nt-categorie"></select></label>
                     <label class="champ">Destinataires <select id="nt-classe"></select></label>
                     <details><summary class="aide" style="margin:0;cursor:pointer">Choisir des élèves précis (sinon : toute la sélection ci-dessus) · <span id="nt-dest-resume"></span></summary>
                         <div class="nt-eleves" id="nt-eleves"></div></details>
