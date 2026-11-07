@@ -216,6 +216,7 @@
         details.extra summary .aide { font-weight: 400; }
         .choix-mode { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 0 0 8px; padding: 4px 10px; border: 1px dashed var(--c-seconde); border-radius: 8px; font-size: 0.9rem; }
         .choix-mode .aide { margin: 0; }
+        .interactif .etape-tete button.reinit { font-size: 0.8rem; color: var(--muted); }
         .choix-mode label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
     </style>
 </head>
@@ -1192,6 +1193,18 @@ def _console(ligne, n):
         function compteProf() { if (VUE) return false; var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'PROF-2NDE'; }
         // compte PROF-2NDE : « mode professeure » (solutions, « Développer », toutes les étapes ouvertes, Passer sans confirmation)
         // ou « mode élève » (le TP exactement comme un élève le voit) ; choix gardé sur l'appareil (localStorage « tp-mode »)
+        /* Compte PROF-2NDE en mode élève : « Réinitialiser l'étape » efface les réponses de l'étape (et la progression
+           à partir d'elle) pour la refaire comme un élève. L'heure est gardée sur l'appareil : les résultats
+           enregistrés en ligne avant cette heure sont ignorés au chargement (sinon ils reviendraient). */
+        function dateReinit() { try { return +localStorage.getItem(cle() + ':reinit') || 0; } catch (x) { return 0; } }
+        function reinitialiser(n) {
+            [reponses, codes, lus, erreurs, passees].forEach(function (o) { delete o[n]; });
+            if (n <= faites) faites = n - 1;
+            try { localStorage.setItem(cle() + ':reinit', String(Date.now())); } catch (x) {}
+            ecrireLocal(); afficher();
+            var c = zone.querySelector('[data-n="' + n + '"]');
+            if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
         function modeTest() { if (!compteProf()) return false; try { return localStorage.getItem('tp-mode') !== 'eleve'; } catch (e) { return true; } }
         function depart(e) { return typeof e.code === 'function' ? e.code() : e.code; }
 
@@ -1208,7 +1221,8 @@ def _console(ligne, n):
             var s = Interactif.session();
             if (!s) return;
             Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(function (liste) {
-                var miens = (liste || []).filter(function (r) { return r.exercice === ID; });
+                var reinit = dateReinit();
+                var miens = (liste || []).filter(function (r) { return r.exercice === ID && new Date(r.fait_le || 0).getTime() > reinit; });
                 var meilleur = miens.slice().sort(function (a, b) { return b.score - a.score || new Date(b.fait_le || 0) - new Date(a.fait_le || 0); })[0];
                 var change = false;
                 if (meilleur && meilleur.score > faites) { faites = Math.min(meilleur.score, NB); restaurer(meilleur.details); change = true; }
@@ -1327,6 +1341,15 @@ def _console(ligne, n):
             var tete = el('div', 'etape-tete');
             tete.appendChild(el('span', 'etape-num', faite ? (passees[n] ? '⏭' : '✓') : String(n)));
             tete.appendChild(el('h2', null, esc(e.titre)));
+            if (compteProf() && !modeTest()) {   // compte professeure, mode élève : refaire l'étape
+                var bReinit = el('button', 'lien reinit', '↺ Réinitialiser l’étape'); bReinit.type = 'button';
+                bReinit.title = 'Compte professeure : efface tes réponses à cette étape pour la refaire comme un élève';
+                bReinit.onclick = function () {
+                    if (!confirm('Effacer tes réponses à l’étape ' + n + ' et la refaire ?' + (n <= faites ? '\n\nLes étapes suivantes devront aussi être revalidées.' : ''))) return;
+                    reinitialiser(n);
+                };
+                tete.appendChild(bReinit);
+            }
             var corps = el('div', 'etape-corps', accorder(e.consigne));
             c.appendChild(tete); c.appendChild(corps);
             var cm = null, cms = [], construit = false, bilanMontre = false, retour;
