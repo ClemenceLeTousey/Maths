@@ -123,8 +123,8 @@
         <div class="panneau" role="tabpanel" id="panneau-evaluations" aria-labelledby="onglet-evaluations" hidden>
         <section class="soutien">
             <h2>Évaluations déjà faites</h2>
-            <p class="aide">Les sujets et leurs corrigés, pour revoir tes erreurs et préparer les prochains devoirs. Quand ta copie est corrigée, « Ma note » apparaît sous l'évaluation : clique dessus pour voir ta grille (tes points à chaque question).</p>
-            <p class="aide">Ta note et ta grille ne sont visibles que par toi et ta professeure, avec ton identifiant (jamais ton nom). Elles sont effacées en fin d'année scolaire.</p>
+            <p class="aide">Les sujets et leurs corrigés, pour revoir tes erreurs et préparer les prochains devoirs.<span class="aide-notes" hidden> Quand ta copie est corrigée, « Ma note » apparaît sous l'évaluation : clique dessus pour voir ta grille (tes points à chaque question).</span></p>
+            <p class="aide aide-notes" hidden>Ta note et ta grille ne sont visibles que par toi et ta professeure, avec ton identifiant (jamais ton nom). Elles sont effacées en fin d'année scolaire.</p>
             <ul class="evals">
                 <li data-eval="Interro 1"><div class="eval-titre">Interrogation 1<span>Calculs numériques</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef1-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef1-corrige.html">Corrigé</a></div></li>
@@ -551,8 +551,11 @@
 
         function mesNotes(s) {
             document.querySelectorAll('#panneau-evaluations .ma-note, #autres-notes').forEach(function (x) { x.remove(); });
+            document.querySelectorAll('.aide-notes').forEach(function (x) { x.hidden = true; });
             if (!s) return;
             Interactif.rpc('mes_notes', { p_jeton: s.jeton }).then(function (liste) {
+                // explications affichées seulement quand l'élève a au moins une note publiée
+                document.querySelectorAll('.aide-notes').forEach(function (x) { x.hidden = !(liste && liste.length); });
                 var autres = [];
                 (liste || []).forEach(function (n) {
                     var li = Array.prototype.filter.call(document.querySelectorAll('#panneau-evaluations li[data-eval]'), function (x) { return x.dataset.eval === n.evaluation; })[0];
