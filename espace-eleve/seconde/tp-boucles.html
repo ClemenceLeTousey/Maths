@@ -752,6 +752,9 @@ def _console(ligne, n):
             '<tr><td><code>range(5)</code></td><td>0, 1, 2, 3, 4 (5 valeurs, <b>sans</b> le 5)</td></tr>' +
             '<tr><td><code>range(1, 6)</code></td><td>1, 2, 3, 4, 5 (de 1 à 6, <b>sans</b> le 6)</td></tr>' +
             '<tr><td><code>range(2, 11, 2)</code></td><td>2, 4, 6, 8, 10 (de 2 en 2)</td></tr></table></div>';
+        var TABLE_COMP = '<div class="tableau"><table>' +
+            '<tr><th>En maths</th><td>tant que <i>x</i> &lt; 3</td><td>tant que <i>x</i> &gt; 3</td><td>tant que <i>x</i> ⩽ 3</td><td>tant que <i>x</i> ⩾ 3</td><td>tant que <i>x</i> = 3</td><td>tant que <i>x</i> ≠ 3</td></tr>' +
+            '<tr><th>En Python</th><td><code>while x &lt; 3:</code></td><td><code>while x &gt; 3:</code></td><td><code>while x &lt;= 3:</code></td><td><code>while x &gt;= 3:</code></td><td><code>while x == 3:</code></td><td><code>while x != 3:</code></td></tr></table></div>';
         var LISTE = '<p class="aide">Plusieurs nombres ? Sépare-les par des espaces ou des virgules, par exemple : <code>2, 4, 6</code></p>';
 
         /* Ancienne version de l'étape 3 (cases l'une sous l'autre, éditeur et console visibles dès le départ).
@@ -849,6 +852,7 @@ def _console(ligne, n):
               consigne: encadre('', 'La boucle non bornée « while »', '<ul><li>Elle répète des instructions <b>tant que</b> (<i>while</i>) une condition est vraie : on ne sait pas à l’avance combien de fois.</li>' +
                     '<li>Scratch dit « répéter <b>jusqu’à</b> <i>x</i> &gt; 1000 », Python dit « répéter <b>tant que</b> <i>x</i> ⩽ 1000 » : la condition est <b>contraire</b>.</li></ul>') +
                 encadre('attention', 'Boucle infinie', 'Si la condition reste toujours vraie, la boucle ne s’arrête jamais ! Les instructions répétées doivent faire évoluer la variable testée. En cas de problème, clique sur <b>■ Stop</b>.') +
+                '<p>La condition s’écrit comme celle d’un <code>if</code> (TP2) : on compare deux valeurs.</p>' + TABLE_COMP +
                 PREVOIR_SCRIPT,
               scripts: [
                   { nom: 'Script E', code: PUISSANCES, attendu: 1024, variable: 'x',
