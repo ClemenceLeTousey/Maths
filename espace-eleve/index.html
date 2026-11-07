@@ -60,6 +60,16 @@
         .evals .eval-titre { font-weight: 600; }
         .evals .eval-titre span { display: block; font-weight: 400; font-size: 0.9rem; color: var(--muted); }
         .evals .eval-liens, #liste-tp .eval-liens { display: flex; flex-wrap: wrap; gap: 6px; }
+        /* Ma note + grille (publiées par la professeure) */
+        .evals .ma-note { flex-basis: 100%; }
+        .ma-note > summary { cursor: pointer; font-weight: 600; width: fit-content; }
+        .ma-note > summary .note { padding: 1px 8px; border-radius: 6px; margin-left: 4px; }
+        .ma-note .grille { margin-top: 8px; }
+        .ma-note .grille td:nth-child(n+2), .ma-note .grille th:nth-child(n+2) { text-align: center; white-space: nowrap; }
+        .ma-note .grille tr.ex th { text-align: left; background: var(--bleu-doux); }
+        .ma-note .objs { margin: 8px 0 0; padding-left: 18px; }
+        .ma-note .com { margin: 8px 0 0; }
+        .ma-note .legende { margin: 6px 0 0; }
             #liste-tp td { vertical-align: middle; text-align: left; }
             #liste-tp th.coin { border: none; background: var(--bg); }   /* case vide en haut à gauche */
             #liste-tp .tp-num { color: var(--c-seconde); }
@@ -113,19 +123,20 @@
         <div class="panneau" role="tabpanel" id="panneau-evaluations" aria-labelledby="onglet-evaluations" hidden>
         <section class="soutien">
             <h2>Évaluations déjà faites</h2>
-            <p class="aide">Les sujets et leurs corrigés, pour revoir tes erreurs et préparer les prochains devoirs.</p>
+            <p class="aide">Les sujets et leurs corrigés, pour revoir tes erreurs et préparer les prochains devoirs. Quand ta copie est corrigée, « Ma note » apparaît sous l'évaluation : clique dessus pour voir ta grille (tes points à chaque question).</p>
+            <p class="aide">Ta note et ta grille ne sont visibles que par toi et ta professeure, avec ton identifiant (jamais ton nom). Elles sont effacées en fin d'année scolaire.</p>
             <ul class="evals">
-                <li><div class="eval-titre">Interrogation 1<span>Calculs numériques</span></div>
+                <li data-eval="Interro 1"><div class="eval-titre">Interrogation 1<span>Calculs numériques</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef1-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef1-corrige.html">Corrigé</a></div></li>
-                <li><div class="eval-titre">Interrogation 2<span>Racines carrées et vecteurs</span></div>
+                <li data-eval="Interro 2"><div class="eval-titre">Interrogation 2<span>Racines carrées et vecteurs</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef2-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef2-corrige.html">Corrigé</a></div></li>
                 <li><div class="eval-titre">Devoir surveillé 1 · Contrat<span>Le sujet d'entraînement, même structure que le DS</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ds1-contrat.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ds1-contrat-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
-                <li><div class="eval-titre">Devoir surveillé 1<span>Sujets A et B</span></div>
+                <li data-eval="DS 1"><div class="eval-titre">Devoir surveillé 1<span>Sujets A et B</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ds1-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ds1-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
-                <li><div class="eval-titre">Interrogation 3<span>Équations et vecteurs</span></div>
+                <li data-eval="Interro 3"><div class="eval-titre">Interrogation 3<span>Équations et vecteurs</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef3-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef3-corrige.html">Corrigé</a></div></li>
-                <li><div class="eval-titre">Interrogation 4<span>Identités remarquables</span></div>
+                <li data-eval="Interro 4"><div class="eval-titre">Interrogation 4<span>Identités remarquables</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef4-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef4-corrige.html">Corrigé</a></div></li>
                 <li><div class="eval-titre">Devoir surveillé 2 · Contrat<span>Le sujet d'entraînement, même structure que le DS</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ds2-contrat.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ds2-contrat-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
@@ -486,6 +497,78 @@
               .then(function () { bouton.disabled = false; });
         };
 
+        /* ---------- Mes notes (publiées depuis l'onglet Suivi Eval de l'espace professeure) ---------- */
+        var NIVEAUX = { 'N.E.': 'non évalué', 'I': 'insuffisant', 'F': 'fragile', 'S': 'satisfaisant', 'T.S.': 'très satisfaisant' };
+        function fmtN(x) { return x == null ? '—' : (Math.round(x * 100) / 100).toString().replace('.', ','); }
+        function classeNote(r) { return r >= 0.75 ? 'n-bon' : r >= 0.5 ? 'n-moyen' : 'n-faible'; }
+        function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+
+        function blocNote(n) {
+            var d = n.detail || {}, bloc = el('details', 'ma-note'), sum = el('summary');
+            sum.appendChild(document.createTextNode('Ma note'));
+            var badge = el('span', 'note ' + (n.total == null ? '' : classeNote(n.total / n.sur)), fmtN(n.total) + ' / ' + fmtN(n.sur));
+            sum.appendChild(badge);
+            bloc.appendChild(sum);
+            var zone = el('div', 'grille');
+            if (d.sujet) zone.appendChild(el('p', 'aide', 'Sujet ' + d.sujet));
+            if (d.ex && d.ex.length) {
+                var defile = el('div', 'tableau-defile'), t = el('table', 'res');
+                var tete = el('tr'); ['Question', 'Points', 'Barème'].forEach(function (h) { tete.appendChild(el('th', null, h)); }); t.appendChild(tete);
+                d.ex.forEach(function (e) {
+                    var pts = 0, max = 0;
+                    e.qs.forEach(function (q) { if (!q.bonus) max += q.max; pts += q.v || 0; });
+                    var tr = el('tr', 'ex'), th = el('th', null, (e.bonus ? 'Bonus' : 'Exercice ' + e.n) + (e.comp ? ' · ' + e.comp : ''));
+                    tr.appendChild(th); tr.appendChild(el('th', null, fmtN(pts))); tr.appendChild(el('th', null, e.bonus ? '' : fmtN(max)));
+                    t.appendChild(tr);
+                    e.qs.forEach(function (q) {
+                        var r = el('tr');
+                        r.appendChild(el('td', null, q.l + (q.bonus && !e.bonus ? ' (bonus)' : '')));
+                        var c = el('td', q.v == null ? '' : classeNote(q.v / q.max), (q.v == null ? '—' : fmtN(q.v)) + (q.nf ? ' (non fait)' : ''));
+                        r.appendChild(c); r.appendChild(el('td', null, fmtN(q.max)));
+                        t.appendChild(r);
+                    });
+                });
+                defile.appendChild(t); zone.appendChild(defile);
+                var somme = d.ex.reduce(function (s, e) { return s + e.qs.reduce(function (a, q) { return a + (q.v || 0); }, 0); }, 0);
+                if (n.total != null && somme > n.total + 0.001) zone.appendChild(el('p', 'aide legende', 'Total de tes points : ' + fmtN(somme) + ', note plafonnée à ' + fmtN(n.sur) + '.'));
+            }
+            if (d.objs && d.objs.length) {
+                zone.appendChild(el('p', 'com', 'Objectifs :'));
+                var ul = el('ul', 'objs');
+                d.objs.forEach(function (o) { ul.appendChild(el('li', null, o.c + ' · ' + o.t + ' : ' + o.niv + (NIVEAUX[o.niv] ? ' (' + NIVEAUX[o.niv] + ')' : ''))); });
+                zone.appendChild(ul);
+            }
+            if (d.com && (d.com.erreurs.length || d.com.remarque)) {
+                if (d.com.erreurs.length) {
+                    zone.appendChild(el('p', 'com', 'Erreurs relevées :'));
+                    var ue = el('ul', 'objs'); d.com.erreurs.forEach(function (x) { ue.appendChild(el('li', null, x)); }); zone.appendChild(ue);
+                }
+                if (d.com.remarque) zone.appendChild(el('p', 'com', 'Remarque : ' + d.com.remarque));
+            }
+            bloc.appendChild(zone);
+            return bloc;
+        }
+
+        function mesNotes(s) {
+            document.querySelectorAll('#panneau-evaluations .ma-note, #autres-notes').forEach(function (x) { x.remove(); });
+            if (!s) return;
+            Interactif.rpc('mes_notes', { p_jeton: s.jeton }).then(function (liste) {
+                var autres = [];
+                (liste || []).forEach(function (n) {
+                    var li = Array.prototype.filter.call(document.querySelectorAll('#panneau-evaluations li[data-eval]'), function (x) { return x.dataset.eval === n.evaluation; })[0];
+                    if (li) li.appendChild(blocNote(n)); else autres.push(n);
+                });
+                if (autres.length) {
+                    var sec = el('section', 'soutien'); sec.id = 'autres-notes';
+                    sec.appendChild(el('h2', null, 'Mes autres notes'));
+                    var ul = el('ul', 'evals');
+                    autres.forEach(function (n) { var li = el('li'); li.appendChild(el('div', 'eval-titre', n.evaluation)); li.appendChild(blocNote(n)); ul.appendChild(li); });
+                    sec.appendChild(ul);
+                    var faites = document.querySelector('#panneau-evaluations section'); faites.parentNode.insertBefore(sec, faites.nextSibling);
+                }
+            }, function () { /* pas encore de notes en ligne (script maj-notes.sql non lancé) : rien à afficher */ });
+        }
+
         function charger(s) {
             etatMessage.textContent = '';
             document.getElementById('contenu').hidden = !s;
@@ -497,6 +580,7 @@
             if (s) ouvrirOnglet(location.hash.slice(1));   // déconnecté : on garde #evaluations… pour après la connexion
             afficher(null);
             soutien(s);
+            mesNotes(s);
             if (!s) return;
             Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(afficher, function (x) {
                 if (/Session/.test(x.message)) { Interactif.deconnecter(); Interactif.bandeau(document.getElementById('bandeau'), charger); }
