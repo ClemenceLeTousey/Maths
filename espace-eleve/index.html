@@ -110,6 +110,13 @@
             <select id="choix-ancienne"></select>
             <div class="tableau-defile"><table class="res" id="liste-anciennes"></table></div>
         </div>
+        <section class="notif" id="notif" hidden>
+            <h2>🔔 Notifications</h2>
+            <p class="aide">Sois prévenu sur ce téléphone quand une nouvelle série arrive, et si tu n'as pas fini celle de la semaine.</p>
+            <p><button type="button" class="bouton" id="notif-activer">Activer les notifications</button>
+               <button type="button" class="bouton secondaire" id="notif-desactiver" hidden>Désactiver sur cet appareil</button></p>
+            <p class="aide" id="notif-etat" aria-live="polite"></p>
+        </section>
         <p class="aide">Tu peux refaire un exercice autant de fois que tu veux : les nombres changent à chaque fois.</p>
         <p class="aide">Données enregistrées : ton identifiant, tes réponses, ton score, la date et la durée de chaque série. Seule ta professeure les consulte ; elles sont effacées en fin d'année scolaire.</p>
         </div>
@@ -572,6 +579,60 @@
             }, function () { /* pas encore de notes en ligne (script maj-notes.sql non lancé) : rien à afficher */ });
         }
 
+        /* ---------- Notifications push (comptes de NOTIF_CONFIG.comptes pour l'instant) ---------- */
+        function notifications(s) {
+            var zone = document.getElementById('notif'), etat = document.getElementById('notif-etat');
+            var bOn = document.getElementById('notif-activer'), bOff = document.getElementById('notif-desactiver');
+            var cfg = window.NOTIF_CONFIG || {};
+            zone.hidden = !s || !cfg.cle || (cfg.comptes && cfg.comptes.indexOf(String(s.code).toUpperCase()) < 0);
+            if (zone.hidden) return;
+            var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            var installee = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+            if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+                bOn.hidden = bOff.hidden = true;
+                etat.textContent = ios && !installee
+                    ? 'Sur iPhone : ajoute d\'abord le site à l\'écran d\'accueil (Safari → Partager → « Sur l\'écran d\'accueil »), puis ouvre-le depuis l\'icône.'
+                    : 'Ce navigateur ne permet pas les notifications.';
+                return;
+            }
+            function cle() {
+                var b = cfg.cle.replace(/-/g, '+').replace(/_/g, '/'), brut = atob(b + '==='.slice((b.length + 3) % 4));
+                return Uint8Array.from(brut, function (c) { return c.charCodeAt(0); });
+            }
+            function montrer(actives) {
+                bOn.hidden = actives; bOff.hidden = !actives;
+                if (Notification.permission === 'denied') {
+                    bOn.hidden = true;
+                    etat.textContent = 'Les notifications sont bloquées pour ce site : autorise-les dans les réglages du téléphone (ou du navigateur), puis recharge la page.';
+                } else etat.textContent = actives ? '✓ Notifications activées sur cet appareil.' : '';
+            }
+            var enregistrement = navigator.serviceWorker.register('../sw.js', { scope: '../' });
+            enregistrement.then(function (reg) { return reg.pushManager.getSubscription(); })
+                .then(function (abo) { montrer(!!abo); }, function () { etat.textContent = 'Notifications indisponibles sur cet appareil.'; });
+            bOn.onclick = function () {
+                etat.textContent = 'Activation…';
+                Notification.requestPermission().then(function (p) {
+                    if (p !== 'granted') { montrer(false); if (p !== 'denied') etat.textContent = 'Notifications non autorisées.'; return; }
+                    return enregistrement.then(function (reg) {
+                        return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: cle() });
+                    }).then(function (abo) {
+                        var j = abo.toJSON();
+                        return Interactif.rpc('push_abonner', { p_jeton: s.jeton, p_endpoint: j.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth });
+                    }).then(function () { montrer(true); });
+                }).catch(function (x) { etat.textContent = 'Activation impossible : ' + (x && x.message || x); });
+            };
+            bOff.onclick = function () {
+                enregistrement.then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (abo) {
+                    if (!abo) return montrer(false);
+                    var ep = abo.endpoint;
+                    return abo.unsubscribe().then(function () {
+                        montrer(false); etat.textContent = 'Notifications désactivées sur cet appareil.';
+                        return Interactif.rpc('push_desabonner', { p_jeton: s.jeton, p_endpoint: ep });
+                    });
+                }).catch(function (x) { etat.textContent = 'Erreur : ' + (x && x.message || x); });
+            };
+        }
+
         function charger(s) {
             etatMessage.textContent = '';
             document.getElementById('contenu').hidden = !s;
@@ -584,6 +645,7 @@
             afficher(null);
             soutien(s);
             mesNotes(s);
+            notifications(s);
             if (!s) return;
             Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(afficher, function (x) {
                 if (/Session/.test(x.message)) { Interactif.deconnecter(); Interactif.bandeau(document.getElementById('bandeau'), charger); }

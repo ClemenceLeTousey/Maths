@@ -6,6 +6,14 @@ window.INTERACTIF_CONFIG = {
     cle: 'sb_publishable_ryT5LKm_TWnjc9u1fxqShA_s-jmtT34'
 };
 
+/* Notifications push (« Série N disponible », « Série pas finie »).
+   comptes : seuls ces comptes voient le bouton d'activation (null = tous les élèves).
+   cle : clé publique VAPID (la clé privée est dans le fichier local cles-notifications-push.txt). */
+window.NOTIF_CONFIG = {
+    comptes: ['PROF-2NDE'],
+    cle: 'BFIKG36b9xdoHXRqkVH6JkwC7Iw8ayZt1g9LDL7unT7wYYMZNhFHQxdJzyh-OGjwsb8Aeixkd16f0APFZt6sOA8'
+};
+
 /* Liste des exercices : regroupés par semaine (groupe), dans l'ordre d'affichage.
    « niveau » (seconde, premiere, terminale) : un élève ne voit que ceux de sa classe.
    « court » sert d'en-tête de colonne sur la page prof.
