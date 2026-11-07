@@ -827,7 +827,7 @@ def _console(ligne, n):
               guide: 2, maxTours: 10,      // tours 1 et 2 faits à part, puis tableau avec ajout de colonnes (jusqu'au 10e tour)
               avant: [null, 0],            // valeurs avant la boucle (null = pas encore définie)
               lignes: [
-                  { nom: 'i', f: function (k) { return k; }, aide: '`range(1, 11)` commence à 1 et s’arrête à 11 − 1 = 10 : au 1er tour, i vaut 1, au 2e tour, i vaut 2, etc.' },
+                  { nom: 'i', f: function (k) { return k; }, aide: '`for i in range(1, 11):` : `i` prend successivement les valeurs 1, 2, …, 11 − 1 = 10' },
                   { nom: 'somme', f: function (k) { return k * (k + 1) / 2; }, aide: '`somme = somme + i` : ajoute la valeur de i du même tour à la valeur précédente de somme.' }
               ],
               contexte: function (k) {
