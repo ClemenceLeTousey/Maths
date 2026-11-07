@@ -777,11 +777,27 @@ document.addEventListener('click', function (e) {
 (function () {
     var script = document.currentScript;
     var base = script ? script.src.replace(/site\.js(\?.*)?$/, '') : '';
+    // Site ouvert comme application installée (écran d'accueil) : pas de lien vers l'espace professeure
+    var appli = (window.matchMedia && (matchMedia('(display-mode: standalone)').matches ||
+                 matchMedia('(display-mode: fullscreen)').matches ||
+                 matchMedia('(display-mode: minimal-ui)').matches)) || navigator.standalone === true;
     var LIENS = [
-        { texte: 'Espace élève', href: 'espace-eleve/', actif: /\/espace-eleve\/(index\.html)?$/ },
-        { texte: 'Espace professeure', href: 'espace-eleve/prof.html', actif: /\/espace-eleve\/prof\.html$/ }
+        { texte: 'Espace élève', href: 'espace-eleve/', actif: /\/espace-eleve\/(index\.html)?$/ }
     ];
+    if (appli) {
+        document.documentElement.classList.add('appli-installee');
+        var css = document.createElement('style');
+        css.textContent = '.appli-installee .espace-prof, .appli-installee .lien-espace-prof { display: none !important; }';
+        (document.head || document.documentElement).appendChild(css);
+    } else {
+        LIENS.push({ texte: 'Espace professeure', href: 'espace-eleve/prof.html', actif: /\/espace-eleve\/prof\.html$/ });
+    }
     document.addEventListener('DOMContentLoaded', function () {
+        if (appli) {   // lien éventuellement écrit en dur dans la barre de navigation
+            document.querySelectorAll('.nav-links a').forEach(function (a) {
+                if (a.textContent.trim() === 'Espace professeure') a.parentNode.classList.add('lien-espace-prof');
+            });
+        }
         var menu = document.querySelector('.nav-links');
         if (!menu || !base) return;
         var liens = Array.from(menu.querySelectorAll(':scope > li > a'));
