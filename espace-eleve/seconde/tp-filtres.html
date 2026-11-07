@@ -218,6 +218,14 @@
         .choix-mode .aide { margin: 0; }
         .interactif .etape-tete button.reinit { font-size: 0.8rem; color: var(--muted); }
         .choix-mode label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+        .calc-bouton { position: fixed; right: 16px; bottom: 16px; z-index: 950; width: 48px; height: 48px; border-radius: 50%; font-size: 1.4rem; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 2px 10px rgba(0,0,0,.18); cursor: pointer; }
+        .calc-panneau { position: fixed; right: 16px; bottom: 74px; z-index: 950; width: min(290px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.2); padding: 10px 12px; }
+        .calc-panneau[hidden] { display: none; }
+        .calc-tete { display: flex; justify-content: space-between; align-items: center; }
+        .calc-histo { max-height: 9em; overflow-y: auto; font-family: var(--f-mono); font-size: 0.9rem; margin: 6px 0; font-variant-ligatures: none; }
+        .calc-ligne { display: flex; gap: 6px; }
+        .calc-ligne input { flex: 1; min-width: 0; font-family: var(--f-mono); font-variant-ligatures: none; }
+        .calc-panneau .aide { margin: 6px 0 0; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -702,6 +710,16 @@ def _console(ligne, n):
             var t = String(s).replace(/\s/g, '').replace(',', '.').replace('−', '-');
             return /^[-+]?(\d+\.?\d*|\.\d+)$/.test(t) ? Number(t) : NaN;
         }
+
+        /* Réponse numérique écrite sous forme de calcul (2^10, 2**10, 512×2, 1+2+3…) : on l'évalue.
+           Bonne valeur → on demande la forme la plus simple, sans compter d'erreur pour une prévision. */
+        function evalExpr(v) {
+            var t = String(v).replace(/\s/g, '').replace(/−/g, '-').replace(/[×x·]/g, '*').replace(/÷/g, '/').replace(/\^/g, '**').replace(/(\d),(\d)/g, '$1.$2');
+            if (!/^[\d+\-*/().]+$/.test(t) || !/\d/.test(t)) return NaN;
+            try { var r = Function('"use strict"; return (' + t + ');')(); return typeof r === 'number' && isFinite(r) ? r : NaN; } catch (e) { return NaN; }
+        }
+        var FORME_SIMPLE = 'C’est la bonne valeur, mais on attend le résultat sous sa forme la plus simple : un seul nombre, sans calcul (par exemple 8 et non 2^3).';
+        function formeNonSimple(v, a) { return typeof a === 'number' && isNaN(num(v)) && Math.abs(evalExpr(v) - a) < 1e-6; }
         function liste(s) {
             return String(s).split(/;|\bet\b/).map(function (x) { return x.trim(); }).filter(Boolean).map(num);
         }
@@ -710,6 +728,7 @@ def _console(ligne, n):
             var a = e.attendus[k];
             var ok = typeof a === 'number' ? Math.abs(num(v) - a) < 1e-6 : txt(v) === txt(a);
             if (ok) return null;
+            if (formeNonSimple(v, a)) return FORME_SIMPLE;
             if (typeof a === 'number' && isNaN(num(v))) return 'Écris un nombre (avec un point ou une virgule).';
             return (e.aides && e.aides[k]) || 'Ce n’est pas ça. Vérifie avec la console.';
         }
@@ -1549,7 +1568,7 @@ def _console(ligne, n):
                             corps.appendChild(bloc);
                             charge = true;
                             ligneCase(lq, sc.question, rep[k][0],
-                                function (v) { return egalSc(v, sc) ? null : sc.aide; },
+                                function (v) { if (formeNonSimple(v, sc.attendu)) return FORME_SIMPLE; return egalSc(v, sc) ? null : sc.aide; },
                                 function (v, ok) { rep[k][0] = v; sauver(); if (ok) caseFinie(k); else faux(); },
                                 function (ok) { if (ok) finis[k] = true; }, true, exigerLu);
                             charge = false;
@@ -1581,7 +1600,7 @@ def _console(ligne, n):
                             var lignes = el('div', 'reponses une-par-une');
                             suite.appendChild(lignes);
                             ligneCase(lignes, sc.libelleVerif || (sc.appel ? 'L’appel <code>' + esc(sc.appel) + '</code> renvoie' : 'La console affiche'), rep[k][1],
-                                function (v) { return egalSc(v, sc) ? null : sc.aideVerif ? sc.aideVerif : sc.appel ? 'Tape ' + sc.appel + ' dans la console et regarde ce que l’appel renvoie.' : 'Exécute le programme et recopie exactement ce que la console affiche.'; },
+                                function (v) { if (formeNonSimple(v, sc.attendu)) return FORME_SIMPLE; return egalSc(v, sc) ? null : sc.aideVerif ? sc.aideVerif : sc.appel ? 'Tape ' + sc.appel + ' dans la console et regarde ce que l’appel renvoie.' : 'Exécute le programme et recopie exactement ce que la console affiche.'; },
                                 function (v, ok) { rep[k][1] = v; sauver(); if (ok) apresConsole(true); else faux(); },
                                 function () {}, true, exigerLu);
                             if (rep[k][1] && egalSc(rep[k][1], sc)) apresConsole(false);
@@ -1618,7 +1637,7 @@ def _console(ligne, n):
                                     } else if (it.valeur) {
                                         var lc = el('div', 'reponses une-par-une'); pq.appendChild(lc);
                                         ligneCase(lc, it.avant, rep[k][idx],
-                                            function (v) { return Math.abs(num(v) - num(it.valeur)) < (it.tol || 1e-9) ? null : it.aide; },
+                                            function (v) { if (formeNonSimple(v, num(it.valeur))) return FORME_SIMPLE; return Math.abs(num(v) - num(it.valeur)) < (it.tol || 1e-9) ? null : it.aide; },
                                             function (v, ok) { suivant(v, ok); if (ok) marquerRaison(lc, it.raison); },
                                             function (ok) { if (ok) { marquerRaison(lc, it.raison); auChargement(true); } }, true, exigerLu);
                                     } else if (it.bloc) {
@@ -1643,6 +1662,7 @@ def _console(ligne, n):
                             if (!exigerLu()) return;
                             var v = ip.value.trim();
                             if (!v || ip.readOnly) return;
+                            if (formeNonSimple(v, sc.attendu)) { rp.className = 'retour case-retour ko'; rp.textContent = '✗ ' + FORME_SIMPLE; return; }
                             rep[k][0] = v; sauver(); if (!egalSc(v, sc)) faux(); apresPrevision(true);
                             rafraichir();
                         };
@@ -1874,6 +1894,27 @@ def _console(ligne, n):
             if (window.ResizeObserver) new ResizeObserver(mesurer).observe(barre);
         })();
 
+        /* ---------- Calculatrice (bouton 🧮 en bas à droite) ---------- */
+        (function () {
+            var bc = el('button', 'calc-bouton', '🧮'); bc.type = 'button'; bc.title = 'Calculatrice'; bc.setAttribute('aria-label', 'Ouvrir la calculatrice');
+            var pan = el('div', 'calc-panneau'); pan.hidden = true; pan.setAttribute('role', 'dialog'); pan.setAttribute('aria-label', 'Calculatrice');
+            pan.innerHTML = '<div class="calc-tete"><b>🧮 Calculatrice</b><button type="button" class="lien calc-fermer">Fermer</button></div>' +
+                '<div class="calc-histo"></div><form class="calc-ligne"><input aria-label="Calcul" placeholder="ex. 2^10 ou 12,5 / 2" autocomplete="off" spellcheck="false"><button type="submit">=</button></form>' +
+                '<p class="aide">+ − × (ou *) ÷ (ou /), puissance ^, parenthèses.</p>';
+            var histo = pan.querySelector('.calc-histo'), ci = pan.querySelector('input');
+            bc.onclick = function () { pan.hidden = !pan.hidden; if (!pan.hidden) ci.focus(); };
+            pan.querySelector('.calc-fermer').onclick = function () { pan.hidden = true; };
+            pan.querySelector('form').onsubmit = function (ev) {
+                ev.preventDefault();
+                var x = ci.value.trim(); if (!x) return;
+                var r = evalExpr(x);
+                var l = el('div', 'calc-res');
+                l.appendChild(document.createTextNode(x + ' = '));
+                l.appendChild(el('b', null, isNaN(r) ? 'calcul impossible' : esc(String(+r.toPrecision(12)).replace('.', ','))));
+                histo.appendChild(l); histo.scrollTop = histo.scrollHeight; ci.select();
+            };
+            document.body.appendChild(bc); document.body.appendChild(pan);
+        })();
         if (compteProf()) {
             var choix = el('div', 'choix-mode');
             choix.setAttribute('role', 'radiogroup'); choix.setAttribute('aria-label', 'Affichage du TP');
