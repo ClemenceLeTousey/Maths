@@ -132,7 +132,7 @@
         #panneau-notifs h3 { margin: 22px 0 8px; }
         .nt-form { display: grid; gap: 12px; max-width: 640px; }
         .nt-form label.champ { display: grid; gap: 4px; color: var(--muted); font-size: 0.9rem; }
-        .nt-form input[type=text], .nt-form textarea, .nt-form select, .nt-form input[type=datetime-local] {
+        .nt-form input[type=text], .nt-form textarea, .nt-form select, .nt-form input[type=datetime-local], .nt-form input[type=time] {
             font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
         .nt-form textarea { min-height: 64px; resize: vertical; }
         .nt-ligne { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
@@ -256,6 +256,24 @@
                     <div class="nt-apercu" aria-label="Aperçu"><img src="../img/favicon-192.png" alt=""><div><b id="nt-apercu-t"></b><span id="nt-apercu-x"></span></div></div>
                     <div><button type="button" id="nt-envoyer">Envoyer maintenant</button></div>
                     <p class="aide" id="nt-etat" aria-live="polite"></p>
+                </div>
+                <h3>Règles automatiques (chaque semaine)</h3>
+                <p class="aide">Appliquées à la série de la semaine, d'après les dates de config.js (« Série 8 · semaine du 9 au 13 novembre »). <code>{serie}</code> est remplacé par « Série 8 ».</p>
+                <p class="aide" id="nt-serie-cours"></p>
+                <div id="nt-regles"></div>
+                <div class="nt-form" id="nt-regle-form" hidden>
+                    <div class="nt-ligne">
+                        <label class="champ">Règle <select id="nt-r-type"><option value="rappel">⏰ Série pas finie (seulement à ceux qui n'ont pas fini)</option><option value="dispo">📅 Série disponible (à tous)</option></select></label>
+                    </div>
+                    <div class="nt-ligne">
+                        <label class="champ">Chaque <select id="nt-r-jour"><option value="1">lundi</option><option value="2">mardi</option><option value="3">mercredi</option><option value="4">jeudi</option><option value="5">vendredi</option></select></label>
+                        <label class="champ">à <input type="time" id="nt-r-heure" value="18:00"></label>
+                        <label class="champ">Classes <select id="nt-r-classe"></select></label>
+                    </div>
+                    <label class="champ">Titre <input type="text" id="nt-r-titre" maxlength="80"></label>
+                    <label class="champ">Texte <textarea id="nt-r-texte" maxlength="300"></textarea></label>
+                    <div><button type="button" id="nt-r-ajouter">Ajouter la règle</button></div>
+                    <p class="aide" id="nt-r-etat" aria-live="polite"></p>
                 </div>
                 <h3>À venir</h3>
                 <div id="nt-avenir"></div>

@@ -50,6 +50,9 @@
     function remplirClasses() {
         var sel = $('nt-classe'), avant = sel.value;
         sel.innerHTML = CLASSES.map(function (c) { return '<option value="' + esc(c[0]) + '">' + esc(c[1]) + '</option>'; }).join('');
+        var rs = $('nt-r-classe'), ravant = rs.value;
+        rs.innerHTML = sel.innerHTML;
+        if (ravant) rs.value = ravant;
         if (avant && Array.prototype.some.call(sel.options, function (o) { return o.value === avant; })) sel.value = avant;
         remplirEleves();
     }
@@ -137,6 +140,66 @@
         }, function (x) { etat('Non enregistrée : ' + x.message, true); });
     }
 
+    /* ---------- Règles automatiques hebdomadaires (maj-push-regles.sql) ---------- */
+    var JOURS = ['', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'];
+    var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    var REGLE_DEFAUT = {
+        rappel: ['⏰ Automatismes - {serie}', 'La série n\'est pas finie. Date limite : vendredi soir.'],
+        dispo: ['📅 Automatismes - {serie}', 'La nouvelle série est en ligne : 3 jours à faire avant vendredi soir.']
+    };
+    // « Série 8 · semaine du 9 au 13 novembre » -> lundi 2026-11-09 (année scolaire de septembre à août)
+    function lundiDe(groupe) {
+        var m = /semaine du (\d+)(?:er)?(?: ([a-zéû]+))? au (\d+)(?:er)? ([a-zéû]+)/i.exec(groupe);
+        if (!m) return null;
+        var mois = MOIS.indexOf((m[2] || m[4]).toLowerCase());
+        if (mois < 0) return null;
+        var auj = new Date(), debut = auj.getMonth() >= 7 ? auj.getFullYear() : auj.getFullYear() - 1;
+        var d = new Date(mois >= 7 ? debut : debut + 1, mois, +m[1]);
+        if (d.getDay() !== 1) return null;
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    // calendrier des séries envoyé à la base à chaque ouverture de l'onglet (d'après config.js)
+    function synchroniserSeries() {
+        var l = series().map(function (g) {
+            return { niveau: g.niveau, lundi: lundiDe(g.groupe), serie: g.groupe.replace(/ · .*/, ''), exercices: g.ids };
+        }).filter(function (x) { return x.lundi; });
+        return Interactif.rpc('prof_series_sync', { p_mdp: mdp(), p_series: l }).catch(function () { /* maj-push-regles.sql pas encore lancé */ });
+    }
+    function texteDestRegle(r) { return texteDest({ codes: r.codes, classes: r.classes }); }
+    function afficherRegles() {
+        var l = donnees.regles, z = $('nt-regles');
+        var s = donnees.serie_en_cours;
+        $('nt-serie-cours').textContent = s ? 'Série de cette semaine : ' + s.serie + ' (' + s.exercices.length + ' jours : ' + s.exercices.map(function (x) { return x.replace(/.*-/, '').toUpperCase(); }).join(', ') + ').'
+                                            : l ? 'Aucune série n\'est prévue cette semaine dans config.js : les règles ne partiront pas.' : '';
+        if (!l) { z.innerHTML = '<p class="aide">Règles indisponibles : lancer maj-push-regles.sql dans Supabase.</p>'; $('nt-regle-form').hidden = true; return; }
+        $('nt-regle-form').hidden = false;
+        z.innerHTML = l.length
+            ? '<div class="tableau-defile"><table class="res"><tr><th>Quand</th><th>Notification</th><th>Destinataires</th><th>Active</th><th></th></tr>' +
+              l.map(function (r) {
+                  return '<tr><td>Chaque ' + JOURS[r.jour] + ' à ' + esc(r.heure.replace(':', 'h')) + '</td><td>' + (r.type === 'rappel' ? '⏰' : '📅') + ' <b>' + esc(r.titre) + '</b><br><span class="aide">' + esc(r.texte) + '</span></td>' +
+                         '<td>' + esc(texteDestRegle(r)) + (r.type === 'rappel' ? '<br><span class="aide">seulement si la série de la semaine n\'est pas finie</span>' : '') + '</td>' +
+                         '<td><input type="checkbox" data-actif="' + r.id + '"' + (r.actif ? ' checked' : '') + ' aria-label="Règle active"></td>' +
+                         '<td><button type="button" class="secondaire" data-suppr-regle="' + r.id + '">Supprimer</button></td></tr>';
+              }).join('') + '</table></div>'
+            : '<p class="aide">Aucune règle pour l\'instant.</p>';
+    }
+    function typeRegle() {
+        var d = REGLE_DEFAUT[$('nt-r-type').value];
+        $('nt-r-titre').value = d[0]; $('nt-r-texte').value = d[1];
+        if ($('nt-r-type').value === 'dispo') { $('nt-r-jour').value = '1'; $('nt-r-heure').value = '07:30'; }
+        else { $('nt-r-jour').value = '4'; $('nt-r-heure').value = '18:00'; }
+    }
+    function ajouterRegle() {
+        var choix = $('nt-r-classe').value, codes = choix.indexOf('code:') === 0 ? [choix.slice(5)] : [];
+        if (!$('nt-r-heure').value) return etatRegle('Choisissez l\'heure.', true);
+        etatRegle('Enregistrement…');
+        Interactif.rpc('prof_regle_ajouter', {
+            p_mdp: mdp(), p_type: $('nt-r-type').value, p_jour: +$('nt-r-jour').value, p_heure: $('nt-r-heure').value.slice(0, 5),
+            p_codes: codes, p_classes: codes.length ? [] : [choix], p_titre: $('nt-r-titre').value, p_texte: $('nt-r-texte').value
+        }).then(function () { etatRegle('✓ Règle ajoutée.'); charger(); }, function (x) { etatRegle('Non enregistrée : ' + x.message, true); });
+    }
+    function etatRegle(t, ko) { var e = $('nt-r-etat'); e.textContent = t; e.className = 'aide' + (ko ? ' ko' : ''); }
+
     /* ---------- Listes ---------- */
     function afficherListes() {
         var l = donnees.notifs || [], avenir = l.filter(function (n) { return !n.envoye_le; }).reverse(), faites = l.filter(function (n) { return n.envoye_le; });
@@ -160,8 +223,8 @@
     }
     function charger() {
         if (!mdp()) return etat('Reconnectez-vous à l\'espace professeure.', true);
-        return Interactif.rpc('prof_notif_liste', { p_mdp: mdp() }).then(function (d) {
-            donnees = d; remplirClasses(); afficherListes();
+        return synchroniserSeries().then(function () { return Interactif.rpc('prof_notif_liste', { p_mdp: mdp() }); }).then(function (d) {
+            donnees = d; remplirClasses(); afficherListes(); afficherRegles();
         }, function (x) { etat('Notifications indisponibles (' + x.message + ') : le script maj-push-prof.sql a-t-il été lancé dans Supabase ?', true); });
     }
 
@@ -169,7 +232,7 @@
         demarrer: function () {
             if (lance) { charger(); return; }
             // page prof.html restée en cache (plus ancienne que ce script) : le dire au lieu d'échouer en silence
-            var manque = ['nt-classe', 'nt-categorie', 'nt-modele-eval', 'nt-lien', 'nt-serie'].filter(function (id) { return !$(id); });
+            var manque = ['nt-classe', 'nt-categorie', 'nt-modele-eval', 'nt-lien', 'nt-serie', 'nt-regles', 'nt-r-type'].filter(function (id) { return !$(id); });
             if (manque.length) {
                 var p = $('nt-etat') || $('panneau-notifs');
                 if (p) p.textContent = 'Page pas à jour : rechargez-la en forçant la mise à jour (⌘ + Maj + R, ou Ctrl + F5).';
@@ -194,6 +257,18 @@
                 if (!b || !confirm('Supprimer cette notification programmée ?')) return;
                 Interactif.rpc('prof_notif_supprimer', { p_mdp: mdp(), p_id: +b.dataset.suppr }).then(charger, function (x) { etat('Erreur : ' + x.message, true); });
             };
+            $('nt-r-type').onchange = typeRegle;
+            $('nt-r-ajouter').onclick = ajouterRegle;
+            $('nt-regles').onchange = function (e) {
+                var c = e.target.closest('[data-actif]');
+                if (c) Interactif.rpc('prof_regle_activer', { p_mdp: mdp(), p_id: +c.dataset.actif, p_actif: c.checked }).then(charger, function (x) { etatRegle('Erreur : ' + x.message, true); });
+            };
+            $('nt-regles').onclick = function (e) {
+                var b = e.target.closest('[data-suppr-regle]');
+                if (!b || !confirm('Supprimer cette règle ?')) return;
+                Interactif.rpc('prof_regle_supprimer', { p_mdp: mdp(), p_id: +b.dataset.supprRegle }).then(charger, function (x) { etatRegle('Erreur : ' + x.message, true); });
+            };
+            typeRegle();
             apercu();
             charger();
         }
