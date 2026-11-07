@@ -85,7 +85,8 @@ window.INTERACTIF_CATALOGUE = [
 /* Description de chaque groupe (même libellé que « groupe » ci-dessus), affichée sous son titre sur la page élève :
    themes = automatismes travaillés (pour mémoire, plus affichés) ; texte = explication ;
    section = 'Anciennes séries' (absente pour la série en cours) ; serie = entrée du menu déroulant des anciennes séries.
-   Quand une nouvelle série arrive, mettre la précédente et son bilan facultatif en section: 'Anciennes séries', avec le même serie: 'Série N'. */
+   Quand une nouvelle série arrive, mettre la précédente ET son bilan facultatif en section: 'Anciennes séries', avec le même serie: 'Série N'.
+   Chaque libellé ne doit figurer qu'une fois : une clé répétée plus bas écrase la première (le bilan resterait affiché). */
 window.INTERACTIF_GROUPES = {
     'Facultatif · Série 8 en temps limité ⏱': {},
     'Série 8 · semaine du 9 au 13 novembre': {},
@@ -130,7 +131,6 @@ window.INTERACTIF_GROUPES = {
         section: 'Anciennes séries', serie: 'Série 1',
         themes: ['A1 · Comparer deux nombres', 'A2 · Fractions', 'A3 · Puissances', 'A4 · Écritures d\'un nombre', 'A22 · Pythagore', 'Algo', 'Translations']
     },
-    'Facultatif · Série 7 en temps limité ⏱': {},
     'TP Python · Photographie numérique': {},
     'TP Python · Les structures conditionnelles': {},
     // Terminale ST2S : « serie » distinct des séries de Seconde (sinon la page prof mélange les colonnes des deux Séries 6)
