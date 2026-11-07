@@ -8,8 +8,8 @@ self.addEventListener('push', function (e) {
     try { d = e.data ? e.data.json() : {}; } catch (x) { d = { texte: e.data && e.data.text() }; }
     e.waitUntil(self.registration.showNotification(d.titre || 'Maths Lebrun', {
         body: d.texte || '',
-        icon: 'img/favicon-192.png',
-        badge: 'img/favicon-192.png',
+        icon: 'img/icone-appli-192.png',
+        badge: 'img/icone-appli-192.png',
         data: { url: new URL(d.url || 'espace-eleve/', self.registration.scope).href }
     }).then(pastille));
 });
