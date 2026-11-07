@@ -211,7 +211,8 @@
                 <button type="button" role="tab" id="onglet-tp-photo" aria-controls="panneau-tp-photo" data-onglet="tp-photo">TP Photo</button>
                 <button type="button" role="tab" id="onglet-tp-conditions" aria-controls="panneau-tp-conditions" data-onglet="tp-conditions">TP Conditions</button>
                 <button type="button" role="tab" id="onglet-tp-boucles" aria-controls="panneau-tp-boucles" data-onglet="tp-boucles">TP Boucles</button>
-                <button type="button" role="tab" id="onglet-tp-photo-bis" aria-controls="panneau-tp-photo-bis" data-onglet="tp-photo-bis">TP Photo bis</button>
+                <button type="button" role="tab" id="onglet-tp-pixels" aria-controls="panneau-tp-pixels" data-onglet="tp-pixels">TP Pixels</button>
+                <button type="button" role="tab" id="onglet-tp-filtres" aria-controls="panneau-tp-filtres" data-onglet="tp-filtres">TP Filtres</button>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-suivi-eval" aria-labelledby="onglet-suivi-eval" hidden>
@@ -360,7 +361,7 @@
 
             <div class="panneau" role="tabpanel" id="panneau-tp-photo" aria-labelledby="onglet-tp-photo" hidden>
                 <h2>TP Python · Créer et modifier une image</h2>
-                <p class="aide">Publié pour toutes les classes de Seconde. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi. Le bouton « Passer » est proposé à tous les élèves (étape passée = 0 point, rattrapable). Les solutions et le bouton « Développer » ne s'affichent qu'avec le compte TEST-01 ou dans la vue professeure (onglet Suivi TP).</p>
+                <p class="aide">Publié pour toutes les classes de Seconde. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi. Le bouton « Passer » est proposé à tous les élèves (étape passée = 0 point, rattrapable). Avec le compte PROF-2NDE, un sélecteur en haut des TP interactifs bascule entre « Mode professeure » (solutions, « Développer », toutes les étapes ouvertes) et « Mode élève » (le TP comme un élève, code d'accès compris).</p>
                 <p><a class="bouton" href="seconde/tp-photo.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
                 <iframe id="tp-photo-apercu" title="Aperçu du TP Photo" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
             </div>
@@ -379,11 +380,18 @@
                 <iframe id="tp-boucles-apercu" title="Aperçu du TP Boucles" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
             </div>
 
-            <div class="panneau" role="tabpanel" id="panneau-tp-photo-bis" aria-labelledby="onglet-tp-photo-bis" hidden>
-                <h2>TP4 bis Python · La photo numérique (noté)</h2>
-                <p class="aide">En préparation : visible seulement du compte PROF-2NDE ; les élèves gardent l'ancien TP Photo (seconde/tp-photo.html) tant que celui-ci n'est pas publié. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. 13 étapes sur deux séances : A-B-C (16 points), quiz /5, défis D (4 points), bonus « détecter les contours » (1 point, rattrape une étape manquée) ; « Transforme ta propre photo » est un extra facultatif sous le TP, non noté et non enregistré. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
-                <p><a class="bouton" href="seconde/tp-photo-bis.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
-                <iframe id="tp-photo-bis-apercu" title="Aperçu du TP Photo bis" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
+            <div class="panneau" role="tabpanel" id="panneau-tp-pixels" aria-labelledby="onglet-tp-pixels" hidden>
+                <h2>TP4 Python · Créer une image pixel par pixel (noté)</h2>
+                <p class="aide">En préparation : visible seulement du compte PROF-2NDE ; les élèves gardent l'ancien TP Photo (seconde/tp-photo.html) tant que celui-ci n'est pas publié. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Code d'accès PIXEL-482. 9 étapes : A (6,5 points), B (8 points), C (5,5 points), quiz /5. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
+                <p><a class="bouton" href="seconde/tp-pixels.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
+                <iframe id="tp-pixels-apercu" title="Aperçu du TP Pixels" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
+            </div>
+
+            <div class="panneau" role="tabpanel" id="panneau-tp-filtres" aria-labelledby="onglet-tp-filtres" hidden>
+                <h2>TP5 Python · Retoucher une photo : les filtres (noté)</h2>
+                <p class="aide">En préparation : visible seulement du compte PROF-2NDE. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Code d'accès FILTRE-519. 9 étapes : A (4 points), B (6 points), C (6 points), quiz /5, défi D (4 points), bonus « détecter les contours » (1 point, rattrape une étape manquée) ; « Transforme ta propre photo » est un extra facultatif sous le TP, non noté et non enregistré. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
+                <p><a class="bouton" href="seconde/tp-filtres.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
+                <iframe id="tp-filtres-apercu" title="Aperçu du TP Filtres" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-suivi-tp" aria-labelledby="onglet-suivi-tp" hidden>
@@ -1006,7 +1014,7 @@
             if (nom === 'tp-photo' && !$tp.src) $tp.src = 'seconde/tp-photo.html';
             var $tpc = document.getElementById('tp-conditions-apercu');
             if (nom === 'tp-conditions' && !$tpc.src) $tpc.src = 'seconde/tp-conditions.html';
-            [['tp-boucles', 'seconde/tp-boucles.html'], ['tp-photo-bis', 'seconde/tp-photo-bis.html']].forEach(function (x) {
+            [['tp-boucles', 'seconde/tp-boucles.html'], ['tp-pixels', 'seconde/tp-pixels.html'], ['tp-filtres', 'seconde/tp-filtres.html']].forEach(function (x) {
                 var f = document.getElementById(x[0] + '-apercu');
                 if (nom === x[0] && !f.src) f.src = x[1];
             });

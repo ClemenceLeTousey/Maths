@@ -192,6 +192,9 @@
         .solution-prof li { margin: 3px 0; }
         .interactif button.developper { margin: 4px 0 8px; }
         .vue-prof { background: var(--bleu-doux); border: 2px solid var(--c-seconde); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; }
+        .choix-mode { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 0 0 8px; padding: 4px 10px; border: 1px dashed var(--c-seconde); border-radius: 8px; font-size: 0.9rem; }
+        .choix-mode .aide { margin: 0; }
+        .choix-mode label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -535,7 +538,9 @@ def _console(ligne, n):
         if (FICHE && FICHE.codeAcces && !/[?&]vue-eleve=/.test(location.search)) {
             var ses = Interactif.session(), ouvert = false;
             try { ouvert = localStorage.getItem('tp-acces:' + ID) === FICHE.codeAcces; } catch (x) {}
-            if (!ouvert && !(ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE')) {
+            // compte PROF-2NDE en « mode élève » : le code est demandé, comme à un élève
+            var modeEleve = false; try { modeEleve = localStorage.getItem('tp-mode') === 'eleve'; } catch (x) {}
+            if (!ouvert && !(ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE' && !modeEleve)) {
                 document.getElementById('barre-etapes').hidden = true;
                 document.getElementById('py-etat').hidden = true;
                 var zv = document.getElementById('etapes');
@@ -543,6 +548,12 @@ def _console(ligne, n):
                     '<div class="etape-corps"><p>Ce TP s’ouvre avec le <b>code d’accès</b> donné en classe.</p>' +
                     '<form class="reponses" id="f-code"><label>Code d’accès <input class="long" id="code-tp" autocomplete="off" spellcheck="false" autocapitalize="off"></label>' +
                     '<button type="submit">Ouvrir le TP</button></form><p class="retour" id="code-retour"></p></div></section>';
+                if (ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE') {   // mode élève du compte professeure : retour possible
+                    var bp = document.createElement('button'); bp.type = 'button'; bp.className = 'secondaire';
+                    bp.textContent = '👩‍🏫 Revenir au mode professeure';
+                    bp.onclick = function () { try { localStorage.setItem('tp-mode', 'prof'); } catch (x) {} location.reload(); };
+                    zv.querySelector('.etape-corps').appendChild(bp);
+                }
                 document.getElementById('f-code').onsubmit = function (ev) {
                     ev.preventDefault();
                     var t = document.getElementById('code-tp').value.trim();   // casse et tiret comptent
@@ -1132,7 +1143,10 @@ def _console(ligne, n):
             }).catch(function () {});
         })();
         function modeProf() { return !!VUE || modeTest(); }   // solutions et « Développer » visibles
-        function modeTest() { if (VUE) return false; var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'PROF-2NDE'; }
+        function compteProf() { if (VUE) return false; var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'PROF-2NDE'; }
+        // compte PROF-2NDE : « mode professeure » (solutions, « Développer », toutes les étapes ouvertes, Passer sans confirmation)
+        // ou « mode élève » (le TP exactement comme un élève le voit) ; choix gardé sur l'appareil (localStorage « tp-mode »)
+        function modeTest() { if (!compteProf()) return false; try { return localStorage.getItem('tp-mode') !== 'eleve'; } catch (e) { return true; } }
         function depart(e) { return typeof e.code === 'function' ? e.code() : e.code; }
 
         function charger() {
@@ -1221,9 +1235,14 @@ def _console(ligne, n):
             ETAPES.forEach(function (e, k) {
                 var n = k + 1, b = el('button', n <= faites ? 'fait' + (passees[n] ? ' passee' : '') : n === faites + 1 ? 'courante' : null, String(n));
                 b.type = 'button'; b.title = 'Étape ' + n + ' · ' + e.titre + (n <= faites && passees[n] ? ' (passée : tu peux y revenir)' : '');
-                b.disabled = n > faites + 1;
+                b.disabled = n > faites + 1 && !modeTest();
                 b.onclick = function () {
                     var c = zone.querySelector('[data-n="' + n + '"]');
+                    if (!c && modeTest()) {   // mode professeure : étape pas encore atteinte, ouverte à sa place
+                        c = carte(n);
+                        var apres = Array.prototype.filter.call(zone.querySelectorAll('section.etape'), function (x) { return +x.dataset.n > n; })[0];
+                        zone.insertBefore(c, apres || null); c.rafraichir();
+                    }
                     if (!c) return;
                     c.ouvrir();
                     c.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1751,6 +1770,19 @@ def _console(ligne, n):
             if (window.ResizeObserver) new ResizeObserver(mesurer).observe(barre);
         })();
 
+        if (compteProf()) {
+            var choix = el('div', 'choix-mode');
+            choix.setAttribute('role', 'radiogroup'); choix.setAttribute('aria-label', 'Affichage du TP');
+            choix.appendChild(el('span', 'aide', '👩‍🏫 Compte professeure :'));
+            [['prof', 'Mode professeure', 'solutions, « Développer », toutes les étapes ouvertes'], ['eleve', 'Mode élève', 'le TP exactement comme un élève le voit']].forEach(function (m) {
+                var l = el('label'), r = el('input'); r.type = 'radio'; r.name = 'tp-mode'; r.value = m[0];
+                r.checked = (m[0] === 'prof') === modeTest();
+                r.onchange = function () { try { localStorage.setItem('tp-mode', m[0]); } catch (x) {} location.reload(); };
+                l.title = m[2]; l.appendChild(r); l.appendChild(document.createTextNode(' ' + m[1])); choix.appendChild(l);
+            });
+            var barreE = document.getElementById('barre-etapes');
+            barreE.insertBefore(choix, barreE.firstChild);
+        }
         if (VUE) {
             var bv = document.getElementById('bandeau');
             bv.className = 'vue-prof';
