@@ -11,11 +11,20 @@ self.addEventListener('push', function (e) {
         icon: 'img/favicon-192.png',
         badge: 'img/favicon-192.png',
         data: { url: new URL(d.url || 'espace-eleve/', self.registration.scope).href }
-    }));
+    }).then(pastille));
 });
+
+// Pastille sur l'icône de l'appli : nombre de notifications non lues (iPhone : appli installée seulement)
+function pastille() {
+    if (!self.navigator.setAppBadge) return;
+    return self.registration.getNotifications().then(function (l) {
+        return l.length ? self.navigator.setAppBadge(l.length) : self.navigator.clearAppBadge();
+    }).catch(function () {});
+}
 
 self.addEventListener('notificationclick', function (e) {
     e.notification.close();
+    pastille();
     var url = (e.notification.data && e.notification.data.url) || self.registration.scope;
     e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (fenetres) {
         for (var i = 0; i < fenetres.length; i++) {

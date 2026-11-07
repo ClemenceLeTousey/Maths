@@ -586,6 +586,11 @@
             var cfg = window.NOTIF_CONFIG || {};
             zone.hidden = !s || !cfg.cle || (cfg.comptes && cfg.comptes.indexOf(String(s.code).toUpperCase()) < 0);
             if (zone.hidden) return;
+            // l'élève a ouvert son espace : pastille de l'icône et notifications reçues effacées
+            if (navigator.clearAppBadge) navigator.clearAppBadge().catch(function () {});
+            if (navigator.serviceWorker) navigator.serviceWorker.getRegistration('../').then(function (reg) {
+                if (reg && reg.getNotifications) reg.getNotifications().then(function (l) { l.forEach(function (n) { n.close(); }); });
+            }).catch(function () {});
             var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
             var installee = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
             if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
