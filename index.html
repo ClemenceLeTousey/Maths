@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maths CLT</title>
+    <script>
+        // Élève de Seconde connecté à l'espace élève : l'accueil n'affiche que la page Secondes
+        try {
+            var s = JSON.parse(localStorage.getItem('interactif-session'));
+            if (s && /^2/.test(String(s.classe || ''))) location.replace('seconde/');
+        } catch (e) {}
+    </script>
     <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
