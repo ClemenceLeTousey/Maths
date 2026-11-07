@@ -141,7 +141,7 @@
     }
 
     /* ---------- Règles automatiques hebdomadaires (maj-push-regles.sql) ---------- */
-    var JOURS = ['', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'];
+    var JOURS = ['', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
     var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
     var REGLE_DEFAUT = {
         rappel: ['⏰ Automatismes - {serie}', 'La série n\'est pas finie. Date limite : vendredi soir.'],
