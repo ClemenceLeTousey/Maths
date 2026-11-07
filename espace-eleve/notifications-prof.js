@@ -163,13 +163,15 @@
         var l = series().map(function (g) {
             return { niveau: g.niveau, lundi: lundiDe(g.groupe), serie: g.groupe.replace(/ · .*/, ''), exercices: g.ids };
         }).filter(function (x) { return x.lundi; });
-        return Interactif.rpc('prof_series_sync', { p_mdp: mdp(), p_series: l }).catch(function () { /* maj-push-regles.sql pas encore lancé */ });
+        return Interactif.rpc('prof_series_sync', { p_mdp: mdp(), p_series: l }).then(function () { erreurSync = ''; }, function (x) { erreurSync = x.message; });
     }
+    var erreurSync = '';
     function texteDestRegle(r) { return texteDest({ codes: r.codes, classes: r.classes }); }
     function afficherRegles() {
         var l = donnees.regles, z = $('nt-regles');
         var s = donnees.serie_en_cours;
         $('nt-serie-cours').textContent = s ? 'Série de cette semaine : ' + s.serie + ' (' + s.exercices.length + ' jours : ' + s.exercices.map(function (x) { return x.replace(/.*-/, '').toUpperCase(); }).join(', ') + ').'
+                                            : erreurSync ? 'Calendrier des séries non enregistré (' + erreurSync + ').'
                                             : l ? 'Aucune série n\'est prévue cette semaine dans config.js : les règles ne partiront pas.' : '';
         if (!l) { z.innerHTML = '<p class="aide">Règles indisponibles : lancer maj-push-regles.sql dans Supabase.</p>'; $('nt-regle-form').hidden = true; return; }
         $('nt-regle-form').hidden = false;
