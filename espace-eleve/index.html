@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espace élève</title>
     <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+    <link rel="manifest" href="../manifest.json">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="interactif.css">
     <script src="../site.js"></script>
@@ -87,7 +88,7 @@
             <button type="button" role="tab" id="onglet-automatismes" aria-controls="panneau-automatismes" data-onglet="automatismes">Automatismes</button>
             <button type="button" role="tab" id="onglet-tp" aria-controls="panneau-tp" data-onglet="tp" data-niveau="seconde" hidden>Python</button>
             <button type="button" role="tab" id="onglet-evaluations" aria-controls="panneau-evaluations" data-onglet="evaluations" data-niveau="seconde" hidden>Évaluations</button>
-            <button type="button" role="tab" id="onglet-soutien" aria-controls="panneau-soutien" data-onglet="soutien">Soutien</button>
+            <button type="button" role="tab" id="onglet-soutien" aria-controls="panneau-soutien" data-onglet="soutien" data-niveau="seconde" hidden>Soutien</button>
             <button type="button" role="tab" id="onglet-echange" aria-controls="panneau-echange" data-onglet="echange">Messages</button>
             <button type="button" role="tab" id="onglet-remediation" aria-controls="panneau-remediation" data-onglet="remediation" data-niveau="seconde" hidden>Remédiation</button>
         </div>
@@ -489,7 +490,7 @@
             etatMessage.textContent = '';
             document.getElementById('contenu').hidden = !s;
             document.querySelector('.espace-prof').hidden = !!s;   // seulement sur l'accueil, pas pour un élève connecté
-            // onglets et blocs réservés à un niveau (Évaluations, Remédiation, diaporamas : Secondes seulement) ; compte TEST (sans niveau) : tout voir
+            // onglets et blocs réservés à un niveau (Évaluations, Soutien, Remédiation, diaporamas : Secondes seulement) ; compte TEST (sans niveau) : tout voir
             var niv = s && Interactif.niveauClasse(s.classe);
             onglets.forEach(function (o) { if (o.dataset.niveau) o.hidden = !s || (!!niv && o.dataset.niveau !== niv); });
             document.querySelectorAll('.panneau [data-niveau]').forEach(function (e) { e.hidden = !!niv && e.dataset.niveau !== niv; });
