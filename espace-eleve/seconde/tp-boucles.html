@@ -141,7 +141,7 @@
         .pourquoi p { margin: 6px 0; }
         .pourquoi .case-ligne { margin: 6px 0; }
         table.trace td { padding: 4px 6px; }
-        table.trace input { width: 3.6em; text-align: center; font-family: var(--f-mono); }
+        table.trace input, .case-ligne input.tour { width: 3.6em; text-align: center; font-family: var(--f-mono); }
         table.trace input.juste, .case-ligne input.juste { outline: 2px solid var(--ok); background: var(--ok-fond); }
         table.trace input.fausse, .case-ligne input.fausse { outline: 2px solid var(--ko); background: var(--ko-fond); }
         .pourquoi .pq-titre { color: var(--muted); font-weight: 600; margin: 8px 0 2px; }
@@ -822,13 +822,20 @@ def _console(ligne, n):
             { titre: 'A · Un accumulateur', type: 'trace',
               consigne: '<p>Le script ci-dessous calcule une somme.</p>' + py(SOMME) +
                 encadre('', 'Suivre les variables', 'À chaque tour, <code>i</code> prend la valeur suivante de <code>range(1, 11)</code>, puis <code>somme = somme + i</code> remplace <code>somme</code> par sa valeur actuelle <b>plus</b> <code>i</code>.') +
-                '<p>✍️ <b>Sans ordinateur</b>, complète le tableau : la valeur de <code>i</code> et celle de <code>somme</code> à la fin de chaque tour, puis ce que le script affiche. Tu pourras ensuite exécuter le script pour vérifier.</p>',
+                '<p>✍️ <b>Sans ordinateur</b>, suis les valeurs des variables tour après tour. Tu pourras ensuite exécuter le script pour vérifier.</p>',
               script: SOMME,
-              colonnes: ['Avant la boucle', '1<sup>er</sup> tour', '2<sup>e</sup> tour', '3<sup>e</sup> tour', '4<sup>e</sup> tour', '5<sup>e</sup> tour'],
+              guide: 2, maxTours: 10,      // tours 1 et 2 faits à part, puis tableau avec ajout de colonnes (jusqu'au 10e tour)
+              avant: [null, 0],            // valeurs avant la boucle (null = pas encore définie)
               lignes: [
-                  { nom: 'i', valeurs: [null, 1, 2, 3, 4, 5], aide: '`range(1, 11)` commence à 1 : au 1er tour, i vaut 1, puis 2, 3…' },
-                  { nom: 'somme', valeurs: [0, 1, 3, 6, 10, 15], donnees: [0], aide: '`somme = somme + i` : ajoute la valeur de i du même tour à la valeur précédente de somme.' }
+                  { nom: 'i', f: function (k) { return k; }, aide: '`range(1, 11)` commence à 1 : au 1er tour, i vaut 1, puis 2, 3…' },
+                  { nom: 'somme', f: function (k) { return k * (k + 1) / 2; }, aide: '`somme = somme + i` : ajoute la valeur de i du même tour à la valeur précédente de somme.' }
               ],
+              contexte: function (k) {
+                  return k === 1 ? 'Avant la boucle, <code>somme</code> vaut 0. Au 1<sup>er</sup> tour, <code>i</code> prend la première valeur de <code>range(1, 11)</code>, puis l’instruction <code>somme = somme + i</code> est exécutée.'
+                                 : 'Au 2<sup>e</sup> tour, <code>i</code> prend la valeur suivante de <code>range(1, 11)</code>, puis <code>somme</code> augmente de <code>i</code>.';
+              },
+              raison: function (k) { return '`i` vaut ' + k + ', et `somme` devient ' + (k * (k - 1) / 2) + ' + ' + k + ' = ' + (k * (k + 1) / 2); },
+              consigneTableau: 'Les valeurs déjà trouvées sont reportées dans le tableau. Complète le 3<sup>e</sup> tour, puis ajoute autant de tours que tu veux avec le bouton « + Ajouter un tour ». Enfin, prévois ce que le script affiche.',
               final: { libelle: 'À la fin, le script affiche', attendu: 55, aide: 'La boucle continue jusqu’à i = 10 : le script affiche 1 + 2 + 3 + … + 10.' },
               bilan: [
                   'Le script calcule 1 + 2 + 3 + … + 10 = 55.',
@@ -1139,7 +1146,8 @@ def _console(ligne, n):
                     return li(esc(c) + ' → <b>' + esc(sol) + '</b>' + (e.aides && e.aides[k] ? '<br><span class="aide">si faux : « ' + esc(e.aides[k]) + ' »</span>' : ''));
                 }).join('') + '</ul>';
             } else if (e.type === 'trace') {
-                h += '<p>' + e.lignes.map(function (lg) { return '<code>' + esc(lg.nom) + '</code> : ' + lg.valeurs.map(function (x) { return x === null ? '—' : x; }).join(', '); }).join('<br>') + '<br>Le script affiche <b>' + e.final.attendu + '</b>.</p>';
+                var tk = []; for (var k = 1; k <= e.maxTours; k++) tk.push(k);
+                h += '<p>' + e.lignes.map(function (lg) { return '<code>' + esc(lg.nom) + '</code> : ' + tk.map(function (k) { return lg.f(k); }).join(', '); }).join('<br>') + '<br>Le script affiche <b>' + e.final.attendu + '</b>.</p>';
             } else if (e.type === 'qcm') {
                 h += '<p>Bonne réponse : <b>' + e.choix[e.bonne] + '</b></p>';
             } else if (e.type === 'quiz') {
@@ -1631,61 +1639,131 @@ def _console(ligne, n):
                     }
                 }
                 if (e.type === 'trace') {
-                    var valsT = (reponses[n] || []).slice(), casesT = [];
-                    var tabT = el('div', 'tableau'), t = el('table', 'trace');
-                    var trT = el('tr'); trT.appendChild(el('th', null, 'Tour de boucle'));
-                    e.colonnes.forEach(function (c) { trT.appendChild(el('th', null, c)); }); t.appendChild(trT);
-                    e.lignes.forEach(function (lg) {
-                        var tr = el('tr'); tr.appendChild(el('th', null, 'Valeur de <code>' + esc(lg.nom) + '</code>'));
-                        lg.valeurs.forEach(function (v, j) {
-                            var td = el('td');
-                            if (v === null) td.textContent = '—';
-                            else if ((lg.donnees || []).indexOf(j) >= 0) td.textContent = String(v);
-                            else {
-                                var inp = el('input'); inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('inputmode', 'decimal');
-                                inp.setAttribute('aria-label', lg.nom + ', ' + sansBalises(e.colonnes[j]));
-                                inp.value = valsT[casesT.length] || '';
-                                casesT.push({ i: inp, attendu: v, aide: lg.aide }); td.appendChild(inp);
+                    /* Suivi des variables d'une boucle : les e.guide premiers tours un par un, puis un tableau
+                       qui reprend les valeurs trouvées, avec des colonnes à ajouter (jusqu'à e.maxTours).
+                       reponses[n] = valeurs tour par tour (e.lignes.length par tour), puis « =réponse finale ». */
+                    var L = e.lignes, memoT = (reponses[n] || []).slice();
+                    var finalT = memoT.length && /^=/.test(memoT[memoT.length - 1]) ? memoT.pop().slice(1) : '';
+                    var tours = [];
+                    for (var q = 0; q + L.length <= memoT.length; q += L.length) tours.push(memoT.slice(q, q + L.length));
+                    var sauverT = function () { reponses[n] = [].concat.apply([], tours).concat(finalT ? ['=' + finalT] : []); ecrireLocal(); };
+                    var justeT = function (k, j, v) { return Math.abs(num(v) - L[j].f(k)) < 1e-9; };
+                    var tourJuste = function (k) { var t = tours[k - 1]; return !!t && L.every(function (lg, j) { return justeT(k, j, t[j]); }); };
+                    var ordinal = function (k) { return k === 1 ? '1<sup>er</sup>' : k + '<sup>e</sup>'; };
+                    var ordinalTxt = function (k) { return k === 1 ? '1er' : k + 'e'; };
+                    var caseT = function (valeur, aria) {
+                        var inp = el('input'); inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('inputmode', 'decimal');
+                        inp.setAttribute('aria-label', aria); inp.value = valeur || '';
+                        inp.addEventListener('input', function () { inp.classList.remove('juste', 'fausse'); });
+                        return inp;
+                    };
+                    var zoneT = el('div'); corps.appendChild(zoneT);
+                    var tableauT = null;
+                    var guideT = function (k) {
+                        var bl = el('div', 'bloc-script'); bl.appendChild(el('h3', null, ordinal(k) + ' tour'));
+                        bl.appendChild(el('p', null, e.contexte(k)));
+                        var f = el('form', 'case-ligne prevision'), ins = [];
+                        L.forEach(function (lg, j) {
+                            var lab = el('label', null, (j ? 'puis ' : '') + '<code>' + esc(lg.nom) + '</code> vaut ');
+                            var inp = caseT((tours[k - 1] || [])[j], lg.nom + ', ' + ordinalTxt(k) + ' tour'); inp.className = 'tour';
+                            lab.appendChild(inp); f.appendChild(lab); ins.push(inp);
+                        });
+                        var bt = el('button', null, 'Valider'); bt.type = 'submit'; f.appendChild(bt);
+                        var r = el('span', 'retour case-retour'); f.appendChild(r);
+                        bl.appendChild(f); zoneT.appendChild(bl);
+                        var fini = function () {
+                            ins.forEach(function (x) { x.readOnly = true; x.classList.remove('fausse'); x.classList.add('juste'); });
+                            bt.hidden = true; r.className = 'retour case-retour ok'; r.innerHTML = '✓<br>' + miseEnForme(e.raison(k)) + '.';
+                            if (k < e.guide) guideT(k + 1); else tableT();
+                        };
+                        f.onsubmit = function (ev) {
+                            ev.preventDefault();
+                            if (!exigerLu() || bt.hidden) return;
+                            var v = ins.map(function (x) { return x.value.trim(); });
+                            if (v.some(function (x) { return !x; })) { r.className = 'retour case-retour ko'; r.textContent = 'Complète les ' + L.length + ' cases.'; return; }
+                            tours = tours.slice(0, k - 1); tours[k - 1] = v; sauverT();
+                            var fausses = [];
+                            ins.forEach(function (x, j) { var ok = justeT(k, j, v[j]); x.classList.toggle('juste', ok); x.classList.toggle('fausse', !ok); if (!ok) fausses.push(j); });
+                            if (fausses.length) { faux(); r.className = 'retour case-retour ko'; r.innerHTML = '✗ ' + miseEnForme(L[fausses[0]].aide); return; }
+                            fini();
+                        };
+                        if (tourJuste(k)) fini();
+                    };
+                    var tableT = function () {
+                        if (tableauT) return;
+                        tableauT = el('div', 'bloc-script');
+                        tableauT.appendChild(el('h3', null, 'La suite, dans un tableau'));
+                        tableauT.appendChild(el('p', null, e.consigneTableau));
+                        var wrap = el('div', 'tableau'), t = el('table', 'trace'); wrap.appendChild(t); tableauT.appendChild(wrap);
+                        var rangs = [el('tr')].concat(L.map(function () { return el('tr'); }));
+                        rangs[0].appendChild(el('th', null, 'Tour de boucle'));
+                        L.forEach(function (lg, j) { rangs[j + 1].appendChild(el('th', null, 'Valeur de <code>' + esc(lg.nom) + '</code>')); });
+                        rangs[0].appendChild(el('th', null, 'Avant la boucle'));
+                        L.forEach(function (lg, j) { rangs[j + 1].appendChild(el('td', null, e.avant[j] === null ? '—' : String(e.avant[j]))); });
+                        rangs.forEach(function (x) { t.appendChild(x); });
+                        var colonnes = [];
+                        var ajouterCol = function (k, vals, fixe) {
+                            rangs[0].appendChild(el('th', null, ordinal(k) + ' tour'));
+                            var ins = L.map(function (lg, j) {
+                                var td = el('td');
+                                if (fixe) { td.textContent = vals[j]; rangs[j + 1].appendChild(td); return null; }
+                                var inp = caseT(vals[j], lg.nom + ', ' + ordinalTxt(k) + ' tour'); td.appendChild(inp); rangs[j + 1].appendChild(td);
+                                return inp;
+                            });
+                            if (!fixe) colonnes.push({ k: k, ins: ins });
+                        };
+                        for (var kk = 1; kk <= e.guide; kk++) ajouterCol(kk, tours[kk - 1], true);
+                        for (kk = e.guide + 1; kk <= Math.max(tours.length, e.guide + 1); kk++) ajouterCol(kk, tours[kk - 1] || [], false);
+                        var act = el('div', 'actions'), bAj = el('button', 'secondaire', '+ Ajouter un tour'); bAj.type = 'button';
+                        var majAj = function () { bAj.disabled = e.guide + colonnes.length >= e.maxTours; bAj.title = bAj.disabled ? 'La boucle ne fait que ' + e.maxTours + ' tours.' : ''; };
+                        bAj.onclick = function () {
+                            var k = e.guide + colonnes.length + 1;
+                            if (k > e.maxTours) return;
+                            ajouterCol(k, [], false); majAj(); colonnes[colonnes.length - 1].ins[0].focus();
+                        };
+                        act.appendChild(bAj); tableauT.appendChild(act); majAj();
+                        var fF = el('form', 'case-ligne prevision'), lF = el('label', null, e.final.libelle + ' ');
+                        var iF = caseT(finalT, e.final.libelle); iF.className = 'long'; lF.appendChild(iF); fF.appendChild(lF);
+                        var bF = el('button', null, 'Valider le tableau'); bF.type = 'submit'; fF.appendChild(bF);
+                        tableauT.appendChild(fF);
+                        var verifT = el('div', 'verif-script'); verifT.hidden = true; tableauT.appendChild(verifT);
+                        zoneT.appendChild(tableauT);
+                        var montrerVerifT = function () {
+                            if (verifT.childNodes.length) return;
+                            verifT.hidden = false;
+                            verifT.appendChild(el('p', null, 'Tu peux maintenant exécuter le script pour vérifier :'));
+                            cms.push(miniEditeur(verifT, e.script, n + '-v')); rafraichir();
+                        };
+                        var corrigerT = function (marquer) {
+                            var fausses = [];
+                            colonnes.forEach(function (c) { c.ins.forEach(function (x, j) {
+                                var ok = justeT(c.k, j, x.value);
+                                if (marquer) { x.classList.toggle('juste', ok); x.classList.toggle('fausse', !ok); }
+                                if (!ok) fausses.push(L[j].aide);
+                            }); });
+                            var okF = Math.abs(num(iF.value) - e.final.attendu) < 1e-9;
+                            if (marquer) { iF.classList.toggle('juste', okF); iF.classList.toggle('fausse', !okF); }
+                            if (!okF) fausses.push(e.final.aide);
+                            return fausses;
+                        };
+                        fF.onsubmit = function (ev) {
+                            ev.preventDefault();
+                            if (!exigerLu()) return;
+                            if (colonnes.some(function (c) { return c.ins.some(function (x) { return !x.value.trim(); }); })) { retour.className = 'retour ko'; retour.textContent = 'Complète toutes les cases du tableau.'; return; }
+                            if (!iF.value.trim()) { retour.className = 'retour ko'; retour.textContent = 'Écris ce que le script affiche à la fin.'; return; }
+                            tours = tours.slice(0, e.guide).concat(colonnes.map(function (c) { return c.ins.map(function (x) { return x.value.trim(); }); }));
+                            finalT = iF.value.trim(); sauverT();
+                            var fausses = corrigerT(true);
+                            if (fausses.length) {
+                                faux(); retour.className = 'retour ko';
+                                retour.innerHTML = '✗ ' + fausses.length + ' case' + (fausses.length > 1 ? 's' : '') + ' à revoir (en rouge). ' + miseEnForme(fausses[0]);
+                                return;
                             }
-                            tr.appendChild(td);
-                        });
-                        t.appendChild(tr);
-                    });
-                    tabT.appendChild(t); corps.appendChild(tabT);
-                    var fT = el('form', 'case-ligne prevision'), lT = el('label', null, e.final.libelle + ' ');
-                    var iT = el('input'); iT.className = 'long'; iT.autocomplete = 'off'; iT.spellcheck = false; iT.value = valsT[casesT.length] || '';
-                    lT.appendChild(iT); fT.appendChild(lT); casesT.push({ i: iT, attendu: e.final.attendu, aide: e.final.aide });
-                    var bT = el('button', null, 'Valider le tableau'); bT.type = 'submit'; fT.appendChild(bT);
-                    corps.appendChild(fT);
-                    var verifT = el('div', 'verif-script'); verifT.hidden = true; corps.appendChild(verifT);
-                    var montrerVerifT = function () {
-                        if (verifT.childNodes.length) return;
-                        verifT.hidden = false;
-                        verifT.appendChild(el('p', null, 'Tu peux maintenant exécuter le script pour vérifier :'));
-                        cms.push(miniEditeur(verifT, e.script, n + '-v')); rafraichir();
+                            retour.textContent = ''; montrerVerifT(); reussi();
+                        };
+                        if (finalT && !corrigerT(false).length) { corrigerT(true); montrerVerifT(); }
                     };
-                    var corrigerT = function (montrerT) {
-                        return casesT.filter(function (c) {
-                            var ok = Math.abs(num(c.i.value) - c.attendu) < 1e-9;
-                            if (montrerT) { c.i.classList.toggle('juste', ok); c.i.classList.toggle('fausse', !ok); }
-                            return !ok;
-                        });
-                    };
-                    casesT.forEach(function (c) { c.i.addEventListener('input', function () { c.i.classList.remove('juste', 'fausse'); }); });
-                    fT.onsubmit = function (ev) {
-                        ev.preventDefault();
-                        if (!exigerLu()) return;
-                        if (casesT.some(function (c) { return !c.i.value.trim(); })) { retour.className = 'retour ko'; retour.textContent = 'Complète toutes les cases du tableau.'; return; }
-                        reponses[n] = casesT.map(function (c) { return c.i.value.trim(); }); ecrireLocal();
-                        var mauvaises = corrigerT(true);
-                        if (mauvaises.length) {
-                            faux(); retour.className = 'retour ko';
-                            retour.innerHTML = '✗ ' + mauvaises.length + ' case' + (mauvaises.length > 1 ? 's' : '') + ' à revoir (en rouge). ' + miseEnForme(mauvaises[0].aide);
-                            return;
-                        }
-                        montrerVerifT(); reussi();
-                    };
-                    if (valsT.length && !corrigerT(false).length) { corrigerT(true); montrerVerifT(); }
+                    guideT(1);
                 }
                 if (e.type === 'quiz') {
                     // une seule validation, puis correction question par question ; score gardé dans les détails (q / qmax)
