@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maths CLT</title>
     <script>
-        // Élève de Seconde connecté à l'espace élève : l'accueil n'affiche que la page Secondes
+        // Élève connecté à l'espace élève : l'accueil n'affiche que la page de sa classe
+        // (même règle que Interactif.niveauClasse : 2… Seconde, 1… Première, T… TST2S, TEST… tout voir)
         try {
             var s = JSON.parse(localStorage.getItem('interactif-session'));
-            if (s && /^2/.test(String(s.classe || ''))) location.replace('seconde/');
+            var c = String((s && s.classe) || '').toUpperCase();
+            var page = /^2/.test(c) ? 'seconde/' : /^1/.test(c) ? 'premiere/' : /^T(?!EST)/.test(c) ? 'tst2s/' : '';
+            if (page) location.replace(page);
         } catch (e) {}
     </script>
     <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
