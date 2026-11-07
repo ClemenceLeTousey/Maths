@@ -17,6 +17,7 @@
     <script src="soutien.js"></script>
     <script src="plan-travail.js"></script>
     <script src="suivi-eval.js"></script>
+    <script src="notifications-prof.js"></script>
     <script src="plan-classe.js"></script>
     <style>
         .interactif { max-width: 1100px; }
@@ -127,6 +128,22 @@
         .se-erreurs-t { margin: 12px 0 4px; font-weight: 600; }
         .se-erreurs { margin: 0; padding-left: 1.2em; }
         #se-eleve { margin-top: 16px; }
+        /* Onglet Notifications */
+        #panneau-notifs h3 { margin: 22px 0 8px; }
+        .nt-form { display: grid; gap: 12px; max-width: 640px; }
+        .nt-form label.champ { display: grid; gap: 4px; color: var(--muted); font-size: 0.9rem; }
+        .nt-form input[type=text], .nt-form textarea, .nt-form select, .nt-form input[type=datetime-local] {
+            font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+        .nt-form textarea { min-height: 64px; resize: vertical; }
+        .nt-ligne { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+        .nt-eleves { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2px 12px; margin-top: 6px; max-height: 240px; overflow: auto; }
+        .nt-eleves label { font-size: 0.88rem; }
+        .nt-apercu { display: flex; gap: 10px; align-items: flex-start; max-width: 360px; padding: 10px 12px; border-radius: 14px;
+            background: var(--bleu-doux); border: 1px solid var(--line); }
+        .nt-apercu img { width: 34px; height: 34px; border-radius: 8px; }
+        .nt-apercu b, .nt-apercu span { display: block; font-size: 0.9rem; }
+        .nt-apercu span { color: var(--muted); }
+        #nt-etat.ko { color: var(--ko); }
         /* Suivi : bouton « Cours passé » par jour ; case rouge si la série n'était pas faite à ce moment-là */
         .cours-passe { display: block; margin: 4px auto 0; font: inherit; font-size: 0.75rem; font-weight: 500; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; white-space: nowrap; }
         .cours-passe:hover { border-color: var(--ko); color: var(--ko); }
@@ -185,6 +202,7 @@
                 <button type="button" role="tab" id="onglet-suivi" aria-controls="panneau-suivi" data-onglet="suivi">Suivi QF</button>
                 <button type="button" role="tab" id="onglet-suivi-eval" aria-controls="panneau-suivi-eval" data-onglet="suivi-eval">Suivi Eval</button>
                 <button type="button" role="tab" id="onglet-suivi-tp" aria-controls="panneau-suivi-tp" data-onglet="suivi-tp">Suivi TP</button>
+                <button type="button" role="tab" id="onglet-notifs" aria-controls="panneau-notifs" data-onglet="notifs">Notifications</button>
                 <button type="button" role="tab" id="onglet-plan" aria-controls="panneau-plan" data-onglet="plan">Plan de travail</button>
                 <button type="button" role="tab" id="onglet-plan-classe" aria-controls="panneau-plan-classe" data-onglet="plan-classe">Plan de classe</button>
                 <button type="button" role="tab" id="onglet-dnl" aria-controls="panneau-dnl" data-onglet="dnl">DNL</button>
@@ -205,6 +223,42 @@
                 <p class="aide" id="se-fichiers"></p>
                 <div id="se-bilan"></div>
                 <div id="se-eleve"></div>
+            </div>
+
+            <div class="panneau" role="tabpanel" id="panneau-notifs" aria-labelledby="onglet-notifs" hidden>
+                <h2>Notifications aux élèves</h2>
+                <p class="aide">Elles arrivent dans la cloche 🔔 du site et, pour les élèves qui les ont activées, sur leur téléphone. Envoi programmé : à l'heure prévue, à 15 minutes près.</p>
+                <div class="nt-form">
+                    <div class="nt-ligne">
+                        <span class="aide" style="margin:0">Modèles :</span>
+                        <button type="button" class="secondaire" id="nt-modele-dispo">📅 Série disponible</button>
+                        <button type="button" class="secondaire" id="nt-modele-rappel">⏰ Série pas finie</button>
+                    </div>
+                    <label class="champ">Destinataires <select id="nt-classe"></select></label>
+                    <details><summary class="aide" style="margin:0;cursor:pointer">Choisir des élèves précis (sinon : toute la sélection ci-dessus) · <span id="nt-dest-resume"></span></summary>
+                        <div class="nt-eleves" id="nt-eleves"></div></details>
+                    <label class="champ">Titre <input type="text" id="nt-titre" maxlength="80" placeholder="📅 Série 9 disponible"></label>
+                    <label class="champ">Texte <textarea id="nt-texte" maxlength="300" placeholder="Les automatismes de la semaine sont en ligne."></textarea></label>
+                    <label class="nt-ligne"><input type="checkbox" id="nt-rappel"> Seulement aux élèves qui n'ont pas fini une série</label>
+                    <div id="nt-serie-zone" hidden>
+                        <label class="champ">Série <select id="nt-serie"></select></label>
+                        <p class="aide" style="margin:4px 0 0">Dans le texte, <code>{n}</code> est remplacé par le nombre de jours qu'il reste à l'élève.</p>
+                    </div>
+                    <label class="champ">En touchant la notification, l'élève arrive sur <select id="nt-lien"></select></label>
+                    <div class="nt-ligne">
+                        <label><input type="radio" name="nt-quand" id="nt-maintenant" checked> Maintenant</label>
+                        <label><input type="radio" name="nt-quand" id="nt-plus-tard"> Plus tard :</label>
+                        <input type="datetime-local" id="nt-quand-date" hidden>
+                    </div>
+                    <div class="nt-apercu" aria-label="Aperçu"><img src="../img/favicon-192.png" alt=""><div><b id="nt-apercu-t"></b><span id="nt-apercu-x"></span></div></div>
+                    <div><button type="button" id="nt-envoyer">Envoyer maintenant</button></div>
+                    <p class="aide" id="nt-etat" aria-live="polite"></p>
+                </div>
+                <h3>À venir</h3>
+                <div id="nt-avenir"></div>
+                <h3>Envoyées (30 derniers jours)</h3>
+                <div id="nt-faites"></div>
+                <p class="aide" id="nt-abonnes"></p>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-plan" aria-labelledby="onglet-plan" hidden>
@@ -357,6 +411,7 @@
                 try { sessionStorage.setItem('interactif-prof', mdp); } catch (e) {}
                 form.hidden = true; document.getElementById('vue').hidden = false;
                 if (!document.getElementById('panneau-plan').hidden) PlanTravail.demarrer();
+                if (!document.getElementById('panneau-notifs').hidden) NotifProf.demarrer();
                 var sel = document.getElementById('classe'), avant = sel.value;
                 var classes = Array.from(new Set(d.eleves.map(function (e) { return e.classe; }))).sort(ordreClasses);
                 sel.innerHTML = '';
@@ -901,6 +956,7 @@
             if (nom === 'dnl') Bingo.demarrer();
             if (nom === 'plan' && !document.getElementById('vue').hidden) PlanTravail.demarrer();
             if (nom === 'suivi-eval') SuiviEval.demarrer();
+            if (nom === 'notifs' && !document.getElementById('vue').hidden) NotifProf.demarrer();
             if (nom === 'plan-classe') PlanClasse.demarrer();
             // l'aperçu du TP (et son Python) ne se charge qu'à la première ouverture de l'onglet
             if (nom === 'tp-photo' && !$tp.src) $tp.src = 'seconde/tp-photo.html';
