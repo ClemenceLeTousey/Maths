@@ -817,3 +817,130 @@ document.addEventListener('click', function (e) {
         });
     });
 })();
+
+/* Cloche 🔔 des notifications (barre de navigation de toutes les pages), pour un élève connecté.
+   Liste des notifications reçues (base : mes_notifications), nombre de non lues ;
+   l'ouvrir les marque comme lues et efface la pastille de l'icône de l'appli.
+   CLOCHE_COMPTES : mêmes comptes que NOTIF_CONFIG.comptes dans espace-eleve/config.js (null = tous). */
+(function () {
+    var CLOCHE_COMPTES = ['PROF-2NDE'];
+    var BASE = 'https://cxpupcwsafrfxdlgytwh.supabase.co', CLE = 'sb_publishable_ryT5LKm_TWnjc9u1fxqShA_s-jmtT34';
+    var script = document.currentScript;
+    var racine = script ? script.src.replace(/site\.js(\?.*)?$/, '') : '';
+    var s = null;
+    try { s = JSON.parse(localStorage.getItem('interactif-session')); } catch (e) {}
+    if (!s || !s.jeton || !racine) return;
+    if (CLOCHE_COMPTES && CLOCHE_COMPTES.indexOf(String(s.code).toUpperCase()) < 0) return;
+
+    function rpc(nom, args) {
+        return fetch(BASE + '/rest/v1/rpc/' + nom, {
+            method: 'POST', headers: { 'Content-Type': 'application/json', apikey: CLE }, body: JSON.stringify(args)
+        }).then(function (r) { return r.text().then(function (t) { if (!r.ok) throw new Error(t); return t ? JSON.parse(t) : null; }); });
+    }
+    function pastille(n) {
+        try {
+            if (n > 0 && navigator.setAppBadge) navigator.setAppBadge(n).catch(function () {});
+            else if (navigator.clearAppBadge) navigator.clearAppBadge().catch(function () {});
+        } catch (e) {}
+    }
+    // les notifications du téléphone ont été vues : elles sont dans la cloche, on les retire du centre de notifications
+    function fermerNotifsSysteme() {
+        if (!navigator.serviceWorker) return;
+        navigator.serviceWorker.getRegistration(racine).then(function (reg) {
+            if (reg && reg.getNotifications) reg.getNotifications().then(function (l) { l.forEach(function (n) { n.close(); }); });
+        }).catch(function () {});
+    }
+    function quand(d) {
+        var m = Math.round((Date.now() - new Date(d)) / 60000);
+        if (m < 1) return 'à l\'instant';
+        if (m < 60) return 'il y a ' + m + ' min';
+        if (m < 24 * 60) return 'il y a ' + Math.round(m / 60) + ' h';
+        return new Date(d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+
+    var css = document.createElement('style');
+    css.textContent =
+        '.cloche { display: flex; align-items: center; }' +
+        '.cloche > button { position: relative; background: none; border: 0; cursor: pointer; color: var(--muted); padding: 10px 12px; display: flex; align-items: center; }' +
+        '.cloche > button:hover, .cloche > button:focus-visible, .cloche > button[aria-expanded="true"] { color: var(--text); outline: none; }' +
+        '.cloche svg { width: 20px; height: 20px; }' +
+        '.cloche .compte { position: absolute; top: 4px; right: 4px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: #e5383b; color: #fff; font: 700 11px/17px system-ui, sans-serif; text-align: center; }' +
+        '.cloche-panneau { position: fixed; right: 12px; width: min(360px, calc(100vw - 24px)); max-height: 65vh; overflow: auto; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.18); z-index: 1100; }' +
+        '.cloche-panneau h2 { font-size: 0.95rem; margin: 0; padding: 12px 14px; border-bottom: 1px solid var(--line); }' +
+        '.cloche-panneau ul { list-style: none; margin: 0; padding: 0; }' +
+        '.cloche-panneau li { border-bottom: 1px solid var(--line); margin: 0; }' +
+        '.cloche-panneau li:last-child { border-bottom: 0; }' +
+        '.cloche-panneau a { display: block; padding: 10px 14px; color: inherit; text-decoration: none; }' +
+        '.cloche-panneau a:hover, .cloche-panneau a:focus-visible { background: var(--bg); outline: none; }' +
+        '.cloche-panneau .nouv { border-left: 3px solid #e5383b; }' +
+        '.cloche-panneau b { display: block; font-size: 0.92rem; }' +
+        '.cloche-panneau span { display: block; font-size: 0.88rem; color: var(--muted); }' +
+        '.cloche-panneau small { display: block; font-size: 0.78rem; color: var(--muted); margin-top: 2px; }' +
+        '.cloche-panneau .vide { padding: 14px; color: var(--muted); font-size: 0.9rem; margin: 0; }';
+    (document.head || document.documentElement).appendChild(css);
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var menu = document.querySelector('.nav-links');
+        if (!menu) return;
+        var li = document.createElement('li'), bt = document.createElement('button'), compte = document.createElement('span');
+        li.className = 'cloche';
+        bt.type = 'button';
+        bt.setAttribute('aria-expanded', 'false');
+        bt.setAttribute('aria-label', 'Notifications');
+        bt.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
+        compte.className = 'compte'; compte.hidden = true;
+        bt.appendChild(compte); li.appendChild(bt); menu.appendChild(li);
+
+        var panneau = document.createElement('div');
+        panneau.className = 'cloche-panneau'; panneau.hidden = true;
+        panneau.setAttribute('role', 'dialog'); panneau.setAttribute('aria-label', 'Notifications');
+        document.body.appendChild(panneau);
+
+        var donnees = null;
+        function montrerCompte(n) { compte.hidden = !n; compte.textContent = n > 9 ? '9+' : String(n); bt.setAttribute('aria-label', 'Notifications' + (n ? ' (' + n + ' non lue' + (n > 1 ? 's' : '') + ')' : '')); }
+        function charger() {
+            return rpc('mes_notifications', { p_jeton: s.jeton }).then(function (d) {
+                donnees = d || { non_lues: 0, liste: [] };
+                montrerCompte(donnees.non_lues); pastille(donnees.non_lues);
+            }, function () { /* base pas prête ou session expirée : pas de cloche active */ });
+        }
+        function remplir() {
+            panneau.innerHTML = '';
+            var h = document.createElement('h2'); h.textContent = 'Notifications'; panneau.appendChild(h);
+            var liste = (donnees && donnees.liste) || [];
+            if (!liste.length) { var p = document.createElement('p'); p.className = 'vide'; p.textContent = 'Aucune notification pour l\'instant.'; panneau.appendChild(p); return; }
+            var ul = document.createElement('ul');
+            liste.forEach(function (n) {
+                var l = document.createElement('li'), a = document.createElement('a');
+                a.href = racine + (n.url || 'espace-eleve/');
+                if (!n.lu) a.className = 'nouv';
+                [['b', n.titre], ['span', n.texte], ['small', quand(n.recu_le)]].forEach(function (x) {
+                    var e = document.createElement(x[0]); e.textContent = x[1]; a.appendChild(e);
+                });
+                l.appendChild(a); ul.appendChild(l);
+            });
+            panneau.appendChild(ul);
+        }
+        function ouvrir(oui) {
+            panneau.hidden = !oui; bt.setAttribute('aria-expanded', oui ? 'true' : 'false');
+            if (!oui) return;
+            panneau.style.top = (document.querySelector('.navbar').getBoundingClientRect().bottom + 6) + 'px';
+            remplir();
+            if (donnees && donnees.non_lues) {
+                rpc('notifications_lues', { p_jeton: s.jeton }).then(function () {
+                    donnees.non_lues = 0; donnees.liste.forEach(function (n) { n.lu = true; });
+                    montrerCompte(0); pastille(0);
+                }).catch(function () {});
+            }
+        }
+        bt.onclick = function (e) { e.stopPropagation(); ouvrir(panneau.hidden); };
+        document.addEventListener('click', function (e) { if (!panneau.hidden && !panneau.contains(e.target)) ouvrir(false); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panneau.hidden) { ouvrir(false); bt.focus(); } });
+        // revenu dans l'appli (après une notification) : on met à jour
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) { charger(); fermerNotifsSysteme(); } });
+
+        fermerNotifsSysteme();
+        charger();
+    });
+})();
