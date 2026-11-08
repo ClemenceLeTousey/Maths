@@ -63,6 +63,7 @@
         '.barre-licence{all:initial;display:block;box-sizing:border-box;width:100%;max-width:1100px;margin:28px auto 12px;padding:0 16px;text-align:center;font:12.5px/1.5 Lexend,system-ui,sans-serif;color:#66708a}',
         '.barre-licence a{color:inherit;text-decoration:underline}',
         'html[data-theme="dark"] .barre-licence{color:#98a2b6}',
+        '.barre-licence .lic-court{display:none}@media (max-width:600px){.barre-licence .lic-long{display:none}.barre-licence .lic-court{display:inline}}',
         '@media print{.barre-site,.barre-effet{display:none!important}html.barre-inverse,html.matrix,html.futur,html.halloween{filter:none}}'
     ].join('');
     var style = document.createElement('style');
@@ -166,7 +167,7 @@
         if (!document.querySelector('footer')) {
             var lic = document.createElement('p');
             lic.className = 'barre-licence';
-            lic.innerHTML = 'Hébergé avec GitHub Pages. © 2026 Clémence Le Tousey<br>Documents sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a> : réutilisation libre en citant l\'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.';
+            lic.innerHTML = '<span class="lic-long">Hébergé avec GitHub Pages. </span>© 2026 Clémence Le Tousey<br><span class="lic-long">Documents sous licence </span><span class="lic-court">Licence </span><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a><span class="lic-long"> : réutilisation libre en citant l\'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.</span>';
             document.body.appendChild(lic);
         }
 

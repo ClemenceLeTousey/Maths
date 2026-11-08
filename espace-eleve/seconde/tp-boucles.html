@@ -258,7 +258,7 @@
     </main>
 
     <footer>
-        <p>Hébergé avec GitHub Pages. &copy; 2026 Clémence Le Tousey<br>Documents sous licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a> : réutilisation libre en citant l'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.</p>
+        <style>.lic-court{display:none}@media (max-width:600px){.lic-long{display:none}.lic-court{display:inline}}</style><p><span class="lic-long">Hébergé avec GitHub Pages. </span>&copy; 2026 Clémence Le Tousey<br><span class="lic-long">Documents sous licence </span><span class="lic-court">Licence </span><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a><span class="lic-long"> : réutilisation libre en citant l'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.</span></p>
     </footer>
 
 <script type="text/x-python" id="py-aide">
@@ -780,7 +780,7 @@ def _console(ligne, n):
         var SCRIPT_D = 'for i in range(3):\n    print("Bonjour")\n    print("Fin")\n';
         var SOMME = 'somme = 0\nfor i in range(1, 11):\n    somme = somme + i\nprint(somme)\n';
         var SOMME_BUG = 'somme = 0\nfor i in range(1, 10):\n    somme = somme + i\n    print(somme)\n';
-        var PUISSANCES = 'x = 1\nwhile x <= 1000:\n    x = 2 * x\nprint(x)\n';
+        var PUISSANCES = 'x = 1\nwhile x <= 100:\n    x = 2 * x\nprint(x)\n';
         var MOITIES = 'x = 100\nn = 0\nwhile x > 10:\n    x = x / 2\n    n = n + 1\nprint(n)\n';
         var FIZZ_BUG = 'def fizzbuzz(n):\n    if n % 3 == 0:\n        return "Fizz"\n    elif n % 5 == 0:\n        return "Buzz"\n    elif n % 15 == 0:\n        return "FizzBuzz"\n    else:\n        return n\n';
         var FIZZ = 'def fizzbuzz(n):\n    if n % 15 == 0:\n        return "FizzBuzz"\n    elif n % 3 == 0:\n        return "Fizz"\n    elif n % 5 == 0:\n        return "Buzz"\n    else:\n        return n\n';
@@ -888,39 +888,39 @@ def _console(ligne, n):
 
             { titre: 'A · La boucle while', type: 'prevoir',
               consigne: encadre('', 'La boucle non bornée « while »', '<ul><li>Elle répète des instructions <b>tant que</b> (<i>while</i>) une condition est vraie : on ne sait pas à l’avance combien de fois.</li>' +
-                    '<li>Scratch utilise la condition <b>d’arrêt</b> (« répéter <b>jusqu’à</b> <i>x</i> &gt; 1000 »), Python utilise la condition pour <b>continuer</b> (« répéter <b>tant que</b> <i>x</i> ⩽ 1000 »).</li></ul>') +
+                    '<li>Scratch utilise la condition <b>d’arrêt</b> (« répéter <b>jusqu’à</b> <i>x</i> &gt; 100 »), Python utilise la condition pour <b>continuer</b> (« répéter <b>tant que</b> <i>x</i> ⩽ 100 »).</li></ul>') +
                 encadre('attention', 'Boucle infinie', 'Si la condition reste toujours vraie, la boucle ne s’arrête jamais ! Les instructions répétées doivent faire évoluer la variable testée. En cas de problème, clique sur <b>■ Stop</b>.') +
                 '<p>La condition s’écrit comme celle d’un <code>if</code> (TP2) : on compare deux valeurs.</p>' + TABLE_COMP +
                 PREVOIR_SCRIPT,
               scripts: [
-                  { nom: 'Script E', code: PUISSANCES, attendu: 1024, variable: 'x',
-                    intro: 'On teste la condition <code>x &lt;= 1000</code> <b>avant chaque tour</b> : si elle est vérifiée, on entre dans la boucle et on exécute l’instruction décalée ; sinon, on sort de la boucle.', surligne: [2, 3],
-                    car: [{ cond: 'while x <= 1000', val: '1', vraie: true,
-                            avant: 'Au début, <code>x</code> vaut 1. La condition <code>x &lt;= 1000</code> ',
-                            raison: '`x` vaut 1 et 1 ⩽ 1000 : on entre dans la boucle et on exécute `x = 2 * x`' },
+                  { nom: 'Script E', code: PUISSANCES, attendu: 128, variable: 'x',
+                    intro: 'On teste la condition <code>x &lt;= 100</code> <b>avant chaque tour</b> : si elle est vérifiée, on entre dans la boucle et on exécute l’instruction décalée ; sinon, on sort de la boucle.', surligne: [2, 3],
+                    car: [{ cond: 'while x <= 100', val: '1', vraie: true,
+                            avant: 'Au début, <code>x</code> vaut 1. La condition <code>x &lt;= 100</code> ',
+                            raison: '`x` vaut 1 et 1 ⩽ 100 : on entre dans la boucle et on exécute `x = 2 * x`' },
                           { suivi: {
-                              consigne: 'Complète le tableau tour par tour. Tant que la condition est vérifiée, la boucle continue : ajoute un tour avec le bouton « + Ajouter un tour ».',
-                              lignes: [{ libelle: 'Condition <code>x &lt;= 1000</code> vérifiée ?', choix: ['oui', 'non'], aide: 'Compare la valeur de `x` de la même colonne avec 1000.' },
-                                       { libelle: 'Valeur de <code>x</code>', aide: '`x = 2 * x` : double la valeur de `x` de la colonne précédente.' }],
-                              debut: ['oui', '1'],
-                              valeurs: function (t) { var x = Math.pow(2, t); return [x <= 1000 ? 'oui' : 'non', String(x)]; },
-                              stop: 'non', max: 12,
-                              raison: 'Après le 10e tour, `x` vaut 1024 et 1024 ⩽ 1000 est faux : on sort de la boucle' } },
-                          { fin: 'La boucle a fait 10 tours : le script affiche 1024.' }] },
+                              consigne: 'Complète le tableau tour par tour. Dans chaque colonne : la valeur des variables <b>à la fin du tour</b>, puis le test fait juste après. Si le test est vrai, la boucle fait un tour de plus : ajoute une colonne avec « + Ajouter un tour ». S’il est faux, la boucle s’arrête.',
+                              lignes: [{ libelle: 'Valeur de <code>x</code>', aide: '`x = 2 * x` : double la valeur de `x` de la colonne précédente.' },
+                                       { libelle: 'Puis test <code>x &lt;= 100</code> : vrai ?', choix: ['oui', 'non'], aide: 'Compare la valeur de `x` juste au-dessus avec 100.' }],
+                              debut: ['1', 'oui'],
+                              valeurs: function (t) { var x = Math.pow(2, t); return [String(x), x <= 100 ? 'oui' : 'non']; },
+                              stop: 'non', max: 9,
+                              raison: 'À la fin du tour 7, `x` vaut 128 et 128 ⩽ 100 est faux : on sort de la boucle' } },
+                          { fin: 'La boucle a fait 7 tours : le script affiche 128.' }] },
                   { nom: 'Script F', code: MOITIES, attendu: 4, variable: 'x',
                     intro: 'On teste la condition <code>x &gt; 10</code> <b>avant chaque tour</b> : si elle est vérifiée, on entre dans la boucle et on exécute les deux instructions décalées ; sinon, on sort de la boucle. La variable <code>n</code> compte les tours.', surligne: [3, 5],
                     car: [{ cond: 'while x > 10', val: '100', vraie: true,
                             avant: 'Au début, <code>x</code> vaut 100. La condition <code>x &gt; 10</code> ',
                             raison: '`x` vaut 100 et 100 > 10 : on entre dans la boucle et on exécute `x = x / 2` puis `n = n + 1`' },
                           { suivi: {
-                              consigne: 'Complète le tableau tour par tour. Tant que la condition est vérifiée, la boucle continue : ajoute un tour avec le bouton « + Ajouter un tour ».',
-                              lignes: [{ libelle: 'Condition <code>x &gt; 10</code> vérifiée ?', choix: ['oui', 'non'], aide: 'Compare la valeur de `x` de la même colonne avec 10.' },
-                                       { libelle: 'Valeur de <code>x</code>', aide: '`x = x / 2` : divise par 2 la valeur de `x` de la colonne précédente.' },
-                                       { libelle: 'Valeur de <code>n</code>', aide: '`n = n + 1` : `n` augmente de 1 à chaque tour.' }],
-                              debut: ['oui', '100', '0'],
-                              valeurs: function (t) { var x = 100 / Math.pow(2, t); return [x > 10 ? 'oui' : 'non', String(x), String(t)]; },
+                              consigne: 'Complète le tableau tour par tour. Dans chaque colonne : la valeur des variables <b>à la fin du tour</b>, puis le test fait juste après. Si le test est vrai, la boucle fait un tour de plus : ajoute une colonne avec « + Ajouter un tour ». S’il est faux, la boucle s’arrête.',
+                              lignes: [{ libelle: 'Valeur de <code>x</code>', aide: '`x = x / 2` : divise par 2 la valeur de `x` de la colonne précédente.' },
+                                       { libelle: 'Valeur de <code>n</code>', aide: '`n = n + 1` : `n` augmente de 1 à chaque tour.' },
+                                       { libelle: 'Puis test <code>x &gt; 10</code> : vrai ?', choix: ['oui', 'non'], aide: 'Compare la valeur de `x` juste au-dessus avec 10.' }],
+                              debut: ['100', '0', 'oui'],
+                              valeurs: function (t) { var x = 100 / Math.pow(2, t); return [String(x), String(t), x > 10 ? 'oui' : 'non']; },
                               stop: 'non', max: 8,
-                              raison: 'Après le 4e tour, `x` vaut 6,25 et 6,25 > 10 est faux : on sort de la boucle' } },
+                              raison: 'À la fin du tour 4, `x` vaut 6,25 et 6,25 > 10 est faux : on sort de la boucle' } },
                           { fin: 'La boucle a fait 4 tours : n vaut 4, le script affiche 4.' }] }
               ],
               bilan: [
@@ -1217,7 +1217,7 @@ def _console(ligne, n):
                         if (it.cond) return li(code(it.cond) + ' : ' + (it.vraie ? 'est vérifiée' : 'n’est pas vérifiée') + ' (' + esc(it.raison) + ')');
                         if (it.valeur) return li(it.avant + ' <b>' + esc(it.valeur) + '</b> (' + esc(it.raison) + ')');
                         if (it.bloc) return li('bloc exécuté : sous ' + code(it.bloc));
-                        if (it.suivi) { var tt = []; for (var q = 1; q <= it.suivi.max; q++) { var vv = it.suivi.valeurs(q); tt.push('après le tour ' + q + ' : ' + vv.join(' ; ')); if (vv[0] === it.suivi.stop) break; } return li('tableau : ' + esc(tt.join(' · '))); }
+                        if (it.suivi) { var tt = []; for (var q = 1; q <= it.suivi.max; q++) { var vv = it.suivi.valeurs(q); tt.push('tour ' + q + ' : ' + vv.join(' ; ')); if (vv[vv.length - 1] === it.suivi.stop) break; } return li('tableau : ' + esc(tt.join(' · '))); }
                         return '';
                     }).join('') + '</ul>';
                     return li(t);
@@ -1455,9 +1455,9 @@ def _console(ligne, n):
                 rangs[0].appendChild(el('th', null, ''));
                 S.lignes.forEach(function (lg, j) { rangs[j + 1].appendChild(el('th', null, lg.libelle)); });
                 rangs.forEach(function (x) { t.appendChild(x); });
-                var cols = [], ordinal = function (k) { return k === 1 ? '1<sup>er</sup>' : k + '<sup>e</sup>'; };
+                var cols = [];
                 function colonne(k, vals, fixe) {
-                    var th = el('th', null, k === 0 ? 'Au début' : 'Après le ' + ordinal(k) + ' tour'); rangs[0].appendChild(th);
+                    var th = el('th', null, k === 0 ? 'Avant la boucle' : 'Tour ' + k); rangs[0].appendChild(th);
                     var tds = [th];
                     var ins = S.lignes.map(function (lg, j) {
                         var td = el('td'); rangs[j + 1].appendChild(td); tds.push(td);
@@ -1499,7 +1499,7 @@ def _console(ligne, n):
                     });
                     if (fausses.length) return '✗ ' + fausses.length + ' case' + (fausses.length > 1 ? 's' : '') + ' à revoir (en rouge). ' + miseEnForme(fausses[0]);
                     var derniere = cols[cols.length - 1];
-                    if (S.valeurs(derniere.k)[0] !== S.stop) return '✗ La condition est encore vérifiée : la boucle continue. Ajoute un tour.';
+                    var vd = S.valeurs(derniere.k); if (vd[vd.length - 1] !== S.stop) return '✗ La condition est encore vérifiée : la boucle continue. Ajoute un tour.';
                     return null;
                 }
                 function bon() {
@@ -1519,7 +1519,7 @@ def _console(ligne, n):
             // réponse attendue d'un « suivi » (aperçu « Développer » du mode professeure)
             function solutionSuivi(S) {
                 var c = [];
-                for (var k = 1; k <= S.max; k++) { var v = S.valeurs(k); c.push(v.join(';')); if (v[0] === S.stop) break; }
+                for (var k = 1; k <= S.max; k++) { var v = S.valeurs(k); c.push(v.join(';')); if (v[v.length - 1] === S.stop) break; }
                 return c.join('|');
             }
             function montrerBilan() {
