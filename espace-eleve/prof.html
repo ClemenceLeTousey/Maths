@@ -43,17 +43,9 @@
             border-bottom: 2px solid var(--surface); font-weight: 600;
         }
         .interactif .onglets button:focus-visible { outline: 2px solid var(--c-seconde); outline-offset: -2px; }
-        /* Onglet DNL : bingo de la Séquence 1 */
-        .bingo { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
-        .bingo-tirage { display: flex; flex-wrap: wrap; gap: 6px 24px; align-items: baseline; margin: 10px 0 14px; min-height: 4.2rem; }
-        .bingo-n { font-size: 3.4rem; font-weight: 700; color: var(--c-seconde); font-variant-numeric: tabular-nums; }
-        .bingo-mots { font-size: 1.6rem; }
-        .bingo-piege { color: var(--ko); font-size: 1rem; }
-        .bingo .ligne { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 8px 0; }
-        .bingo input[type="text"] { font: inherit; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--text); width: 16em; }
-        .bingo-liste { font-family: var(--f-mono); line-height: 1.8; }
-        .bingo-liste .piege { color: var(--ko); }
-        .bingo pre { font-family: var(--f-mono); font-size: 0.85rem; overflow-x: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+        .pastille-onglet { display: inline-block; min-width: 1.2em; margin-left: 6px; padding: 0 5px; border-radius: 999px; background: var(--c-seconde); color: #fff; font-size: 0.75rem; font-weight: 600; line-height: 1.4; text-align: center; }
+        .tentative.nouveau { border-left: 4px solid var(--c-seconde); }
+        .badge-nouveau { font-size: 0.8rem; font-weight: 600; color: var(--c-seconde); }
         /* Onglet Plan de travail : une case par classe (2B, 2H, 2F) pour chaque élément */
         .pt-resume { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
         @media (max-width: 700px) { .pt-resume { grid-template-columns: 1fr; } }
@@ -191,7 +183,7 @@
 
     <header>
         <h1>Espace professeure</h1>
-        <p>Suivi, plan de travail, plan de classe, DNL et TP</p>
+        <p>Suivi, messages, plan de travail, plan de classe et TP</p>
     </header>
 
     <main class="interactif">
@@ -204,17 +196,19 @@
         <div id="vue" hidden>
             <div class="onglets" role="tablist" aria-label="Rubriques de l'espace professeure">
                 <button type="button" role="tab" id="onglet-suivi" aria-controls="panneau-suivi" data-onglet="suivi">Suivi QF</button>
+                <button type="button" role="tab" id="onglet-messages" aria-controls="panneau-messages" data-onglet="messages">Messages</button>
                 <button type="button" role="tab" id="onglet-suivi-eval" aria-controls="panneau-suivi-eval" data-onglet="suivi-eval">Suivi Eval</button>
                 <button type="button" role="tab" id="onglet-suivi-tp" aria-controls="panneau-suivi-tp" data-onglet="suivi-tp">Suivi TP</button>
                 <button type="button" role="tab" id="onglet-notifs" aria-controls="panneau-notifs" data-onglet="notifs">Notifications</button>
                 <button type="button" role="tab" id="onglet-plan" aria-controls="panneau-plan" data-onglet="plan">Plan de travail</button>
                 <button type="button" role="tab" id="onglet-plan-classe" aria-controls="panneau-plan-classe" data-onglet="plan-classe">Plan de classe</button>
-                <button type="button" role="tab" id="onglet-dnl" aria-controls="panneau-dnl" data-onglet="dnl">DNL</button>
-                <button type="button" role="tab" id="onglet-tp-photo" aria-controls="panneau-tp-photo" data-onglet="tp-photo">TP Photo</button>
-                <button type="button" role="tab" id="onglet-tp-conditions" aria-controls="panneau-tp-conditions" data-onglet="tp-conditions">TP Conditions</button>
-                <button type="button" role="tab" id="onglet-tp-boucles" aria-controls="panneau-tp-boucles" data-onglet="tp-boucles">TP Boucles</button>
-                <button type="button" role="tab" id="onglet-tp-pixels" aria-controls="panneau-tp-pixels" data-onglet="tp-pixels">TP Pixels</button>
-                <button type="button" role="tab" id="onglet-tp-filtres" aria-controls="panneau-tp-filtres" data-onglet="tp-filtres">TP Filtres</button>
+                <button type="button" role="tab" id="onglet-python" aria-controls="panneau-python" data-onglet="python">Python</button>
+            </div>
+
+            <div class="panneau" role="tabpanel" id="panneau-messages" aria-labelledby="onglet-messages" hidden>
+                <h2>Messages des élèves</h2>
+                <p class="aide" id="messages-etat"></p>
+                <div id="messages"></div>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-suivi-eval" aria-labelledby="onglet-suivi-eval" hidden>
@@ -328,72 +322,33 @@
                 </div>
             </div>
 
-            <div class="panneau" role="tabpanel" id="panneau-dnl" aria-labelledby="onglet-dnl" hidden>
-                <h2>Séquence 1 · Lesson 1 · Number bingo</h2>
-                <p class="aide">À ne pas projeter : les élèves doivent <b>entendre</b> le nombre. Le script Python de la séquence s'exécute ici, dans le navigateur. Après un nombre piège (13…19 ou 30…90), son « jumeau » sort souvent juste après.</p>
-                <div class="bingo">
-                    <p class="aide" id="bingo-etat" aria-live="polite">Python n'est pas encore chargé.</p>
-                    <div class="bingo-tirage" aria-live="polite">
-                        <span class="bingo-n" id="bingo-n"></span>
-                        <span class="bingo-mots" id="bingo-mots"></span>
-                        <button type="button" id="bingo-lire" class="secondaire" title="Lire le nombre (voix anglaise)" hidden>▶ Play</button>
-                        <span class="bingo-piege" id="bingo-piege"></span>
-                    </div>
-                    <div class="ligne">
-                        <button type="button" id="bingo-tirer" disabled>Tirer un nombre</button>
-                        <button type="button" id="bingo-nouvelle" class="secondaire" disabled>Nouvelle partie</button>
-                        <label><input type="checkbox" id="bingo-auto"> lire automatiquement à chaque tirage</label>
-                        <span class="aide">Raccourcis : espace ou Entrée pour tirer, R pour réécouter.</span>
-                    </div>
-                    <div class="ligne">
-                        <label>Ligne de l'élève qui crie « Bingo! » <input type="text" id="bingo-grille" placeholder="ses 3 nombres, ex. 14 50 72"></label>
-                        <button type="button" id="bingo-verifier" disabled>Vérifier</button>
-                        <span id="bingo-verif" aria-live="polite"></span>
-                    </div>
-                    <p class="aide">L'élève lit ses trois nombres alignés ; tapez-les pour vérifier qu'ils ont bien tous été tirés (sinon, il a sans doute confondu fifteen et fifty…).</p>
-                    <p><b>Nombres tirés</b> <span class="aide" id="bingo-compte"></span></p>
-                    <div class="bingo-liste" id="bingo-liste"></div>
-                    <details>
-                        <summary>Voir le script Python</summary>
-                        <p><a href="dnl/S1-L1-number-bingo.py" download>Télécharger le script</a> (il marche aussi dans Thonny ou EduPython, au clavier).</p>
-                        <pre id="bingo-source"></pre>
-                    </details>
+            <div class="panneau" role="tabpanel" id="panneau-python" aria-labelledby="onglet-python" hidden>
+                <h2>TP Python</h2>
+                <div class="outils tp-choix-prof" role="group" aria-label="Choix du TP">
+                    <a class="bouton secondaire" href="seconde/tp/tp1-sujet.pdf" target="_blank" rel="noopener" title="TP sur Capytale : sujet PDF">TP1 · Affectations (PDF)</a>
+                    <button type="button" class="secondaire" data-tp="tp-conditions">TP2 · Conditions</button>
+                    <button type="button" class="secondaire" data-tp="tp-boucles">TP3 · Boucles</button>
+                    <button type="button" class="secondaire" data-tp="tp-pixels">TP4 · Pixels</button>
+                    <button type="button" class="secondaire" data-tp="tp-filtres">TP5 · Filtres</button>
                 </div>
-            </div>
-
-            <div class="panneau" role="tabpanel" id="panneau-tp-photo" aria-labelledby="onglet-tp-photo" hidden>
-                <h2>TP Python · Créer et modifier une image</h2>
-                <p class="aide">Publié pour toutes les classes de Seconde. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi. Le bouton « Passer » est proposé à tous les élèves (étape passée = 0 point, rattrapable). Avec le compte PROF-2NDE, un sélecteur en haut des TP interactifs bascule entre « Mode professeure » (solutions, « Développer », toutes les étapes ouvertes) et « Mode élève » (le TP comme un élève, code d'accès compris).</p>
-                <p><a class="bouton" href="seconde/tp-photo.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
-                <iframe id="tp-photo-apercu" title="Aperçu du TP Photo" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
-            </div>
-
-            <div class="panneau" role="tabpanel" id="panneau-tp-conditions" aria-labelledby="onglet-tp-conditions" hidden>
-                <h2>TP Python · Les structures conditionnelles</h2>
-                <p class="aide">En préparation : le TP n'est visible que du compte TEST-01, les élèves ne le voient pas encore. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi.</p>
-                <p><a class="bouton" href="seconde/tp-conditions.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
-                <iframe id="tp-conditions-apercu" title="Aperçu du TP Conditions" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
-            </div>
-
-            <div class="panneau" role="tabpanel" id="panneau-tp-boucles" aria-labelledby="onglet-tp-boucles" hidden>
-                <h2>TP3 Python · Les boucles (non noté)</h2>
-                <p class="aide">En préparation : le TP n'est visible que du compte PROF-2NDE (les élèves voient encore le sujet PDF). Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. 16 étapes : A (lire, prévoir) et B (modifier) en classe, C, quiz et défis D à la maison. TP d'entraînement : pas de note dans le Suivi TP (<code>nonNote</code> dans INTERACTIF_BAREMES). Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
-                <p><a class="bouton" href="seconde/tp-boucles.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
-                <iframe id="tp-boucles-apercu" title="Aperçu du TP Boucles" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
-            </div>
-
-            <div class="panneau" role="tabpanel" id="panneau-tp-pixels" aria-labelledby="onglet-tp-pixels" hidden>
-                <h2>TP4 Python · Créer une image pixel par pixel (noté)</h2>
-                <p class="aide">En préparation : visible seulement du compte PROF-2NDE ; les élèves gardent l'ancien TP Photo (seconde/tp-photo.html) tant que celui-ci n'est pas publié. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Code d'accès PIXEL-482. 9 étapes : A (6,5 points), B (8 points), C (5,5 points), quiz /5. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
-                <p><a class="bouton" href="seconde/tp-pixels.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
-                <iframe id="tp-pixels-apercu" title="Aperçu du TP Pixels" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
-            </div>
-
-            <div class="panneau" role="tabpanel" id="panneau-tp-filtres" aria-labelledby="onglet-tp-filtres" hidden>
-                <h2>TP5 Python · Retoucher une photo : les filtres (noté)</h2>
-                <p class="aide">En préparation : visible seulement du compte PROF-2NDE. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Code d'accès FILTRE-519. 9 étapes : A (4 points), B (6 points), C (6 points), quiz /5, défi D (4 points), bonus « détecter les contours » (1 point, rattrape une étape manquée) ; « Transforme ta propre photo » est un extra facultatif sous le TP, non noté et non enregistré. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
-                <p><a class="bouton" href="seconde/tp-filtres.html" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
-                <iframe id="tp-filtres-apercu" title="Aperçu du TP Filtres" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
+                <div class="tp-info" data-tp="tp-conditions" hidden>
+                    <h3>TP2 · Les structures conditionnelles (noté)</h3>
+                    <p class="aide">Publié pour toutes les classes de Seconde. 13 étapes. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi. Avec le compte PROF-2NDE, le sélecteur en haut du TP bascule entre « Mode professeure » et « Mode élève ».</p>
+                </div>
+                <div class="tp-info" data-tp="tp-boucles" hidden>
+                    <h3>TP3 · Les boucles (non noté)</h3>
+                    <p class="aide">En préparation : le TP n'est visible que du compte PROF-2NDE (les élèves voient encore le sujet PDF). Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. 16 étapes : A (lire, prévoir) et B (modifier) en classe, C, quiz et défis D à la maison. TP d'entraînement : pas de note dans le Suivi TP (<code>nonNote</code> dans INTERACTIF_BAREMES). Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
+                </div>
+                <div class="tp-info" data-tp="tp-pixels" hidden>
+                    <h3>TP4 · Créer une image pixel par pixel (noté)</h3>
+                    <p class="aide">En préparation : visible seulement du compte PROF-2NDE ; les élèves gardent l'ancien TP Photo (seconde/tp-photo.html) tant que celui-ci n'est pas publié. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Code d'accès PIXEL-482. 9 étapes : A (6,5 points), B (8 points), C (5,5 points), quiz /5. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
+                </div>
+                <div class="tp-info" data-tp="tp-filtres" hidden>
+                    <h3>TP5 · Retoucher une photo : les filtres (noté)</h3>
+                    <p class="aide">En préparation : visible seulement du compte PROF-2NDE. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Code d'accès FILTRE-519. 9 étapes : A (4 points), B (6 points), C (6 points), quiz /5, défi D (4 points), bonus « détecter les contours » (1 point, rattrape une étape manquée) ; « Transforme ta propre photo » est un extra facultatif sous le TP, non noté et non enregistré. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
+                </div>
+                <p><a class="bouton" id="tp-ouvrir" href="#" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
+                <iframe id="tp-apercu" title="Aperçu du TP" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-suivi-tp" aria-labelledby="onglet-suivi-tp" hidden>
@@ -421,9 +376,6 @@
             </div>
             <div class="tableau-defile"><table class="res" id="tableau"></table></div>
             <div id="detail"></div>
-            <h2>Messages des élèves</h2>
-            <p class="aide" id="messages-etat"></p>
-            <div id="messages"></div>
             <h2>Soutien · inscriptions de la classe</h2>
             <p class="aide" id="soutien-etat"></p>
             <div class="tableau-defile"><table class="res" id="soutien"></table></div>
@@ -486,7 +438,13 @@
             var $classe = document.getElementById('tp-classe'), $tp = document.getElementById('tp-choix'), $eleve = document.getElementById('tp-eleve');
             var $table = document.getElementById('tp-tableau'), $detail = document.getElementById('tp-detail');
             var TPS = INTERACTIF_CATALOGUE.filter(function (e) { return e.tp && !e.archive; });
-            TPS.forEach(function (e) { $tp.appendChild(new Option(e.titre.replace(/\s*\(.*\)$/, '') + ' · ' + e.groupe.replace(/^TP Python · /, '') + (e.comptes ? ' (en test)' : ''), e.id)); });
+            // « TP2 », « TP3 »… d'après INTERACTIF_TP_ORDRE (ancienne version remplacée : « TP4 (ancien) »)
+            function numeroTP(id) {
+                var o = (window.INTERACTIF_TP_ORDRE || []).filter(function (x) { return x.id === id || x.sinon === id; })[0];
+                var m = o && /^TP\s*\d+/.exec(o.nom);
+                return m ? m[0].replace(/\s+/, '') + (o.id === id ? '' : ' (ancien)') + ' · ' : '';
+            }
+            TPS.forEach(function (e) { $tp.appendChild(new Option(numeroTP(e.id) + e.titre.replace(/\s*\(.*\)$/, '') + ' · ' + e.groupe.replace(/^TP Python · /, '') + (e.comptes ? ' (en test)' : ''), e.id)); });
             if (TPS.length) $tp.value = TPS[TPS.length - 1].id;   // par défaut : le TP le plus récent du catalogue
 
             // meilleure tentative (plus d'étapes, puis la plus récente) et note
@@ -894,18 +852,38 @@
         var messages = null;
         function chargerMessages() {
             var etat = document.getElementById('messages-etat');
-            Interactif.rpc('prof_messages', { p_mdp: mdp }).then(function (l) { messages = l || []; afficherMessages(); },
-                function (x) { messages = null; etat.textContent = 'Messages indisponibles (' + x.message + ') : le script maj-messages.sql a-t-il été lancé dans Supabase ?'; });
+            Interactif.rpc('prof_messages', { p_mdp: mdp }).then(function (l) {
+                messages = l || [];
+                messages.forEach(function (m) { m.nouveau = m.lu_prof === false; });   // reste marqué « nouveau » jusqu'au prochain chargement
+                afficherMessages(); marquerMessagesLus();
+            }, function (x) { messages = null; etat.textContent = 'Messages indisponibles (' + x.message + ') : le script maj-messages.sql a-t-il été lancé dans Supabase ?'; });
+        }
+        /* Pastille de l'onglet : messages pas encore vus ; ils deviennent « vus » quand l'onglet Messages est ouvert */
+        function pastilleMessages() {
+            var o = document.getElementById('onglet-messages'), p = o.querySelector('.pastille-onglet');
+            var n = messages ? messages.filter(function (m) { return m.lu_prof === false; }).length : 0;
+            if (!n) { if (p) p.remove(); return; }
+            if (!p) { p = document.createElement('span'); p.className = 'pastille-onglet'; o.appendChild(p); }
+            p.textContent = n; p.setAttribute('aria-label', n + ' nouveau(x) message(s)');
+        }
+        function marquerMessagesLus() {
+            if (!messages || document.getElementById('panneau-messages').hidden) return;
+            if (!messages.some(function (m) { return m.lu_prof === false; })) return;
+            Interactif.rpc('prof_messages_lus', { p_mdp: mdp }).then(function () {
+                messages.forEach(function (m) { m.lu_prof = true; }); pastilleMessages();
+            }, function () {});   // maj-reponses.sql pas encore (re)lancé : la pastille reste
         }
         function afficherMessages() {
             var zone = document.getElementById('messages');
             zone.innerHTML = '';
+            pastilleMessages();
             document.getElementById('messages-etat').textContent = messages.length ? messages.length + ' message(s).' : 'Aucun message.';
             messages.forEach(function (m) {
-                var bloc = document.createElement('div'); bloc.className = 'tentative';
+                var bloc = document.createElement('div'); bloc.className = 'tentative' + (m.nouveau ? ' nouveau' : '');
                 var t = document.createElement('h3');
                 t.textContent = new Date(m.envoye_le).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) +
                     ' · ' + m.code + (noms[m.code] ? ' — ' + noms[m.code] : '');
+                if (m.nouveau) { var nv = document.createElement('span'); nv.className = 'badge-nouveau'; nv.textContent = 'nouveau'; t.appendChild(nv); }
                 var sup = document.createElement('button'); sup.type = 'button'; sup.className = 'lien'; sup.textContent = 'supprimer';
                 sup.onclick = function () {
                     if (!confirm('Supprimer définitivement ce message ?')) return;
@@ -1078,9 +1056,24 @@
 
     <script>
     (function () {
-        /* ---------- Onglets : Suivi QF par défaut ; #suivi-eval, #plan, #plan-classe, #dnl, #tp-photo ou #tp-conditions dans l'adresse ouvre l'onglet correspondant ---------- */
+        /* ---------- Onglets : Suivi QF par défaut ; #messages, #suivi-eval, #plan, #plan-classe, #python dans l'adresse ouvre l'onglet correspondant ---------- */
         var onglets = Array.prototype.slice.call(document.querySelectorAll('.onglets [role="tab"]'));
-        var $tp = document.getElementById('tp-photo-apercu');
+        /* Onglet Python : un TP à la fois ; l'aperçu ne se charge qu'au clic (dernier TP choisi gardé sur cet ordinateur) */
+        var tpChoisi = null;
+        try { tpChoisi = localStorage.getItem('prof-tp-choisi'); } catch (e) {}
+        function choisirTP(id) {
+            var boutonsTP = Array.prototype.slice.call(document.querySelectorAll('.tp-choix-prof button[data-tp]'));
+            id = id || tpChoisi;
+            if (!boutonsTP.some(function (b) { return b.dataset.tp === id; })) id = boutonsTP[boutonsTP.length - 1].dataset.tp;
+            tpChoisi = id;
+            try { localStorage.setItem('prof-tp-choisi', id); } catch (e) {}
+            boutonsTP.forEach(function (b) { var a = b.dataset.tp === id; b.className = a ? '' : 'secondaire'; b.setAttribute('aria-pressed', a ? 'true' : 'false'); });
+            document.querySelectorAll('.tp-info').forEach(function (d) { d.hidden = d.dataset.tp !== id; });
+            var url = 'seconde/' + id + '.html', f = document.getElementById('tp-apercu');
+            document.getElementById('tp-ouvrir').href = url;
+            if (f.getAttribute('src') !== url) f.src = url;
+        }
+        document.querySelectorAll('.tp-choix-prof button[data-tp]').forEach(function (b) { b.onclick = function () { choisirTP(b.dataset.tp); }; });
         function ouvrirOnglet(nom, focus) {
             if (!onglets.some(function (o) { return o.dataset.onglet === nom; })) nom = 'suivi';
             onglets.forEach(function (o) {
@@ -1091,19 +1084,13 @@
                 if (actif && focus) o.focus();
             });
             try { history.replaceState(null, '', nom === 'suivi' ? location.pathname + location.search : '#' + nom); } catch (e) {}
-            if (nom === 'dnl') Bingo.demarrer();
             if (nom === 'plan' && !document.getElementById('vue').hidden) PlanTravail.demarrer();
             if (nom === 'suivi-eval') SuiviEval.demarrer();
             if (nom === 'notifs' && !document.getElementById('vue').hidden) NotifProf.demarrer();
             if (nom === 'plan-classe') PlanClasse.demarrer();
+            if (nom === 'messages') marquerMessagesLus();
             // l'aperçu du TP (et son Python) ne se charge qu'à la première ouverture de l'onglet
-            if (nom === 'tp-photo' && !$tp.src) $tp.src = 'seconde/tp-photo.html';
-            var $tpc = document.getElementById('tp-conditions-apercu');
-            if (nom === 'tp-conditions' && !$tpc.src) $tpc.src = 'seconde/tp-conditions.html';
-            [['tp-boucles', 'seconde/tp-boucles.html'], ['tp-pixels', 'seconde/tp-pixels.html'], ['tp-filtres', 'seconde/tp-filtres.html']].forEach(function (x) {
-                var f = document.getElementById(x[0] + '-apercu');
-                if (nom === x[0] && !f.src) f.src = x[1];
-            });
+            if (nom === 'python') choisirTP();
         }
         onglets.forEach(function (o) {
             o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };
@@ -1116,131 +1103,6 @@
             };
         });
         window.addEventListener('hashchange', function () { ouvrirOnglet(location.hash.slice(1)); });
-
-        /* ---------- DNL · Number bingo : le script Python de la séquence, exécuté avec Pyodide ---------- */
-        // Pyodide n'est chargé qu'à la première ouverture de l'onglet DNL.
-        // Le script garde sa boucle input() sous "if __name__ == '__main__'" : ici on n'importe que ses fonctions.
-        var PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/';
-        var SCRIPT = 'dnl/S1-L1-number-bingo.py';
-        var PARTIE = [
-            'def nouvelle_partie():',
-            '    global restants, tires, dernier',
-            '    restants, tires, dernier = list(range(11, 100)), [], None',
-            'def tirage():',
-            '    global dernier',
-            '    if not restants:',
-            '        return None',
-            '    n = tirer(restants, dernier)',
-            '    restants.remove(n); tires.append(n); dernier = n',
-            '    j = jumeau(n)',
-            '    return [n, in_words(n), in_words(j) if j is not None else ""]',
-            'def absents(texte):',
-            '    nombres = [int(x) for x in texte.replace(",", " ").split() if x.isdigit()]',
-            '    return [nombres, [n for n in nombres if n not in tires]]',
-            'nouvelle_partie()'
-        ].join('\n');
-        var $ = function (id) { return document.getElementById(id); };
-        var py = null, ns = null, lance = false, liste = [];
-
-        function chargerScript(url) {
-            return new Promise(function (ok, ko) {
-                var s = document.createElement('script');
-                s.src = url; s.onload = ok; s.onerror = function () { ko(new Error('réseau')); };
-                document.head.appendChild(s);
-            });
-        }
-        function boutons(actifs) { ['bingo-tirer', 'bingo-nouvelle', 'bingo-verifier'].forEach(function (id) { $(id).disabled = !actifs; }); }
-        function afficherListe() {
-            var zone = $('bingo-liste'); zone.innerHTML = '';
-            liste.forEach(function (t, i) {
-                var s = document.createElement('span');
-                if (t[2]) s.className = 'piege';
-                s.textContent = t[0] + (i < liste.length - 1 ? ' · ' : '');
-                zone.appendChild(s);
-            });
-            $('bingo-compte').textContent = liste.length ? '(' + liste.length + ' sur 89, piège en rouge)' : '';
-        }
-
-        var Bingo = window.Bingo = {
-            demarrer: function () {
-                if (lance) return;
-                lance = true;
-                $('bingo-etat').textContent = 'Chargement de Python… (quelques secondes la première fois)';
-                var source;
-                Promise.all([
-                    fetch(SCRIPT).then(function (r) { if (!r.ok) throw new Error('script introuvable'); return r.text(); }),
-                    window.loadPyodide ? Promise.resolve() : chargerScript(PYODIDE + 'pyodide.js')
-                ]).then(function (res) {
-                    source = res[0];
-                    $('bingo-source').textContent = source;
-                    return loadPyodide({ indexURL: PYODIDE });
-                }).then(function (p) {
-                    py = p;
-                    ns = py.globals.get('dict')();
-                    ns.set('__name__', 'bingo');
-                    py.runPython(source, { globals: ns });
-                    py.runPython(PARTIE, { globals: ns });
-                    $('bingo-etat').textContent = 'Python ' + py.version + ' prêt. Cliquez sur « Tirer un nombre ».';
-                    boutons(true);
-                    $('bingo-tirer').focus();
-                }).catch(function (e) {
-                    lance = false;
-                    $('bingo-etat').textContent = 'Impossible de charger Python (' + (e.message || e) + '). Rouvrez l\'onglet pour réessayer.';
-                });
-            },
-            tirer: function () {
-                if (!ns) return;
-                var r = ns.get('tirage')();
-                if (!r) { $('bingo-etat').textContent = 'Les 89 nombres sont sortis !'; return; }
-                var t = r.toJs(); r.destroy();
-                liste.push(t);
-                $('bingo-n').textContent = t[0];
-                $('bingo-mots').textContent = t[1];
-                $('bingo-piege').textContent = t[2] ? '(trap! not ' + t[2] + ')' : '';
-                $('bingo-lire').hidden = !window.speechSynthesis;
-                afficherListe();
-                if ($('bingo-auto').checked) Bingo.lire();
-            },
-            // lecture du nombre avec la synthèse vocale du navigateur (voix britannique si possible)
-            lire: function () {
-                var mots = $('bingo-mots').textContent;
-                if (!mots || !window.speechSynthesis) return;
-                var voix = speechSynthesis.getVoices(), u = new SpeechSynthesisUtterance(mots);
-                var v = voix.filter(function (x) { return x.lang === 'en-GB'; })[0] || voix.filter(function (x) { return /^en/.test(x.lang); })[0];
-                u.lang = v ? v.lang : 'en-GB'; if (v) u.voice = v;
-                u.rate = 0.85;
-                speechSynthesis.cancel(); speechSynthesis.speak(u);
-            },
-            nouvelle: function () {
-                if (!ns || (liste.length && !confirm('Recommencer une partie ?'))) return;
-                ns.get('nouvelle_partie')();
-                liste = [];
-                $('bingo-n').textContent = $('bingo-mots').textContent = $('bingo-piege').textContent = $('bingo-verif').textContent = '';
-                afficherListe();
-            },
-            verifier: function () {
-                if (!ns) return;
-                var r = ns.get('absents')($('bingo-grille').value), t = r.toJs(); r.destroy();
-                var v = $('bingo-verif');
-                if (!t[0].length) { v.textContent = 'Tapez les nombres du gagnant.'; v.className = ''; }
-                else if (!t[1].length) { v.textContent = 'Bingo ! Tous ces nombres ont été tirés.'; v.className = 'ok'; }
-                else { v.textContent = 'Pas encore tirés : ' + t[1].join(', '); v.className = 'ko'; }
-            }
-        };
-        $('bingo-tirer').onclick = Bingo.tirer;
-        $('bingo-lire').onclick = Bingo.lire;
-        if (window.speechSynthesis) speechSynthesis.getVoices();   // précharge la liste des voix (Chrome)
-        try { $('bingo-auto').checked = localStorage.getItem('bingo-auto') === '1'; } catch (e) {}
-        $('bingo-auto').onchange = function () { try { localStorage.setItem('bingo-auto', this.checked ? '1' : '0'); } catch (e) {} };
-        $('bingo-nouvelle').onclick = Bingo.nouvelle;
-        $('bingo-verifier').onclick = Bingo.verifier;
-        $('bingo-grille').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); Bingo.verifier(); } };
-        // barre d'espace ou Entrée : tirer (sauf si on écrit dans un champ)
-        document.addEventListener('keydown', function (e) {
-            if ($('panneau-dnl').hidden || !ns || /INPUT|TEXTAREA|SELECT|BUTTON/.test(e.target.tagName)) return;
-            if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); Bingo.tirer(); }
-            else if (e.key === 'r' || e.key === 'R') { e.preventDefault(); Bingo.lire(); }
-        });
 
         ouvrirOnglet(location.hash.slice(1));
     })();
