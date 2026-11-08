@@ -909,6 +909,15 @@ def _console(ligne, n):
         var TABLE_COMP = '<div class="tableau"><table>' +
             '<tr><th>En maths</th><td>tant que <i>x</i> &lt; 3</td><td>tant que <i>x</i> &gt; 3</td><td>tant que <i>x</i> ⩽ 3</td><td>tant que <i>x</i> ⩾ 3</td><td>tant que <i>x</i> = 3</td><td>tant que <i>x</i> ≠ 3</td></tr>' +
             '<tr><th>En Python</th><td><code>while x &lt; 3:</code></td><td><code>while x &gt; 3:</code></td><td><code>while x &lt;= 3:</code></td><td><code>while x &gt;= 3:</code></td><td><code>while x == 3:</code></td><td><code>while x != 3:</code></td></tr></table></div>';
+        /* Tableau de suivi du corrigé du quiz : tours = en-têtes de colonnes (nombre ou 'sortie' / 'avant'),
+           lignes = [titre, valeurs…] ; une valeur null donne une case vide. */
+        function suiviQuiz(tours, lignes) {
+            return '<div class="tableau"><table class="trace"><tr class="tour"><th>Tour de boucle n°</th>' +
+                tours.map(function (t) { return '<th class="num-tour' + (typeof t === 'number' ? '' : ' sortie') + '">' + t + '</th>'; }).join('') + '</tr>' +
+                lignes.map(function (l) {
+                    return '<tr><th>' + l[0] + '</th>' + l.slice(1).map(function (v) { return v == null ? '<td class="vide"></td>' : '<td>' + v + '</td>'; }).join('') + '</tr>';
+                }).join('') + '</table></div>';
+        }
         var LISTE = '<p class="aide">Plusieurs nombres ? Sépare-les par des espaces ou des virgules, par exemple : <code>2, 4, 6</code></p>';
 
         /* Ancienne version de l'étape 3 (cases l'une sous l'autre, éditeur et console visibles dès le départ).
@@ -1170,19 +1179,27 @@ def _console(ligne, n):
               questions: [
                   { texte: 'Combien de nombres ce script affiche-t-il ?', code: 'for i in range(2, 7):\n    print(i)\n',
                     choix: ['4', '5', '6', '7'], bonne: 1,
-                    explication: '<code>i</code> prend les valeurs 2, 3, 4, 5 et 6 : 7 est exclu.' },
+                    explication: '<code>i</code> prend les valeurs 2, 3, 4, 5 et 6 : 7 est exclu.' +
+                        suiviQuiz([1, 2, 3, 4, 5], [['<code>i</code>', 2, 3, 4, 5, 6], ['Affichage', 2, 3, 4, 5, 6]]) +
+                        '5 tours de boucle, donc 5 nombres affichés.' },
                   { texte: 'Quelles valeurs prend <code>i</code> dans <code>for i in range(3):</code> ?',
                     choix: ['0, 1, 2', '1, 2, 3', '0, 1, 2, 3', '3 seulement'], bonne: 0,
                     explication: '<code>range(3)</code> part de 0 et s’arrête avant 3.' },
                   { texte: 'Qu’affiche ce script ?', code: 's = 0\nfor i in range(4):\n    s = s + 2\nprint(s)\n',
                     choix: ['2', '6', '8', '2, 4, 6, 8'], bonne: 2,
-                    explication: 'La boucle fait 4 tours et ajoute 2 à chaque fois : 4 × 2 = 8. <code>print</code> est après la boucle : un seul nombre.' },
+                    explication: 'La boucle fait 4 tours et ajoute 2 à chaque fois : 4 × 2 = 8.' +
+                        suiviQuiz(['avant', 1, 2, 3, 4], [['<code>i</code>', null, 0, 1, 2, 3], ['<code>s</code>', 0, 2, 4, 6, 8]]) +
+                        '<code>print</code> est après la boucle : il n’affiche qu’un seul nombre, la dernière valeur de <code>s</code>.' },
                   { texte: 'Que vaut <code>23 % 5</code> ?',
                     choix: ['4', '3', '4.6', '5'], bonne: 1,
                     explication: '23 = 5 × 4 + 3 : le reste est 3.' },
                   { texte: 'Qu’affiche ce script ?', code: 'x = 3\nwhile x < 20:\n    x = x + 5\nprint(x)\n',
                     choix: ['18', '20', '23', '28'], bonne: 2,
-                    explication: '<code>x</code> vaut 3, 8, 13, 18, puis 23 ; 23 &lt; 20 est faux : la boucle s’arrête.' }
+                    explication: '<code>x</code> vaut 3, 8, 13, 18, puis 23 ; 23 &lt; 20 est faux : la boucle s’arrête.' +
+                        suiviQuiz(['avant', 1, 2, 3, 4, 'sortie'], [
+                            ['Test <code>x &lt; 20</code>', null, '3 &lt; 20 vrai', '8 &lt; 20 vrai', '13 &lt; 20 vrai', '18 &lt; 20 vrai', '23 &lt; 20 <b>faux</b>'],
+                            ['<code>x</code>', 3, 8, 13, 18, 23, null]]) +
+                        'Le test est faux au 5<sup>e</sup> passage : on sort de la boucle et <code>print(x)</code> affiche 23.' }
               ] },
 
             { titre: 'D · Défi 1 : le bug du FizzBuzz', type: 'prevoir',
@@ -2267,7 +2284,7 @@ def _console(ligne, n):
                             var l = el('label'), inp = el('input'); inp.type = 'radio'; inp.name = 'quiz-' + n + '-' + i; inp.value = j;
                             l.appendChild(inp); l.appendChild(el('span', null, t)); bq0.appendChild(l); return inp;
                         });
-                        var corr = el('p', 'retour'); bq0.appendChild(corr);
+                        var corr = el('div', 'retour'); bq0.appendChild(corr);   // div : la correction peut contenir un tableau de suivi
                         fq.appendChild(bq0);
                         return { radios: radios, corr: corr };
                     });
