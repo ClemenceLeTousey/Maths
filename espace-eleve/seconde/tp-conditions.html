@@ -537,8 +537,8 @@ def _console(ligne, n):
            Pas de code demandé au compte PROF-2NDE ni dans la vue professeure. ---------- */
         var FICHE = (window.INTERACTIF_CATALOGUE || []).filter(function (x) { return x.id === ID; })[0];
         if (FICHE && FICHE.codeAcces && !/[?&]vue-eleve=/.test(location.search)) {
-            var ses = Interactif.session(), ouvert = false;
-            try { ouvert = localStorage.getItem('tp-acces:' + ID) === FICHE.codeAcces; } catch (x) {}
+            var ses = Interactif.session(), ouvert = false, CODE = Interactif.codeAccesTP(FICHE, ses);   // code propre à la classe s'il existe
+            try { ouvert = localStorage.getItem('tp-acces:' + ID) === CODE; } catch (x) {}
             // compte PROF-2NDE en « mode élève » : le code est demandé, comme à un élève
             var modeEleve = false; try { modeEleve = localStorage.getItem('tp-mode') === 'eleve'; } catch (x) {}
             if (!ouvert && !(ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE' && !modeEleve)) {
@@ -561,7 +561,7 @@ def _console(ligne, n):
                     crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function (b) {
                         var h = Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
                         var r = document.getElementById('code-retour');
-                        if (h !== FICHE.codeAcces) { r.className = 'retour ko'; r.textContent = '✗ Code incorrect : les majuscules et le tiret comptent.'; return; }
+                        if (h !== CODE) { r.className = 'retour ko'; r.textContent = '✗ Code incorrect : les majuscules et le tiret comptent.'; return; }
                         try { localStorage.setItem('tp-acces:' + ID, h); } catch (x) {}
                         location.reload();
                     });

@@ -275,7 +275,7 @@
             if (!ex.codeAcces) return true;
             var s = Interactif.session();
             if (s && String(s.code || '').toUpperCase() === 'PROF-2NDE') return true;   // compte professeure (TEST-01 supprimé)
-            try { return localStorage.getItem('tp-acces:' + ex.id) === ex.codeAcces; } catch (e) { return false; }
+            try { return localStorage.getItem('tp-acces:' + ex.id) === Interactif.codeAccesTP(ex, s); } catch (e) { return false; }
         }
         // « TP3 · Les boucles » : seul « TP3 » est en couleur
         function nomTP(el, nom) {
@@ -354,7 +354,7 @@
                     f.onsubmit = function (e) {
                         e.preventDefault();
                         empreinte(normaliserCode(i.value)).then(function (h) {
-                            if (h !== ex.codeAcces) { m.textContent = 'Code incorrect : les majuscules et le tiret comptent.'; return; }
+                            if (h !== Interactif.codeAccesTP(ex, Interactif.session())) { m.textContent = 'Code incorrect : les majuscules et le tiret comptent.'; return; }
                             try { localStorage.setItem('tp-acces:' + ex.id, h); } catch (x) {}
                             location.href = ex.url;
                         }, function () { m.textContent = 'Impossible de vérifier le code sur ce navigateur.'; });

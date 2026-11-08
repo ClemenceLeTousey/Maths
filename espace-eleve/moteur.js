@@ -790,8 +790,16 @@
         return null;
     }
 
+    /* Empreinte du code d'accès d'un TP pour la session : codeAccesClasses[classe] s'il existe, sinon codeAcces */
+    function codeAccesTP(ex, s) {
+        if (!ex || !ex.codeAcces) return null;
+        var m = ex.codeAccesClasses, c = s ? String(s.classe || '').toUpperCase() : '';
+        if (m && !c && s) c = String(s.code || '').toUpperCase().split('-')[0];
+        return (m && c && m[c]) || ex.codeAcces;
+    }
+
     window.Interactif = {
         rpc: rpc, session: session, connecter: connecter, deconnecter: deconnecter,
-        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, couleurs: couleurs, bilanCouleurs: bilanCouleurs, pastilles: pastilles
+        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, codeAccesTP: codeAccesTP, couleurs: couleurs, bilanCouleurs: bilanCouleurs, pastilles: pastilles
     };
 })();

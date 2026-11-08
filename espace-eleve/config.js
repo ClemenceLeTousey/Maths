@@ -19,6 +19,8 @@ window.NOTIF_CONFIG = {
    « court » sert d'en-tête de colonne sur la page prof.
    « codeAcces » : empreinte SHA-256 du code d'accès d'un TP, à taper EXACTEMENT (majuscules et tiret compris) ;
      sans le code, le TP reste fermé (sauf TEST-01 et vue professeure).
+   « codeAccesClasses: { '2F': empreinte } » : code propre à une classe (remplace codeAcces pour elle ;
+     l'ancien accès mémorisé ne vaut plus, la classe est donc bloquée jusqu'au nouveau code) ;
      Empreinte d'un nouveau code : python3 -c "import hashlib;print(hashlib.sha256(b'ABC-234').hexdigest())" ;
    « vueProf: true » : la page sait s'ouvrir telle que l'élève l'a laissée (bouton dans Suivi TP) ;
    « tp: true » : TP en plusieurs étapes (score = étapes réussies, une ligne enregistrée par étape : pas de compteur de séries).
@@ -63,7 +65,8 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/tp-conditions', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (20 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions-v1.html', tp: true, vueProf: true, archive: true,
       codeAcces: 'd7c6ed760ed5b07f0c2766b06a63c0d5ddcec26f17c19db9e3d2a541645aca9c' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
     { niveau: 'seconde', id: 'seconde/tp-conditions-v2', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (13 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions.html', tp: true, vueProf: true,
-      codeAcces: '7bceb7c3c796d4df2b37ee3dbeaf01030c22455f16ffb3f942d3a83c96b01460' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
+      codeAcces: '7bceb7c3c796d4df2b37ee3dbeaf01030c22455f16ffb3f942d3a83c96b01460',   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
+      codeAccesClasses: { '2F': 'e6a96a2b74d96829918f25d0f14c93c9171cfed689c8abf25745f2e2b0f2b056' } },   // 2F : code à part depuis le 08/11/2026
     { niveau: 'seconde', id: 'seconde/serie7-j1', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 1', court: 'S7 · J1', url: 'seconde/serie7.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie7-j2', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 2', court: 'S7 · J2', url: 'seconde/serie7.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie7-j3', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 3', court: 'S7 · J3', url: 'seconde/serie7.html?j=3' },
