@@ -141,6 +141,21 @@
         .pourquoi p { margin: 6px 0; }
         .pourquoi .case-ligne { margin: 6px 0; }
         table.trace td { padding: 4px 6px; }
+        .coup-de-pouce { margin-top: 10px; }
+        .coup-de-pouce ol { margin: 0 0 8px; padding: 8px 12px 8px 2em; background: var(--bleu-doux); border-radius: 8px; }
+        .coup-de-pouce li { margin: 4px 0; }
+        .coup-de-pouce pre { margin: 6px 0 0; font-family: var(--f-mono); }
+        .coup-de-pouce > button { margin: 0 8px 8px 0; }
+        .coup-de-pouce .algo, .coup-de-pouce .puzzle { margin: 0 0 10px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+        .coup-de-pouce .algo-titre { margin: 0 0 6px; font-weight: 600; }
+        .coup-de-pouce .algo-ligne { font-family: var(--f-mono); line-height: 1.6; }
+        .puzzle-lignes { list-style: none; margin: 0 0 8px; padding: 0; }
+        .puzzle-lignes li { display: flex; align-items: center; gap: 8px; padding: 3px 6px; margin: 3px 0; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); }
+        .puzzle-lignes li.juste { border-color: var(--ok); background: var(--ok-fond); }
+        .puzzle-lignes li.fausse { border-color: var(--ko); background: var(--ko-fond); }
+        .puzzle-outils { display: inline-flex; gap: 2px; flex-shrink: 0; }
+        .puzzle-outils button { padding: 0 7px; min-width: 1.9em; font-size: 0.9rem; }
+        .puzzle-lignes code { white-space: pre; font-family: var(--f-mono); }
         table.trace tr.tour th { background: var(--bleu-doux); text-align: center; }
         table.trace th.num-tour { font-family: var(--f-mono); min-width: 3.6em; }
         table.trace th.num-tour.sortie { font-family: inherit; font-style: italic; color: var(--muted); }
@@ -1085,6 +1100,14 @@ def _console(ligne, n):
                 '<p>✍️ Écris le corps de la fonction <code>somme_entiers(n)</code>, qui <b>renvoie</b> la somme 1 + 2 + … + <i>n</i>. Inspire-toi de l’accumulateur de l’étape 3.</p><p>Teste-la avec <code>somme_entiers(10)</code> (55) et <code>somme_entiers(100)</code>.</p>',
               code: 'def somme_entiers(n):\n    \n', exemple: 'somme_entiers(4)',
               solutionCode: 'def somme_entiers(n):\n    somme = 0\n    for i in range(1, n + 1):\n        somme = somme + i\n    return somme\n',
+              coupsDePouce: [
+                  'Relis l’étape 3 : la variable <code>somme</code> est un <b>accumulateur</b>. On l’initialise à 0, <b>avant</b> la boucle.',
+                  'La boucle doit parcourir les entiers de 1 à <i>n</i> : <code>for i in range(1, n + 1):</code> (<code>n + 1</code> est exclu, donc <code>i</code> va bien jusqu’à <i>n</i>).',
+                  'À chaque tour, on ajoute <code>i</code> à la somme : <code>somme = somme + i</code>, décalé sous le <code>for</code>.',
+                  'Après la boucle (même décalage que le <code>for</code>), on renvoie le résultat : <code>return somme</code>. Un <code>return</code> placé dans la boucle arrêterait la fonction dès le 1<sup>er</sup> tour.'
+              ],
+              algorithme: ['Fonction somme_entiers(n) :', '    somme ← 0', '    Pour i allant de 1 à n :', '        somme ← somme + i', '    Renvoyer somme'],
+              puzzle: true,
               bilan: [
                   'Pour que <i>n</i> soit compris, on écrit <code>range(1, n + 1)</code>.',
                   '<code>return</code> se place <b>après</b> la boucle (non décalé sous <code>for</code>).',
@@ -1095,6 +1118,13 @@ def _console(ligne, n):
               consigne: '<p>✍️ À l’aide d’une boucle <code>for</code>, d’un <code>if</code> et de <code>%</code>, écris un script qui affiche tous les <b>multiples de 7</b> compris entre 1 et 100, un par ligne.</p>',
               code: '# Écris ici ton script\n', console: false,
               solutionCode: 'for n in range(1, 101):\n    if n % 7 == 0:\n        print(n)\n',
+              coupsDePouce: [
+                  'On teste <b>tous</b> les nombres de 1 à 100, un par un : commence par une boucle <code>for n in range(1, 101):</code> (101 est exclu, donc <code>n</code> va bien jusqu’à 100).',
+                  'Pour chaque <code>n</code>, on se pose une question : « <code>n</code> est-il un multiple de 7 ? ». C’est le cas quand le <b>reste</b> de la division de <code>n</code> par 7 est nul, c’est-à-dire quand <code>n % 7 == 0</code> (comme <code>n % 2 == 0</code> pour « <code>n</code> est pair »).',
+                  'Si la réponse est oui, on affiche <code>n</code> : un <code>if</code> décalé sous le <code>for</code>, et le <code>print(n)</code> décalé sous le <code>if</code>.'
+              ],
+              algorithme: ['Pour n allant de 1 à 100 :', '    Si le reste de la division de n par 7 est égal à 0 :', '        Afficher n'],
+              puzzle: true,
               bilan: [
                   'On parcourt les nombres de 1 à 100 et on garde ceux dont le reste par 7 est nul : <code>n % 7 == 0</code>.',
                   'On obtient 7, 14, …, 98 : 14 nombres.',
@@ -1106,6 +1136,15 @@ def _console(ligne, n):
                 '<p>✍️ <b>Sans modèle</b> : écris un script qui affiche le nombre de pliages nécessaires pour que l’épaisseur <b>dépasse</b> la hauteur de la tour Eiffel (en supposant qu’on puisse plier la feuille autant de fois qu’on veut !).</p>',
               code: '# Écris ici ton script\n', exemple: 'epaisseur',
               solutionCode: 'epaisseur = 0.1\npliages = 0\nwhile epaisseur <= 330000:\n    epaisseur = 2 * epaisseur\n    pliages = pliages + 1\nprint(pliages)\n',
+              coupsDePouce: [
+                  'C’est le même schéma qu’à l’étape 9 (doubler son capital) : relis ton script de cette étape, il va beaucoup t’aider.',
+                  'Il te faut <b>deux variables</b> : <code>epaisseur</code>, qui vaut 0.1 au départ, et un compteur <code>pliages</code>, qui vaut 0 au départ.',
+                  'On ne sait pas à l’avance combien de fois plier : utilise une boucle <code>while</code>. On continue <b>tant que</b> l’épaisseur ne dépasse pas 330 000 mm : <code>while epaisseur &lt;= 330000:</code>',
+                  'À chaque tour de boucle, deux instructions décalées : l’épaisseur double (<code>epaisseur = 2 * epaisseur</code>) et on compte un pliage de plus (<code>pliages = pliages + 1</code>).',
+                  'Après la boucle (sans décalage), on affiche le nombre de pliages avec <code>print</code>.'
+              ],
+              algorithme: ['epaisseur ← 0,1', 'pliages ← 0', 'Tant que epaisseur ⩽ 330 000 :', '    epaisseur ← 2 × epaisseur', '    pliages ← pliages + 1', 'Afficher pliages'],
+              puzzle: true, puzzleEchanges: [[0, 1], [3, 4]],
               bilan: [
                   'Il faut <b>22 pliages</b> : l’épaisseur est alors de 419 430,4 mm, soit environ 419 m.',
                   'C’est le même schéma qu’à l’étape 9 : une boucle <code>while</code> et un compteur.'
@@ -1534,6 +1573,57 @@ def _console(ligne, n):
                 return false;
             }
 
+            /* Puzzle de Parsons : les lignes de e.solutionCode mélangées et sans décalage ; ↑ ↓ pour l'ordre, ← → pour le décalage.
+               e.puzzleEchanges : paires de lignes (indices dans la solution) dont l'ordre est indifférent. */
+            function puzzleScript(e, cm) {
+                var sol = e.solutionCode.replace(/\n+$/, '').split('\n').map(function (l, i) { return { i: i, txt: l.trim(), niv: /^ */.exec(l)[0].length / 4 }; });
+                var ordre = sol.map(function (x) { return { i: x.i, txt: x.txt, niv: 0 }; });
+                do { for (var k = ordre.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), t = ordre[k]; ordre[k] = ordre[j]; ordre[j] = t; } }
+                while (ordre.every(function (x, k) { return x.i === k; }) && ordre.length > 1);
+                var bloc = el('div', 'puzzle');
+                bloc.appendChild(el('p', 'algo-titre', '🧩 Remets les lignes dans l’ordre (↑ ↓), puis décale-les comme il faut (← →).'));
+                var ul = el('ol', 'puzzle-lignes'); bloc.appendChild(ul);
+                var act = el('div', 'actions'), bV = el('button', null, 'Vérifier'); bV.type = 'button';
+                var r = el('span', 'retour'); act.appendChild(bV); act.appendChild(r); bloc.appendChild(act);
+                function bouton(txt, titre, f) { var b = el('button', 'secondaire', txt); b.type = 'button'; b.title = titre; b.setAttribute('aria-label', titre); b.onclick = f; return b; }
+                function dessiner() {
+                    ul.innerHTML = '';
+                    ordre.forEach(function (x, k) {
+                        var li = el('li'); li.dataset.k = k;
+                        var c = el('code'); c.textContent = x.txt; c.style.marginLeft = (x.niv * 2) + 'em';
+                        var outils = el('span', 'puzzle-outils');
+                        outils.appendChild(bouton('↑', 'Monter la ligne', function () { if (k) { ordre.splice(k - 1, 0, ordre.splice(k, 1)[0]); dessiner(); } }));
+                        outils.appendChild(bouton('↓', 'Descendre la ligne', function () { if (k < ordre.length - 1) { ordre.splice(k + 1, 0, ordre.splice(k, 1)[0]); dessiner(); } }));
+                        outils.appendChild(bouton('←', 'Moins décaler', function () { if (x.niv) { x.niv--; dessiner(); } }));
+                        outils.appendChild(bouton('→', 'Décaler', function () { if (x.niv < 3) { x.niv++; dessiner(); } }));
+                        li.appendChild(outils); li.appendChild(c); ul.appendChild(li);
+                    });
+                    r.textContent = ''; r.className = 'retour';
+                }
+                bV.onclick = function () {
+                    // une ligne est à sa place si elle est à son rang dans la solution, ou à celui d'une ligne interchangeable avec elle
+                    var malPlacees = 0, malDecalees = 0, lis = ul.children;
+                    ordre.forEach(function (x, k) {
+                        var place = x.i === k || (e.puzzleEchanges || []).some(function (p) { return (p[0] === x.i || p[1] === x.i) && (p[0] === k || p[1] === k); });
+                        var decal = x.niv === sol[x.i].niv;
+                        lis[k].classList.toggle('juste', place && decal); lis[k].classList.toggle('fausse', !(place && decal));
+                        if (!place) malPlacees++; else if (!decal) malDecalees++;
+                    });
+                    if (!malPlacees && !malDecalees) {
+                        r.className = 'retour ok'; r.innerHTML = '✓ Bravo, ton script est dans le bon ordre ! ';
+                        var bC = el('button', 'secondaire', 'Mettre ce script dans l’éditeur'); bC.type = 'button';
+                        bC.onclick = function () { cm.setValue(sol.map(function (x) { return '    '.repeat(x.niv) + x.txt; }).join('\n') + '\n'); cm.focus(); };
+                        r.appendChild(bC); return;
+                    }
+                    r.className = 'retour ko';
+                    r.textContent = '✗ ' + (malPlacees ? malPlacees + ' ligne' + (malPlacees > 1 ? 's' : '') + ' pas à sa place' + (malPlacees > 1 ? 's' : '') + '. ' : '') +
+                        (malDecalees ? malDecalees + ' ligne' + (malDecalees > 1 ? 's' : '') + ' bien placée' + (malDecalees > 1 ? 's' : '') + ' mais mal décalée' + (malDecalees > 1 ? 's' : '') + '. ' : '') +
+                        'Aide-toi de l’algorithme : une ligne décalée est répétée dans la boucle (ou exécutée seulement si la condition est vraie).';
+                };
+                dessiner();
+                return bloc;
+            }
+
             /* Tableau de suivi construit à partir du script de l'élève (lignes de texte brut, rendu en lecture seule) */
             function tableauSuivi(lignes) {
                 var w = el('div', 'tableau'), t = el('table', 'trace');
@@ -1692,6 +1782,37 @@ def _console(ligne, n):
                     actions.appendChild(bLancer); actions.appendChild(bStop); actions.appendChild(bDepart);
                     actions.appendChild(el('span', 'aide', 'Ctrl+Entrée pour exécuter'));
                     gauche.appendChild(actions);
+                    // Aide en trois niveaux : indices un par un (e.coupsDePouce), puis l'algorithme en langage naturel
+                    // (e.algorithme), puis un puzzle : les lignes de la solution à remettre dans l'ordre et à décaler (e.puzzle)
+                    if (e.coupsDePouce && e.coupsDePouce.length) {
+                        var pouce = el('div', 'coup-de-pouce'), liste = el('ol'), vus = 0;
+                        var bPouce = el('button', 'secondaire', '💡 Je ne vois pas comment faire'); bPouce.type = 'button';
+                        var bAlgo = el('button', 'secondaire', '🧭 Je ne comprends toujours pas'); bAlgo.type = 'button'; bAlgo.hidden = true;
+                        var bPuzzle = el('button', 'secondaire', '🧩 Remettre les lignes du script dans l’ordre'); bPuzzle.type = 'button'; bPuzzle.hidden = true;
+                        liste.hidden = true;
+                        bPouce.onclick = function () {
+                            liste.hidden = false;
+                            liste.appendChild(el('li', null, e.coupsDePouce[vus++]));
+                            if (vus < e.coupsDePouce.length) { bPouce.textContent = '💡 Encore un indice (' + vus + '/' + e.coupsDePouce.length + ')'; return; }
+                            bPouce.hidden = true;
+                            if (e.algorithme) bAlgo.hidden = false; else if (e.puzzle) bPuzzle.hidden = false;
+                        };
+                        bAlgo.onclick = function () {
+                            bAlgo.hidden = true;
+                            var bA = el('div', 'algo');
+                            bA.appendChild(el('p', 'algo-titre', 'L’algorithme, pas à pas'));
+                            e.algorithme.forEach(function (l) {
+                                var niv = (/^ */.exec(l)[0].length) / 4, d = el('div', 'algo-ligne');
+                                d.style.paddingLeft = (niv * 1.6) + 'em'; d.textContent = l.trim(); bA.appendChild(d);
+                            });
+                            bA.appendChild(el('p', 'aide', 'Traduis chaque ligne en Python : « ← » s’écrit <code>=</code>, « Pour … allant de … à … » devient une boucle <code>for</code>, « Tant que » devient <code>while</code>, « Si » devient <code>if</code>, « Afficher » devient <code>print</code>, « Renvoyer » devient <code>return</code>. Les lignes décalées restent décalées.'));
+                            pouce.insertBefore(bA, bAlgo);
+                            if (e.puzzle) bPuzzle.hidden = false;
+                        };
+                        bPuzzle.onclick = function () { bPuzzle.hidden = true; pouce.insertBefore(puzzleScript(e, cm), bPuzzle); };
+                        pouce.appendChild(liste); pouce.appendChild(bPouce); pouce.appendChild(bAlgo); pouce.appendChild(bPuzzle);
+                        gauche.appendChild(pouce);
+                    }
                     bDepart.onclick = function () { if (confirm('Effacer ton programme et revenir à celui de départ ?')) cm.setValue(depart(e)); };
                     bStop.onclick = arreterPython;
 
