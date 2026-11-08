@@ -141,6 +141,11 @@
         .pourquoi p { margin: 6px 0; }
         .pourquoi .case-ligne { margin: 6px 0; }
         table.trace td { padding: 4px 6px; }
+        table.trace tr.tour th { background: var(--bleu-doux); text-align: center; }
+        table.trace th.num-tour { font-family: var(--f-mono); min-width: 3.6em; }
+        table.trace th.num-tour.sortie { font-family: inherit; font-style: italic; color: var(--muted); }
+        table.trace td.vide { background: var(--bg); }
+        table.trace th small { display: block; font-weight: normal; font-size: 0.75rem; color: var(--muted); line-height: 1.2; }
         table.trace td.donnee { font-family: var(--f-mono); color: var(--muted); }
         table.trace select { font: inherit; padding: 2px 4px; border: 1px solid var(--line); border-radius: 6px; background: var(--bleu-doux); color: var(--text); }
         table.trace select.juste { outline: 2px solid var(--ok); } table.trace select.fausse { outline: 2px solid var(--ko); }
@@ -899,12 +904,12 @@ def _console(ligne, n):
                             avant: 'Au début, <code>x</code> vaut 1. La condition <code>x &lt;= 100</code> ',
                             raison: '`x` vaut 1 et 1 ⩽ 100 : on entre dans la boucle et on exécute `x = 2 * x`' },
                           { suivi: {
-                              consigne: 'Complète le tableau tour par tour. Dans chaque colonne : la valeur des variables <b>à la fin du tour</b>, puis le test fait juste après. Si le test est vrai, la boucle fait un tour de plus : ajoute une colonne avec « + Ajouter un tour ». S’il est faux, la boucle s’arrête.',
-                              lignes: [{ libelle: 'Valeur de <code>x</code>', aide: '`x = 2 * x` : double la valeur de `x` de la colonne précédente.' },
-                                       { libelle: 'Puis test <code>x &lt;= 100</code> : vrai ?', choix: ['oui', 'non'], aide: 'Compare la valeur de `x` juste au-dessus avec 100.' }],
-                              debut: ['1', 'oui'],
-                              valeurs: function (t) { var x = Math.pow(2, t); return [String(x), x <= 100 ? 'oui' : 'non']; },
-                              stop: 'non', max: 9,
+                              consigne: 'Complète le tableau colonne par colonne. À chaque tour, Python fait d’abord le <b>test</b> avec les valeurs de la colonne précédente. S’il est <b>vrai</b>, il exécute le tour : écris les nouvelles valeurs, puis ajoute un tour avec « + Ajouter un tour ». S’il est <b>faux</b>, la boucle s’arrête : choisis « faux », il n’y a plus de valeur à écrire.',
+                              lignes: [{ libelle: 'Test <code>x &lt;= 100</code><br><small>Est-ce qu’on fait un tour de boucle ?</small>', choix: ['vrai', 'faux'], aide: 'Compare la valeur de `x` de la colonne précédente avec 100.' },
+                                       { libelle: 'Valeur de <code>x</code><br><small>après le tour de boucle (sauf 1<sup>re</sup> colonne)</small>', aide: '`x = 2 * x` : double la valeur de `x` de la colonne précédente.' }],
+                              debut: ['', '1'],
+                              valeurs: function (t) { var a = Math.pow(2, t - 1); return [a <= 100 ? 'vrai' : 'faux', String(2 * a)]; },
+                              stop: 'faux', max: 9,
                               raison: 'À la fin du tour 7, `x` vaut 128 et 128 ⩽ 100 est faux : on sort de la boucle' } },
                           { fin: 'La boucle a fait 7 tours : le script affiche 128.' }] },
                   { nom: 'Script F', code: MOITIES, attendu: 4, variable: 'x',
@@ -913,13 +918,13 @@ def _console(ligne, n):
                             avant: 'Au début, <code>x</code> vaut 100. La condition <code>x &gt; 10</code> ',
                             raison: '`x` vaut 100 et 100 > 10 : on entre dans la boucle et on exécute `x = x / 2` puis `n = n + 1`' },
                           { suivi: {
-                              consigne: 'Complète le tableau tour par tour. Dans chaque colonne : la valeur des variables <b>à la fin du tour</b>, puis le test fait juste après. Si le test est vrai, la boucle fait un tour de plus : ajoute une colonne avec « + Ajouter un tour ». S’il est faux, la boucle s’arrête.',
-                              lignes: [{ libelle: 'Valeur de <code>x</code>', aide: '`x = x / 2` : divise par 2 la valeur de `x` de la colonne précédente.' },
-                                       { libelle: 'Valeur de <code>n</code>', aide: '`n = n + 1` : `n` augmente de 1 à chaque tour.' },
-                                       { libelle: 'Puis test <code>x &gt; 10</code> : vrai ?', choix: ['oui', 'non'], aide: 'Compare la valeur de `x` juste au-dessus avec 10.' }],
-                              debut: ['100', '0', 'oui'],
-                              valeurs: function (t) { var x = 100 / Math.pow(2, t); return [String(x), String(t), x > 10 ? 'oui' : 'non']; },
-                              stop: 'non', max: 8,
+                              consigne: 'Complète le tableau colonne par colonne. À chaque tour, Python fait d’abord le <b>test</b> avec les valeurs de la colonne précédente. S’il est <b>vrai</b>, il exécute le tour : écris les nouvelles valeurs, puis ajoute un tour avec « + Ajouter un tour ». S’il est <b>faux</b>, la boucle s’arrête : choisis « faux », il n’y a plus de valeur à écrire.',
+                              lignes: [{ libelle: 'Test <code>x &gt; 10</code><br><small>Est-ce qu’on fait un tour de boucle ?</small>', choix: ['vrai', 'faux'], aide: 'Compare la valeur de `x` de la colonne précédente avec 10.' },
+                                       { libelle: 'Valeur de <code>x</code><br><small>après le tour de boucle (sauf 1<sup>re</sup> colonne)</small>', aide: '`x = x / 2` : divise par 2 la valeur de `x` de la colonne précédente.' },
+                                       { libelle: 'Valeur de <code>n</code><br><small>après le tour de boucle (sauf 1<sup>re</sup> colonne)</small>', aide: '`n = n + 1` : `n` augmente de 1 à chaque tour.' }],
+                              debut: ['', '100', '0'],
+                              valeurs: function (t) { var a = 100 / Math.pow(2, t - 1); return [a > 10 ? 'vrai' : 'faux', String(a / 2), String(t)]; },
+                              stop: 'faux', max: 8,
                               raison: 'À la fin du tour 4, `x` vaut 6,25 et 6,25 > 10 est faux : on sort de la boucle' } },
                           { fin: 'La boucle a fait 4 tours : n vaut 4, le script affiche 4.' }] }
               ],
@@ -1217,7 +1222,7 @@ def _console(ligne, n):
                         if (it.cond) return li(code(it.cond) + ' : ' + (it.vraie ? 'est vérifiée' : 'n’est pas vérifiée') + ' (' + esc(it.raison) + ')');
                         if (it.valeur) return li(it.avant + ' <b>' + esc(it.valeur) + '</b> (' + esc(it.raison) + ')');
                         if (it.bloc) return li('bloc exécuté : sous ' + code(it.bloc));
-                        if (it.suivi) { var tt = []; for (var q = 1; q <= it.suivi.max; q++) { var vv = it.suivi.valeurs(q); tt.push('tour ' + q + ' : ' + vv.join(' ; ')); if (vv[vv.length - 1] === it.suivi.stop) break; } return li('tableau : ' + esc(tt.join(' · '))); }
+                        if (it.suivi) { var tt = []; for (var q = 1; q <= it.suivi.max; q++) { var vv = it.suivi.valeurs(q); if (vv[0] === it.suivi.stop) { tt.push('test ' + vv[0] + ' : sortie'); break; } tt.push('tour ' + q + ' : ' + vv.join(' ; ')); } return li('tableau : ' + esc(tt.join(' · '))); }
                         return '';
                     }).join('') + '</ul>';
                     return li(t);
@@ -1444,24 +1449,27 @@ def _console(ligne, n):
                 return false;
             }
 
-            /* Tableau de suivi d'une boucle while dans le « Pourquoi ? » : une colonne « Au début » donnée, puis une colonne
-               par tour (condition oui / non, valeurs des variables) ; l'élève ajoute des tours tant que la condition est vérifiée.
+            /* Tableau de suivi d'une boucle while dans le « Pourquoi ? ». Ligne 1 : « Tour de boucle n° » (numéroté
+               automatiquement) ; ligne 2 : le test, fait avec les valeurs de la colonne précédente (vrai / faux) ;
+               lignes suivantes : valeurs des variables à la fin du tour. Première colonne donnée (initialisation).
+               Quand l'élève choisit « faux », la colonne devient la sortie de boucle : plus de valeur à écrire.
+               S.lignes[0] = le test ; S.valeurs(t) = [test avant le tour t, valeurs après le tour t].
                Valeur gardée : colonnes séparées par « | », cases par « ; ». */
             function suiviTableau(parent, S, garde, suivant, auChargement) {
                 var bloc = el('div', 'suivi'); parent.appendChild(bloc);
                 bloc.appendChild(el('p', null, S.consigne));
                 var wrap = el('div', 'tableau'), t = el('table', 'trace'); wrap.appendChild(t); bloc.appendChild(wrap);
-                var rangs = [el('tr')].concat(S.lignes.map(function () { return el('tr'); }));
-                rangs[0].appendChild(el('th', null, ''));
+                var rangs = [el('tr', 'tour')].concat(S.lignes.map(function () { return el('tr'); }));
+                rangs[0].appendChild(el('th', null, 'Tour de boucle n°'));
                 S.lignes.forEach(function (lg, j) { rangs[j + 1].appendChild(el('th', null, lg.libelle)); });
                 rangs.forEach(function (x) { t.appendChild(x); });
                 var cols = [];
                 function colonne(k, vals, fixe) {
-                    var th = el('th', null, k === 0 ? 'Avant la boucle' : 'Tour ' + k); rangs[0].appendChild(th);
+                    var th = el('th', 'num-tour', k === 0 ? '' : String(k)); rangs[0].appendChild(th);
                     var tds = [th];
                     var ins = S.lignes.map(function (lg, j) {
                         var td = el('td'); rangs[j + 1].appendChild(td); tds.push(td);
-                        if (fixe) { td.textContent = vals[j]; td.className = 'donnee'; return null; }
+                        if (fixe) { td.textContent = vals[j] || ''; td.className = 'donnee'; return null; }
                         var x;
                         if (lg.choix) { x = el('select'); x.appendChild(new Option('…', '')); lg.choix.forEach(function (o) { x.appendChild(new Option(o, o)); }); x.value = vals[j] || ''; }
                         else { x = el('input'); x.autocomplete = 'off'; x.spellcheck = false; x.setAttribute('inputmode', 'decimal'); x.value = vals[j] || ''; }
@@ -1469,7 +1477,18 @@ def _console(ligne, n):
                         x.addEventListener('input', efface); x.addEventListener('change', efface);
                         td.appendChild(x); return x;
                     });
-                    if (!fixe) cols.push({ k: k, ins: ins, tds: tds });
+                    if (fixe) return;
+                    var c = { k: k, ins: ins, tds: tds };
+                    // « faux » : sortie de boucle, pas de nouvelles valeurs
+                    c.sortie = function () { return ins[0].value === S.stop; };
+                    c.maj = function () {
+                        var so = c.sortie();
+                        th.textContent = so ? 'sortie' : String(k);
+                        th.classList.toggle('sortie', so);
+                        ins.forEach(function (x, j) { if (j) { x.hidden = so; tds[j + 1].classList.toggle('vide', so); } });
+                    };
+                    ins[0].addEventListener('change', function () { c.maj(); maj(); });
+                    cols.push(c); c.maj();
                 }
                 colonne(0, S.debut, true);
                 var memo = garde ? String(garde).split('|').map(function (c) { return c.split(';'); }) : [];
@@ -1477,20 +1496,25 @@ def _console(ligne, n):
                 if (!memo.length) colonne(1, [], false);
                 var act = el('div', 'actions');
                 var bAj = el('button', 'secondaire', '+ Ajouter un tour'); bAj.type = 'button';
-                var bRe = el('button', 'secondaire', '− Retirer le dernier tour'); bRe.type = 'button';
+                var bRe = el('button', 'secondaire', '− Retirer la dernière colonne'); bRe.type = 'button';
                 var bVa = el('button', null, 'Valider le tableau'); bVa.type = 'button';
                 var r = el('span', 'retour case-retour');
                 act.appendChild(bAj); act.appendChild(bRe); act.appendChild(bVa); bloc.appendChild(act); bloc.appendChild(r);
-                function maj() { bAj.disabled = cols.length >= S.max; bRe.disabled = cols.length <= 1; }
+                function maj() {
+                    var der = cols[cols.length - 1];
+                    bAj.disabled = cols.length >= S.max || (der && der.sortie());
+                    bRe.disabled = cols.length <= 1;
+                }
                 bAj.onclick = function () { colonne(cols.length + 1, [], false); maj(); var p = cols[cols.length - 1].ins[0]; if (p) p.focus(); };
                 bRe.onclick = function () { var c = cols.pop(); c.tds.forEach(function (x) { x.remove(); }); maj(); };
                 maj();
-                function valeur() { return cols.map(function (c) { return c.ins.map(function (x) { return x.value.trim(); }).join(';'); }).join('|'); }
+                function valeur() { return cols.map(function (c) { return c.ins.map(function (x, j) { return j && c.sortie() ? '' : x.value.trim(); }).join(';'); }).join('|'); }
                 function verifier(marquer) {
                     var fausses = [];
                     cols.forEach(function (c) {
-                        var att = S.valeurs(c.k);
+                        var att = S.valeurs(c.k), sortieAttendue = att[0] === S.stop;
                         c.ins.forEach(function (x, j) {
+                            if (j && (sortieAttendue || c.sortie())) { x.classList.remove('juste', 'fausse'); return; }
                             var v = x.value.trim(), lg = S.lignes[j];
                             var ok = lg.choix ? v === att[j] : Math.abs(num(v) - num(att[j])) < 1e-9;
                             if (marquer) { x.classList.toggle('juste', ok); x.classList.toggle('fausse', !ok); }
@@ -1498,8 +1522,7 @@ def _console(ligne, n):
                         });
                     });
                     if (fausses.length) return '✗ ' + fausses.length + ' case' + (fausses.length > 1 ? 's' : '') + ' à revoir (en rouge). ' + miseEnForme(fausses[0]);
-                    var derniere = cols[cols.length - 1];
-                    var vd = S.valeurs(derniere.k); if (vd[vd.length - 1] !== S.stop) return '✗ La condition est encore vérifiée : la boucle continue. Ajoute un tour.';
+                    if (!cols[cols.length - 1].sortie()) return '✗ Le test est encore vrai : la boucle fait un tour de plus. Ajoute un tour.';
                     return null;
                 }
                 function bon() {
@@ -1509,7 +1532,7 @@ def _console(ligne, n):
                 }
                 bVa.onclick = function () {
                     if (!exigerLu()) return;
-                    if (cols.some(function (c) { return c.ins.some(function (x) { return !x.value.trim(); }); })) { r.className = 'retour case-retour ko'; r.textContent = 'Complète toutes les cases du tableau.'; return; }
+                    if (cols.some(function (c) { return c.ins.some(function (x, j) { return !(j && c.sortie()) && !x.value.trim(); }); })) { r.className = 'retour case-retour ko'; r.textContent = 'Complète toutes les cases du tableau.'; return; }
                     var m = verifier(true);
                     if (m) { r.className = 'retour case-retour ko'; r.innerHTML = m; suivant(valeur(), false); return; }
                     bon(); suivant(valeur(), true);
@@ -1519,7 +1542,11 @@ def _console(ligne, n):
             // réponse attendue d'un « suivi » (aperçu « Développer » du mode professeure)
             function solutionSuivi(S) {
                 var c = [];
-                for (var k = 1; k <= S.max; k++) { var v = S.valeurs(k); c.push(v.join(';')); if (v[v.length - 1] === S.stop) break; }
+                for (var k = 1; k <= S.max; k++) {
+                    var v = S.valeurs(k);
+                    if (v[0] === S.stop) { c.push([v[0]].concat(v.slice(1).map(function () { return ''; })).join(';')); break; }
+                    c.push(v.join(';'));
+                }
                 return c.join('|');
             }
             function montrerBilan() {
