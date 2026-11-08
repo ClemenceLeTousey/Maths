@@ -383,17 +383,100 @@ def _e_capital(ns, src, out):
     return "Au bout de 10 ans, on doit trouver 1343.92 : à chaque tour, le nouveau capital est l'ancien multiplié par 1.03."
 
 
+# Suivi d'une boucle while écrite par l'élève : le script est rejoué en notant, à chaque test de la condition,
+# le résultat du test et les variables suivies. Renvoie (condition écrite, liste de (test, {variable: valeur})).
+def _suivi_while(src, noms, maxi=400):
+    lignes = src.split("\n")
+    cond = None
+    for i, l in enumerate(lignes):
+        m = re.match(r"^(\s*)while\s+(.+?)\s*:\s*(#.*)?$", l)
+        if m:
+            cond = m.group(2)
+            lignes[i] = m.group(1) + "while __suivi(" + cond + "):"
+            break
+    if cond is None:
+        return None, []
+    notes = []
+    ns = {"__name__": "__main__"}
+    def __suivi(v):
+        notes.append((bool(v), {k: ns.get(k) for k in noms}))
+        if len(notes) > maxi:
+            raise Stop("La boucle fait beaucoup trop de tours : vérifie la condition du while.")
+        return v
+    ns["__suivi"] = __suivi
+    vieux = sys.stdout
+    sys.stdout = io.StringIO()
+    try:
+        exec(compile("\n".join(lignes), "<suivi>", "exec"), ns)
+    except Stop:
+        raise
+    except BaseException:
+        pass
+    finally:
+        sys.stdout = vieux
+    return cond, notes
+
+
+# Tableau « Tour de boucle n° / Test / valeurs » (même présentation que les tableaux des scripts E et F) ;
+# au-delà de 8 tours, on garde les 5 premiers et les 2 derniers.
+def _tableau_while(cond, notes, noms, fmt):
+    if not notes:
+        return None
+    vals = [n[1] for n in notes]
+    cols = [{"tour": "", "test": "", "v": vals[0]}]
+    for i, (t, _) in enumerate(notes):
+        if t:
+            cols.append({"tour": str(i + 1), "test": "vrai", "v": vals[i + 1] if i + 1 < len(vals) else {}})
+        else:
+            cols.append({"tour": "sortie", "test": "faux", "v": None})
+    if len(cols) > 9:
+        cols = cols[:6] + [{"tour": "…", "test": "…", "v": "…"}] + cols[-3:]
+    def cell(c, k):
+        if c["v"] == "…":
+            return "…"
+        if c["v"] is None:
+            return ""
+        x = c["v"].get(k)
+        return "—" if x is None else fmt(k, x)
+    lignes = [["Tour de boucle n°"] + [c["tour"] for c in cols],
+              ["Test " + cond] + [c["test"] for c in cols]]
+    for k in noms:
+        lignes.append(["Valeur de " + k] + [cell(c, k) for c in cols])
+    return lignes
+
+
 # Étape 9 · doubler son capital (while)
 def _e_doubler(ns, src, out):
     _avec(src, "while", "Utilise la boucle while du script de départ.")
     l = _lignes(out)
     if l == ["24"]:
         return None
-    if l == ["1"]:
-        return "annee ne vaut que 1 : as-tu bien écrit annee = annee + 1 ?"
-    if l == ["0"]:
-        return "annee vaut toujours 0 : il faut l'augmenter de 1 à chaque tour."
-    return "Le script doit afficher le nombre d'années nécessaires (un seul nombre). Vérifie la condition : on continue tant que le capital ne dépasse pas 2000."
+    noms = ["capital", "annee"]
+    cond, notes = _suivi_while(src, noms)
+    def fmt(k, x):
+        if isinstance(x, float):
+            return f"{x:.2f}".replace(".", ",")
+        return str(x)
+    tab = _tableau_while(cond, notes, noms, fmt)
+    tours = sum(1 for t, _ in notes if t)
+    fin = notes[-1][1] if notes else {}
+    if cond is not None and notes and not notes[0][0]:
+        m = (f"Ta condition {cond} est fausse dès le départ (capital vaut 1000) : la boucle ne fait aucun tour, donc annee reste à 0. "
+             "La condition d'un while dit quand on CONTINUE : on recommence tant que le capital n'a pas dépassé 2000.")
+    elif tours and fin.get("annee") == 0:
+        m = f"La boucle fait {tours} tour{'s' if tours > 1 else ''}, mais annee vaut toujours 0 : il faut l'augmenter de 1 à chaque tour (annee = annee + 1)."
+    elif tours and isinstance(fin.get("capital"), (int, float)) and fin["capital"] < 2000:
+        m = (f"La boucle s'arrête après {tours} tour{'s' if tours > 1 else ''}, alors que le capital ne vaut que {fmt('capital', fin['capital'])} € : "
+             "il n'a pas encore doublé. Vérifie la condition : on continue tant que le capital ne dépasse pas 2000.")
+    elif tours and fin.get("annee") != tours:
+        m = f"La boucle fait {tours} tours, mais annee vaut {fin.get('annee')} à la fin : annee doit augmenter de 1 à chaque tour."
+    elif l and l != [str(fin.get("annee"))]:
+        m = "Le script doit afficher la valeur de annee, une seule fois, après la boucle."
+    else:
+        m = "Le script doit afficher le nombre d'années nécessaires (un seul nombre). Vérifie la condition : on continue tant que le capital ne dépasse pas 2000."
+    if tab:
+        m = (m + " Voici ce que fait ton script, tour par tour :", tab)
+    return m
 
 
 def _somme_ref(n):
@@ -537,6 +620,8 @@ def _executer(src, n, verif):
             m = _ETAPES[n](ns, src, res["out"])
         except Stop as e:
             m = str(e)
+        if isinstance(m, tuple):   # message + tableau de suivi
+            m, res["tableau"] = m
         res["ok"], res["msg"] = m is None, m
     return json.dumps(res)
 
@@ -1449,6 +1534,25 @@ def _console(ligne, n):
                 return false;
             }
 
+            /* Tableau de suivi construit à partir du script de l'élève (lignes de texte brut, rendu en lecture seule) */
+            function tableauSuivi(lignes) {
+                var w = el('div', 'tableau'), t = el('table', 'trace');
+                lignes.forEach(function (lg, i) {
+                    var tr = el('tr', i === 0 ? 'tour' : null);
+                    lg.forEach(function (c, j) {
+                        var x = document.createElement(j === 0 || i === 0 ? 'th' : 'td');
+                        if (j === 0 && i > 0) { var code = document.createElement('code'); code.textContent = c.replace(/^(Test|Valeur de) /, ''); x.appendChild(document.createTextNode(c.match(/^(Test|Valeur de) /) ? c.match(/^(Test|Valeur de) /)[0] : '')); x.appendChild(code); }
+                        else x.textContent = c;
+                        if (i === 0 && j > 0) x.className = 'num-tour' + (c === 'sortie' ? ' sortie' : '');
+                        if (i > 0 && j > 0) x.className = 'donnee';
+                        tr.appendChild(x);
+                    });
+                    t.appendChild(tr);
+                });
+                w.appendChild(t); w.style.marginTop = '8px';
+                return w;
+            }
+
             /* Tableau de suivi d'une boucle while dans le « Pourquoi ? ». Ligne 1 : « Tour de boucle n° » (numéroté
                automatiquement) ; ligne 2 : le test, fait avec les valeurs de la colonne précédente (vrai / faux) ;
                lignes suivantes : valeurs des variables à la fin du tour. Première colonne donnée (initialisation).
@@ -1648,7 +1752,10 @@ def _console(ligne, n):
                             if (r.ligne) { marque = r.ligne - 1; cm.addLineClass(marque, 'background', 'ligne-erreur'); }
                             if (!(e.type === 'code' || e.verifCode) || r.err) return;
                             if (r.ok) reussi();
-                            else { faux(); retour.className = 'retour ko'; retour.textContent = '✗ Pas encore. ' + r.msg; }
+                            else {
+                                faux(); retour.className = 'retour ko'; retour.textContent = '✗ Pas encore. ' + r.msg;
+                                if (r.tableau) retour.appendChild(tableauSuivi(r.tableau));
+                            }
                         });
                     }
                     bLancer.onclick = lancer;
