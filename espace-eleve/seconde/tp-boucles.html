@@ -17,6 +17,7 @@
     <script src="../config.js"></script>
     <script src="../expr.js"></script>
     <script src="../moteur.js"></script>
+    <script src="../anti-triche.js"></script>
     <style>
         .progression { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; color: var(--muted); font-size: 0.9rem; }
         .progression .barre { flex: 1; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
@@ -142,10 +143,13 @@
         .pourquoi .case-ligne { margin: 6px 0; }
         table.trace td { padding: 4px 6px; }
         .coup-de-pouce { margin-top: 10px; }
+        .ampoule { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 10px; font-size: 0.92rem; }
+        .ampoule-logo { font-size: 1.5rem; line-height: 1; }
         .coup-de-pouce ol { margin: 0 0 8px; padding: 8px 12px 8px 2em; background: var(--bleu-doux); border-radius: 8px; }
         .coup-de-pouce li { margin: 4px 0; }
         .coup-de-pouce pre { margin: 6px 0 0; font-family: var(--f-mono); }
-        .coup-de-pouce > button { margin: 0 8px 8px 0; }
+        .coup-de-pouce > button, .coup-de-pouce .aide-repliee > button { margin: 0 8px 8px 0; }
+        .coup-de-pouce .aide-repliee > summary { cursor: pointer; color: var(--muted); margin-bottom: 8px; }
         .coup-de-pouce .algo, .coup-de-pouce .puzzle { margin: 0 0 10px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
         .coup-de-pouce .algo-titre { margin: 0 0 6px; font-weight: 600; }
         .coup-de-pouce .algo-ligne { font-family: var(--f-mono); line-height: 1.6; }
@@ -155,7 +159,10 @@
         .puzzle-lignes li.fausse { border-color: var(--ko); background: var(--ko-fond); }
         .puzzle-outils { display: inline-flex; gap: 2px; flex-shrink: 0; }
         .puzzle-outils button { padding: 0 7px; min-width: 1.9em; font-size: 0.9rem; }
-        .puzzle-lignes code { white-space: pre; font-family: var(--f-mono); }
+        .puzzle-lignes code.etiquette { white-space: pre; font-family: var(--f-mono); padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+        .puzzle-lignes code.etiquette:focus-visible { outline: 2px solid var(--c-seconde); outline-offset: 1px; }
+        .puzzle-lignes li.saisie { position: relative; z-index: 2; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+        .puzzle-lignes li.saisie code.etiquette { cursor: grabbing; }
         table.trace tr.tour th { background: var(--bleu-doux); text-align: center; }
         table.trace th.num-tour { font-family: var(--f-mono); min-width: 3.6em; }
         table.trace th.num-tour.sortie { font-family: inherit; font-style: italic; color: var(--muted); }
@@ -1116,7 +1123,7 @@ def _console(ligne, n):
 
             { titre: 'C · Les multiples de 7', type: 'code',
               consigne: '<p>✍️ À l’aide d’une boucle <code>for</code>, d’un <code>if</code> et de <code>%</code>, écris un script qui affiche tous les <b>multiples de 7</b> compris entre 1 et 100, un par ligne.</p>',
-              code: '# Écris ici ton script\n', console: false,
+              code: '# Écris ici ton script\n', exemple: '14 % 7',
               solutionCode: 'for n in range(1, 101):\n    if n % 7 == 0:\n        print(n)\n',
               coupsDePouce: [
                   'On teste <b>tous</b> les nombres de 1 à 100, un par un : commence par une boucle <code>for n in range(1, 101):</code> (101 est exclu, donc <code>n</code> va bien jusqu’à 100).',
@@ -1148,7 +1155,11 @@ def _console(ligne, n):
               bilan: [
                   'Il faut <b>22 pliages</b> : l’épaisseur est alors de 419 430,4 mm, soit environ 419 m.',
                   'C’est le même schéma qu’à l’étape 9 : une boucle <code>while</code> et un compteur.'
-              ] },
+              ],
+              ampoule: '<b>Et en vrai ?</b> Une feuille A4 ne se plie qu’environ <b>7 fois</b> : au 7<sup>e</sup> pliage, on a déjà 128 épaisseurs sur un petit rectangle. ' +
+                  'Prendre une feuille plus grande aide très peu : d’après la formule de Britney Gallivan, pour gagner <b>un seul</b> pliage, il faut une feuille environ 2,8 fois plus large. Avec du papier ordinaire (0,1 mm d’épaisseur), une A3 ou une A2 ne suffisent pas : il faut aller jusqu’à l’<b>A1</b> pour en espérer 8. ' +
+                  'Le record est de <b>12 pliages</b>, réussi en 2002 par Britney Gallivan, alors lycéenne américaine, avec une bande de papier d’environ 1,2 km de long (<a href="https://www.guinnessworldrecords.com/world-records/494571-most-times-to-fold-a-piece-of-paper" target="_blank" rel="noopener">voir le record sur le site du Guinness World Records</a>) ! ' +
+                  'Pour atteindre la tour Eiffel, il en faudrait 22…' },
 
             { titre: 'Quiz final · 5 questions', type: 'quiz',
               consigne: '<p>Pour finir, 5 questions rapides sur tout le TP. ✍️ Réponds à chaque question <b>sans ordinateur</b>, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
@@ -1448,7 +1459,7 @@ def _console(ligne, n):
                 if (e.type !== 'code') d.v = reponses[n] || [];
                 if (e.code && e.type !== 'code' && codes[n]) d.c = codes[n].slice(0, 2500);
                 if (erreurs[n]) d.e = erreurs[n];
-                if (e.type === 'quiz' && !passees[n]) { d.q = scoreQuiz(e, n); d.qmax = e.questions.length; }
+                if (e.type === 'quiz' && !passees[n]) { d.q = scoreQuiz(e, n); d.qmax = e.questions.length; if (window.AntiTriche && AntiTriche.sorties(ID)) d.s = AntiTriche.sorties(ID); }   // s : sorties du quiz surveillé
                 if (passees[n]) d.p = 1;
                 return d;
             });
@@ -1575,30 +1586,69 @@ def _console(ligne, n):
 
             /* Puzzle de Parsons : les lignes de e.solutionCode mélangées et sans décalage ; ↑ ↓ pour l'ordre, ← → pour le décalage.
                e.puzzleEchanges : paires de lignes (indices dans la solution) dont l'ordre est indifférent. */
-            function puzzleScript(e, cm) {
+            function puzzleScript(e, cm, apresCopie) {
                 var sol = e.solutionCode.replace(/\n+$/, '').split('\n').map(function (l, i) { return { i: i, txt: l.trim(), niv: /^ */.exec(l)[0].length / 4 }; });
                 var ordre = sol.map(function (x) { return { i: x.i, txt: x.txt, niv: 0 }; });
                 do { for (var k = ordre.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), t = ordre[k]; ordre[k] = ordre[j]; ordre[j] = t; } }
                 while (ordre.every(function (x, k) { return x.i === k; }) && ordre.length > 1);
                 var bloc = el('div', 'puzzle');
-                bloc.appendChild(el('p', 'algo-titre', '🧩 Remets les lignes dans l’ordre (↑ ↓), puis décale-les comme il faut (← →).'));
+                bloc.appendChild(el('p', 'algo-titre', '🧩 Fais glisser les étiquettes pour remettre les lignes dans l’ordre, puis décale-les avec ← →.'));
                 var ul = el('ol', 'puzzle-lignes'); bloc.appendChild(ul);
                 var act = el('div', 'actions'), bV = el('button', null, 'Vérifier'); bV.type = 'button';
                 var r = el('span', 'retour'); act.appendChild(bV); act.appendChild(r); bloc.appendChild(act);
                 function bouton(txt, titre, f) { var b = el('button', 'secondaire', txt); b.type = 'button'; b.title = titre; b.setAttribute('aria-label', titre); b.onclick = f; return b; }
-                function dessiner() {
+                function dessiner(focusK) {
                     ul.innerHTML = '';
                     ordre.forEach(function (x, k) {
                         var li = el('li'); li.dataset.k = k;
-                        var c = el('code'); c.textContent = x.txt; c.style.marginLeft = (x.niv * 2) + 'em';
                         var outils = el('span', 'puzzle-outils');
-                        outils.appendChild(bouton('↑', 'Monter la ligne', function () { if (k) { ordre.splice(k - 1, 0, ordre.splice(k, 1)[0]); dessiner(); } }));
-                        outils.appendChild(bouton('↓', 'Descendre la ligne', function () { if (k < ordre.length - 1) { ordre.splice(k + 1, 0, ordre.splice(k, 1)[0]); dessiner(); } }));
                         outils.appendChild(bouton('←', 'Moins décaler', function () { if (x.niv) { x.niv--; dessiner(); } }));
                         outils.appendChild(bouton('→', 'Décaler', function () { if (x.niv < 3) { x.niv++; dessiner(); } }));
+                        var c = el('code', 'etiquette'); c.textContent = x.txt; c.style.marginLeft = (x.niv * 2) + 'em';
+                        c.tabIndex = 0; c.setAttribute('role', 'button');
+                        c.setAttribute('aria-label', 'Ligne ' + (k + 1) + ' : ' + x.txt + '. Flèches haut et bas pour la déplacer, gauche et droite pour la décaler.');
+                        // clavier : ↑ ↓ déplacent la ligne, ← → la décalent
+                        c.onkeydown = function (ev) {
+                            var d = { ArrowUp: -1, ArrowDown: 1 }[ev.key];
+                            if (d && k + d >= 0 && k + d < ordre.length) { ev.preventDefault(); ordre.splice(k + d, 0, ordre.splice(k, 1)[0]); dessiner(k + d); }
+                            else if (ev.key === 'ArrowLeft' && x.niv) { ev.preventDefault(); x.niv--; dessiner(k); }
+                            else if (ev.key === 'ArrowRight' && x.niv < 3) { ev.preventDefault(); x.niv++; dessiner(k); }
+                        };
+                        // souris et doigt : on attrape l'étiquette et on la glisse à sa place
+                        c.onpointerdown = function (ev) {
+                            if (ev.button) return;
+                            ev.preventDefault();
+                            c.setPointerCapture(ev.pointerId);
+                            li.classList.add('saisie');
+                            var y0 = ev.clientY;
+                            c.onpointermove = function (m) {
+                                li.style.transform = 'translateY(' + (m.clientY - y0) + 'px)';
+                                var autres = Array.prototype.filter.call(ul.children, function (x) { return x !== li; });
+                                var avant = null;
+                                for (var a = 0; a < autres.length; a++) {
+                                    var rc = autres[a].getBoundingClientRect();
+                                    if (m.clientY < rc.top + rc.height / 2) { avant = autres[a]; break; }
+                                }
+                                var h = li.getBoundingClientRect().top - parseFloat(li.style.transform.replace(/[^-\d.]/g, '') || 0);
+                                if (avant !== li.nextSibling) {
+                                    ul.insertBefore(li, avant);
+                                    // garder l'étiquette sous le doigt après le déplacement dans la liste
+                                    var h2 = li.getBoundingClientRect().top - parseFloat(li.style.transform.replace(/[^-\d.]/g, '') || 0);
+                                    y0 += h2 - h;
+                                    li.style.transform = 'translateY(' + (m.clientY - y0) + 'px)';
+                                }
+                            };
+                            c.onpointerup = c.onpointercancel = function () {
+                                c.onpointermove = c.onpointerup = c.onpointercancel = null;
+                                li.classList.remove('saisie'); li.style.transform = '';
+                                var nouv = Array.prototype.map.call(ul.children, function (x) { return ordre[+x.dataset.k]; });
+                                ordre = nouv; dessiner();
+                            };
+                        };
                         li.appendChild(outils); li.appendChild(c); ul.appendChild(li);
                     });
                     r.textContent = ''; r.className = 'retour';
+                    if (focusK != null && ul.children[focusK]) ul.children[focusK].querySelector('.etiquette').focus();
                 }
                 bV.onclick = function () {
                     // une ligne est à sa place si elle est à son rang dans la solution, ou à celui d'une ligne interchangeable avec elle
@@ -1612,12 +1662,16 @@ def _console(ligne, n):
                     if (!malPlacees && !malDecalees) {
                         r.className = 'retour ok'; r.innerHTML = '✓ Bravo, ton script est dans le bon ordre ! ';
                         var bC = el('button', 'secondaire', 'Mettre ce script dans l’éditeur'); bC.type = 'button';
-                        bC.onclick = function () { cm.setValue(sol.map(function (x) { return '    '.repeat(x.niv) + x.txt; }).join('\n') + '\n'); cm.focus(); };
+                        bC.onclick = function () { cm.setValue(sol.map(function (x) { return '    '.repeat(x.niv) + x.txt; }).join('\n') + '\n'); if (apresCopie) apresCopie(); cm.focus(); };
                         r.appendChild(bC); return;
                     }
                     r.className = 'retour ko';
-                    r.textContent = '✗ ' + (malPlacees ? malPlacees + ' ligne' + (malPlacees > 1 ? 's' : '') + ' pas à sa place' + (malPlacees > 1 ? 's' : '') + '. ' : '') +
-                        (malDecalees ? malDecalees + ' ligne' + (malDecalees > 1 ? 's' : '') + ' bien placée' + (malDecalees > 1 ? 's' : '') + ' mais mal décalée' + (malDecalees > 1 ? 's' : '') + '. ' : '') +
+                    // nombre écrit en lettres en début de phrase, accords au singulier ou au pluriel
+                    var LETTRES = ['', 'Une', 'Deux', 'Trois', 'Quatre', 'Cinq', 'Six', 'Sept', 'Huit', 'Neuf', 'Dix'];
+                    var nb = function (n) { return LETTRES[n] || String(n); };
+                    r.textContent = '✗ ' +
+                        (malPlacees === 1 ? 'Une ligne n’est pas à sa place. ' : malPlacees ? nb(malPlacees) + ' lignes ne sont pas à leur place. ' : '') +
+                        (malDecalees === 1 ? 'Une ligne est bien placée mais mal décalée. ' : malDecalees ? nb(malDecalees) + ' lignes sont bien placées mais mal décalées. ' : '') +
                         'Aide-toi de l’algorithme : une ligne décalée est répétée dans la boucle (ou exécutée seulement si la condition est vraie).';
                 };
                 dessiner();
@@ -1748,6 +1802,7 @@ def _console(ligne, n):
                 bilanMontre = true;
                 var texteB = Array.isArray(e.bilan) ? '<ol>' + e.bilan.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol>' : e.bilan;
                 corps.appendChild(el('div', 'encadre astuce bilan', '<b>À retenir</b>' + texteB + CASE_LU));
+                if (e.ampoule) corps.appendChild(el('div', 'ampoule', '<span class="ampoule-logo" aria-hidden="true">💡</span><div>' + e.ampoule + '</div>'));
                 brancherLus();
             }
 
@@ -1809,7 +1864,15 @@ def _console(ligne, n):
                             pouce.insertBefore(bA, bAlgo);
                             if (e.puzzle) bPuzzle.hidden = false;
                         };
-                        bPuzzle.onclick = function () { bPuzzle.hidden = true; pouce.insertBefore(puzzleScript(e, cm), bPuzzle); };
+                        bPuzzle.onclick = function () { bPuzzle.hidden = true; pouce.insertBefore(puzzleScript(e, cm, replier), bPuzzle); };
+                        // script mis dans l'éditeur : l'aide (indices, algorithme, puzzle) se replie, on peut la rouvrir
+                        function replier() {
+                            if (pouce.querySelector('details.aide-repliee')) return;
+                            var d = el('details', 'aide-repliee'), sm = el('summary', null, '💡 Revoir l’aide (indices, algorithme, puzzle)');
+                            d.appendChild(sm);
+                            while (pouce.firstChild) d.appendChild(pouce.firstChild);
+                            pouce.appendChild(d);
+                        }
                         pouce.appendChild(liste); pouce.appendChild(bPouce); pouce.appendChild(bAlgo); pouce.appendChild(bPuzzle);
                         gauche.appendChild(pouce);
                     }
@@ -2218,12 +2281,14 @@ def _console(ligne, n):
                         bValQ.hidden = true; avQ.hidden = true;
                         return sc;
                     };
+                    var gardeQ = null;   // mode anti-triche (antiTriche: true dans config.js)
                     fq.onsubmit = function (ev) {
                         ev.preventDefault();
                         var vals = choixQ.map(function (ch) { var k = ch.radios.findIndex(function (r) { return r.checked; }); return k < 0 ? '' : String(k); });
                         if (vals.some(function (v) { return v === ''; })) { retour.className = 'retour ko'; retour.textContent = 'Réponds à toutes les questions.'; return; }
-                        if (!VUE && !confirm('Valider définitivement tes réponses ?')) return;
+                        if (!VUE && !(gardeQ ? gardeQ.confirmer('Valider définitivement tes réponses ?') : confirm('Valider définitivement tes réponses ?'))) return;
                         reponses[n] = vals; ecrireLocal();
+                        if (gardeQ) gardeQ.terminer();
                         var sc = corriger(vals);
                         reussi();
                         retour.textContent = 'Score : ' + sc + ' / ' + e.questions.length + '. ' + retour.textContent;
@@ -2236,6 +2301,8 @@ def _console(ligne, n):
                         // quiz fait en avance : l'étape est validée dès qu'on y arrive
                         c.quizFait = function () { if (n === faites + 1) { reussi(); retour.textContent = 'Score : ' + scQ + ' / ' + e.questions.length + '. ' + retour.textContent; } };
                         if (n === faites + 1) setTimeout(c.quizFait, 0);
+                    } else if (window.AntiTriche && FICHE && FICHE.antiTriche) {
+                        gardeQ = AntiTriche.proteger({ id: ID, carte: c, formulaire: fq, actif: !VUE && !modeTest() });
                     }
                 }
                 if (e.type === 'qcm') {
