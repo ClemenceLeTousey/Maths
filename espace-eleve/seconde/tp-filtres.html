@@ -17,6 +17,7 @@
     <script src="../config.js"></script>
     <script src="../expr.js"></script>
     <script src="../moteur.js"></script>
+    <script src="../anti-triche.js"></script>
     <style>
         .progression { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; color: var(--muted); font-size: 0.9rem; }
         .progression .barre { flex: 1; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
@@ -1298,7 +1299,7 @@ def _console(ligne, n):
                 if (e.type !== 'code') d.v = reponses[n] || [];
                 if (e.code && e.type !== 'code' && codes[n]) d.c = codes[n].slice(0, 2500);
                 if (erreurs[n]) d.e = erreurs[n];
-                if (e.type === 'quiz' && !passees[n]) { d.q = scoreQuiz(e, n); d.qmax = e.questions.length; }
+                if (e.type === 'quiz' && !passees[n]) { d.q = scoreQuiz(e, n); d.qmax = e.questions.length; if (window.AntiTriche && AntiTriche.sorties(ID)) d.s = AntiTriche.sorties(ID); }   // s : sorties du quiz surveillé
                 if (passees[n]) d.p = 1;
                 return d;
             });
@@ -1741,12 +1742,14 @@ def _console(ligne, n):
                         bValQ.hidden = true; avQ.hidden = true;
                         return sc;
                     };
+                    var gardeQ = null;   // mode anti-triche (antiTriche: true dans config.js)
                     fq.onsubmit = function (ev) {
                         ev.preventDefault();
                         var vals = choixQ.map(function (ch) { var k = ch.radios.findIndex(function (r) { return r.checked; }); return k < 0 ? '' : String(k); });
                         if (vals.some(function (v) { return v === ''; })) { retour.className = 'retour ko'; retour.textContent = 'Réponds à toutes les questions.'; return; }
-                        if (!VUE && !confirm('Valider définitivement tes réponses ?')) return;
+                        if (!VUE && !(gardeQ ? gardeQ.confirmer('Valider définitivement tes réponses ?') : confirm('Valider définitivement tes réponses ?'))) return;
                         reponses[n] = vals; ecrireLocal();
+                        if (gardeQ) gardeQ.terminer();
                         var sc = corriger(vals);
                         reussi();
                         retour.textContent = 'Score : ' + sc + ' / ' + e.questions.length + '. ' + retour.textContent;
@@ -1759,6 +1762,8 @@ def _console(ligne, n):
                         // quiz fait en avance : l'étape est validée dès qu'on y arrive
                         c.quizFait = function () { if (n === faites + 1) { reussi(); retour.textContent = 'Score : ' + scQ + ' / ' + e.questions.length + '. ' + retour.textContent; } };
                         if (n === faites + 1) setTimeout(c.quizFait, 0);
+                    } else if (window.AntiTriche && FICHE && FICHE.antiTriche) {
+                        gardeQ = AntiTriche.proteger({ id: ID, carte: c, formulaire: fq, actif: !VUE && !modeTest() });
                     }
                 }
                 if (e.type === 'qcm') {

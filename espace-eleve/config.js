@@ -23,8 +23,14 @@ window.NOTIF_CONFIG = {
    « vueProf: true » : la page sait s'ouvrir telle que l'élève l'a laissée (bouton dans Suivi TP) ;
    « tp: true » : TP en plusieurs étapes (score = étapes réussies, une ligne enregistrée par étape : pas de compteur de séries).
    « comptes: ['TEST-01'] » : visible seulement de ces comptes (séries préparées à l'avance, pour les tester) ;
+   « antiTriche: true » : quiz final en mode surveillé (plein écran, blocage à la sortie, code de déblocage ci-dessous) ;
    « archive: true » : retiré du site (invisible pour les élèves et dans le suivi prof) ;
    les résultats restent dans la base. */
+/* Code de déblocage du quiz surveillé (« antiTriche: true » sur un TP, voir anti-triche.js) : empreinte SHA-256.
+   Le quiz se bloque dès que l'élève quitte la page ; la professeure tape ce code sur l'appareil de l'élève.
+   Nouveau code : python3 -c "import hashlib;print(hashlib.sha256(b'QUIZ-1234').hexdigest())" */
+window.INTERACTIF_CODE_DEBLOCAGE = '81fea9c97d311bb5192cf2554509b7f790d43628be32a19ef19e633154cacbc6';
+
 window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie8-j1', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 1', court: 'S8 · J1', url: 'seconde/serie8.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie8-j2', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 2', court: 'S8 · J2', url: 'seconde/serie8.html?j=2' },
@@ -48,11 +54,11 @@ window.INTERACTIF_CATALOGUE = [
     // TP3 Boucles, TP4 Pixels et TP5 Filtres : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
     // Codes d'accès : TP3 BOUCLE-327, TP4 PIXEL-482, TP5 FILTRE-519 (seule l'empreinte est dans le site)
     { niveau: 'seconde', id: 'seconde/tp-boucles', groupe: 'TP Python · Les boucles', titre: 'for, while, range (16 étapes)', court: 'TP Boucles', url: 'seconde/tp-boucles.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
-      codeAcces: 'f6e6d5215e50d0a94a9c4b3278f315616612eca19e6ccf2e48e2576f9485f8d8' },
+      codeAcces: 'f6e6d5215e50d0a94a9c4b3278f315616612eca19e6ccf2e48e2576f9485f8d8', antiTriche: true },
     { niveau: 'seconde', id: 'seconde/tp-pixels', groupe: 'TP Python · Créer une image pixel par pixel', titre: 'Pixels, couleurs, double boucle (9 étapes)', court: 'TP Pixels', url: 'seconde/tp-pixels.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
-      codeAcces: '0e9a00530e9b3e7bb719421ed987bc824b42e1415efed2b85a4cefabec7162bc' },
+      codeAcces: '0e9a00530e9b3e7bb719421ed987bc824b42e1415efed2b85a4cefabec7162bc', antiTriche: true },
     { niveau: 'seconde', id: 'seconde/tp-filtres', groupe: 'TP Python · Retoucher une photo : les filtres', titre: 'getpixel, filtres, contours (9 étapes)', court: 'TP Filtres', url: 'seconde/tp-filtres.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
-      codeAcces: '37add347a24e9e04cf1a91317563727261e1122f32b4ec611c81fb60a5c575ff' },
+      codeAcces: '37add347a24e9e04cf1a91317563727261e1122f32b4ec611c81fb60a5c575ff', antiTriche: true },
     // TP Conditions V1 (20 étapes) : archivé, la page reste dans seconde/tp-conditions-v1.html
     { niveau: 'seconde', id: 'seconde/tp-conditions', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (20 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions-v1.html', tp: true, vueProf: true, archive: true,
       codeAcces: 'd7c6ed760ed5b07f0c2766b06a63c0d5ddcec26f17c19db9e3d2a541645aca9c' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)

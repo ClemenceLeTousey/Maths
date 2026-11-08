@@ -614,7 +614,7 @@
                     var tr = document.createElement('tr');
                     cell(tr, (d.t || 'Étape ' + (k + 1)) + (bonus.indexOf(k + 1) >= 0 ? ' (bonus)' : ''));
                     var passee = d.p || d.ok === false;
-                    cell(tr, passee ? '⏭ passée' : d.qmax ? '✓ ' + (d.q || 0) + ' / ' + d.qmax : '✓', passee ? 'passee' : '');
+                    cell(tr, (passee ? '⏭ passée' : d.qmax ? '✓ ' + (d.q || 0) + ' / ' + d.qmax : '✓') + (d.s ? ' · ⚠ ' + d.s + ' sortie' + (d.s > 1 ? 's' : '') + ' du quiz' : ''), passee ? 'passee' : '');
                     cell(tr, d.qmax ? 'quiz' : passee ? '0' : fmt(Math.round(pointsEtape(bareme, k + 1, b.comptees) * 100) / 100));
                     cell(tr, d.e || 0);
                     var c = cell(tr, ''), rep = String(d.r || '');
