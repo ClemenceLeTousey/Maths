@@ -53,6 +53,12 @@
         .aide.pj-avert { margin: 6px 0 0; font-size: 0.85rem; }
         .message label.pj-bouton { display: inline-block; margin: 0; cursor: pointer; border: 1px solid var(--line); border-radius: 8px; padding: 4px 12px; background: var(--surface); }
         .message label.pj-bouton:hover { border-color: var(--c-seconde); }
+        .fil { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; margin-bottom: 10px; }
+        .fil p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .fil .date { color: var(--muted); font-size: 0.85rem; margin-bottom: 2px; white-space: normal; }
+        .fil .reponse { margin-top: 8px; padding: 6px 10px; border-left: 3px solid var(--c-seconde); }
+        .fil .reponse.nouvelle .date::after { content: " · nouveau"; font-weight: 600; color: var(--c-seconde); }
+        .pastille-onglet { display: inline-block; min-width: 1.2em; margin-left: 6px; padding: 0 5px; border-radius: 999px; background: var(--c-seconde); color: #fff; font-size: 0.75rem; line-height: 1.4; text-align: center; }
         #pj-apercu { display: inline-flex; align-items: center; gap: 8px; }
         #pj-apercu[hidden] { display: none; }
         #pj-image { max-height: 70px; max-width: 160px; border: 1px solid var(--line); border-radius: 4px; }
@@ -196,6 +202,10 @@
             </div>
             <p class="aide pj-avert">Si tu joins une capture, vérifie qu'elle ne montre que la page qui pose souci (pas de conversation ni d'informations personnelles).</p>
             <p class="soutien-actions"><button type="button" id="message-envoyer">Envoyer le message</button> <span id="message-etat" class="aide" aria-live="polite"></span></p>
+        </section>
+        <section class="soutien" id="mes-messages-zone" hidden>
+            <h2>Mes messages</h2>
+            <div id="mes-messages"></div>
         </section>
         </div>
 
@@ -505,9 +515,49 @@
             Interactif.rpc('envoyer_message', { p_jeton: s.jeton, p_texte: t, p_image: image }).then(function () {
                 texteMessage.value = ''; retirerImage();
                 etatMessage.textContent = '✓ Message envoyé, merci !';
+                mesMessages(s);
             }, function (x) { etatMessage.textContent = 'Non envoyé : ' + x.message; })
               .then(function () { bouton.disabled = false; });
         };
+
+        /* ---------- Mes messages et les réponses de la professeure ---------- */
+        var ongletEchange = document.getElementById('onglet-echange');
+        function pastilleEchange(n) {
+            var p = ongletEchange.querySelector('.pastille-onglet');
+            if (!n) { if (p) p.remove(); return; }
+            if (!p) { p = document.createElement('span'); p.className = 'pastille-onglet'; ongletEchange.appendChild(p); }
+            p.textContent = n; p.setAttribute('aria-label', n + ' nouvelle(s) réponse(s)');
+        }
+        function marquerLus() {
+            var s = Interactif.session();
+            if (!s || !ongletEchange.querySelector('.pastille-onglet') || document.getElementById('panneau-echange').hidden) return;
+            Interactif.rpc('messages_lus', { p_jeton: s.jeton }).then(function () { pastilleEchange(0); }, function () {});
+        }
+        function mesMessages(s) {
+            var zone = document.getElementById('mes-messages-zone'), liste = document.getElementById('mes-messages');
+            zone.hidden = true; liste.innerHTML = ''; pastilleEchange(0);
+            if (!s) return;
+            Interactif.rpc('mes_messages', { p_jeton: s.jeton }).then(function (l) {
+                l = l || [];
+                var fmt = function (d) { return new Date(d).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }); };
+                l.forEach(function (m) {
+                    var b = document.createElement('div'); b.className = 'fil';
+                    var d = document.createElement('p'); d.className = 'date'; d.textContent = 'Toi, le ' + fmt(m.envoye_le) + (m.image ? ' · 📎 capture jointe' : '');
+                    var t = document.createElement('p'); t.textContent = m.texte;   // texte brut
+                    b.appendChild(d); if (m.texte) b.appendChild(t);
+                    if (m.reponse) {
+                        var r = document.createElement('div'); r.className = 'reponse' + (m.lue ? '' : ' nouvelle');
+                        var dr = document.createElement('p'); dr.className = 'date'; dr.textContent = 'Ta professeure, le ' + fmt(m.repondu_le);
+                        var tr = document.createElement('p'); tr.textContent = m.reponse;
+                        r.appendChild(dr); r.appendChild(tr); b.appendChild(r);
+                    }
+                    liste.appendChild(b);
+                });
+                zone.hidden = !l.length;
+                pastilleEchange(l.filter(function (m) { return m.reponse && !m.lue; }).length);
+                marquerLus();
+            }, function () {});   // fonction absente (maj-reponses.sql pas encore lancé) : rien à afficher
+        }
 
         /* ---------- Mes notes (publiées depuis l'onglet Suivi Eval de l'espace professeure) ---------- */
         var NIVEAUX = { 'N.E.': 'non évalué', 'I': 'insuffisant', 'F': 'fragile', 'S': 'satisfaisant', 'T.S.': 'très satisfaisant' };
@@ -650,6 +700,7 @@
             afficher(null);
             soutien(s);
             mesNotes(s);
+            mesMessages(s);
             notifications(s);
             if (!s) return;
             Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(afficher, function (x) {
@@ -668,6 +719,7 @@
                 document.getElementById(o.getAttribute('aria-controls')).hidden = !actif;
                 if (actif && focus) o.focus();
             });
+            if (nom === 'echange' && typeof marquerLus === 'function') marquerLus();
             try { history.replaceState(null, '', nom === 'automatismes' ? location.pathname + location.search : '#' + nom); } catch (e) {}
         }
         onglets.forEach(function (o) {

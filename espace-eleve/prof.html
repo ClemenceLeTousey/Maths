@@ -931,8 +931,57 @@
                     };
                     bloc.appendChild(voir);
                 }
+                bloc.appendChild(blocReponse(m));
                 zone.appendChild(bloc);
             });
+        }
+
+        /* Réponse à un message : affichée, puis modifiable (vide = effacée) ; l'élève la lit dans son onglet Messages */
+        function blocReponse(m) {
+            var r = document.createElement('div');
+            r.style.cssText = 'margin-top:8px;padding-top:6px;border-top:1px dashed var(--line)';
+            function vue() {
+                r.innerHTML = '';
+                if (m.reponse) {
+                    var e = document.createElement('p'); e.className = 'aide'; e.style.margin = '0 0 2px';
+                    e.textContent = '↳ Ta réponse, ' + new Date(m.repondu_le).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) +
+                        (m.reponse_lue ? ' · lue ✓' : ' · pas encore lue');
+                    var p = document.createElement('p'); p.style.cssText = 'white-space:pre-wrap;margin:0';
+                    p.textContent = m.reponse;
+                    r.appendChild(e); r.appendChild(p);
+                }
+                var b = document.createElement('button'); b.type = 'button'; b.className = 'lien';
+                b.textContent = m.reponse ? 'modifier la réponse' : '↳ répondre';
+                b.onclick = edition;
+                r.appendChild(b);
+            }
+            function edition() {
+                r.innerHTML = '';
+                var ta = document.createElement('textarea'); ta.rows = 3; ta.maxLength = 4000; ta.value = m.reponse || '';
+                ta.style.cssText = 'width:100%;box-sizing:border-box;font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text)';
+                var ok = document.createElement('button'); ok.type = 'button'; ok.textContent = 'Envoyer la réponse';
+                var annuler = document.createElement('button'); annuler.type = 'button'; annuler.className = 'lien'; annuler.textContent = 'annuler';
+                var etat = document.createElement('span'); etat.className = 'aide';
+                annuler.onclick = vue;
+                ok.onclick = function () {
+                    var t = ta.value.trim();
+                    if (!t && !m.reponse) { vue(); return; }
+                    if (!t && !confirm('Effacer la réponse ?')) return;
+                    ok.disabled = true; etat.textContent = ' Envoi…';
+                    Interactif.rpc('prof_repondre', { p_mdp: mdp, p_id: m.id, p_texte: t }).then(function () {
+                        m.reponse = t || null; m.repondu_le = t ? new Date().toISOString() : null; m.reponse_lue = false; vue();
+                    }, function (x) {
+                        ok.disabled = false;
+                        etat.textContent = ' Non envoyée : ' + x.message + (/prof_repondre/.test(x.message) ? ' (lancer maj-reponses.sql dans Supabase)' : '');
+                    });
+                };
+                var ligne = document.createElement('p'); ligne.style.margin = '6px 0 0';
+                ligne.appendChild(ok); ligne.appendChild(document.createTextNode(' ')); ligne.appendChild(annuler); ligne.appendChild(etat);
+                r.appendChild(ta); r.appendChild(ligne);
+                ta.focus();
+            }
+            vue();
+            return r;
         }
 
         /* ---------- Soutien : inscrits par séance pour la classe choisie ---------- */
