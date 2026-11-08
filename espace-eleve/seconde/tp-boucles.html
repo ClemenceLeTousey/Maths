@@ -1206,14 +1206,14 @@ def _console(ligne, n):
               consigne: '<p><b>FizzBuzz</b> est l’un des exercices de programmation les plus célèbres au monde ! On compte de 1 à 100, mais :</p>' +
                 '<ul><li>à la place d’un multiple de 3, on dit « Fizz » ;</li><li>à la place d’un multiple de 5, on dit « Buzz » ;</li><li>à la place d’un multiple de 3 <b>et</b> de 5 (donc de 15), on dit « FizzBuzz ».</li></ul>' +
                 '<p>Le début est donc : 1, 2, Fizz, 4, Buzz, Fizz, 7, 8, Fizz, Buzz, 11, Fizz, 13, 14, FizzBuzz, 16…</p>' +
-                '<p>✍️ Réponds d’abord sans ordinateur, puis étudie la fonction <code>fizzbuzz</code> ci-dessous, écrite par un élève.</p>' + py(FIZZ_BUG),
+                '<p>✍️ Réponds d’abord avec la <b>règle du jeu</b>, sans ordinateur.</p>',
               commun: FIZZ_BUG, exemple: 'fizzbuzz(9)', variable: 'n',
               blocs: [['if', 'if n % 3 == 0'], ['elif5', 'elif n % 5 == 0'], ['elif15', 'elif n % 15 == 0'], ['else', 'else']],
               scripts: [
                   { question: 'Que dit-on à la place de 33 ?', attendu: 'Fizz', aide: '33 = 3 × 11 : c’est un multiple de 3, mais pas de 5.' },
                   { question: 'Que dit-on à la place de 35 ?', attendu: 'Buzz', aide: '35 = 5 × 7 : c’est un multiple de 5, mais pas de 3.' },
                   { question: 'Que dit-on à la place de 30 ?', attendu: 'FizzBuzz', aide: '30 est un multiple de 3 et de 5.' },
-                  { nom: 'La fonction de l’élève', appel: 'fizzbuzz(15)', attendu: 'Fizz', valeur: '15',
+                  { nom: 'La fonction de l’élève', presentation: '<p>Un élève a écrit cette fonction <code>fizzbuzz</code>. Fait-elle vraiment ce que dit la règle du jeu ?</p>' + py(FIZZ_BUG), appel: 'fizzbuzz(15)', attendu: 'Fizz', valeur: '15',
                     car: [{ cond: 'if n % 3 == 0', vraie: true, raison: '15 % 3 vaut 0 : 15 est un multiple de 3' }, { bloc: 'if' }] }
               ],
               code: FIZZ_BUG, verifCode: true, exemple: 'fizzbuzz(15)',
@@ -2015,6 +2015,7 @@ def _console(ligne, n):
                             return;
                         }
                         bloc.appendChild(el('h3', null, esc(sc.nom)));
+                        if (sc.presentation) bloc.appendChild(el('div', null, sc.presentation));   // texte et code montrés au moment d'étudier ce cas
                         if (!sc.appel) bloc.appendChild(el('div', null, py(sc.code)));
                         var fp = el('form', 'case-ligne prevision');
                         var lp = el('label', null, sc.libelle || (sc.appel ? 'Je prévois que l’appel <code>' + esc(sc.appel) + '</code> renvoie ' : 'Je prévois qu’il affiche '));
