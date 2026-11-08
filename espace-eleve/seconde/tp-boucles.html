@@ -192,6 +192,10 @@
         .quiz-q label:has(input:checked) { border-color: var(--c-seconde); background: var(--bleu-doux); }
         .quiz-q input { margin-top: 4px; }
         .quiz > button { align-self: flex-start; margin-top: 8px; }
+        .quiz-bilan { display: flex; align-items: center; gap: 14px; border: 2px solid var(--ko); background: var(--ko-fond); border-radius: 10px; padding: 10px 16px; margin-bottom: 6px; max-width: 36em; }
+        .quiz-bilan.bien { border-color: var(--c-seconde); background: var(--bleu-doux); }
+        .quiz-bilan.parfait { border-color: var(--ok); background: var(--ok-fond, var(--bleu-doux)); }
+        .quiz-bilan-score { font-size: 1.9em; font-weight: 700; white-space: nowrap; }
 
         .sortie:empty { display: none; }
         .sortie { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--bg); }
@@ -2279,6 +2283,13 @@ def _console(ligne, n):
                             ch.corr.innerHTML = (ok ? '✓ ' : '✗ La bonne réponse : ' + q.choix[q.bonne] + '. ') + (q.explication || '');
                         });
                         bValQ.hidden = true; avQ.hidden = true;
+                        // bilan du quiz, en haut : nombre de bonnes réponses
+                        var bil = fq.querySelector('.quiz-bilan') || fq.insertBefore(el('div', 'quiz-bilan'), fq.firstChild);
+                        var nq = e.questions.length;
+                        bil.className = 'quiz-bilan' + (sc === nq ? ' parfait' : sc * 2 >= nq ? ' bien' : '');
+                        bil.innerHTML = '<span class="quiz-bilan-score">' + sc + ' / ' + nq + '</span><span><b>' +
+                            (sc === 0 ? 'Aucune bonne réponse' : sc + ' bonne' + (sc > 1 ? 's' : '') + ' réponse' + (sc > 1 ? 's' : '')) + '</b> sur ' + nq + ' questions.<br>' +
+                            (sc === nq ? '🎉 Bravo, sans faute !' : 'Lis la correction sous chaque question.') + '</span>';
                         return sc;
                     };
                     var gardeQ = null;   // mode anti-triche (antiTriche: true dans config.js)
@@ -2381,6 +2392,11 @@ def _console(ligne, n):
                     attenteBilan = el('p', 'retour ko', 'Coche « J’ai lu » dans l’encadré « À retenir » pour passer à l’étape suivante.');
                     corps.appendChild(attenteBilan);
                     suite = ouvrirSuite;
+                } else if (e.type === 'quiz' && !force && n < NB) {   // après le quiz : on laisse lire la correction, la suite s'ouvre sur demande
+                    var mD = /Défi(\s*\d+)?/.exec(ETAPES[n].titre);
+                    var bSuite = el('button', null, (mD ? 'Passer au d' + mD[0].slice(1) : 'Passer à l’étape suivante') + ' →'); bSuite.type = 'button';
+                    bSuite.onclick = function () { bSuite.remove(); ouvrirSuite(); };
+                    corps.appendChild(bSuite);
                 } else ouvrirSuite();
             }
 
