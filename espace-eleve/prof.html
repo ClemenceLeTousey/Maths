@@ -156,6 +156,8 @@
         #tp-tableau tr.cliquable { cursor: pointer; }
         #tp-tableau tr.cliquable:hover td { background: var(--bleu-doux); }
         #tp-tableau td.note { font-weight: 700; }
+        #tp-tableau th.triable { cursor: pointer; user-select: none; white-space: nowrap; }
+        #tp-tableau th.triable:hover, #tp-tableau th.trie { color: var(--c-seconde); }
         .tp-etapes td { vertical-align: top; }
         .tp-etapes td:first-child, .tp-etapes td:last-child, .tp-etapes th:first-child, .tp-etapes th:last-child { text-align: left; }
         .tp-etapes pre { margin: 0; white-space: pre-wrap; font-family: var(--f-mono); font-size: 0.85rem; font-variant-ligatures: none; }
@@ -552,15 +554,50 @@
                 eleves().forEach(function (e) { $eleve.appendChild(new Option((nomDe(e) ? nomDe(e) + ' · ' : '') + e.code, e.code)); });
                 if (Array.prototype.some.call($eleve.options, function (o) { return o.value === avant; })) $eleve.value = avant;
             }
+            /* Tri du tableau : clic sur l'en-tête « Erreurs », « Note TP », « Note globale » ou « Dernière activité »
+               (un clic : croissant, deuxième clic : décroissant) ; les élèves qui n'ont pas commencé restent en bas. */
+            var tri = { cle: null, sens: 1 };
+            var TRIABLES = { 'Erreurs': 'erreurs', 'Note TP /20': 'note', 'Note globale /20': 'globale', 'Dernière activité': 'dernier' };
+            function valeurTri(b, cle) {
+                if (!b) return null;
+                var v = b[cle];
+                if (cle === 'dernier') return v && v.getTime ? v.getTime() : null;
+                return v === null || v === undefined ? null : +v;
+            }
+            function enteteTriable(t, cols) {
+                var tr = document.createElement('tr');
+                cols.forEach(function (x) {
+                    var th = document.createElement('th'), cle = TRIABLES[x];
+                    th.textContent = x;
+                    if (cle) {
+                        th.className = 'triable' + (tri.cle === cle ? ' trie' : '');
+                        th.textContent += tri.cle === cle ? (tri.sens > 0 ? ' ▲' : ' ▼') : ' ⇅';
+                        th.title = 'Trier par ' + x.toLowerCase() + (tri.cle === cle ? (tri.sens > 0 ? ' (ordre décroissant au prochain clic)' : ' (ordre croissant au prochain clic)') : ' (ordre croissant)');
+                        th.tabIndex = 0;
+                        th.onclick = function () { if (tri.cle === cle) tri.sens = -tri.sens; else { tri.cle = cle; tri.sens = 1; } afficher(); };
+                        th.onkeydown = function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); th.onclick(); } };
+                    }
+                    tr.appendChild(th);
+                });
+                t.appendChild(tr);
+            }
             function afficher() {
                 if (!donnees) return;
                 $table.innerHTML = ''; $detail.innerHTML = '';
                 var id = $tp.value, liste = eleves();
                 if ($eleve.value) liste = liste.filter(function (e) { return e.code === $eleve.value; });
-                entete($table, ['Code', 'Nom', 'Étapes réussies', 'Bonus', 'Erreurs', 'Note TP /20', 'Quiz', 'Note globale /20', 'Temps', 'Dernière activité']);
+                enteteTriable($table, ['Code', 'Nom', 'Étapes réussies', 'Bonus', 'Erreurs', 'Note TP /20', 'Quiz', 'Note globale /20', 'Temps', 'Dernière activité']);
                 var notes = [], quizs = [], globales = [];
-                liste.forEach(function (e) {
-                    var b = resultat(e.code, id), tr = document.createElement('tr');
+                var lignes = liste.map(function (e) { return { e: e, b: resultat(e.code, id) }; });
+                if (tri.cle) lignes.sort(function (p, q) {
+                    var a = valeurTri(p.b, tri.cle), c = valeurTri(q.b, tri.cle);
+                    if (a === null && c === null) return 0;
+                    if (a === null) return 1;      // sans valeur : toujours en bas
+                    if (c === null) return -1;
+                    return (a - c) * tri.sens;
+                });
+                lignes.forEach(function (l) {
+                    var e = l.e, b = l.b, tr = document.createElement('tr');
                     cell(tr, e.code); cell(tr, nomDe(e));
                     if (!b) { cell(tr, 'pas commencé'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); cell(tr, '—'); }
                     else {
