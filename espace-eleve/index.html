@@ -634,6 +634,33 @@
             }, function () { /* pas encore de notes en ligne (script maj-notes.sql non lancé) : rien à afficher */ });
         }
 
+        /* ---------- Première connexion dans l'appli installée : fenêtre obligatoire pour les notifications ----------
+           Pas de bouton de fermeture : l'élève doit toucher « Continuer », qui ouvre la demande du téléphone
+           (il peut y refuser ; la fenêtre ne revient alors plus). Ensuite, l'espace élève est rechargé (sans recharger la page). */
+        function fenetreNotifs(activer) {
+            if (document.getElementById('fenetre-notifs')) return;
+            var fond = document.createElement('div');
+            fond.id = 'fenetre-notifs'; fond.className = 'fenetre-fond';
+            fond.innerHTML = '<div class="fenetre" role="alertdialog" aria-modal="true" aria-labelledby="fenetre-notifs-titre" aria-describedby="fenetre-notifs-texte">' +
+                '<h2 id="fenetre-notifs-titre">🔔 Notifications</h2>' +
+                '<p id="fenetre-notifs-texte">Pour être prévenu(e) quand une nouvelle série arrive, quand tu as une note ou un message de ta professeure, ' +
+                'autorise les notifications sur ce téléphone.</p>' +
+                '<p class="aide">Touche « Continuer », puis « Autoriser » dans la fenêtre du téléphone.</p>' +
+                '<p><button type="button" class="bouton">Continuer</button></p></div>';
+            (document.querySelector('main.interactif') || document.body).appendChild(fond);
+            document.body.classList.add('fenetre-ouverte');
+            var b = fond.querySelector('button');
+            b.focus();
+            fond.addEventListener('keydown', function (e) { if (e.key === 'Escape') e.preventDefault(); if (e.key === 'Tab') { e.preventDefault(); b.focus(); } });
+            b.onclick = function () {
+                b.disabled = true; b.textContent = 'Un instant…';
+                Promise.resolve(activer()).then(function () {
+                    fond.remove(); document.body.classList.remove('fenetre-ouverte');
+                    charger(Interactif.session());   // l'espace élève redémarre (cloche, onglets, résultats)
+                });
+            };
+        }
+
         /* ---------- Notifications push (comptes de NOTIF_CONFIG.comptes pour l'instant) ---------- */
         function notifications(s) {
             var zone = document.getElementById('notif'), etat = document.getElementById('notif-etat');
@@ -662,20 +689,30 @@
                 } else etat.textContent = actives ? '✓ Notifications activées sur cet appareil.' : '';
             }
             var enregistrement = navigator.serviceWorker.register('../sw.js', { scope: '../' });
-            enregistrement.then(function (reg) { return reg.pushManager.getSubscription(); })
-                .then(function (abo) { montrer(!!abo); }, function () { etat.textContent = 'Notifications indisponibles sur cet appareil.'; });
-            bOn.onclick = function () {
+            function abonner() {
+                return enregistrement.then(function (reg) {
+                    return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: cle() });
+                }).then(function (abo) {
+                    var j = abo.toJSON();
+                    return Interactif.rpc('push_abonner', { p_jeton: s.jeton, p_endpoint: j.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth });
+                }).then(function () { montrer(true); });
+            }
+            function activer() {
                 etat.textContent = 'Activation…';
-                Notification.requestPermission().then(function (p) {
+                return Notification.requestPermission().then(function (p) {
                     if (p !== 'granted') { montrer(false); if (p !== 'denied') etat.textContent = 'Notifications non autorisées.'; return; }
-                    return enregistrement.then(function (reg) {
-                        return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: cle() });
-                    }).then(function (abo) {
-                        var j = abo.toJSON();
-                        return Interactif.rpc('push_abonner', { p_jeton: s.jeton, p_endpoint: j.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth });
-                    }).then(function () { montrer(true); });
+                    return abonner();
                 }).catch(function (x) { etat.textContent = 'Activation impossible : ' + (x && x.message || x); });
-            };
+            }
+            enregistrement.then(function (reg) { return reg.pushManager.getSubscription(); })
+                .then(function (abo) {
+                    montrer(!!abo);
+                    if (abo || !installee) return;
+                    // appli installée, pas encore abonnée : autorisation déjà donnée → abonnement discret ; jamais demandée → fenêtre obligatoire
+                    if (Notification.permission === 'granted') abonner().catch(function () {});
+                    else if (Notification.permission === 'default') fenetreNotifs(activer);
+                }, function () { etat.textContent = 'Notifications indisponibles sur cet appareil.'; });
+            bOn.onclick = activer;
             bOff.onclick = function () {
                 enregistrement.then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (abo) {
                     if (!abo) return montrer(false);

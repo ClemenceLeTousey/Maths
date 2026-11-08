@@ -29,11 +29,14 @@
     }
 
     function session() { return lireLocal(CLE_SESSION); }
+    // connexion / déconnexion : la cloche (site.js) s'installe ou se retire sans recharger la page
+    function signalerSession() { try { window.dispatchEvent(new Event('interactif-session')); } catch (e) {} }
 
     function connecter(code, mdp) {
         return rpc('connexion', { p_code: code, p_mdp: mdp }).then(function (s) {
             ecrireLocal(CLE_SESSION, s);
             ecrireLocal('interactif-derniere-connexion', new Date().toISOString());
+            signalerSession();
             return s;
         });
     }
@@ -41,6 +44,7 @@
     function deconnecter() {
         var s = session();
         ecrireLocal(CLE_SESSION, null);
+        signalerSession();
         if (s) rpc('deconnexion', { p_jeton: s.jeton }).catch(function () {});
     }
 

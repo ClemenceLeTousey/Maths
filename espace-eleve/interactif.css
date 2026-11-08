@@ -295,3 +295,11 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .interactif .chrono-actions button { font-size: 1rem; padding: 8px 18px; }
 .chrono-msg { margin: 0; color: var(--attention); font-weight: 600; }
 .q-figure .fig-barre { fill: var(--c-premiere); fill-opacity: .7; stroke: currentColor; stroke-width: 1.2; }
+
+/* Fenêtre obligatoire (notifications, première connexion dans l'appli) */
+.fenetre-fond { position: fixed; inset: 0; z-index: 1000; background: rgba(10, 16, 32, 0.55); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.fenetre { background: var(--surface, #fff); color: var(--text, #14213d); border-radius: 14px; padding: 20px 22px; max-width: 420px; width: 100%; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); }
+.fenetre h2 { margin: 0 0 10px; font-size: 1.2rem; }
+.fenetre p { margin: 0 0 12px; }
+.fenetre p:last-child { margin: 0; text-align: right; }
+body.fenetre-ouverte { overflow: hidden; }

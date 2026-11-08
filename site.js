@@ -828,9 +828,15 @@ document.addEventListener('click', function (e) {
     var script = document.currentScript;
     var racine = script ? script.src.replace(/site\.js(\?.*)?$/, '') : '';
     var s = null;
-    try { s = JSON.parse(localStorage.getItem('interactif-session')); } catch (e) {}
-    if (!s || !s.jeton || !racine) return;
-    if (CLOCHE_COMPTES && CLOCHE_COMPTES.indexOf(String(s.code).toUpperCase()) < 0) return;
+    // session de l'élève (relue à chaque connexion / déconnexion : événement « interactif-session » de moteur.js)
+    function lireSession() {
+        var x = null;
+        try { x = JSON.parse(localStorage.getItem('interactif-session')); } catch (e) {}
+        if (!x || !x.jeton || !racine) return null;
+        if (CLOCHE_COMPTES && CLOCHE_COMPTES.indexOf(String(x.code).toUpperCase()) < 0) return null;
+        return x;
+    }
+    if (!racine) return;
 
     function rpc(nom, args) {
         return fetch(BASE + '/rest/v1/rpc/' + nom, {
@@ -884,7 +890,8 @@ document.addEventListener('click', function (e) {
         '.cloche-panneau .vide { padding: 14px; color: var(--muted); font-size: 0.9rem; margin: 0; }';
     (document.head || document.documentElement).appendChild(css);
 
-    document.addEventListener('DOMContentLoaded', function () {
+    var retirer = null;   // retire la cloche installée (déconnexion)
+    function monter() {
         var menu = document.querySelector('.nav-links');
         if (!menu) return;
         var li = document.createElement('li'), bt = document.createElement('button'), compte = document.createElement('span');
@@ -982,12 +989,32 @@ document.addEventListener('click', function (e) {
         }
         bt.onclick = function (e) { e.stopPropagation(); reglages = false; ouvrir(panneau.hidden); };
         panneau.addEventListener('click', function (e) { e.stopPropagation(); });   // le contenu est redessiné : ne pas fermer le panneau
-        document.addEventListener('click', function (e) { if (!panneau.hidden && !panneau.contains(e.target)) ouvrir(false); });
-        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panneau.hidden) { ouvrir(false); bt.focus(); } });
+        function auRetour() { if (!document.hidden) { charger(); fermerNotifsSysteme(); } }
+        function clicDehors(e) { if (!panneau.hidden && !panneau.contains(e.target)) ouvrir(false); }
+        function echap(e) { if (e.key === 'Escape' && !panneau.hidden) { ouvrir(false); bt.focus(); } }
+        document.addEventListener('click', clicDehors);
+        document.addEventListener('keydown', echap);
         // revenu dans l'appli (après une notification) : on met à jour
-        document.addEventListener('visibilitychange', function () { if (!document.hidden) { charger(); fermerNotifsSysteme(); } });
+        document.addEventListener('visibilitychange', auRetour);
+        retirer = function () {
+            document.removeEventListener('click', clicDehors);
+            document.removeEventListener('keydown', echap);
+            document.removeEventListener('visibilitychange', auRetour);
+            li.remove(); panneau.remove(); pastille(0); retirer = null;
+        };
 
         fermerNotifsSysteme();
         charger();
-    });
+    }
+
+    // (ré)installe la cloche selon la session : au chargement, puis à chaque connexion / déconnexion, sans recharger la page
+    function actualiser() {
+        var x = lireSession();
+        if (retirer && (!x || !s || x.jeton !== s.jeton)) retirer();
+        s = x;
+        if (s && !retirer) monter();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', actualiser); else actualiser();
+    window.addEventListener('interactif-session', actualiser);
+    window.addEventListener('storage', function (e) { if (e.key === 'interactif-session') actualiser(); });   // autre onglet
 })();
