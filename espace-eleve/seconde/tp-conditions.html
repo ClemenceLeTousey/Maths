@@ -1856,6 +1856,12 @@ def _console(ligne, n):
                 r.onchange = function () { try { localStorage.setItem('tp-mode', m[0]); } catch (x) {} location.reload(); };
                 l.title = m[2]; l.appendChild(r); l.appendChild(document.createTextNode(' ' + m[1])); choix.appendChild(l);
             });
+            /* case « Version hybride » : passe du TP2 classique au TP2 hybride (et retour), dans le même mode */
+            var lh = el('label'), ch = el('input'); ch.type = 'checkbox';
+            ch.checked = /tp-conditions-hybride\.html/.test(location.pathname);
+            ch.onchange = function () { location.href = ch.checked ? 'tp-conditions-hybride.html' : 'tp-conditions.html'; };
+            lh.title = 'Version hybride : tout ce qui est à lire dans le PDF, seulement les questions en ligne';
+            lh.appendChild(ch); lh.appendChild(document.createTextNode(' 📄 Version hybride')); choix.appendChild(lh);
             var barreE = document.getElementById('barre-etapes');
             barreE.insertBefore(choix, barreE.firstChild);
         }
