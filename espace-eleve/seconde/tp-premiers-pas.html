@@ -306,6 +306,12 @@
         }
         html.grand .interactif input[readonly]:not(.console-ligne input) { border-style: dashed; }
         html.grand table.trace input { width: 4.5em; }
+        /* scripts : cadre gris marqué ; numéros de ligne en noir (couleur du texte en thème sombre) */
+        html.grand { --cadre-script: #6b6b6b; }
+        html.grand[data-theme="dark"] { --cadre-script: #9a9a9a; }
+        html.grand .editeur, html.grand .etape-corps pre.code { border: 2px solid var(--cadre-script); }
+        html.grand .editeur .CodeMirror-gutters { border-right: 2px solid var(--cadre-script); }
+        html.grand .editeur .CodeMirror-linenumber { color: var(--text); font-weight: 600; }
         html.grand .retour, html.grand .aide { font-size: 1rem; }
         /* script puis console l'un sous l'autre : chacun garde toute la largeur */
         html.grand .duo.avec-console { grid-template-columns: 1fr; }
