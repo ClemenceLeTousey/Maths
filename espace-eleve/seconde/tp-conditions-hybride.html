@@ -804,8 +804,8 @@ def _console(ligne, n):
            Mêmes vérifications que seconde/tp-conditions.html. */
         function doc(exo) { return '<p class="renvoi-doc">📄 Document : <b>' + exo + '</b>.</p>'; }
         var ETAPES = [
-            { titre: 'Si… sinon', type: 'prevoir',
-              consigne: doc('exercice 1') + '<p>✍️ Pour chaque appel, prévois ce qu’il renvoie.</p>',
+            { titre: 'A · Si… sinon', type: 'prevoir',
+              consigne: doc('question 1') + '<p>✍️ Pour chaque appel, prévois ce qu’il renvoie.</p>',
               commun: SUPPLEMENT, exemple: 'supplement(30)',
               variable: 'masse', blocs: [['if', 'if masse > 23'], ['else', 'else']],
               scripts: [
@@ -817,8 +817,8 @@ def _console(ligne, n):
                     car: [{ cond: 'if masse > 23', vraie: true, raison: '23,5 est plus grand que 23' }, { bloc: 'if' }] }
               ] },
 
-            { titre: 'Plus de deux cas (elif)', type: 'prevoir',
-              consigne: doc('exercice 2') + '<p>✍️ Pour chaque appel, prévois ce qu’il renvoie.</p>',
+            { titre: 'A · Plus de deux cas avec « sinon si » (elif)', type: 'prevoir',
+              consigne: doc('question 2') + '<p>✍️ Pour chaque appel, prévois ce qu’il renvoie.</p>',
               commun: ETAT_EAU, exemple: 'etat_eau(20)', variable: 't', blocs: [['if', 'if t < 0'], ['elif', 'elif t < 100'], ['else', 'else']],
               scripts: [
                   { nom: 'Appel 1', appel: 'etat_eau(-5)', attendu: 'glace',
@@ -829,8 +829,8 @@ def _console(ligne, n):
                     valeur: '100', car: [{ cond: 'if t < 0', vraie: false, raison: '100 n’est pas plus petit que 0' }, { cond: 'elif t < 100', vraie: false, raison: '100 n’est pas plus petit que 100' }, { bloc: 'else' }] }
               ] },
 
-            { titre: 'Deux if à la suite', type: 'prevoir',
-              consigne: doc('exercice 3') + '<p>✍️ Prévois ce qu’affiche le script C.</p>',
+            { titre: 'A · Deux if à la suite', type: 'prevoir',
+              consigne: doc('question 3') + '<p>✍️ Prévois ce qu’affiche le script C.</p>',
               scripts: [{ nom: 'Script C', code: SCRIPT_C, attendu: '1', variable: 'a', valeur: '8',
                     car: [{ cond: 'if a > 4', vraie: true, raison: '8 est plus grand que 4' },
                           { valeur: '11', avant: 'Donc <code>a</code> prend la valeur', raison: '2 × 8 − 5 = 11', aide: 'Calcule 2 × a − 5 avec a = 8.' },
@@ -839,26 +839,26 @@ def _console(ligne, n):
                           { valeur: '1', avant: 'Donc <code>a</code> prend la valeur', raison: '11 − 10 = 1', aide: 'Calcule a − 10 avec la nouvelle valeur de a.' },
                           { fin: 'Le script affiche donc 1.' }] }] },
 
-            { titre: 'Corriger le script B', type: 'prevoir',
-              consigne: doc('exercice 4') + '<p>✍️ Prévois ce qu’affiche le script B.</p>',
+            { titre: 'B · Corriger le script B', type: 'prevoir',
+              consigne: doc('question 4') + '<p>✍️ Prévois ce qu’affiche le script B.</p>',
               scripts: [{ nom: 'Script B', code: SCRIPT_B, attendu: 'refusé' }],
               code: SCRIPT_B, verifCode: true, solutionCode: 'note = 10\nif note >= 10:\n    print("admis")\nelse:\n    print("refusé")\n',
               consigneCode: '<h3>Corriger le script B</h3><p>✍️ Corrige <b>uniquement</b> la condition de la <b>ligne 2</b> pour que le script affiche <code>admis</code>, sans changer la note.</p>' },
 
-            { titre: 'Cinéma : ajouter un tarif enfant', type: 'code',
-              consigne: doc('exercice 5') + '<p>✍️ Modifie la fonction <code>tarif</code> avec <code>elif</code>, puis teste <code>tarif(10)</code>, <code>tarif(14)</code>, <code>tarif(17)</code> et <code>tarif(18)</code>.</p>',
+            { titre: 'B · Cinéma : ajouter un tarif enfant', type: 'code',
+              consigne: doc('question 5') + '<p>✍️ Modifie la fonction <code>tarif</code> avec <code>elif</code>, puis teste <code>tarif(10)</code>, <code>tarif(14)</code>, <code>tarif(17)</code> et <code>tarif(18)</code>.</p>',
               code: TARIF, exemple: 'tarif(30)',
               solutionCode: 'def tarif(age):\n    if age < 14:\n        return 4.5\n    elif age < 18:\n        return 6\n    else:\n        return 9\n' },
 
-            { titre: 'Cinéma : l’ordre des tests', type: 'prevoir',
-              consigne: doc('exercice 5, suite') + '<p>✍️ Prévois ce que renvoie l’appel.</p>',
+            { titre: 'B · Cinéma : l’ordre des tests', type: 'prevoir',
+              consigne: doc('question 6') + '<p>✍️ Prévois ce que renvoie l’appel.</p>',
               commun: TARIF_INVERSE, exemple: 'tarif(30)',
               variable: 'age', blocs: [['if', 'if age < 18'], ['elif', 'elif age < 14'], ['else', 'else']],
               scripts: [{ nom: 'Appel', appel: 'tarif(10)', attendu: 6, valeur: '10',
                           car: [{ cond: 'if age < 18', vraie: true, raison: '10 est plus petit que 18' }, { bloc: 'if' }] }] },
 
-            { titre: 'Trouver le bug : tester', type: 'question', etiquettesTexte: true,
-              consigne: doc('exercice 6') + '<p>✍️ Exécute le script, puis teste dans la console <code>groupe(7)</code>, <code>groupe(8)</code>, <code>groupe(10)</code>, <code>groupe(11)</code>, <code>groupe(12)</code>, <code>groupe(13)</code> et <code>groupe(14)</code>.</p>',
+            { titre: 'B · Trouver le bug : tester', type: 'question', etiquettesTexte: true,
+              consigne: doc('question 7') + '<p>✍️ Exécute le script, puis teste dans la console <code>groupe(7)</code>, <code>groupe(8)</code>, <code>groupe(10)</code>, <code>groupe(11)</code>, <code>groupe(12)</code>, <code>groupe(13)</code> et <code>groupe(14)</code>.</p>',
               code: GROUPE_BUG, exemple: 'groupe(9)',
               champs: ['Âges pour lesquels la fonction se trompe (sépare-les par ;)'], solution: ['10 ; 11'],
               verifierCase: function (k, v) {
@@ -870,23 +870,23 @@ def _console(ligne, n):
                   return 'Il n’y a que deux âges qui se trompent parmi ceux de la liste.';
               } },
 
-            { titre: 'Trouver le bug : corriger', type: 'code',
-              consigne: doc('exercice 6') + '<p>✍️ Corrige les deux erreurs, puis teste de nouveau aux âges frontières.</p>',
+            { titre: 'B · Trouver le bug : corriger', type: 'code',
+              consigne: doc('question 8') + '<p>✍️ Corrige les deux erreurs, puis teste de nouveau aux âges frontières.</p>',
               code: GROUPE_BUG, exemple: 'groupe(9)',
               solutionCode: 'def groupe(age):\n    if age < 8:\n        return "Trop jeune"\n    elif age < 10:\n        return "U8"\n    elif age < 12:\n        return "U10"\n    elif age < 14:\n        return "U12"\n    else:\n        return "Hors école"\n' },
 
-            { titre: 'Le plus grand des deux', type: 'code',
-              consigne: doc('exercice 7') + '<p>✍️ Écris le corps de <code>maximum(a, b)</code>, puis teste <code>maximum(5, 5)</code> et <code>maximum(-2, -5)</code>.</p>',
+            { titre: 'C · Le plus grand des deux', type: 'code',
+              consigne: doc('question 9') + '<p>✍️ Écris le corps de <code>maximum(a, b)</code>, puis teste <code>maximum(5, 5)</code> et <code>maximum(-2, -5)</code>.</p>',
               code: 'def maximum(a, b):\n    \n', exemple: 'maximum(10, 4)',
               solutionCode: 'def maximum(a, b):\n    if a > b:\n        return a\n    else:\n        return b\n' },
 
-            { titre: 'Page blanche : la mention au brevet', type: 'code',
-              consigne: doc('exercice 8') + '<p>✍️ Écris la fonction <code>mention(note)</code>, puis teste-la aux notes frontières.</p>',
+            { titre: 'C · Page blanche : la mention au brevet', type: 'code',
+              consigne: doc('question 10') + '<p>✍️ Écris la fonction <code>mention(note)</code>, puis teste-la aux notes frontières.</p>',
               code: '# Écris ici la fonction mention(note)\n', exemple: 'mention(15)',
               solutionCode: 'def mention(note):\n    if note >= 16:\n        return "Très bien"\n    elif note >= 14:\n        return "Bien"\n    elif note >= 12:\n        return "Assez bien"\n    elif note >= 10:\n        return "Passable"\n    else:\n        return "Insuffisant"\n' },
 
             { titre: 'Quiz final · 5 questions', type: 'quiz',
-              consigne: doc('quiz final') + '<p>✍️ Réponds à chaque question <b>sans exécuter</b>, puis valide : une <b>seule validation</b>.</p>',
+              consigne: doc('question 11') + '<p>✍️ Réponds à chaque question <b>sans exécuter</b>, puis valide : une <b>seule validation</b>.</p>',
               questions: [
                   { texte: 'Que renvoie l’appel <code>f(5)</code> ?', code: 'def f(x):\n    if x > 5:\n        return "A"\n    else:\n        return "B"\n',
                     choix: ['<code>"A"</code>', '<code>"B"</code>', 'une erreur', 'rien'], bonne: 1,
@@ -905,13 +905,13 @@ def _console(ligne, n):
                     explication: '4 &gt; 3 : x devient 5 ; le second <code>if</code> teste la nouvelle valeur, 5 &gt; 4 : x devient 10.' }
               ] },
 
-            { titre: 'Défi 1 : frais de port', type: 'code',
-              consigne: doc('exercice 9') + '<p>✍️ Écris la fonction <code>port(m)</code>, puis vérifie que <code>port(3)</code> renvoie 9 et que <code>port(8)</code> renvoie 16.</p>',
+            { titre: 'D · Défi 1 : frais de port', type: 'code',
+              consigne: doc('question 12') + '<p>✍️ Écris la fonction <code>port(m)</code>, puis vérifie que <code>port(3)</code> renvoie 9 et que <code>port(8)</code> renvoie 16.</p>',
               code: '# Écris ici la fonction port(m)\n', exemple: 'port(2)',
               solutionCode: 'def port(m):\n    if m <= 1:\n        return 5\n    elif m <= 5:\n        return 5 + 2 * (m - 1)\n    else:\n        return 13 + (m - 5)\n' },
 
-            { titre: 'Défi 2 : les antécédents', type: 'question',
-              consigne: doc('exercice 10') + '<p>✍️ Plusieurs solutions ? Sépare-les par un point-virgule, par exemple : <code>-2 ; 4.5</code></p>',
+            { titre: 'D · Défi 2 : les antécédents', type: 'question',
+              consigne: doc('question 13') + '<p>✍️ Plusieurs solutions ? Sépare-les par un point-virgule, par exemple : <code>-2 ; 4.5</code></p>',
               code: 'def f(x):\n    if x > 3:\n        return 2 * x\n    else:\n        return x + 10\n', exemple: 'f(0)',
               champs: ['f(x) = 14 pour x =', 'f(x) = 7 pour x ='], long: true, solution: ['7', '−3 ; 3,5'],
               verifierCase: function (k, v) {
