@@ -54,7 +54,7 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/tp-photo', groupe: 'TP Python · Photographie numérique', titre: 'Créer et modifier une image (10 étapes)', court: 'TP Photo', url: 'seconde/tp-photo.html', tp: true,
       codeAcces: '2a04e66a8ad28d6c60b6cd57d4d4b45e894397c1baeb56b20bbe306c107ee99d' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
     // TP1 Premiers pas (version interactive du TP Capytale) : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
-    { niveau: 'seconde', id: 'seconde/tp-premiers-pas', groupe: 'TP Python · Premiers pas : affectation et fonctions', titre: 'Variables, affectation, fonctions (20 étapes)', court: 'TP Premiers pas', url: 'seconde/tp-premiers-pas.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'], antiTriche: true },   // sans code d'accès
+    { niveau: 'seconde', id: 'seconde/tp-premiers-pas', groupe: 'TP Python · Premiers pas : affectation et fonctions', titre: 'Variables, affectation, fonctions (20 étapes)', court: 'TP Premiers pas', url: 'seconde/tp-premiers-pas.html', tp: true, vueProf: true, comptes: ['PROF-2NDE', '2H-TARTAGLIA'], antiTriche: true },   // sans code d'accès
     // TP3 Boucles, TP4 Pixels et TP5 Filtres : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
     // Codes d'accès : TP3 BOUCLE-327, TP4 PIXEL-482, TP5 FILTRE-519 (seule l'empreinte est dans le site)
     { niveau: 'seconde', id: 'seconde/tp-boucles', groupe: 'TP Python · Les boucles', titre: 'for, while, range (16 étapes)', court: 'TP Boucles', url: 'seconde/tp-boucles.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
