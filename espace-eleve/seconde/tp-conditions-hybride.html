@@ -1520,8 +1520,8 @@ def _console(ligne, n):
                         charge = true;      // reconstruction depuis les réponses gardées : on ne valide rien
                         if (rep[k][0]) apresPrevision(false);
                         charge = false;
-                        // mode professeure : « Développer » montre le chemin d'un élève qui s'est trompé (rien n'est enregistré)
-                        if (modeProf() && !rep[k][0]) {
+                        // version hybride : pas de « Développer », la page reste telle que l'élève la voit (même en mode professeure)
+                        if (false && modeProf() && !rep[k][0]) {
                             var bd = el('button', 'secondaire developper', '🔍 Développer (si l’élève se trompe)'); bd.type = 'button';
                             bd.onclick = function () {
                                 bd.remove();
@@ -1839,7 +1839,7 @@ def _console(ligne, n):
             var choix = el('div', 'choix-mode');
             choix.setAttribute('role', 'radiogroup'); choix.setAttribute('aria-label', 'Affichage du TP');
             choix.appendChild(el('span', 'aide', '👩‍🏫 Compte professeure :'));
-            [['prof', 'Mode professeure', 'solutions, « Développer », toutes les étapes ouvertes'], ['eleve', 'Mode élève', 'le TP exactement comme un élève le voit']].forEach(function (m) {
+            [['prof', 'Mode professeure', 'solutions, toutes les étapes ouvertes'], ['eleve', 'Mode élève', 'le TP exactement comme un élève le voit']].forEach(function (m) {
                 var l = el('label'), r = el('input'); r.type = 'radio'; r.name = 'tp-mode'; r.value = m[0];
                 r.checked = (m[0] === 'prof') === modeTest();
                 r.onchange = function () { try { localStorage.setItem('tp-mode', m[0]); } catch (x) {} location.reload(); };
