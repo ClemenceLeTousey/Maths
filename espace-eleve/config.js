@@ -215,9 +215,11 @@ window.INTERACTIF_BAREMES = {
         quiz: [7], quizSur: 5
     },
     'seconde/tp-conditions-v2': {
-        // A : lire et prévoir (4,5) · B : modifier (5,5) · C : créer (5) · quiz à part · D : défis (5)
-        //       A              B                          C       quiz  D
-        points: [1.5, 1.5, 1.5, 1.5, 1.5, 0.5, 1, 1,       2, 3,   0,    2.5, 2.5],
+        // A : lire et prévoir (6) · B : modifier (7) · C : créer (7) = 20 · quiz à part
+        // D : défis 1 et 2 en bonus (2,5 chacun, rattrapent une étape manquée ; note plafonnée à 20)
+        //       A          B                  C      quiz  D (bonus)
+        points: [2, 2, 2,   2, 2, 1, 1, 1,     3, 4,  0,    2.5, 2.5],
+        bonus: [12, 13],
         quiz: [11], quizSur: 5
     }
 };
