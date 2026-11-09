@@ -53,6 +53,9 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie11-j4', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 4 · bilan (à la maison)', court: 'S11 · J4', url: 'seconde/serie11.html?j=4', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/tp-photo', groupe: 'TP Python · Photographie numérique', titre: 'Créer et modifier une image (10 étapes)', court: 'TP Photo', url: 'seconde/tp-photo.html', tp: true,
       codeAcces: '2a04e66a8ad28d6c60b6cd57d4d4b45e894397c1baeb56b20bbe306c107ee99d' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
+    // TP1 Premiers pas (version interactive du TP Capytale) : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
+    { niveau: 'seconde', id: 'seconde/tp-premiers-pas', groupe: 'TP Python · Premiers pas : affectation et fonctions', titre: 'Variables, affectation, fonctions (20 étapes)', court: 'TP Premiers pas', url: 'seconde/tp-premiers-pas.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
+      codeAcces: '75d382b5084db2ef912609fd95dfeb6d0875cfecc64a489ec0bbf306dafd9301', antiTriche: true },
     // TP3 Boucles, TP4 Pixels et TP5 Filtres : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
     // Codes d'accès : TP3 BOUCLE-327, TP4 PIXEL-482, TP5 FILTRE-519 (seule l'empreinte est dans le site)
     { niveau: 'seconde', id: 'seconde/tp-boucles', groupe: 'TP Python · Les boucles', titre: 'for, while, range (16 étapes)', court: 'TP Boucles', url: 'seconde/tp-boucles.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
@@ -177,7 +180,8 @@ window.INTERACTIF_GROUPES = {
    pdf / corrige = TP sur papier ou Capytale (liens vers les PDF) ; aVenir: true = annoncé, pas encore ouvert.
    Un TP interactif absent de cette liste s'affiche à la fin. */
 window.INTERACTIF_TP_ORDRE = [
-    { niveau: 'seconde', nom: 'TP1 · Affectations et fonctions', texte: 'Premiers pas en Python avec Capytale', pdf: 'seconde/tp/tp1-sujet.pdf', corrige: 'seconde/tp/tp1-corrige.pdf' },
+    // TP1 : version interactive réservée à PROF-2NDE pour l'instant ; les élèves voient la fiche PDF (Capytale) de la même ligne
+    { niveau: 'seconde', nom: 'TP1 · Affectations et fonctions', id: 'seconde/tp-premiers-pas', texte: 'Premiers pas en Python avec Capytale', pdf: 'seconde/tp/tp1-sujet.pdf', corrige: 'seconde/tp/tp1-corrige.pdf' },
     { niveau: 'seconde', nom: 'TP2 · Les structures conditionnelles', id: 'seconde/tp-conditions-v2' },
     // id = TP interactif ; tant qu'il est réservé à PROF-2NDE, les élèves voient « sinon » (ancien TP) ou la fiche PDF
     { niveau: 'seconde', nom: 'TP3 · Les boucles en Python', id: 'seconde/tp-boucles', texte: 'for, range, while', pdf: 'seconde/tp/tp3-sujet.pdf', corrige: 'seconde/tp/corrige-a-venir.html' },
@@ -200,6 +204,7 @@ window.INTERACTIF_BAREMES = {
         bonus: [19, 20],
         quiz: [18], quizSur: 5
     },
+    'seconde/tp-premiers-pas': { nonNote: true },   // TP1 : rappels (Capytale déjà fait en classe), non noté
     'seconde/tp-boucles': { nonNote: true },   // TP3 : entraînement, non noté
     'seconde/tp-pixels': {
         // TP4 · A : lire et prévoir (6,5) · B : modifier (8) · C : créer (5,5) · quiz à part

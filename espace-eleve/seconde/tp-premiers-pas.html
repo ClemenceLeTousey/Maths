@@ -1,0 +1,2492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premiers pas en Python</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../../img/favicon-32.png">
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="apple-mobile-web-app-title" content="Maths Lebrun">
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../interactif.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+    <script src="../../site.js"></script>
+    <script src="../config.js"></script>
+    <script src="../expr.js"></script>
+    <script src="../moteur.js"></script>
+    <script src="../anti-triche.js"></script>
+    <style>
+        .progression { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; color: var(--muted); font-size: 0.9rem; }
+        .progression .barre { flex: 1; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+        .progression .barre i { display: block; height: 100%; background: var(--ok); border-radius: 4px; transition: width .4s; }
+        .py-etat { color: var(--muted); font-size: 0.85rem; margin: -8px 0 16px; }
+        /* progression et pastilles toujours visibles, juste sous la barre du site (hauteurs mesurées en JS) */
+        .barre-etapes { position: sticky; top: var(--haut-nav, 0px); z-index: 900; background: var(--bg); padding: 10px 0 8px; margin: 0 0 14px; border-bottom: 1px solid var(--line); }
+        .barre-etapes .progression { margin: 0 0 8px; }
+        .etape, .bloc-script, .zone-code, .encadre { scroll-margin-top: calc(var(--haut-nav, 0px) + var(--haut-barre, 0px) + 10px); }
+        .sommaire { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; }
+        @media (max-width: 640px) {
+            .sommaire { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+            .interactif .sommaire button { flex: 0 0 auto; }
+        }
+        .sommaire .aide { margin: 0 4px 0 0; font-size: 0.85rem; }
+        .interactif .sommaire button {
+            min-width: 2.2em; height: 2.2em; padding: 0 4px; border-radius: 50%; font-size: 0.85rem; font-weight: 600;
+            background: var(--surface); color: var(--text); border: 1px solid var(--line); cursor: pointer;
+        }
+        .interactif .sommaire button.fait { background: var(--ok); border-color: var(--ok); color: #fff; }
+        .interactif .sommaire button.courante { border: 2px solid var(--c-seconde); }
+        .interactif .sommaire button:disabled { opacity: .4; cursor: default; }
+        .interactif .sommaire button.acces-quiz { margin-left: auto; border-radius: 999px; padding: 0 14px; background: var(--c-seconde); border-color: var(--c-seconde); color: var(--badge-text); letter-spacing: .05em; }
+        .interactif .sommaire button.acces-quiz.fait { background: var(--ok); border-color: var(--ok); }
+
+        .etapes { display: flex; flex-direction: column; gap: 14px; }
+        .etape { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
+        .etape.courante { border-color: var(--c-seconde); box-shadow: 0 2px 12px rgba(47, 111, 223, .12); }
+        .etape-tete { display: flex; align-items: center; gap: 10px; }
+        .etape-tete h2 { font-size: 1.1rem; margin: 0; flex: 1; }
+        .etape-num {
+            display: inline-grid; place-items: center; min-width: 1.8em; height: 1.8em; border-radius: 50%;
+            background: var(--c-seconde); color: var(--badge-text); font-size: 0.85rem; font-weight: 600;
+        }
+        .etape.faite .etape-num { background: var(--ok); }
+        /* étape passée (bouton « Passer ») : gris, tant qu'elle n'est pas réussie */
+        .etape.passee .etape-num { background: var(--muted); }
+        .interactif .sommaire button.fait.passee { background: var(--muted); border-color: var(--muted); }
+        .zone-passer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); }
+        .zone-passer .aide { margin: 0; }
+        .interactif .zone-passer button { background: var(--surface); color: var(--text); border-color: var(--line); }
+        .interactif .etape-tete button.lien { font-size: 0.85rem; }
+        .etape.faite:not(.ouverte) .etape-corps { display: none; }
+        .etape-corps { margin-top: 10px; }
+        .etape-corps p { margin: 8px 0; }
+        .etape-corps ul { margin: 6px 0; padding-left: 22px; }
+        .etape-corps code { font-family: var(--f-mono); background: var(--bleu-doux); padding: 0 4px; border-radius: 4px; font-size: 0.92em; }
+        .etape-corps pre.code { font-family: var(--f-mono); font-size: 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 8px 0; overflow-x: auto; }
+        .encadre { border-left: 4px solid var(--c-seconde); background: var(--bleu-doux); border-radius: 0 8px 8px 0; padding: 8px 12px; margin: 10px 0; }
+        .encadre.astuce { border-left-color: var(--ok); }
+        .encadre.attention { border-left-color: var(--ko); }
+        /* « À retenir » : titre centré, phrases alignées à gauche et numérotées */
+        .encadre.bilan { text-align: left; }
+        .encadre.bilan > b:first-child { text-align: center; }
+        .encadre.bilan ol { margin: 4px 0 0; padding-left: 24px; }
+        .encadre.bilan li { margin: 3px 0; }
+        .encadre .lu { display: flex; justify-content: flex-end; align-items: center; gap: 6px; margin-top: 4px; font-size: 0.85rem; color: var(--muted); cursor: pointer; }
+        .encadre .lu input { margin: 0; cursor: pointer; }
+        .encadre.est-lu .lu { color: var(--ok); font-weight: 600; }
+        .encadre.a-cocher { outline: 2px solid var(--ko); outline-offset: 2px; }
+        .encadre.a-cocher .lu { color: var(--ko); font-weight: 600; }
+        /* titre du cadre seulement (le <b> placé directement dedans), pas les mots en gras des paragraphes */
+        .encadre > b:first-child { display: block; margin-bottom: 2px; }
+        .tableau { overflow-x: auto; margin: 8px 0; }
+        .tableau table { border-collapse: collapse; }
+        .tableau th, .tableau td { border: 1px solid var(--line); padding: 4px 10px; text-align: center; white-space: nowrap; }
+        .tableau th { background: var(--bleu-doux); text-align: left; }
+        .morceaux { display: flex; align-items: center; gap: 8px; margin: 10px 0; font-size: 1.05rem; }
+        .morceaux .accolade { display: flex; flex-direction: column; gap: 2px; border-left: 2px solid currentColor; border-radius: 10px 0 0 10px; padding: 2px 0 2px 10px; }
+
+        .editeur { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 10px; }
+        .editeur .CodeMirror { height: auto; font-family: var(--f-mono); font-size: 15px; background: var(--surface); color: var(--text); }
+        .editeur .CodeMirror-scroll { min-height: 4em; }
+        .editeur .CodeMirror-gutters { background: var(--bg); border-right: 1px solid var(--line); }
+        .editeur .CodeMirror-cursor { border-left-color: var(--text); }
+        .editeur .ligne-erreur { background: var(--ko-fond); }
+        :root[data-theme="dark"] .cm-s-default .cm-keyword { color: #c792ea; }
+        :root[data-theme="dark"] .cm-s-default .cm-string { color: #c3e88d; }
+        :root[data-theme="dark"] .cm-s-default .cm-number { color: #f78c6c; }
+        :root[data-theme="dark"] .cm-s-default .cm-comment { color: #7f8aa3; }
+        :root[data-theme="dark"] .cm-s-default .cm-def, :root[data-theme="dark"] .cm-s-default .cm-variable-2 { color: #82aaff; }
+        :root[data-theme="dark"] .cm-s-default .cm-builtin { color: #ffcb6b; }
+
+        .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+        .interactif .actions button.secondaire { background: var(--surface); color: var(--text); border-color: var(--line); }
+        /* boutons ▶ Exécuter : police de code et violet, pour les distinguer des boutons Valider (bleus) */
+        :root { --executer: #6d28d9; --executer-texte: #fff; }
+        :root[data-theme="dark"] { --executer: #a78bfa; --executer-texte: #1e1b4b; }
+        .interactif button.executer { font-family: var(--f-mono); font-variant-ligatures: none; background: var(--executer); border-color: var(--executer); color: var(--executer-texte); }
+        .interactif .actions button.stop { background: var(--ko); border-color: var(--ko); }
+        .interactif .actions button:disabled { opacity: .5; cursor: default; }
+        .actions .aide { margin: 0; }
+        .reponses { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 12px; }
+        .reponses label { display: flex; align-items: center; gap: 6px; }
+        .reponses label code { white-space: nowrap; }
+        .reponses input { width: 6em; font-family: var(--f-mono); }
+        .reponses input.long { width: 10em; }
+        /* cases où une réponse est attendue : fond bleu très léger (la ligne de console garde son fond, règle plus bas) */
+        .interactif input:not([type]), .interactif .pourquoi select { background: var(--bleu-doux); }
+        .reponses.une-par-une { flex-direction: column; align-items: stretch; gap: 8px; }
+        /* lignes « étiquette | case | Valider | ✓/✗ » alignées en colonnes */
+        .case-ligne { display: grid; grid-template-columns: minmax(13.5em, max-content) 12em auto 1fr; align-items: center; gap: 6px 10px; }
+        .case-ligne label { display: contents; }
+        .case-ligne input.long { width: 100%; box-sizing: border-box; }
+        .retour.case-retour { margin: 0; line-height: 1.3; }
+        .retour code.forme { font-family: var(--f-mono); color: var(--c-seconde); background: var(--bleu-doux); padding: 1px 6px; border-radius: 4px; font-variant-ligatures: none; }
+        @media (max-width: 640px) {
+            .case-ligne { grid-template-columns: 1fr auto; }
+            .case-ligne .retour.case-retour { grid-column: 1 / -1; }
+        }
+        /* ligne de prévision : texte suivi de la case, sans colonnes */
+        .case-ligne.prevision { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+        .case-ligne.prevision label { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+        .case-ligne.prevision input.long { width: 12em; }
+        .case-ligne.prevision .retour.case-retour { flex: 1 1 100%; }
+        .bloc-script { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 12px; }
+        .bloc-script h3 { font-size: 1rem; margin: 4px 0; }
+        .bloc-script pre.code { width: fit-content; min-width: 16em; max-width: 100%; }
+        .verif-script { margin-left: 14px; padding-left: 12px; border-left: 3px solid var(--ok); }
+        .verif-script .reponses { margin-top: 8px; }
+        .pourquoi { margin-top: 10px; }
+        .pourquoi p { margin: 6px 0; }
+        .pourquoi .case-ligne { margin: 6px 0; }
+        table.trace td { padding: 4px 6px; }
+        .coup-de-pouce { margin-top: 10px; }
+        .ampoule { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 10px; font-size: 0.92rem; }
+        .ampoule-logo { font-size: 1.5rem; line-height: 1; }
+        .coup-de-pouce ol { margin: 0 0 8px; padding: 8px 12px 8px 2em; background: var(--bleu-doux); border-radius: 8px; }
+        .coup-de-pouce li { margin: 4px 0; }
+        .coup-de-pouce pre { margin: 6px 0 0; font-family: var(--f-mono); }
+        .coup-de-pouce > button, .coup-de-pouce .aide-repliee > button { margin: 0 8px 8px 0; }
+        .coup-de-pouce .aide-repliee > summary { cursor: pointer; color: var(--muted); margin-bottom: 8px; }
+        .coup-de-pouce .algo, .coup-de-pouce .puzzle { margin: 0 0 10px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+        .coup-de-pouce .algo-titre { margin: 0 0 6px; font-weight: 600; }
+        .coup-de-pouce .algo-ligne { font-family: var(--f-mono); line-height: 1.6; }
+        .puzzle-lignes { list-style: none; margin: 0 0 8px; padding: 0; }
+        .puzzle-lignes li { display: flex; align-items: center; gap: 8px; padding: 3px 6px; margin: 3px 0; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); }
+        .puzzle-lignes li.juste { border-color: var(--ok); background: var(--ok-fond); }
+        .puzzle-lignes li.fausse { border-color: var(--ko); background: var(--ko-fond); }
+        .puzzle-outils { display: inline-flex; gap: 2px; flex-shrink: 0; }
+        .puzzle-outils button { padding: 0 7px; min-width: 1.9em; font-size: 0.9rem; }
+        .puzzle-lignes code.etiquette { white-space: pre; font-family: var(--f-mono); padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+        .puzzle-lignes code.etiquette:focus-visible { outline: 2px solid var(--c-seconde); outline-offset: 1px; }
+        .puzzle-lignes li.saisie { position: relative; z-index: 2; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+        .puzzle-lignes li.saisie code.etiquette { cursor: grabbing; }
+        table.trace tr.tour th { background: var(--bleu-doux); text-align: center; }
+        table.trace th.num-tour { font-family: var(--f-mono); min-width: 3.6em; }
+        table.trace th.num-tour.sortie { font-family: inherit; font-style: italic; color: var(--muted); }
+        table.trace td.vide { background: var(--bg); }
+        table.trace th small { display: block; font-weight: normal; font-size: 0.75rem; color: var(--muted); line-height: 1.2; }
+        table.trace td.donnee { font-family: var(--f-mono); color: var(--muted); }
+        table.trace select { font: inherit; padding: 2px 4px; border: 1px solid var(--line); border-radius: 6px; background: var(--bleu-doux); color: var(--text); }
+        table.trace select.juste { outline: 2px solid var(--ok); } table.trace select.fausse { outline: 2px solid var(--ko); }
+        .suivi .case-retour { display: block; margin-top: 6px; }
+        table.trace input, .case-ligne input.tour { width: 3.6em; text-align: center; font-family: var(--f-mono); }
+        table.trace input.juste, .case-ligne input.juste { outline: 2px solid var(--ok); background: var(--ok-fond); }
+        table.trace input.fausse, .case-ligne input.fausse { outline: 2px solid var(--ko); background: var(--ko-fond); }
+        .pourquoi .pq-titre { color: var(--muted); font-weight: 600; margin: 8px 0 2px; }
+        .pourquoi .case-ligne .retour.case-retour { grid-column: 1 / -1; }
+        pre.code.surligne span.l { display: block; padding: 0 6px; }
+        pre.code.surligne span.boucle { background: rgba(255, 212, 59, .35); box-shadow: inset 3px 0 0 #f59f00; }
+        .pourquoi select { font: inherit; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--text); }
+        .qcm { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+        .qcm label { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+        .qcm label:has(input:checked) { border-color: var(--c-seconde); background: var(--bleu-doux); }
+        .qcm input { margin-top: 4px; }
+        .qcm button { align-self: flex-start; }
+        .quiz { display: flex; flex-direction: column; gap: 6px; }
+        .quiz-q { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+        .quiz-q p { margin: 4px 0; }
+        .quiz-q label { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; max-width: 36em; }
+        .quiz-q label:has(input:checked) { border-color: var(--c-seconde); background: var(--bleu-doux); }
+        .quiz-q input { margin-top: 4px; }
+        .quiz > button { align-self: flex-start; margin-top: 8px; }
+        .quiz-bilan { display: flex; align-items: center; gap: 14px; border: 2px solid var(--ko); background: var(--ko-fond); border-radius: 10px; padding: 10px 16px; margin-bottom: 6px; max-width: 36em; }
+        .quiz-bilan.bien { border-color: var(--c-seconde); background: var(--bleu-doux); }
+        .quiz-bilan.parfait { border-color: var(--ok); background: var(--ok-fond, var(--bleu-doux)); }
+        .quiz-bilan-score { font-size: 1.9em; font-weight: 700; white-space: nowrap; }
+
+        .sortie:empty { display: none; }
+        .sortie { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--bg); }
+        .sortie pre, .console pre { margin: 0; font-family: var(--f-mono); font-size: 14px; white-space: pre-wrap; word-break: break-word; }
+        .sortie pre.err, .console pre.err { color: var(--ko); }
+        main.interactif { max-width: 1100px; }
+        /* JetBrains Mono afficherait != <= >= sous forme de ligatures ≠ ≤ ≥ : on montre les vrais caractères à taper */
+        .interactif code, .interactif pre, .interactif input, .editeur .CodeMirror, .console { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+        /* script à gauche, console à droite (comme dans Capytale) ; l'une sous l'autre sur petit écran */
+        .duo.avec-console { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 12px; align-items: stretch; }
+        .duo.avec-console .console { display: flex; flex-direction: column; min-height: 12em; }
+        .duo.avec-console .console-histo { flex: 0 1 auto; max-height: 26em; }
+        .console-histo { padding-top: 6px; }
+        @media (max-width: 760px) {
+            .duo.avec-console { grid-template-columns: 1fr; }
+            .duo.avec-console .console { min-height: 0; }
+        }
+        .console { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-family: var(--f-mono); font-size: 14px; }
+        .console-titre { font-family: var(--f-texte); font-size: 0.8rem; color: var(--muted); padding: 4px 12px 0; }
+        .console-histo { max-height: 14em; overflow-y: auto; padding: 0 12px; }
+        .console pre.sep { color: var(--muted); }
+        .console-ligne { display: flex; align-items: center; gap: 6px; padding: 4px 12px 6px; }
+        .console-ligne { position: relative; }
+        .console-ligne span { color: var(--muted); }
+        .console-ligne .indice-console { position: absolute; left: 3.4em; pointer-events: none; font-style: italic; animation: clignote 1.6s ease-in-out infinite; }
+        .console-ligne .indice-console[hidden] { display: none; }
+        @keyframes clignote { 0%, 100% { opacity: .75; } 50% { opacity: .15; } }
+        @media (prefers-reduced-motion: reduce) { .console-ligne .indice-console { animation: none; opacity: .6; } }
+        .interactif .console-ligne input { flex: 1; min-width: 0; font-family: var(--f-mono); font-size: 14px; border: none; background: transparent; color: var(--text); padding: 2px 0; outline: none; box-shadow: none; }
+        .retour { font-weight: 600; margin-top: 10px; }
+        .retour:empty { display: none; }
+        .retour.ok { color: var(--ok); }
+        .retour.ko { color: var(--ko); }
+        .fin { text-align: center; font-size: 1.1rem; }
+        .solution-prof { border: 2px dashed var(--ok); border-radius: 10px; padding: 8px 14px; margin: 14px 0 6px; background: var(--surface); }
+        .solution-prof ul, .solution-prof ol { margin: 6px 0; padding-left: 22px; }
+        .solution-prof li { margin: 3px 0; }
+        .interactif button.developper { margin: 4px 0 8px; }
+        .vue-prof { background: var(--bleu-doux); border: 2px solid var(--c-seconde); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; }
+        .choix-mode { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 0 0 8px; padding: 4px 10px; border: 1px dashed var(--c-seconde); border-radius: 8px; font-size: 0.9rem; }
+        .choix-mode .aide { margin: 0; }
+        .interactif .etape-tete button.reinit { font-size: 0.8rem; color: var(--muted); }
+        .choix-mode label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+        .calc-bouton { position: fixed; right: 16px; bottom: 16px; z-index: 950; width: 48px; height: 48px; border-radius: 50%; font-size: 1.4rem; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 2px 10px rgba(0,0,0,.18); cursor: pointer; }
+        .calc-panneau { position: fixed; right: 16px; bottom: 74px; z-index: 950; width: min(280px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.25); padding: 10px 12px 8px; outline: none; }
+        .calc-panneau[hidden] { display: none; }
+        .calc-panneau .calc-fermer { background: none; border: none; color: var(--muted); font-size: 1rem; cursor: pointer; padding: 2px 6px; }
+        .calc-tete { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .calc-ecran { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; text-align: right; font-family: var(--f-mono); font-variant-ligatures: none; }
+        .calc-histo { color: var(--muted); font-size: 0.8rem; min-height: 1.2em; }
+        .calc-expr { font-size: 1.25rem; min-height: 1.9em; line-height: 1.9; overflow-x: auto; white-space: nowrap; }
+        .calc-res { font-size: 1.35rem; font-weight: 700; min-height: 1.5em; color: var(--c-seconde); }
+        .calc-vide { color: var(--muted); }
+        .calc-exp { font-size: 0.7em; vertical-align: 0.9em; padding: 0 2px; }
+        .calc-exp.actif { outline: 1.5px dashed var(--c-seconde); outline-offset: 1px; border-radius: 3px; }
+        .calc-exp.vide { display: inline-block; min-width: 0.9em; }
+        .calc-curseur { display: inline-block; width: 2px; height: 1.1em; background: var(--text); vertical-align: -0.15em; margin-left: 1px; animation: clignote 1.2s steps(1) infinite; }
+        .calc-touches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+        .interactif ~ .calc-panneau .calc-t, .calc-panneau .calc-t { height: 40px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 1.05rem; font-family: var(--f-mono); cursor: pointer; padding: 0; }
+        .calc-panneau .calc-t:hover { background: var(--bleu-doux); }
+        .calc-panneau .calc-t.op { color: var(--c-seconde); font-weight: 700; }
+        .calc-panneau .calc-t.fn { background: var(--bg); }
+        .calc-panneau .calc-t.egal { grid-column: span 3; background: var(--c-seconde); border-color: var(--c-seconde); color: var(--badge-text); font-weight: 700; }
+        .calc-panneau .calc-t:disabled { opacity: .35; cursor: default; }
+        .calc-panneau .aide { margin: 6px 0 0; font-size: 0.75rem; text-align: center; }
+        .calc-panneau kbd { font-family: var(--f-mono); font-size: 0.9em; border: 1px solid var(--line); border-radius: 3px; padding: 0 3px; }
+        /* blocs Scratch (dessin simplifié) */
+        .duo-scratch { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 24px; margin: 6px 0; }
+        .scratch { display: inline-flex; flex-direction: column; gap: 2px; margin: 8px 0; font-size: 0.9rem; }
+        .scratch .sb { color: #fff; padding: 6px 12px; border-radius: 6px; width: fit-content; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+        .scratch .sb-def { background: #ff6680; border-radius: 16px 16px 6px 6px; padding-top: 10px; }
+        .scratch .sb-dire { background: #9966ff; }
+        .scratch .sb-mettre { background: #ff8c1a; }
+        .scratch .sb-def ~ .sb { margin-left: 10px; }
+        .scratch .sb-op { background: #59c059; border-radius: 999px; padding: 2px 8px; display: inline-flex; align-items: center; gap: 4px; }
+        .scratch .sb-param { background: #ff6680; border: 1px solid rgba(255,255,255,.7); border-radius: 999px; padding: 0 8px; }
+        .scratch .sb-var { background: #ff8c1a; border: 1px solid rgba(255,255,255,.7); border-radius: 999px; padding: 0 8px; }
+        .scratch .sb-num { background: #fff; color: #333; border-radius: 999px; padding: 0 8px; }
+        .scratch .sb-menu { background: rgba(0,0,0,.12); border-radius: 4px; padding: 0 6px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><span class="logo-ligne"><button type="button" data-effet="ecrire" title="Réécrire le titre"></button><button type="button" data-effet="matrix" title="Mode Matrix"></button><button type="button" data-effet="futur" title="Mode BTTF (Back to the Future)"></button><button type="button" data-effet="halloween" title="Mode Halloween"></button></span><a href="../../index.html">Année 2026-2027 - Lycée Lebrun</a></div>
+        <ul class="nav-links">
+            <li><a href="../../index.html">Accueil</a></li>
+            <li><a href="../index.html">Espace élève</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>Premiers pas en Python</h1>
+        <p>TP Algorithmique n°1 · affectation et fonctions</p>
+    </header>
+
+    <main class="interactif">
+        <div id="bandeau"></div>
+        <div class="barre-etapes" id="barre-etapes">
+            <div class="progression"><span id="progres-texte"></span><div class="barre"><i id="progres-barre"></i></div></div>
+            <nav class="sommaire" id="sommaire" aria-label="Étapes du TP"></nav>
+        </div>
+        <p class="py-etat" id="py-etat">Chargement de Python… (quelques secondes la première fois)</p>
+        <div class="etapes" id="etapes"></div>
+    </main>
+
+    <footer>
+        <style>.lic-court{display:none}@media (max-width:600px){.lic-long{display:none}.lic-court{display:inline}}</style><p><span class="lic-long">Hébergé avec GitHub Pages. </span>&copy; 2026 Clémence Le Tousey<br><span class="lic-long">Documents sous licence </span><span class="lic-court">Licence </span><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a><span class="lic-long"> : réutilisation libre en citant l'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.</span></p>
+    </footer>
+
+<script type="text/x-python" id="py-aide">
+import sys, io, json, traceback, re, inspect, unicodedata
+
+
+class Stop(Exception):
+    pass
+
+
+_espaces = {}
+
+
+def _sans_accent(t):
+    return "".join(c for c in unicodedata.normalize("NFD", t) if unicodedata.category(c) != "Mn")
+
+
+def _egal(r, a):
+    if isinstance(r, bool) or isinstance(a, bool):
+        return type(r) == type(a) and r == a
+    if isinstance(r, (int, float)) and isinstance(a, (int, float)):
+        return abs(r - a) < 1e-9
+    return r == a
+
+
+def _fonction(ns, nom, nb):
+    f = ns.get(nom)
+    if not callable(f):
+        raise Stop(f"La fonction {nom} n'est pas définie : vérifie la ligne def {nom}(...): (orthographe, majuscules).")
+    try:
+        n = len(inspect.signature(f).parameters)
+    except (TypeError, ValueError):
+        n = nb
+    if n != nb:
+        s = "s" if nb > 1 else ""
+        raise Stop(f"La fonction {nom} doit avoir {nb} paramètre{s}, la tienne en a {n}.")
+    return f
+
+
+def _verifier(ns, src, nom, nb, cas, aide=None):
+    f = _fonction(ns, nom, nb)
+    for c in cas:
+        args, attendu = c[0], c[1]
+        conseil = c[2] if len(c) > 2 else aide
+        appel = f"{nom}({', '.join(repr(a) for a in args)})"
+        vieux = sys.stdout
+        sys.stdout = io.StringIO()
+        try:
+            r = f(*args)
+        except Exception as e:
+            raise Stop(f"{appel} provoque une erreur : {type(e).__name__} : {e}")
+        finally:
+            sys.stdout = vieux
+        if r is None:
+            raise Stop(f"{appel} ne renvoie rien : la fonction doit renvoyer son résultat avec return (et pas print).")
+        if not _egal(r, attendu):
+            m = f"{appel} renvoie {r!r} au lieu de {attendu!r}."
+            if isinstance(attendu, str) and isinstance(r, str) and _sans_accent(r).lower().strip() == _sans_accent(attendu).lower():
+                m += " Attention à l'orthographe exacte (majuscules, accents, espaces)."
+            elif isinstance(attendu, (int, float)) and isinstance(r, str):
+                m += " Un nombre s'écrit sans guillemets."
+            elif isinstance(attendu, str) and not isinstance(r, str):
+                m += " Un texte s'écrit entre guillemets."
+            elif conseil:
+                m += " " + conseil
+            return m
+
+
+def _lignes(out):
+    return [l.strip() for l in out.split("\n") if l.strip()]
+
+
+def _avec(src, mot, msg):
+    if not re.search(r"\b" + mot + r"\b", src):
+        raise Stop(msg)
+
+
+# Étape 4 · échanger x et y avec une troisième variable z
+def _e_echange(ns, src, out):
+    if not re.search(r"^\s*x\s*=\s*4\s*$", src, re.M) or not re.search(r"^\s*y\s*=\s*7\s*$", src, re.M):
+        return "Garde les deux premières lignes, x = 4 et y = 7 : on corrige le script, on ne change pas les valeurs de départ."
+    if re.search(r"^\s*x\s*,\s*y\s*=", src, re.M) or re.search(r"^\s*y\s*,\s*x\s*=", src, re.M):
+        return "L'affectation simultanée, ce sera pour l'étape suivante ! Ici, utilise une troisième variable z."
+    _avec(src, "z", "Utilise une troisième variable z pour mettre de côté la valeur de x.")
+    l = _lignes(out)
+    if l == ["7", "4"] and ns.get("x") == 7 and ns.get("y") == 4:
+        return None
+    if ns.get("x") == 7 and ns.get("y") == 7:
+        return "x et y valent encore 7 toutes les deux : mets de côté la valeur de x dans z AVANT d'écrire x = y."
+    if ns.get("x") == 4 and ns.get("y") == 4:
+        return "x et y valent 4 toutes les deux : x doit recevoir la valeur de y, et y l'ancienne valeur de x, gardée dans z."
+    if ns.get("x") == 7 and ns.get("y") == 4:
+        return "Les valeurs sont bien échangées, mais le script doit afficher x puis y avec les deux print du départ."
+    return "À la fin, x doit valoir 7 et y doit valoir 4 : le script affiche 7 puis 4."
+
+
+# Étape 7 · chasse aux erreurs : triple(x)
+def _e_triple(ns, src, out):
+    return _verifier(ns, src, "triple", 1, [((5,), 15), ((0,), 0), ((-2,), -6), ((2.5,), 7.5)],
+                     "triple(x) doit renvoyer 3 * x.")
+
+
+# Étape 9 · perimetre_carre(c)
+def _e_perimetre(ns, src, out):
+    return _verifier(ns, src, "perimetre_carre", 1, [((7,), 28), ((2.5,), 10.0), ((0,), 0), ((1,), 4)],
+                     "Le périmètre d'un carré de côté c est 4 × c, comme dans le bloc Scratch.")
+
+
+# Étape 10 · aire_rectangle(L, l)
+def _e_aire(ns, src, out):
+    return _verifier(ns, src, "aire_rectangle", 2, [((5, 3), 15), ((2.5, 4), 10.0), ((1, 1), 1), ((10, 0.5), 5.0)],
+                     "L'aire d'un rectangle est longueur × largeur : L * l.")
+
+
+# Étape 11 · programme(x) avec une variable resultat
+def _e_programme(ns, src, out):
+    _avec(src, "resultat", "Utilise une variable resultat, comme dans le bloc Scratch.")
+    return _verifier(ns, src, "programme", 1, [
+        ((4,), 14, "Respecte l'ordre du bloc Scratch : d'abord ajouter 3, puis multiplier le résultat par 2. "
+                   "Sans parenthèses, x + 3 * 2 calcule x + 6."),
+        ((-3,), 0), ((0,), 6), ((1.5,), 9.0)],
+        "Ajoute 3 à x, puis multiplie le résultat par 2.")
+
+
+# Étape 13 · temps(d, v)
+def _e_temps(ns, src, out):
+    return _verifier(ns, src, "temps", 2, [
+        ((300, 80), 3.75, "Le temps, c'est la distance divisée par la vitesse : d / v."),
+        ((100, 50), 2.0), ((90, 60), 1.5), ((45, 90), 0.5)],
+        "Le temps, c'est la distance divisée par la vitesse : d / v.")
+
+
+# Étape 15 · celsius(F)
+def _e_celsius(ns, src, out):
+    return _verifier(ns, src, "celsius", 1, [
+        ((212,), 100.0, "Les parenthèses sont indispensables : (F - 32) / 1.8. Sans elles, Python divise d'abord 32 par 1.8."),
+        ((32,), 0.0), ((-40,), -40.0), ((50,), 10.0)],
+        "Résous F = 1,8 × C + 32 : on retire 32, puis on divise par 1,8.")
+
+
+# Étape 16 · le nouveau loyer
+def _e_loyer(ns, src, out):
+    m = re.search(r"^\s*nouveau_loyer\s*=(.*)$", src, re.M)
+    if not m:
+        return "Garde la ligne nouveau_loyer = ... et remplace seulement les pointillés."
+    if not re.search(r"\btaux\b", m.group(1)) or not re.search(r"\bloyer\b", m.group(1)):
+        return "Utilise les variables loyer et taux dans le calcul : le script doit marcher pour n'importe quel loyer et n'importe quel taux."
+    l = _lignes(out)
+    if l == ["525.0"]:
+        return None
+    if l == ["500.05"]:
+        return "Il manque des parenthèses : loyer * 1 + taux / 100 calcule 500 + 0,05. Écris loyer * (1 + taux / 100)."
+    if l == ["25.0"]:
+        return "25 €, c'est le montant de la hausse. Le nouveau loyer, c'est l'ancien multiplié par CM = 1 + taux / 100."
+    return "Le nouveau loyer s'obtient en multipliant le loyer par le coefficient multiplicateur CM = 1 + taux / 100."
+
+
+# Étape 17 · solde(prix, remise)
+def _e_solde(ns, src, out):
+    return _verifier(ns, src, "solde", 2, [
+        ((80, 25), 60.0, "Pour une baisse de remise %, on multiplie le prix par CM = 1 - remise / 100 (avec les parenthèses)."),
+        ((49.90, 30), 34.93), ((100, 0), 100.0), ((50, 100), 0.0)],
+        "Prix après remise : prix * (1 - remise / 100).")
+
+
+# Étape 20 · défi : mystere2 renvoie toujours 20
+def _e_mystere2(ns, src, out):
+    if src.count("**") < 2:
+        raise Stop("Garde la forme (x + a) ** 2 - (x + b) ** 2 - c * x, avec des nombres à la place de a, b et c.")
+    return _verifier(ns, src, "mystere2", 1, [((x,), 20) for x in [0, 1, -3, 7.5, 100, -12]],
+                     "Développe (x + a)² − (x + b)² − c x : on obtient (2a − 2b − c) x + a² − b². "
+                     "Il faut que les x disparaissent (c = 2a − 2b) et que a² − b² = 20.")
+
+
+_ETAPES = {4: _e_echange, 7: _e_triple, 9: _e_perimetre, 10: _e_aire, 11: _e_programme,
+           13: _e_temps, 15: _e_celsius, 16: _e_loyer, 17: _e_solde, 20: _e_mystere2}
+
+
+def _erreur(e, src):
+    if isinstance(e, SyntaxError):
+        ligne, texte = e.lineno, f"{type(e).__name__} : {e.msg}"
+    else:
+        tb = [f for f in traceback.extract_tb(e.__traceback__) if f.filename == "<programme>"]
+        ligne = tb[-1].lineno if tb else None
+        texte = "".join(traceback.format_exception_only(type(e), e)).strip()
+    if "..." in src and (isinstance(e, TypeError) or "ellipsis" in texte.lower()):
+        texte += "\n→ Il reste des pointillés ... à remplacer dans ton programme."
+    elif isinstance(e, SyntaxError) and "decimal literal" in texte:
+        texte += "\n→ La multiplication s'écrit toujours avec * : 3 * x, et non 3x."
+    elif isinstance(e, IndentationError):
+        texte += "\n→ Vérifie le décalage (indentation) des lignes : 4 espaces sous def (et sous for, while, if, else)."
+    elif isinstance(e, SyntaxError) and "'=='" in texte:
+        texte += "\n→ Pour tester une égalité, on écrit == ; le simple = sert à affecter."
+    elif isinstance(e, SyntaxError) and "':'" in texte:
+        texte += "\n→ Il manque sans doute les deux-points : à la fin de la ligne for, while, if, else ou def."
+    elif isinstance(e, NameError):
+        texte += "\n→ Vérifie l'orthographe des noms (majuscules comprises), et qu'une variable a une valeur avant d'être utilisée."
+    elif isinstance(e, KeyboardInterrupt):
+        texte = "Programme arrêté."
+    return ligne, texte
+
+
+def _executer(src, n, verif):
+    vieux, sortie = sys.stdout, io.StringIO()
+    sys.stdout = sortie
+    ns = {"__name__": "__main__"}
+    _espaces[n] = ns
+    res = {"err": None, "ligne": None, "ok": None, "msg": None}
+    try:
+        exec(compile(src, "<programme>", "exec"), ns)
+    except BaseException as e:
+        res["ligne"], res["err"] = _erreur(e, src)
+    finally:
+        sys.stdout = vieux
+    res["out"] = sortie.getvalue()[:4000]
+    if res["err"] is None and verif and n in _ETAPES:
+        try:
+            if "..." in src:
+                raise Stop("Il reste des pointillés ... à remplacer dans ton programme.")
+            m = _ETAPES[n](ns, src, res["out"])
+        except Stop as e:
+            m = str(e)
+        if isinstance(m, tuple):   # message + tableau de suivi
+            m, res["tableau"] = m
+        res["ok"], res["msg"] = m is None, m
+    return json.dumps(res)
+
+
+def _console(ligne, n):
+    ns = _espaces.setdefault(n, {"__name__": "__main__"})
+    vieux, sortie = sys.stdout, io.StringIO()
+    sys.stdout = sortie
+    res = {"err": None}
+    try:
+        try:
+            code, expr = compile(ligne, "<console>", "eval"), True
+        except SyntaxError:
+            code, expr = compile(ligne, "<console>", "exec"), False
+        if expr:
+            v = eval(code, ns)
+            if v is not None:
+                print(repr(v))
+        else:
+            exec(code, ns)
+    except BaseException as e:
+        res["err"] = "".join(traceback.format_exception_only(type(e), e)).strip()
+        if isinstance(e, NameError):
+            res["err"] += "\n→ As-tu exécuté le programme (▶) ? Vérifie aussi l'orthographe."
+    finally:
+        sys.stdout = vieux
+    res["out"] = sortie.getvalue()[:4000]
+    return json.dumps(res)
+</script>
+
+    <script>
+    (function () {
+        'use strict';
+        var ID = 'seconde/tp-premiers-pas';
+        var PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/';
+
+        /* ---------- Code d'accès (codeAcces dans config.js) : sans le code, le TP reste fermé.
+           Pas de code demandé au compte PROF-2NDE ni dans la vue professeure. ---------- */
+        var FICHE = (window.INTERACTIF_CATALOGUE || []).filter(function (x) { return x.id === ID; })[0];
+        if (FICHE && FICHE.codeAcces && !/[?&]vue-eleve=/.test(location.search)) {
+            var ses = Interactif.session(), ouvert = false;
+            try { ouvert = localStorage.getItem('tp-acces:' + ID) === FICHE.codeAcces; } catch (x) {}
+            // compte PROF-2NDE en « mode élève » : le code est demandé, comme à un élève
+            var modeEleve = false; try { modeEleve = localStorage.getItem('tp-mode') === 'eleve'; } catch (x) {}
+            if (!ouvert && !(ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE' && !modeEleve)) {
+                document.getElementById('barre-etapes').hidden = true;
+                document.getElementById('py-etat').hidden = true;
+                var zv = document.getElementById('etapes');
+                zv.innerHTML = '<section class="etape courante"><div class="etape-tete"><span class="etape-num">🔒</span><h2>TP verrouillé</h2></div>' +
+                    '<div class="etape-corps"><p>Ce TP s’ouvre avec le <b>code d’accès</b> donné en classe.</p>' +
+                    '<form class="reponses" id="f-code"><label>Code d’accès <input class="long" id="code-tp" autocomplete="off" spellcheck="false" autocapitalize="off"></label>' +
+                    '<button type="submit">Ouvrir le TP</button></form><p class="retour" id="code-retour"></p></div></section>';
+                if (ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE') {   // mode élève du compte professeure : retour possible
+                    var bp = document.createElement('button'); bp.type = 'button'; bp.className = 'secondaire';
+                    bp.textContent = '👩‍🏫 Revenir au mode professeure';
+                    bp.onclick = function () { try { localStorage.setItem('tp-mode', 'prof'); } catch (x) {} location.reload(); };
+                    zv.querySelector('.etape-corps').appendChild(bp);
+                }
+                document.getElementById('f-code').onsubmit = function (ev) {
+                    ev.preventDefault();
+                    var t = document.getElementById('code-tp').value.trim();   // casse et tiret comptent
+                    crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function (b) {
+                        var h = Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+                        var r = document.getElementById('code-retour');
+                        if (h !== FICHE.codeAcces) { r.className = 'retour ko'; r.textContent = '✗ Code incorrect : les majuscules et le tiret comptent.'; return; }
+                        try { localStorage.setItem('tp-acces:' + ID, h); } catch (x) {}
+                        location.reload();
+                    });
+                };
+                // connexion possible (compte PROF-2NDE : pas de code)
+                Interactif.bandeau(document.getElementById('bandeau'), function () { location.reload(); });
+                return;
+            }
+        }
+
+        /* ---------- Outils pour les consignes et la vérification des réponses ---------- */
+        // chaque encadré se termine par une case « J'ai lu » (état gardé sur l'appareil, voir brancherLus)
+        var CASE_LU = '<label class="lu"><input type="checkbox"> J’ai lu</label>';
+        function encadre(classe, titre, corps) { return '<div class="encadre ' + classe + '"><b>' + titre + '</b>' + corps + CASE_LU + '</div>'; }
+        function py(code) { return '<pre class="code">' + esc(code) + '</pre>'; }
+        // script dont les lignes a à b (la boucle) sont surlignées
+        function pySurligne(code, a, b) {
+            return '<pre class="code surligne">' + String(code).replace(/\n$/, '').split('\n').map(function (l, i) {
+                return '<span class="' + (i + 1 >= a && i + 1 <= b ? 'l boucle' : 'l') + '">' + (esc(l) || ' ') + '</span>';
+            }).join('') + '</pre>';
+        }
+        function sansAccent(t) { return t.normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+        // texte : sans majuscules, accents, guillemets ni espaces superflus
+        function txt(s) { return sansAccent(String(s).toLowerCase()).replace(/["'«»“”‘’]/g, '').replace(/\s+/g, ' ').trim(); }
+        function num(s) {
+            var t = String(s).replace(/\s/g, '').replace(',', '.').replace('−', '-');
+            return /^[-+]?(\d+\.?\d*|\.\d+)$/.test(t) ? Number(t) : NaN;
+        }
+
+        /* Réponse numérique écrite sous forme de calcul (2^10, 2**10, 512×2, 1+2+3…) : on l'évalue.
+           Bonne valeur → on demande la forme la plus simple, sans compter d'erreur pour une prévision. */
+        function evalExpr(v) {
+            var t = String(v).replace(/\s/g, '').replace(/−/g, '-').replace(/[×x·]/g, '*').replace(/÷/g, '/').replace(/\^/g, '**').replace(/(\d),(\d)/g, '$1.$2');
+            if (!/^[\d+\-*/().]+$/.test(t) || !/\d/.test(t)) return NaN;
+            try { var r = Function('"use strict"; return (' + t + ');')(); return typeof r === 'number' && isFinite(r) ? r : NaN; } catch (e) { return NaN; }
+        }
+        var FORME_SIMPLE = 'C’est la bonne valeur, mais on attend le résultat sous sa forme la plus simple : un seul nombre, sans calcul (par exemple 8 et non 2^3).';
+        function formeNonSimple(v, a) { return typeof a === 'number' && isNaN(num(v)) && Math.abs(evalExpr(v) - a) < 1e-6; }
+        function liste(s) {
+            return String(s).split(/;|\bet\b/).map(function (x) { return x.trim(); }).filter(Boolean).map(num);
+        }
+        // vérification d'une case avec e.attendus (nombres ou textes) et e.aides (indices case par case)
+        function controleCase(k, v, e) {
+            var a = e.attendus[k];
+            var ok = typeof a === 'number' ? Math.abs(num(v) - a) < 1e-6 : txt(v) === txt(a);
+            if (ok) return null;
+            if (formeNonSimple(v, a)) return FORME_SIMPLE;
+            if (typeof a === 'number' && isNaN(num(v))) return 'Écris un nombre (avec un point ou une virgule).';
+            return (e.aides && e.aides[k]) || 'Ce n’est pas ça. Vérifie avec la console.';
+        }
+
+        // message d'aide : \n = retour à la ligne, `…` = code (en bleu)
+        function miseEnForme(m) { return esc(m).replace(/\n/g, '<br>').replace(/`([^`]+)`/g, '<code class="forme">$1</code>'); }
+
+        // une ligne « étiquette [case] Valider ✓/✗ » ; apres(v, ok) à chaque validation ; init(ok) au chargement
+        function ligneCase(parent, etiquette, valeur, verif, apres, init, afficherEtat, garde) {
+            var f = el('form', 'case-ligne');
+            var l = el('label', null, '<span>' + etiquette + '</span>');   // étiquette = une seule colonne de la grille
+            var i = el('input'); i.autocomplete = 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', 'off');
+            i.className = 'long'; i.value = valeur || '';
+            l.appendChild(i); f.appendChild(l);
+            var b = el('button', null, 'Valider'); b.type = 'submit'; f.appendChild(b);
+            var r = el('span', 'retour case-retour'); f.appendChild(r);
+            var juste = false;
+            function marquer(m) { juste = !m; r.className = 'retour case-retour ' + (m ? 'ko' : 'ok'); r.innerHTML = m ? '✗ ' + miseEnForme(m) : '✓'; }
+            parent.appendChild(f);   // dans la page avant l'éventuel init (qui peut modifier le retour)
+            if (valeur && afficherEtat !== false && !verif(valeur)) { marquer(null); init(true); }
+            i.oninput = function () { if (juste) { juste = false; r.textContent = ''; init(false); } };
+            f.onsubmit = function (ev) {
+                ev.preventDefault();
+                if (garde && !garde()) return;
+                var v = i.value.trim();
+                if (!v) { marquer('Écris ta réponse.'); return; }
+                var m = verif(v);
+                marquer(m);
+                apres(v, !m);
+            };
+        }
+
+        // une phrase avec une liste déroulante, un bouton Valider et le retour ✓/✗ (ok : explication affichée)
+        function ligneChoix(parent, avant, options, valeur, attendu, msgFaux, msgOk, apres, init, apresTexte, classe) {
+            var f = el('form', 'case-ligne prevision' + (classe ? ' ' + classe : ''));
+            var l = el('label', null, avant);
+            var sel = el('select');
+            sel.appendChild(new Option('…', ''));
+            options.forEach(function (o) { var v = Array.isArray(o) ? o[0] : o; sel.appendChild(new Option(Array.isArray(o) ? o[1] : o, v, false, v === valeur)); });
+            l.appendChild(sel);
+            if (apresTexte) l.appendChild(document.createTextNode(apresTexte));
+            f.appendChild(l);
+            var b = el('button', null, 'Valider'); b.type = 'submit'; f.appendChild(b);
+            var r = el('span', 'retour case-retour'); f.appendChild(r);
+            function marquer(ok) { r.className = 'retour case-retour ' + (ok ? 'ok' : 'ko'); r.innerHTML = ok ? '✓<br>' + miseEnForme(msgOk) : '✗ ' + miseEnForme(msgFaux); }
+            sel.onchange = function () { r.textContent = ''; };
+            f.onsubmit = function (ev) {
+                ev.preventDefault();
+                if (!sel.value) { r.className = 'retour case-retour ko'; r.textContent = 'Choisis une réponse.'; return; }
+                var ok = sel.value === attendu;
+                marquer(ok); apres(sel.value, ok);
+            };
+            parent.appendChild(f);
+            if (valeur && valeur === attendu) { marquer(true); init(true); }
+        }
+
+        // texte d'aide clignotant (italique) dans la ligne >>> : un exemple qui n'est PAS la réponse ; disparaît dès qu'on tape
+        function indiceConsole(fc, ci, exemple) {
+            if (!exemple) return;
+            var ind = el('span', 'indice-console', 'par exemple : ' + esc(exemple));
+            fc.appendChild(ind);
+            function maj() { ind.hidden = !!ci.value; }
+            ci.addEventListener('input', maj);
+            fc.addEventListener('submit', function () { setTimeout(maj, 0); });
+        }
+
+        // petit éditeur exécutable (sans console) : renvoie l'objet CodeMirror
+        // appel (facultatif) : ajoute une console « >>> » sous l'éditeur, les sorties du script y sont affichées
+        function miniEditeur(parent, code, cleNs, appel, e_exemple) {
+            // avec console : éditeur à gauche, console à droite (comme l'éditeur principal)
+            var duo = el('div', 'duo avec-console'), gauche = el('div', 'duo-script');   // toujours : script à gauche, console à droite
+            duo.appendChild(gauche); parent.appendChild(duo);
+            var boite = el('div', 'editeur'); gauche.appendChild(boite);
+            var actions = el('div', 'actions'), sortie = el('div', 'sortie');
+            var bLancer = el('button', 'executer', '▶ Exécuter'); bLancer.type = 'button';
+            var bStop = el('button', 'stop', '■ Stop'); bStop.type = 'button'; bStop.hidden = true; bStop.onclick = arreterPython;
+            actions.appendChild(bLancer); actions.appendChild(bStop);
+            var marque = null;
+            function lancer() {
+                if (bLancer.disabled) return;
+                bLancer.disabled = true; bLancer.textContent = 'Exécution…';
+                var arret = setTimeout(function () { bStop.hidden = false; }, 2500);
+                envoyer({ type: 'run', src: cm.getValue(), n: cleNs, v: false }).then(function (r) {
+                    clearTimeout(arret); bStop.hidden = true;
+                    bLancer.disabled = false; bLancer.textContent = '▶ Exécuter';
+                    if (histo) {
+                        histo.innerHTML = '';
+                        ligne('Script exécuté', 'sep');
+                        if (r.out) ligne(r.out.replace(/\n$/, ''));
+                        if (r.err) ligne((r.ligne ? 'Ligne ' + r.ligne + ' · ' : '') + r.err, 'err');
+                    } else montrer(sortie, r);
+                    if (r.ligne) { marque = r.ligne - 1; cm.addLineClass(marque, 'background', 'ligne-erreur'); }
+                });
+            }
+            var histo = null;
+            function ligne(t, classe) { histo.appendChild(el('pre', classe || null, esc(t))); histo.scrollTop = histo.scrollHeight; }
+            var cm = CodeMirror(boite, {
+                value: code, mode: 'python', lineNumbers: true, indentUnit: 4, matchBrackets: true, viewportMargin: Infinity,
+                extraKeys: { 'Ctrl-Enter': lancer, 'Cmd-Enter': lancer, Tab: function (x) { x.replaceSelection('    '); } }
+            });
+            cm.on('change', function () { if (marque !== null) { cm.removeLineClass(marque, 'background', 'ligne-erreur'); marque = null; } });
+            bLancer.onclick = lancer;
+            gauche.appendChild(actions); gauche.appendChild(sortie);
+            {
+                var cons = el('div', 'console');
+                histo = el('div', 'console-histo');
+                histo.appendChild(el('pre', 'sep', appel ? 'Exécute le script (▶), puis tape l’appel et appuie sur Entrée' : 'Exécute le script (▶) : ce qu’il affiche apparaît ici'));
+                var fc = el('form', 'console-ligne');
+                fc.appendChild(el('span', null, '&gt;&gt;&gt;'));
+                var ci = el('input'); ci.autocomplete = 'off'; ci.spellcheck = false; ci.setAttribute('autocapitalize', 'off');
+                ci.setAttribute('aria-label', 'Console Python'); indiceConsole(fc, ci, e_exemple);
+                fc.appendChild(ci); cons.appendChild(histo); cons.appendChild(fc);
+                duo.appendChild(cons);
+                cons.onclick = function (ev) { if (ev.target === cons || ev.target === histo) ci.focus(); };
+                fc.onsubmit = function (ev) {
+                    ev.preventDefault();
+                    var l = ci.value;
+                    if (!l.trim() || ci.readOnly) return;
+                    ci.value = ''; ci.readOnly = true;
+                    ligne('>>> ' + l);
+                    envoyer({ type: 'console', n: cleNs, src: l }).then(function (r) {
+                        ci.readOnly = false;
+                        if (r.out) ligne(r.out.replace(/\n$/, ''));
+                        if (r.err) ligne(r.err, 'err');
+                    });
+                };
+            }
+            return cm;
+        }
+
+        var SCRIPT_A = 'a = 5\nb = 3\na = a + b\nb = a * 2\nprint(a)\nprint(b)\n';
+        var SCRIPT_B = 'x = 4\ny = 7\nx = y\ny = x\nprint(x)\nprint(y)\n';
+        var SCRIPT_C = 'masse = 50\nvitesse = 12\nenergie = 0.5 * masse * vitesse ** 2\nprint(energie)\n';
+        var PRIX = 'def prix_total(prix, frais):\n    return 2 * prix + frais\n';
+        var TRIPLE_BUG = 'def triple(x)\nreturn 3x\n';
+        var TRIPLE = 'def triple(x):\n    return 3 * x\n';
+        var VITESSE = 'def vitesse(distance, temps):\n    return distance / temps\n';
+        var MYSTERE = 'def mystere(x):\n    return (x + 3) ** 2 - (x + 1) ** 2 - 4 * x\n';
+        var PREVOIR_SCRIPT = '<p>✍️ <b>Prévois d’abord</b> ce qui va s’afficher, sans ordinateur.<br>Si ta prévision est fausse, tu exécuteras le script pour vérifier, puis tu te corrigeras.</p>';
+        var LISTE = '<p class="aide">Plusieurs nombres ? Sépare-les par des espaces ou des virgules, par exemple : <code>2, 4</code></p>';
+        var TABLE_OP = '<div class="tableau"><table>' +
+            '<tr><th>Opération</th><td>addition</td><td>soustraction</td><td>multiplication</td><td>division</td><td>puissance</td></tr>' +
+            '<tr><th>En maths</th><td>7 + 2</td><td>7 − 2</td><td>7 × 2</td><td>7 ÷ 2</td><td>7<sup>2</sup></td></tr>' +
+            '<tr><th>En Python</th><td><code>7 + 2</code></td><td><code>7 - 2</code></td><td><code>7 * 2</code></td><td><code>7 / 2</code></td><td><code>7 ** 2</code></td></tr></table></div>';
+        /* Blocs Scratch (dessin simplifié) : def = bloc « définir » (rose), dire = apparence (violet), mettre = variable (orange) */
+        function scratch(blocs) { return '<div class="scratch">' + blocs.join('') + '</div>'; }
+        function sbDef(nom, params) { return '<div class="sb sb-def">définir <b>' + nom + '</b>' + params.map(function (p) { return ' <span class="sb-param">' + p + '</span>'; }).join('') + '</div>'; }
+        function sbDire(x) { return '<div class="sb sb-dire">dire ' + x + '</div>'; }
+        function sbMettre(v, x) { return '<div class="sb sb-mettre">mettre <span class="sb-menu">' + v + ' ▾</span> à ' + x + '</div>'; }
+        function sbOp(x) { return '<span class="sb-op">' + x + '</span>'; }
+        function sbP(p) { return '<span class="sb-param">' + p + '</span>'; }
+        function sbV(v) { return '<span class="sb-var">' + v + '</span>'; }
+        function sbN(x) { return '<span class="sb-num">' + x + '</span>'; }
+        /* Réponse = exactement ce que Python affiche (2.0 et non 2, point et non virgule) */
+        function affichePython(k, v, e) {
+            var a = String(e.attendus[k]), t = String(v).trim();
+            if (t.replace(/\s/g, '') === a.replace(/\s/g, '')) return null;
+            if (t.replace(',', '.') === a) return 'Python écrit les nombres à virgule avec un point : recopie exactement ce qu’affiche la console.';
+            if (!isNaN(num(t)) && Math.abs(num(t) - Number(a)) < 1e-9) return 'C’est la bonne valeur, mais Python ne l’écrit pas comme ça : recopie exactement ce qu’affiche la console (regarde bien la fin du nombre).';
+            if (formeNonSimple(v, Number(a))) return FORME_SIMPLE;
+            return (e.aides && e.aides[k]) || 'Ce n’est pas ça : tape le calcul dans la console et recopie le résultat.';
+        }
+        /* Tableau de suivi du corrigé du quiz : lignes = [titre, valeurs…] après chaque ligne du script */
+        function suiviQuiz(entetes, lignes) {
+            return '<div class="tableau"><table class="trace"><tr class="tour"><th>Après la ligne</th>' +
+                entetes.map(function (t) { return '<th class="num-tour">' + t + '</th>'; }).join('') + '</tr>' +
+                lignes.map(function (l) {
+                    return '<tr><th>' + l[0] + '</th>' + l.slice(1).map(function (v) { return v == null ? '<td class="vide"></td>' : '<td>' + v + '</td>'; }).join('') + '</tr>';
+                }).join('') + '</table></div>';
+        }
+
+        /* ---------- Les étapes ----------
+           type 'question' : cases à remplir (avec ou sans programme à exécuter) ;
+           type 'prevoir' : prévoir, puis vérifier (et se corriger) ; type 'code' : programme vérifié par Python (_ETAPES) ;
+           type 'qcm' : une question à choix ; type 'quiz' : questions finales, une seule validation. */
+        var ETAPES = [
+            { titre: 'A · La console comme calculatrice', type: 'question',
+              consigne: encadre('', 'Programmer en Python sur cette page', '<ul><li>À gauche, le <b>script</b> : on y écrit un programme, puis on le lance avec <b>▶ Exécuter</b> (comme dans Capytale).</li>' +
+                    '<li>À droite, la <b>console</b> : après <code>&gt;&gt;&gt;</code>, on tape une instruction et Python répond aussitôt (touche <b>Entrée</b>).</li>' +
+                    '<li>Les opérations en Python :</li></ul>' + TABLE_OP) +
+                encadre('attention', 'Les règles d’or du programmeur débutant', '<ul><li>Python lit <b>exactement</b> ce qui est écrit : un « : » oublié, une parenthèse non fermée, une majuscule à la place d’une minuscule… et c’est l’erreur.</li>' +
+                    '<li>Un nombre à virgule s’écrit avec un <b>point</b> : <code>2.5</code> (et non <code>2,5</code>). La multiplication s’écrit toujours : <code>3 * x</code> (et non <code>3x</code>).</li>' +
+                    '<li>Un message d’erreur en rouge n’est pas une catastrophe : il indique la <b>ligne</b> en cause et le <b>type</b> d’erreur. On le lit, on corrige, on relance.</li></ul>') +
+                '<p>✍️ Tape chaque calcul dans la console (à droite), appuie sur Entrée, puis recopie <b>exactement</b> ce que Python affiche.</p>',
+              code: '# Tape les calculs dans la console, à droite, puis appuie sur Entrée.\n', exemple: '6 * 9',
+              champs: ['7 * 8', '2 ** 10', '3 + 4 * 5', '(3 + 4) * 5', '7 / 2', '10 / 5', '2.5 * 4', '1.5 * 6 + 3'],
+              attendus: ['56', '1024', '23', '35', '3.5', '2.0', '10.0', '12.0'],
+              verifierCase: function (k, v, e) { return affichePython(k, v, e); },
+              aides: ['Tape 7 * 8 dans la console.', '** est la puissance : 2 ** 10 = 2¹⁰.', 'Python respecte-t-il les priorités opératoires ? Tape le calcul pour le savoir.',
+                      'Les parenthèses sont prioritaires.', 'Tape 7 / 2 dans la console.', 'Tape 10 / 5 dans la console et regarde bien le résultat.',
+                      'Tape 2.5 * 4 dans la console et regarde bien le résultat.', 'Tape 1.5 * 6 + 3 dans la console et regarde bien le résultat.'],
+              bilan: [
+                  'Python respecte les <b>priorités opératoires</b> : <code>3 + 4 * 5</code> donne 23 (la multiplication d’abord), <code>(3 + 4) * 5</code> donne 35.',
+                  'Après une division <code>/</code> (même si elle « tombe juste », comme 10 ÷ 5), ou dès qu’un nombre à virgule intervient, Python donne un <b>nombre à virgule</b> (un « flottant ») : <code>2.0</code>, <code>10.0</code>…'
+              ] },
+
+            { titre: 'A · Virgule ou point ?', type: 'question', etiquettesTexte: true,
+              consigne: '<p>En France, on écrit 3,5 avec une virgule. Que se passe-t-il si on fait pareil en Python ?</p>' +
+                '<p>✍️ Tape <code>3,5 * 2</code> dans la console (avec la virgule), puis réponds.</p>',
+              code: '# Tape les calculs dans la console, à droite, puis appuie sur Entrée.\n', exemple: '1,2',
+              champs: ['Pour 3,5 * 2, Python affiche :', 'En Python, le calcul 3,5 × 2 s’écrit :', 'Python affiche alors :'],
+              attendus: ['(3, 10)', '3.5 * 2', '7.0'],
+              solution: ['(3, 10)', '3.5 * 2', '7.0'],
+              verifierCase: function (k, v, e) {
+                  var t = String(v).replace(/\s/g, '');
+                  if (k === 0) return /^\(?3,10\)?$/.test(t) ? null : 'Tape exactement 3,5 * 2 dans la console (avec la virgule) et recopie ce que Python affiche.';
+                  if (k === 1) {
+                      if (t === '3.5*2' || t === '2*3.5') return null;
+                      if (/3,5/.test(t)) return 'Justement : en Python, la virgule d’un nombre s’écrit avec un point.';
+                      if (/[x×]/.test(t)) return 'En Python, la multiplication s’écrit avec * .';
+                      return 'Écris le calcul en Python : un point à la place de la virgule, * pour multiplier.';
+                  }
+                  return affichePython(k, v, e);
+              },
+              aides: ['', '', 'Tape 3.5 * 2 dans la console.'],
+              bilan: [
+                  'Pour Python, la virgule <b>sépare</b> deux nombres : <code>3,5 * 2</code> donne <code>(3, 10)</code>, c’est-à-dire 3 et 5 × 2 = 10.',
+                  'Un nombre à virgule s’écrit avec un <b>point</b> : <code>3.5 * 2</code> donne <code>7.0</code>.'
+              ] },
+
+            { titre: 'A · Variables et affectation', type: 'prevoir',
+              consigne: encadre('', 'Variables et affectation', '<div class="duo-scratch">' +
+                    scratch([sbMettre('a', sbN('6')), sbMettre('b', sbN('8')), sbMettre('a', sbOp(sbV('a') + ' + ' + sbN('1'))), sbDire(sbOp(sbV('a') + ' + ' + sbV('b')))]) +
+                    py('a = 6\nb = 8\na = a + 1\nprint(a + b)') + '</div>' +
+                    '<ul><li><code>a = 6</code> se lit « <i>a</i> prend la valeur 6 » : ce n’est pas une égalité mathématique, c’est une <b>affectation</b>.</li>' +
+                    '<li>Dans <code>a = a + 1</code>, Python calcule d’abord <code>a + 1</code> avec l’<b>ancienne</b> valeur (6 + 1 = 7), puis range le résultat dans <code>a</code>.</li>' +
+                    '<li><code>print(...)</code> affiche une valeur dans la console : ici 7 + 8 = 15.</li>' +
+                    '<li>Le <b>nom</b> d’une variable ne contient ni espace ni accent : on remplace les espaces par des tirets bas, par exemple <code>nouveau_prix</code>.</li></ul>') +
+                PREVOIR_SCRIPT + LISTE,
+              scripts: [
+                  { nom: 'Script A', code: SCRIPT_A, attendu: '8 16', liste: true,
+                    intro: 'Python exécute les lignes <b>dans l’ordre</b>, de haut en bas.', surligne: [3, 4],
+                    car: [{ valeur: '8', avant: 'Après la ligne 3, <code>a</code> vaut', raison: '`a = a + b` : 5 + 3 = 8', aide: 'Calcule a + b avec a = 5 et b = 3.' },
+                          { valeur: '16', avant: 'Après la ligne 4, <code>b</code> vaut', raison: '`b = a * 2` utilise la nouvelle valeur de `a` : 8 × 2 = 16', aide: 'À la ligne 4, a ne vaut plus 5.' },
+                          { fin: 'Le script affiche 8, puis 16.' }] },
+                  { nom: 'Script B', code: SCRIPT_B, attendu: '7 7', liste: true,
+                    intro: 'Une affectation <b>remplace</b> l’ancienne valeur d’une variable : celle-ci est perdue.', surligne: [3, 4],
+                    car: [{ valeur: '7', avant: 'Après la ligne 3, <code>x</code> vaut', raison: '`x = y` : `x` prend la valeur de `y`, c’est-à-dire 7 ; l’ancienne valeur 4 est perdue', aide: 'x prend la valeur de y.' },
+                          { valeur: '7', avant: 'Après la ligne 4, <code>y</code> vaut', raison: '`y = x` : `y` prend la valeur de `x`, qui vaut déjà 7', aide: 'Quelle est la valeur de x après la ligne 3 ?' },
+                          { fin: 'Le script affiche 7, puis 7.' }] },
+                  { nom: 'Script C · énergie cinétique d’un objet de 50 kg lancé à 12 m/s', code: SCRIPT_C, attendu: 3600, libelleVerif: 'La console affiche',
+                    intro: 'La puissance est prioritaire sur la multiplication : seule la vitesse est élevée au carré.', surligne: [3, 3],
+                    car: [{ valeur: '144', avant: '<code>vitesse ** 2</code> vaut', raison: '12² = 144', aide: '** est la puissance : 12 ** 2 = 12 × 12.' },
+                          { valeur: '3600', avant: 'Donc <code>energie</code> vaut', raison: '0,5 × 50 × 144 = 3 600', aide: 'Calcule 0,5 × 50 × 144.' },
+                          { fin: 'Python affiche 3600.0 : comme 0.5 est un nombre à virgule, le résultat en est un aussi.' }] }
+              ],
+              bilan: [
+                  'Python exécute les instructions <b>dans l’ordre</b> : à la ligne 4 du script A, <code>a</code> vaut déjà 8.',
+                  'Une affectation <b>écrase</b> l’ancienne valeur : dans le script B, la valeur 4 de <code>x</code> est perdue.'
+              ] },
+
+            { titre: 'A · Échanger deux valeurs', type: 'code',
+              consigne: '<p>Le script B devait <b>échanger</b> les valeurs de <code>x</code> et <code>y</code> : à la fin, <code>x</code> devrait valoir 7 et <code>y</code> devrait valoir 4. C’est raté, puisque les deux variables valent 7.</p>' +
+                encadre('', 'L’idée', 'Pour échanger le contenu de deux verres, il faut un <b>troisième verre</b> ! Avant d’écraser <code>x</code>, on met sa valeur de côté dans une troisième variable <code>z</code>.') +
+                '<p>✍️ Corrige le script en utilisant une troisième variable <code>z</code>, puis exécute-le : il doit afficher 7, puis 4.</p>',
+              code: SCRIPT_B, console: false,
+              solutionCode: 'x = 4\ny = 7\nz = x\nx = y\ny = z\nprint(x)\nprint(y)\n',
+              coupsDePouce: [
+                  'Avant la ligne <code>x = y</code>, garde la valeur de <code>x</code> dans <code>z</code> : <code>z = x</code>.',
+                  'Ensuite, <code>x = y</code> ne pose plus de problème : l’ancienne valeur de <code>x</code> est à l’abri dans <code>z</code>.',
+                  'Enfin, <code>y</code> doit recevoir l’ancienne valeur de <code>x</code>, c’est-à-dire celle de <code>z</code> : <code>y = z</code>.'
+              ],
+              bilan: [
+                  'Pour échanger deux variables, on met d’abord l’une d’elles <b>de côté</b> : <code>z = x</code>, puis <code>x = y</code>, puis <code>y = z</code>.'
+              ] },
+
+            { titre: 'A · L’affectation simultanée', type: 'question',
+              consigne: encadre('', 'Nouveau : l’affectation simultanée', '<p><code>a, b = 5, 9</code> affecte <b>en même temps</b> la valeur 5 à <code>a</code> et la valeur 9 à <code>b</code> : c’est la même chose que <code>a = 5</code> puis <code>b = 9</code>, mais en une seule ligne.</p>') +
+                '<p>✍️ Tape dans la console, l’une après l’autre, les instructions ci-dessous, puis recopie ce que la console affiche pour <code>x</code> et pour <code>y</code>.</p>' +
+                py('>>> x, y = 4, 7\n>>> x, y = y, x\n>>> x\n>>> y'),
+              code: '# Tape les instructions dans la console, à droite.\n', exemple: 'a, b = 5, 9',
+              champs: ['>>> x', '>>> y'],
+              attendus: [7, 4],
+              aides: ['Tape les quatre instructions dans l’ordre, puis regarde ce que la console affiche après x.', 'Regarde ce que la console affiche après y.'],
+              bilan: [
+                  '<code>x, y = y, x</code> <b>échange</b> les valeurs de <code>x</code> et <code>y</code> en une seule instruction.',
+                  'Python calcule d’abord toutes les valeurs à droite du <code>=</code> (ici 7 et 4), avant de les ranger : l’ancienne valeur de <code>x</code> n’est donc pas perdue.'
+              ] },
+
+            { titre: 'A · Les fonctions', type: 'prevoir',
+              consigne: encadre('', 'Les fonctions', '<div class="duo-scratch">' +
+                    scratch([sbDef('prix_total', ['prix', 'frais']), sbDire(sbOp(sbOp(sbN('2') + ' * ' + sbP('prix')) + ' + ' + sbP('frais')))]) +
+                    py(PRIX) + '</div>' +
+                    '<ul><li><code>def</code> annonce la définition d’une fonction, suivie de son <b>nom</b>, de ses <b>paramètres</b> entre parenthèses (ici <code>prix</code> et <code>frais</code>) et de <b>deux-points</b> <code>:</code>.</li>' +
+                    '<li>Les instructions de la fonction sont <b>décalées vers la droite</b> (indentation : 4 espaces ou touche Tab).</li>' +
+                    '<li><code>return</code> indique la valeur <b>renvoyée</b> par la fonction.</li>' +
+                    '<li>Exécuter le script ne fait que <i>définir</i> la fonction : pour l’utiliser, on l’<b>appelle</b> dans la console avec des valeurs.</li></ul>') +
+                '<p>✍️ <b>Prévois</b> ce que renvoie chaque appel, sans ordinateur.</p>',
+              commun: PRIX, exemple: 'prix_total(1, 1)',
+              scripts: [
+                  { nom: 'Appel 1', appel: 'prix_total(5, 4)', attendu: 14,
+                    intro: 'Lors de l’appel, chaque paramètre prend la valeur écrite à la même place entre les parenthèses.',
+                    car: [{ valeur: '5', avant: 'Dans cet appel, <code>prix</code> vaut', raison: 'la première valeur va dans le premier paramètre', aide: 'Regarde la première valeur entre les parenthèses.' },
+                          { valeur: '4', avant: 'et <code>frais</code> vaut', raison: 'la deuxième valeur va dans le deuxième paramètre', aide: 'Regarde la deuxième valeur entre les parenthèses.' },
+                          { valeur: '14', avant: 'La fonction renvoie <code>2 * prix + frais</code> =', raison: '2 × 5 + 4 = 14', aide: 'Calcule 2 × 5 + 4.' }] },
+                  { nom: 'Appel 2', appel: 'prix_total(3, 10)', attendu: 16,
+                    intro: 'Cette fois, <code>prix</code> vaut 3 et <code>frais</code> vaut 10.',
+                    car: [{ valeur: '16', avant: 'La fonction renvoie <code>2 * prix + frais</code> =', raison: '2 × 3 + 10 = 16 (la multiplication d’abord)', aide: 'Calcule 2 × 3, puis ajoute 10.' }] }
+              ],
+              bilan: [
+                  'Une fonction se <b>définit</b> une fois (<code>def</code>), puis s’<b>appelle</b> autant de fois qu’on veut, avec des valeurs différentes.',
+                  'L’ordre des valeurs compte : <code>prix_total(5, 4)</code> renvoie 14, mais <code>prix_total(4, 5)</code> renvoie 13.'
+              ] },
+
+            { titre: 'B · Chasse aux erreurs', type: 'code',
+              consigne: '<p>Voici une fonction censée renvoyer le <b>triple</b> d’un nombre. Elle contient <b>trois erreurs</b>.</p>' +
+                '<p>✍️ Exécute le script et lis le message d’erreur (la ligne en cause est surlignée). Corrige <b>une</b> erreur, relance, et ainsi de suite jusqu’à ce que le script s’exécute sans erreur. Teste ensuite <code>triple(5)</code> dans la console : on doit obtenir 15.</p>',
+              code: TRIPLE_BUG, exemple: 'triple(5)',
+              solutionCode: TRIPLE,
+              coupsDePouce: [
+                  '<code>invalid decimal literal</code> : Python ne comprend pas <code>3x</code>. La multiplication s’écrit toujours avec <code>*</code> : <code>3 * x</code>.',
+                  '<code>expected \':\'</code> : il manque les <b>deux-points</b> à la fin de la ligne <code>def triple(x)</code>.',
+                  '<code>IndentationError</code> : la ligne <code>return</code> doit être <b>décalée</b> vers la droite (4 espaces ou touche Tab), car elle fait partie de la fonction.'
+              ],
+              bilan: [
+                  'Les trois erreurs : <code>3x</code> devient <code>3 * x</code> ; il manque <code>:</code> à la fin de la ligne <code>def</code> ; <code>return</code> doit être décalé.',
+                  'Python signale les erreurs <b>une par une</b> : c’est pour cela qu’il faut relancer après chaque correction.'
+              ] },
+
+            { titre: 'B · Majuscule ou minuscule ?', type: 'qcm',
+              consigne: '<p>La fonction <code>triple</code> est maintenant corrigée.</p><p>✍️ Exécute le script, puis tape <code>Triple(5)</code> dans la console, <b>avec une majuscule</b>. Que se passe-t-il ?</p>',
+              code: TRIPLE, exemple: 'Triple(5)',
+              choix: ['La console affiche 15.', 'Une erreur NameError : Python ne connaît pas Triple.', 'Une erreur SyntaxError : il manque les deux-points.', 'La console affiche Triple(5).'],
+              bonne: 1,
+              pourquoi: ['As-tu bien tapé Triple avec un T majuscule ? Regarde la console.', '', 'Le script est correct : relis la dernière ligne du message d’erreur.', 'Regarde la dernière ligne du message affiché dans la console.'],
+              bilan: [
+                  'Python distingue les <b>majuscules</b> et les <b>minuscules</b> : la fonction s’appelle <code>triple</code>, pas <code>Triple</code>.',
+                  '<code>NameError: name \'Triple\' is not defined</code> signifie : « je ne connais pas ce nom ». On vérifie alors l’orthographe.'
+              ] },
+
+            { titre: 'B · De Scratch à Python : le périmètre', type: 'code',
+              consigne: '<p>Voici un bloc Scratch qui calcule le périmètre d’un carré de côté <i>c</i>.</p>' +
+                scratch([sbDef('perimetre_carre', ['c']), sbDire(sbOp(sbN('4') + ' * ' + sbP('c')))]) +
+                '<p>✍️ Écris la fonction Python <code>perimetre_carre</code> correspondante, puis teste <code>perimetre_carre(7)</code> et <code>perimetre_carre(2.5)</code> dans la console.</p>',
+              code: '# Écris ici la fonction perimetre_carre\n', exemple: 'perimetre_carre(1)',
+              solutionCode: 'def perimetre_carre(c):\n    return 4 * c\n',
+              coupsDePouce: [
+                  'Inspire-toi de la fonction <code>prix_total</code> de l’étape 6 : <code>def</code>, le nom, le paramètre entre parenthèses, puis <code>:</code>.',
+                  'La première ligne est <code>def perimetre_carre(c):</code>.',
+                  'Sur la ligne suivante, <b>décalée</b>, la fonction renvoie le périmètre : <code>return 4 * c</code>.'
+              ],
+              bilan: [
+                  '<code>perimetre_carre(7)</code> renvoie 28 et <code>perimetre_carre(2.5)</code> renvoie 10.0.',
+                  'Le bloc « définir » de Scratch devient <code>def</code>, et « dire » devient <code>return</code>.'
+              ] },
+
+            { titre: 'B · L’aire d’un rectangle', type: 'code',
+              consigne: '<p>✍️ Écris une fonction <code>aire_rectangle</code> à <b>deux</b> paramètres <code>L</code> et <code>l</code>, qui renvoie l’aire d’un rectangle de longueur <i>L</i> et de largeur <i>ℓ</i>.</p>' +
+                '<p>Teste <code>aire_rectangle(5, 3)</code> et <code>aire_rectangle(2.5, 4)</code> dans la console.</p>',
+              code: '# Écris ici la fonction aire_rectangle\n', exemple: 'aire_rectangle(2, 1)',
+              solutionCode: 'def aire_rectangle(L, l):\n    return L * l\n',
+              coupsDePouce: [
+                  'Deux paramètres s’écrivent entre les parenthèses, séparés par une virgule, comme pour <code>prix_total(prix, frais)</code>.',
+                  'La première ligne est <code>def aire_rectangle(L, l):</code> (attention : <code>L</code> et <code>l</code> sont deux variables différentes).',
+                  'L’aire d’un rectangle, c’est longueur × largeur : <code>return L * l</code>, décalé.'
+              ],
+              bilan: [
+                  '<code>aire_rectangle(5, 3)</code> renvoie 15 et <code>aire_rectangle(2.5, 4)</code> renvoie 10.0.',
+                  'Python distingue <code>L</code> et <code>l</code> : ce sont deux paramètres différents.'
+              ] },
+
+            { titre: 'B · Un programme de calcul', type: 'code',
+              consigne: '<p>Voici un programme de calcul écrit en Scratch.</p>' +
+                scratch([sbDef('programme', ['x']), sbMettre('resultat', sbOp(sbP('x') + ' + ' + sbN('3'))), sbMettre('resultat', sbOp(sbV('resultat') + ' * ' + sbN('2'))), sbDire(sbV('resultat'))]) +
+                '<p>✍️ Écris la fonction Python <code>programme(x)</code> correspondante, <b>en utilisant une variable</b> <code>resultat</code>. Teste <code>programme(4)</code> et <code>programme(-3)</code> dans la console.</p>',
+              code: 'def programme(x):\n    \n', exemple: 'programme(1)',
+              solutionCode: 'def programme(x):\n    resultat = x + 3\n    resultat = resultat * 2\n    return resultat\n',
+              coupsDePouce: [
+                  'Chaque bloc Scratch devient une ligne Python, décalée sous <code>def</code>.',
+                  '« mettre resultat à x + 3 » devient <code>resultat = x + 3</code>.',
+                  '« mettre resultat à resultat * 2 » devient <code>resultat = resultat * 2</code>.',
+                  'Enfin, « dire resultat » devient <code>return resultat</code>.'
+              ],
+              algorithme: ['Fonction programme(x) :', '    resultat ← x + 3', '    resultat ← resultat × 2', '    Renvoyer resultat'],
+              puzzle: true,
+              bilan: [
+                  '<code>programme(4)</code> renvoie (4 + 3) × 2 = 14 et <code>programme(-3)</code> renvoie (−3 + 3) × 2 = 0.',
+                  'On pouvait aussi écrire directement <code>return (x + 3) * 2</code> ; sans les parenthèses, <code>x + 3 * 2</code> calculerait <i>x</i> + 6.'
+              ] },
+
+            { titre: 'B · Vitesse moyenne', type: 'question', etiquettesTexte: true,
+              consigne: '<p>On a écrit la fonction ci-dessous (elle est déjà dans le script). La distance est exprimée en kilomètres et le temps en heures.</p>' +
+                '<p>✍️ Réponds à la première question en lisant la fonction, puis exécute le script et tape <code>vitesse(120, 1.5)</code> dans la console.</p>',
+              code: VITESSE, exemple: 'vitesse(10, 2)',
+              champs: ['Nombre de paramètres de la fonction vitesse :', 'vitesse(120, 1.5) renvoie :', 'Donc 120 km parcourus en 1 h 30 min, c’est une vitesse moyenne de … km/h :'],
+              attendus: [2, 80, 80],
+              aides: ['Compte les noms écrits entre les parenthèses, après def vitesse.', 'Exécute le script (▶), puis tape vitesse(120, 1.5) dans la console.', 'Relis la réponse précédente : la fonction renvoie la vitesse en km/h.'],
+              bilan: [
+                  'La fonction a deux paramètres : <code>distance</code> et <code>temps</code>.',
+                  'Parcourir 120 km en 1,5 h (1 h 30 min), c’est rouler en moyenne à 80 km/h : 120 ÷ 1,5 = 80.'
+              ] },
+
+            { titre: 'B · Temps de parcours', type: 'code',
+              consigne: '<p>✍️ Écris une fonction <code>temps(d, v)</code> qui renvoie le temps (en heures) nécessaire pour parcourir la distance <code>d</code> (en km) à la vitesse <code>v</code> (en km/h).</p>' +
+                '<p>Teste <code>temps(300, 80)</code> dans la console.</p>',
+              code: '# Écris ici la fonction temps\n', exemple: 'temps(100, 50)',
+              solutionCode: 'def temps(d, v):\n    return d / v\n',
+              coupsDePouce: [
+                  'Exemple : 100 km à 50 km/h, cela prend 2 h, car 100 ÷ 50 = 2. Le temps, c’est donc la distance <b>divisée</b> par la vitesse.',
+                  'La première ligne est <code>def temps(d, v):</code>.',
+                  'Puis, décalé : <code>return d / v</code>.'
+              ],
+              bilan: [
+                  '<code>temps(300, 80)</code> renvoie 3.75 : il faut 3,75 h.',
+                  '0,75 h = 0,75 × 60 min = 45 min : la durée est de <b>3 h 45 min</b> (et non 3 h 75 min !).'
+              ] },
+
+            { titre: 'C · Degrés Celsius et degrés Fahrenheit', type: 'question',
+              consigne: '<p class="aide">Si la séance est terminée : la partie C, le quiz et les défis se font à la maison.</p>' +
+                '<p>Aux États-Unis, les températures sont données en degrés Fahrenheit (°F). Pour convertir en °F une température <i>C</i> donnée en degrés Celsius, on utilise la formule : <b><i>F</i> = 1,8 × <i>C</i> + 32</b>.</p>' +
+                '<p>✍️ Remplace les pointillés pour que la fonction <code>fahrenheit(C)</code> renvoie la température en °F. Exécute le script, puis utilise la fonction dans la console pour compléter le tableau.</p>',
+              code: 'def fahrenheit(C):\n    return ...\n', exemple: 'fahrenheit(10)',
+              champs: ['fahrenheit(0)', 'fahrenheit(100)', 'fahrenheit(20)', 'fahrenheit(-40)'],
+              attendus: ['32.0', '212.0', '68.0', '-40.0'],
+              verifierCase: function (k, v, e) { return affichePython(k, v, e); },
+              aides: ['Exécute le script (▶), puis tape fahrenheit(0) dans la console. Vérifie ta formule : 1.8 * C + 32.', 'Tape fahrenheit(100) dans la console.', 'Tape fahrenheit(20) dans la console.', 'Tape fahrenheit(-40) dans la console.'],
+              solution: ['32.0', '212.0', '68.0', '-40.0 (fonction : return 1.8 * C + 32)'],
+              bilan: [
+                  'La fonction s’écrit <code>return 1.8 * C + 32</code> : l’eau gèle à 32 °F et bout à 212 °F.',
+                  '−40 °C correspond à −40 °F : c’est la seule température qui s’écrit de la même façon dans les deux unités (solution de l’équation 1,8<i>C</i> + 32 = <i>C</i>).'
+              ] },
+
+            { titre: 'C · La conversion inverse', type: 'code',
+              consigne: '<p>On veut maintenant convertir une température de °F en °C.</p>' +
+                '<p>✍️ Résous l’équation <i>F</i> = 1,8 × <i>C</i> + 32 d’inconnue <i>C</i> (au brouillon), puis écris une fonction <code>celsius(F)</code> qui fait la conversion inverse. Vérifie que <code>celsius(212)</code> renvoie 100.0.</p>',
+              code: '# Écris ici la fonction celsius\n', exemple: 'celsius(32)',
+              solutionCode: 'def celsius(F):\n    return (F - 32) / 1.8\n',
+              coupsDePouce: [
+                  'Pour isoler <i>C</i>, on commence par retirer 32 des deux côtés : <i>F</i> − 32 = 1,8 × <i>C</i>.',
+                  'Puis on divise par 1,8 : <i>C</i> = (<i>F</i> − 32) ÷ 1,8.',
+                  'En Python, les parenthèses sont indispensables : <code>return (F - 32) / 1.8</code>, décalé sous <code>def celsius(F):</code>.'
+              ],
+              bilan: [
+                  '<i>F</i> = 1,8<i>C</i> + 32 ⟺ <i>F</i> − 32 = 1,8<i>C</i> ⟺ <i>C</i> = (<i>F</i> − 32) ÷ 1,8.',
+                  'Sans parenthèses, <code>F - 32 / 1.8</code> diviserait seulement 32 par 1,8 (la division est prioritaire).'
+              ] },
+
+            { titre: 'C · Hausse de loyer', type: 'code',
+              consigne: encadre('', 'Coefficient multiplicateur', 'Augmenter une quantité de <i>p</i> % revient à la multiplier par <i>CM</i> = 1 + <i>p</i>/100 ; la diminuer de <i>p</i> % revient à la multiplier par <i>CM</i> = 1 − <i>p</i>/100.') +
+                '<p>Le loyer d’un appartement est de 500 € par mois. Il augmente de 5 %.</p>' +
+                '<p>✍️ Remplace les pointillés par un calcul qui utilise les variables <code>loyer</code> et <code>taux</code>, puis exécute le script.</p>',
+              code: 'loyer = 500\ntaux = 5\nnouveau_loyer = ...\nprint(nouveau_loyer)\n', console: false,
+              solutionCode: 'loyer = 500\ntaux = 5\nnouveau_loyer = loyer * (1 + taux / 100)\nprint(nouveau_loyer)\n',
+              coupsDePouce: [
+                  'Ici, <i>CM</i> = 1 + 5/100 = 1,05. En Python, avec la variable <code>taux</code> : <code>1 + taux / 100</code>.',
+                  'Le nouveau loyer, c’est le loyer multiplié par <i>CM</i>. Attention aux parenthèses autour de <code>1 + taux / 100</code>.'
+              ],
+              bilan: [
+                  'Python affiche 525.0 : le nouveau loyer est de 525 €.',
+                  '<i>CM</i> = 1 + 5/100 = 1,05 et 500 × 1,05 = 525. Les parenthèses autour de <code>1 + taux / 100</code> sont indispensables.'
+              ] },
+
+            { titre: 'C · Les soldes', type: 'code',
+              consigne: '<p>✍️ Écris une fonction <code>solde(prix, remise)</code> qui renvoie le prix d’un article après une remise de <code>remise</code> %.</p>' +
+                '<p>Teste <code>solde(80, 25)</code> et <code>solde(49.90, 30)</code> dans la console.</p>',
+              code: '# Écris ici la fonction solde\n', exemple: 'solde(100, 10)',
+              solutionCode: 'def solde(prix, remise):\n    return prix * (1 - remise / 100)\n',
+              coupsDePouce: [
+                  'Une remise de <i>p</i> %, c’est une <b>baisse</b> : on multiplie par <i>CM</i> = 1 − <i>p</i>/100.',
+                  'La première ligne est <code>def solde(prix, remise):</code>.',
+                  'Puis, décalé : <code>return prix * (1 - remise / 100)</code>, comme pour le loyer, mais avec un « − ».'
+              ],
+              bilan: [
+                  '<code>solde(80, 25)</code> renvoie 60.0 : <i>CM</i> = 1 − 25/100 = 0,75 et 80 × 0,75 = 60.',
+                  '<code>solde(49.90, 30)</code> renvoie 34.93 (arrondi) : l’article soldé coûte 34,93 €.'
+              ] },
+
+            { titre: 'Quiz final · 5 questions', type: 'quiz',
+              consigne: '<p>Pour finir, 5 questions rapides sur tout le TP. ✍️ Réponds à chaque question <b>sans ordinateur</b>, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
+              questions: [
+                  { texte: 'Qu’affiche ce script ?', code: 'a = 3\nb = a + 2\na = b * 2\nprint(a)\n',
+                    choix: ['3', '5', '6', '10'], bonne: 3,
+                    explication: suiviQuiz([1, 2, 3], [['<code>a</code>', 3, 3, 10], ['<code>b</code>', null, 5, 5]]) +
+                        '<code>b</code> vaut 3 + 2 = 5, puis <code>a</code> prend la valeur 5 × 2 = 10.' },
+                  { texte: 'Comment écrit-on le calcul 2,5 × <i>x</i> en Python ?',
+                    choix: ['<code>2,5x</code>', '<code>2.5x</code>', '<code>2.5 * x</code>', '<code>2,5 * x</code>'], bonne: 2,
+                    explication: 'Un point pour la virgule, et <code>*</code> pour la multiplication, toujours écrite.' },
+                  { texte: 'Que renvoie l’appel <code>f(3)</code> ?', code: 'def f(x):\n    return x ** 2 + 1\n',
+                    choix: ['7', '9', '10', '16'], bonne: 2,
+                    explication: '<code>x ** 2</code> est le carré : 3² + 1 = 9 + 1 = 10.' },
+                  { texte: 'Que vaut <code>12 / 4</code> en Python ?',
+                    choix: ['3', '3.0', '3,0', '0.33'], bonne: 1,
+                    explication: 'Une division <code>/</code> donne toujours un nombre à virgule (un flottant), même quand elle tombe juste : <code>3.0</code>.' },
+                  { texte: 'Qu’affiche ce script ?', code: 'x = 2\ny = 5\nx, y = y, x\nprint(x)\n',
+                    choix: ['2', '5', '7', '(5, 2)'], bonne: 1,
+                    explication: '<code>x, y = y, x</code> échange les deux valeurs : <code>x</code> vaut maintenant 5 (et <code>y</code> vaut 2).' }
+              ] },
+
+            { titre: 'D · Défi 1 : le programme mystère', type: 'question',
+              consigne: '<p>On considère la fonction ci-dessous (elle est déjà dans le script).</p>' +
+                '<p>✍️ Exécute le script, puis complète le tableau à l’aide de la console.</p>',
+              code: MYSTERE, exemple: 'mystere(1)',
+              champs: ['mystere(5)', 'mystere(-2)', 'mystere(0)', 'mystere(10.5)', 'mystere(1000)'],
+              attendus: ['8', '8', '8', '8.0', '8'],
+              verifierCase: function (k, v, e) { return affichePython(k, v, e); },
+              aides: ['Exécute le script (▶), puis tape mystere(5) dans la console.', 'Tape mystere(-2) dans la console.', 'Tape mystere(0) dans la console.', 'Tape mystere(10.5) dans la console.', 'Tape mystere(1000) dans la console.'],
+              bilan: [
+                  '<b>Conjecture</b> : quel que soit le nombre <i>x</i> choisi, la fonction semble toujours renvoyer 8.',
+                  '<b>Démonstration</b> : (<i>x</i> + 3)² = <i>x</i>² + 6<i>x</i> + 9 et (<i>x</i> + 1)² = <i>x</i>² + 2<i>x</i> + 1, donc (<i>x</i> + 3)² − (<i>x</i> + 1)² − 4<i>x</i> = <i>x</i>² + 6<i>x</i> + 9 − <i>x</i>² − 2<i>x</i> − 1 − 4<i>x</i> = 8.',
+                  'Tester des valeurs ne suffit pas à <b>prouver</b> que c’est toujours vrai ; le calcul littéral, si.'
+              ] },
+
+            { titre: 'D · Défi 2 : toujours 20', type: 'code',
+              consigne: '<p>✍️ Écris une fonction <code>mystere2(x)</code> de la même forme, <code>(x + a) ** 2 - (x + b) ** 2 - c * x</code>, avec des nombres <code>a</code>, <code>b</code> et <code>c</code> bien choisis, qui renvoie <b>toujours 20</b>. Vérifie avec la console.</p>' +
+                '<p class="aide">Développe (<i>x</i> + <i>a</i>)² − (<i>x</i> + <i>b</i>)² − <i>c</i><i>x</i> au brouillon : que faut-il pour que les <i>x</i> disparaissent ?</p>',
+              code: 'def mystere2(x):\n    return (x + ...) ** 2 - (x + ...) ** 2 - ... * x\n', exemple: 'mystere2(5)',
+              solutionCode: 'def mystere2(x):\n    return (x + 6) ** 2 - (x + 4) ** 2 - 4 * x\n',
+              bilan: [
+                  'En développant : (<i>x</i> + <i>a</i>)² − (<i>x</i> + <i>b</i>)² − <i>cx</i> = (2<i>a</i> − 2<i>b</i> − <i>c</i>)<i>x</i> + <i>a</i>² − <i>b</i>².',
+                  'Il faut donc <i>c</i> = 2<i>a</i> − 2<i>b</i> (pour que les <i>x</i> disparaissent) et <i>a</i>² − <i>b</i>² = 20. Par exemple <i>a</i> = 6, <i>b</i> = 4, <i>c</i> = 4 : 36 − 16 = 20.',
+                  'D’autres choix conviennent, par exemple <i>a</i> = 4,5, <i>b</i> = 0,5 et <i>c</i> = 8.'
+              ] }
+        ];
+        var NB = ETAPES.length;
+        var N_QUIZ = ETAPES.findIndex(function (e) { return e.type === 'quiz'; }) + 1;   // 0 s'il n'y a pas de quiz
+
+        /* ---------- Python (Pyodide dans un worker) ---------- */
+        var SOURCE_WORKER = [
+            'importScripts(' + JSON.stringify(PYODIDE + 'pyodide.js') + ');',
+            'var py, pret = null;',
+            'onmessage = async function (e) {',
+            '  var m = e.data;',
+            '  if (m.type === "init") {',
+            '    pret = (async function () {',
+            '      py = await loadPyodide({ indexURL: ' + JSON.stringify(PYODIDE) + ' });',
+            '      py.runPython(m.aide);',
+            '    })();',
+            '    pret.then(function () { postMessage({ type: "pret" }); }, function (x) { postMessage({ type: "echec", t: String(x) }); });',
+            '    return;',
+            '  }',
+            '  await pret;',
+            '  var res;',
+            '  try {',
+            '    if (m.type === "console") res = JSON.parse(py.globals.get("_console")(m.src, m.n));',
+            '    else res = JSON.parse(py.globals.get("_executer")(m.src, m.n, m.v));',
+            '  } catch (x) { res = { err: String(x.message || x), out: "" }; }',
+            '  postMessage({ type: "res", id: m.id, r: res });',
+            '};'
+        ].join('\n');
+        var urlWorker = URL.createObjectURL(new Blob([SOURCE_WORKER], { type: 'text/javascript' }));
+        var AIDE = document.getElementById('py-aide').textContent;
+        var etatPy = document.getElementById('py-etat');
+        var worker, pythonPret, attente = {}, numero = 0;
+
+        function demarrerPython() {
+            worker = new Worker(urlWorker);
+            pythonPret = new Promise(function (ok, ko) {
+                worker.onmessage = function (e) {
+                    var m = e.data;
+                    if (m.type === 'pret') { etatPy.hidden = true; ok(); }
+                    else if (m.type === 'echec') { etatPy.textContent = 'Impossible de charger Python : ' + m.t + ' (vérifie la connexion internet, puis recharge la page).'; ko(new Error(m.t)); }
+                    else if (m.type === 'res' && attente[m.id]) { attente[m.id](m.r); delete attente[m.id]; }
+                };
+            });
+            worker.postMessage({ type: 'init', aide: AIDE });
+        }
+        function envoyer(msg) {
+            return pythonPret.then(function () {
+                var id = ++numero;
+                msg.id = id;
+                return new Promise(function (ok) { attente[id] = ok; worker.postMessage(msg); });
+            }, function (x) {
+                return { err: 'Python n’a pas pu se charger (' + x.message + ') : vérifie la connexion internet, puis recharge la page.', out: '' };
+            });
+        }
+        function arreterPython() {
+            worker.terminate();
+            Object.keys(attente).forEach(function (id) { attente[id]({ err: '■ Programme arrêté.', out: '' }); });
+            attente = {};
+            etatPy.hidden = false; etatPy.textContent = 'Redémarrage de Python…';
+            demarrerPython();
+        }
+        demarrerPython();
+
+        /* ---------- Progression : sur l'appareil, et dans la base si l'élève est connecté ---------- */
+        var debut = Date.now(), faites = 0, codes = {}, reponses = {}, lus = {}, erreurs = {}, passees = {};
+        /* Vue professeure (onglet Suivi TP) : ?vue-eleve=1 ouvre le TP tel que l'élève l'a laissé
+           (résultat préparé par prof.html dans localStorage « tp-vue-eleve ») ; rien n'est enregistré. */
+        var VUE = null;
+        try { if (/[?&]vue-eleve=/.test(location.search)) VUE = JSON.parse(localStorage.getItem('tp-vue-eleve')); } catch (e) {}
+        function cle() { var s = Interactif.session(); return 'tp-premiers-pas:' + (s ? s.code : 'invite'); }
+        function lireLocal() { try { return JSON.parse(localStorage.getItem(cle())) || {}; } catch (e) { return {}; } }
+        function ecrireLocal() { if (VUE) return; try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, codes: codes, reponses: reponses, lus: lus, erreurs: erreurs, passees: passees })); } catch (e) {} }
+        // réponse d'une étape, en clair, pour le suivi de la professeure
+        function sansBalises(h) { var d = document.createElement('div'); d.innerHTML = h; return d.textContent; }
+        function lisible(e, n) {
+            var v = reponses[n] || [];
+            if (passees[n]) return '(étape passée)';
+            if (e.type === 'code') return codes[n] || depart(e);
+            if (e.type === 'qcm') return sansBalises(v[0] || '');
+            if (e.type === 'quiz') return e.questions.map(function (q, i) {
+                return 'Q' + (i + 1) + ' : « ' + sansBalises(q.choix[v[i]] || '…') + ' » ' + (String(q.bonne) === v[i] ? '✓' : '✗');
+            }).join('\n') + '\nScore : ' + scoreQuiz(e, n) + ' / ' + e.questions.length;
+            if (e.type === 'trace') return 'Tableau de suivi : ' + v.join(' ; ');
+            if (e.type === 'question') return e.champs.map(function (c, k) { return c + ' → ' + (v[k] || '…'); }).join('\n');
+            if (e.type === 'prevoir') {
+                var lignes = e.scripts.map(function (sc, k) {
+                    var r = v.slice(8 * k, 8 * k + 8), nom = sc.question ? sansBalises(sc.question) : sc.appel || sc.nom;
+                    if (!r[0]) return null;
+                    if (sc.question) return nom + ' → ' + r[0];
+                    return egalSc(r[0], sc) ? nom + ' : prévu « ' + r[0] + ' » ✓'
+                                                             : nom + ' : prévu « ' + r[0] + ' » ✗, corrigé « ' + (r[1] || '…') + ' »';
+                }).filter(Boolean);
+                if (e.code && codes[n]) lignes.push('Programme corrigé :\n' + codes[n]);
+                return lignes.join('\n');
+            }
+            return v.join(' ; ');
+        }
+        function scoreQuiz(e, n) { var v = reponses[n] || []; return e.questions.filter(function (q, i) { return String(q.bonne) === v[i]; }).length; }
+        function egalVal(v, a, tol) { return typeof a === 'number' ? Math.abs(num(v) - a) < (tol || 1e-6) : txt(v) === txt(a); }
+        // prévision juste ? sc.liste : suite de nombres (espaces, virgules ou points-virgules) ; sc.aussi : autres réponses acceptées
+        function normListe(s) { return txt(s).replace(/[\[\]()]/g, ' ').split(/[\s,;]+/).filter(Boolean).join(' '); }
+        function egalSc(v, sc) {
+            return [sc.attendu].concat(sc.aussi || []).some(function (a) {
+                return sc.liste ? normListe(v) === normListe(a) : egalVal(v, a, sc.tol);
+            });
+        }
+
+        // encadré « Solution » (mode test et vue professeure)
+        function boiteSolution(e) {
+            var h = '<b>🔑 Solution</b> <span class="aide">(visible seulement en mode test)</span>';
+            function li(t) { return '<li>' + t + '</li>'; }
+            function code(t) { return '<code>' + esc(t) + '</code>'; }
+            if (e.type === 'question') {
+                h += '<ul>' + e.champs.map(function (c, k) {
+                    var sol = e.solution ? e.solution[k] : e.attendus ? String(e.attendus[k]) : '?';
+                    return li(esc(c) + ' → <b>' + esc(sol) + '</b>' + (e.aides && e.aides[k] ? '<br><span class="aide">si faux : « ' + esc(e.aides[k]) + ' »</span>' : ''));
+                }).join('') + '</ul>';
+            } else if (e.type === 'trace') {
+                var tk = []; for (var k = 1; k <= e.maxTours; k++) tk.push(k);
+                h += '<p>' + e.lignes.map(function (lg) { return '<code>' + esc(lg.nom) + '</code> : ' + tk.map(function (k) { return lg.f(k); }).join(', '); }).join('<br>') + '<br>Le script affiche <b>' + e.final.attendu + '</b>.</p>';
+            } else if (e.type === 'qcm') {
+                h += '<p>Bonne réponse : <b>' + e.choix[e.bonne] + '</b></p>';
+            } else if (e.type === 'quiz') {
+                h += '<ol>' + e.questions.map(function (q) { return li(q.choix[q.bonne]); }).join('') + '</ol>';
+            } else if (e.type === 'prevoir') {
+                h += '<ul>' + e.scripts.map(function (sc) {
+                    var t = sc.question ? sc.question + ' → <b>' + esc(sc.attendu) + '</b>'
+                          : esc(sc.appel || sc.nom) + ' → <b>' + esc(sc.attendu) + '</b>';
+                    if (sc.car) t += '<ul>' + sc.car.map(function (it) {
+                        if (it.cond) return li(code(it.cond) + ' : ' + (it.vraie ? 'est vérifiée' : 'n’est pas vérifiée') + ' (' + esc(it.raison) + ')');
+                        if (it.valeur) return li(it.avant + ' <b>' + esc(it.valeur) + '</b> (' + esc(it.raison) + ')');
+                        if (it.bloc) return li('bloc exécuté : sous ' + code(it.bloc));
+                        if (it.suivi) { var tt = []; for (var q = 1; q <= it.suivi.max; q++) { var vv = it.suivi.valeurs(q); if (vv[0] === it.suivi.stop) { tt.push('test ' + vv[0] + ' : sortie'); break; } tt.push('tour ' + q + ' : ' + vv.join(' ; ')); } return li('tableau : ' + esc(tt.join(' · '))); }
+                        return '';
+                    }).join('') + '</ul>';
+                    return li(t);
+                }).join('') + '</ul>';
+            }
+            if (e.solutionCode) h += '<pre class="code">' + esc(e.solutionCode) + '</pre>';
+            return el('div', 'solution-prof', h);
+        }
+        /* Accord selon le genre de l'élève : {{forme féminine|forme masculine}} ; les deux si inconnu. */
+        function genre() { var s = Interactif.session(); return s && (s.genre === 'F' || s.genre === 'M') ? s.genre : null; }
+        function formeAccord(f, m) { var g = genre(); return g === 'F' ? f : g === 'M' ? m : f + ', ' + m; }
+        function accorder(html) {
+            return String(html || '').replace(/\{\{([^|{}]*)\|([^|{}]*)\}\}/g, function (_, f, m) {
+                return '<span class="accord" data-f="' + f + '" data-m="' + m + '">' + formeAccord(f, m) + '</span>';
+            });
+        }
+        (function chercherGenre() {   // session ouverte avant que la connexion ne renvoie le genre
+            var s = Interactif.session();
+            if (!s || VUE || 'genre' in s) return;
+            Interactif.rpc('mon_genre', { p_jeton: s.jeton }).then(function (g) {
+                var s2 = Interactif.session(); if (!s2 || s2.jeton !== s.jeton) return;
+                s2.genre = g || null;
+                try { localStorage.setItem('interactif-session', JSON.stringify(s2)); } catch (e) {}
+                document.querySelectorAll('.accord').forEach(function (x) { x.textContent = formeAccord(x.dataset.f, x.dataset.m); });
+            }).catch(function () {});
+        })();
+        function modeProf() { return !!VUE || modeTest(); }   // solutions et « Développer » visibles
+        function compteProf() { if (VUE) return false; var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'PROF-2NDE'; }
+        // compte PROF-2NDE : « mode professeure » (solutions, « Développer », toutes les étapes ouvertes, Passer sans confirmation)
+        // ou « mode élève » (le TP exactement comme un élève le voit) ; choix gardé sur l'appareil (localStorage « tp-mode »)
+        /* Compte PROF-2NDE en mode élève : « Réinitialiser l'étape » efface les réponses de l'étape (et la progression
+           à partir d'elle) pour la refaire comme un élève. L'heure est gardée sur l'appareil : les résultats
+           enregistrés en ligne avant cette heure sont ignorés au chargement (sinon ils reviendraient). */
+        function dateReinit() { try { return +localStorage.getItem(cle() + ':reinit') || 0; } catch (x) { return 0; } }
+        function reinitialiser(n) {
+            [reponses, codes, lus, erreurs, passees].forEach(function (o) { delete o[n]; });
+            if (n <= faites) faites = n - 1;
+            try { localStorage.setItem(cle() + ':reinit', String(Date.now())); } catch (x) {}
+            ecrireLocal(); afficher();
+            var c = zone.querySelector('[data-n="' + n + '"]');
+            if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        function modeTest() { if (!compteProf()) return false; try { return localStorage.getItem('tp-mode') !== 'eleve'; } catch (e) { return true; } }
+        function depart(e) { return typeof e.code === 'function' ? e.code() : e.code; }
+
+        function charger() {
+            if (VUE) {
+                faites = Math.min(VUE.score || 0, NB); codes = {}; reponses = {}; lus = {}; erreurs = {}; passees = {};
+                restaurer(VUE.details);
+                afficher();
+                return;
+            }
+            var l = lireLocal();
+            faites = l.faites || 0; codes = l.codes || {}; reponses = l.reponses || {}; lus = l.lus || {}; erreurs = l.erreurs || {}; passees = l.passees || {};
+            afficher();
+            var s = Interactif.session();
+            if (!s) return;
+            Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(function (liste) {
+                var reinit = dateReinit();
+                var miens = (liste || []).filter(function (r) { return r.exercice === ID && new Date(r.fait_le || 0).getTime() > reinit; });
+                var meilleur = miens.slice().sort(function (a, b) { return b.score - a.score || new Date(b.fait_le || 0) - new Date(a.fait_le || 0); })[0];
+                var change = false;
+                if (meilleur && meilleur.score > faites) { faites = Math.min(meilleur.score, NB); restaurer(meilleur.details); change = true; }
+                // quiz déjà validé sur le serveur (autre appareil, navigation privée…) : on reprend les PREMIÈRES réponses, verrouillées
+                if (N_QUIZ) {
+                    var premier = miens.filter(function (r) { var d = (r.details || [])[N_QUIZ - 1]; return d && d.qmax && d.v && d.v.length && !d.p; })
+                        .sort(function (a, b) { return new Date(a.fait_le || 0) - new Date(b.fait_le || 0); })[0];
+                    if (premier) {
+                        var v = premier.details[N_QUIZ - 1].v;
+                        if (JSON.stringify(reponses[N_QUIZ] || []) !== JSON.stringify(v)) { reponses[N_QUIZ] = v.slice(); delete passees[N_QUIZ]; change = true; }
+                    }
+                }
+                if (change) { ecrireLocal(); afficher(); }
+            }, function () {});
+        }
+
+        // réponses, programmes, erreurs et étapes passées, à partir des détails enregistrés dans la base
+        function restaurer(details) {
+                (details || []).forEach(function (d, k) {
+                    if (!d || !ETAPES[k]) return;
+                    if (d.e) erreurs[k + 1] = Math.max(erreurs[k + 1] || 0, d.e);
+                    if (d.p) passees[k + 1] = true;
+                    if (d.v) { reponses[k + 1] = d.v.slice(); if (ETAPES[k].type !== 'code' && d.c) codes[k + 1] = String(d.c); }
+                    else if (d.r == null) return;
+                    else if (ETAPES[k].type === 'code') codes[k + 1] = String(d.r);
+                    else reponses[k + 1] = String(d.r).split(' ; ');
+                    if (ETAPES[k].type === 'code' && d.c) codes[k + 1] = String(d.c);
+                });
+        }
+
+        function enregistrer() {
+            var s = Interactif.session();
+            if (VUE) return Promise.resolve('Vue professeure : rien n’est enregistré.');
+            if (!s) return Promise.resolve('Tu n’es pas connecté(e) : ta progression est gardée seulement sur cet appareil.');
+            var nbDetails = N_QUIZ > faites && quizRepondu() ? N_QUIZ : faites;   // + le quiz s'il est fait en avance
+            var details = ETAPES.slice(0, nbDetails).map(function (e, k) {
+                if (k >= faites && k + 1 !== N_QUIZ) return null;
+                var n = k + 1, d = { t: 'Étape ' + n + ' · ' + e.titre, r: lisible(e, n).slice(0, 2500), ok: !passees[n] };
+                if (e.type !== 'code') d.v = reponses[n] || [];
+                if (e.code && e.type !== 'code' && codes[n]) d.c = codes[n].slice(0, 2500);
+                if (erreurs[n]) d.e = erreurs[n];
+                if (e.type === 'quiz' && !passees[n]) { d.q = scoreQuiz(e, n); d.qmax = e.questions.length; if (window.AntiTriche && AntiTriche.sorties(ID)) d.s = AntiTriche.sorties(ID); }   // s : sorties du quiz surveillé
+                if (passees[n]) d.p = 1;
+                return d;
+            });
+            return Interactif.rpc('enregistrer', {
+                p_jeton: s.jeton, p_exercice: ID, p_score: faites, p_total: NB, p_details: details,
+                p_duree: Math.round((Date.now() - debut) / 1000)
+            }).then(function () { return '✓ Progression enregistrée.'; },
+                function (x) { return 'Progression gardée sur cet appareil (' + x.message + ').'; });
+        }
+
+        /* ---------- Affichage des étapes ---------- */
+        var zone = document.getElementById('etapes');
+        function el(tag, classe, html) { var e = document.createElement(tag); if (classe) e.className = classe; if (html != null) e.innerHTML = html; return e; }
+        function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        function progression() {
+            var n = Math.min(faites, NB);
+            document.getElementById('progres-texte').textContent = n >= NB ? 'TP terminé : ' + NB + ' étapes sur ' + NB + ' ✓' : 'Étape ' + (n + 1) + ' sur ' + NB;
+            document.getElementById('progres-barre').style.width = (100 * n / NB) + '%';
+            sommaire();
+        }
+
+        // barre des étapes : un clic sur une étape déjà faite la rouvre pour la reprendre
+        function sommaire() {
+            var nav = document.getElementById('sommaire');
+            nav.innerHTML = '';
+            nav.appendChild(el('span', 'aide', 'Aller à l’étape :'));
+            ETAPES.forEach(function (e, k) {
+                var n = k + 1, b = el('button', n <= faites ? 'fait' + (passees[n] ? ' passee' : '') : n === faites + 1 ? 'courante' : null, String(n));
+                b.type = 'button'; b.title = 'Étape ' + n + ' · ' + e.titre + (n <= faites && passees[n] ? ' (passée : tu peux y revenir)' : '');
+                b.disabled = n > faites + 1 && !modeTest();
+                b.onclick = function () {
+                    var c = zone.querySelector('[data-n="' + n + '"]');
+                    if (!c && modeTest()) {   // mode professeure : étape pas encore atteinte, ouverte à sa place
+                        c = carte(n);
+                        var apres = Array.prototype.filter.call(zone.querySelectorAll('section.etape'), function (x) { return +x.dataset.n > n; })[0];
+                        zone.insertBefore(c, apres || null); c.rafraichir();
+                    }
+                    if (!c) return;
+                    c.ouvrir();
+                    c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                };
+                nav.appendChild(b);
+            });
+            // accès direct au quiz, à tout moment (sans faire avancer la progression)
+            if (N_QUIZ) {
+                var fait = quizRepondu();
+                var bq = el('button', 'acces-quiz' + (fait ? ' fait' : ''), fait ? 'QUIZ ✓' : 'QUIZ'); bq.type = 'button';
+                bq.title = fait ? 'Revoir le quiz final (déjà validé)' : 'Aller directement au quiz final';
+                bq.onclick = ouvrirQuiz;
+                nav.appendChild(bq);
+            }
+        }
+        function quizRepondu() { var v = reponses[N_QUIZ]; return !!(v && v.length && v.every(function (x) { return x !== ''; })); }
+        function ouvrirQuiz() {
+            var c = zone.querySelector('[data-n="' + N_QUIZ + '"]');
+            if (!c) { c = carte(N_QUIZ); zone.appendChild(c); }
+            c.ouvrir();
+            c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function afficher() {
+            zone.innerHTML = '';
+            progression();
+            for (var n = 1; n <= Math.min(faites + 1, NB); n++) { var c = carte(n); zone.appendChild(c); if (VUE && n <= faites) c.ouvrir(); c.rafraichir(); }
+            if (faites >= NB) zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé le TP !'));
+        }
+
+        function carte(n) {
+            var e = ETAPES[n - 1], faite = n <= faites;
+            var c = el('section', 'etape' + (faite ? ' faite' + (passees[n] ? ' passee' : '') : ' courante'));
+            c.dataset.n = n;
+            var tete = el('div', 'etape-tete');
+            tete.appendChild(el('span', 'etape-num', faite ? (passees[n] ? '⏭' : '✓') : String(n)));
+            tete.appendChild(el('h2', null, esc(e.titre)));
+            if (compteProf() && !modeTest()) {   // compte professeure, mode élève : refaire l'étape
+                var bReinit = el('button', 'lien reinit', '↺ Réinitialiser l’étape'); bReinit.type = 'button';
+                bReinit.title = 'Compte professeure : efface tes réponses à cette étape pour la refaire comme un élève';
+                bReinit.onclick = function () {
+                    if (!confirm('Effacer tes réponses à l’étape ' + n + ' et la refaire ?' + (n <= faites ? '\n\nLes étapes suivantes devront aussi être revalidées.' : ''))) return;
+                    reinitialiser(n);
+                };
+                tete.appendChild(bReinit);
+            }
+            var corps = el('div', 'etape-corps', accorder(e.consigne));
+            c.appendChild(tete); c.appendChild(corps);
+            var cm = null, cms = [], construit = false, bilanMontre = false, retour;
+            function faux() { if (n > faites) { erreurs[n] = (erreurs[n] || 0) + 1; ecrireLocal(); } }   // réponse fausse avant la réussite
+
+            // cases « J'ai lu » : lus[n] = numéros (dans l'ordre de la page) des encadrés cochés de l'étape n
+            function brancherLus() {
+                Array.prototype.forEach.call(corps.querySelectorAll('.encadre .lu input'), function (i, k) {
+                    var cadre = i.closest('.encadre');
+                    i.checked = VUE ? true : (lus[n] || []).indexOf(k) >= 0;
+                    cadre.classList.toggle('est-lu', i.checked);
+                    i.onchange = function () {
+                        var l = (lus[n] || []).filter(function (x) { return x !== k; });
+                        if (i.checked) l.push(k);
+                        lus[n] = l; ecrireLocal();
+                        cadre.classList.toggle('est-lu', i.checked);
+                        if (i.checked) cadre.classList.remove('a-cocher');
+                        if (i.checked && toutLu() && retour && retour.dataset.lu) { retour.textContent = ''; retour.className = 'retour'; delete retour.dataset.lu; }
+                        if (i.checked && cadre.classList.contains('bilan') && suite) { var f = suite; suite = null; f(); }
+                    };
+                });
+            }
+
+            // « J'ai lu » obligatoire : tous les encadrés de la consigne cochés avant de répondre ou d'exécuter
+            var suite = null;   // étape suivante en attente du « J'ai lu » de l'encadré « À retenir »
+            function nonLus() {
+                return Array.prototype.filter.call(corps.querySelectorAll('.encadre:not(.bilan)'), function (x) { return !x.querySelector('.lu input').checked; });
+            }
+            function toutLu() { return !nonLus().length; }
+            function exigerLu() {
+                if (VUE) return true;
+                var l = nonLus();
+                if (!l.length) return true;
+                l.forEach(function (x) { x.classList.add('a-cocher'); });
+                retour.className = 'retour ko'; retour.dataset.lu = '1';
+                retour.textContent = '✗ Coche d’abord « J’ai lu » dans chaque encadré (' + l.length + ' à cocher).';
+                l[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+
+            /* Puzzle de Parsons : les lignes de e.solutionCode mélangées et sans décalage ; ↑ ↓ pour l'ordre, ← → pour le décalage.
+               e.puzzleEchanges : paires de lignes (indices dans la solution) dont l'ordre est indifférent. */
+            function puzzleScript(e, cm, apresCopie) {
+                var sol = e.solutionCode.replace(/\n+$/, '').split('\n').map(function (l, i) { return { i: i, txt: l.trim(), niv: /^ */.exec(l)[0].length / 4 }; });
+                var ordre = sol.map(function (x) { return { i: x.i, txt: x.txt, niv: 0 }; });
+                do { for (var k = ordre.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), t = ordre[k]; ordre[k] = ordre[j]; ordre[j] = t; } }
+                while (ordre.every(function (x, k) { return x.i === k; }) && ordre.length > 1);
+                var bloc = el('div', 'puzzle');
+                bloc.appendChild(el('p', 'algo-titre', '🧩 Fais glisser les étiquettes pour remettre les lignes dans l’ordre, puis décale-les avec ← →.'));
+                var ul = el('ol', 'puzzle-lignes'); bloc.appendChild(ul);
+                var act = el('div', 'actions'), bV = el('button', null, 'Vérifier'); bV.type = 'button';
+                var r = el('span', 'retour'); act.appendChild(bV); act.appendChild(r); bloc.appendChild(act);
+                function bouton(txt, titre, f) { var b = el('button', 'secondaire', txt); b.type = 'button'; b.title = titre; b.setAttribute('aria-label', titre); b.onclick = f; return b; }
+                function dessiner(focusK) {
+                    ul.innerHTML = '';
+                    ordre.forEach(function (x, k) {
+                        var li = el('li'); li.dataset.k = k;
+                        var outils = el('span', 'puzzle-outils');
+                        outils.appendChild(bouton('←', 'Moins décaler', function () { if (x.niv) { x.niv--; dessiner(); } }));
+                        outils.appendChild(bouton('→', 'Décaler', function () { if (x.niv < 3) { x.niv++; dessiner(); } }));
+                        var c = el('code', 'etiquette'); c.textContent = x.txt; c.style.marginLeft = (x.niv * 2) + 'em';
+                        c.tabIndex = 0; c.setAttribute('role', 'button');
+                        c.setAttribute('aria-label', 'Ligne ' + (k + 1) + ' : ' + x.txt + '. Flèches haut et bas pour la déplacer, gauche et droite pour la décaler.');
+                        // clavier : ↑ ↓ déplacent la ligne, ← → la décalent
+                        c.onkeydown = function (ev) {
+                            var d = { ArrowUp: -1, ArrowDown: 1 }[ev.key];
+                            if (d && k + d >= 0 && k + d < ordre.length) { ev.preventDefault(); ordre.splice(k + d, 0, ordre.splice(k, 1)[0]); dessiner(k + d); }
+                            else if (ev.key === 'ArrowLeft' && x.niv) { ev.preventDefault(); x.niv--; dessiner(k); }
+                            else if (ev.key === 'ArrowRight' && x.niv < 3) { ev.preventDefault(); x.niv++; dessiner(k); }
+                        };
+                        // souris et doigt : on attrape l'étiquette et on la glisse à sa place
+                        c.onpointerdown = function (ev) {
+                            if (ev.button) return;
+                            ev.preventDefault();
+                            c.setPointerCapture(ev.pointerId);
+                            li.classList.add('saisie');
+                            var y0 = ev.clientY;
+                            c.onpointermove = function (m) {
+                                li.style.transform = 'translateY(' + (m.clientY - y0) + 'px)';
+                                var autres = Array.prototype.filter.call(ul.children, function (x) { return x !== li; });
+                                var avant = null;
+                                for (var a = 0; a < autres.length; a++) {
+                                    var rc = autres[a].getBoundingClientRect();
+                                    if (m.clientY < rc.top + rc.height / 2) { avant = autres[a]; break; }
+                                }
+                                var h = li.getBoundingClientRect().top - parseFloat(li.style.transform.replace(/[^-\d.]/g, '') || 0);
+                                if (avant !== li.nextSibling) {
+                                    ul.insertBefore(li, avant);
+                                    // garder l'étiquette sous le doigt après le déplacement dans la liste
+                                    var h2 = li.getBoundingClientRect().top - parseFloat(li.style.transform.replace(/[^-\d.]/g, '') || 0);
+                                    y0 += h2 - h;
+                                    li.style.transform = 'translateY(' + (m.clientY - y0) + 'px)';
+                                }
+                            };
+                            c.onpointerup = c.onpointercancel = function () {
+                                c.onpointermove = c.onpointerup = c.onpointercancel = null;
+                                li.classList.remove('saisie'); li.style.transform = '';
+                                var nouv = Array.prototype.map.call(ul.children, function (x) { return ordre[+x.dataset.k]; });
+                                ordre = nouv; dessiner();
+                            };
+                        };
+                        li.appendChild(outils); li.appendChild(c); ul.appendChild(li);
+                    });
+                    r.textContent = ''; r.className = 'retour';
+                    if (focusK != null && ul.children[focusK]) ul.children[focusK].querySelector('.etiquette').focus();
+                }
+                bV.onclick = function () {
+                    // une ligne est à sa place si elle est à son rang dans la solution, ou à celui d'une ligne interchangeable avec elle
+                    var malPlacees = 0, malDecalees = 0, lis = ul.children;
+                    ordre.forEach(function (x, k) {
+                        var place = x.i === k || (e.puzzleEchanges || []).some(function (p) { return (p[0] === x.i || p[1] === x.i) && (p[0] === k || p[1] === k); });
+                        var decal = x.niv === sol[x.i].niv;
+                        lis[k].classList.toggle('juste', place && decal); lis[k].classList.toggle('fausse', !(place && decal));
+                        if (!place) malPlacees++; else if (!decal) malDecalees++;
+                    });
+                    if (!malPlacees && !malDecalees) {
+                        r.className = 'retour ok'; r.innerHTML = '✓ Bravo, ton script est dans le bon ordre ! ';
+                        var bC = el('button', 'secondaire', 'Mettre ce script dans l’éditeur'); bC.type = 'button';
+                        bC.onclick = function () { cm.setValue(sol.map(function (x) { return '    '.repeat(x.niv) + x.txt; }).join('\n') + '\n'); if (apresCopie) apresCopie(); cm.focus(); };
+                        r.appendChild(bC); return;
+                    }
+                    r.className = 'retour ko';
+                    // nombre écrit en lettres en début de phrase, accords au singulier ou au pluriel
+                    var LETTRES = ['', 'Une', 'Deux', 'Trois', 'Quatre', 'Cinq', 'Six', 'Sept', 'Huit', 'Neuf', 'Dix'];
+                    var nb = function (n) { return LETTRES[n] || String(n); };
+                    r.textContent = '✗ ' +
+                        (malPlacees === 1 ? 'Une ligne n’est pas à sa place. ' : malPlacees ? nb(malPlacees) + ' lignes ne sont pas à leur place. ' : '') +
+                        (malDecalees === 1 ? 'Une ligne est bien placée mais mal décalée. ' : malDecalees ? nb(malDecalees) + ' lignes sont bien placées mais mal décalées. ' : '') +
+                        'Aide-toi de l’algorithme : une ligne décalée est répétée dans la boucle (ou exécutée seulement si la condition est vraie).';
+                };
+                dessiner();
+                return bloc;
+            }
+
+            /* Tableau de suivi construit à partir du script de l'élève (lignes de texte brut, rendu en lecture seule) */
+            function tableauSuivi(lignes) {
+                var w = el('div', 'tableau'), t = el('table', 'trace');
+                lignes.forEach(function (lg, i) {
+                    var tr = el('tr', i === 0 ? 'tour' : null);
+                    lg.forEach(function (c, j) {
+                        var x = document.createElement(j === 0 || i === 0 ? 'th' : 'td');
+                        if (j === 0 && i > 0) { var code = document.createElement('code'); code.textContent = c.replace(/^(Test|Valeur de) /, ''); x.appendChild(document.createTextNode(c.match(/^(Test|Valeur de) /) ? c.match(/^(Test|Valeur de) /)[0] : '')); x.appendChild(code); }
+                        else x.textContent = c;
+                        if (i === 0 && j > 0) x.className = 'num-tour' + (c === 'sortie' ? ' sortie' : '');
+                        if (i > 0 && j > 0) x.className = 'donnee';
+                        tr.appendChild(x);
+                    });
+                    t.appendChild(tr);
+                });
+                w.appendChild(t); w.style.marginTop = '8px';
+                return w;
+            }
+
+            /* Tableau de suivi d'une boucle while dans le « Pourquoi ? ». Ligne 1 : « Tour de boucle n° » (numéroté
+               automatiquement) ; ligne 2 : le test, fait avec les valeurs de la colonne précédente (vrai / faux) ;
+               lignes suivantes : valeurs des variables à la fin du tour. Première colonne donnée (initialisation).
+               Quand l'élève choisit « faux », la colonne devient la sortie de boucle : plus de valeur à écrire.
+               S.lignes[0] = le test ; S.valeurs(t) = [test avant le tour t, valeurs après le tour t].
+               Valeur gardée : colonnes séparées par « | », cases par « ; ». */
+            function suiviTableau(parent, S, garde, suivant, auChargement) {
+                var bloc = el('div', 'suivi'); parent.appendChild(bloc);
+                bloc.appendChild(el('p', null, S.consigne));
+                var wrap = el('div', 'tableau'), t = el('table', 'trace'); wrap.appendChild(t); bloc.appendChild(wrap);
+                var rangs = [el('tr', 'tour')].concat(S.lignes.map(function () { return el('tr'); }));
+                rangs[0].appendChild(el('th', null, 'Tour de boucle n°'));
+                S.lignes.forEach(function (lg, j) { rangs[j + 1].appendChild(el('th', null, lg.libelle)); });
+                rangs.forEach(function (x) { t.appendChild(x); });
+                var cols = [];
+                function colonne(k, vals, fixe) {
+                    var th = el('th', 'num-tour', k === 0 ? '' : String(k)); rangs[0].appendChild(th);
+                    var tds = [th];
+                    var ins = S.lignes.map(function (lg, j) {
+                        var td = el('td'); rangs[j + 1].appendChild(td); tds.push(td);
+                        if (fixe) { td.textContent = vals[j] || ''; td.className = 'donnee'; return null; }
+                        var x;
+                        if (lg.choix) { x = el('select'); x.appendChild(new Option('…', '')); lg.choix.forEach(function (o) { x.appendChild(new Option(o, o)); }); x.value = vals[j] || ''; }
+                        else { x = el('input'); x.autocomplete = 'off'; x.spellcheck = false; x.setAttribute('inputmode', 'decimal'); x.value = vals[j] || ''; }
+                        var efface = function () { x.classList.remove('juste', 'fausse'); };
+                        x.addEventListener('input', efface); x.addEventListener('change', efface);
+                        td.appendChild(x); return x;
+                    });
+                    if (fixe) return;
+                    var c = { k: k, ins: ins, tds: tds };
+                    // « faux » : sortie de boucle, pas de nouvelles valeurs
+                    c.sortie = function () { return ins[0].value === S.stop; };
+                    c.maj = function () {
+                        var so = c.sortie();
+                        th.textContent = so ? 'sortie' : String(k);
+                        th.classList.toggle('sortie', so);
+                        ins.forEach(function (x, j) { if (j) { x.hidden = so; tds[j + 1].classList.toggle('vide', so); } });
+                    };
+                    ins[0].addEventListener('change', function () { c.maj(); maj(); });
+                    cols.push(c); c.maj();
+                }
+                colonne(0, S.debut, true);
+                var memo = garde ? String(garde).split('|').map(function (c) { return c.split(';'); }) : [];
+                memo.forEach(function (v, i) { colonne(i + 1, v, false); });
+                if (!memo.length) colonne(1, [], false);
+                var act = el('div', 'actions');
+                var bAj = el('button', 'secondaire', '+ Ajouter un tour'); bAj.type = 'button';
+                var bRe = el('button', 'secondaire', '− Retirer la dernière colonne'); bRe.type = 'button';
+                var bVa = el('button', null, 'Valider le tableau'); bVa.type = 'button';
+                var r = el('span', 'retour case-retour');
+                act.appendChild(bAj); act.appendChild(bRe); act.appendChild(bVa); bloc.appendChild(act); bloc.appendChild(r);
+                function maj() {
+                    var der = cols[cols.length - 1];
+                    bAj.disabled = cols.length >= S.max || (der && der.sortie());
+                    bRe.disabled = cols.length <= 1;
+                }
+                bAj.onclick = function () { colonne(cols.length + 1, [], false); maj(); var p = cols[cols.length - 1].ins[0]; if (p) p.focus(); };
+                bRe.onclick = function () { var c = cols.pop(); c.tds.forEach(function (x) { x.remove(); }); maj(); };
+                maj();
+                function valeur() { return cols.map(function (c) { return c.ins.map(function (x, j) { return j && c.sortie() ? '' : x.value.trim(); }).join(';'); }).join('|'); }
+                function verifier(marquer) {
+                    var fausses = [];
+                    cols.forEach(function (c) {
+                        var att = S.valeurs(c.k), sortieAttendue = att[0] === S.stop;
+                        c.ins.forEach(function (x, j) {
+                            if (j && (sortieAttendue || c.sortie())) { x.classList.remove('juste', 'fausse'); return; }
+                            var v = x.value.trim(), lg = S.lignes[j];
+                            var ok = lg.choix ? v === att[j] : Math.abs(num(v) - num(att[j])) < 1e-9;
+                            if (marquer) { x.classList.toggle('juste', ok); x.classList.toggle('fausse', !ok); }
+                            if (!ok) fausses.push(formeNonSimple(v, num(att[j])) ? FORME_SIMPLE : lg.aide);
+                        });
+                    });
+                    if (fausses.length) return '✗ ' + fausses.length + ' case' + (fausses.length > 1 ? 's' : '') + ' à revoir (en rouge). ' + miseEnForme(fausses[0]);
+                    if (!cols[cols.length - 1].sortie()) return '✗ Le test est encore vrai : la boucle fait un tour de plus. Ajoute un tour.';
+                    return null;
+                }
+                function bon() {
+                    [bAj, bRe, bVa].forEach(function (b) { b.hidden = true; });
+                    cols.forEach(function (c) { c.ins.forEach(function (x) { x.disabled = true; }); });
+                    r.className = 'retour case-retour ok'; r.innerHTML = '✓<br>' + miseEnForme(S.raison) + '.';
+                }
+                bVa.onclick = function () {
+                    if (!exigerLu()) return;
+                    if (cols.some(function (c) { return c.ins.some(function (x, j) { return !(j && c.sortie()) && !x.value.trim(); }); })) { r.className = 'retour case-retour ko'; r.textContent = 'Complète toutes les cases du tableau.'; return; }
+                    var m = verifier(true);
+                    if (m) { r.className = 'retour case-retour ko'; r.innerHTML = m; suivant(valeur(), false); return; }
+                    bon(); suivant(valeur(), true);
+                };
+                if (garde && !verifier(false)) { verifier(true); bon(); auChargement(true); }
+            }
+            // réponse attendue d'un « suivi » (aperçu « Développer » du mode professeure)
+            function solutionSuivi(S) {
+                var c = [];
+                for (var k = 1; k <= S.max; k++) {
+                    var v = S.valeurs(k);
+                    if (v[0] === S.stop) { c.push([v[0]].concat(v.slice(1).map(function () { return ''; })).join(';')); break; }
+                    c.push(v.join(';'));
+                }
+                return c.join('|');
+            }
+            function montrerBilan() {
+                if (!e.bilan || bilanMontre) return;
+                bilanMontre = true;
+                var texteB = Array.isArray(e.bilan) ? '<ol>' + e.bilan.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol>' : e.bilan;
+                corps.appendChild(el('div', 'encadre astuce bilan', '<b>À retenir</b>' + texteB + CASE_LU));
+                if (e.ampoule) corps.appendChild(el('div', 'ampoule', '<span class="ampoule-logo" aria-hidden="true">💡</span><div>' + e.ampoule + '</div>'));
+                brancherLus();
+            }
+
+            function construire() {
+                if (construit) return;
+                construit = true;
+                var sortie = el('div', 'sortie');
+                retour = el('p', 'retour');
+                if (e.code) {
+                    var duo = el('div', 'duo' + (e.console !== false ? ' avec-console' : ''));
+                    var zoneCode = el('div', 'zone-code'); if (e.consigneCode) zoneCode.innerHTML = e.consigneCode;
+                    var gauche = el('div', 'duo-script');
+                    duo.appendChild(gauche); zoneCode.appendChild(duo); corps.appendChild(zoneCode);
+                    var boite = el('div', 'editeur');
+                    gauche.appendChild(boite);
+                    cm = CodeMirror(boite, {
+                        value: codes[n] || depart(e), mode: 'python', lineNumbers: true, indentUnit: 4, matchBrackets: true, viewportMargin: Infinity,
+                        extraKeys: {
+                            'Ctrl-Enter': lancer, 'Cmd-Enter': lancer,
+                            Tab: function (x) { x.somethingSelected() ? x.indentSelection('add') : x.replaceSelection('    '); }
+                        }
+                    });
+                    var marque = null;
+                    cm.on('change', function () {
+                        codes[n] = cm.getValue(); ecrireLocal();
+                        if (marque !== null) { cm.removeLineClass(marque, 'background', 'ligne-erreur'); marque = null; }
+                    });
+                    var actions = el('div', 'actions');
+                    var bLancer = el('button', 'executer', '▶ Exécuter'); bLancer.type = 'button';
+                    var bStop = el('button', 'stop', '■ Stop'); bStop.type = 'button'; bStop.hidden = true;
+                    var bDepart = el('button', 'secondaire', 'Revenir au programme de départ'); bDepart.type = 'button';
+                    actions.appendChild(bLancer); actions.appendChild(bStop); actions.appendChild(bDepart);
+                    actions.appendChild(el('span', 'aide', 'Ctrl+Entrée pour exécuter'));
+                    gauche.appendChild(actions);
+                    // Aide en trois niveaux : indices un par un (e.coupsDePouce), puis l'algorithme en langage naturel
+                    // (e.algorithme), puis un puzzle : les lignes de la solution à remettre dans l'ordre et à décaler (e.puzzle)
+                    if (e.coupsDePouce && e.coupsDePouce.length) {
+                        var pouce = el('div', 'coup-de-pouce'), liste = el('ol'), vus = 0;
+                        var bPouce = el('button', 'secondaire', '💡 Je ne vois pas comment faire'); bPouce.type = 'button';
+                        var bAlgo = el('button', 'secondaire', '🧭 Je ne comprends toujours pas'); bAlgo.type = 'button'; bAlgo.hidden = true;
+                        var bPuzzle = el('button', 'secondaire', '🧩 Remettre les lignes du script dans l’ordre'); bPuzzle.type = 'button'; bPuzzle.hidden = true;
+                        liste.hidden = true;
+                        bPouce.onclick = function () {
+                            liste.hidden = false;
+                            liste.appendChild(el('li', null, e.coupsDePouce[vus++]));
+                            if (vus < e.coupsDePouce.length) { bPouce.textContent = '💡 Encore un indice (' + vus + '/' + e.coupsDePouce.length + ')'; return; }
+                            bPouce.hidden = true;
+                            if (e.algorithme) bAlgo.hidden = false; else if (e.puzzle) bPuzzle.hidden = false;
+                        };
+                        bAlgo.onclick = function () {
+                            bAlgo.hidden = true;
+                            var bA = el('div', 'algo');
+                            bA.appendChild(el('p', 'algo-titre', 'L’algorithme, pas à pas'));
+                            e.algorithme.forEach(function (l) {
+                                var niv = (/^ */.exec(l)[0].length) / 4, d = el('div', 'algo-ligne');
+                                d.style.paddingLeft = (niv * 1.6) + 'em'; d.textContent = l.trim(); bA.appendChild(d);
+                            });
+                            bA.appendChild(el('p', 'aide', 'Traduis chaque ligne en Python : « ← » s’écrit <code>=</code>, « Pour … allant de … à … » devient une boucle <code>for</code>, « Tant que » devient <code>while</code>, « Si » devient <code>if</code>, « Afficher » devient <code>print</code>, « Renvoyer » devient <code>return</code>. Les lignes décalées restent décalées.'));
+                            pouce.insertBefore(bA, bAlgo);
+                            if (e.puzzle) bPuzzle.hidden = false;
+                        };
+                        bPuzzle.onclick = function () { bPuzzle.hidden = true; pouce.insertBefore(puzzleScript(e, cm, replier), bPuzzle); };
+                        // script mis dans l'éditeur : l'aide (indices, algorithme, puzzle) se replie, on peut la rouvrir
+                        function replier() {
+                            if (pouce.querySelector('details.aide-repliee')) return;
+                            var d = el('details', 'aide-repliee'), sm = el('summary', null, '💡 Revoir l’aide (indices, algorithme, puzzle)');
+                            d.appendChild(sm);
+                            while (pouce.firstChild) d.appendChild(pouce.firstChild);
+                            pouce.appendChild(d);
+                        }
+                        pouce.appendChild(liste); pouce.appendChild(bPouce); pouce.appendChild(bAlgo); pouce.appendChild(bPuzzle);
+                        gauche.appendChild(pouce);
+                    }
+                    bDepart.onclick = function () { if (confirm('Effacer ton programme et revenir à celui de départ ?')) cm.setValue(depart(e)); };
+                    bStop.onclick = arreterPython;
+
+                    /* console « >>> », comme dans Capytale : elle travaille avec le dernier programme exécuté */
+                    var histo = null, titreConsole = null;
+                    if (e.console !== false) {
+                        var cons = el('div', 'console');
+                        titreConsole = el('div', 'console-titre', 'Console : exécute le script (▶), puis tape un appel et appuie sur Entrée');
+                        cons.appendChild(titreConsole);
+                        histo = el('div', 'console-histo');
+                        var fc = el('form', 'console-ligne');
+                        fc.appendChild(el('span', null, '&gt;&gt;&gt;'));
+                        var ci = el('input'); ci.autocomplete = 'off'; ci.spellcheck = false; ci.setAttribute('autocapitalize', 'off');
+                        ci.setAttribute('aria-label', 'Console Python'); indiceConsole(fc, ci, e.exemple);
+                        fc.appendChild(ci); cons.appendChild(histo); cons.appendChild(fc);
+                        duo.appendChild(cons);
+                        cons.onclick = function (ev) { if (ev.target === cons || ev.target === histo) ci.focus(); };
+                        var pile = [], pos = 0;
+                        fc.onsubmit = function (ev) {
+                            ev.preventDefault();
+                            var l = ci.value;
+                            if (!l.trim() || ci.readOnly) return;
+                            pile.push(l); pos = pile.length; ci.value = ''; ci.readOnly = true;
+                            ligneHisto('>>> ' + l);
+                            envoyer({ type: 'console', n: n, src: l }).then(function (r) {
+                                ci.readOnly = false;
+                                if (r.out) ligneHisto(r.out.replace(/\n$/, ''));
+                                if (r.err) ligneHisto(r.err, 'err');
+                            });
+                        };
+                        ci.onkeydown = function (ev) {
+                            if (ev.key === 'ArrowUp' && pos > 0) { pos--; ci.value = pile[pos]; ev.preventDefault(); }
+                            else if (ev.key === 'ArrowDown') { pos = Math.min(pile.length, pos + 1); ci.value = pile[pos] || ''; ev.preventDefault(); }
+                        };
+                    } else gauche.appendChild(sortie);
+                    function ligneHisto(t, classe) {
+                        histo.appendChild(el('pre', classe || null, esc(t)));
+                        histo.scrollTop = histo.scrollHeight;
+                    }
+
+                    function lancer() {
+                        if (bLancer.disabled || !exigerLu()) return;
+                        bLancer.disabled = true; bLancer.textContent = 'Exécution…';
+                        var arret = setTimeout(function () { bStop.hidden = false; }, 2500);
+                        if (e.type === 'code' || e.verifCode) { retour.textContent = ''; retour.className = 'retour'; }
+                        envoyer({ type: 'run', src: cm.getValue(), n: n, v: e.type === 'code' || !!e.verifCode }).then(function (r) {
+                            clearTimeout(arret); bStop.hidden = true;
+                            bLancer.disabled = false; bLancer.textContent = '▶ Exécuter';
+                            if (histo) {
+                                // comme dans Capytale : affichages et erreurs du script dans la console
+                                // console repartie de zéro, comme après un redémarrage : « Script exécuté » en haut, puis >>>
+                                titreConsole.hidden = true;
+                                histo.innerHTML = '';
+                                ligneHisto('Script exécuté', 'sep');
+                                if (r.out) ligneHisto(r.out.replace(/\n$/, ''));
+                                if (r.err) ligneHisto((r.ligne ? 'Ligne ' + r.ligne + ' · ' : '') + r.err, 'err');
+                            } else montrer(sortie, r);
+                            if (r.ligne) { marque = r.ligne - 1; cm.addLineClass(marque, 'background', 'ligne-erreur'); }
+                            if (!(e.type === 'code' || e.verifCode) || r.err) return;
+                            if (r.ok) reussi();
+                            else {
+                                faux(); retour.className = 'retour ko'; retour.textContent = '✗ Pas encore. ' + r.msg;
+                                if (r.tableau) retour.appendChild(tableauSuivi(r.tableau));
+                            }
+                        });
+                    }
+                    bLancer.onclick = lancer;
+                }
+                if (e.type === 'question') {
+                    // une case = une ligne avec son propre bouton Valider ; l'étape est réussie quand toutes sont justes
+                    var cases = el('div', 'reponses une-par-une');
+                    var valeurs = e.champs.map(function (x, k) { return (reponses[n] || [])[k] || ''; }), oks = [];
+                    var verif = e.verifierCase ? function (k, v) { return e.verifierCase(k, v, e); } : function (k, v) { return controleCase(k, v, e); };
+                    e.champs.forEach(function (lib, k) {
+                        ligneCase(cases, e.etiquettesTexte ? esc(lib) : '<code>' + esc(lib) + '</code>', valeurs[k],
+                            function (v) { return verif(k, v); },
+                            function (v, ok) {
+                                if (!ok) faux();
+                                oks[k] = ok; valeurs[k] = v; reponses[n] = valeurs.slice(); ecrireLocal();
+                                if (ok && e.champs.every(function (x, j) { return oks[j]; })) reussi();
+                            }, function (ok) { oks[k] = ok; }, true, exigerLu);
+                    });
+                    corps.appendChild(cases);
+                }
+                if (e.type === 'prevoir') {
+                    /* Pour chaque cas, l'un après l'autre : prévision (verrouillée).
+                       Juste → cas fini. Fausse → exécuter, « La console affiche » (sans pré-remplissage),
+                       puis, si sc.car : comparaisons à compléter (<, > ou =) et bloc exécuté à cocher.
+                       reponses[n] = 8 valeurs par cas : [prévision, console, réponses du « Pourquoi ? »…]. */
+                    var W = 8, rep = e.scripts.map(function (x, k) {
+                        var r = []; for (var j = 0; j < W; j++) r.push((reponses[n] || [])[W * k + j] || ''); return r;
+                    });
+                    var finis = [];
+                    function sauver() { reponses[n] = [].concat.apply([], rep); ecrireLocal(); }
+                    function egal(v, a, tol) { return typeof a === 'number' ? Math.abs(num(v) - a) < (tol || 1e-6) : txt(v) === txt(a); }
+                    function caseFinie(k) {
+                        finis[k] = true;
+                        if (k + 1 < e.scripts.length) { if (!blocs[k + 1]) montrerCas(k + 1); }
+                        else if (e.scripts.every(function (x, j) { return finis[j]; })) { if (zoneCode) ouvrirCode(); else reussi(); }
+                    }
+                    var blocs = [], charge = false;
+                    function montrerCas(k) {
+                        var sc = e.scripts[k];
+                        var bloc = el('div', 'bloc-script'); blocs[k] = bloc;
+                        if (sc.question) {
+                            // simple question à valider avant les prévisions
+                            var lq = el('div', 'reponses une-par-une'); bloc.appendChild(lq);
+                            corps.appendChild(bloc);
+                            charge = true;
+                            ligneCase(lq, sc.question, rep[k][0],
+                                function (v) { if (formeNonSimple(v, sc.attendu)) return FORME_SIMPLE; return egalSc(v, sc) ? null : sc.aide; },
+                                function (v, ok) { rep[k][0] = v; sauver(); if (ok) caseFinie(k); else faux(); },
+                                function (ok) { if (ok) finis[k] = true; }, true, exigerLu);
+                            charge = false;
+                            if ((finis[k] || faite) && k + 1 < e.scripts.length && !blocs[k + 1]) montrerCas(k + 1);
+                            return;
+                        }
+                        bloc.appendChild(el('h3', null, esc(sc.nom)));
+                        if (sc.presentation) bloc.appendChild(el('div', null, sc.presentation));   // texte et code montrés au moment d'étudier ce cas
+                        if (!sc.appel) bloc.appendChild(el('div', null, py(sc.code)));
+                        var fp = el('form', 'case-ligne prevision');
+                        var lp = el('label', null, sc.libelle || (sc.appel ? 'Je prévois que l’appel <code>' + esc(sc.appel) + '</code> renvoie ' : 'Je prévois qu’il affiche '));
+                        var ip = el('input'); ip.autocomplete = 'off'; ip.spellcheck = false; ip.className = 'long'; ip.value = rep[k][0];
+                        lp.appendChild(ip); if (sc.apres) lp.appendChild(document.createTextNode(sc.apres)); fp.appendChild(lp);
+                        var bp = el('button', null, 'Valider ma prévision'); bp.type = 'submit'; fp.appendChild(bp);
+                        var rp = el('span', 'retour case-retour'); fp.appendChild(rp);
+                        bloc.appendChild(fp);
+                        var suite = el('div', 'verif-script'); suite.hidden = true;
+                        bloc.appendChild(suite);
+
+                        function apresPrevision(direct) {
+                            ip.readOnly = true; bp.hidden = true;
+                            if (egalSc(rep[k][0], sc)) {
+                                rp.className = 'retour case-retour ok'; rp.textContent = '✓ Bonne prévision !';
+                                if (direct) caseFinie(k); else finis[k] = true;
+                                return;
+                            }
+                            rp.className = 'retour case-retour ko'; rp.textContent = sc.appel ? '✗ Ce n’est pas ça : exécute le script, puis tape l’appel dans la console.' : '✗ Ce n’est pas ça : exécute le programme pour voir ce qu’il affiche.';
+                            suite.hidden = false;
+                            cms.push(sc.appel ? miniEditeur(suite, e.commun, n + '-' + k, sc.appel, e.exemple) : miniEditeur(suite, (e.commun ? e.commun + '\n' : '') + sc.code, n + '-' + k));
+                            var lignes = el('div', 'reponses une-par-une');
+                            suite.appendChild(lignes);
+                            ligneCase(lignes, sc.libelleVerif || (sc.appel ? 'L’appel <code>' + esc(sc.appel) + '</code> renvoie' : 'La console affiche'), rep[k][1],
+                                function (v) { if (formeNonSimple(v, sc.attendu)) return FORME_SIMPLE; return egalSc(v, sc) ? null : sc.aideVerif ? sc.aideVerif : sc.appel ? 'Tape ' + sc.appel + ' dans la console et regarde ce que l’appel renvoie.' : 'Exécute le programme et recopie exactement ce que la console affiche.'; },
+                                function (v, ok) { rep[k][1] = v; sauver(); if (ok) apresConsole(true); else faux(); },
+                                function () {}, true, exigerLu);
+                            if (rep[k][1] && egalSc(rep[k][1], sc)) apresConsole(false);
+
+                            function apresConsole(direct) {
+                                if (!sc.car) { if (direct) caseFinie(k); else finis[k] = true; return; }
+                                if (suite.querySelector('.pourquoi')) return;
+                                /* raisonnement guidé, une ligne après l'autre. sc.car = liste d'éléments :
+                                   { cond, vraie, raison, val?, avant? } condition vérifiée ou non (liste déroulante)
+                                   { valeur, raison, avant, aide }       nouvelle valeur d'une variable (case à remplir)
+                                   { bloc }                              bloc exécuté (liste déroulante)
+                                   { fin }                               phrase de conclusion
+                                   réponses rangées dans rep[k][2], rep[k][3], … */
+                                var nomVar = sc.variable || e.variable;
+                                var pq = el('div', 'pourquoi');
+                                pq.appendChild(el('p', 'pq-titre', 'Pourquoi ?'));
+                                pq.appendChild(el('p', null, sc.intro || 'La variable <code>' + esc(nomVar) + '</code> vaut ' + esc(sc.valeur) + '.'));
+                                if (sc.surligne && sc.code) pq.appendChild(el('div', null, pySurligne(sc.code, sc.surligne[0], sc.surligne[1])));
+                                suite.appendChild(pq);
+                                var nbCond = 0, faits = [];
+                                function libelleBloc(v) { var b = (e.blocs || []).filter(function (x) { return (Array.isArray(x) ? x[0] : x) === v; })[0]; return Array.isArray(b) ? b[1] : v; }
+                                function element(j) {
+                                    if (faits[j]) return;
+                                    faits[j] = true;
+                                    var it = sc.car[j], idx = 2 + j;
+                                    if (!it) { if (charge) finis[k] = true; else caseFinie(k); return; }
+                                    var suivant = function (v, ok) { if (v !== undefined) { rep[k][idx] = v; sauver(); } if (ok) element(j + 1); else faux(); };
+                                    var auChargement = function (ok) { if (ok) { if (j + 1 === sc.car.length) finis[k] = true; else element(j + 1); } };
+                                    if (it.cond) {
+                                        var avant = it.avant || (nbCond ? 'On teste la condition suivante, <code>' + esc(it.cond) + '</code> : elle ' : '<code>' + esc(it.cond) + '</code> : la condition ');
+                                        nbCond++;
+                                        ligneChoix(pq, avant, ['est vérifiée', 'n’est pas vérifiée'], rep[k][idx], it.vraie ? 'est vérifiée' : 'n’est pas vérifiée',
+                                            'Remplace ' + nomVar + ' par ' + (it.val || sc.valeur) + ' dans la condition : est-ce vrai ?', it.raison + '.', suivant, auChargement);
+                                    } else if (it.valeur) {
+                                        var lc = el('div', 'reponses une-par-une'); pq.appendChild(lc);
+                                        ligneCase(lc, it.avant, rep[k][idx],
+                                            function (v) { if (formeNonSimple(v, num(it.valeur))) return FORME_SIMPLE; return Math.abs(num(v) - num(it.valeur)) < (it.tol || 1e-9) ? null : it.aide; },
+                                            function (v, ok) { suivant(v, ok); if (ok) marquerRaison(lc, it.raison); },
+                                            function (ok) { if (ok) { marquerRaison(lc, it.raison); auChargement(true); } }, true, exigerLu);
+                                    } else if (it.bloc) {
+                                        ligneChoix(pq, 'Donc le bloc sous ', e.blocs, rep[k][idx], it.bloc,
+                                            'C’est le bloc sous la première condition vérifiée (le bloc sous else si aucune ne l’est).',
+                                            'Le bloc sous ' + libelleBloc(it.bloc) + ' est exécuté' + (sc.appel && j === sc.car.length - 1 ? ' : l’appel ' + sc.appel + ' renvoie « ' + sc.attendu + ' »' : '') + '.',
+                                            suivant, auChargement, ' est exécuté.', 'ligne-bloc');
+                                    } else if (it.suivi) {
+                                        suiviTableau(pq, it.suivi, rep[k][idx], suivant, auChargement);
+                                    } else if (it.fin) {
+                                        pq.appendChild(el('p', 'retour ok', '✓ ' + it.fin));
+                                        if (j + 1 < sc.car.length) element(j + 1); else if (charge) finis[k] = true; else caseFinie(k);
+                                    }
+                                }
+                                function marquerRaison(lc, raison) {
+                                    var r = lc.querySelector('.case-retour');
+                                    if (r && raison) r.innerHTML = '✓<br>' + miseEnForme(raison) + '.';
+                                }
+                                element(0);
+                            }
+                        }
+                        fp.onsubmit = function (ev) {
+                            ev.preventDefault();
+                            if (!exigerLu()) return;
+                            var v = ip.value.trim();
+                            if (!v || ip.readOnly) return;
+                            if (formeNonSimple(v, sc.attendu)) { rp.className = 'retour case-retour ko'; rp.textContent = '✗ ' + FORME_SIMPLE; return; }
+                            rep[k][0] = v; sauver(); if (!egalSc(v, sc)) faux(); apresPrevision(true);
+                            rafraichir();
+                        };
+                        corps.appendChild(bloc);
+                        charge = true;      // reconstruction depuis les réponses gardées : on ne valide rien
+                        if (rep[k][0]) apresPrevision(false);
+                        charge = false;
+                        // mode professeure : « Développer » montre le chemin d'un élève qui s'est trompé (rien n'est enregistré)
+                        if (modeProf() && !rep[k][0]) {
+                            var bd = el('button', 'secondaire developper', '🔍 Développer (si l’élève se trompe)'); bd.type = 'button';
+                            bd.onclick = function () {
+                                bd.remove();
+                                var garde = rep[k].slice(), etaitFini = finis[k];
+                                rep[k] = ['(aperçu)', String(sc.attendu)].concat((sc.car || []).map(function (it) {
+                                    return it.cond ? (it.vraie ? 'est vérifiée' : 'n’est pas vérifiée') : it.valeur ? String(it.valeur) : it.suivi ? solutionSuivi(it.suivi) : it.bloc || '';
+                                }));
+                                ip.value = '(aperçu professeure)';
+                                charge = true; apresPrevision(false); charge = false;
+                                rep[k] = garde; finis[k] = etaitFini;
+                                rafraichir();
+                            };
+                            bloc.insertBefore(bd, suite);
+                        }
+                        // au rechargement : on rouvre aussi les cas suivants déjà commencés (tous, en mode professeure)
+                        if ((finis[k] || faite || modeProf()) && k + 1 < e.scripts.length && !blocs[k + 1]) montrerCas(k + 1);
+                    }
+                    montrerCas(0);
+                    // étape « prévoir » avec correction : l'éditeur vient après les cas, et n'apparaît qu'une fois ceux-ci finis
+                    function ouvrirCode() { zoneCode.hidden = false; rafraichir(); setTimeout(function () { zoneCode.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300); }
+                    if (zoneCode) {
+                        corps.appendChild(zoneCode);
+                        zoneCode.hidden = !(faite || e.scripts.every(function (x, j) { return finis[j]; }));
+                    }
+                }
+                if (e.type === 'trace') {
+                    /* Suivi des variables d'une boucle : les e.guide premiers tours un par un, puis un tableau
+                       qui reprend les valeurs trouvées, avec des colonnes à ajouter (jusqu'à e.maxTours).
+                       reponses[n] = valeurs tour par tour (e.lignes.length par tour), puis « =réponse finale ». */
+                    var L = e.lignes, memoT = (reponses[n] || []).slice();
+                    var finalT = memoT.length && /^=/.test(memoT[memoT.length - 1]) ? memoT.pop().slice(1) : '';
+                    var tours = [];
+                    for (var q = 0; q + L.length <= memoT.length; q += L.length) tours.push(memoT.slice(q, q + L.length));
+                    var sauverT = function () { reponses[n] = [].concat.apply([], tours).concat(finalT ? ['=' + finalT] : []); ecrireLocal(); };
+                    var justeT = function (k, j, v) { return Math.abs(num(v) - L[j].f(k)) < 1e-9; };
+                    var tourJuste = function (k) { var t = tours[k - 1]; return !!t && L.every(function (lg, j) { return justeT(k, j, t[j]); }); };
+                    var ordinal = function (k) { return k === 1 ? '1<sup>er</sup>' : k + '<sup>e</sup>'; };
+                    var ordinalTxt = function (k) { return k === 1 ? '1er' : k + 'e'; };
+                    var caseT = function (valeur, aria) {
+                        var inp = el('input'); inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('inputmode', 'decimal');
+                        inp.setAttribute('aria-label', aria); inp.value = valeur || '';
+                        inp.addEventListener('input', function () { inp.classList.remove('juste', 'fausse'); });
+                        return inp;
+                    };
+                    var zoneT = el('div'); corps.appendChild(zoneT);
+                    var tableauT = null;
+                    var guideT = function (k) {
+                        var bl = el('div', 'bloc-script'); bl.appendChild(el('h3', null, ordinal(k) + ' tour'));
+                        bl.appendChild(el('p', null, e.contexte(k)));
+                        var f = el('form', 'case-ligne prevision'), ins = [];
+                        L.forEach(function (lg, j) {
+                            var lab = el('label', null, (j ? 'puis ' : '') + '<code>' + esc(lg.nom) + '</code> vaut ');
+                            var inp = caseT((tours[k - 1] || [])[j], lg.nom + ', ' + ordinalTxt(k) + ' tour'); inp.className = 'tour';
+                            lab.appendChild(inp); f.appendChild(lab); ins.push(inp);
+                        });
+                        var bt = el('button', null, 'Valider'); bt.type = 'submit'; f.appendChild(bt);
+                        var r = el('span', 'retour case-retour'); f.appendChild(r);
+                        bl.appendChild(f); zoneT.appendChild(bl);
+                        var fini = function () {
+                            ins.forEach(function (x) { x.readOnly = true; x.classList.remove('fausse'); x.classList.add('juste'); });
+                            bt.hidden = true; r.className = 'retour case-retour ok'; r.innerHTML = '✓<br>' + miseEnForme(e.raison(k)) + '.';
+                            if (k < e.guide) guideT(k + 1); else tableT();
+                        };
+                        f.onsubmit = function (ev) {
+                            ev.preventDefault();
+                            if (!exigerLu() || bt.hidden) return;
+                            var v = ins.map(function (x) { return x.value.trim(); });
+                            if (v.some(function (x) { return !x; })) { r.className = 'retour case-retour ko'; r.textContent = 'Complète les ' + L.length + ' cases.'; return; }
+                            var formesG = ins.filter(function (x, j) { return formeNonSimple(x.value, L[j].f(k)); });
+                            if (formesG.length) { formesG.forEach(function (x) { x.classList.add('fausse'); }); r.className = 'retour case-retour ko'; r.textContent = '✗ ' + FORME_SIMPLE; return; }
+                            tours = tours.slice(0, k - 1); tours[k - 1] = v; sauverT();
+                            var fausses = [];
+                            ins.forEach(function (x, j) { var ok = justeT(k, j, v[j]); x.classList.toggle('juste', ok); x.classList.toggle('fausse', !ok); if (!ok) fausses.push(j); });
+                            if (fausses.length) { faux(); r.className = 'retour case-retour ko'; r.innerHTML = '✗ ' + miseEnForme(L[fausses[0]].aide); return; }
+                            fini();
+                        };
+                        if (tourJuste(k)) fini();
+                    };
+                    var tableT = function () {
+                        if (tableauT) return;
+                        tableauT = el('div', 'bloc-script');
+                        tableauT.appendChild(el('h3', null, 'La suite, dans un tableau'));
+                        tableauT.appendChild(el('p', null, e.consigneTableau));
+                        var wrap = el('div', 'tableau'), t = el('table', 'trace'); wrap.appendChild(t); tableauT.appendChild(wrap);
+                        var rangs = [el('tr')].concat(L.map(function () { return el('tr'); }));
+                        rangs[0].appendChild(el('th', null, 'Tour de boucle'));
+                        L.forEach(function (lg, j) { rangs[j + 1].appendChild(el('th', null, 'Valeur de <code>' + esc(lg.nom) + '</code>')); });
+                        rangs[0].appendChild(el('th', null, 'Avant la boucle'));
+                        L.forEach(function (lg, j) { rangs[j + 1].appendChild(el('td', null, e.avant[j] === null ? '—' : String(e.avant[j]))); });
+                        rangs.forEach(function (x) { t.appendChild(x); });
+                        var colonnes = [];
+                        var ajouterCol = function (k, vals, fixe) {
+                            rangs[0].appendChild(el('th', null, ordinal(k) + ' tour'));
+                            var ins = L.map(function (lg, j) {
+                                var td = el('td');
+                                if (fixe) { td.textContent = vals[j]; rangs[j + 1].appendChild(td); return null; }
+                                if ((e.donneesTableau || []).indexOf(j) >= 0) { td.textContent = String(lg.f(k)); td.className = 'donnee'; rangs[j + 1].appendChild(td); return null; }
+                                var inp = caseT(vals[j], lg.nom + ', ' + ordinalTxt(k) + ' tour'); td.appendChild(inp); rangs[j + 1].appendChild(td);
+                                return inp;
+                            });
+                            if (!fixe) colonnes.push({ k: k, ins: ins });
+                        };
+                        for (var kk = 1; kk <= e.guide; kk++) ajouterCol(kk, tours[kk - 1], true);
+                        for (kk = e.guide + 1; kk <= Math.max(tours.length, e.guide + 1); kk++) ajouterCol(kk, tours[kk - 1] || [], false);
+                        var act = el('div', 'actions'), bAj = el('button', 'secondaire', '+ Ajouter un tour'); bAj.type = 'button';
+                        var majAj = function () { bAj.disabled = e.guide + colonnes.length >= e.maxTours; bAj.title = bAj.disabled ? 'La boucle ne fait que ' + e.maxTours + ' tours.' : ''; };
+                        bAj.onclick = function () {
+                            var k = e.guide + colonnes.length + 1;
+                            if (k > e.maxTours) return;
+                            ajouterCol(k, [], false); majAj(); colonnes[colonnes.length - 1].ins.filter(Boolean)[0].focus();
+                        };
+                        act.appendChild(bAj); tableauT.appendChild(act); majAj();
+                        var fF = el('form', 'case-ligne prevision'), lF = el('label', null, e.final.libelle + ' ');
+                        var iF = caseT(finalT, e.final.libelle); iF.className = 'long'; lF.appendChild(iF); fF.appendChild(lF);
+                        var bF = el('button', null, 'Valider le tableau'); bF.type = 'submit'; fF.appendChild(bF);
+                        tableauT.appendChild(fF);
+                        var verifT = el('div', 'verif-script'); verifT.hidden = true; tableauT.appendChild(verifT);
+                        zoneT.appendChild(tableauT);
+                        var montrerVerifT = function () {
+                            if (verifT.childNodes.length) return;
+                            verifT.hidden = false;
+                            verifT.appendChild(el('p', null, 'Tu peux maintenant exécuter le script pour vérifier :'));
+                            cms.push(miniEditeur(verifT, e.script, n + '-v')); rafraichir();
+                        };
+                        var corrigerT = function (marquer) {
+                            var fausses = [];
+                            colonnes.forEach(function (c) { c.ins.forEach(function (x, j) {
+                                if (!x) return;   // valeur donnée
+                                var ok = justeT(c.k, j, x.value);
+                                if (marquer) { x.classList.toggle('juste', ok); x.classList.toggle('fausse', !ok); }
+                                if (!ok) fausses.push(L[j].aide);
+                            }); });
+                            var okF = Math.abs(num(iF.value) - e.final.attendu) < 1e-9;
+                            if (marquer) { iF.classList.toggle('juste', okF); iF.classList.toggle('fausse', !okF); }
+                            if (!okF) fausses.push(e.final.aide);
+                            return fausses;
+                        };
+                        fF.onsubmit = function (ev) {
+                            ev.preventDefault();
+                            if (!exigerLu()) return;
+                            if (colonnes.some(function (c) { return c.ins.some(function (x) { return x && !x.value.trim(); }); })) { retour.className = 'retour ko'; retour.textContent = 'Complète toutes les cases du tableau.'; return; }
+                            if (!iF.value.trim()) { retour.className = 'retour ko'; retour.textContent = 'Écris ce que le script affiche à la fin.'; return; }
+                            var formesT = [];
+                            colonnes.forEach(function (c) { c.ins.forEach(function (x, j) { if (x && formeNonSimple(x.value, L[j].f(c.k))) formesT.push(x); }); });
+                            if (formeNonSimple(iF.value, e.final.attendu)) formesT.push(iF);
+                            if (formesT.length) { formesT.forEach(function (x) { x.classList.add('fausse'); }); retour.className = 'retour ko'; retour.textContent = '✗ ' + FORME_SIMPLE; return; }
+                            tours = tours.slice(0, e.guide).concat(colonnes.map(function (c) { return c.ins.map(function (x, j) { return x ? x.value.trim() : String(L[j].f(c.k)); }); }));
+                            finalT = iF.value.trim(); sauverT();
+                            var fausses = corrigerT(true);
+                            if (fausses.length) {
+                                faux(); retour.className = 'retour ko';
+                                retour.innerHTML = '✗ ' + fausses.length + ' case' + (fausses.length > 1 ? 's' : '') + ' à revoir (en rouge). ' + miseEnForme(fausses[0]);
+                                return;
+                            }
+                            retour.textContent = ''; montrerVerifT(); reussi();
+                        };
+                        if (finalT && !corrigerT(false).length) { corrigerT(true); montrerVerifT(); }
+                    };
+                    guideT(1);
+                }
+                if (e.type === 'quiz') {
+                    // une seule validation, puis correction question par question ; score gardé dans les détails (q / qmax)
+                    var fq = el('form', 'quiz');
+                    var choixQ = e.questions.map(function (q, i) {
+                        var bq0 = el('div', 'quiz-q');
+                        bq0.appendChild(el('p', null, '<b>Question ' + (i + 1) + '.</b> ' + q.texte));
+                        if (q.code) bq0.appendChild(el('div', null, py(q.code)));
+                        var radios = q.choix.map(function (t, j) {
+                            var l = el('label'), inp = el('input'); inp.type = 'radio'; inp.name = 'quiz-' + n + '-' + i; inp.value = j;
+                            l.appendChild(inp); l.appendChild(el('span', null, t)); bq0.appendChild(l); return inp;
+                        });
+                        var corr = el('div', 'retour'); bq0.appendChild(corr);   // div : la correction peut contenir un tableau de suivi
+                        fq.appendChild(bq0);
+                        return { radios: radios, corr: corr };
+                    });
+                    var bValQ = el('button', null, 'Valider mes réponses'); bValQ.type = 'submit'; fq.appendChild(bValQ);
+                    var avQ = el('p', 'aide', 'Attention : une seule validation, tes réponses ne pourront plus être modifiées.'); fq.appendChild(avQ);
+                    var corriger = function (vals) {
+                        var sc = 0;
+                        e.questions.forEach(function (q, i) {
+                            var ch = choixQ[i], ok = String(q.bonne) === vals[i];
+                            ch.radios.forEach(function (r, j) { r.disabled = true; r.checked = String(j) === vals[i]; });
+                            if (ok) sc++;
+                            ch.corr.className = 'retour ' + (ok ? 'ok' : 'ko');
+                            ch.corr.innerHTML = (ok ? '✓ ' : '✗ La bonne réponse : ' + q.choix[q.bonne] + '. ') + (q.explication || '');
+                        });
+                        bValQ.hidden = true; avQ.hidden = true;
+                        // bilan du quiz, en haut : nombre de bonnes réponses
+                        var bil = fq.querySelector('.quiz-bilan') || fq.insertBefore(el('div', 'quiz-bilan'), fq.firstChild);
+                        var nq = e.questions.length;
+                        bil.className = 'quiz-bilan' + (sc === nq ? ' parfait' : sc * 2 >= nq ? ' bien' : '');
+                        bil.innerHTML = '<span class="quiz-bilan-score">' + sc + ' / ' + nq + '</span><span><b>' +
+                            (sc === 0 ? 'Aucune bonne réponse' : sc + ' bonne' + (sc > 1 ? 's' : '') + ' réponse' + (sc > 1 ? 's' : '')) + '</b> sur ' + nq + ' questions.<br>' +
+                            (sc === nq ? '🎉 Bravo, sans faute !' : 'Lis la correction sous chaque question.') + '</span>';
+                        return sc;
+                    };
+                    var gardeQ = null;   // mode anti-triche (antiTriche: true dans config.js)
+                    fq.onsubmit = function (ev) {
+                        ev.preventDefault();
+                        var vals = choixQ.map(function (ch) { var k = ch.radios.findIndex(function (r) { return r.checked; }); return k < 0 ? '' : String(k); });
+                        if (vals.some(function (v) { return v === ''; })) { retour.className = 'retour ko'; retour.textContent = 'Réponds à toutes les questions.'; return; }
+                        if (!VUE && !(gardeQ ? gardeQ.confirmer('Valider définitivement tes réponses ?') : confirm('Valider définitivement tes réponses ?'))) return;
+                        reponses[n] = vals; ecrireLocal();
+                        if (gardeQ) gardeQ.terminer();
+                        var sc = corriger(vals);
+                        reussi();
+                        retour.textContent = 'Score : ' + sc + ' / ' + e.questions.length + '. ' + retour.textContent;
+                    };
+                    corps.appendChild(fq);
+                    var dejaQ = reponses[n];
+                    if (dejaQ && dejaQ.length === e.questions.length && dejaQ.every(function (v) { return v !== ''; })) {
+                        var scQ = corriger(dejaQ);
+                        retour.className = 'retour ok'; retour.textContent = 'Score : ' + scQ + ' / ' + e.questions.length;
+                        // quiz fait en avance : l'étape est validée dès qu'on y arrive
+                        c.quizFait = function () { if (n === faites + 1) { reussi(); retour.textContent = 'Score : ' + scQ + ' / ' + e.questions.length + '. ' + retour.textContent; } };
+                        if (n === faites + 1) setTimeout(c.quizFait, 0);
+                    } else if (window.AntiTriche && FICHE && FICHE.antiTriche) {
+                        gardeQ = AntiTriche.proteger({ id: ID, carte: c, formulaire: fq, actif: !VUE && !modeTest() });
+                    }
+                }
+                if (e.type === 'qcm') {
+                    var q = el('form', 'qcm');
+                    var radios = e.choix.map(function (t, k) {
+                        var l = el('label'), i = el('input');
+                        i.type = 'radio'; i.name = 'qcm-' + n; i.value = k;
+                        if (reponses[n] && reponses[n][0] === t) i.checked = true;
+                        l.appendChild(i); l.appendChild(el('span', null, t)); q.appendChild(l);
+                        return i;
+                    });
+                    var bQ = el('button', null, 'Valider'); bQ.type = 'submit';
+                    q.appendChild(bQ);
+                    q.onsubmit = function (ev) {
+                        ev.preventDefault();
+                        if (!exigerLu()) return;
+                        var k = radios.findIndex(function (i) { return i.checked; });
+                        if (k < 0) { retour.className = 'retour ko'; retour.textContent = 'Choisis une réponse.'; return; }
+                        reponses[n] = [e.choix[k]]; ecrireLocal();
+                        if (k === e.bonne) reussi();
+                        else { faux(); retour.className = 'retour ko'; retour.textContent = '✗ Pas encore. ' + (e.pourquoi[k] || 'Relis bien la consigne.'); }
+                    };
+                    corps.appendChild(q);
+                }
+                corps.appendChild(retour);
+                if (modeProf()) corps.appendChild(boiteSolution(e));
+                if (faite && !passees[n]) montrerBilan();   // étape passée : pas d'« À retenir » (il donne la réponse)
+                brancherLus();
+            }
+
+            function reussi(force) {
+                if (n > faites + 1) {   // quiz fait en avance : enregistré, sans faire avancer la progression
+                    retour.className = 'retour ok'; retour.textContent = '✓ Réponses enregistrées.';
+                    sommaire();
+                    var et = el('p', 'aide', 'Enregistrement…'); corps.appendChild(et);
+                    enregistrer().then(function (t) { et.textContent = t; });
+                    return;
+                }
+                retour.className = 'retour ok';
+                if (n <= faites) {
+                    if (!passees[n]) { retour.textContent = '✓ Toujours juste !'; return; }
+                    // étape passée plus tôt, réussie maintenant : elle compte
+                    delete passees[n]; ecrireLocal();
+                    retour.textContent = '✓ Bravo, c’est réussi ! Cette étape compte maintenant.';
+                    c.classList.remove('passee'); tete.querySelector('.etape-num').textContent = '✓';
+                    montrerBilan(); sommaire();
+                    var et2 = el('p', 'aide', 'Enregistrement…'); corps.appendChild(et2);
+                    enregistrer().then(function (t) { et2.textContent = t; });
+                    return;
+                }
+                faites = n; ecrireLocal();
+                var zp = c.querySelector('.zone-passer'); if (zp) zp.remove();
+                retour.className = force ? 'retour' : 'retour ok';
+                retour.textContent = force ? '⏭ Étape passée. Tu pourras y revenir plus tard avec la barre des étapes, en haut.' : '✓ Bravo, c’est réussi !';
+                if (!force) montrerBilan();
+                c.classList.remove('courante'); c.classList.add('faite', 'ouverte');
+                if (force) c.classList.add('passee');
+                tete.querySelector('.etape-num').textContent = force ? '⏭' : '✓';
+                ajouterRevoir();
+                progression();
+                var etat = el('p', 'aide', 'Enregistrement…');
+                corps.appendChild(etat);
+                enregistrer().then(function (t) { etat.textContent = t; });
+                var ouvrirSuite = function () {
+                    if (attenteBilan) attenteBilan.remove();
+                    if (n < NB) {
+                        var suivante = zone.querySelector('[data-n="' + (n + 1) + '"]');
+                        if (suivante) suivante.remove(); else suivante = carte(n + 1);
+                        zone.appendChild(suivante); suivante.rafraichir();
+                        if (suivante.quizFait) setTimeout(suivante.quizFait, 0);
+                        setTimeout(function () { suivante.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 600);
+                    } else zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé le TP !'));
+                };
+                var bilanCase = corps.querySelector('.encadre.bilan .lu input'), attenteBilan = null;
+                if (bilanCase && !bilanCase.checked && !force) {
+                    attenteBilan = el('p', 'retour ko', 'Coche « J’ai lu » dans l’encadré « À retenir » pour passer à l’étape suivante.');
+                    corps.appendChild(attenteBilan);
+                    suite = ouvrirSuite;
+                } else if (e.type === 'quiz' && !force && n < NB) {   // après le quiz : on laisse lire la correction, la suite s'ouvre sur demande
+                    var mD = /Défi(\s*\d+)?/.exec(ETAPES[n].titre);
+                    var bSuite = el('button', null, (mD ? 'Passer au d' + mD[0].slice(1) : 'Passer à l’étape suivante') + ' →'); bSuite.type = 'button';
+                    bSuite.onclick = function () { bSuite.remove(); ouvrirSuite(); };
+                    corps.appendChild(bSuite);
+                } else ouvrirSuite();
+            }
+
+            function ajouterRevoir() {
+                if (tete.querySelector('.revoir')) return;
+                var b = el('button', 'lien revoir', c.classList.contains('ouverte') ? 'Replier' : 'Reprendre'); b.type = 'button';
+                b.onclick = function () { basculer(!c.classList.contains('ouverte')); };
+                tete.appendChild(b);
+            }
+            function basculer(ouvrir) {
+                c.classList.toggle('ouverte', ouvrir);
+                var b = tete.querySelector('.revoir');
+                if (b) b.textContent = ouvrir ? 'Replier' : 'Reprendre';
+                if (ouvrir) { construire(); rafraichir(); }
+            }
+
+            // bouton « Passer » sous l'étape en cours : l'étape est marquée passée (0 point) ; on peut y revenir et la réussir plus tard
+            if (n === faites + 1 && !VUE) {
+                var zPasser = el('div', 'zone-passer', '<span class="aide">Bloqué(e) ? Tu peux passer cette étape et y revenir plus tard.</span>');
+                var bPasser = el('button', null, '⏭ Passer'); bPasser.type = 'button';
+                bPasser.onclick = function () {
+                    if (!modeTest() && !confirm('Passer cette étape ?\n\nElle ne comptera pas tant que tu ne l’auras pas réussie. Tu pourras y revenir plus tard avec la barre des étapes, en haut.')) return;
+                    construire(); passees[n] = true; reussi(true);
+                };
+                zPasser.appendChild(bPasser);
+                c.appendChild(zPasser);
+            }
+
+            c.ouvrir = function () { if (c.classList.contains('faite')) basculer(true); };
+            function rafraichir() { if (cm) cm.refresh(); cms.forEach(function (x) { x.refresh(); }); }
+            c.rafraichir = rafraichir;
+            if (faite) ajouterRevoir(); else construire();
+            return c;
+        }
+
+        function montrer(sortie, r) {
+            sortie.innerHTML = '';
+            if (r.out) sortie.appendChild(el('pre', null, esc(r.out)));
+            if (r.err) sortie.appendChild(el('pre', 'err', esc((r.ligne ? 'Ligne ' + r.ligne + ' · ' : '') + r.err)));
+        }
+
+        // hauteurs de la barre du site et de la barre d'étapes, pour le collage et les défilements
+        (function () {
+            var nav = document.querySelector('.navbar'), barre = document.getElementById('barre-etapes');
+            function mesurer() {
+                document.documentElement.style.setProperty('--haut-nav', (nav ? nav.offsetHeight : 0) + 'px');
+                document.documentElement.style.setProperty('--haut-barre', barre.offsetHeight + 'px');
+            }
+            mesurer();
+            addEventListener('resize', mesurer);
+            if (window.ResizeObserver) new ResizeObserver(mesurer).observe(barre);
+        })();
+
+        /* ---------- Calculatrice : affichage et calcul de l'expression ----------
+           items = caractères tapés, { c: '2', sup: true } pour un caractère écrit dans la fenêtre en exposant. */
+        var CALC_AFF = { '*': '×', '/': '÷', '-': '−', '.': ',' };
+        function calcAff(c) { return esc(CALC_AFF[c] || c); }
+        function calcTexte(items) {   // texte à calculer : chaque exposant devient **(…)
+            var s = '', i = 0;
+            while (i < items.length) {
+                if (items[i].sup) {
+                    var e = '';
+                    while (i < items.length && items[i].sup) { e += items[i].c; i++; }
+                    s += '**(' + e + ')';
+                } else { s += items[i].c; i++; }
+            }
+            return s;
+        }
+        function calcHTML(items, expo) {   // exposants en petit ; fenêtre en pointillés quand on écrit dedans
+            var h = '', i = 0;
+            while (i < items.length) {
+                if (items[i].sup) {
+                    var e = '';
+                    while (i < items.length && items[i].sup) { e += calcAff(items[i].c); i++; }
+                    h += '<sup class="calc-exp' + (expo && i === items.length ? ' actif' : '') + '">' + e + '</sup>';
+                } else { h += calcAff(items[i].c); i++; }
+            }
+            if (expo && (!items.length || !items[items.length - 1].sup)) h += '<sup class="calc-exp actif vide">&nbsp;</sup>';
+            return h;
+        }
+        /* ---------- Calculatrice (bouton 🧮 en bas à droite) : écran + clavier ; x^y ouvre une fenêtre en exposant ---------- */
+        (function () {
+            var bc = el('button', 'calc-bouton', '🧮'); bc.type = 'button'; bc.title = 'Calculatrice'; bc.setAttribute('aria-label', 'Ouvrir la calculatrice');
+            var pan = el('div', 'calc-panneau'); pan.hidden = true; pan.tabIndex = -1;
+            pan.setAttribute('role', 'dialog'); pan.setAttribute('aria-label', 'Calculatrice');
+            pan.innerHTML = '<div class="calc-tete"><b>🧮 Calculatrice</b><button type="button" class="lien calc-fermer" aria-label="Fermer la calculatrice">✕</button></div>' +
+                '<div class="calc-ecran"><div class="calc-histo"></div><div class="calc-expr"></div><div class="calc-res" aria-live="polite"></div></div>' +
+                '<div class="calc-touches"></div>' +
+                '<p class="aide">Clavier : <kbd>^</kbd> puissance, <kbd>→</kbd> sortir de l’exposant, <kbd>Entrée</kbd> =</p>';
+            var ecranH = pan.querySelector('.calc-histo'), ecranE = pan.querySelector('.calc-expr'), ecranR = pan.querySelector('.calc-res');
+            var items = [], expo = false, fini = false;
+            // [libellé, touche, classe, description pour les lecteurs d'écran]
+            var TOUCHES = [
+                ['C', 'efface', 'fn', 'tout effacer'], ['⌫', 'retour', 'fn', 'effacer le dernier caractère'], ['(', '('], [')', ')'],
+                ['7', '7'], ['8', '8'], ['9', '9'], ['÷', '/', 'op', 'divisé par'],
+                ['4', '4'], ['5', '5'], ['6', '6'], ['×', '*', 'op', 'multiplié par'],
+                ['1', '1'], ['2', '2'], ['3', '3'], ['−', '-', 'op', 'moins'],
+                ['0', '0'], [',', '.'], ['x<sup>y</sup>', 'pow', 'fn', 'puissance : ouvre la fenêtre de l’exposant'], ['+', '+', 'op', 'plus'],
+                ['▸', 'sortir', 'fn', 'sortir de l’exposant'], ['=', '=', 'egal', 'égal']
+            ];
+            var zt = pan.querySelector('.calc-touches');
+            TOUCHES.forEach(function (t) {
+                var b = el('button', 'calc-t' + (t[2] ? ' ' + t[2] : ''), t[0]); b.type = 'button';
+                if (t[3]) b.setAttribute('aria-label', t[3]);
+                b.onclick = function () { touche(t[1]); };
+                zt.appendChild(b);
+            });
+            function afficher() {
+                ecranE.innerHTML = (calcHTML(items, expo) || '<span class="calc-vide">0</span>') + '<span class="calc-curseur"></span>';
+                pan.querySelector('.calc-t[aria-label="sortir de l’exposant"]').disabled = !expo;
+            }
+            function touche(k) {
+                if (k === 'efface') { items = []; expo = false; fini = false; ecranR.textContent = ''; }
+                else if (k === 'retour') { if (fini) { fini = false; ecranR.textContent = ''; } var x = items.pop(); expo = !!(x && x.sup); }
+                else if (k === 'pow') { if (fini) reprendre(); if (items.length && !expo) expo = true; }
+                else if (k === 'sortir') expo = false;
+                else if (k === '=') {
+                    if (!items.length) return;
+                    var r = evalExpr(calcTexte(items));
+                    var txt = isNaN(r) ? 'calcul impossible' : String(+r.toPrecision(12)).replace('.', ',');
+                    ecranR.textContent = '= ' + txt;
+                    var l = el('div', 'calc-ligne-h', calcHTML(items, false) + ' = ' + esc(txt));
+                    ecranH.appendChild(l); while (ecranH.childNodes.length > 3) ecranH.removeChild(ecranH.firstChild);
+                    expo = false; fini = !isNaN(r);
+                    if (fini) items.resultat = r;
+                } else {
+                    if (fini) { if (/[+\-*/]/.test(k)) reprendre(); else { items = []; ecranR.textContent = ''; } fini = false; }
+                    items.push({ c: k, sup: expo });
+                }
+                afficher();
+            }
+            // après « = », un opérateur ou une puissance repart du résultat
+            function reprendre() {
+                var r = items.resultat;
+                items = String(+r.toPrecision(12)).split('').map(function (c) { return { c: c, sup: false }; });
+                fini = false; ecranR.textContent = '';
+            }
+            pan.addEventListener('keydown', function (ev) {
+                var k = ev.key, m = { 'Enter': '=', '=': '=', 'Backspace': 'retour', 'Delete': 'efface', '^': 'pow', 'ArrowRight': 'sortir', ',': '.', 'x': '*', 'X': '*', '÷': '/', '×': '*' }[k] || k;
+                if (k === 'Escape') { pan.hidden = true; bc.focus(); ev.preventDefault(); return; }
+                if (/^[0-9.+\-*/()]$/.test(m) || ['=', 'retour', 'efface', 'pow', 'sortir'].indexOf(m) >= 0) { ev.preventDefault(); touche(m); }
+            });
+            bc.onclick = function () { pan.hidden = !pan.hidden; if (!pan.hidden) { afficher(); pan.focus(); } };
+            pan.querySelector('.calc-fermer').onclick = function () { pan.hidden = true; bc.focus(); };
+            document.body.appendChild(bc); document.body.appendChild(pan);
+        })();
+        if (compteProf()) {
+            var choix = el('div', 'choix-mode');
+            choix.setAttribute('role', 'radiogroup'); choix.setAttribute('aria-label', 'Affichage du TP');
+            choix.appendChild(el('span', 'aide', '👩‍🏫 Compte professeure :'));
+            [['prof', 'Mode professeure', 'solutions, « Développer », toutes les étapes ouvertes'], ['eleve', 'Mode élève', 'le TP exactement comme un élève le voit']].forEach(function (m) {
+                var l = el('label'), r = el('input'); r.type = 'radio'; r.name = 'tp-mode'; r.value = m[0];
+                r.checked = (m[0] === 'prof') === modeTest();
+                r.onchange = function () { try { localStorage.setItem('tp-mode', m[0]); } catch (x) {} location.reload(); };
+                l.title = m[2]; l.appendChild(r); l.appendChild(document.createTextNode(' ' + m[1])); choix.appendChild(l);
+            });
+            var barreE = document.getElementById('barre-etapes');
+            barreE.insertBefore(choix, barreE.firstChild);
+        }
+        if (VUE) {
+            var bv = document.getElementById('bandeau');
+            bv.className = 'vue-prof';
+            bv.innerHTML = '👩‍🏫 <b>Vue professeure</b> : TP de <b></b> tel qu’il a été laissé (étapes validées : ' + Math.min(VUE.score || 0, NB) + ' / ' + NB + '). Tu peux tout consulter et réexécuter ; rien n’est enregistré.';
+            bv.querySelectorAll('b')[1].textContent = VUE.nom || VUE.code || 'l’élève';
+            document.title = 'Vue professeure · ' + (VUE.nom || VUE.code || '') + ' · ' + document.title;
+        } else Interactif.bandeau(document.getElementById('bandeau'), charger);
+        charger();
+    })();
+    </script>
+</body>
+</html>

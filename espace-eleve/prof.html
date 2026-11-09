@@ -325,11 +325,15 @@
             <div class="panneau" role="tabpanel" id="panneau-python" aria-labelledby="onglet-python" hidden>
                 <h2>TP Python</h2>
                 <div class="outils tp-choix-prof" role="group" aria-label="Choix du TP">
-                    <a class="bouton secondaire" href="seconde/tp/tp1-sujet.pdf" target="_blank" rel="noopener" title="TP sur Capytale : sujet PDF">TP1 · Affectations (PDF)</a>
+                    <button type="button" class="secondaire" data-tp="tp-premiers-pas">TP1 · Premiers pas</button>
                     <button type="button" class="secondaire" data-tp="tp-conditions">TP2 · Conditions</button>
                     <button type="button" class="secondaire" data-tp="tp-boucles">TP3 · Boucles</button>
                     <button type="button" class="secondaire" data-tp="tp-pixels">TP4 · Pixels</button>
                     <button type="button" class="secondaire" data-tp="tp-filtres">TP5 · Filtres</button>
+                </div>
+                <div class="tp-info" data-tp="tp-premiers-pas" hidden>
+                    <h3>TP1 · Premiers pas : affectation et fonctions (non noté)</h3>
+                    <p class="aide">Version interactive du TP1 fait sur Capytale (<a href="seconde/tp/tp1-sujet.pdf" target="_blank" rel="noopener">sujet PDF</a>, <a href="seconde/tp/tp1-corrige.pdf" target="_blank" rel="noopener">corrigé PDF</a>). En préparation : visible seulement du compte PROF-2NDE (les élèves voient encore la fiche PDF). Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Code d'accès PYTHON-146, quiz surveillé. 20 étapes : A (console, affectation, fonctions), B (chasse aux erreurs, de Scratch à Python, vitesse) en classe, C (conversions, pourcentages), quiz et défis D (programme mystère) à la maison. TP d'entraînement : pas de note dans le Suivi TP (<code>nonNote</code>). Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
                 </div>
                 <div class="tp-info" data-tp="tp-conditions" hidden>
                     <h3>TP2 · Les structures conditionnelles (noté)</h3>
