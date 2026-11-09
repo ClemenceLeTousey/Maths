@@ -13,6 +13,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+    <script>
+        /* Texte agrandi (bouton « Aa » de la barre des étapes) : réglage gardé sur l'appareil ;
+           ?grand=1 (ou ?grand=0) dans l'adresse l'active (ou le désactive) d'emblée sur un appareil. */
+        (function () {
+            try {
+                var m = /[?&]grand=([01])/.exec(location.search);
+                if (m) localStorage.setItem('texte-grand', m[1]);
+                if (localStorage.getItem('texte-grand') === '1') document.documentElement.classList.add('grand');
+            } catch (e) {}
+        })();
+    </script>
     <script src="../../site.js"></script>
     <script src="../config.js"></script>
     <script src="../expr.js"></script>
@@ -275,6 +286,22 @@
         .scratch .sb-var { background: #ff8c1a; border: 1px solid rgba(255,255,255,.7); border-radius: 999px; padding: 0 8px; }
         .scratch .sb-num { background: #fff; color: #333; border-radius: 999px; padding: 0 8px; }
         .scratch .sb-menu { background: rgba(0,0,0,.12); border-radius: 4px; padding: 0 6px; }
+        /* ---------- Texte agrandi (classe « grand » sur <html>) ---------- */
+        .interactif button.taille-texte { flex: 0 0 auto; padding: 2px 10px; font-weight: 700; background: var(--surface); color: var(--text); border: 1px solid var(--line); }
+        .interactif button.taille-texte[aria-pressed="true"] { background: var(--c-seconde); border-color: var(--c-seconde); color: var(--badge-text); }
+        html.grand { font-size: 125%; }
+        html.grand body { line-height: 1.55; hyphens: none; }
+        html.grand main.interactif { max-width: 1400px; }
+        html.grand .etape-corps pre.code, html.grand .sortie pre, html.grand .console pre,
+        html.grand .console, html.grand .interactif .console-ligne input { font-size: 19px; }
+        html.grand .editeur .CodeMirror { font-size: 20px; }
+        html.grand .scratch { font-size: 1rem; }
+        html.grand .retour, html.grand .aide { font-size: 1rem; }
+        /* script puis console l'un sous l'autre : chacun garde toute la largeur */
+        html.grand .duo.avec-console { grid-template-columns: 1fr; }
+        html.grand .duo.avec-console .console { min-height: 8em; }
+        html.grand .case-ligne { grid-template-columns: minmax(13.5em, max-content) 10em auto 1fr; }
+        @media (max-width: 900px) { html.grand .case-ligne { grid-template-columns: 1fr auto; } html.grand .case-ligne .retour.case-retour { grid-column: 1 / -1; } }
     </style>
 </head>
 <body>
@@ -294,7 +321,7 @@
     <main class="interactif">
         <div id="bandeau"></div>
         <div class="barre-etapes" id="barre-etapes">
-            <div class="progression"><span id="progres-texte"></span><div class="barre"><i id="progres-barre"></i></div></div>
+            <div class="progression"><span id="progres-texte"></span><div class="barre"><i id="progres-barre"></i></div><button type="button" class="taille-texte" id="taille-texte" title="Agrandir le texte" aria-label="Agrandir le texte" aria-pressed="false">Aa</button></div>
             <nav class="sommaire" id="sommaire" aria-label="Étapes du TP"></nav>
         </div>
         <p class="py-etat" id="py-etat">Chargement de Python… (quelques secondes la première fois)</p>
@@ -2464,6 +2491,23 @@ def _console(ligne, n):
             bc.onclick = function () { pan.hidden = !pan.hidden; if (!pan.hidden) { afficher(); pan.focus(); } };
             pan.querySelector('.calc-fermer').onclick = function () { pan.hidden = true; bc.focus(); };
             document.body.appendChild(bc); document.body.appendChild(pan);
+        })();
+        /* bouton « Aa » : texte agrandi ou normal (réglage gardé sur l'appareil) */
+        (function () {
+            var b = document.getElementById('taille-texte'), h = document.documentElement;
+            function maj() {
+                var g = h.classList.contains('grand');
+                b.setAttribute('aria-pressed', g ? 'true' : 'false');
+                b.title = g ? 'Revenir à la taille normale' : 'Agrandir le texte';
+                b.setAttribute('aria-label', b.title);
+            }
+            b.onclick = function () {
+                h.classList.toggle('grand');
+                try { localStorage.setItem('texte-grand', h.classList.contains('grand') ? '1' : '0'); } catch (e) {}
+                maj();
+                window.dispatchEvent(new Event('resize'));   // éditeurs CodeMirror et hauteur de la barre recalculés
+            };
+            maj();
         })();
         if (compteProf()) {
             var choix = el('div', 'choix-mode');
