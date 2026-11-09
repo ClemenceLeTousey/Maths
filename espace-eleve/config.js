@@ -94,15 +94,15 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie1-j2', groupe: 'Série 1 · semaine du 7 au 11 septembre', titre: 'Jour 2', court: 'S1 · J2', url: 'seconde/serie1.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie1-j3', groupe: 'Série 1 · semaine du 7 au 11 septembre', titre: 'Jour 3', court: 'S1 · J3', url: 'seconde/serie1.html?j=3' },
     { niveau: 'seconde', id: 'seconde/serie1-j4', groupe: 'Série 1 · semaine du 7 au 11 septembre', titre: 'Jour 4', court: 'S1 · J4', url: 'seconde/serie1.html?j=4' },
-    // Terminale ST2S (en préparation : visibles seulement de TEST-01 et TTEST-02 ; retirer « comptes » pour publier)
-    { niveau: 'terminale', id: 'terminale/serie6-j1', groupe: 'Série 6 · semaine du 9 au 13 novembre', titre: 'Jour 1', court: 'T · S6 · J1', url: 'terminale/serie6.html?j=1', comptes: ['TEST-01', 'TTEST-02'] },
-    { niveau: 'terminale', id: 'terminale/serie6-j2', groupe: 'Série 6 · semaine du 9 au 13 novembre', titre: 'Jour 2', court: 'T · S6 · J2', url: 'terminale/serie6.html?j=2', comptes: ['TEST-01', 'TTEST-02'] },
-    { niveau: 'terminale', id: 'terminale/serie6-j3', groupe: 'Série 6 · semaine du 9 au 13 novembre', titre: 'Jour 3', court: 'T · S6 · J3', url: 'terminale/serie6.html?j=3', comptes: ['TEST-01', 'TTEST-02'] },
-    { niveau: 'terminale', id: 'terminale/serie6-bilan', groupe: 'Facultatif · Série 6 TST2S en temps limité ⏱', titre: 'Bilan Série 6 (10 questions chronométrées)', court: 'T · S6 · Bilan', url: 'terminale/serie6-bilan.html', comptes: ['TEST-01', 'TTEST-02'] },
-    { niveau: 'terminale', id: 'terminale/serie7-j1', groupe: 'Série 7 · semaine du 16 au 20 novembre', titre: 'Jour 1', court: 'T · S7 · J1', url: 'terminale/serie7.html?j=1', comptes: ['TEST-01', 'TTEST-02'] },
-    { niveau: 'terminale', id: 'terminale/serie7-j2', groupe: 'Série 7 · semaine du 16 au 20 novembre', titre: 'Jour 2', court: 'T · S7 · J2', url: 'terminale/serie7.html?j=2', comptes: ['TEST-01', 'TTEST-02'] },
-    { niveau: 'terminale', id: 'terminale/serie7-j3', groupe: 'Série 7 · semaine du 16 au 20 novembre', titre: 'Jour 3', court: 'T · S7 · J3', url: 'terminale/serie7.html?j=3', comptes: ['TEST-01', 'TTEST-02'] },
-    { niveau: 'terminale', id: 'terminale/serie7-bilan', groupe: 'Facultatif · Série 7 TST2S en temps limité ⏱', titre: 'Bilan Série 7 (10 questions chronométrées)', court: 'T · S7 · Bilan', url: 'terminale/serie7-bilan.html', comptes: ['TEST-01', 'TTEST-02'] },
+    // Terminale ST2S (en préparation : visibles seulement de PROF-TST2S ; retirer « comptes » pour publier)
+    { niveau: 'terminale', id: 'terminale/serie6-j1', groupe: 'Série 6 · semaine du 9 au 13 novembre', titre: 'Jour 1', court: 'T · S6 · J1', url: 'terminale/serie6.html?j=1', comptes: ['PROF-TST2S'] },
+    { niveau: 'terminale', id: 'terminale/serie6-j2', groupe: 'Série 6 · semaine du 9 au 13 novembre', titre: 'Jour 2', court: 'T · S6 · J2', url: 'terminale/serie6.html?j=2', comptes: ['PROF-TST2S'] },
+    { niveau: 'terminale', id: 'terminale/serie6-j3', groupe: 'Série 6 · semaine du 9 au 13 novembre', titre: 'Jour 3', court: 'T · S6 · J3', url: 'terminale/serie6.html?j=3', comptes: ['PROF-TST2S'] },
+    { niveau: 'terminale', id: 'terminale/serie6-bilan', groupe: 'Facultatif · Série 6 TST2S en temps limité ⏱', titre: 'Bilan Série 6 (10 questions chronométrées)', court: 'T · S6 · Bilan', url: 'terminale/serie6-bilan.html', comptes: ['PROF-TST2S'] },
+    { niveau: 'terminale', id: 'terminale/serie7-j1', groupe: 'Série 7 · semaine du 16 au 20 novembre', titre: 'Jour 1', court: 'T · S7 · J1', url: 'terminale/serie7.html?j=1', comptes: ['PROF-TST2S'] },
+    { niveau: 'terminale', id: 'terminale/serie7-j2', groupe: 'Série 7 · semaine du 16 au 20 novembre', titre: 'Jour 2', court: 'T · S7 · J2', url: 'terminale/serie7.html?j=2', comptes: ['PROF-TST2S'] },
+    { niveau: 'terminale', id: 'terminale/serie7-j3', groupe: 'Série 7 · semaine du 16 au 20 novembre', titre: 'Jour 3', court: 'T · S7 · J3', url: 'terminale/serie7.html?j=3', comptes: ['PROF-TST2S'] },
+    { niveau: 'terminale', id: 'terminale/serie7-bilan', groupe: 'Facultatif · Série 7 TST2S en temps limité ⏱', titre: 'Bilan Série 7 (10 questions chronométrées)', court: 'T · S7 · Bilan', url: 'terminale/serie7-bilan.html', comptes: ['PROF-TST2S'] },
     // Première (1TC) : une série par semaine, à faire à la maison pour le vendredi suivant (10 questions par couleur, validation question par question)
     { niveau: 'premiere', id: 'premiere/serie1', groupe: 'Série 1 · à faire pour le vendredi 13 novembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S1', url: 'premiere/serie1.html' }
 ];
