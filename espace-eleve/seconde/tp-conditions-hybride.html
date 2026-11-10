@@ -587,6 +587,8 @@ def _console(ligne, n):
         if (FICHE && FICHE.codeAcces && !/[?&]vue-eleve=/.test(location.search)) {
             var ses = Interactif.session(), ouvert = false, CODE = Interactif.codeAccesTP(FICHE, ses);   // code propre à la classe s'il existe
             try { ouvert = localStorage.getItem('tp-acces:' + ID) === CODE; } catch (x) {}
+            var finTemp = ouvert ? 0 : Interactif.accesTemporaire(FICHE, ses);   // code temporaire (une heure, usage unique)
+            if (finTemp > 0) { ouvert = true; Interactif.minuteurAcces(finTemp); }
             // compte PROF-2NDE en « mode élève » : le code est demandé, comme à un élève
             var modeEleve = false; try { modeEleve = localStorage.getItem('tp-mode') === 'eleve'; } catch (x) {}
             if (!ouvert && !(ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE' && !modeEleve)) {
@@ -594,7 +596,8 @@ def _console(ligne, n):
                 document.getElementById('py-etat').hidden = true;
                 var zv = document.getElementById('etapes');
                 zv.innerHTML = '<section class="etape courante"><div class="etape-tete"><span class="etape-num">🔒</span><h2>TP verrouillé</h2></div>' +
-                    '<div class="etape-corps"><p>Ce TP s’ouvre avec le <b>code d’accès</b> donné en classe.</p>' +
+                    '<div class="etape-corps">' + (finTemp < 0 ? '<p class="retour ko">⏱ Ton heure d’accès est terminée. Ta progression est gardée.</p>' : '') +
+                    '<p>Ce TP s’ouvre avec le <b>code d’accès</b> donné en classe.</p>' +
                     '<form class="reponses" id="f-code"><label>Code d’accès <input class="long" id="code-tp" autocomplete="off" spellcheck="false" autocapitalize="off"></label>' +
                     '<button type="submit">Ouvrir le TP</button></form><p class="retour" id="code-retour"></p></div></section>';
                 if (ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE') {   // mode élève du compte professeure : retour possible
@@ -609,6 +612,12 @@ def _console(ligne, n):
                     crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function (b) {
                         var h = Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
                         var r = document.getElementById('code-retour');
+                        if (h !== CODE && FICHE.codeAccesTemporaire && h === FICHE.codeAccesTemporaire.h) {
+                            r.className = 'retour'; r.textContent = 'Vérification…';
+                            Interactif.ouvrirTemporaire(FICHE).then(function () { location.reload(); },
+                                function (e) { r.className = 'retour ko'; r.textContent = '✗ ' + e.message; });
+                            return;
+                        }
                         if (h !== CODE) { r.className = 'retour ko'; r.textContent = '✗ Code incorrect : les majuscules et le tiret comptent.'; return; }
                         try { localStorage.setItem('tp-acces:' + ID, h); } catch (x) {}
                         location.reload();

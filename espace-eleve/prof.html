@@ -665,7 +665,7 @@
             var ids = INTERACTIF_CATALOGUE.filter(function (e) { return !e.archive && (choix === '*' || serieDe(e) === choix); })
                                           .map(function (e) { return e.id; });
             // résultats d'exercices hors catalogue : seulement dans « Toutes les séries »
-            if (choix === '*') donnees.resultats.forEach(function (r) { if (ids.indexOf(r.exercice) < 0 && masques.indexOf(r.exercice) < 0) ids.push(r.exercice); });
+            if (choix === '*') donnees.resultats.forEach(function (r) { if (ids.indexOf(r.exercice) < 0 && masques.indexOf(r.exercice) < 0 && !/#acces-temp$/.test(r.exercice)) ids.push(r.exercice); });
             return ids;
         }
         function titre(id) {
