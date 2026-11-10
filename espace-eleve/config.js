@@ -56,7 +56,6 @@ window.INTERACTIF_CATALOGUE = [
     // TP1 Premiers pas (version interactive du TP Capytale) : en préparation (PROF-2NDE et 2H-TARTAGLIA seulement ; retirer « comptes » pour publier)
     { niveau: 'seconde', id: 'seconde/tp-premiers-pas', groupe: 'TP Python · Premiers pas : affectation et fonctions', titre: 'Variables, affectation, fonctions (20 étapes)', court: 'TP Premiers pas', url: 'seconde/tp-premiers-pas.html', tp: true, vueProf: true, comptes: ['PROF-2NDE', '2H-TARTAGLIA'], antiTriche: true },   // sans code d'accès
     // TP3 Boucles, TP4 Pixels et TP5 Filtres : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
-    // Codes d'accès : TP3 BOUCLE-327, TP4 PIXEL-482, TP5 FILTRE-519 (seule l'empreinte est dans le site)
     { niveau: 'seconde', id: 'seconde/tp-boucles', groupe: 'TP Python · Les boucles', titre: 'for, while, range (16 étapes)', court: 'TP Boucles', url: 'seconde/tp-boucles.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
       codeAcces: 'f6e6d5215e50d0a94a9c4b3278f315616612eca19e6ccf2e48e2576f9485f8d8', antiTriche: true },
     { niveau: 'seconde', id: 'seconde/tp-pixels', groupe: 'TP Python · Créer une image pixel par pixel', titre: 'Pixels, couleurs, double boucle (9 étapes)', court: 'TP Pixels', url: 'seconde/tp-pixels.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
