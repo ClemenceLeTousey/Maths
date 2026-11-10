@@ -262,8 +262,12 @@
         html.grand .editeur .CodeMirror-linenumber { color: var(--text); font-weight: 600; }
         html.grand .retour, html.grand .aide { font-size: 1rem; }
         /* script puis console l'un sous l'autre : chacun garde toute la largeur */
-        html.grand .duo.avec-console { grid-template-columns: 1fr; }
-        html.grand .duo.avec-console .console { min-height: 8em; }
+        /* grands caractères : script à gauche, console à droite (comme en taille normale) ; l'une sous l'autre seulement sur écran étroit */
+        html.grand .duo.avec-console { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+        @media (max-width: 1000px) {
+            html.grand .duo.avec-console { grid-template-columns: 1fr; }
+            html.grand .duo.avec-console .console { min-height: 8em; }
+        }
         html.grand .case-ligne { grid-template-columns: minmax(13.5em, max-content) 10em auto 1fr; }
         @media (max-width: 900px) { html.grand .case-ligne { grid-template-columns: 1fr auto; } html.grand .case-ligne .retour.case-retour { grid-column: 1 / -1; } }
         .renvoi-doc { margin: 0 0 6px; padding: 6px 12px; border-left: 4px solid #6d28d9; background: var(--bleu-doux); border-radius: 0 8px 8px 0; }
