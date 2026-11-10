@@ -540,7 +540,7 @@ def _console(ligne, n):
             var ses = Interactif.session(), ouvert = false, CODE = Interactif.codeAccesTP(FICHE, ses);   // code propre à la classe s'il existe
             try { ouvert = localStorage.getItem('tp-acces:' + ID) === CODE; } catch (x) {}
             var finTemp = ouvert ? 0 : Interactif.accesTemporaire(FICHE, ses);   // code temporaire (une heure, usage unique)
-            if (finTemp > 0) { ouvert = true; Interactif.minuteurAcces(finTemp); }
+            if (finTemp > 0) { ouvert = true; Interactif.minuteurAcces(finTemp, FICHE); }
             // compte PROF-2NDE en « mode élève » : le code est demandé, comme à un élève
             var modeEleve = false; try { modeEleve = localStorage.getItem('tp-mode') === 'eleve'; } catch (x) {}
             if (!ouvert && !(ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE' && !modeEleve)) {

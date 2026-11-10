@@ -801,14 +801,32 @@
     /* Code d'accès temporaire d'un TP (« codeAccesTemporaire: { h: empreinte, min: 60, groupe: id } » dans config.js) :
        ouvre le TP pendant « min » minutes, une seule fois par élève (compte connecté obligatoire).
        La première saisie est enregistrée en base comme un résultat « <groupe>#acces-temp » : l'heure de départ
-       est celle du serveur et l'usage unique vaut sur tous les appareils de l'élève. */
+       est celle du serveur et l'usage unique vaut sur tous les appareils de l'élève ; le décompte suit l'heure d'internet. */
     function cleTemp(ex) { return 'tp-acces-temp:' + ((ex.codeAccesTemporaire && ex.codeAccesTemporaire.groupe) || ex.id); }
+
+    /* Heure d'internet : l'en-tête « Date » renvoyé par le serveur du site (même origine, donc lisible),
+       puis le chronomètre interne du navigateur (performance.now), que changer l'heure de l'ordinateur ne modifie pas.
+       Sans réseau : heure de l'appareil. */
+    var heureSite = null;
+    function heureServeur() {
+        if (heureSite) return heureSite;
+        var t0 = performance.now();
+        heureSite = fetch(location.pathname + '?heure=' + Date.now(), { method: 'HEAD', cache: 'no-store' }).then(function (r) {
+            var d = Date.parse(r.headers.get('Date') || ''), t1 = performance.now();
+            if (isNaN(d)) throw new Error('pas d’en-tête Date');
+            var ref = d + 500 - (t1 + t0) / 2;   // l'en-tête est à la seconde près
+            return function () { return ref + performance.now(); };
+        }).catch(function () { return function () { return Date.now(); }; });
+        return heureSite;
+    }
+
     // fin de l'accès (ms) s'il est en cours sur cet appareil, -1 s'il est terminé, 0 sinon
+    // (contrôle rapide à l'ouverture ; minuteurAcces revérifie aussitôt avec l'heure d'internet)
     function accesTemporaire(ex, s) {
         if (!ex || !ex.codeAccesTemporaire || !s) return 0;
         var t = lireLocal(cleTemp(ex));
         if (!t || t.code !== s.code) return 0;
-        return t.fin > Date.now() ? t.fin : -1;
+        return !t.fini && t.fin > Date.now() ? t.fin : -1;
     }
     function ouvrirTemporaire(ex) {
         var T = ex.codeAccesTemporaire, s = session();
@@ -827,29 +845,35 @@
                                         p_details: { acces: 'temporaire', minutes: T.min || 60 }, p_duree: 0 }).then(debut);
         }).then(function (d) {
             if (!d) throw new Error('Impossible d’enregistrer l’accès, réessaie.');
-            var fin = d + duree;
-            if (fin <= Date.now()) {
-                ecrireLocal(cleTemp(ex), { code: s.code, fin: fin });
-                throw new Error('Tu as déjà utilisé ce code : ton heure d’accès est terminée.');
-            }
-            ecrireLocal(cleTemp(ex), { code: s.code, fin: fin });
-            return fin;
+            return heureServeur().then(function (maintenant) {
+                var fin = d + duree, fini = fin <= maintenant();
+                ecrireLocal(cleTemp(ex), { code: s.code, fin: fin, fini: fini });
+                if (fini) throw new Error('Tu as déjà utilisé ce code : ton heure d’accès est terminée.');
+                return fin;
+            });
         });
     }
-    // bandeau « il reste … min » pendant l'accès temporaire ; la page se recharge (et se referme) à la fin
-    function minuteurAcces(fin) {
+    // bandeau « il reste … min » pendant l'accès temporaire, décompté à l'heure d'internet ;
+    // à la fin, l'accès est marqué terminé sur l'appareil et la page se recharge (TP refermé)
+    function minuteurAcces(fin, ex) {
         var b = el('div', null);
         b.setAttribute('role', 'status');
         b.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:50;padding:6px 12px;border-radius:999px;' +
             'background:#fff6df;border:1.5px solid #c9a227;color:#3a2f00;font:600 0.9rem system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.15)';
+        b.textContent = '⏱ Accès temporaire';
         document.body.appendChild(b);
-        (function maj() {
-            var r = fin - Date.now();
-            if (r <= 0) { location.reload(); return; }
-            var m = Math.ceil(r / 60000);
-            b.textContent = '⏱ Accès temporaire : ' + (m > 1 ? 'il reste ' + m + ' min' : 'moins d’une minute');
-            setTimeout(maj, Math.min(r, 20000));
-        })();
+        heureServeur().then(function (maintenant) {
+            (function maj() {
+                var r = fin - maintenant();
+                if (r <= 0) {
+                    if (ex) { var t = lireLocal(cleTemp(ex)); if (t) { t.fini = true; ecrireLocal(cleTemp(ex), t); } }
+                    location.reload(); return;
+                }
+                var m = Math.ceil(r / 60000);
+                b.textContent = '⏱ Accès temporaire : ' + (m > 1 ? 'il reste ' + m + ' min' : 'moins d’une minute');
+                setTimeout(maj, Math.min(r, 20000));
+            })();
+        });
     }
 
     window.Interactif = {
