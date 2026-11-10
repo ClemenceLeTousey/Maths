@@ -55,9 +55,10 @@ window.INTERACTIF_CATALOGUE = [
       codeAcces: '2a04e66a8ad28d6c60b6cd57d4d4b45e894397c1baeb56b20bbe306c107ee99d' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
     // TP1 Premiers pas (version interactive du TP Capytale) : en préparation (PROF-2NDE et 2H-TARTAGLIA seulement ; retirer « comptes » pour publier)
     { niveau: 'seconde', id: 'seconde/tp-premiers-pas', groupe: 'TP Python · Premiers pas : affectation et fonctions', titre: 'Variables, affectation, fonctions (20 étapes)', court: 'TP Premiers pas', url: 'seconde/tp-premiers-pas.html', tp: true, vueProf: true, comptes: ['PROF-2NDE', '2H-TARTAGLIA'], antiTriche: true },   // sans code d'accès
-    // TP3 Boucles, TP4 Pixels et TP5 Filtres : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
-    { niveau: 'seconde', id: 'seconde/tp-boucles', groupe: 'TP Python · Les boucles', titre: 'for, while, range (16 étapes)', court: 'TP Boucles', url: 'seconde/tp-boucles.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
+    // TP3 Boucles : publié le 10/11/2026 (code d'accès)
+    { niveau: 'seconde', id: 'seconde/tp-boucles', groupe: 'TP Python · Les boucles', titre: 'for, while, range (16 étapes)', court: 'TP Boucles', url: 'seconde/tp-boucles.html', tp: true, vueProf: true,
       codeAcces: 'f6e6d5215e50d0a94a9c4b3278f315616612eca19e6ccf2e48e2576f9485f8d8', antiTriche: true },
+    // TP4 Pixels et TP5 Filtres : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
     { niveau: 'seconde', id: 'seconde/tp-pixels', groupe: 'TP Python · Créer une image pixel par pixel', titre: 'Pixels, couleurs, double boucle (9 étapes)', court: 'TP Pixels', url: 'seconde/tp-pixels.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
       codeAcces: '0e9a00530e9b3e7bb719421ed987bc824b42e1415efed2b85a4cefabec7162bc', antiTriche: true },
     { niveau: 'seconde', id: 'seconde/tp-filtres', groupe: 'TP Python · Retoucher une photo : les filtres', titre: 'getpixel, filtres, contours (9 étapes)', court: 'TP Filtres', url: 'seconde/tp-filtres.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
