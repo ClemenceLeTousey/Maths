@@ -12,7 +12,7 @@
     function L(s) { return s ? s.split('|') : []; }
 
     // Séance : k = clé stable, j = jour, q = séquence, n = séance, t = titre, o = objectifs
-    // ev = évaluations, co = éléments de cours, cl = en classe ('?' = si le temps), ap = approfondissement, ma = à la maison
+    // docs = liens (diaporamas…), ev = évaluations, co = éléments de cours, cl = en classe ('?' = si le temps), ap = approfondissement, ma = à la maison
     var SEMAINES = [
         { d: '2026-11-02', t: '02/11 au 06/11', a: 'Série 7', s: [
             { k: 's3-1', j: 'J1', q: 3, n: 1, t: 'Retour sur le développement ; factoriser avec les identités remarquables ; priorités', o: '4, 5',
@@ -27,6 +27,7 @@
               cl: L('F5 ex 5|F5 ex 7|F5 ex 6|F5 ex 8|F5 ex 9 (bilan : la copie de Tom)|?F5 ex 10'), ap: L('F5 ex 10 (9, 10)|87|90'), ma: L('85|86') },
             { k: 's3-4', j: 'J4', q: 3, n: 4, t: 'Mettre un problème en équation', o: '9',
               ev: L('Évaluation d\'automatismes, Série 7 (10 min)'),
+              docs: [{ t: 'Diaporama corrigé : F5 ex 6 (Q2, Q6), ex 85 et 86 (Q1, Q2)', h: '../cours/seconde/sequence3-correction-feuille5-ex6-ex85-86-diaporama.html' }],
               co: L('Correction des exercices 85 et 86|Méthode en quatre étapes : inconnue, traduire, résoudre, vérifier et conclure|Exemple de la salle d\'escalade, question 1'),
               cl: L('F6 ex 1|F6 ex 2|F6 ex 3|?F6 ex 4|?F6 ex 5'), ap: L('F6 ex 6|102'), ma: L('84|96|98|99|Sujet d\'entraînement DS 2') }
         ] },
@@ -257,6 +258,9 @@
                         '</div>' +
                         '<div class="pt-corps">' +
                             (s.rq ? '<p class="pt-rq">' + esc(s.rq) + '</p>' : '') +
+                            (s.docs ? '<p class="pt-docs">' + s.docs.map(function (d) {
+                                return '<a href="' + esc(d.h) + '" target="_blank" rel="noopener">▶ ' + esc(d.t) + '</a>';
+                            }).join('') + '</p>' : '') +
                             '<div class="pt-groupe pt-passee-g"><div class="pt-groupe-t"><span>Bilan</span>' + COLONNES + '</div>' +
                                 '<div class="pt-item" data-ligne="' + esc(s.k) + ':passee"><span class="pt-texte">Séance passée</span>' +
                                 cases({ id: s.k + ':passee', texte: 'Séance passée · ' + s.j + ' · ' + s.t }) + '</div></div>' +

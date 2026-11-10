@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inégalités et inéquations</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<style>
+  :root{
+    --bg:#eef3f0;
+    --surface:#ffffff;
+    --panel:#e3ede7;
+    --ink:#0f1b16;
+    --ink-dim:#51665c;
+    --line:#c3d3cb;
+    --brand:#3f7d34;
+    --brand-contrast:#ffffff;
+    --accent:#c81e34;
+    --answer:#c45a00;
+    --callout-bg:#fff6df;
+    --callout-border:#c9a227;
+    --shadow:0 10px 30px -12px rgba(15,27,22,.25);
+  }
+  /* Fond volontairement clair et fixe (vidéoprojection) : pas de variante sombre. */
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Source Sans 3",system-ui,sans-serif;
+    display:flex; flex-direction:column; min-height:100vh; padding-inline:16px;
+  }
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important;} }
+
+  .stage{flex:1; display:flex; flex-direction:column; max-width:1180px; width:100%; margin:0 auto; padding-block:14px 10px; gap:12px; min-height:0;}
+  .topbar{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .crumb{font-size:.9rem; font-weight:600; color:var(--brand);}
+  .progress{font-variant-numeric:tabular-nums; font-size:.85rem; color:var(--ink-dim); margin-left:auto; white-space:nowrap;}
+
+  .slide{flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:16px; cursor:pointer; padding:2px;}
+
+  .statement{
+    background:var(--panel); border-radius:16px; padding:.9em 1.2em;
+    font-size:clamp(1.1rem,2vw,1.55rem); line-height:1.4;
+  }
+  .statement .tag{
+    display:inline-block; background:var(--brand); color:var(--brand-contrast);
+    font-weight:700; font-size:.7em; letter-spacing:.03em; text-transform:uppercase;
+    border-radius:6px; padding:.15em .55em; margin-right:.5em; vertical-align:.12em;
+  }
+  .statement .q{display:inline-flex; align-items:center; justify-content:center; min-width:1.6em; height:1.6em; border-radius:50%;
+    border:2px solid var(--brand); color:var(--brand); font-weight:700; font-size:.8em; margin-right:.35em; vertical-align:.05em;}
+  .statement .ctx{color:var(--ink-dim); font-size:.85em; display:block; margin-bottom:.3em;}
+
+  .work{
+    background:var(--surface); border-radius:16px; box-shadow:var(--shadow);
+    padding:1em 1.4em; font-size:clamp(1.15rem,2.3vw,1.9rem); line-height:1.35;
+    display:grid; grid-template-columns:auto auto auto minmax(0,1fr); column-gap:.6em; row-gap:.45em; align-items:center;
+    align-content:start;
+  }
+  .work:empty{display:none;}
+  .work > .full{grid-column:1 / -1;}
+  /* Comme un aligned du cours : « membre de départ ⟺ ligne 1 », puis les ⟺ alignés en dessous. */
+  .work .l{justify-self:end;}
+  .work .op{color:var(--ink-dim);}
+  .work .m{white-space:nowrap;}
+  .work .c{font-size:.62em; font-style:italic; color:var(--ink-dim); line-height:1.3; padding-left:.6em;}
+  .work .row{display:contents;}
+  /* Nouvelle étape : simple apparition, sans changement de couleur (seuls les symboles inversés sont en rouge). */
+  .work .row > .new, .work .full.new{animation:appear .35s ease;}
+  .work .c{color:var(--ink);}
+  .work .note{font-size:.8em; font-weight:600;}
+  .work .sol{
+    margin-top:.4em; background:var(--callout-bg); border:1.5px solid var(--callout-border); border-radius:12px;
+    padding:.6em 1em; display:flex; align-items:center; gap:1.2em; flex-wrap:wrap; font-weight:600;
+  }
+  .work .sol.new{color:var(--ink);}
+  .work .sol svg{width:min(320px,100%); height:auto; flex:none;}
+  .red{color:var(--accent);}
+  @keyframes appear{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+  /* Diapositive de rappel du cours */
+  .rules{display:flex; flex-direction:column; gap:.8em; font-size:clamp(1.05rem,1.9vw,1.45rem); line-height:1.4;}
+  .rule{background:var(--surface); border-radius:14px; padding:.7em 1.1em; box-shadow:var(--shadow); animation:appear .35s ease;}
+  .rule b{color:var(--brand);}
+  .rule .f{display:block; margin-top:.3em; color:var(--ink-dim);}
+
+  .title-slide{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:.6em;}
+  .title-slide h1{margin:0; font-size:clamp(1.8rem,4vw,3rem); color:var(--brand);}
+  .title-slide ul{list-style:none; padding:0; margin:.6em 0 0; font-size:clamp(1.05rem,2vw,1.5rem); line-height:1.6;}
+  .title-slide li::before{content:"⋆ "; color:var(--brand);}
+  .hint{font-size:.9rem; color:var(--ink-dim); margin-top:1.2em;}
+
+  .controls{display:flex; align-items:center; gap:10px; padding-block:6px 2px;}
+  button{font-family:inherit; font-weight:600; font-size:.9rem; border:1px solid var(--line); background:var(--surface); color:var(--ink);
+    border-radius:10px; padding:.55em 1.1em; cursor:pointer; white-space:nowrap;}
+  button:hover{border-color:var(--brand);}
+  button:focus-visible{outline:2px solid var(--brand); outline-offset:2px;}
+  button:disabled{opacity:.45; cursor:default;}
+  button.primary{background:var(--brand); color:var(--brand-contrast); border-color:var(--brand);}
+  .dots{display:flex; gap:4px; flex-wrap:wrap; justify-content:center; margin-inline:auto;}
+  .dot{font-size:.72rem; padding:.25em .55em; border-radius:999px; background:transparent; color:var(--ink-dim); border:1px solid var(--line);}
+  .dot[data-current="true"]{background:var(--brand); color:var(--brand-contrast); border-color:var(--brand);}
+
+  @media (max-width:640px){
+    .work{grid-template-columns:auto auto minmax(0,1fr) 0; padding:.8em .9em;}
+    .work .c{grid-column:2 / -1; margin-top:-.3em; padding-left:0;}
+    .controls button.label-long span{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="topbar">
+    <div class="crumb" id="crumb"></div>
+    <div class="progress" id="progress"></div>
+  </div>
+  <div class="slide" id="slide" aria-live="polite"></div>
+  <div class="controls">
+    <button id="prev" aria-label="Étape précédente">←</button>
+    <div class="dots" id="dots"></div>
+    <button id="fs" aria-label="Plein écran">⛶</button>
+    <button id="next" class="primary">Suivant →</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---------- Contenu ----------
+  // Étapes : {op:true, m:'latex', c:'commentaire'} ligne de calcul (op = signe ⟺ devant) ;
+  //          {t:'texte'} ligne pleine largeur ; {note:'texte'} remarque en gras ;
+  //          {sol:'texte', v:'latex', open:bool, right:bool} conclusion + droite graduée.
+  var SOIT = {t:'Soit $x$ un réel.'};
+  var SLIDES = [
+    {kind:'title'},
+    {kind:'rules', crumb:'Rappel du cours'},
+    {crumb:'Feuille 5 · Exercice 6 · Question 2',
+     ctx:'Soit $a$ un réel tel que $-1\\leq a<4$. Donner un encadrement des expressions suivantes.',
+     tag:'Feuille 5 · Ex 6', q:'2', st:'$a-6$',
+     steps:[
+       {m:'-1\\leq a<4'},
+       {op:true, m:'-1-6\\leq a-6<4-6', c:'Règle 3 : on soustrait $6$ aux trois membres, l\'ordre est conservé.'},
+       {op:true, m:'-7\\leq a-6<-2'},
+       {box:'Donc $-7\\leq a-6<-2$.'}
+     ]},
+    {crumb:'Feuille 5 · Exercice 6 · Question 6',
+     ctx:'Soit $a$ un réel tel que $-1\\leq a<4$. Donner un encadrement des expressions suivantes.',
+     tag:'Feuille 5 · Ex 6', q:'6', st:'$-3a+1$',
+     steps:[
+       {m:'-1\\leq a<4'},
+       {op:true, m:'-3\\times(-1)\\mathrel{\\textcolor{#c81e34}{\\geq}}-3a\\mathrel{\\textcolor{#c81e34}{>}}-3\\times4', c:'Règle 5 : on multiplie par $-3<0$, l\'ordre change.'},
+       {op:true, m:'3\\geq-3a>-12'},
+       {op:true, m:'3+1\\geq-3a+1>-12+1', c:'Règle 3 : on ajoute $1$ aux trois membres, l\'ordre est conservé.'},
+       {op:true, m:'4\\geq-3a+1>-11'},
+       {op:true, m:'-11<-3a+1\\leq4', c:'On réécrit l\'encadrement dans l\'ordre croissant.'},
+       {box:'Donc $-11<-3a+1\\leq4$.'}
+     ]},
+    {crumb:'Exercice 85 p. 25 · Question 1',
+     ctx:'Résoudre les inéquations suivantes dans $\\mathbb{R}$.',
+     tag:'Ex 85 p. 25', q:'1', st:'$2x+1>3$',
+     steps:[
+       SOIT,
+       {m:'2x+1>3'},
+       {op:true, m:'2x>3-1', c:'On soustrait $1$ aux deux membres.'},
+       {op:true, m:'2x>2'},
+       {op:true, m:'x>\\dfrac{2}{2}', c:'On divise par $2>0$ : l\'ordre est conservé.'},
+       {op:true, m:'x>1'},
+       {sol:'Les solutions sont les réels $x$ tels que $x>1$.', v:'1', open:true, right:true}
+     ]},
+    {crumb:'Exercice 85 p. 25 · Question 2',
+     ctx:'Résoudre les inéquations suivantes dans $\\mathbb{R}$.',
+     tag:'Ex 85 p. 25', q:'2', st:'$3x-2\\leq7$',
+     steps:[
+       SOIT,
+       {m:'3x-2\\leq7'},
+       {op:true, m:'3x\\leq7+2', c:'On ajoute $2$ aux deux membres.'},
+       {op:true, m:'3x\\leq9'},
+       {op:true, m:'x\\leq\\dfrac{9}{3}', c:'On divise par $3>0$ : l\'ordre est conservé.'},
+       {op:true, m:'x\\leq3'},
+       {sol:'Les solutions sont les réels $x$ tels que $x\\leq3$.', v:'3', open:false, right:false}
+     ]},
+    {crumb:'Exercice 86 p. 25 · Question 1',
+     ctx:'Résoudre les inéquations suivantes dans $\\mathbb{R}$.',
+     tag:'Ex 86 p. 25', q:'1', st:'$7x+3>2x-5$',
+     steps:[
+       SOIT,
+       {m:'7x+3>2x-5'},
+       {op:true, m:'7x-2x>-5-3', c:'On soustrait $2x$ et $3$ aux deux membres.'},
+       {op:true, m:'5x>-8'},
+       {op:true, m:'x>\\dfrac{-8}{5}', c:'On divise par $5>0$ : l\'ordre est conservé.'},
+       {op:true, m:'x>-1{,}6'},
+       {sol:'Les solutions sont les réels $x$ tels que $x>-1{,}6$.', v:'-1{,}6', open:true, right:true}
+     ]},
+    {crumb:'Exercice 86 p. 25 · Question 2',
+     ctx:'Résoudre les inéquations suivantes dans $\\mathbb{R}$.',
+     tag:'Ex 86 p. 25', q:'2', st:'$5x-3\\leq8x-6$',
+     steps:[
+       SOIT,
+       {m:'5x-3\\leq8x-6'},
+       {op:true, m:'5x-8x\\leq-6+3', c:'On soustrait $8x$ et on ajoute $3$ aux deux membres.'},
+       {op:true, m:'-3x\\leq-3'},
+       {op:true, m:'x\\mathrel{\\textcolor{#c81e34}{\\geq}}\\dfrac{-3}{-3}', c:'On divise par $-3<0$ : l\'ordre s\'inverse.'},
+       {op:true, m:'x\\geq1'},
+       {sol:'Les solutions sont les réels $x$ tels que $x\\geq1$.', v:'1', open:false, right:true}
+     ]}
+  ];
+
+  var RULES = [
+    '<b>Règle 3.</b> On <b>conserve</b> l\'ordre si on ajoute (ou on soustrait) un même nombre aux deux membres.<span class="f">$x<y\\Longleftrightarrow x+k<y+k$</span>',
+    '<b>Règle 4.</b> On <b>conserve</b> l\'ordre si on multiplie (ou on divise) les deux membres par un même nombre <b>positif</b> non nul.<span class="f">Si $k>0$ : $x<y\\Longleftrightarrow x\\times k<y\\times k$</span>',
+    '<b>Règle 5.</b> On <b class="red">inverse</b> l\'ordre si on multiplie (ou on divise) les deux membres par un même nombre <b class="red">négatif</b> non nul.<span class="f">Si $k<0$ : $x<y\\Longleftrightarrow x\\times k\\mathrel{\\textcolor{#c81e34}{>}}y\\times k$</span>'
+  ];
+  SLIDES[1].n = RULES.length;
+  SLIDES.forEach(function(s){ if(s.steps) s.n = s.steps.length; if(s.kind==='title') s.n = 0; });
+
+  // ---------- Rendu mathématique ----------
+  function tex(s, display){
+    try{ return katex.renderToString(s, {throwOnError:false, displayMode:!!display}); }
+    catch(e){ return s; }
+  }
+  // Texte avec $...$ en ligne.
+  function txt(s){
+    return s.split('$').map(function(p,i){ return i%2 ? tex(p) : p; }).join('');
+  }
+
+  // Droite graduée (non à l'échelle) : point plein si la borne appartient aux solutions,
+  // sinon une parenthèse tournée vers l'extérieur (comme le crochet de ]1;+∞[).
+  function droite(v, open, right){
+    var x0 = 160, s = right ? -1 : 1;
+    var ray = right ? 'M160 30 H300' : 'M20 30 H160';
+    var borne = open
+      ? '<path d="M'+(x0+7*s)+' 13 Q'+(x0-7*s)+' 30 '+(x0+7*s)+' 47" fill="none" stroke="#c81e34" stroke-width="4" stroke-linecap="round"/>'
+      : '<circle cx="'+x0+'" cy="30" r="7" fill="#c81e34"/>';
+    return '<svg viewBox="0 0 320 70" role="img" aria-label="Représentation des solutions sur une droite">'+
+      '<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#0f1b16"/></marker></defs>'+
+      '<path d="M10 30 H308" stroke="#0f1b16" stroke-width="2" marker-end="url(#ar)"/>'+
+      '<path d="'+ray+'" stroke="#c81e34" stroke-width="5"/>'+
+      borne+
+      '<foreignObject x="110" y="46" width="100" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="text-align:center;font-size:16px;color:#0f1b16">'+tex(v)+'</div></foreignObject>'+
+      '</svg>';
+  }
+
+  // ---------- Navigation ----------
+  var cur = 0, step = 0;
+  var slideEl = document.getElementById('slide'), crumbEl = document.getElementById('crumb'),
+      progEl = document.getElementById('progress'), dotsEl = document.getElementById('dots'),
+      prevBtn = document.getElementById('prev'), nextBtn = document.getElementById('next');
+
+  SLIDES.forEach(function(s,i){
+    var b = document.createElement('button');
+    b.className = 'dot';
+    b.textContent = i===0 ? 'Titre' : i===1 ? 'Cours' : (s.tag.replace(' p. 25','').replace('Feuille 5 · ','')+' Q'+s.q);
+    b.addEventListener('click', function(e){ e.stopPropagation(); cur = i; step = 0; render(); });
+    dotsEl.appendChild(b);
+  });
+
+  function render(){
+    var s = SLIDES[cur], h = '';
+    if(s.kind === 'title'){
+      crumbEl.textContent = 'Séquence 3 · Inégalités et inéquations';
+      h = '<div class="title-slide"><h1>Corrigé</h1>'+
+          '<div>Inégalités et inéquations du premier degré</div><ul>'+
+          '<li>Feuille 5 — Exercice 6, questions 2 et 6</li>'+
+          '<li>Exercice 85 p. 25, questions 1 et 2</li>'+
+          '<li>Exercice 86 p. 25, questions 1 et 2</li></ul>'+
+          '<div class="hint">→ ou clic : étape suivante · ← : étape précédente</div></div>';
+    } else if(s.kind === 'rules'){
+      crumbEl.textContent = s.crumb;
+      h = '<div class="statement"><span class="tag">Cours</span>Opérations sur les inégalités</div><div class="rules">';
+      for(var r=0; r<step; r++) h += '<div class="rule">'+txt(RULES[r])+'</div>';
+      h += '</div>';
+    } else {
+      crumbEl.textContent = s.crumb;
+      h = '<div class="statement"><span class="ctx">'+txt(s.ctx)+'</span><span class="tag">'+s.tag+'</span>'+
+          '<span class="q">'+s.q+'</span>'+txt(s.st)+'</div><div class="work">';
+      // Une ligne ne commence jamais par ⟺ « à vide » : la première équivalence
+      // se place sur la même ligne que l'expression de départ.
+      var rows = [];
+      for(var k=0; k<step; k++){
+        var e = s.steps[k], nw = (k === step-1) ? ' new' : '', last = rows[rows.length-1];
+        if(e.m && e.op && last && last.open){ last.r = e.m; last.c = e.c; last.rnew = nw; last.open = false; }
+        else if(e.m && !e.op) rows.push({l:e.m, lnew:nw, open:true});
+        else if(e.m) rows.push({r:e.m, c:e.c, rnew:nw});
+        else if(e.t) rows.push({html:'<div class="full'+nw+'">'+txt(e.t)+'</div>'});
+        else if(e.note) rows.push({html:'<div class="full note'+nw+'">'+txt(e.note)+'</div>'});
+        else if(e.box) rows.push({html:'<div class="full sol'+nw+'">'+txt(e.box)+'</div>'});
+        else if(e.sol) rows.push({html:'<div class="full sol'+nw+'"><span>'+txt(e.sol)+'</span>'+droite(e.v, e.open, e.right)+'</div>'});
+      }
+      rows.forEach(function(r){
+        if(r.html){ h += r.html; return; }
+        var rn = r.rnew || '';
+        h += '<div class="row">'+
+             '<span class="m l'+(r.lnew||'')+'">'+(r.l ? tex(r.l) : '')+'</span>'+
+             '<span class="op'+rn+'">'+(r.r ? tex('\\Longleftrightarrow') : '')+'</span>'+
+             '<span class="m'+rn+'">'+(r.r ? tex(r.r) : '')+'</span>'+
+             '<span class="c'+rn+'">'+(r.c ? txt(r.c) : '')+'</span></div>';
+      });
+      h += '</div>';
+    }
+    slideEl.innerHTML = h;
+    var last = slideEl.querySelector('.new, .rule:last-child');
+    if(last && last.scrollIntoView) last.scrollIntoView({block:'nearest'});
+    progEl.textContent = 'Diapo '+(cur+1)+' / '+SLIDES.length+(s.n ? ' · étape '+step+' / '+s.n : '');
+    Array.prototype.forEach.call(dotsEl.children, function(d,i){ d.dataset.current = (i===cur) ? 'true' : 'false'; });
+    prevBtn.disabled = (cur===0 && step===0);
+    nextBtn.disabled = (cur===SLIDES.length-1 && step===SLIDES[cur].n);
+    try{ history.replaceState(null, '', '#'+(cur+1)); }catch(err){}
+  }
+
+  function next(){
+    if(step < SLIDES[cur].n) step++;
+    else if(cur < SLIDES.length-1){ cur++; step = 0; }
+    render();
+  }
+  function prev(){
+    if(step > 0) step--;
+    else if(cur > 0){ cur--; step = SLIDES[cur].n; }
+    render();
+  }
+
+  nextBtn.addEventListener('click', next);
+  prevBtn.addEventListener('click', prev);
+  slideEl.addEventListener('click', next);
+  document.getElementById('fs').addEventListener('click', function(){
+    try{ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }catch(e){}
+  });
+  document.addEventListener('keydown', function(e){
+    if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].indexOf(e.key) >= 0){ e.preventDefault(); next(); }
+    else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].indexOf(e.key) >= 0){ e.preventDefault(); prev(); }
+    else if(e.key === 'Home'){ e.preventDefault(); cur = 0; step = 0; render(); }
+  });
+
+  // "…Diaporama.html#4" ouvre directement la 4e diapositive.
+  var start = parseInt(location.hash.slice(1), 10);
+  if(start >= 1 && start <= SLIDES.length) cur = start-1;
+  render();
+})();
+</script>
+</body>
+</html>
