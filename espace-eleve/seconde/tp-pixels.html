@@ -776,6 +776,32 @@ def _console(ligne, n):
             ci.addEventListener('input', maj);
             fc.addEventListener('submit', function () { setTimeout(maj, 0); });
         }
+        // console : ↑ / ↓ rappellent les saisies précédentes (comme dans Capytale / Thonny)
+        function histoFleches(ci, fc) {
+            var pile = [], pos = 0, brouillon = '';
+            fc.addEventListener('submit', function () {
+                var l = ci.value;
+                if (l.trim() && !ci.readOnly && pile[pile.length - 1] !== l) pile.push(l);
+                pos = pile.length; brouillon = '';
+            }, true);
+            function mettre(v) {
+                ci.value = v; ci.dispatchEvent(new Event('input'));
+                setTimeout(function () { ci.selectionStart = ci.selectionEnd = ci.value.length; }, 0);
+            }
+            ci.addEventListener('keydown', function (ev) {
+                if (ci.readOnly) return;
+                if (ev.key === 'ArrowUp') {
+                    ev.preventDefault();
+                    if (pos === 0) return;
+                    if (pos === pile.length) brouillon = ci.value;
+                    pos--; mettre(pile[pos]);
+                } else if (ev.key === 'ArrowDown') {
+                    ev.preventDefault();
+                    if (pos >= pile.length) return;
+                    pos++; mettre(pos === pile.length ? brouillon : pile[pos]);
+                }
+            });
+        }
 
         // petit éditeur exécutable (sans console) : renvoie l'objet CodeMirror
         // appel (facultatif) : ajoute une console « >>> » sous l'éditeur, les sorties du script y sont affichées
@@ -825,6 +851,7 @@ def _console(ligne, n):
                 fc.appendChild(ci); cons.appendChild(histo); cons.appendChild(fc);
                 duo.appendChild(cons);
                 cons.onclick = function (ev) { if (ev.target === cons || ev.target === histo) ci.focus(); };
+                histoFleches(ci, fc);
                 fc.onsubmit = function (ev) {
                     ev.preventDefault();
                     var l = ci.value;
@@ -1461,22 +1488,18 @@ def _console(ligne, n):
                         fc.appendChild(ci); cons.appendChild(histo); cons.appendChild(fc);
                         duo.appendChild(cons);
                         cons.onclick = function (ev) { if (ev.target === cons || ev.target === histo) ci.focus(); };
-                        var pile = [], pos = 0;
+                        histoFleches(ci, fc);
                         fc.onsubmit = function (ev) {
                             ev.preventDefault();
                             var l = ci.value;
                             if (!l.trim() || ci.readOnly) return;
-                            pile.push(l); pos = pile.length; ci.value = ''; ci.readOnly = true;
+                            ci.value = ''; ci.readOnly = true;
                             ligneHisto('>>> ' + l);
                             envoyer({ type: 'console', n: n, src: l }).then(function (r) {
                                 ci.readOnly = false;
                                 if (r.out) ligneHisto(r.out.replace(/\n$/, '')); ajouterImages(histo, r.images);
                                 if (r.err) ligneHisto(r.err, 'err');
                             });
-                        };
-                        ci.onkeydown = function (ev) {
-                            if (ev.key === 'ArrowUp' && pos > 0) { pos--; ci.value = pile[pos]; ev.preventDefault(); }
-                            else if (ev.key === 'ArrowDown') { pos = Math.min(pile.length, pos + 1); ci.value = pile[pos] || ''; ev.preventDefault(); }
                         };
                     } else gauche.appendChild(sortie);
                     function ligneHisto(t, classe) {
