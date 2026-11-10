@@ -1,13 +1,14 @@
 /* Service worker du site : reçoit les notifications push de l'espace élève et les affiche.
    Pas de mise en cache des pages (le site reste toujours à jour). */
+importScripts('maths-texte.js');   // maths $…$ -> texte (x², √2, 1/2) : le téléphone n'affiche pas KaTeX
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) { e.waitUntil(self.clients.claim()); });
 
 self.addEventListener('push', function (e) {
     var d = {};
     try { d = e.data ? e.data.json() : {}; } catch (x) { d = { texte: e.data && e.data.text() }; }
-    e.waitUntil(self.registration.showNotification(d.titre || 'Maths Lebrun', {
-        body: d.texte || '',
+    e.waitUntil(self.registration.showNotification(self.MathsTexte.unicode(d.titre || 'Maths Lebrun'), {
+        body: self.MathsTexte.unicode(d.texte || ''),
         icon: 'img/icone-appli-192.png',
         badge: 'img/icone-appli-192.png',
         data: { url: new URL(d.url || 'espace-eleve/', self.registration.scope).href }

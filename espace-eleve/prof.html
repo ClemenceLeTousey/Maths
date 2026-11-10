@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
     <script src="../site.js"></script>
+    <script src="../maths-texte.js"></script>
     <script src="config.js"></script>
     <script src="moteur.js"></script>
     <script src="soutien.js"></script>
@@ -136,8 +137,11 @@
         .nt-apercu { display: flex; gap: 10px; align-items: flex-start; max-width: 360px; padding: 10px 12px; border-radius: 14px;
             background: var(--bleu-doux); border: 1px solid var(--line); }
         .nt-apercu img { width: 34px; height: 34px; border-radius: 8px; }
-        .nt-apercu b, .nt-apercu span { display: block; font-size: 0.9rem; }
-        .nt-apercu span { color: var(--muted); }
+        .nt-apercu > div > b, .nt-apercu > div > span { display: block; font-size: 0.9rem; }
+        .nt-apercu > div > span { color: var(--muted); }
+        .nt-apercu-cloche { max-width: 360px; font-size: 0.9rem; }
+        .nt-apercu-cloche b, .nt-apercu-cloche > span { display: block; }
+        .nt-apercu-cloche > span { color: var(--muted); }
         #nt-etat.ko { color: var(--ko); }
         .nt-alerte { color: var(--ko); background: var(--ko-fond); border: 1px solid var(--ko); border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; max-width: 640px; }
         /* Suivi : bouton « Cours passé » par jour ; case rouge si la série n'était pas faite à ce moment-là */
@@ -240,6 +244,7 @@
                         <input type="datetime-local" id="nt-quand-date" hidden>
                     </div>
                     <div class="nt-apercu" aria-label="Aperçu"><img src="../img/icone-appli-192.png" alt=""><div><b id="nt-apercu-t"></b><span id="nt-apercu-x"></span></div></div>
+                    <div class="nt-apercu-cloche" id="nt-apercu-cloche" hidden><span class="aide" style="margin:0">Dans la cloche 🔔 du site (le téléphone, lui, affiche la version texte ci-dessus) :</span><b id="nt-apercu-ct"></b><span id="nt-apercu-cx"></span></div>
                     <div><button type="button" id="nt-envoyer">Envoyer maintenant</button></div>
                     <p class="aide" id="nt-etat" aria-live="polite"></p>
                 </div>
@@ -828,7 +833,7 @@
                 };
                 t.appendChild(sup);
                 var p = document.createElement('p'); p.style.whiteSpace = 'pre-wrap'; p.style.margin = '0';
-                p.textContent = m.texte;   // texte brut : jamais interprété comme du HTML
+                MathsTexte.rendu(p, m.texte || '');   // texte brut (jamais interprété comme du HTML), maths $…$ rendues
                 bloc.appendChild(t); bloc.appendChild(p);
                 if (m.image) {
                     var voir = document.createElement('button'); voir.type = 'button'; voir.className = 'lien'; voir.textContent = '📎 voir la capture';
@@ -862,7 +867,7 @@
                     e.textContent = '↳ Ta réponse, ' + new Date(m.repondu_le).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) +
                         (m.reponse_lue ? ' · lue ✓' : ' · pas encore lue');
                     var p = document.createElement('p'); p.style.cssText = 'white-space:pre-wrap;margin:0';
-                    p.textContent = m.reponse;
+                    MathsTexte.rendu(p, m.reponse);
                     r.appendChild(e); r.appendChild(p);
                 }
                 var b = document.createElement('button'); b.type = 'button'; b.className = 'lien';
@@ -893,6 +898,7 @@
                 var ligne = document.createElement('p'); ligne.style.margin = '6px 0 0';
                 ligne.appendChild(ok); ligne.appendChild(document.createTextNode(' ')); ligne.appendChild(annuler); ligne.appendChild(etat);
                 r.appendChild(ta); r.appendChild(ligne);
+                MathsTexte.barre(ta);   // boutons maths au-dessus, aperçu dessous
                 ta.focus();
             }
             vue();

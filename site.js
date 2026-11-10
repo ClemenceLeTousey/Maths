@@ -884,8 +884,8 @@ document.addEventListener('click', function (e) {
         '.cloche-panneau a { display: block; padding: 10px 14px; color: inherit; text-decoration: none; }' +
         '.cloche-panneau a:hover, .cloche-panneau a:focus-visible { background: var(--bg); outline: none; }' +
         '.cloche-panneau .nouv { border-left: 3px solid #e5383b; }' +
-        '.cloche-panneau b { display: block; font-size: 0.92rem; }' +
-        '.cloche-panneau span { display: block; font-size: 0.88rem; color: var(--muted); }' +
+        '.cloche-panneau a > b { display: block; font-size: 0.92rem; }' +
+        '.cloche-panneau a > span { display: block; font-size: 0.88rem; color: var(--muted); }' +
         '.cloche-panneau small { display: block; font-size: 0.78rem; color: var(--muted); margin-top: 2px; }' +
         '.cloche-panneau .vide { padding: 14px; color: var(--muted); font-size: 0.9rem; margin: 0; }';
     (document.head || document.documentElement).appendChild(css);
@@ -894,6 +894,10 @@ document.addEventListener('click', function (e) {
     function monter() {
         var menu = document.querySelector('.nav-links');
         if (!menu) return;
+        // maths $…$ dans les notifications : maths-texte.js (chargé ici s'il n'est pas déjà sur la page)
+        if (!window.MathsTexte && !document.querySelector('script[src$="maths-texte.js"]')) {
+            var mt = document.createElement('script'); mt.src = racine + 'maths-texte.js'; document.head.appendChild(mt);
+        }
         var li = document.createElement('li'), bt = document.createElement('button'), compte = document.createElement('span');
         li.className = 'cloche';
         bt.type = 'button';
@@ -968,8 +972,10 @@ document.addEventListener('click', function (e) {
                 var l = document.createElement('li'), a = document.createElement('a');
                 a.href = racine + (n.url || 'espace-eleve/');
                 if (!n.lu) a.className = 'nouv';
-                [['b', n.titre], ['span', n.texte], ['small', quand(n.recu_le)]].forEach(function (x) {
-                    var e = document.createElement(x[0]); e.textContent = x[1]; a.appendChild(e);
+                [['b', n.titre, 1], ['span', n.texte, 1], ['small', quand(n.recu_le)]].forEach(function (x) {
+                    var e = document.createElement(x[0]);
+                    if (x[2] && window.MathsTexte) MathsTexte.rendu(e, x[1] || ''); else e.textContent = x[1];   // maths $…$ (maths-texte.js)
+                    a.appendChild(e);
                 });
                 l.appendChild(a); ul.appendChild(l);
             });

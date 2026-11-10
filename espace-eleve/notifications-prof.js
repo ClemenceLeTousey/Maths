@@ -87,7 +87,11 @@
     function apercu() {
         var t = $('nt-titre').value.trim() || 'Titre', x = $('nt-texte').value.trim();
         if ($('nt-rappel').checked) x = x.replace(/\{n\}/g, '2');
-        $('nt-apercu-t').textContent = t; $('nt-apercu-x').textContent = x;
+        // téléphone : version texte (x², √2, 1/2) ; cloche du site : maths rendues par KaTeX
+        $('nt-apercu-t').textContent = MathsTexte.unicode(t); $('nt-apercu-x').textContent = MathsTexte.unicode(x);
+        var maths = MathsTexte.aDesMaths(t) || MathsTexte.aDesMaths(x);
+        $('nt-apercu-cloche').hidden = !maths;
+        if (maths) { MathsTexte.rendu($('nt-apercu-ct'), t); MathsTexte.rendu($('nt-apercu-cx'), x); }
         $('nt-quand-date').hidden = !$('nt-plus-tard').checked;
         $('nt-serie-zone').hidden = !$('nt-rappel').checked;
         $('nt-envoyer').textContent = $('nt-plus-tard').checked ? 'Programmer' : 'Envoyer maintenant';
@@ -178,12 +182,17 @@
         z.innerHTML = l.length
             ? '<div class="tableau-defile"><table class="res"><tr><th>Quand</th><th>Notification</th><th>Destinataires</th><th>Active</th><th></th></tr>' +
               l.map(function (r) {
-                  return '<tr><td>Chaque ' + JOURS[r.jour] + ' à ' + esc(r.heure.replace(':', 'h')) + '</td><td>' + (r.type === 'rappel' ? '⏰' : '📅') + ' <b>' + esc(r.titre) + '</b><br><span class="aide">' + esc(r.texte) + '</span></td>' +
+                  return '<tr><td>Chaque ' + JOURS[r.jour] + ' à ' + esc(r.heure.replace(':', 'h')) + '</td><td>' + (r.type === 'rappel' ? '⏰' : '📅') + ' <b class="nt-m">' + esc(r.titre) + '</b><br><span class="aide nt-m">' + esc(r.texte) + '</span></td>' +
                          '<td>' + esc(texteDestRegle(r)) + (r.type === 'rappel' ? '<br><span class="aide">seulement si la série de la semaine n\'est pas finie</span>' : '') + '</td>' +
                          '<td><input type="checkbox" data-actif="' + r.id + '"' + (r.actif ? ' checked' : '') + ' aria-label="Règle active"></td>' +
                          '<td><button type="button" class="secondaire" data-suppr-regle="' + r.id + '">Supprimer</button></td></tr>';
               }).join('') + '</table></div>'
             : '<p class="aide">Aucune règle pour l\'instant.</p>';
+        rendreMaths(z);
+    }
+    // titres et textes des listes : maths $…$ rendues (le contenu a été échappé, on le relit en texte)
+    function rendreMaths(zone) {
+        Array.prototype.forEach.call(zone.querySelectorAll('.nt-m'), function (e) { MathsTexte.rendu(e, e.textContent); });
     }
     function typeRegle() {
         var d = REGLE_DEFAUT[$('nt-r-type').value];
@@ -206,7 +215,7 @@
     function afficherListes() {
         var l = donnees.notifs || [], avenir = l.filter(function (n) { return !n.envoye_le; }).reverse(), faites = l.filter(function (n) { return n.envoye_le; });
         function ligne(n, fait) {
-            return '<tr><td>' + esc(date(fait ? n.envoye_le : n.envoyer_le)) + '</td><td><span title="Catégorie">' + emoji(n.categorie) + '</span> <b>' + esc(n.titre) + '</b><br><span class="aide">' + esc(n.texte) + '</span></td>' +
+            return '<tr><td>' + esc(date(fait ? n.envoye_le : n.envoyer_le)) + '</td><td><span title="Catégorie">' + emoji(n.categorie) + '</span> <b class="nt-m">' + esc(n.titre) + '</b><br><span class="aide nt-m">' + esc(n.texte) + '</span></td>' +
                    '<td>' + esc(texteDest(n)) + (n.exercices ? '<br><span class="aide">si ' + esc(nomSerie(n.exercices)) + ' pas finie</span>' : '') + '</td>' +
                    (fait ? '<td>' + n.recues + '</td><td>' + n.lues + '</td>'
                          : '<td><button type="button" class="secondaire" data-suppr="' + n.id + '">Supprimer</button></td>') + '</tr>';
@@ -218,6 +227,7 @@
             ? '<div class="tableau-defile"><table class="res"><tr><th>Envoyée</th><th>Notification</th><th>Destinataires</th><th>Reçues</th><th>Lues</th></tr>' + faites.map(function (n) { return ligne(n, true); }).join('') + '</table></div>' +
               '<p class="aide">Reçues : élèves visés (dans la cloche du site, et sur leur téléphone s\'ils ont activé les notifications). Lues : cloche ouverte.</p>'
             : '<p class="aide">Aucune notification envoyée ces 30 derniers jours.</p>';
+        rendreMaths($('nt-avenir')); rendreMaths($('nt-faites'));
         var abo = donnees.abonnes || [], nm = noms();
         $('nt-abonnes').textContent = abo.length
             ? 'Notifications activées sur un téléphone : ' + abo.map(function (a) { return (nm[a.code] || a.code) + (a.n > 1 ? ' (' + a.n + ' appareils)' : ''); }).join(', ') + '.'
@@ -254,6 +264,7 @@
             $('nt-modele-rappel').onclick = function () { modele('rappel'); };
             $('nt-modele-eval').onclick = function () { modele('eval'); };
             $('nt-envoyer').onclick = envoyer;
+            MathsTexte.barre($('nt-texte'), false); MathsTexte.barre($('nt-r-texte'), false);   // boutons maths ; l'aperçu est celui de la notification
             $('nt-avenir').onclick = function (e) {
                 var b = e.target.closest('[data-suppr]');
                 if (!b || !confirm('Supprimer cette notification programmée ?')) return;

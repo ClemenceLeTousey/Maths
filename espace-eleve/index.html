@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="interactif.css">
     <script src="../site.js"></script>
+    <script src="../maths-texte.js"></script>
     <script src="config.js"></script>
     <script src="moteur.js"></script>
     <script src="soutien.js"></script>
@@ -473,6 +474,7 @@
         /* ---------- Message à la professeure ---------- */
         var texteMessage = document.getElementById('message-texte');
         var etatMessage = document.getElementById('message-etat');
+        var barreMaths = MathsTexte.barre(texteMessage);   // boutons maths au-dessus du message, aperçu dessous
         // Capture jointe : réduite dans le navigateur (JPEG, 1600 px de large au plus) avant l'envoi
         var image = null, apercu = document.getElementById('pj-apercu'), champImage = document.getElementById('message-image');
         function retirerImage() { image = null; apercu.hidden = true; champImage.value = ''; }
@@ -513,7 +515,7 @@
             var bouton = this; bouton.disabled = true;
             etatMessage.textContent = 'Envoi…';
             Interactif.rpc('envoyer_message', { p_jeton: s.jeton, p_texte: t, p_image: image }).then(function () {
-                texteMessage.value = ''; retirerImage();
+                texteMessage.value = ''; retirerImage(); barreMaths.maj();
                 etatMessage.textContent = '✓ Message envoyé, merci !';
                 mesMessages(s);
             }, function (x) { etatMessage.textContent = 'Non envoyé : ' + x.message; })
@@ -543,12 +545,12 @@
                 l.forEach(function (m) {
                     var b = document.createElement('div'); b.className = 'fil';
                     var d = document.createElement('p'); d.className = 'date'; d.textContent = 'Toi, le ' + fmt(m.envoye_le) + (m.image ? ' · 📎 capture jointe' : '');
-                    var t = document.createElement('p'); t.textContent = m.texte;   // texte brut
+                    var t = document.createElement('p'); MathsTexte.rendu(t, m.texte || '');   // texte brut, maths $…$ rendues
                     b.appendChild(d); if (m.texte) b.appendChild(t);
                     if (m.reponse) {
                         var r = document.createElement('div'); r.className = 'reponse' + (m.lue ? '' : ' nouvelle');
                         var dr = document.createElement('p'); dr.className = 'date'; dr.textContent = 'Ta professeure, le ' + fmt(m.repondu_le);
-                        var tr = document.createElement('p'); tr.textContent = m.reponse;
+                        var tr = document.createElement('p'); MathsTexte.rendu(tr, m.reponse);
                         r.appendChild(dr); r.appendChild(tr); b.appendChild(r);
                     }
                     liste.appendChild(b);
