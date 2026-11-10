@@ -19,7 +19,6 @@
     <script src="plan-travail.js"></script>
     <script src="suivi-eval.js"></script>
     <script src="notifications-prof.js"></script>
-    <script src="plan-classe.js"></script>
     <style>
         .interactif { max-width: 1100px; }
         .outils { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 16px; }
@@ -159,21 +158,6 @@
         .tp-etapes td.passee { color: var(--muted); font-style: italic; }
         .tp-entete { display: flex; flex-wrap: wrap; gap: 6px 24px; align-items: baseline; margin: 18px 0 8px; }
         .tp-entete h3 { margin: 0; }
-        /* Plan de classe */
-        .pc-zone { max-width: 900px; margin: 0 auto; }
-        .pc-grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 36px; }
-        .pc-table { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 5px; border: 2px solid #b9a688; border-radius: 8px; background: #e9dfcf; }
-        .pc-place { min-height: 46px; display: flex; border: 2px dashed #cdbfa6; border-radius: 6px; background: var(--surface); }
-        .pc-place.pc-survol { border-color: var(--orange); }
-        .pc-eti { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 3px; border: 2px solid; border-radius: 5px; font-weight: 600; line-height: 1.1; cursor: grab; user-select: none; color: #14213d; }
-        .pc-f { background: #f7d9e3; border-color: #c9799a; }
-        .pc-g { background: #d6e6f5; border-color: #5d8fbf; }
-        .pc-sans-couleur .pc-eti { background: var(--surface); border-color: var(--muted); color: var(--text); }
-        .pc-eti.pc-choisi { outline: 3px solid var(--orange); outline-offset: 1px; }
-        .pc-eti.pc-glisse { opacity: 0.4; }
-        .pc-tab { width: 60%; margin: 0 auto; padding: 8px; border-radius: 6px; background: #2f4a3a; color: #fff; text-align: center; font-weight: 600; letter-spacing: 0.1em; }
-        .pc-tab-haut { margin-bottom: 22px; } .pc-tab-bas { margin-top: 22px; }
-        @media (max-width: 640px) { .pc-grille { gap: 10px 8px; } .pc-eti { font-size: 0.75rem; } }
     </style>
 </head>
 <body>
@@ -186,7 +170,7 @@
 
     <header>
         <h1>Espace professeure</h1>
-        <p>Suivi, messages, plan de travail, plan de classe et TP</p>
+        <p>Suivi, messages, plan de travail et TP</p>
     </header>
 
     <main class="interactif">
@@ -204,8 +188,6 @@
                 <button type="button" role="tab" id="onglet-suivi-tp" aria-controls="panneau-suivi-tp" data-onglet="suivi-tp">Suivi TP</button>
                 <button type="button" role="tab" id="onglet-notifs" aria-controls="panneau-notifs" data-onglet="notifs">Notifications</button>
                 <button type="button" role="tab" id="onglet-plan" aria-controls="panneau-plan" data-onglet="plan">Plan de travail</button>
-                <button type="button" role="tab" id="onglet-plan-classe" aria-controls="panneau-plan-classe" data-onglet="plan-classe">Plan de classe</button>
-                <button type="button" role="tab" id="onglet-python" aria-controls="panneau-python" data-onglet="python">Python</button>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-messages" aria-labelledby="onglet-messages" hidden>
@@ -307,62 +289,6 @@
                 <div><div id="pt-plan"></div></div>
             </div>
 
-            <div class="panneau" role="tabpanel" id="panneau-plan-classe" aria-labelledby="onglet-plan-classe" hidden>
-                <h2>Plan de classe</h2>
-                <p class="aide">Glissez une étiquette sur une autre place pour échanger deux élèves (ou cliquez sur l'étiquette, puis sur la place). Les déplacements sont mémorisés dans ce navigateur. Aucun nom n'est en ligne : les prénoms viennent des fichiers comptes-*.csv, lus sur cet ordinateur uniquement.</p>
-                <div class="outils">
-                    <label>Classe <select id="pc-classe"></select></label>
-                    <label>Noms : <input type="file" id="pc-noms" accept=".csv" multiple></label>
-                    <button type="button" id="pc-vue">Changer la représentation</button>
-                    <button type="button" id="pc-couleurs" class="secondaire">Couleurs filles / garçons</button>
-                    <button type="button" id="pc-imprimer" class="secondaire">Imprimer</button>
-                    <button type="button" id="pc-reset" class="secondaire">Revenir au plan enregistré</button>
-                </div>
-                <p class="aide" id="pc-etat" aria-live="polite"></p>
-                <div class="pc-zone" id="pc-zone">
-                    <div id="pc-tableau" class="pc-tab">TABLEAU</div>
-                    <div class="pc-grille" id="pc-grille"></div>
-                </div>
-            </div>
-
-            <div class="panneau" role="tabpanel" id="panneau-python" aria-labelledby="onglet-python" hidden>
-                <h2>TP Python</h2>
-                <div class="outils tp-choix-prof" role="group" aria-label="Choix du TP">
-                    <button type="button" class="secondaire" data-tp="tp-premiers-pas">TP1 · Premiers pas</button>
-                    <button type="button" class="secondaire" data-tp="tp-conditions">TP2 · Conditions</button>
-                    <button type="button" class="secondaire" data-tp="tp-conditions-hybride">TP2 · Hybride</button>
-                    <button type="button" class="secondaire" data-tp="tp-boucles">TP3 · Boucles</button>
-                    <button type="button" class="secondaire" data-tp="tp-pixels">TP4 · Pixels</button>
-                    <button type="button" class="secondaire" data-tp="tp-filtres">TP5 · Filtres</button>
-                </div>
-                <div class="tp-info" data-tp="tp-premiers-pas" hidden>
-                    <h3>TP1 · Premiers pas : affectation et fonctions (non noté)</h3>
-                    <p class="aide">Version interactive du TP1 fait sur Capytale (<a href="seconde/tp/tp1-sujet.pdf" target="_blank" rel="noopener">sujet PDF</a>, <a href="seconde/tp/tp1-corrige.pdf" target="_blank" rel="noopener">corrigé PDF</a>). En préparation : visible seulement des comptes PROF-2NDE et 2H-TARTAGLIA (les autres élèves voient encore la fiche PDF). Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. Sans code d'accès ; quiz surveillé. 20 étapes : A (console, affectation, fonctions), B (chasse aux erreurs, de Scratch à Python, vitesse) en classe, C (conversions, pourcentages), quiz et défis D (programme mystère) à la maison. TP d'entraînement : pas de note dans le Suivi TP (<code>nonNote</code>). Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
-                </div>
-                <div class="tp-info" data-tp="tp-conditions" hidden>
-                    <h3>TP2 · Les structures conditionnelles (noté)</h3>
-                    <p class="aide">Publié pour toutes les classes de Seconde. 13 étapes. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré dans le suivi. Avec le compte PROF-2NDE, le sélecteur en haut du TP bascule entre « Mode professeure » et « Mode élève ».</p>
-                </div>
-                <div class="tp-info" data-tp="tp-conditions-hybride" hidden>
-                    <h3>TP2 · Version hybride (noté, même barème)</h3>
-                    <p class="aide">Pour le compte 2H-TARTAGLIA seulement, avec le même code d'accès que le TP2 : il voit cette version à la place du TP2 habituel. Avec PROF-2NDE, la case « Version hybride » en haut du TP2 (mode professeure ou mode élève) passe d'une version à l'autre. Tout ce qui est à lire est dans le PDF grands caractères « TP2 V2 - Les structures conditionnelles - Hybride Grands Caractères » (dossier TP Algorithmique) ; en ligne, seulement les 13 questions à valider, numérotées comme les encadrés « En ligne » du PDF. Bouton « Aa » pour le texte agrandi. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
-                </div>
-                <div class="tp-info" data-tp="tp-boucles" hidden>
-                    <h3>TP3 · Les boucles (non noté)</h3>
-                    <p class="aide">En préparation : le TP n'est visible que du compte PROF-2NDE (les élèves voient encore le sujet PDF). Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. 16 étapes : A (lire, prévoir) et B (modifier) en classe, C, quiz et défis D à la maison. TP d'entraînement : pas de note dans le Suivi TP (<code>nonNote</code> dans INTERACTIF_BAREMES). Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
-                </div>
-                <div class="tp-info" data-tp="tp-pixels" hidden>
-                    <h3>TP4 · Créer une image pixel par pixel (noté)</h3>
-                    <p class="aide">En préparation : visible seulement du compte PROF-2NDE ; les élèves gardent l'ancien TP Photo (seconde/tp-photo.html) tant que celui-ci n'est pas publié. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. 9 étapes : A (6,5 points), B (8 points), C (5,5 points), quiz /5. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
-                </div>
-                <div class="tp-info" data-tp="tp-filtres" hidden>
-                    <h3>TP5 · Retoucher une photo : les filtres (noté)</h3>
-                    <p class="aide">En préparation : visible seulement du compte PROF-2NDE. Pour le publier, retirer <code>comptes</code> de sa ligne dans <code>config.js</code>. 9 étapes : A (4 points), B (6 points), C (6 points), quiz /5, défi D (4 points), bonus « détecter les contours » (1 point, rattrape une étape manquée) ; « Transforme ta propre photo » est un extra facultatif sous le TP, non noté et non enregistré. Ouvert d'ici, le TP tourne en invité : rien n'est enregistré.</p>
-                </div>
-                <p><a class="bouton" id="tp-ouvrir" href="#" target="_blank" rel="noopener">Ouvrir le TP dans un nouvel onglet</a></p>
-                <iframe id="tp-apercu" title="Aperçu du TP" style="width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);"></iframe>
-            </div>
-
             <div class="panneau" role="tabpanel" id="panneau-suivi-tp" aria-labelledby="onglet-suivi-tp" hidden>
                 <h2>Suivi des TP</h2>
                 <p class="aide">Barème automatique : chaque étape réussie rapporte ses points (colonne « Points » du détail), note plafonnée à 20 ; une étape passée (bouton « Passer ») ne rapporte rien tant qu’elle n’est pas réussie. TP Conditions : note du TP selon l'avancée (4 après le cours, 8 après l'Ex. 1, 15 après l'Ex. 4, 20 après l'Ex. 6, bonus 0,5) ; quiz final noté à part sur 5. Note globale = 0,75 × note TP + 0,25 × quiz ramené sur 20 (quiz pas encore fait : compté 0, signalé par *). Les erreurs (réponses fausses avant la bonne) sont indiquées pour information. Barème réglable dans <code>config.js</code> (INTERACTIF_BAREMES).</p>
@@ -401,7 +327,7 @@
         var mdp = null, donnees = null, noms = {}, inscriptions = null;
         try { noms = JSON.parse(localStorage.getItem(CLE_NOMS)) || {}; document.getElementById('memoriser').checked = Object.keys(noms).length > 0; } catch (e) {}
         try { mdp = sessionStorage.getItem('interactif-prof'); } catch (e) {}
-        window.interactifNoms = function () { return noms; };   // pour l'onglet Plan de classe
+        window.interactifNoms = function () { return noms; };   // pour les onglets Suivi Eval et Notifications
 
         var form = document.getElementById('f-prof');
         form.onsubmit = function (e) { e.preventDefault(); mdp = form.mdp.value; charger(); };
@@ -688,10 +614,9 @@
                         if (c.length >= 2 && c[1]) noms[c[1].trim().toUpperCase()] = c[0].replace(/^"|"$/g, '').trim();
                     });
                 });
-                memoriser(); PlanClasse.afficher(); afficher(); SuiviTP.remplir();
+                memoriser(); afficher(); SuiviTP.remplir();
             });
         };
-        document.getElementById('pc-noms').onchange = document.getElementById('noms').onchange;
         document.getElementById('memoriser').onchange = memoriser;
         function memoriser() {
             try {
@@ -1068,24 +993,8 @@
 
     <script>
     (function () {
-        /* ---------- Onglets : Suivi QF par défaut ; #messages, #suivi-eval, #plan, #plan-classe, #python dans l'adresse ouvre l'onglet correspondant ---------- */
+        /* ---------- Onglets : Suivi QF par défaut ; #messages, #suivi-eval, #plan dans l'adresse ouvre l'onglet correspondant ---------- */
         var onglets = Array.prototype.slice.call(document.querySelectorAll('.onglets [role="tab"]'));
-        /* Onglet Python : un TP à la fois ; l'aperçu ne se charge qu'au clic (dernier TP choisi gardé sur cet ordinateur) */
-        var tpChoisi = null;
-        try { tpChoisi = localStorage.getItem('prof-tp-choisi'); } catch (e) {}
-        function choisirTP(id) {
-            var boutonsTP = Array.prototype.slice.call(document.querySelectorAll('.tp-choix-prof button[data-tp]'));
-            id = id || tpChoisi;
-            if (!boutonsTP.some(function (b) { return b.dataset.tp === id; })) id = boutonsTP[boutonsTP.length - 1].dataset.tp;
-            tpChoisi = id;
-            try { localStorage.setItem('prof-tp-choisi', id); } catch (e) {}
-            boutonsTP.forEach(function (b) { var a = b.dataset.tp === id; b.className = a ? '' : 'secondaire'; b.setAttribute('aria-pressed', a ? 'true' : 'false'); });
-            document.querySelectorAll('.tp-info').forEach(function (d) { d.hidden = d.dataset.tp !== id; });
-            var url = 'seconde/' + id + '.html', f = document.getElementById('tp-apercu');
-            document.getElementById('tp-ouvrir').href = url;
-            if (f.getAttribute('src') !== url) f.src = url;
-        }
-        document.querySelectorAll('.tp-choix-prof button[data-tp]').forEach(function (b) { b.onclick = function () { choisirTP(b.dataset.tp); }; });
         function ouvrirOnglet(nom, focus) {
             if (!onglets.some(function (o) { return o.dataset.onglet === nom; })) nom = 'suivi';
             onglets.forEach(function (o) {
@@ -1099,10 +1008,7 @@
             if (nom === 'plan' && !document.getElementById('vue').hidden) PlanTravail.demarrer();
             if (nom === 'suivi-eval') SuiviEval.demarrer();
             if (nom === 'notifs' && !document.getElementById('vue').hidden) NotifProf.demarrer();
-            if (nom === 'plan-classe') PlanClasse.demarrer();
             if (nom === 'messages') marquerMessagesLus();
-            // l'aperçu du TP (et son Python) ne se charge qu'à la première ouverture de l'onglet
-            if (nom === 'python') choisirTP();
         }
         onglets.forEach(function (o) {
             o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };
