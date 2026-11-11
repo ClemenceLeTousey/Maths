@@ -922,7 +922,7 @@ document.addEventListener('click', function (e) {
             }, function () { /* base pas prête ou session expirée : pas de cloche active */ });
         }
         // Catégories (mêmes que maj-push-categories.sql) ; « prof » ne peut pas être coupée
-        var CATEGORIES = [['serie', '📅 Nouvelle série disponible'], ['rappel', '⏰ Série pas finie'], ['note', '📝 Nouvelle note'],
+        var CATEGORIES = [['serie', '📅 Nouvelle série disponible'], ['rappel', '⏰ Série d\'automatismes non finie'], ['note', '📝 Nouvelle note'],
                           ['eval', '📆 Évaluation à venir'], ['soutien', '🤝 Rappel soutien'], ['prof', '📣 Message de ta professeure']];
         var reglages = false;
         function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }

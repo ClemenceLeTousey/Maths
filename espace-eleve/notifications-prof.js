@@ -12,7 +12,7 @@
                  ['espace-eleve/#soutien', 'Espace élève · Soutien'], ['espace-eleve/#echange', 'Espace élève · Messages'], ['./', 'Accueil du site']];
     var NIVEAUX = { seconde: 'Seconde', premiere: 'Première', terminale: 'TST2S' };
     // mêmes catégories que maj-push-categories.sql et que la cloche (site.js) ; « prof » ne peut pas être coupée
-    var CATEGORIES = [['prof', '📣 Message de ta professeure'], ['serie', '📅 Nouvelle série disponible'], ['rappel', '⏰ Série pas finie'],
+    var CATEGORIES = [['prof', '📣 Message de ta professeure'], ['serie', '📅 Nouvelle série disponible'], ['rappel', '⏰ Série d\'automatismes non finie'],
                       ['eval', '📆 Évaluation à venir'], ['note', '📝 Nouvelle note'], ['soutien', '🤝 Rappel soutien']];
     function emoji(c) { var x = CATEGORIES.filter(function (k) { return k[0] === c; })[0]; return x ? x[1].split(' ')[0] : ''; }
 

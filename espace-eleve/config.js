@@ -6,7 +6,7 @@ window.INTERACTIF_CONFIG = {
     cle: 'sb_publishable_ryT5LKm_TWnjc9u1fxqShA_s-jmtT34'
 };
 
-/* Notifications push (« Série N disponible », « Série pas finie »).
+/* Notifications push (« Série N disponible », « Série d'automatismes non finie »).
    comptes : seuls ces comptes voient le bouton d'activation (null = tous les élèves).
    cle : clé publique VAPID (la clé privée est dans le fichier local cles-notifications-push.txt). */
 window.NOTIF_CONFIG = {
