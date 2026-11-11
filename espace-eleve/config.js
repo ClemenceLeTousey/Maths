@@ -185,16 +185,26 @@ window.INTERACTIF_GROUPES = {
 /* Onglet « TP Python » de la page élève : les TP dans l'ordre d'affichage.
    id = TP interactif du catalogue (ligne affichée seulement si l'élève y a accès, voir « comptes ») ;
    pdf / corrige = TP sur papier ou Capytale (liens vers les PDF) ; aVenir: true = annoncé, pas encore ouvert.
+   comptes = ligne réservée à ces comptes (TP préparés, pas encore publiés).
+   Compte PROF-2NDE : chaque ligne montre la version interactive, la version papier (pdf / corrige) et « Revenir à zéro ».
    Un TP interactif absent de cette liste s'affiche à la fin. */
 window.INTERACTIF_TP_ORDRE = [
     // TP1 : version interactive réservée à PROF-2NDE et 2H-TARTAGLIA pour l'instant ; les élèves voient la fiche PDF (Capytale) de la même ligne
     { niveau: 'seconde', nom: 'TP1 · Affectations et fonctions', id: 'seconde/tp-premiers-pas', texte: 'Premiers pas en Python avec Capytale', pdf: 'seconde/tp/tp1-sujet.pdf', corrige: 'seconde/tp/tp1-corrige.pdf' },
     // TP2 : version hybride pour les comptes qui la voient (2H-TARTAGLIA), sinon le TP2 habituel
-    { niveau: 'seconde', nom: 'TP2 · Les structures conditionnelles', id: 'seconde/tp-conditions-hybride', sinon: 'seconde/tp-conditions-v2' },
+    { niveau: 'seconde', nom: 'TP2 · Les structures conditionnelles', id: 'seconde/tp-conditions-hybride', sinon: 'seconde/tp-conditions-v2', pdf: 'seconde/tp/tp2-sujet.pdf' },
     // id = TP interactif ; tant qu'il est réservé à PROF-2NDE, les élèves voient « sinon » (ancien TP) ou la fiche PDF
     { niveau: 'seconde', nom: 'TP3 · Les boucles en Python', id: 'seconde/tp-boucles', texte: 'for, range, while', pdf: 'seconde/tp/tp3-sujet.pdf', corrige: 'seconde/tp/corrige-a-venir.html' },
     { niveau: 'seconde', nom: 'TP4 · Créer une image pixel par pixel', id: 'seconde/tp-pixels', sinon: 'seconde/tp-photo' },
-    { niveau: 'seconde', nom: 'TP5 · Retoucher une photo : les filtres', id: 'seconde/tp-filtres' }
+    { niveau: 'seconde', nom: 'TP5 · Retoucher une photo : les filtres', id: 'seconde/tp-filtres' },
+    // TP6 à TP11 : préparés (sujets PDF), version interactive à venir ; PROF-2NDE seulement (retirer « comptes » pour publier)
+    // Les corrigés restent hors ligne (dépôt public) : les ajouter avec « corrige » au moment de les donner.
+    { niveau: 'seconde', nom: 'TP6 · Les listes en Python', texte: 'Indices, ajout, parcours d’une liste', pdf: 'seconde/tp/tp6-sujet.pdf', comptes: ['PROF-2NDE'] },
+    { niveau: 'seconde', nom: 'TP7 · Balayage et dichotomie', texte: 'Valeurs approchées de √2', pdf: 'seconde/tp/tp7-sujet.pdf', comptes: ['PROF-2NDE'] },
+    { niveau: 'seconde', nom: 'TP8 · Simulation et loi des grands nombres', texte: 'Simuler une expérience aléatoire', pdf: 'seconde/tp/tp8-sujet.pdf', comptes: ['PROF-2NDE'] },
+    { niveau: 'seconde', nom: 'TP9 · Géométrie repérée', texte: 'Milieu, distance, alignement', pdf: 'seconde/tp/tp9-sujet.pdf', comptes: ['PROF-2NDE'] },
+    { niveau: 'seconde', nom: 'TP10 · Extremums et longueur de courbe', texte: 'Approcher un extremum, une longueur', pdf: 'seconde/tp/tp10-sujet.pdf', comptes: ['PROF-2NDE'] },
+    { niveau: 'seconde', nom: 'TP11 · Statistiques et tableaux croisés', texte: 'Indicateurs, filtrer et croiser', pdf: 'seconde/tp/tp11-sujet.pdf', comptes: ['PROF-2NDE'] }
 ];
 
 /* Barème automatique des TP (onglet « Suivi TP » de l'espace professeure).

@@ -81,6 +81,11 @@
             #liste-tp td { vertical-align: middle; text-align: left; }
             #liste-tp th.coin { border: none; background: var(--bg); }   /* case vide en haut à gauche */
             #liste-tp .tp-num { color: var(--c-seconde); }
+        #liste-tp .tp-prep { align-self: center; color: var(--muted); font-style: italic; font-size: 0.9rem; }
+        #liste-tp button.tp-zero { font: inherit; font-size: 0.9rem; cursor: pointer; background: none; color: var(--ko); border: 1px solid var(--ko); border-radius: 8px; padding: 6px 14px; }
+        #liste-tp button.tp-zero:hover { background: var(--ko); color: #fff; }
+        #liste-tp button.tp-zero:disabled { opacity: .5; cursor: default; }
+        #liste-tp .tp-msg { align-self: center; color: var(--muted); font-size: 0.85rem; }
         .code-tp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
         .code-tp input { width: 9em; font-family: var(--f-mono); font-variant-ligatures: none; }
         .code-tp .erreur { color: var(--ko); font-weight: 600; }
@@ -286,6 +291,61 @@
             var n = document.createElement('span'); n.className = 'tp-num'; n.textContent = m[1];
             el.appendChild(n); el.appendChild(document.createTextNode(m[2]));
         }
+        /* Compte PROF-2NDE : « Revenir à zéro » efface un TP (ses résultats en ligne, sa progression et son code d'accès
+           sur l'appareil). L'heure de remise à zéro est gardée sur l'appareil (clé « …:reinit », comme « Réinitialiser
+           l'étape » dans le TP) : les résultats plus anciens sont ignorés même si l'effacement en ligne a échoué. */
+        function compteProf2nde() { var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'PROF-2NDE'; }
+        function cleLocaleTP(id) { var s = Interactif.session(); return id.replace(/^seconde\//, '') + ':' + (s ? s.code : 'invite'); }
+        function dateReinitTP(id) { try { return +localStorage.getItem(cleLocaleTP(id) + ':reinit') || 0; } catch (x) { return 0; } }
+        function apresReinit(id, liste) {
+            var d = dateReinitTP(id);
+            return d ? (liste || []).filter(function (r) { return new Date(r.fait_le || 0).getTime() > d; }) : (liste || []);
+        }
+        function revenirAZero(ids) {
+            var s = Interactif.session(), maintenant = String(Date.now());
+            ids.forEach(function (id) {
+                try {
+                    localStorage.removeItem('tp-acces:' + id);
+                    localStorage.removeItem('tp-quiz:' + id);
+                    localStorage.removeItem(cleLocaleTP(id));
+                    localStorage.setItem(cleLocaleTP(id) + ':reinit', maintenant);
+                } catch (x) {}
+            });
+            return Interactif.rpc('prof_tp_remise_a_zero', { p_jeton: s.jeton, p_exercices: ids });
+        }
+        // colonne de droite pour PROF-2NDE : version interactive, version papier, revenir à zéro
+        function actionsProf(o, ex, res, listeTP, parExercice) {
+            var d = document.createElement('div'); d.className = 'eval-liens';
+            function lien(href, texte, nouvelOnglet) {
+                var a = document.createElement('a'); a.className = 'bouton'; a.href = href; a.textContent = texte;
+                if (nouvelOnglet) { a.target = '_blank'; a.rel = 'noopener'; }
+                d.appendChild(a);
+            }
+            if (ex) lien(ex.url, (res ? 'Continuer' : 'Commencer') + ' · version interactive');
+            else { var pr = document.createElement('span'); pr.className = 'tp-prep'; pr.textContent = 'Version interactive à venir'; d.appendChild(pr); }
+            if (o && o.pdf) lien(o.pdf, 'Version papier', true);
+            if (o && o.corrige) lien(o.corrige, 'Corrigé', true);
+            if (ex) {
+                var b = document.createElement('button'); b.type = 'button'; b.className = 'bouton tp-zero'; b.textContent = 'Revenir à zéro';
+                var msg = document.createElement('span'); msg.className = 'tp-msg';
+                b.onclick = function () {
+                    var nom = (o && o.nom) || ex.titre;
+                    if (!confirm('Revenir à zéro pour « ' + nom + ' » ?\n\nLes résultats du compte PROF-2NDE à ce TP sont effacés, il repart de l’étape 1 et le code d’accès sera redemandé en mode élève.')) return;
+                    var ids = [ex.id];
+                    if (o && o.id && ids.indexOf(o.id) < 0) ids.push(o.id);
+                    if (o && o.sinon && ids.indexOf(o.sinon) < 0) ids.push(o.sinon);
+                    b.disabled = true; msg.textContent = 'Effacement…';
+                    revenirAZero(ids).then(function () {
+                        remplirTP(listeTP, parExercice);
+                    }, function () {
+                        remplirTP(listeTP, parExercice);
+                        alert('Remis à zéro sur cet appareil. L’effacement en ligne n’a pas abouti (fonction prof_tp_remise_a_zero à installer dans Supabase : fichier maj-remise-a-zero-tp.sql).');
+                    });
+                };
+                d.appendChild(b); d.appendChild(msg);
+            }
+            return d;
+        }
         function remplirTP(listeTP, parExercice) {
             var t = document.getElementById('liste-tp');
             t.innerHTML = '';
@@ -294,15 +354,18 @@
             t.appendChild(te);
             // ordre et TP sans page interactive (PDF, à venir) : INTERACTIF_TP_ORDRE dans config.js
             var s = Interactif.session(), niv = s && Interactif.niveauClasse(s.classe), vus = {}, lignes = [];
+            var code = s ? String(s.code || '').toUpperCase() : '', prof = compteProf2nde();
+            if (prof) te.lastChild.textContent = 'Version interactive · version papier';
             (window.INTERACTIF_TP_ORDRE || []).forEach(function (o) {
                 if (niv && o.niveau && o.niveau !== niv) return;
+                if (o.comptes && o.comptes.indexOf(code) < 0) return;   // TP préparé, pas encore publié
                 if (o.id) {
                     // TP interactif en préparation (réservé à PROF-2NDE) : « sinon » = ancienne version interactive,
                     // ou, à défaut, la fiche PDF (pdf / corrige) de la même ligne
                     vus[o.id] = true; if (o.sinon) vus[o.sinon] = true;
                     var trouve = function (id) { return listeTP.filter(function (x) { return x.id === id; })[0]; };
                     var ex = trouve(o.id) || (o.sinon && trouve(o.sinon));
-                    if (ex) lignes.push({ ex: ex, nom: o.nom });
+                    if (ex) lignes.push({ ex: ex, nom: o.nom, o: o });
                     else if (o.pdf || o.texte) lignes.push({ fiche: o });
                 } else lignes.push({ fiche: o });
             });
@@ -322,7 +385,8 @@
                     tr.appendChild(c1);
                     var d2 = document.createElement('td'); d2.textContent = o.aVenir ? '' : '—'; tr.appendChild(d2);
                     var d3 = document.createElement('td');
-                    if (o.pdf || o.corrige) {
+                    if (prof) d3.appendChild(actionsProf(o, null, null, listeTP, parExercice));
+                    else if (o.pdf || o.corrige) {
                         var liens = document.createElement('div'); liens.className = 'eval-liens';
                         [[o.pdf, 'Sujet'], [o.corrige, 'Corrigé']].forEach(function (x) {
                             if (!x[0]) return;
@@ -340,10 +404,11 @@
                 c1.appendChild(titre); c1.appendChild(document.createElement('br'));
                 var st2 = document.createElement('i'); st2.textContent = ex.titre.replace(/\s*\(\d+ étapes?\)\s*$/, ''); c1.appendChild(st2);   // nombre d'étapes : déjà dans la colonne Progression
                 tr.appendChild(c1);
-                var res = (parExercice[ex.id] || []).slice().sort(function (a, b) { return b.score - a.score; })[0];
+                var res = apresReinit(ex.id, parExercice[ex.id]).slice().sort(function (a, b) { return b.score - a.score; })[0];
                 var c2 = document.createElement('td'); c2.textContent = res ? res.score + ' / ' + res.total + ' étapes' : '—'; tr.appendChild(c2);
                 var c3 = document.createElement('td');
-                if (accesTP(ex)) {
+                if (prof) c3.appendChild(actionsProf(l.o, ex, res, listeTP, parExercice));
+                else if (accesTP(ex)) {
                     var a = document.createElement('a'); a.href = ex.url; a.className = 'bouton'; a.textContent = res ? 'Continuer' : 'Commencer';
                     c3.appendChild(a);
                 } else {
