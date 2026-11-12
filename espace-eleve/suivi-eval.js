@@ -52,7 +52,7 @@
             retraits: [['Retrait calcul', 'Erreurs de calcul (plus de 4 sur le devoir)'], ['Titres', 'Titres des exercices ni soulignés ni surlignés'],
                        ['Propreté', 'Propreté de la copie'], ['Copie double', 'Pas de copie double']], ex: [
             { n: 1, qs: [['1. (a) Les trois identités remarquables', 0.5], ['1. (b) A : (a + b)²', 0.5], ['1. (b) B : (a − b)²', 0.5], ['1. (b) C : (a + b)(a − b)', 0.5],
-                ['1. (b) a et b bien repérés dans les 3 calculs (ajout)', 0.5, true], ['2. D : développer et réduire', 1], ['3. E : facteur commun', 0.75], ['3. F : a² − b²', 0.75]] },
+                ['1. (b) a et b bien repérés dans les 3 calculs', 0.5, true], ['2. D : développer et réduire', 1], ['3. E : facteur commun', 0.75], ['3. F : a² − b²', 0.75]] },
             { n: 2, qs: [['1. (a) Équation', 1], ['1. (b) Équation avec parenthèse', 1.5], ['2. Inéquation', 1.5], ['2. Droite graduée', 0.5]] },
             { n: 3, qs: [['1. (a) Définition de vecteurs colinéaires', 0.25], ['1. (b) Vecteur colinéaire de norme différente', 0.25], ['2. (a) Nombre réel', 0.5],
                 ['2. (b) Nombre réel', 0.5], ['2. (c) Nombre réel', 0.5], ['3. Image par translation', 0.5], ['4. (a) Somme', 0.25], ['4. (b) Somme', 0.25]] },

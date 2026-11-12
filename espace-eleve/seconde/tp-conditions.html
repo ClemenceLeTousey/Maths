@@ -746,6 +746,7 @@ def _console(ligne, n):
             });
             cm.on('change', function () { if (marque !== null) { cm.removeLineClass(marque, 'background', 'ligne-erreur'); marque = null; } });
             bLancer.onclick = lancer;
+            if (cleNs !== 'extra') Interactif.scriptFige(cm);   // script à exécuter, pas à modifier (sauf l'éditeur libre « extra »)
             gauche.appendChild(actions); gauche.appendChild(sortie);
             {
                 var cons = el('div', 'console');
