@@ -46,6 +46,22 @@
             { n: 3, comp: 'Calculer', qs: [['Développer A', 0.75], ['Développer B', 1], ['Développer C', 1.25]] },
             { n: 4, comp: 'Calculer', qs: [['Factoriser D', 1.5], ['Factoriser E', 1.5]] },
             { n: 'bonus', comp: 'Calculer', qs: [['Développer F', 0.5, true], ['Développer G', 0.5, true], ['Factoriser H', 0.5, true], ['Factoriser I', 0.5, true]] }
+        ] },
+        // DS 2 : pas de compétence affichée ; « retraits » = colonnes du CSV retirées de la note (montrées à l'élève)
+        'DS2 sujets A-B': { evaluation: 'DS 2', sur: 20,
+            retraits: [['Retrait calcul', 'Erreurs de calcul (plus de 4 sur le devoir)'], ['Titres', 'Titres des exercices ni soulignés ni surlignés'],
+                       ['Propreté', 'Propreté de la copie'], ['Copie double', 'Pas de copie double']], ex: [
+            { n: 1, qs: [['1. (a) Les trois identités remarquables', 0.5], ['1. (b) A : (a + b)²', 0.5], ['1. (b) B : (a − b)²', 0.5], ['1. (b) C : (a + b)(a − b)', 0.5],
+                ['2. D : développer et réduire', 1], ['3. E : facteur commun', 0.75], ['3. F : a² − b²', 0.75]] },
+            { n: 2, qs: [['1. (a) Équation', 1], ['1. (b) Équation avec parenthèse', 1.5], ['2. Inéquation', 1.5], ['2. Droite graduée', 0.5]] },
+            { n: 3, qs: [['1. (a) Définition de vecteurs colinéaires', 0.25], ['1. (b) Vecteur colinéaire de norme différente', 0.25], ['2. (a) Nombre réel', 0.5],
+                ['2. (b) Nombre réel', 0.5], ['2. (c) Nombre réel', 0.5], ['3. Image par translation', 0.5], ['4. (a) Somme', 0.25], ['4. (b) Somme', 0.25]] },
+            { n: 4, qs: [['1. Point M : AM⃗ = 2u⃗ − v⃗', 0.75], ['2. Représentant de −3/2 u⃗ d\'origine B', 0.5], ['3. w⃗ en fonction de u⃗ et v⃗', 0.75]] },
+            { n: 5, qs: [['1. Erreur 1 (message de la console)', 0.25], ['1. Erreur 2 (case à cocher)', 0.25], ['1. Erreur 3 (à trouver)', 0.25],
+                ['2. Tableau : ligne 4', 0.5], ['2. Tableau : ligne 5', 0.5], ['2. Affichage', 0.25]] },
+            { n: 6, qs: [['1. Aire du rectangle', 0.5], ['2. Aire du carré', 0.5], ['3. Même aire', 1]] },
+            { n: 7, qs: [['1. Placer les trois points', 0.25], ['2. (a) Case à cocher', 0.25], ['2. (b) Premier vecteur', 0.5], ['3. Alignement', 1],
+                ['Démonstration par Chasles', 0.5, true]] }
         ] }
     };
     var EVALUATIONS = [];   // dans l'ordre des grilles ci-dessus
@@ -91,7 +107,7 @@
         return lignes.filter(function (l) { return l.some(function (x) { return x.trim(); }); });
     }
 
-    function nombre(t) { var v = parseFloat(String(t).replace(',', '.')); return isNaN(v) ? null : v; }
+    function nombre(t) { var v = parseFloat(String(t).replace(',', '.').replace('−', '-')); return isNaN(v) ? null : v; }
 
     // copies d'un fichier : [{ nom, sujet, notes: { '1.2': { v, nf } }, total, erreurs: [{ q, texte }], remarque }]
     function copies(grille, texte) {
@@ -102,6 +118,7 @@
             var q = /^((?:\d+|bonus)\.\d+)( bonus)?$/.exec(h);
             if (q) col[q[1]] = i;
             else if ((GRILLES[grille].objs || []).some(function (o) { return o[0] === h; })) col['obj:' + h] = i;
+            else if ((GRILLES[grille].retraits || []).some(function (o) { return o[0] === h; })) col['ret:' + h] = i;
             else if (/^Élève$/i.test(h)) col.nom = i;
             else if (/^Sujet$/i.test(h)) col.sujet = i;
             else if (/^Total/i.test(h)) col.total = i;
@@ -110,7 +127,11 @@
         });
         return l.slice(1).map(function (r) {
             var c = { grille: grille, nom: (r[col.nom] || '').trim(), sujet: (r[col.sujet] || '').trim(), notes: {}, erreurs: [],
-                      remarque: col.remarque != null ? (r[col.remarque] || '').trim() : '', objs: {} };
+                      remarque: col.remarque != null ? (r[col.remarque] || '').trim() : '', objs: {}, retraits: [] };
+            (GRILLES[grille].retraits || []).forEach(function (o) {
+                var i = col['ret:' + o[0]], v = i != null ? nombre(r[i]) : null;
+                if (v) c.retraits.push({ l: o[1], v: Math.abs(v) });
+            });
             (GRILLES[grille].objs || []).forEach(function (o) {
                 var i = col['obj:' + o[0]], v = i != null ? (r[i] || '').trim() : '';
                 if (v) c.objs[o[0]] = v;
@@ -241,7 +262,7 @@
                            '<td>' + valeurs.length + '</td><td>' + (nf || '') + '</td></tr>';
                 });
                 var rEx = maxEx ? ptsEx / maxEx : null;
-                h += '<tr class="se-ex"><th colspan="2">Exercice ' + e.n + ' · ' + esc(e.comp) + '</th><th colspan="3">' + (rEx == null ? '' : pct(rEx)) + '</th></tr>' + lignes.join('');
+                h += '<tr class="se-ex"><th colspan="2">Exercice ' + e.n + (e.comp ? ' · ' + esc(e.comp) : '') + '</th><th colspan="3">' + (rEx == null ? '' : pct(rEx)) + '</th></tr>' + lignes.join('');
             });
             h += '</table></div>';
             // erreurs les plus fréquentes (grilles qui les exportent)
@@ -324,10 +345,14 @@
                 var n = c.notes[e.n + '.' + (k + 1)] || {};
                 return { l: q[0], max: q[1], v: n.v == null ? null : n.v, nf: !!n.nf, bonus: !!q[2] };
             });
-            det.ex.push({ n: e.n, comp: e.comp, bonus: qs.every(function (q) { return q.bonus; }), qs: qs });
+            det.ex.push({ n: e.n, comp: e.comp || '', bonus: qs.every(function (q) { return q.bonus; }), qs: qs });
         });
         (g.objs || []).forEach(function (o) { if (c.objs[o[0]]) det.objs.push({ c: o[0], t: o[1], niv: c.objs[o[0]] }); });
-        if (avecCom) det.com = { erreurs: c.erreurs.map(function (x) { return x.q + ' · ' + x.texte; }), remarque: c.remarque || '' };
+        if (c.retraits && c.retraits.length) det.retraits = c.retraits;
+        if (avecCom) det.com = { erreurs: c.erreurs.map(function (x) {
+            var m = /^(\d+)\.(\d+)$/.exec(x.q);
+            return (m ? 'Exercice ' + m[1] + ', question ' + m[2] : x.q) + ' · ' + x.texte;
+        }), remarque: c.remarque || '' };
         return det;
     }
 

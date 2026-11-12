@@ -160,13 +160,13 @@
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ef4-sujet.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ef4-corrige.html">Corrigé</a></div></li>
                 <li><div class="eval-titre">Devoir surveillé 2 · Contrat<span>Le sujet d'entraînement, même structure que le DS</span></div>
                     <div class="eval-liens"><a class="bouton" href="seconde/evaluations/ds2-contrat.pdf" target="_blank" rel="noopener">Sujet</a><a class="bouton" href="seconde/evaluations/ds2-contrat-corrige.pdf" target="_blank" rel="noopener">Corrigé</a></div></li>
+                <li data-eval="DS 2"><div class="eval-titre">Devoir surveillé 2<span>Calcul littéral, vecteurs et Python</span></div></li>
             </ul>
         </section>
         <section class="soutien">
             <h2>Évaluations à venir</h2>
             <p class="aide">Ce qui t'attend jusqu'aux vacances de Noël : le sujet et le corrigé seront ajoutés ici une fois l'évaluation faite.</p>
             <ul class="evals">
-                <li><div class="eval-titre">Devoir surveillé 2<span>Calcul littéral, vecteurs et Python · mardi 10 novembre</span></div></li>
                 <li><div class="eval-titre">Interrogation 5<span>Inégalités et proportions · semaine du 16 novembre</span></div></li>
                 <li><div class="eval-titre">Interrogation 6<span>Évolutions · semaine du 23 novembre</span></div></li>
                 <li><div class="eval-titre">Interrogation 7<span>Ensembles de nombres et intervalles · semaine du 30 novembre</span></div></li>
@@ -663,8 +663,19 @@
                         t.appendChild(r);
                     });
                 });
+                // retraits sur la note du devoir (erreurs de calcul, présentation)
+                var retire = 0;
+                if (d.retraits && d.retraits.length) {
+                    var trr = el('tr', 'ex'); trr.appendChild(el('th', null, 'Retraits sur la note')); trr.appendChild(el('th', null, '−' + fmtN(d.retraits.reduce(function (s, x) { return s + x.v; }, 0)))); trr.appendChild(el('th', null, ''));
+                    t.appendChild(trr);
+                    d.retraits.forEach(function (x) {
+                        retire += x.v;
+                        var r = el('tr'); r.appendChild(el('td', null, x.l)); r.appendChild(el('td', 'n-faible', '−' + fmtN(x.v))); r.appendChild(el('td', null, ''));
+                        t.appendChild(r);
+                    });
+                }
                 defile.appendChild(t); zone.appendChild(defile);
-                var somme = d.ex.reduce(function (s, e) { return s + e.qs.reduce(function (a, q) { return a + (q.v || 0); }, 0); }, 0);
+                var somme = d.ex.reduce(function (s, e) { return s + e.qs.reduce(function (a, q) { return a + (q.v || 0); }, 0); }, 0) - retire;
                 if (n.total != null && somme > n.total + 0.001) zone.appendChild(el('p', 'aide legende', 'Total de tes points : ' + fmtN(somme) + ', note plafonnée à ' + fmtN(n.sur) + '.'));
             }
             if (d.objs && d.objs.length) {
