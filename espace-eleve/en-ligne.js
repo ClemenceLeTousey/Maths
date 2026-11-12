@@ -2,7 +2,7 @@
    Espace professeure · onglet « En ligne »
    Élèves dont une page de l'espace élève est ouverte et visible (signal toutes les minutes,
    voir « Présence » dans moteur.js). En ligne = vu il y a moins de 2 minutes ;
-   les élèves vus dans le quart d'heure restent affichés en gris.
+   les élèves vus dans la dernière heure restent affichés en gris.
    Nécessite le script maj-en-ligne.sql dans Supabase. Les noms viennent des fichiers
    comptes-*.csv chargés dans Suivi QF (sur cet ordinateur seulement).
    ========================================================================== */
@@ -17,7 +17,7 @@
     function depuis(s) {
         if (s < 60) return 'à l\'instant';
         var m = Math.round(s / 60);
-        return 'il y a ' + m + ' min';
+        return m < 60 ? 'il y a ' + m + ' min' : 'il y a 1 h';
     }
     function ongletOuvert() { var p = $('panneau-en-ligne'); return p && !p.hidden && !document.hidden; }
 
@@ -40,7 +40,7 @@
         var recents = vus.filter(function (x) { return !x.actif; }).sort(function (a, b) { return a.s - b.s; });
         resume.innerHTML = '<b>' + actifs.length + '</b> élève' + (actifs.length > 1 ? 's' : '') + ' en ligne' +
             (choix.value ? ' en ' + esc(choix.value) : '') +
-            (recents.length ? ' · ' + recents.length + ' vu' + (recents.length > 1 ? 's' : '') + ' dans le dernier quart d\'heure' : '') +
+            (recents.length ? ' · ' + recents.length + ' vu' + (recents.length > 1 ? 's' : '') + ' dans la dernière heure' : '') +
             ' · actualisé à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         if (!vus.length) { zone.innerHTML = '<p class="aide">Personne pour l\'instant.</p>'; return; }
         var ligne = function (x) {
