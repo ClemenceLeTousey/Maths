@@ -821,11 +821,21 @@
         return null;
     }
 
-    /* Empreinte du code d'accès d'un TP pour la session : codeAccesClasses[classe] s'il existe, sinon codeAcces */
+    /* Classe de la session (à défaut : début du code élève, ex. 2H-TARTAGLIA -> 2H) */
+    function classeSession(s) {
+        if (!s) return '';
+        return String(s.classe || '').toUpperCase() || String(s.code || '').toUpperCase().split('-')[0];
+    }
+    /* TP clos pour la classe de l'élève (« fermeClasses » dans config.js) */
+    function tpFerme(ex, s) {
+        return !!(ex && ex.fermeClasses && s && ex.fermeClasses.indexOf(classeSession(s)) >= 0);
+    }
+    /* Empreinte du code d'accès d'un TP pour la session : codeAccesClasses[classe] s'il existe, sinon codeAcces ;
+       TP clos pour la classe : « ferme », qu'aucune empreinte ne peut égaler */
     function codeAccesTP(ex, s) {
         if (!ex || !ex.codeAcces) return null;
-        var m = ex.codeAccesClasses, c = s ? String(s.classe || '').toUpperCase() : '';
-        if (m && !c && s) c = String(s.code || '').toUpperCase().split('-')[0];
+        if (tpFerme(ex, s)) return 'ferme';
+        var m = ex.codeAccesClasses, c = classeSession(s);
         return (m && c && m[c]) || ex.codeAcces;
     }
 
@@ -854,7 +864,7 @@
     // fin de l'accès (ms) s'il est en cours sur cet appareil, -1 s'il est terminé, 0 sinon
     // (contrôle rapide à l'ouverture ; minuteurAcces revérifie aussitôt avec l'heure d'internet)
     function accesTemporaire(ex, s) {
-        if (!ex || !ex.codeAccesTemporaire || !s) return 0;
+        if (!ex || !ex.codeAccesTemporaire || !s || tpFerme(ex, s)) return 0;
         var t = lireLocal(cleTemp(ex));
         if (!t || t.code !== s.code) return 0;
         return !t.fini && t.fin > Date.now() ? t.fin : -1;
@@ -862,6 +872,7 @@
     function ouvrirTemporaire(ex) {
         var T = ex.codeAccesTemporaire, s = session();
         if (!s) return Promise.reject(new Error('Connecte-toi d’abord à ton compte : ce code ne sert qu’une fois par élève.'));
+        if (tpFerme(ex, s)) return Promise.reject(new Error('Ce TP est fermé pour ta classe.'));
         var id = (T.groupe || ex.id) + '#acces-temp', duree = (T.min || 60) * 60000;
         function debut() {
             return rpc('mes_resultats', { p_jeton: s.jeton }).then(function (l) {
@@ -951,6 +962,6 @@
     window.Interactif = {
         scriptFige: scriptFige,
         rpc: rpc, session: session, connecter: connecter, deconnecter: deconnecter,
-        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, codeAccesTP: codeAccesTP, accesTemporaire: accesTemporaire, ouvrirTemporaire: ouvrirTemporaire, minuteurAcces: minuteurAcces, couleurs: couleurs, bilanCouleurs: bilanCouleurs, pastilles: pastilles
+        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, codeAccesTP: codeAccesTP, tpFerme: tpFerme, accesTemporaire: accesTemporaire, ouvrirTemporaire: ouvrirTemporaire, minuteurAcces: minuteurAcces, couleurs: couleurs, bilanCouleurs: bilanCouleurs, pastilles: pastilles
     };
 })();

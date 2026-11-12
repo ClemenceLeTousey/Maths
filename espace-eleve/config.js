@@ -24,6 +24,7 @@ window.NOTIF_CONFIG = {
      Empreinte d'un nouveau code : python3 -c "import hashlib;print(hashlib.sha256(b'ABC-234').hexdigest())" ;
    « codeAccesTemporaire: { h: empreinte, min: 60, groupe: id } » : code supplémentaire qui ouvre le TP pendant « min » minutes,
      une seule fois par élève (connecté) ; « groupe » : TP qui partagent la même heure (ex. TP2 et sa version hybride) ;
+   « fermeClasses: ['2B'] » : TP clos pour ces classes (plus aucun code ne l'ouvre, progression gardée, vue prof inchangée) ;
    « vueProf: true » : la page sait s'ouvrir telle que l'élève l'a laissée (bouton dans Suivi TP) ;
    « tp: true » : TP en plusieurs étapes (score = étapes réussies, une ligne enregistrée par étape : pas de compteur de séries).
    « comptes: ['TEST-01'] » : visible seulement de ces comptes (séries préparées à l'avance, pour les tester) ;
@@ -65,14 +66,16 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/tp-conditions-hybride', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif · questions en ligne (13 questions)', court: 'TP Cond. hyb.', url: 'seconde/tp-conditions-hybride.html', tp: true, vueProf: true, comptes: ['2H-TARTAGLIA'],
       codeAcces: '7bceb7c3c796d4df2b37ee3dbeaf01030c22455f16ffb3f942d3a83c96b01460',   // mêmes codes d'accès que le TP2 habituel
       codeAccesClasses: { '2F': 'e6a96a2b74d96829918f25d0f14c93c9171cfed689c8abf25745f2e2b0f2b056' },
-      codeAccesTemporaire: { h: '35cd4d76c4f2abe3900a27a961fb77e1098e23421e2d9f5f21fc17a8eefe7cc3', min: 60, groupe: 'seconde/tp-conditions-v2' } },   // code d'une heure, usage unique (voir Codes d'accès des TP)
+      codeAccesTemporaire: { h: '35cd4d76c4f2abe3900a27a961fb77e1098e23421e2d9f5f21fc17a8eefe7cc3', min: 60, groupe: 'seconde/tp-conditions-v2' },
+      fermeClasses: ['2B', '2F', '2H'] },   // TP2 clos le 13/11/2026 · code d'une heure, usage unique (voir Codes d'accès des TP)
     // TP Conditions V1 (20 étapes) : archivé, la page reste dans seconde/tp-conditions-v1.html
     { niveau: 'seconde', id: 'seconde/tp-conditions', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (20 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions-v1.html', tp: true, vueProf: true, archive: true,
       codeAcces: 'd7c6ed760ed5b07f0c2766b06a63c0d5ddcec26f17c19db9e3d2a541645aca9c' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
     { niveau: 'seconde', id: 'seconde/tp-conditions-v2', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (13 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions.html', tp: true, vueProf: true,
       codeAcces: '7bceb7c3c796d4df2b37ee3dbeaf01030c22455f16ffb3f942d3a83c96b01460',   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
       codeAccesClasses: { '2F': 'e6a96a2b74d96829918f25d0f14c93c9171cfed689c8abf25745f2e2b0f2b056' },   // 2F : code à part depuis le 08/11/2026
-      codeAccesTemporaire: { h: '35cd4d76c4f2abe3900a27a961fb77e1098e23421e2d9f5f21fc17a8eefe7cc3', min: 60, groupe: 'seconde/tp-conditions-v2' } },   // code d'une heure, usage unique (voir Codes d'accès des TP)
+      codeAccesTemporaire: { h: '35cd4d76c4f2abe3900a27a961fb77e1098e23421e2d9f5f21fc17a8eefe7cc3', min: 60, groupe: 'seconde/tp-conditions-v2' },
+      fermeClasses: ['2B', '2F', '2H'] },   // TP2 clos le 13/11/2026 · code d'une heure, usage unique (voir Codes d'accès des TP)
     { niveau: 'seconde', id: 'seconde/serie8-j1', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 1', court: 'S8 · J1', url: 'seconde/serie8.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie8-j2', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 2', court: 'S8 · J2', url: 'seconde/serie8.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie8-j3', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 3', court: 'S8 · J3', url: 'seconde/serie8.html?j=3' },

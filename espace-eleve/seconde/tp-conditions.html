@@ -548,7 +548,7 @@ def _console(ligne, n):
                 document.getElementById('py-etat').hidden = true;
                 var zv = document.getElementById('etapes');
                 zv.innerHTML = '<section class="etape courante"><div class="etape-tete"><span class="etape-num">🔒</span><h2>TP verrouillé</h2></div>' +
-                    '<div class="etape-corps">' + (finTemp < 0 ? '<p class="retour ko">⏱ Ton heure d’accès est terminée. Ta progression est gardée.</p>' : '') +
+                    '<div class="etape-corps">' + (Interactif.tpFerme(FICHE, ses) ? '<p class="retour ko">🔒 Ce TP est terminé : l’accès est fermé pour ta classe. Ta progression est gardée.</p>' : finTemp < 0 ? '<p class="retour ko">⏱ Ton heure d’accès est terminée. Ta progression est gardée.</p>' : '') +
                     '<p>Ce TP s’ouvre avec le <b>code d’accès</b> donné en classe.</p>' +
                     '<form class="reponses" id="f-code"><label>Code d’accès <input class="long" id="code-tp" autocomplete="off" spellcheck="false" autocapitalize="off"></label>' +
                     '<button type="submit">Ouvrir le TP</button></form><p class="retour" id="code-retour"></p></div></section>';
@@ -558,6 +558,7 @@ def _console(ligne, n):
                     bp.onclick = function () { try { localStorage.setItem('tp-mode', 'prof'); } catch (x) {} location.reload(); };
                     zv.querySelector('.etape-corps').appendChild(bp);
                 }
+                if (Interactif.tpFerme(FICHE, ses)) { document.getElementById('f-code').hidden = true; zv.querySelector('.etape-corps > p:not(.retour)').hidden = true; }   // TP clos : plus de champ de code
                 document.getElementById('f-code').onsubmit = function (ev) {
                     ev.preventDefault();
                     var t = document.getElementById('code-tp').value.trim();   // casse et tiret comptent

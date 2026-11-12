@@ -413,6 +413,8 @@
                 else if (accesTP(ex)) {
                     var a = document.createElement('a'); a.href = ex.url; a.className = 'bouton'; a.textContent = res ? 'Continuer' : 'Commencer';
                     c3.appendChild(a);
+                } else if (Interactif.tpFerme(ex, Interactif.session())) {
+                    var fe = document.createElement('i'); fe.textContent = '🔒 TP terminé, accès fermé'; c3.appendChild(fe);
                 } else {
                     var f = document.createElement('form'); f.className = 'code-tp';
                     var i = document.createElement('input'); i.placeholder = 'Code d’accès'; i.autocomplete = 'off'; i.spellcheck = false;
