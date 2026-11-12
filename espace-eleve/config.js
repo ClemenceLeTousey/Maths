@@ -36,15 +36,11 @@ window.NOTIF_CONFIG = {
 window.INTERACTIF_CODE_DEBLOCAGE = '81fea9c97d311bb5192cf2554509b7f790d43628be32a19ef19e633154cacbc6';
 
 window.INTERACTIF_CATALOGUE = [
-    { niveau: 'seconde', id: 'seconde/serie8-j1', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 1', court: 'S8 · J1', url: 'seconde/serie8.html?j=1' },
-    { niveau: 'seconde', id: 'seconde/serie8-j2', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 2', court: 'S8 · J2', url: 'seconde/serie8.html?j=2' },
-    { niveau: 'seconde', id: 'seconde/serie8-j3', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 3', court: 'S8 · J3', url: 'seconde/serie8.html?j=3' },
-    { niveau: 'seconde', id: 'seconde/serie8-bilan', groupe: 'Facultatif · Série 8 en temps limité ⏱', titre: 'Bilan Série 8 (10 questions chronométrées)', court: 'S8 · Bilan', url: 'seconde/serie8-bilan.html' },
+    { niveau: 'seconde', id: 'seconde/serie9-j1', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 1', court: 'S9 · J1', url: 'seconde/serie9.html?j=1' },
+    { niveau: 'seconde', id: 'seconde/serie9-j2', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 2', court: 'S9 · J2', url: 'seconde/serie9.html?j=2' },
+    { niveau: 'seconde', id: 'seconde/serie9-j3', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 3', court: 'S9 · J3', url: 'seconde/serie9.html?j=3' },
+    { niveau: 'seconde', id: 'seconde/serie9-bilan', groupe: 'Facultatif · Série 9 en temps limité ⏱', titre: 'Bilan Série 9 (10 questions chronométrées)', court: 'S9 · Bilan', url: 'seconde/serie9-bilan.html' },
     // Séries préparées à l'avance : visibles seulement des comptes listés dans « comptes » (à retirer à la publication)
-    { niveau: 'seconde', id: 'seconde/serie9-j1', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 1', court: 'S9 · J1', url: 'seconde/serie9.html?j=1', comptes: ['TEST-01', 'JIMMY'] },
-    { niveau: 'seconde', id: 'seconde/serie9-j2', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 2', court: 'S9 · J2', url: 'seconde/serie9.html?j=2', comptes: ['TEST-01', 'JIMMY'] },
-    { niveau: 'seconde', id: 'seconde/serie9-j3', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 3', court: 'S9 · J3', url: 'seconde/serie9.html?j=3', comptes: ['TEST-01', 'JIMMY'] },
-    { niveau: 'seconde', id: 'seconde/serie9-bilan', groupe: 'Facultatif · Série 9 en temps limité ⏱', titre: 'Bilan Série 9 (10 questions chronométrées)', court: 'S9 · Bilan', url: 'seconde/serie9-bilan.html', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/serie10-j1', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 1', court: 'S10 · J1', url: 'seconde/serie10.html?j=1', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/serie10-j2', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 2', court: 'S10 · J2', url: 'seconde/serie10.html?j=2', comptes: ['TEST-01', 'JIMMY'] },
     { niveau: 'seconde', id: 'seconde/serie10-j3', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 3', court: 'S10 · J3', url: 'seconde/serie10.html?j=3', comptes: ['TEST-01', 'JIMMY'] },
@@ -77,6 +73,10 @@ window.INTERACTIF_CATALOGUE = [
       codeAcces: '7bceb7c3c796d4df2b37ee3dbeaf01030c22455f16ffb3f942d3a83c96b01460',   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
       codeAccesClasses: { '2F': 'e6a96a2b74d96829918f25d0f14c93c9171cfed689c8abf25745f2e2b0f2b056' },   // 2F : code à part depuis le 08/11/2026
       codeAccesTemporaire: { h: '35cd4d76c4f2abe3900a27a961fb77e1098e23421e2d9f5f21fc17a8eefe7cc3', min: 60, groupe: 'seconde/tp-conditions-v2' } },   // code d'une heure, usage unique (voir Codes d'accès des TP)
+    { niveau: 'seconde', id: 'seconde/serie8-j1', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 1', court: 'S8 · J1', url: 'seconde/serie8.html?j=1' },
+    { niveau: 'seconde', id: 'seconde/serie8-j2', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 2', court: 'S8 · J2', url: 'seconde/serie8.html?j=2' },
+    { niveau: 'seconde', id: 'seconde/serie8-j3', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 3', court: 'S8 · J3', url: 'seconde/serie8.html?j=3' },
+    { niveau: 'seconde', id: 'seconde/serie8-bilan', groupe: 'Facultatif · Série 8 en temps limité ⏱', titre: 'Bilan Série 8 (10 questions chronométrées)', court: 'S8 · Bilan', url: 'seconde/serie8-bilan.html' },
     { niveau: 'seconde', id: 'seconde/serie7-j1', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 1', court: 'S7 · J1', url: 'seconde/serie7.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie7-j2', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 2', court: 'S7 · J2', url: 'seconde/serie7.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie7-j3', groupe: 'Série 7 · semaine du 2 au 6 novembre', titre: 'Jour 3', court: 'S7 · J3', url: 'seconde/serie7.html?j=3' },
@@ -123,13 +123,17 @@ window.INTERACTIF_CATALOGUE = [
    Quand une nouvelle série arrive, mettre la précédente ET son bilan facultatif en section: 'Anciennes séries', avec le même serie: 'Série N'.
    Chaque libellé ne doit figurer qu'une fois : une clé répétée plus bas écrase la première (le bilan resterait affiché). */
 window.INTERACTIF_GROUPES = {
-    'Facultatif · Série 8 en temps limité ⏱': {},
-    'Série 8 · semaine du 9 au 13 novembre': {},
     'Facultatif · Série 9 en temps limité ⏱': {},
     'Série 9 · semaine du 16 au 20 novembre': {},
     'Facultatif · Série 10 en temps limité ⏱': {},
     'Série 10 · semaine du 23 au 27 novembre': {},
     'Série 11 · semaine du 30 novembre au 4 décembre': {},
+    'Série 8 · semaine du 9 au 13 novembre': {
+        section: 'Anciennes séries', serie: 'Série 8'
+    },
+    'Facultatif · Série 8 en temps limité ⏱': {
+        section: 'Anciennes séries', serie: 'Série 8'
+    },
     'Série 7 · semaine du 2 au 6 novembre': {
         section: 'Anciennes séries', serie: 'Série 7',
         themes: ['A1 · Comparer deux nombres', 'A3 · Puissances', 'A4 · Écritures d\'un nombre', 'A5 · Encadrer, ordre de grandeur',
