@@ -45,8 +45,39 @@
         var s = session();
         ecrireLocal(CLE_SESSION, null);
         signalerSession();
-        if (s) rpc('deconnexion', { p_jeton: s.jeton }).catch(function () {});
+        if (s) {
+            var fin = function () { return rpc('deconnexion', { p_jeton: s.jeton }); };
+            rpc('quitter_presence', { p_jeton: s.jeton }).then(fin, fin).catch(function () {});
+        }
     }
+
+    /* ---------- Présence (onglet « En ligne » de l'espace professeure) ----------
+       Tant qu'une page de l'espace élève est ouverte ET visible, elle signale l'élève connecté
+       toutes les minutes (code + page). Rien quand l'onglet est caché, ni sur la page professeure.
+       Sans le script maj-en-ligne.sql dans Supabase, l'appel échoue en silence. */
+    var PRESENCE_MS = 60000, dernierePresence = 0;
+    function pagePresence() {
+        var chemin = location.pathname.replace(/^.*\/espace-eleve\//, '') + location.search;
+        if (/(^|\/)(index\.html)?$/.test(location.pathname.replace(/^.*\/espace-eleve/, ''))) {
+            var onglet = (location.hash || '').replace('#', '');
+            var ONGLETS = { automatismes: 'Automatismes', tp: 'Python', evaluations: 'Évaluations', soutien: 'Soutien', echange: 'Messages', remediation: 'Remédiation' };
+            return 'Espace élève · ' + (ONGLETS[onglet] || 'Automatismes');
+        }
+        var cat = (window.INTERACTIF_CATALOGUE || []).filter(function (x) { return x.url === chemin; })[0];
+        return cat ? cat.court : (document.title || chemin);
+    }
+    function signalerPresence(force) {
+        var s = session();
+        if (!s || document.hidden || /\/prof\.html$/.test(location.pathname)) return;
+        if (!force && Date.now() - dernierePresence < PRESENCE_MS - 2000) return;
+        dernierePresence = Date.now();
+        rpc('signaler_presence', { p_jeton: s.jeton, p_page: pagePresence() }).catch(function () {});
+    }
+    setInterval(signalerPresence, PRESENCE_MS);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) signalerPresence(); });
+    window.addEventListener('interactif-session', function () { signalerPresence(true); });
+    window.addEventListener('hashchange', function () { signalerPresence(true); });
+    setTimeout(function () { signalerPresence(true); }, 1500);
 
     /* Résultats non envoyés (réseau coupé) : gardés et renvoyés plus tard */
     function envoyerAttente() {
@@ -876,7 +907,49 @@
         });
     }
 
+    /* Script à exécuter sans le modifier (TP : après une prévision fausse, vérification d'un tableau) :
+       éditeur en lecture seule ; si l'élève clique ou tape dedans, une fenêtre lui rappelle de cliquer sur ▶ Exécuter. */
+    function fenetreScriptFige() {
+        if (document.querySelector('.fige-fond')) return;
+        var fond = document.createElement('div'); fond.className = 'fige-fond';
+        var boite = document.createElement('div'); boite.className = 'fige-boite';
+        boite.setAttribute('role', 'alertdialog'); boite.setAttribute('aria-modal', 'true'); boite.setAttribute('aria-labelledby', 'fige-texte');
+        var p = document.createElement('p'); p.id = 'fige-texte';
+        p.innerHTML = 'On ne te demande pas de modifier le script, mais juste de l’<b>exécuter</b> : clique sur <b>▶ Exécuter</b>.';
+        var b = document.createElement('button'); b.type = 'button'; b.textContent = 'OK, j’ai compris';
+        function fermer() { fond.remove(); document.removeEventListener('keydown', echap, true); }
+        function echap(e) { if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); fermer(); } }
+        b.onclick = fermer;
+        fond.onclick = function (e) { if (e.target === fond) fermer(); };
+        document.addEventListener('keydown', echap, true);
+        boite.appendChild(p); boite.appendChild(b); fond.appendChild(boite); document.body.appendChild(fond);
+        b.focus();
+    }
+    function scriptFige(cm) {
+        cm.setOption('readOnly', 'nocursor');
+        var w = cm.getWrapperElement();
+        w.classList.add('script-fige');
+        w.title = 'Script à exécuter sans le modifier';
+        // un tap sur téléphone produit aussi « mousedown » (pas un glissement pour faire défiler la page) ; barres de défilement permises
+        w.addEventListener('mousedown', function (e) {
+            if (e.target.closest && e.target.closest('.CodeMirror-hscrollbar, .CodeMirror-vscrollbar')) return;
+            e.preventDefault(); fenetreScriptFige();
+        });
+        if (!document.getElementById('style-script-fige')) {
+            var st = document.createElement('style'); st.id = 'style-script-fige';
+            st.textContent = '.CodeMirror.script-fige { cursor: not-allowed; }' +
+                '.CodeMirror.script-fige .CodeMirror-lines { cursor: not-allowed; }' +
+                '.fige-fond { position: fixed; inset: 0; z-index: 3000; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; padding: 16px; }' +
+                '.fige-boite { max-width: 420px; background: var(--surface, #fff); color: var(--text, #222); border-radius: 12px; padding: 20px 22px; box-shadow: 0 10px 30px rgba(0,0,0,.3); text-align: center; }' +
+                '.fige-boite p { margin: 0 0 16px; font-size: 1.05rem; line-height: 1.5; }' +
+                '.fige-boite button { font: inherit; font-weight: 600; padding: 8px 18px; border-radius: 8px; border: none; background: var(--c-seconde, #1c7ed6); color: #fff; cursor: pointer; }';
+            document.head.appendChild(st);
+        }
+        return cm;
+    }
+
     window.Interactif = {
+        scriptFige: scriptFige,
         rpc: rpc, session: session, connecter: connecter, deconnecter: deconnecter,
         bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, codeAccesTP: codeAccesTP, accesTemporaire: accesTemporaire, ouvrirTemporaire: ouvrirTemporaire, minuteurAcces: minuteurAcces, couleurs: couleurs, bilanCouleurs: bilanCouleurs, pastilles: pastilles
     };
