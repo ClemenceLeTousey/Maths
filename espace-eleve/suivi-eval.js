@@ -339,17 +339,21 @@
 
     // grille envoyée à l'élève : se suffit à elle-même (intitulés, barème, points)
     function grilleEleve(c, avecCom) {
-        var g = GRILLES[c.grille], det = { sujet: c.sujet || '', ex: [], objs: [] };
+        var g = GRILLES[c.grille], det = { sujet: c.sujet || '', ex: [], objs: [] }, cles = {};
         g.ex.forEach(function (e) {
             var qs = e.qs.map(function (q, k) {
-                var n = c.notes[e.n + '.' + (k + 1)] || {};
-                return { l: q[0], max: q[1], v: n.v == null ? null : n.v, nf: !!n.nf, bonus: !!q[2] };
+                var cle = e.n + '.' + (k + 1), n = c.notes[cle] || {};
+                var r = { l: q[0], max: q[1], v: n.v == null ? null : n.v, nf: !!n.nf, bonus: !!q[2] };
+                cles[cle] = 1;
+                // commentaires : erreurs rattachées à leur question, affichées sous sa ligne
+                if (avecCom) { var err = c.erreurs.filter(function (x) { return x.q === cle; }).map(function (x) { return x.texte; }); if (err.length) r.err = err; }
+                return r;
             });
             det.ex.push({ n: e.n, comp: e.comp || '', bonus: qs.every(function (q) { return q.bonus; }), qs: qs });
         });
         (g.objs || []).forEach(function (o) { if (c.objs[o[0]]) det.objs.push({ c: o[0], t: o[1], niv: c.objs[o[0]] }); });
         if (c.retraits && c.retraits.length) det.retraits = c.retraits;
-        if (avecCom) det.com = { erreurs: c.erreurs.map(function (x) {
+        if (avecCom) det.com = { erreurs: c.erreurs.filter(function (x) { return !cles[x.q]; }).map(function (x) {   // erreurs sans question reconnue
             var m = /^(\d+)\.(\d+)$/.exec(x.q);
             return (m ? 'Exercice ' + m[1] + ', question ' + m[2] : x.q) + ' · ' + x.texte;
         }), remarque: c.remarque || '' };

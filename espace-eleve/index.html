@@ -77,6 +77,7 @@
         .ma-note .grille tr.ex th { text-align: left; background: var(--bleu-doux); }
         .ma-note .objs { margin: 8px 0 0; padding-left: 18px; }
         .ma-note .com { margin: 8px 0 0; }
+        .ma-note ul.err-q { margin: 4px 0 0; padding-left: 18px; text-align: left; font-size: 0.85rem; color: var(--muted); }
         .ma-note .legende { margin: 6px 0 0; }
             #liste-tp td { vertical-align: middle; text-align: left; }
             #liste-tp th.coin { border: none; background: var(--bg); }   /* case vide en haut à gauche */
@@ -657,7 +658,11 @@
                     t.appendChild(tr);
                     e.qs.forEach(function (q) {
                         var r = el('tr');
-                        r.appendChild(el('td', null, q.l + (q.bonus && !e.bonus ? ' (bonus)' : '')));
+                        var tq = el('td', null, q.l + (q.bonus && !e.bonus ? ' (bonus)' : ''));
+                        if (q.err && q.err.length) {   // erreurs relevées sur cette question, là où les points sont perdus
+                            var ue = el('ul', 'err-q'); q.err.forEach(function (x) { ue.appendChild(el('li', null, x)); }); tq.appendChild(ue);
+                        }
+                        r.appendChild(tq);
                         var c = el('td', q.v == null ? '' : classeNote(q.v / q.max), (q.v == null ? '—' : fmtN(q.v)) + (q.nf ? ' (non fait)' : ''));
                         r.appendChild(c); r.appendChild(el('td', null, fmtN(q.max)));
                         t.appendChild(r);
