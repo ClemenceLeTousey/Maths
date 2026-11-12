@@ -682,7 +682,8 @@
                 }
                 defile.appendChild(t); zone.appendChild(defile);
                 var somme = d.ex.reduce(function (s, e) { return s + e.qs.reduce(function (a, q) { return a + (q.v || 0); }, 0); }, 0) - retire;
-                if (n.total != null && somme > n.total + 0.001) zone.appendChild(el('p', 'aide legende', 'Total de tes points : ' + fmtN(somme) + ', note plafonnée à ' + fmtN(n.sur) + '.'));
+                if (d.noteSur) zone.appendChild(el('p', 'aide legende', 'Absent(e) lors de certaines notions : copie notée sur ' + fmtN(d.noteSur) + ' points, note ramenée sur 20 au prorata (arrondie au quart de point supérieur).'));
+                else if (n.total != null && somme > n.total + 0.001) zone.appendChild(el('p', 'aide legende', 'Total de tes points : ' + fmtN(somme) + ', note plafonnée à ' + fmtN(n.sur) + '.'));
             }
             if (d.objs && d.objs.length) {
                 zone.appendChild(el('p', 'com', 'Objectifs :'));

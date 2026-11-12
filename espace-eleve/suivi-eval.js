@@ -122,12 +122,14 @@
             else if (/^Élève$/i.test(h)) col.nom = i;
             else if (/^Sujet$/i.test(h)) col.sujet = i;
             else if (/^Total/i.test(h)) col.total = i;
+            else if (/^Noté sur$/i.test(h)) col.noteSur = i;
             else if (/^Erreurs/i.test(h)) col.erreurs = i;
             else if (/^Remarque$/i.test(h)) col.remarque = i;
         });
         return l.slice(1).map(function (r) {
             var c = { grille: grille, nom: (r[col.nom] || '').trim(), sujet: (r[col.sujet] || '').trim(), notes: {}, erreurs: [],
-                      remarque: col.remarque != null ? (r[col.remarque] || '').trim() : '', objs: {}, retraits: [] };
+                      remarque: col.remarque != null ? (r[col.remarque] || '').trim() : '', objs: {}, retraits: [],
+                      noteSur: col.noteSur != null ? nombre(r[col.noteSur]) : null };   // absent lors de certaines notions
             (GRILLES[grille].retraits || []).forEach(function (o) {
                 var i = col['ret:' + o[0]], v = i != null ? nombre(r[i]) : null;
                 if (v) c.retraits.push({ l: o[1], v: Math.abs(v) });
@@ -353,6 +355,7 @@
         });
         (g.objs || []).forEach(function (o) { if (c.objs[o[0]]) det.objs.push({ c: o[0], t: o[1], niv: c.objs[o[0]] }); });
         if (c.retraits && c.retraits.length) det.retraits = c.retraits;
+        if (c.noteSur) det.noteSur = c.noteSur;
         if (avecCom) det.com = { erreurs: c.erreurs.filter(function (x) { return !cles[x.q]; }).map(function (x) {   // erreurs sans question reconnue
             var m = /^(\d+)\.(\d+)$/.exec(x.q);
             return (m ? 'Exercice ' + m[1] + ', question ' + m[2] : x.q) + ' · ' + x.texte;
