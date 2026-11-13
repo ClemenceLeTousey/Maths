@@ -110,7 +110,7 @@
         <div id="contenu" hidden>
         <div class="onglets" role="tablist" aria-label="Rubriques de l'espace élève">
             <button type="button" role="tab" id="onglet-automatismes" aria-controls="panneau-automatismes" data-onglet="automatismes">Automatismes</button>
-            <button type="button" role="tab" id="onglet-tp" aria-controls="panneau-tp" data-onglet="tp" data-niveau="seconde" hidden>Python</button>
+            <button type="button" role="tab" id="onglet-tp" aria-controls="panneau-tp" data-onglet="tp" data-niveau="seconde premiere" hidden>Python</button>
             <button type="button" role="tab" id="onglet-evaluations" aria-controls="panneau-evaluations" data-onglet="evaluations" data-niveau="seconde" hidden>Évaluations</button>
             <button type="button" role="tab" id="onglet-soutien" aria-controls="panneau-soutien" data-onglet="soutien" data-niveau="seconde" hidden>Soutien</button>
             <button type="button" role="tab" id="onglet-echange" aria-controls="panneau-echange" data-onglet="echange">Messages</button>
@@ -824,8 +824,11 @@
             document.querySelector('.espace-prof').hidden = !!s;   // seulement sur l'accueil, pas pour un élève connecté
             // onglets et blocs réservés à un niveau (Évaluations, Soutien, Remédiation, diaporamas : Secondes seulement) ; compte TEST (sans niveau) : tout voir
             var niv = s && Interactif.niveauClasse(s.classe);
-            onglets.forEach(function (o) { if (o.dataset.niveau) o.hidden = !s || (!!niv && o.dataset.niveau !== niv); });
-            document.querySelectorAll('.panneau [data-niveau]').forEach(function (e) { e.hidden = !!niv && e.dataset.niveau !== niv; });
+            // data-niveau peut lister plusieurs niveaux (« seconde premiere ») ; onglet TP : « Python » en Seconde, « Activités » en Première
+            function pourNiveau(e) { return e.dataset.niveau.split(' ').indexOf(niv) >= 0; }
+            onglets.forEach(function (o) { if (o.dataset.niveau) o.hidden = !s || (!!niv && !pourNiveau(o)); });
+            document.querySelectorAll('.panneau [data-niveau]').forEach(function (e) { e.hidden = !!niv && !pourNiveau(e); });
+            document.getElementById('onglet-tp').firstChild.textContent = niv === 'premiere' ? 'Activités' : 'Python';
             if (s) ouvrirOnglet(location.hash.slice(1));   // déconnecté : on garde #evaluations… pour après la connexion
             afficher(null);
             soutien(s);

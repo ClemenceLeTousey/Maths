@@ -117,7 +117,10 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'terminale', id: 'terminale/serie7-j3', groupe: 'Série 7 · semaine du 16 au 20 novembre', titre: 'Jour 3', court: 'T · S7 · J3', url: 'terminale/serie7.html?j=3' },
     { niveau: 'terminale', id: 'terminale/serie7-bilan', groupe: 'Facultatif · Série 7 TST2S en temps limité ⏱', titre: 'Bilan Série 7 (10 questions chronométrées)', court: 'T · S7 · Bilan', url: 'terminale/serie7-bilan.html' },
     // Première (1TC) : une série par semaine, à faire à la maison pour le vendredi suivant (10 questions par couleur, validation question par question)
-    { niveau: 'premiere', id: 'premiere/serie1', groupe: 'Série 1 · à faire pour le vendredi 13 novembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S1', url: 'premiere/serie1.html' }
+    { niveau: 'premiere', id: 'premiere/serie1', groupe: 'Série 1 · à faire pour le vendredi 13 novembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S1', url: 'premiere/serie1.html' },
+    // Première (1TC) : activité d'introduction aux probabilités conditionnelles (onglet « Activités » de l'espace élève), code d'accès
+    { niveau: 'premiere', id: 'premiere/activite-probas', groupe: 'Activité · Probabilités conditionnelles', titre: 'Contrôlé positif… donc dopé ? (13 étapes)', court: '1 · Act. Probas', url: 'premiere/activite-probas.html', tp: true, vueProf: true,
+      codeAcces: '4faa0e5775e86206c01c5b9f5bbbdb08889dd89af0911746d84b05024a4033a3' }   // empreinte SHA-256 du code d'accès (voir Codes d'accès des TP)
 ];
 
 /* Description de chaque groupe (même libellé que « groupe » ci-dessus), affichée sous son titre sur la page élève :
@@ -211,7 +214,9 @@ window.INTERACTIF_TP_ORDRE = [
     { niveau: 'seconde', nom: 'TP8 · Simulation et loi des grands nombres', texte: 'Simuler une expérience aléatoire', pdf: 'seconde/tp/tp8-sujet.pdf', comptes: ['PROF-2NDE'] },
     { niveau: 'seconde', nom: 'TP9 · Géométrie repérée', texte: 'Milieu, distance, alignement', pdf: 'seconde/tp/tp9-sujet.pdf', comptes: ['PROF-2NDE'] },
     { niveau: 'seconde', nom: 'TP10 · Extremums et longueur de courbe', texte: 'Approcher un extremum, une longueur', pdf: 'seconde/tp/tp10-sujet.pdf', comptes: ['PROF-2NDE'] },
-    { niveau: 'seconde', nom: 'TP11 · Statistiques et tableaux croisés', texte: 'Indicateurs, filtrer et croiser', pdf: 'seconde/tp/tp11-sujet.pdf', comptes: ['PROF-2NDE'] }
+    { niveau: 'seconde', nom: 'TP11 · Statistiques et tableaux croisés', texte: 'Indicateurs, filtrer et croiser', pdf: 'seconde/tp/tp11-sujet.pdf', comptes: ['PROF-2NDE'] },
+    // Première (1TC) : activités interactives en plusieurs étapes (onglet « Activités »)
+    { niveau: 'premiere', nom: 'Probabilités conditionnelles · Contrôlé positif… donc dopé ?', id: 'premiere/activite-probas' }
 ];
 
 /* Barème automatique des TP (onglet « Suivi TP » de l'espace professeure).
@@ -231,6 +236,7 @@ window.INTERACTIF_BAREMES = {
     },
     'seconde/tp-premiers-pas': { nonNote: true },   // TP1 : rappels (Capytale déjà fait en classe), non noté
     'seconde/tp-boucles': { nonNote: true },   // TP3 : entraînement, non noté
+    'premiere/activite-probas': { nonNote: true, bonus: [13], quiz: [12], quizSur: 5 },   // 1TC : activité d'introduction, non notée ; quiz (étape 12) suivi à part, défi (étape 13) en bonus
     'seconde/tp-pixels': {
         // TP4 · A : lire et prévoir (6,5) · B : modifier (8) · C : créer (5,5) · quiz à part
         //       A               B                C         quiz

@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrôlé positif… donc dopé ?</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../../img/favicon-32.png">
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="apple-mobile-web-app-title" content="Maths Lebrun">
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../interactif.css">
+    <script src="../../site.js"></script>
+    <script src="../config.js"></script>
+    <script src="../moteur.js"></script>
+    <style>
+        /* Même présentation que les TP interactifs de Seconde (tp-conditions.html), couleur de la Première */
+        :root { --c-act: var(--c-premiere); }
+        .progression { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; color: var(--muted); font-size: 0.9rem; }
+        .progression .barre { flex: 1; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+        .progression .barre i { display: block; height: 100%; background: var(--ok); border-radius: 4px; transition: width .4s; }
+        .barre-etapes { position: sticky; top: var(--haut-nav, 0px); z-index: 900; background: var(--bg); padding: 10px 0 8px; margin: 0 0 14px; border-bottom: 1px solid var(--line); }
+        .barre-etapes .progression { margin: 0 0 8px; }
+        .etape, .encadre { scroll-margin-top: calc(var(--haut-nav, 0px) + var(--haut-barre, 0px) + 10px); }
+        .sommaire { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; }
+        @media (max-width: 640px) {
+            .sommaire { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+            .interactif .sommaire button { flex: 0 0 auto; }
+        }
+        .sommaire .aide { margin: 0 4px 0 0; font-size: 0.85rem; }
+        .interactif .sommaire button {
+            min-width: 2.2em; height: 2.2em; padding: 0 4px; border-radius: 50%; font-size: 0.85rem; font-weight: 600;
+            background: var(--surface); color: var(--text); border: 1px solid var(--line); cursor: pointer;
+        }
+        .interactif .sommaire button.fait { background: var(--ok); border-color: var(--ok); color: #fff; }
+        .interactif .sommaire button.courante { border: 2px solid var(--c-act); }
+        .interactif .sommaire button:disabled { opacity: .4; cursor: default; }
+        .interactif .sommaire button.acces-quiz { margin-left: auto; border-radius: 999px; padding: 0 14px; background: var(--c-act); border-color: var(--c-act); color: var(--badge-text); letter-spacing: .05em; }
+        .interactif .sommaire button.acces-quiz.fait { background: var(--ok); border-color: var(--ok); }
+        .interactif .sommaire button.fait.passee { background: var(--muted); border-color: var(--muted); }
+
+        .etapes { display: flex; flex-direction: column; gap: 14px; }
+        .etape { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
+        .etape.courante { border-color: var(--c-act); box-shadow: 0 2px 12px rgba(15, 157, 118, .14); }
+        .etape-tete { display: flex; align-items: center; gap: 10px; }
+        .etape-tete h2 { font-size: 1.1rem; margin: 0; flex: 1; }
+        .etape-num {
+            display: inline-grid; place-items: center; min-width: 1.8em; height: 1.8em; border-radius: 50%;
+            background: var(--c-act); color: var(--badge-text); font-size: 0.85rem; font-weight: 600;
+        }
+        .etape.faite .etape-num { background: var(--ok); }
+        .etape.passee .etape-num { background: var(--muted); }
+        .zone-passer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); }
+        .zone-passer .aide { margin: 0; }
+        .interactif .zone-passer button { background: var(--surface); color: var(--text); border-color: var(--line); }
+        .interactif .etape-tete button.lien { font-size: 0.85rem; }
+        .interactif .etape-tete button.reinit { font-size: 0.8rem; color: var(--muted); }
+        .etape.faite:not(.ouverte) .etape-corps { display: none; }
+        .etape-corps { margin-top: 10px; }
+        .etape-corps p { margin: 8px 0; }
+        .etape-corps ul { margin: 6px 0; padding-left: 22px; list-style: disc; }
+        .etape-corps ol { list-style: decimal; }
+        .encadre { border-left: 4px solid var(--c-act); background: var(--bleu-doux); border-radius: 0 8px 8px 0; padding: 8px 12px; margin: 10px 0; }
+        .encadre.astuce { border-left-color: var(--ok); }
+        .encadre.attention { border-left-color: var(--ko); }
+        .encadre.bilan { text-align: left; }
+        .encadre.bilan ol { margin: 4px 0 0; padding-left: 24px; }
+        .encadre.bilan li { margin: 3px 0; }
+        .encadre .lu { display: flex; justify-content: flex-end; align-items: center; gap: 6px; margin-top: 4px; font-size: 0.85rem; color: var(--muted); cursor: pointer; }
+        .encadre .lu input { margin: 0; cursor: pointer; }
+        .encadre.est-lu .lu { color: var(--ok); font-weight: 600; }
+        .encadre.a-cocher { outline: 2px solid var(--ko); outline-offset: 2px; }
+        .encadre.a-cocher .lu { color: var(--ko); font-weight: 600; }
+        .encadre > b:first-child { display: block; margin-bottom: 2px; }
+        .enonce { border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; background: var(--bg); margin: 8px 0; }
+        .enonce ul { margin: 4px 0; }
+
+        /* notations : barre au-dessus d'un évènement, indices */
+        .ev { font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 1.08em; white-space: nowrap; }
+        .ev .bar { text-decoration: overline; }
+        .ev sub { font-size: 0.72em; }
+
+        /* lignes « étiquette | case | Valider | ✓/✗ » */
+        .reponses { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+        .interactif input:not([type]), .interactif select { background: var(--bleu-doux); }
+        .case-ligne { display: grid; grid-template-columns: minmax(13.5em, max-content) 9em auto 1fr; align-items: center; gap: 6px 10px; }
+        .case-ligne label { display: contents; }
+        .case-ligne input { width: 100%; box-sizing: border-box; font-family: var(--f-mono); }
+        .retour.case-retour { margin: 0; line-height: 1.3; }
+        @media (max-width: 640px) {
+            .case-ligne { grid-template-columns: 1fr auto; }
+            .case-ligne .retour.case-retour, .case-ligne .explic { grid-column: 1 / -1; }
+        }
+        .case-ligne .explic { grid-column: 1 / -1; }
+        .case-ligne.prevision { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+        .case-ligne.prevision label { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+        .case-ligne.prevision .retour.case-retour { flex: 1 1 100%; }
+        .case-ligne select { font: inherit; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; color: var(--text); }
+
+        /* aide progressive : bouton « Explication » après deux erreurs */
+        .interactif button.voir-explic { background: var(--surface); color: var(--text); border: 1px dashed var(--ko); font-size: 0.9rem; }
+        .explication { border-left: 4px solid #f59f00; background: rgba(255, 212, 59, .14); border-radius: 0 8px 8px 0; padding: 6px 12px; margin: 6px 0; font-weight: 400; color: var(--text); }
+        .explication > b:first-child { display: block; }
+
+        /* tableau croisé à compléter */
+        .tableau { overflow-x: auto; margin: 8px 0; }
+        .tableau table { border-collapse: collapse; }
+        .tableau th, .tableau td { border: 1px solid var(--line); padding: 4px 8px; text-align: center; white-space: nowrap; }
+        .tableau th { background: var(--bleu-doux); }
+        .tableau td.donne { font-weight: 600; }
+        .tableau input { width: 5.5em; text-align: center; font-family: var(--f-mono); }
+        input.juste { border-color: var(--ok) !important; box-shadow: 0 0 0 2px var(--ok-fond, rgba(40, 167, 69, .25)); }
+        input.faux { border-color: var(--ko) !important; box-shadow: 0 0 0 2px var(--ko-fond); }
+        .liste-aides { margin: 6px 0 0; padding-left: 22px; font-weight: 400; color: var(--text); }
+        .liste-aides li { margin: 3px 0; }
+
+        /* arbre pondéré : SVG + cases placées en pourcentage (s'adapte à la largeur) */
+        .arbre { position: relative; width: 100%; max-width: 560px; aspect-ratio: 560 / 300; margin: 10px auto; }
+        .arbre svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .arbre svg line { stroke: var(--text); stroke-width: 2; }
+        .arbre svg text { fill: var(--text); font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 22px; }
+        .arbre input { position: absolute; transform: translate(-50%, -50%); width: 4.6em; text-align: center; font-family: var(--f-mono); padding: 3px 4px; }
+        .arbre .poids { position: absolute; transform: translate(-50%, -50%); background: var(--surface); padding: 0 4px; font-family: var(--f-mono); }
+
+        .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+        .qcm { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+        .qcm label { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+        .qcm label:has(input:checked) { border-color: var(--c-act); background: var(--bleu-doux); }
+        .qcm input { margin-top: 4px; }
+        .qcm button { align-self: flex-start; }
+        .quiz { display: flex; flex-direction: column; gap: 6px; }
+        .quiz-q { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+        .quiz-q p { margin: 4px 0; }
+        .quiz-q label { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; max-width: 36em; }
+        .quiz-q label:has(input:checked) { border-color: var(--c-act); background: var(--bleu-doux); }
+        .quiz-q input { margin-top: 4px; }
+        .quiz > button { align-self: flex-start; margin-top: 8px; }
+        .retour { font-weight: 600; margin-top: 10px; }
+        .retour:empty { display: none; }
+        .retour.ok { color: var(--ok); }
+        .retour.ko { color: var(--ko); }
+        .fin { text-align: center; font-size: 1.1rem; }
+        .solution-prof { border: 2px dashed var(--ok); border-radius: 10px; padding: 8px 14px; margin: 14px 0 6px; background: var(--surface); }
+        .solution-prof ul, .solution-prof ol { margin: 6px 0; padding-left: 22px; }
+        .vue-prof { background: var(--bleu-doux); border: 2px solid var(--c-act); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; }
+        .choix-mode { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 0 0 8px; padding: 4px 10px; border: 1px dashed var(--c-act); border-radius: 8px; font-size: 0.9rem; }
+        .choix-mode .aide { margin: 0; }
+        .choix-mode label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+        main.interactif { max-width: 1100px; }
+
+        /* calculatrice (bouton 🧮 en bas à droite), comme dans les TP de Seconde */
+        .calc-bouton { position: fixed; right: 16px; bottom: 16px; z-index: 950; width: 48px; height: 48px; border-radius: 50%; font-size: 1.4rem; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 2px 10px rgba(0,0,0,.18); cursor: pointer; }
+        .calc-panneau { position: fixed; right: 16px; bottom: 74px; z-index: 950; width: min(280px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.25); padding: 10px 12px 8px; outline: none; }
+        .calc-panneau[hidden] { display: none; }
+        .calc-panneau .calc-fermer { background: none; border: none; color: var(--muted); font-size: 1rem; cursor: pointer; padding: 2px 6px; }
+        .calc-tete { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .calc-ecran { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; text-align: right; font-family: var(--f-mono); font-variant-ligatures: none; }
+        .calc-histo { color: var(--muted); font-size: 0.8rem; min-height: 1.2em; }
+        .calc-expr { font-size: 1.25rem; min-height: 1.9em; line-height: 1.9; overflow-x: auto; white-space: nowrap; }
+        .calc-res { font-size: 1.35rem; font-weight: 700; min-height: 1.5em; color: var(--c-act); }
+        .calc-vide { color: var(--muted); }
+        .calc-curseur { display: inline-block; width: 2px; height: 1.1em; background: var(--text); vertical-align: -0.15em; margin-left: 1px; animation: clignote 1.2s steps(1) infinite; }
+        @keyframes clignote { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .calc-touches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+        .calc-panneau .calc-t { height: 40px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 1.05rem; font-family: var(--f-mono); cursor: pointer; padding: 0; }
+        .calc-panneau .calc-t:hover { background: var(--bleu-doux); }
+        .calc-panneau .calc-t.op { color: var(--c-act); font-weight: 700; }
+        .calc-panneau .calc-t.fn { background: var(--bg); }
+        .calc-panneau .calc-t.egal { grid-column: span 4; background: var(--c-act); border-color: var(--c-act); color: var(--badge-text); font-weight: 700; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><span class="logo-ligne"><button type="button" data-effet="ecrire" title="Réécrire le titre"></button><button type="button" data-effet="matrix" title="Mode Matrix"></button><button type="button" data-effet="futur" title="Mode BTTF (Back to the Future)"></button><button type="button" data-effet="halloween" title="Mode Halloween"></button></span><a href="../../index.html">Année 2026-2027 - Lycée Lebrun</a></div>
+        <ul class="nav-links">
+            <li><a href="../../index.html">Accueil</a></li>
+            <li><a href="../index.html">Espace élève</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>Contrôlé positif… donc dopé ?</h1>
+        <p>Activité d’introduction · probabilités conditionnelles</p>
+    </header>
+
+    <main class="interactif">
+        <div id="bandeau"></div>
+        <div class="barre-etapes" id="barre-etapes">
+            <div class="progression"><span id="progres-texte"></span><div class="barre"><i id="progres-barre"></i></div></div>
+            <nav class="sommaire" id="sommaire" aria-label="Étapes de l’activité"></nav>
+        </div>
+        <div class="etapes" id="etapes"></div>
+    </main>
+
+    <footer>
+        <style>.lic-court{display:none}@media (max-width:600px){.lic-long{display:none}.lic-court{display:inline}}</style><p><span class="lic-long">Hébergé avec GitHub Pages. </span>&copy; 2026 Clémence Le Tousey<br><span class="lic-long">Documents sous licence </span><span class="lic-court">Licence </span><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-NC-SA 4.0</a><span class="lic-long"> : réutilisation libre en citant l'autrice et la source, sans usage commercial, et en partageant dans les mêmes conditions.</span></p>
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+        var ID = 'premiere/activite-probas';
+        var PROF = 'PROF-2NDE';   // compte professeure (mode professeure : solutions, toutes les étapes, pas de code)
+
+        /* ---------- Code d'accès (codeAcces dans config.js), comme pour les TP de Seconde ---------- */
+        var FICHE = (window.INTERACTIF_CATALOGUE || []).filter(function (x) { return x.id === ID; })[0];
+        if (FICHE && FICHE.codeAcces && !/[?&]vue-eleve=/.test(location.search)) {
+            var ses = Interactif.session(), ouvert = false, CODE = Interactif.codeAccesTP(FICHE, ses);
+            try { ouvert = localStorage.getItem('tp-acces:' + ID) === CODE; } catch (x) {}
+            var finTemp = ouvert ? 0 : Interactif.accesTemporaire(FICHE, ses);
+            if (finTemp > 0) { ouvert = true; Interactif.minuteurAcces(finTemp, FICHE); }
+            var modeEleve = false; try { modeEleve = localStorage.getItem('tp-mode') === 'eleve'; } catch (x) {}
+            var estProf = ses && String(ses.code || '').toUpperCase() === PROF;
+            if (!ouvert && !(estProf && !modeEleve)) {
+                document.getElementById('barre-etapes').hidden = true;
+                var zv = document.getElementById('etapes');
+                zv.innerHTML = '<section class="etape courante"><div class="etape-tete"><span class="etape-num">🔒</span><h2>Activité verrouillée</h2></div>' +
+                    '<div class="etape-corps">' + (Interactif.tpFerme(FICHE, ses) ? '<p class="retour ko">🔒 Cette activité est terminée : l’accès est fermé pour ta classe. Ta progression est gardée.</p>' : finTemp < 0 ? '<p class="retour ko">⏱ Ton heure d’accès est terminée. Ta progression est gardée.</p>' : '') +
+                    '<p>Cette activité s’ouvre avec le <b>code d’accès</b> donné en classe.</p>' +
+                    '<form class="case-ligne prevision" id="f-code"><label>Code d’accès <input id="code-tp" autocomplete="off" spellcheck="false" autocapitalize="off"></label>' +
+                    '<button type="submit">Ouvrir l’activité</button></form><p class="retour" id="code-retour"></p></div></section>';
+                if (estProf) {
+                    var bp = document.createElement('button'); bp.type = 'button'; bp.className = 'secondaire';
+                    bp.textContent = '👩‍🏫 Revenir au mode professeure';
+                    bp.onclick = function () { try { localStorage.setItem('tp-mode', 'prof'); } catch (x) {} location.reload(); };
+                    zv.querySelector('.etape-corps').appendChild(bp);
+                }
+                if (Interactif.tpFerme(FICHE, ses)) { document.getElementById('f-code').hidden = true; zv.querySelector('.etape-corps > p:not(.retour)').hidden = true; }
+                document.getElementById('f-code').onsubmit = function (ev) {
+                    ev.preventDefault();
+                    var t = document.getElementById('code-tp').value.trim();
+                    crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function (b) {
+                        var h = Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+                        var r = document.getElementById('code-retour');
+                        if (h !== CODE && FICHE.codeAccesTemporaire && h === FICHE.codeAccesTemporaire.h) {
+                            r.className = 'retour'; r.textContent = 'Vérification…';
+                            Interactif.ouvrirTemporaire(FICHE).then(function () { location.reload(); },
+                                function (e) { r.className = 'retour ko'; r.textContent = '✗ ' + e.message; });
+                            return;
+                        }
+                        if (h !== CODE) { r.className = 'retour ko'; r.textContent = '✗ Code incorrect : les majuscules et le tiret comptent.'; return; }
+                        try { localStorage.setItem('tp-acces:' + ID, h); } catch (x) {}
+                        location.reload();
+                    });
+                };
+                Interactif.bandeau(document.getElementById('bandeau'), function () { location.reload(); });
+                return;
+            }
+        }
+
+        /* ---------- Outils ---------- */
+        function el(tag, classe, html) { var e = document.createElement(tag); if (classe) e.className = classe; if (html != null) e.innerHTML = html; return e; }
+        function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+        function sansBalises(h) { var d = document.createElement('div'); d.innerHTML = h; return d.textContent; }
+        var CASE_LU = '<label class="lu"><input type="checkbox"> J’ai lu</label>';
+        function encadre(classe, titre, corps) { return '<div class="encadre ' + classe + '"><b>' + titre + '</b>' + corps + CASE_LU + '</div>'; }
+
+        // notations : D, D barre, T, T barre, P(…), P_T(D)
+        var D = '<span class="ev">D</span>', T = '<span class="ev">T</span>';
+        var Db = '<span class="ev"><span class="bar">D</span></span>', Tb = '<span class="ev"><span class="bar">T</span></span>';
+        function ev(x) { return x.replace(/!([A-Z])/g, '<span class="bar">$1</span>'); }
+        function P(x) { return '<span class="ev">P(' + ev(x).replace(/∩/g, '<span style="font-style:normal"> ∩ </span>') + ')</span>'; }
+        function Pc(s, x) { return '<span class="ev">P<sub>' + ev(s) + '</sub>(' + ev(x) + ')</span>'; }
+
+        /* Nombres : virgule ou point, espaces, pourcentage (16 % → 0,16 si « pourcent » est permis) */
+        function num(s, pourcent) {
+            var t = String(s).replace(/\s/g, '').replace(',', '.').replace('−', '-');
+            var p = /%$/.test(t); if (p) t = t.slice(0, -1);
+            if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(t)) return NaN;
+            return p ? (pourcent ? Number(t) / 100 : NaN) : Number(t);
+        }
+        function evalExpr(v) {
+            var t = String(v).replace(/\s/g, '').replace(/−/g, '-').replace(/[×x·]/g, '*').replace(/÷/g, '/').replace(/\^/g, '**').replace(/(\d),(\d)/g, '$1.$2');
+            if (!/^[\d+\-*/().]+$/.test(t) || !/\d/.test(t)) return NaN;
+            try { var r = Function('"use strict"; return (' + t + ');')(); return typeof r === 'number' && isFinite(r) ? r : NaN; } catch (e) { return NaN; }
+        }
+        function fr(x) { return String(x).replace('.', ','); }
+
+        /* Vérification d'une case : f = { attendu, tol, pourcent, pieges: [[valeur, message], …], indice, arrondi }
+           → null si juste, sinon le message d'aide (piège reconnu, sinon indice général). */
+        function verifierCase(f, v) {
+            var tol = f.tol || 1e-9, x = num(v, f.pourcent);
+            if (isNaN(x)) {
+                var e = evalExpr(v);
+                if (!isNaN(e)) {
+                    if (Math.abs(e - f.attendu) <= Math.max(tol, 0.006)) return 'C’est le bon calcul ! Effectue-le (calculatrice 🧮 en bas à droite) et écris seulement le résultat' + (f.arrondi ? ', ' + f.arrondi : '') + '.';
+                    x = e;   // calcul faux : on cherche quand même un piège connu
+                } else if (/%/.test(v) && !f.pourcent) return 'Écris un nombre, sans le symbole %.';
+                else return 'Écris un nombre (avec une virgule si besoin).';
+            }
+            if (Math.abs(x - f.attendu) <= tol) return null;
+            var p = (f.pieges || []).filter(function (q) { return Math.abs(x - q[0]) <= (q[2] || tol); })[0];
+            if (p) return p[1];
+            if (f.arrondi && Math.abs(x - f.attendu) < 0.02) return 'Tu y es presque : vérifie l’arrondi (' + f.arrondi + ').';
+            return f.indice || 'Ce n’est pas ça. Relis l’énoncé.';
+        }
+
+        /* ---------- Données de l'activité ---------- */
+        var ENONCE = '<div class="enonce">Lors d’une grande compétition, <b>1 %</b> des athlètes sont dopés. Le test antidopage :' +
+            '<ul><li>est <b>positif</b> pour <b>95 %</b> des athlètes <b>dopés</b> ;</li><li>est <b>négatif</b> pour <b>95 %</b> des athlètes <b>non dopés</b>.</li></ul></div>';
+        var EXPLIC_FAUX_POSITIFS = 'Les non dopés sont 9 900. Le test se trompe pour 5 % d’entre eux (il est positif alors qu’ils ne sont pas dopés) : 0,05 × 9 900 = 495 « faux positifs ».';
+
+        /* ---------- Les étapes ----------
+           type 'sondage' : choisir une réponse (toutes acceptées) ;
+           type 'question' : une ligne par case, chacune avec son bouton Valider ;
+           type 'grille' : cases placées dans un tableau ou un arbre, un seul bouton Valider ;
+           type 'choix' : phrases avec liste déroulante ; type 'qcm' : une réponse ; type 'quiz' : une seule validation.
+           Pour chaque case : pieges (erreurs fréquentes → aide ciblée), indice (sinon), explication (après 2 erreurs). */
+        var ETAPES = [
+            { titre: 'Ton intuition', type: 'sondage',
+              consigne: ENONCE + '<p>Un athlète est contrôlé <b>positif</b>. Selon toi, quelle est la probabilité qu’il soit <b>réellement</b> dopé ?</p>' +
+                '<p>✍️ Réponds <b>sans calculer</b>, à l’intuition : il n’y a pas de mauvaise réponse ici. On vérifiera à la fin.</p>',
+              choix: ['A. Environ 95 %', 'B. Environ 50 %', 'C. Moins de 20 %'] },
+
+            { titre: 'Une compétition de 10 000 athlètes', type: 'question',
+              consigne: ENONCE + '<p>Pour y voir clair, on imagine une compétition de <b>10 000 athlètes</b>, qui respecte ces proportions.</p>' +
+                encadre('', 'Rappel : prendre un pourcentage d’un nombre', '<p>Prendre 1 % de 10 000, c’est calculer 0,01 × 10 000.</p>'),
+              champs: [
+                  { lib: 'Nombre d’athlètes dopés', attendu: 100,
+                    pieges: [[1, '1 %, c’est la proportion. On demande le <b>nombre</b> d’athlètes : 1 % de 10 000.'], [1000, 'Attention : 1 % = 0,01, et non 0,1.'], [9900, 'Ça, c’est le nombre de non dopés.']],
+                    indice: 'Calcule 1 % de 10 000.',
+                    explication: '1 % = 1/100 = 0,01. Donc 1 % de 10 000 = 0,01 × 10 000 = 100 athlètes dopés.' },
+                  { lib: 'Nombre d’athlètes non dopés', attendu: 9900,
+                    pieges: [[100, 'Ça, ce sont les dopés. On demande les autres.'], [99, 'Il y a 99 % de non dopés : 99 % de 10 000.'], [9000, 'Vérifie : 10 000 − 100.']],
+                    indice: 'Tous les athlètes qui ne sont pas dopés : 10 000 moins les dopés.',
+                    explication: 'Les non dopés sont tous les autres : 10 000 − 100 = 9 900 (c’est aussi 99 % de 10 000).' }
+              ],
+              bilan: ['Sur 10 000 athlètes : <b>100 dopés</b> et <b>9 900 non dopés</b>.', 'Les non dopés sont <b>beaucoup plus nombreux</b> : retiens-le, c’est la clé de l’activité.'] },
+
+            { titre: 'Le tableau croisé', type: 'grille',
+              consigne: ENONCE + '<p>✍️ Complète le tableau croisé d’effectifs pour les 10 000 athlètes, puis valide. Les cases fausses seront entourées de rouge.</p>' +
+                encadre('astuce', 'Méthode', '<ul><li>Dans la colonne « Dopé », on travaille sur les <b>100 dopés</b> : 95 % d’entre eux ont un test positif.</li><li>Dans la colonne « Non dopé », on travaille sur les <b>9 900 non dopés</b> : 95 % d’entre eux ont un test <b>négatif</b>.</li></ul>'),
+              grille: function () {
+                  return '<div class="tableau"><table>' +
+                      '<tr><th></th><th>Dopé</th><th>Non dopé</th><th>Total</th></tr>' +
+                      '<tr><th>Test positif</th><td><input data-k="0"></td><td><input data-k="2"></td><td><input data-k="4"></td></tr>' +
+                      '<tr><th>Test négatif</th><td><input data-k="1"></td><td><input data-k="3"></td><td><input data-k="5"></td></tr>' +
+                      '<tr><th>Total</th><td class="donne">100</td><td class="donne">9 900</td><td class="donne">10 000</td></tr></table></div>';
+              },
+              champs: [
+                  { lib: 'Dopé et positif', attendu: 95, pieges: [[0.95, 'On veut un <b>effectif</b> : 95 % des 100 dopés.'], [9405, 'Tu as pris 95 % des 9 900 : dans cette colonne, on ne compte que les 100 dopés.']], indice: 'Dopé et positif : 95 % des 100 dopés.' },
+                  { lib: 'Dopé et négatif', attendu: 5, pieges: [[495, 'Tu as pris les 9 900 non dopés : dans cette colonne, on ne compte que les 100 dopés.']], indice: 'Dopé et négatif : les dopés qui restent, 100 − 95.' },
+                  { lib: 'Non dopé et positif', attendu: 495, pieges: [[9405, 'Inversé ! 95 % des non dopés ont un test <b>négatif</b>. Les positifs, ce sont les 5 % restants.'], [5, 'Tu as pris 5 % des 100 dopés : ici, on travaille sur les 9 900 non dopés.']], indice: 'Non dopé et positif : 5 % des 9 900 non dopés.' },
+                  { lib: 'Non dopé et négatif', attendu: 9405, pieges: [[495, 'Inversé ! 95 % des non dopés ont un test <b>négatif</b> : 0,95 × 9 900.'], [9900, 'Tous les non dopés n’ont pas un test négatif : seulement 95 % d’entre eux.']], indice: 'Non dopé et négatif : 95 % des 9 900 non dopés.' },
+                  { lib: 'Total des positifs', attendu: 590, pieges: [[95, 'Le total d’une ligne : on ajoute les dopés positifs <b>et</b> les non dopés positifs.']], indice: 'Total de la ligne « Test positif » : on additionne les deux cases de la ligne.' },
+                  { lib: 'Total des négatifs', attendu: 9410, indice: 'Total de la ligne « Test négatif » : on additionne les deux cases de la ligne (ou 10 000 − total des positifs).' }
+              ],
+              explication: '<ul><li>Dopés : 0,95 × 100 = <b>95</b> positifs, donc 100 − 95 = <b>5</b> négatifs.</li><li>Non dopés : 0,95 × 9 900 = <b>9 405</b> négatifs, donc 9 900 − 9 405 = <b>495</b> positifs.</li><li>Totaux : 95 + 495 = <b>590</b> positifs ; 5 + 9 405 = <b>9 410</b> négatifs (et 590 + 9 410 = 10 000 ✓).</li></ul>',
+              bilan: ['Parmi les 590 tests positifs, <b>495</b> concernent des athlètes <b>non dopés</b> : ce sont des <b>faux positifs</b>.', 'Ils sont plus nombreux que les 95 « vrais positifs » !'] },
+
+            { titre: 'Parmi les contrôlés positifs…', type: 'question',
+              consigne: '<div class="tableau"><table><tr><th></th><th>Dopé</th><th>Non dopé</th><th>Total</th></tr>' +
+                '<tr><th>Test positif</th><td>95</td><td>495</td><td>590</td></tr><tr><th>Test négatif</th><td>5</td><td>9 405</td><td>9 410</td></tr>' +
+                '<tr><th>Total</th><td>100</td><td>9 900</td><td>10 000</td></tr></table></div>' +
+                encadre('', 'Rappel : fréquence conditionnelle', '<p>La fréquence des A <b>parmi</b> les B, c’est <b>effectif de « A et B »</b> ÷ <b>effectif des B</b>. On se restreint à la sous-population des B.</p>') +
+                '<p>✍️ Parmi les athlètes contrôlés <b>positifs</b>, quelle est la fréquence des athlètes <b>réellement dopés</b> ?</p>',
+              champs: [
+                  { lib: 'Effectif de la sous-population (les positifs)', attendu: 590,
+                    pieges: [[100, 'Ça, ce sont les dopés. On se restreint aux athlètes contrôlés <b>positifs</b>.'], [10000, 'On ne prend pas tous les athlètes : seulement ceux qui sont contrôlés positifs.']],
+                    indice: 'Lis le total de la ligne « Test positif ».',
+                    explication: '« Parmi les contrôlés positifs » : on ne regarde que la ligne « Test positif ». Il y en a 590.' },
+                  { lib: 'Fréquence des dopés parmi eux (arrondie au centième)', attendu: 0.16, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
+                    pieges: [[0.95, 'Ça, c’est la fréquence des positifs <b>parmi les dopés</b> (95 sur 100). On veut l’inverse : les dopés parmi les positifs.', 0.001], [0.0095, 'Tu as divisé par 10 000 : on se restreint aux 590 positifs.', 0.0002], [0.01, 'C’est la proportion de dopés dans toute la compétition. On veut les dopés <b>parmi les positifs</b> seulement.', 0.001], [0.17, 'Vérifie l’arrondi : 95 ÷ 590 ≈ 0,161.', 0.001], [16, 'Écris une fréquence : un nombre entre 0 et 1 (ou 16 %).', 0.01], [6.21, 'Tu as divisé dans le mauvais sens : effectif des dopés positifs ÷ effectif des positifs.', 0.05], [0.84, 'Ça, ce sont les <b>non dopés</b> parmi les positifs (495 ÷ 590). On veut les dopés.', 0.006]],
+                    indice: 'Dopés et positifs ÷ positifs.',
+                    explication: 'On se restreint aux 590 positifs. Parmi eux, 95 sont dopés : 95 ÷ 590 ≈ 0,161, soit environ <b>0,16</b> (16 %).' }
+              ],
+              bilan: ['Parmi les athlètes contrôlés positifs, seulement <b>16 %</b> environ sont réellement dopés.', 'C’est une <b>fréquence conditionnelle</b> : on se restreint aux positifs.'] },
+
+            { titre: 'Retour sur ton intuition', type: 'qcm',
+              consigne: function () {
+                  var v = (reponses[1] || [])[0];
+                  return '<p>À l’étape 1, tu avais répondu : <b>' + (v ? esc(v) : '…') + '</b>.</p><p>✍️ Pourquoi le résultat (environ 16 %) est-il si faible, alors que le test se trompe rarement ?</p>';
+              },
+              choix: [
+                  'Parce que le test se trompe souvent.',
+                  'Parce que les non dopés sont très nombreux : même 5 % d’entre eux, cela fait beaucoup de faux positifs.',
+                  'Parce que la plupart des athlètes dopés ont un test négatif.',
+                  'Parce qu’on a fait une erreur de calcul dans le tableau.'
+              ], bonne: 1,
+              pourquoi: [
+                  'Non : il se trompe seulement pour 5 % des athlètes. Regarde plutôt <b>sur combien</b> d’athlètes il se trompe.',
+                  '',
+                  'Non : 95 des 100 dopés ont un test positif. Compare plutôt les 95 vrais positifs aux faux positifs.',
+                  'Non : les totaux sont cohérents (590 + 9 410 = 10 000). Le résultat est juste, même s’il surprend.'
+              ],
+              explication: EXPLIC_FAUX_POSITIFS + ' Il y a donc 495 faux positifs pour seulement 95 vrais positifs.',
+              bilan: ['La bonne réponse au vote était <b>C</b> : moins de 20 %.', 'Le test se trompe <b>rarement</b>, mais sur une population <b>énorme</b> (9 900 non dopés).', 'Quand ce qu’on cherche est <b>rare</b>, beaucoup de positifs sont des faux positifs.'] },
+
+            { titre: 'De la fréquence à la probabilité', type: 'question',
+              consigne: '<p>On choisit maintenant <b>au hasard</b> un athlète parmi les 10 000. On note :</p><ul><li>' + D + ' l’évènement « l’athlète est dopé » ;</li><li>' + T + ' l’évènement « le test de l’athlète est positif ».</li></ul>' +
+                encadre('', 'Choisir au hasard', '<p>Quand on choisit un individu <b>au hasard</b> (tous ont la même chance), la probabilité d’un évènement est égale à sa <b>fréquence</b> dans la population :</p><p style="text-align:center">' + P('A') + ' = nombre de cas favorables ÷ nombre de cas possibles.</p>') +
+                '<p>✍️ Donne les probabilités sous forme décimale.</p>',
+              champs: [
+                  { lib: P('D') + ' =', attendu: 0.01, pourcent: true, pieges: [[100, 'Une probabilité est un nombre entre 0 et 1 : divise par le nombre total d’athlètes.'], [1, 'Une probabilité de 1 voudrait dire que tous sont dopés. 1 %, c’est 0,01.']], indice: 'Nombre de dopés ÷ nombre total d’athlètes.', explication: P('D') + ' = 100 ÷ 10 000 = 0,01.' },
+                  { lib: P('T') + ' =', attendu: 0.059, pourcent: true, pieges: [[590, 'Une probabilité est un nombre entre 0 et 1 : divise par le nombre total d’athlètes.'], [0.95, 'Ça, c’est la proportion de positifs <b>parmi les dopés</b>. Ici, on choisit un athlète parmi <b>tous</b> les 10 000.'], [0.0095, 'Ça ne compte que les positifs dopés. Il faut tous les positifs : 590.'], [0.59, 'Vérifie la division : 590 ÷ 10 000.']], indice: 'Nombre de tests positifs ÷ nombre total d’athlètes.', explication: P('T') + ' = 590 ÷ 10 000 = 0,059.' }
+              ],
+              bilan: [P('D') + ' = 0,01 et ' + P('T') + ' = 0,059 : on divise par l’effectif <b>total</b>, 10 000.'] },
+
+            { titre: 'Probabilité « sachant que »', type: 'question',
+              consigne: encadre('', 'Notation', '<p>La probabilité que ' + D + ' soit réalisé <b>sachant que</b> ' + T + ' est réalisé se note ' + Pc('T', 'D') + ' (on lit « P de D sachant T »).</p>' +
+                    '<p>On l’obtient en se <b>restreignant</b> aux individus qui réalisent ' + T + ' : ' + Pc('T', 'D') + ' = effectif de « ' + D + ' et ' + T + ' » ÷ effectif de ' + T + '.</p>') +
+                encadre('attention', 'Attention à l’ordre', '<p>L’évènement écrit <b>en indice</b> est celui qu’on <b>sait</b> réalisé : c’est la sous-population dans laquelle on travaille.</p>') +
+                '<p>✍️ À l’aide du tableau (95 dopés positifs, 590 positifs, 100 dopés), calcule (arrondi au centième si besoin) :</p>',
+              champs: [
+                  { lib: Pc('T', 'D') + ' =', attendu: 0.16, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
+                    pieges: [[0.95, 'Inversé ! Ici, on <b>sait</b> que le test est positif (' + T + ' en indice) : on se restreint aux 590 positifs.', 0.001], [0.0095, 'On ne divise pas par 10 000 : on se restreint aux 590 positifs.', 0.001]],
+                    indice: 'On sait que le test est positif : on se restreint aux 590 positifs. Combien sont dopés ?',
+                    explication: 'On sait que ' + T + ' est réalisé : on travaille parmi les 590 positifs, dont 95 sont dopés. ' + Pc('T', 'D') + ' = 95 ÷ 590 ≈ 0,16. C’est la fréquence trouvée à l’étape 4.' },
+                  { lib: Pc('D', 'T') + ' =', attendu: 0.95, pourcent: true,
+                    pieges: [[0.16, 'Inversé ! Ici, ' + D + ' est en indice : on <b>sait</b> que l’athlète est dopé. On se restreint aux 100 dopés.', 0.006], [0.0095, 'On ne divise pas par 10 000 : on se restreint aux 100 dopés.']],
+                    indice: 'On sait que l’athlète est dopé : on se restreint aux 100 dopés. Combien ont un test positif ?',
+                    explication: 'On sait que ' + D + ' est réalisé : on travaille parmi les 100 dopés, dont 95 ont un test positif. ' + Pc('D', 'T') + ' = 95 ÷ 100 = 0,95. C’est le « 95 % » de l’énoncé.' }
+              ],
+              bilan: [Pc('T', 'D') + ' ≈ 0,16 mais ' + Pc('D', 'T') + ' = 0,95 : en général, ' + Pc('T', 'D') + ' ≠ ' + Pc('D', 'T') + '.', 'L’erreur d’intuition de l’étape 1 venait de cette <b>confusion</b>.'] },
+
+            { titre: 'Lire et écrire les notations', type: 'choix',
+              consigne: '<p>✍️ Pour chaque phrase, choisis la bonne notation.</p><p class="aide">Dans les listes, l’indice est écrit après « _ » : P_T(D) signifie ' + Pc('T', 'D') + '.</p>',
+              lignes: [
+                  { avant: 'Probabilité qu’un athlète <b>non dopé</b> ait un test <b>négatif</b> :', options: [['a', 'P_D(T)'], ['b', 'P_T̄(D̄)'], ['c', 'P_D̄(T̄)'], ['d', 'P(D̄ ∩ T̄)']], attendu: 'c',
+                    msgFaux: 'On <b>sait</b> que l’athlète est non dopé : c’est ' + Db + ' qui va en indice.', msgOk: Pc('!D', '!T') + ' = 0,95 (le second « 95 % » de l’énoncé).',
+                    explication: 'Ce qu’on sait : l’athlète est <b>non dopé</b> (' + Db + ') → en indice. Ce qu’on cherche : un test <b>négatif</b> (' + Tb + ') → entre parenthèses. D’où ' + Pc('!D', '!T') + '.' },
+                  { avant: 'Probabilité qu’un athlète soit <b>dopé et</b> contrôlé positif :', options: [['a', 'P(D ∩ T)'], ['b', 'P_T(D)'], ['c', 'P_D(T)']], attendu: 'a',
+                    msgFaux: 'Ici, on ne <b>sait</b> rien à l’avance : on cherche les deux à la fois, parmi tous les athlètes. Il n’y a pas d’indice.', msgOk: P('D∩T') + ' = 95 ÷ 10 000 = 0,0095 : on divise par l’effectif total.',
+                    explication: '« Dopé <b>et</b> positif » : les deux évènements sont réalisés en même temps. C’est l’intersection ' + D + ' ∩ ' + T + ', sans indice : ' + P('D∩T') + '.' },
+                  { avant: '« Sachant que son test est négatif, probabilité que l’athlète soit dopé » :', options: [['a', 'P_D(T̄)'], ['b', 'P_T̄(D)'], ['c', 'P(D ∩ T̄)']], attendu: 'b',
+                    msgFaux: 'Ce qu’on <b>sait</b> (test négatif, ' + Tb + ') va en indice.', msgOk: Pc('!T', 'D') + ' = 5 ÷ 9 410 ≈ 0,0005 : un test négatif est très rassurant.',
+                    explication: '« Sachant que son test est négatif » : on sait ' + Tb + ' → en indice. On cherche « dopé » (' + D + ') → entre parenthèses. D’où ' + Pc('!T', 'D') + '.' }
+              ],
+              bilan: ['Ce qu’on <b>sait</b> (« sachant que », « parmi les… ») va <b>en indice</b>.', P('A∩B') + ' : A <b>et</b> B à la fois, parmi <b>tous</b> les individus (pas d’indice).'] },
+
+            { titre: 'L’arbre pondéré', type: 'grille',
+              consigne: ENONCE +
+                encadre('', 'Arbre pondéré', '<ul><li>Les branches du <b>premier niveau</b> portent ' + P('D') + ' et ' + P('!D') + '.</li><li>Les branches du <b>second niveau</b> portent des probabilités <b>conditionnelles</b> : sur les branches qui partent de ' + D + ', on lit des probabilités <b>sachant</b> ' + D + '.</li><li>La somme des probabilités des branches issues d’un même nœud vaut <b>1</b>.</li></ul>') +
+                '<p>✍️ Complète l’arbre avec des nombres décimaux, puis valide.</p>',
+              grille: function () {
+                  function pos(x, y) { return 'style="left:' + (x / 5.6).toFixed(2) + '%;top:' + (y / 3).toFixed(2) + '%"'; }
+                  return '<div class="arbre"><svg viewBox="0 0 560 300" aria-hidden="true">' +
+                      '<line x1="18" y1="150" x2="205" y2="78"/><line x1="18" y1="150" x2="205" y2="222"/>' +
+                      '<line x1="240" y1="70" x2="425" y2="32"/><line x1="240" y1="80" x2="425" y2="118"/>' +
+                      '<line x1="240" y1="220" x2="425" y2="182"/><line x1="240" y1="230" x2="425" y2="268"/>' +
+                      '<text x="212" y="84">D</text><text x="212" y="236">D</text><line x1="212" y1="214" x2="228" y2="214" style="stroke-width:1.5"/>' +
+                      '<text x="432" y="40">T</text><text x="432" y="126">T</text><line x1="432" y1="104" x2="446" y2="104" style="stroke-width:1.5"/>' +
+                      '<text x="432" y="190">T</text><text x="432" y="276">T</text><line x1="432" y1="254" x2="446" y2="254" style="stroke-width:1.5"/>' +
+                      '</svg>' +
+                      '<input data-k="0" aria-label="probabilité de D" ' + pos(105, 88) + '>' +
+                      '<input data-k="1" aria-label="probabilité de D barre" ' + pos(105, 212) + '>' +
+                      '<input data-k="2" aria-label="probabilité de T sachant D" ' + pos(330, 30) + '>' +
+                      '<input data-k="3" aria-label="probabilité de T barre sachant D" ' + pos(330, 120) + '>' +
+                      '<input data-k="4" aria-label="probabilité de T sachant D barre" ' + pos(330, 180) + '>' +
+                      '<input data-k="5" aria-label="probabilité de T barre sachant D barre" ' + pos(330, 270) + '>' +
+                      '</div>';
+              },
+              champs: [
+                  { lib: P('D'), attendu: 0.01, pourcent: true, pieges: [[0.95, 'Au premier niveau, on lit la proportion de dopés dans toute la compétition : 1 %.'], [1, '1 % s’écrit 0,01.']], indice: 'Branche vers ' + D + ' : proportion d’athlètes dopés, 1 %.' },
+                  { lib: P('!D'), attendu: 0.99, pourcent: true, pieges: [[0.05, 'Au premier niveau, on lit la proportion de non dopés : 1 − 0,01.'], [0.95, 'Au premier niveau, on lit la proportion de non dopés : 1 − 0,01.']], indice: 'Les deux branches issues de la racine ont une somme égale à 1.' },
+                  { lib: Pc('D', 'T'), attendu: 0.95, pourcent: true, pieges: [[0.05, 'Inversé : 95 % des dopés ont un test <b>positif</b>.'], [0.0095, 'Sur une branche, on n’écrit pas le produit : seulement la probabilité sachant ' + D + '.']], indice: 'Parmi les dopés, quelle part a un test positif ?' },
+                  { lib: Pc('D', '!T'), attendu: 0.05, pourcent: true, pieges: [[0.95, 'Inversé : seulement 5 % des dopés ont un test négatif.']], indice: 'Les deux branches issues de ' + D + ' ont une somme égale à 1.' },
+                  { lib: Pc('!D', 'T'), attendu: 0.05, pourcent: true, pieges: [[0.95, 'Inversé : 95 % des non dopés ont un test <b>négatif</b>, donc seulement 5 % un test positif.'], [0.0495, 'Sur une branche, on n’écrit pas le produit : seulement la probabilité sachant ' + Db + '.']], indice: 'Parmi les non dopés, quelle part a (à tort) un test positif ?' },
+                  { lib: Pc('!D', '!T'), attendu: 0.95, pourcent: true, pieges: [[0.05, 'Inversé : 95 % des non dopés ont un test négatif.']], indice: 'Les deux branches issues de ' + Db + ' ont une somme égale à 1.' }
+              ],
+              explication: '<ul><li>Premier niveau : ' + P('D') + ' = 0,01 et ' + P('!D') + ' = 1 − 0,01 = 0,99.</li><li>Depuis ' + D + ' : ' + Pc('D', 'T') + ' = 0,95 et ' + Pc('D', '!T') + ' = 0,05.</li><li>Depuis ' + Db + ' : ' + Pc('!D', '!T') + ' = 0,95 (énoncé) et ' + Pc('!D', 'T') + ' = 1 − 0,95 = 0,05.</li></ul>',
+              bilan: ['Second niveau = probabilités <b>conditionnelles</b> : la branche ' + D + ' → ' + T + ' porte ' + Pc('D', 'T') + '.', 'Depuis chaque nœud, la somme des branches vaut <b>1</b>.'] },
+
+            { titre: 'Suivre un chemin de l’arbre', type: 'question',
+              consigne: '<div class="arbre" style="max-width:420px">' +
+                  '<svg viewBox="0 0 560 300" aria-hidden="true"><line x1="18" y1="150" x2="205" y2="78"/><line x1="18" y1="150" x2="205" y2="222"/><line x1="240" y1="70" x2="425" y2="32"/><line x1="240" y1="80" x2="425" y2="118"/><line x1="240" y1="220" x2="425" y2="182"/><line x1="240" y1="230" x2="425" y2="268"/>' +
+                  '<text x="212" y="84">D</text><text x="212" y="236">D</text><line x1="212" y1="214" x2="228" y2="214" style="stroke-width:1.5"/><text x="432" y="40">T</text><text x="432" y="126">T</text><line x1="432" y1="104" x2="446" y2="104" style="stroke-width:1.5"/><text x="432" y="190">T</text><text x="432" y="276">T</text><line x1="432" y1="254" x2="446" y2="254" style="stroke-width:1.5"/></svg>' +
+                  '<span class="poids" style="left:18.75%;top:29.3%">0,01</span><span class="poids" style="left:18.75%;top:70.7%">0,99</span>' +
+                  '<span class="poids" style="left:58.9%;top:10%">0,95</span><span class="poids" style="left:58.9%;top:40%">0,05</span><span class="poids" style="left:58.9%;top:60%">0,05</span><span class="poids" style="left:58.9%;top:90%">0,95</span></div>' +
+                encadre('', 'Probabilité d’un chemin', '<p>La probabilité d’un <b>chemin</b> est le <b>produit</b> des probabilités portées par ses branches. Par exemple :</p><p style="text-align:center">' + P('D∩T') + ' = ' + P('D') + ' × ' + Pc('D', 'T') + '.</p>') +
+                '<p>✍️ Calcule (valeurs exactes) :</p>',
+              champs: [
+                  { lib: P('D∩T') + ' =', attendu: 0.0095, pieges: [[0.96, 'Sur un chemin, on <b>multiplie</b> les probabilités, on ne les additionne pas.'], [0.95, 'Il faut tout le chemin : la branche ' + D + ' (0,01), puis la branche ' + T + ' (0,95).'], [0.095, 'Vérifie le calcul : 0,01 × 0,95.']], indice: 'Chemin racine → ' + D + ' → ' + T + ' : 0,01 × 0,95.',
+                    explication: P('D∩T') + ' = 0,01 × 0,95 = 0,0095. On retrouve 95 ÷ 10 000 : les 95 dopés positifs du tableau.' },
+                  { lib: P('!D∩T') + ' =', attendu: 0.0495, pieges: [[1.04, 'Sur un chemin, on <b>multiplie</b> les probabilités.'], [0.9405, 'Ça, c’est le chemin ' + Db + ' → ' + Tb + '. On veut ' + Db + ' → ' + T + '.'], [0.495, 'Vérifie le calcul : 0,99 × 0,05.']], indice: 'Chemin racine → ' + Db + ' → ' + T + ' : 0,99 × 0,05.',
+                    explication: P('!D∩T') + ' = 0,99 × 0,05 = 0,0495. On retrouve 495 ÷ 10 000 : les 495 faux positifs.' },
+                  { lib: P('T') + ' =', attendu: 0.059, pieges: [[0.0095, 'Un test peut être positif de <b>deux</b> façons : athlète dopé, ou non dopé. Ajoute les deux chemins qui mènent à ' + T + '.'], [0.0495, 'Un test peut être positif de <b>deux</b> façons : ajoute les deux chemins qui mènent à ' + T + '.'], [1, 'On n’ajoute que les chemins qui mènent à ' + T + '.']], indice: 'Ajoute les probabilités des deux chemins qui mènent à ' + T + '.',
+                    explication: P('T') + ' = ' + P('D∩T') + ' + ' + P('!D∩T') + ' = 0,0095 + 0,0495 = 0,059. On retrouve 590 ÷ 10 000.' }
+              ],
+              bilan: ['Probabilité d’un chemin = <b>produit</b> des probabilités de ses branches.', 'Pour ' + P('T') + ', on <b>ajoute</b> les chemins qui mènent à ' + T + ' : 0,059.'] },
+
+            { titre: 'La formule des probabilités conditionnelles', type: 'question',
+              consigne: encadre('', 'Formule', '<p>Si ' + P('T') + ' ≠ 0 : </p><p style="text-align:center;font-size:1.1em">' + Pc('T', 'D') + ' = ' + P('D∩T') + ' ÷ ' + P('T') + '</p>') +
+                '<p>✍️ Avec les résultats de l’étape précédente (' + P('D∩T') + ' = 0,0095 et ' + P('T') + ' = 0,059), calcule ' + Pc('T', 'D') + ', arrondi au centième. Retrouves-tu le résultat du tableau ?</p>',
+              champs: [
+                  { lib: Pc('T', 'D') + ' ≈', attendu: 0.16, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
+                    pieges: [[6.21, 'Division dans le mauvais sens : ' + P('D∩T') + ' ÷ ' + P('T') + ', c’est 0,0095 ÷ 0,059.', 0.05], [0.00056, 'On divise, on ne multiplie pas.', 0.0001]],
+                    indice: 'Calcule 0,0095 ÷ 0,059.',
+                    explication: Pc('T', 'D') + ' = 0,0095 ÷ 0,059 ≈ 0,161, soit 0,16 : le même résultat que 95 ÷ 590 avec le tableau.' }
+              ],
+              bilan: [Pc('T', 'D') + ' = ' + P('D∩T') + ' ÷ ' + P('T') + ' : c’est la formule du cours.', 'Tableau croisé et arbre pondéré donnent le <b>même</b> résultat : à toi de choisir l’outil le plus pratique.'] },
+
+            { titre: 'Quiz final · 5 questions', type: 'quiz',
+              consigne: '<p>Pour finir, 5 questions rapides sur toute l’activité. ✍️ Réponds à chaque question, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
+              questions: [
+                  { texte: 'Dans un lycée, on choisit un élève au hasard. ' + Pc('F', 'L') + ' désigne la probabilité :',
+                    choix: ['que l’élève soit une fille et porte des lunettes', 'que l’élève porte des lunettes, sachant que c’est une fille', 'que l’élève soit une fille, sachant qu’il porte des lunettes'], bonne: 1,
+                    explication: 'L’évènement en indice (F) est celui qu’on sait réalisé.' },
+                  { texte: '« 30 % des fumeurs ont une maladie respiratoire. » Avec F : « être fumeur » et M : « avoir une maladie respiratoire », cela s’écrit :',
+                    choix: [Pc('F', 'M') + ' = 0,3', Pc('M', 'F') + ' = 0,3', P('F∩M') + ' = 0,3'], bonne: 0,
+                    explication: '« Parmi les fumeurs » : on sait que F est réalisé, F va en indice.' },
+                  { texte: 'Dans un arbre pondéré, deux branches partent du nœud A. L’une porte 0,7. L’autre porte :',
+                    choix: ['0,7', '0,3', '1,7', 'on ne peut pas savoir'], bonne: 1,
+                    explication: 'La somme des branches issues d’un même nœud vaut 1 : 1 − 0,7 = 0,3.' },
+                  { texte: 'On sait que ' + P('A') + ' = 0,4 et ' + Pc('A', 'B') + ' = 0,5. Alors ' + P('A∩B') + ' vaut :',
+                    choix: ['0,9', '0,2', '0,1', '0,8'], bonne: 1,
+                    explication: 'Probabilité d’un chemin : 0,4 × 0,5 = 0,2.' },
+                  { texte: 'Sur 200 personnes, 50 sont vaccinées ; parmi les vaccinées, 10 tombent malades. La fréquence des malades <b>parmi les vaccinés</b> est :',
+                    choix: ['10 ÷ 200 = 0,05', '10 ÷ 50 = 0,2', '50 ÷ 200 = 0,25', '50 ÷ 10 = 5'], bonne: 1,
+                    explication: 'On se restreint aux 50 vaccinés : 10 ÷ 50 = 0,2.' }
+              ] },
+
+            { titre: 'Défi · Et si le dopage était fréquent ?', type: 'question',
+              consigne: '<p>On garde le <b>même test</b> (positif pour 95 % des dopés, négatif pour 95 % des non dopés), mais cette fois <b>20 %</b> des athlètes sont dopés.</p>' +
+                '<p>✍️ Calcule la probabilité qu’un athlète contrôlé positif soit réellement dopé (tableau ou arbre, au choix), arrondie au centième.</p>',
+              champs: [
+                  { lib: P('T') + ' =', attendu: 0.23, tol: 1e-6, pourcent: true,
+                    pieges: [[0.19, 'Il manque les faux positifs : les non dopés (0,8) dont le test est positif (0,05).'], [0.04, 'Il manque les vrais positifs : 0,2 × 0,95.']],
+                    indice: P('T') + ' = 0,2 × 0,95 + 0,8 × 0,05.',
+                    explication: 'Arbre : ' + P('D') + ' = 0,2 et ' + P('!D') + ' = 0,8. ' + P('T') + ' = 0,2 × 0,95 + 0,8 × 0,05 = 0,19 + 0,04 = 0,23.' },
+                  { lib: Pc('T', 'D') + ' ≈', attendu: 0.83, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
+                    pieges: [[0.16, 'C’était le cas où 1 % des athlètes étaient dopés. Refais le calcul avec 20 %.', 0.006], [0.95, 'Ça, c’est ' + Pc('D', 'T') + '. On veut ' + Pc('T', 'D') + '.', 0.001], [0.19, 'Ça, c’est ' + P('D∩T') + ' : divise-le par ' + P('T') + '.', 0.001]],
+                    indice: Pc('T', 'D') + ' = ' + P('D∩T') + ' ÷ ' + P('T') + ' = 0,19 ÷ 0,23.',
+                    explication: Pc('T', 'D') + ' = 0,19 ÷ 0,23 ≈ 0,826, soit environ 0,83. Avec un tableau de 10 000 athlètes : 1 900 vrais positifs, 400 faux positifs, 1 900 ÷ 2 300 ≈ 0,83.' }
+              ],
+              bilan: ['Avec 20 % de dopés, un test positif est beaucoup plus fiable : environ <b>83 %</b>.', 'La probabilité ' + Pc('T', 'D') + ' dépend beaucoup de la proportion de départ ' + P('D') + ' : c’est pour cela qu’on ne dépiste pas une maladie rare chez tout le monde.'] }
+        ];
+        var NB = ETAPES.length;
+        var N_QUIZ = ETAPES.findIndex(function (e) { return e.type === 'quiz'; }) + 1;
+        var ERREURS_AVANT_EXPLICATION = 2;
+
+        /* ---------- Progression : appareil + base (même format que les TP de Seconde) ---------- */
+        var debut = Date.now(), faites = 0, reponses = {}, lus = {}, erreurs = {}, passees = {};
+        var VUE = null;   // vue professeure (onglet Suivi TP) : ?vue-eleve=1
+        try { if (/[?&]vue-eleve=/.test(location.search)) VUE = JSON.parse(localStorage.getItem('tp-vue-eleve')); } catch (e) {}
+        function cle() { var s = Interactif.session(); return 'activite-probas:' + (s ? s.code : 'invite'); }
+        function lireLocal() { try { return JSON.parse(localStorage.getItem(cle())) || {}; } catch (e) { return {}; } }
+        function ecrireLocal() { if (VUE) return; try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, reponses: reponses, lus: lus, erreurs: erreurs, passees: passees })); } catch (e) {} }
+
+        function scoreQuiz(e, n) { var v = reponses[n] || []; return e.questions.filter(function (q, i) { return String(q.bonne) === v[i]; }).length; }
+        function lisible(e, n) {
+            var v = reponses[n] || [];
+            if (passees[n]) return '(étape passée)';
+            if (e.type === 'sondage' || e.type === 'qcm') return sansBalises(v[0] || '');
+            if (e.type === 'quiz') return e.questions.map(function (q, i) {
+                return 'Q' + (i + 1) + ' : « ' + sansBalises(q.choix[v[i]] || '…') + ' » ' + (String(q.bonne) === v[i] ? '✓' : '✗');
+            }).join('\n') + '\nScore : ' + scoreQuiz(e, n) + ' / ' + e.questions.length;
+            if (e.type === 'choix') return e.lignes.map(function (l, k) {
+                var o = l.options.filter(function (x) { return x[0] === v[k]; })[0];
+                return sansBalises(l.avant) + ' → ' + (o ? o[1] : '…') + (v[k] ? (v[k] === l.attendu ? ' ✓' : ' ✗') : '');
+            }).join('\n');
+            return e.champs.map(function (c, k) { return sansBalises(c.lib) + ' → ' + (v[k] || '…'); }).join('\n');
+        }
+
+        function genre() { var s = Interactif.session(); return s && (s.genre === 'F' || s.genre === 'M') ? s.genre : null; }
+        function compteProf() { if (VUE) return false; var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === PROF; }
+        function modeTest() { if (!compteProf()) return false; try { return localStorage.getItem('tp-mode') !== 'eleve'; } catch (e) { return true; } }
+        function modeProf() { return !!VUE || modeTest(); }
+        function dateReinit() { try { return +localStorage.getItem(cle() + ':reinit') || 0; } catch (x) { return 0; } }
+        function reinitialiser(n) {
+            [reponses, lus, erreurs, passees].forEach(function (o) { delete o[n]; });
+            if (n <= faites) faites = n - 1;
+            try { localStorage.setItem(cle() + ':reinit', String(Date.now())); } catch (x) {}
+            ecrireLocal(); afficher();
+            var c = zone.querySelector('[data-n="' + n + '"]');
+            if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function charger() {
+            if (VUE) {
+                faites = Math.min(VUE.score || 0, NB); reponses = {}; lus = {}; erreurs = {}; passees = {};
+                restaurer(VUE.details); afficher(); return;
+            }
+            var l = lireLocal();
+            faites = l.faites || 0; reponses = l.reponses || {}; lus = l.lus || {}; erreurs = l.erreurs || {}; passees = l.passees || {};
+            afficher();
+            var s = Interactif.session();
+            if (!s) return;
+            Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(function (liste) {
+                var reinit = dateReinit();
+                var miens = (liste || []).filter(function (r) { return r.exercice === ID && new Date(r.fait_le || 0).getTime() > reinit; });
+                var meilleur = miens.slice().sort(function (a, b) { return b.score - a.score || new Date(b.fait_le || 0) - new Date(a.fait_le || 0); })[0];
+                var change = false;
+                if (meilleur && meilleur.score > faites) { faites = Math.min(meilleur.score, NB); restaurer(meilleur.details); change = true; }
+                if (N_QUIZ) {   // quiz déjà validé ailleurs : on reprend les premières réponses
+                    var premier = miens.filter(function (r) { var d = (r.details || [])[N_QUIZ - 1]; return d && d.qmax && d.v && d.v.length && !d.p; })
+                        .sort(function (a, b) { return new Date(a.fait_le || 0) - new Date(b.fait_le || 0); })[0];
+                    if (premier) {
+                        var v = premier.details[N_QUIZ - 1].v;
+                        if (JSON.stringify(reponses[N_QUIZ] || []) !== JSON.stringify(v)) { reponses[N_QUIZ] = v.slice(); delete passees[N_QUIZ]; change = true; }
+                    }
+                }
+                if (change) { ecrireLocal(); afficher(); }
+            }, function () {});
+        }
+        function restaurer(details) {
+            (details || []).forEach(function (d, k) {
+                if (!d || !ETAPES[k]) return;
+                if (d.e) erreurs[k + 1] = Math.max(erreurs[k + 1] || 0, d.e);
+                if (d.p) passees[k + 1] = true;
+                if (d.v) reponses[k + 1] = d.v.slice();
+            });
+        }
+        function quizRepondu() { var v = reponses[N_QUIZ]; return !!(v && v.length && v.every(function (x) { return x !== ''; })); }
+        function enregistrer() {
+            var s = Interactif.session();
+            if (VUE) return Promise.resolve('Vue professeure : rien n’est enregistré.');
+            if (!s) return Promise.resolve('Tu n’es pas ' + (genre() === 'F' ? 'connectée' : genre() === 'M' ? 'connecté' : 'connecté(e)') + ' : ta progression est gardée seulement sur cet appareil.');
+            var nbDetails = N_QUIZ > faites && quizRepondu() ? N_QUIZ : faites;
+            var details = ETAPES.slice(0, nbDetails).map(function (e, k) {
+                if (k >= faites && k + 1 !== N_QUIZ) return null;
+                var n = k + 1, d = { t: 'Étape ' + n + ' · ' + e.titre, r: lisible(e, n).slice(0, 2500), ok: !passees[n], v: reponses[n] || [] };
+                if (erreurs[n]) d.e = erreurs[n];
+                if (e.type === 'quiz' && !passees[n]) { d.q = scoreQuiz(e, n); d.qmax = e.questions.length; }
+                if (passees[n]) d.p = 1;
+                return d;
+            });
+            return Interactif.rpc('enregistrer', {
+                p_jeton: s.jeton, p_exercice: ID, p_score: faites, p_total: NB, p_details: details,
+                p_duree: Math.round((Date.now() - debut) / 1000)
+            }).then(function () { return '✓ Progression enregistrée.'; },
+                function (x) { return 'Progression gardée sur cet appareil (' + x.message + ').'; });
+        }
+
+        /* ---------- Affichage ---------- */
+        var zone = document.getElementById('etapes');
+        function progression() {
+            var n = Math.min(faites, NB);
+            document.getElementById('progres-texte').textContent = n >= NB ? 'Activité terminée : ' + NB + ' étapes sur ' + NB + ' ✓' : 'Étape ' + (n + 1) + ' sur ' + NB;
+            document.getElementById('progres-barre').style.width = (100 * n / NB) + '%';
+            sommaire();
+        }
+        function sommaire() {
+            var nav = document.getElementById('sommaire');
+            nav.innerHTML = '';
+            nav.appendChild(el('span', 'aide', 'Aller à l’étape :'));
+            ETAPES.forEach(function (e, k) {
+                var n = k + 1, b = el('button', n <= faites ? 'fait' + (passees[n] ? ' passee' : '') : n === faites + 1 ? 'courante' : null, String(n));
+                b.type = 'button'; b.title = 'Étape ' + n + ' · ' + e.titre;
+                b.disabled = n > faites + 1 && !modeTest();
+                b.onclick = function () {
+                    var c = zone.querySelector('[data-n="' + n + '"]');
+                    if (!c && modeTest()) {
+                        c = carte(n);
+                        var apres = Array.prototype.filter.call(zone.querySelectorAll('section.etape'), function (x) { return +x.dataset.n > n; })[0];
+                        zone.insertBefore(c, apres || null);
+                    }
+                    if (!c) return;
+                    c.ouvrir(); c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                };
+                nav.appendChild(b);
+            });
+            if (N_QUIZ) {
+                var fait = quizRepondu();
+                var bq = el('button', 'acces-quiz' + (fait ? ' fait' : ''), fait ? 'QUIZ ✓' : 'QUIZ'); bq.type = 'button';
+                bq.title = fait ? 'Revoir le quiz final (déjà validé)' : 'Aller directement au quiz final';
+                bq.onclick = function () {
+                    var c = zone.querySelector('[data-n="' + N_QUIZ + '"]');
+                    if (!c) { c = carte(N_QUIZ); zone.appendChild(c); }
+                    c.ouvrir(); c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                };
+                nav.appendChild(bq);
+            }
+        }
+        function afficher() {
+            zone.innerHTML = '';
+            progression();
+            for (var n = 1; n <= Math.min(faites + 1, NB); n++) { var c = carte(n); zone.appendChild(c); if (VUE && n <= faites) c.ouvrir(); }
+            if (faites >= NB) zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé l’activité !'));
+        }
+
+        // encadré « Solution » (compte professeure et vue professeure)
+        function boiteSolution(e) {
+            var h = '<b>🔑 Solution</b> <span class="aide">(visible seulement en mode professeure)</span>';
+            if (e.champs) h += '<ul>' + e.champs.map(function (c) { return '<li>' + c.lib + ' → <b>' + fr(c.attendu) + '</b></li>'; }).join('') + '</ul>';
+            if (e.type === 'qcm') h += '<p>' + e.choix[e.bonne] + '</p>';
+            if (e.type === 'choix') h += '<ul>' + e.lignes.map(function (l) { return '<li>' + l.avant + ' <b>' + l.options.filter(function (o) { return o[0] === l.attendu; })[0][1] + '</b></li>'; }).join('') + '</ul>';
+            if (e.type === 'quiz') h += '<ol>' + e.questions.map(function (q) { return '<li>' + q.choix[q.bonne] + '</li>'; }).join('') + '</ol>';
+            if (e.type === 'sondage') h += '<p>Toutes les réponses sont acceptées (la bonne est C, révélée à l’étape 5).</p>';
+            return el('div', 'solution-prof', h);
+        }
+
+        function carte(n) {
+            var e = ETAPES[n - 1], faite = n <= faites;
+            var c = el('section', 'etape' + (faite ? ' faite' + (passees[n] ? ' passee' : '') : ' courante'));
+            c.dataset.n = n;
+            var tete = el('div', 'etape-tete');
+            tete.appendChild(el('span', 'etape-num', faite ? (passees[n] ? '⏭' : '✓') : String(n)));
+            tete.appendChild(el('h2', null, esc(e.titre)));
+            if (compteProf() && !modeTest()) {
+                var bReinit = el('button', 'lien reinit', '↺ Réinitialiser l’étape'); bReinit.type = 'button';
+                bReinit.onclick = function () { if (confirm('Effacer tes réponses à l’étape ' + n + ' et la refaire ?')) reinitialiser(n); };
+                tete.appendChild(bReinit);
+            }
+            var corps = el('div', 'etape-corps');
+            c.appendChild(tete); c.appendChild(corps);
+            var construit = false, bilanMontre = false, retour, suite = null;
+            function faux() { if (n > faites) { erreurs[n] = (erreurs[n] || 0) + 1; ecrireLocal(); } }
+
+            /* « J'ai lu » obligatoire dans chaque encadré avant de répondre ; « À retenir » avant l'étape suivante */
+            function brancherLus() {
+                Array.prototype.forEach.call(corps.querySelectorAll('.encadre .lu input'), function (i, k) {
+                    var cadre = i.closest('.encadre');
+                    i.checked = VUE ? true : (lus[n] || []).indexOf(k) >= 0;
+                    cadre.classList.toggle('est-lu', i.checked);
+                    i.onchange = function () {
+                        var l = (lus[n] || []).filter(function (x) { return x !== k; });
+                        if (i.checked) l.push(k);
+                        lus[n] = l; ecrireLocal();
+                        cadre.classList.toggle('est-lu', i.checked);
+                        if (i.checked) cadre.classList.remove('a-cocher');
+                        if (i.checked && toutLu() && retour && retour.dataset.lu) { retour.textContent = ''; retour.className = 'retour'; delete retour.dataset.lu; }
+                        if (i.checked && cadre.classList.contains('bilan') && suite) { var f = suite; suite = null; f(); }
+                    };
+                });
+            }
+            function nonLus() { return Array.prototype.filter.call(corps.querySelectorAll('.encadre:not(.bilan)'), function (x) { return !x.querySelector('.lu input').checked; }); }
+            function toutLu() { return !nonLus().length; }
+            function exigerLu() {
+                if (VUE) return true;
+                var l = nonLus();
+                if (!l.length) return true;
+                l.forEach(function (x) { x.classList.add('a-cocher'); });
+                retour.className = 'retour ko'; retour.dataset.lu = '1';
+                retour.textContent = '✗ Coche d’abord « J’ai lu » dans chaque encadré (' + l.length + ' à cocher).';
+                l[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+            function montrerBilan() {
+                if (!e.bilan || bilanMontre) return;
+                bilanMontre = true;
+                corps.appendChild(el('div', 'encadre astuce bilan', '<b>À retenir</b><ol>' + e.bilan.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol>' + CASE_LU));
+                brancherLus();
+            }
+
+            /* aide progressive : après ERREURS_AVANT_EXPLICATION erreurs, bouton « 💡 Voir l'explication » */
+            function zoneExplication(parent, texte, avant) {
+                var z = el('div', 'explic'); z.hidden = true;
+                var b = el('button', 'voir-explic', '💡 Voir l’explication'); b.type = 'button';
+                var box = el('div', 'explication', '<b>💡 Explication</b>' + texte); box.hidden = true;
+                b.onclick = function () { box.hidden = false; b.hidden = true; };
+                z.appendChild(b); z.appendChild(box);
+                if (avant) parent.insertBefore(z, avant); else parent.appendChild(z);
+                return { montrer: function () { z.hidden = false; }, cacher: function () { z.hidden = true; } };
+            }
+
+            // une ligne « étiquette [case] Valider ✓/✗ », avec aide ciblée et explication après 2 erreurs
+            function ligneCase(parent, f, valeur, apres, init) {
+                var form = el('form', 'case-ligne');
+                var l = el('label', null, '<span>' + f.lib + '</span>');
+                var i = el('input'); i.autocomplete = 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', 'off'); i.inputMode = 'decimal';
+                i.value = valeur || ''; l.appendChild(i); form.appendChild(l);
+                var b = el('button', null, 'Valider'); b.type = 'submit'; form.appendChild(b);
+                var r = el('span', 'retour case-retour'); form.appendChild(r);
+                parent.appendChild(form);
+                var nbFaux = 0, juste = false;
+                var ex = f.explication ? zoneExplication(form, f.explication) : null;
+                function marquer(m) { juste = !m; r.className = 'retour case-retour ' + (m ? 'ko' : 'ok'); r.innerHTML = m ? '✗ ' + m : '✓'; i.classList.toggle('juste', !m); i.classList.toggle('faux', !!m); }
+                if (valeur && !verifierCase(f, valeur)) { marquer(null); init(true); }
+                i.oninput = function () { i.classList.remove('juste', 'faux'); if (juste) { juste = false; r.textContent = ''; init(false); } };
+                form.onsubmit = function (ev) {
+                    ev.preventDefault();
+                    if (!exigerLu()) return;
+                    var v = i.value.trim();
+                    if (!v) { marquer('Écris ta réponse.'); return; }
+                    var m = verifierCase(f, v);
+                    marquer(m);
+                    if (m) { nbFaux++; if (ex && nbFaux >= ERREURS_AVANT_EXPLICATION) ex.montrer(); }
+                    else if (ex) ex.cacher();
+                    apres(v, !m);
+                };
+            }
+
+            function construire() {
+                if (construit) return;
+                construit = true;
+                corps.innerHTML = typeof e.consigne === 'function' ? e.consigne() : e.consigne;
+                retour = el('p', 'retour');
+
+                if (e.type === 'sondage') {
+                    var fs = el('form', 'qcm');
+                    var rs = e.choix.map(function (t, k) {
+                        var l = el('label'), i = el('input'); i.type = 'radio'; i.name = 'sondage-' + n; i.value = k;
+                        if ((reponses[n] || [])[0] === t) i.checked = true;
+                        l.appendChild(i); l.appendChild(el('span', null, t)); fs.appendChild(l); return i;
+                    });
+                    var bs = el('button', null, 'Valider mon choix'); bs.type = 'submit'; fs.appendChild(bs);
+                    fs.onsubmit = function (ev) {
+                        ev.preventDefault();
+                        var k = rs.findIndex(function (i) { return i.checked; });
+                        if (k < 0) { retour.className = 'retour ko'; retour.textContent = 'Choisis une réponse.'; return; }
+                        reponses[n] = [e.choix[k]]; ecrireLocal();
+                        if (n <= faites) { retour.className = 'retour ok'; retour.textContent = '✓ Choix enregistré.'; return; }
+                        reussi(false, '✓ C’est noté ! On vérifiera ton intuition à l’étape 5.');
+                    };
+                    corps.appendChild(fs);
+                }
+
+                if (e.type === 'question') {
+                    var cases = el('div', 'reponses');
+                    var valeurs = e.champs.map(function (x, k) { return (reponses[n] || [])[k] || ''; }), oks = [];
+                    e.champs.forEach(function (f, k) {
+                        ligneCase(cases, f, valeurs[k], function (v, ok) {
+                            if (!ok) faux();
+                            oks[k] = ok; valeurs[k] = v; reponses[n] = valeurs.slice(); ecrireLocal();
+                            if (ok && e.champs.every(function (x, j) { return oks[j]; })) reussi();
+                        }, function (ok) { oks[k] = ok; });
+                    });
+                    corps.appendChild(cases);
+                }
+
+                if (e.type === 'grille') {
+                    var g = el('form', 'grille', e.grille());
+                    var inputs = Array.prototype.slice.call(g.querySelectorAll('input[data-k]'));
+                    inputs.forEach(function (i) {
+                        var k = +i.dataset.k;
+                        i.autocomplete = 'off'; i.spellcheck = false; i.inputMode = 'decimal';
+                        i.value = (reponses[n] || [])[k] || '';
+                        i.oninput = function () { i.classList.remove('juste', 'faux'); };
+                    });
+                    var actG = el('div', 'actions'), bG = el('button', null, 'Valider'); bG.type = 'submit'; actG.appendChild(bG); g.appendChild(actG);
+                    var aidesG = el('div', 'retour'); g.appendChild(aidesG);
+                    var exG = e.explication ? zoneExplication(g, e.explication) : null, nbFauxG = 0;
+                    function verifierGrille(afficherAides) {
+                        var fautes = [], vals = [];
+                        inputs.forEach(function (i) {
+                            var k = +i.dataset.k, f = e.champs[k], v = i.value.trim(); vals[k] = v;
+                            var m = v ? verifierCase(f, v) : 'case vide';
+                            i.classList.toggle('juste', !m); i.classList.toggle('faux', !!m);
+                            if (m) fautes.push({ f: f, m: v ? m : 'Case à remplir.' });
+                        });
+                        reponses[n] = vals;
+                        if (afficherAides && fautes.length) {
+                            aidesG.className = 'retour ko';
+                            aidesG.innerHTML = '✗ ' + (fautes.length === 1 ? 'Une case est fausse' : fautes.length + ' cases sont fausses') + ' (entourées de rouge) :' +
+                                '<ul class="liste-aides">' + fautes.slice(0, 3).map(function (x) { return '<li><b>' + x.f.lib + '</b> : ' + x.m + '</li>'; }).join('') + '</ul>';
+                        }
+                        return !fautes.length;
+                    }
+                    g.onsubmit = function (ev) {
+                        ev.preventDefault();
+                        if (!exigerLu()) return;
+                        var ok = verifierGrille(true);
+                        ecrireLocal();
+                        if (ok) { aidesG.innerHTML = ''; aidesG.className = 'retour'; reussi(); }
+                        else { faux(); nbFauxG++; if (exG && nbFauxG >= ERREURS_AVANT_EXPLICATION) exG.montrer(); }
+                    };
+                    corps.appendChild(g);
+                    if (faite && (reponses[n] || []).length) verifierGrille(false);
+                }
+
+                if (e.type === 'choix') {
+                    var zc = el('div', 'reponses'), okc = [], valc = e.lignes.map(function (x, k) { return (reponses[n] || [])[k] || ''; });
+                    e.lignes.forEach(function (lg, k) {
+                        var f = el('form', 'case-ligne prevision');
+                        var lab = el('label', null, '<span>' + lg.avant + '</span>');
+                        var sel = el('select'); sel.appendChild(new Option('…', ''));
+                        lg.options.forEach(function (o) { sel.appendChild(new Option(o[1], o[0], false, o[0] === valc[k])); });
+                        lab.appendChild(sel); f.appendChild(lab);
+                        var b = el('button', null, 'Valider'); b.type = 'submit'; f.appendChild(b);
+                        var r = el('span', 'retour case-retour'); f.appendChild(r);
+                        var nb = 0;
+                        var exC = lg.explication ? zoneExplication(f, lg.explication) : null;
+                        function marquer(ok) {
+                            okc[k] = ok; r.className = 'retour case-retour ' + (ok ? 'ok' : 'ko'); r.innerHTML = ok ? '✓ ' + lg.msgOk : '✗ ' + lg.msgFaux;
+                            if (exC) { if (ok) exC.cacher(); else if (nb >= ERREURS_AVANT_EXPLICATION) exC.montrer(); }
+                        }
+                        sel.onchange = function () { r.textContent = ''; okc[k] = false; };
+                        f.onsubmit = function (ev) {
+                            ev.preventDefault();
+                            if (!sel.value) { r.className = 'retour case-retour ko'; r.textContent = 'Choisis une réponse.'; return; }
+                            var ok = sel.value === lg.attendu;
+                            if (!ok) { nb++; faux(); }
+                            marquer(ok);
+                            valc[k] = sel.value; reponses[n] = valc.slice(); ecrireLocal();
+                            if (ok && e.lignes.every(function (x, j) { return okc[j]; })) reussi();
+                        };
+                        zc.appendChild(f);
+                        if (valc[k] && valc[k] === lg.attendu) marquer(true);
+                    });
+                    corps.appendChild(zc);
+                }
+
+                if (e.type === 'qcm') {
+                    var q = el('form', 'qcm');
+                    var radios = e.choix.map(function (t, k) {
+                        var l = el('label'), i = el('input'); i.type = 'radio'; i.name = 'qcm-' + n; i.value = k;
+                        if (reponses[n] && reponses[n][0] === t) i.checked = true;
+                        l.appendChild(i); l.appendChild(el('span', null, t)); q.appendChild(l); return i;
+                    });
+                    var bQ = el('button', null, 'Valider'); bQ.type = 'submit'; q.appendChild(bQ);
+                    var exQ = e.explication ? zoneExplication(q, e.explication) : null, nbQ = 0;
+                    q.onsubmit = function (ev) {
+                        ev.preventDefault();
+                        if (!exigerLu()) return;
+                        var k = radios.findIndex(function (i) { return i.checked; });
+                        if (k < 0) { retour.className = 'retour ko'; retour.textContent = 'Choisis une réponse.'; return; }
+                        reponses[n] = [e.choix[k]]; ecrireLocal();
+                        if (k === e.bonne) reussi();
+                        else { faux(); nbQ++; if (exQ && nbQ >= ERREURS_AVANT_EXPLICATION) exQ.montrer(); retour.className = 'retour ko'; retour.innerHTML = '✗ ' + (e.pourquoi[k] || 'Relis bien la question.'); }
+                    };
+                    corps.appendChild(q);
+                }
+
+                if (e.type === 'quiz') {
+                    var fq = el('form', 'quiz');
+                    var choixQ = e.questions.map(function (qq, i) {
+                        var bq0 = el('div', 'quiz-q');
+                        bq0.appendChild(el('p', null, '<b>Question ' + (i + 1) + '.</b> ' + qq.texte));
+                        var rr = qq.choix.map(function (t, j) {
+                            var l = el('label'), inp = el('input'); inp.type = 'radio'; inp.name = 'quiz-' + n + '-' + i; inp.value = j;
+                            l.appendChild(inp); l.appendChild(el('span', null, t)); bq0.appendChild(l); return inp;
+                        });
+                        var corr = el('p', 'retour'); bq0.appendChild(corr); fq.appendChild(bq0);
+                        return { radios: rr, corr: corr };
+                    });
+                    var bValQ = el('button', null, 'Valider mes réponses'); bValQ.type = 'submit'; fq.appendChild(bValQ);
+                    var avQ = el('p', 'aide', 'Attention : une seule validation, tes réponses ne pourront plus être modifiées.'); fq.appendChild(avQ);
+                    var corriger = function (vals) {
+                        var sc = 0;
+                        e.questions.forEach(function (qq, i) {
+                            var ch = choixQ[i], ok = String(qq.bonne) === vals[i];
+                            ch.radios.forEach(function (r, j) { r.disabled = true; r.checked = String(j) === vals[i]; });
+                            if (ok) sc++;
+                            ch.corr.className = 'retour ' + (ok ? 'ok' : 'ko');
+                            ch.corr.innerHTML = (ok ? '✓ ' : '✗ La bonne réponse : ' + qq.choix[qq.bonne] + '. ') + (qq.explication || '');
+                        });
+                        bValQ.hidden = true; avQ.hidden = true;
+                        return sc;
+                    };
+                    fq.onsubmit = function (ev) {
+                        ev.preventDefault();
+                        var vals = choixQ.map(function (ch) { var k = ch.radios.findIndex(function (r) { return r.checked; }); return k < 0 ? '' : String(k); });
+                        if (vals.some(function (v) { return v === ''; })) { retour.className = 'retour ko'; retour.textContent = 'Réponds à toutes les questions.'; return; }
+                        if (!VUE && !confirm('Valider définitivement tes réponses ?')) return;
+                        reponses[n] = vals; ecrireLocal();
+                        var sc = corriger(vals);
+                        reussi();
+                        retour.textContent = 'Score : ' + sc + ' / ' + e.questions.length + '. ' + retour.textContent;
+                    };
+                    corps.appendChild(fq);
+                    var dejaQ = reponses[n];
+                    if (dejaQ && dejaQ.length === e.questions.length && dejaQ.every(function (v) { return v !== ''; })) {
+                        var scQ = corriger(dejaQ);
+                        retour.className = 'retour ok'; retour.textContent = 'Score : ' + scQ + ' / ' + e.questions.length;
+                        c.quizFait = function () { if (n === faites + 1) { reussi(); retour.textContent = 'Score : ' + scQ + ' / ' + e.questions.length + '. ' + retour.textContent; } };
+                        if (n === faites + 1) setTimeout(c.quizFait, 0);
+                    }
+                }
+
+                corps.appendChild(retour);
+                if (modeProf()) corps.appendChild(boiteSolution(e));
+                if (faite && !passees[n]) montrerBilan();
+                brancherLus();
+            }
+
+            function reussi(force, message) {
+                if (n > faites + 1) {   // quiz fait en avance
+                    retour.className = 'retour ok'; retour.textContent = '✓ Réponses enregistrées.';
+                    sommaire();
+                    var et = el('p', 'aide', 'Enregistrement…'); corps.appendChild(et);
+                    enregistrer().then(function (t) { et.textContent = t; });
+                    return;
+                }
+                retour.className = 'retour ok';
+                if (n <= faites) {
+                    if (!passees[n]) { retour.textContent = '✓ Toujours juste !'; return; }
+                    delete passees[n]; ecrireLocal();
+                    retour.textContent = '✓ Bravo, c’est réussi ! Cette étape compte maintenant.';
+                    c.classList.remove('passee'); tete.querySelector('.etape-num').textContent = '✓';
+                    montrerBilan(); sommaire();
+                    var et2 = el('p', 'aide', 'Enregistrement…'); corps.appendChild(et2);
+                    enregistrer().then(function (t) { et2.textContent = t; });
+                    return;
+                }
+                faites = n; ecrireLocal();
+                var zp = c.querySelector('.zone-passer'); if (zp) zp.remove();
+                retour.className = force ? 'retour' : 'retour ok';
+                retour.textContent = force ? '⏭ Étape passée. Tu pourras y revenir plus tard avec la barre des étapes, en haut.' : (message || '✓ Bravo, c’est réussi !');
+                if (!force) montrerBilan();
+                c.classList.remove('courante'); c.classList.add('faite', 'ouverte');
+                if (force) c.classList.add('passee');
+                tete.querySelector('.etape-num').textContent = force ? '⏭' : '✓';
+                ajouterRevoir();
+                progression();
+                var etat = el('p', 'aide', 'Enregistrement…'); corps.appendChild(etat);
+                enregistrer().then(function (t) { etat.textContent = t; });
+                var attenteBilan = null;
+                var ouvrirSuite = function () {
+                    if (attenteBilan) attenteBilan.remove();
+                    if (n < NB) {
+                        var suivante = zone.querySelector('[data-n="' + (n + 1) + '"]');
+                        if (suivante) suivante.remove(); else suivante = carte(n + 1);
+                        zone.appendChild(suivante);
+                        if (suivante.quizFait) setTimeout(suivante.quizFait, 0);
+                        setTimeout(function () { suivante.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 600);
+                    } else zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé l’activité !'));
+                };
+                var bilanCase = corps.querySelector('.encadre.bilan .lu input');
+                if (bilanCase && !bilanCase.checked && !force) {
+                    attenteBilan = el('p', 'retour ko', 'Coche « J’ai lu » dans l’encadré « À retenir » pour passer à l’étape suivante.');
+                    corps.appendChild(attenteBilan);
+                    suite = ouvrirSuite;
+                } else ouvrirSuite();
+            }
+
+            function ajouterRevoir() {
+                if (tete.querySelector('.revoir')) return;
+                var b = el('button', 'lien revoir', c.classList.contains('ouverte') ? 'Replier' : 'Reprendre'); b.type = 'button';
+                b.onclick = function () { basculer(!c.classList.contains('ouverte')); };
+                tete.appendChild(b);
+            }
+            function basculer(ouvrir) {
+                c.classList.toggle('ouverte', ouvrir);
+                var b = tete.querySelector('.revoir');
+                if (b) b.textContent = ouvrir ? 'Replier' : 'Reprendre';
+                if (ouvrir) construire();
+            }
+
+            // « Passer » : l'étape ne compte pas, on peut y revenir (le sondage et le quiz ne se passent pas)
+            if (n === faites + 1 && !VUE && e.type !== 'sondage' && e.type !== 'quiz') {
+                var zPasser = el('div', 'zone-passer', '<span class="aide">' + (genre() === 'F' ? 'Bloquée' : genre() === 'M' ? 'Bloqué' : 'Bloqué(e)') + ' ? Tu peux passer cette étape et y revenir plus tard.</span>');
+                var bPasser = el('button', null, '⏭ Passer'); bPasser.type = 'button';
+                bPasser.onclick = function () {
+                    if (!modeTest() && !confirm('Passer cette étape ?\n\nElle ne comptera pas tant que tu ne l’auras pas réussie. Tu pourras y revenir plus tard avec la barre des étapes, en haut.')) return;
+                    construire(); passees[n] = true; reussi(true);
+                };
+                zPasser.appendChild(bPasser);
+                c.appendChild(zPasser);
+            }
+
+            c.ouvrir = function () { if (c.classList.contains('faite')) basculer(true); };
+            if (faite) ajouterRevoir(); else construire();
+            return c;
+        }
+
+        // hauteurs de la barre du site et de la barre d'étapes (collage, défilements)
+        (function () {
+            var nav = document.querySelector('.navbar'), barre = document.getElementById('barre-etapes');
+            function mesurer() {
+                document.documentElement.style.setProperty('--haut-nav', (nav ? nav.offsetHeight : 0) + 'px');
+                document.documentElement.style.setProperty('--haut-barre', barre.offsetHeight + 'px');
+            }
+            mesurer(); addEventListener('resize', mesurer);
+            if (window.ResizeObserver) new ResizeObserver(mesurer).observe(barre);
+        })();
+
+        /* ---------- Calculatrice (bouton 🧮 en bas à droite) ---------- */
+        (function () {
+            var AFF = { '*': '×', '/': '÷', '-': '−', '.': ',' };
+            var bc = el('button', 'calc-bouton', '🧮'); bc.type = 'button'; bc.title = 'Calculatrice'; bc.setAttribute('aria-label', 'Ouvrir la calculatrice');
+            var pan = el('div', 'calc-panneau'); pan.hidden = true; pan.tabIndex = -1;
+            pan.setAttribute('role', 'dialog'); pan.setAttribute('aria-label', 'Calculatrice');
+            pan.innerHTML = '<div class="calc-tete"><b>🧮 Calculatrice</b><button type="button" class="calc-fermer" aria-label="Fermer la calculatrice">✕</button></div>' +
+                '<div class="calc-ecran"><div class="calc-histo"></div><div class="calc-expr"></div><div class="calc-res" aria-live="polite"></div></div><div class="calc-touches"></div>';
+            var ecranH = pan.querySelector('.calc-histo'), ecranE = pan.querySelector('.calc-expr'), ecranR = pan.querySelector('.calc-res');
+            var expr = '', fini = false, res = null;
+            var TOUCHES = [['C', 'efface', 'fn', 'tout effacer'], ['⌫', 'retour', 'fn', 'effacer'], ['(', '('], [')', ')'],
+                ['7', '7'], ['8', '8'], ['9', '9'], ['÷', '/', 'op', 'divisé par'], ['4', '4'], ['5', '5'], ['6', '6'], ['×', '*', 'op', 'multiplié par'],
+                ['1', '1'], ['2', '2'], ['3', '3'], ['−', '-', 'op', 'moins'], ['0', '0'], [',', '.'], ['%', '%', 'fn', 'pour cent'], ['+', '+', 'op', 'plus'], ['=', '=', 'egal', 'égal']];
+            var zt = pan.querySelector('.calc-touches');
+            TOUCHES.forEach(function (t) {
+                var b = el('button', 'calc-t' + (t[2] ? ' ' + t[2] : ''), t[0]); b.type = 'button';
+                if (t[3]) b.setAttribute('aria-label', t[3]);
+                b.onclick = function () { touche(t[1]); }; zt.appendChild(b);
+            });
+            function aff(s) { return esc(s.replace(/[*/\-.]/g, function (c) { return AFF[c]; })); }
+            function maj() { ecranE.innerHTML = (expr ? aff(expr) : '<span class="calc-vide">0</span>') + '<span class="calc-curseur"></span>'; }
+            function touche(k) {
+                if (k === 'efface') { expr = ''; fini = false; ecranR.textContent = ''; }
+                else if (k === 'retour') { if (fini) { fini = false; ecranR.textContent = ''; } expr = expr.slice(0, -1); }
+                else if (k === '=') {
+                    if (!expr) return;
+                    var r = evalExpr(expr.replace(/(\d+(?:\.\d+)?)%/g, '($1/100)'));
+                    var t = isNaN(r) ? 'calcul impossible' : fr(+r.toPrecision(12));
+                    ecranR.textContent = '= ' + t;
+                    ecranH.appendChild(el('div', null, aff(expr) + ' = ' + esc(t))); while (ecranH.childNodes.length > 3) ecranH.removeChild(ecranH.firstChild);
+                    fini = !isNaN(r); res = r;
+                } else {
+                    if (fini) { expr = /[+\-*/%]/.test(k) ? String(+res.toPrecision(12)) : ''; ecranR.textContent = ''; fini = false; }
+                    expr += k;
+                }
+                maj();
+            }
+            pan.addEventListener('keydown', function (ev) {
+                var k = ev.key, m = { 'Enter': '=', '=': '=', 'Backspace': 'retour', 'Delete': 'efface', ',': '.', 'x': '*', 'X': '*', '÷': '/', '×': '*' }[k] || k;
+                if (k === 'Escape') { pan.hidden = true; bc.focus(); ev.preventDefault(); return; }
+                if (/^[0-9.+\-*/()%]$/.test(m) || ['=', 'retour', 'efface'].indexOf(m) >= 0) { ev.preventDefault(); touche(m); }
+            });
+            bc.onclick = function () { pan.hidden = !pan.hidden; if (!pan.hidden) { maj(); pan.focus(); } };
+            pan.querySelector('.calc-fermer').onclick = function () { pan.hidden = true; bc.focus(); };
+            document.body.appendChild(bc); document.body.appendChild(pan);
+        })();
+
+        if (compteProf()) {
+            var choix = el('div', 'choix-mode');
+            choix.appendChild(el('span', 'aide', '👩‍🏫 Compte professeure :'));
+            [['prof', 'Mode professeure', 'solutions, toutes les étapes ouvertes'], ['eleve', 'Mode élève', 'l’activité exactement comme un élève la voit']].forEach(function (m) {
+                var l = el('label'), r = el('input'); r.type = 'radio'; r.name = 'tp-mode'; r.value = m[0];
+                r.checked = (m[0] === 'prof') === modeTest();
+                r.onchange = function () { try { localStorage.setItem('tp-mode', m[0]); } catch (x) {} location.reload(); };
+                l.title = m[2]; l.appendChild(r); l.appendChild(document.createTextNode(' ' + m[1])); choix.appendChild(l);
+            });
+            var barreE = document.getElementById('barre-etapes');
+            barreE.insertBefore(choix, barreE.firstChild);
+        }
+        if (VUE) {
+            var bv = document.getElementById('bandeau');
+            bv.className = 'vue-prof';
+            bv.innerHTML = '👩‍🏫 <b>Vue professeure</b> : activité de <b></b> telle qu’elle a été laissée (étapes validées : ' + Math.min(VUE.score || 0, NB) + ' / ' + NB + '). Rien n’est enregistré.';
+            bv.querySelectorAll('b')[1].textContent = VUE.nom || VUE.code || 'l’élève';
+        } else Interactif.bandeau(document.getElementById('bandeau'), charger);
+        charger();
+    })();
+    </script>
+</body>
+</html>
