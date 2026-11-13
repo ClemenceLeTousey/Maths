@@ -113,10 +113,10 @@
         .tableau input.active-phase { outline: 2px solid var(--c-act); outline-offset: 1px; }
         .aide-phase .explication { margin-top: 6px; }
         /* fractions */
-        .frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 .15em; line-height: 1.15; font-size: .95em; }
-        .frac > span:first-child { border-bottom: 1px solid currentColor; padding: 0 .2em; }
-        .frac > span:last-child { padding: 0 .2em; }
-        .frac > .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+        .frac { display: inline-block; vertical-align: middle; text-align: center; margin: 0 .15em; line-height: 1.2; font-size: .95em; }
+        .frac > span { display: block; padding: 0 .2em; }
+        .frac > span:first-child { border-bottom: 1px solid currentColor; }
+        .frac > span.sr { display: none; }
         input.juste { border-color: var(--ok) !important; box-shadow: 0 0 0 2px var(--ok-fond, rgba(40, 167, 69, .25)); }
         input.faux { border-color: var(--ko) !important; box-shadow: 0 0 0 2px var(--ko-fond); }
         .liste-aides { margin: 6px 0 0; padding-left: 22px; font-weight: 400; color: var(--text); }
@@ -268,7 +268,7 @@
         var Db = '<span class="ev"><span class="bar">D</span></span>', Tb = '<span class="ev"><span class="bar">T</span></span>';
         function ev(x) { return x.replace(/!([A-Z])/g, '<span class="bar">$1</span>'); }
         function P(x) { return '<span class="ev">P(' + ev(x).replace(/∩/g, '<span style="font-style:normal"> ∩ </span>') + ')</span>'; }
-        function fr(a, b) { return '<span class="frac"><span>' + a + '</span><span class="sr">/</span><span>' + b + '</span></span>'; }
+        function fraction(a, b) { return '<span class="frac"><span>' + a + '</span><span class="sr">/</span><span>' + b + '</span></span>'; }
         function Pc(s, x) { return '<span class="ev">P<sub>' + ev(s) + '</sub>(' + ev(x) + ')</span>'; }
 
         /* Nombres : virgule ou point, espaces, pourcentage (16 % → 0,16 si « pourcent » est permis) */
@@ -323,7 +323,7 @@
 
             { titre: 'Une compétition de 10 000 athlètes', type: 'question',
               consigne: ENONCE + '<p>Pour y voir clair, on imagine une compétition de <b>10 000 athlètes</b>, qui respecte ces proportions.</p>' +
-                encadre('', 'Rappel : prendre un pourcentage d’un nombre', '<p>Prendre 1 % de 10 000, c’est calculer ' + fr('1', '100') + ' × 10 000, soit 0,01 × 10 000.</p>'),
+                encadre('', 'Rappel : prendre un pourcentage d’un nombre', '<p>Prendre 1 % de 10 000, c’est calculer ' + fraction('1', '100') + ' × 10 000, soit 0,01 × 10 000.</p>'),
               champs: [
                   { lib: 'Nombre d’athlètes dopés', attendu: 100,
                     pieges: [[1, '1 %, c’est la proportion. On demande le <b>nombre</b> d’athlètes : 1 % de 10 000.'], [1000, 'Attention : 1 % = 0,01, et non 0,1.'], [9900, 'Ça, c’est le nombre de non dopés.']],
@@ -365,7 +365,7 @@
               consigne: '<div class="tableau"><table><tr><th></th><th>Dopé</th><th>Non dopé</th><th>Total</th></tr>' +
                 '<tr><th>Test positif</th><td>95</td><td>495</td><td>590</td></tr><tr><th>Test négatif</th><td>5</td><td>9 405</td><td>9 410</td></tr>' +
                 '<tr><th>Total</th><td>100</td><td>9 900</td><td>10 000</td></tr></table></div>' +
-                encadre('', 'Rappel : fréquence conditionnelle', '<p>La fréquence des A <b>parmi</b> les B, c’est ' + fr('effectif de « A et B »', 'effectif des B') + '. On se restreint à la sous-population des B.</p>') +
+                encadre('', 'Rappel : fréquence conditionnelle', '<p>La fréquence des A <b>parmi</b> les B, c’est ' + fraction('effectif de « A et B »', 'effectif des B') + '. On se restreint à la sous-population des B.</p>') +
                 '<p>✍️ Parmi les athlètes contrôlés <b>positifs</b>, quelle est la fréquence des athlètes <b>réellement dopés</b> ?</p>',
               champs: [
                   { lib: 'Effectif de la sous-population (les positifs)', attendu: 590,
@@ -373,9 +373,9 @@
                     indice: 'Lis le total de la ligne « Test positif ».',
                     explication: '« Parmi les contrôlés positifs » : on ne regarde que la ligne « Test positif ». Il y en a 590.' },
                   { lib: 'Fréquence des dopés parmi eux (arrondie au centième)', attendu: 0.16, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
-                    pieges: [[0.95, 'Ça, c’est la fréquence des positifs <b>parmi les dopés</b> (95 sur 100). On veut l’inverse : les dopés parmi les positifs.', 0.001], [0.0095, 'Tu as divisé par 10 000 : on se restreint aux 590 positifs.', 0.0002], [0.01, 'C’est la proportion de dopés dans toute la compétition. On veut les dopés <b>parmi les positifs</b> seulement.', 0.001], [0.17, 'Vérifie l’arrondi : ' + fr('95', '590') + ' ≈ 0,161.', 0.001], [16, 'Écris une fréquence : un nombre entre 0 et 1 (ou 16 %).', 0.01], [95, 'Tu as donné un <b>effectif</b> (les 95 dopés positifs), pas une <b>fréquence</b>. Une fréquence est un nombre entre 0 et 1 : divise cet effectif par l’effectif des positifs.', 0.5], [495, 'Tu as donné un <b>effectif</b> (et c’est celui des non dopés positifs). On veut une <b>fréquence</b> : ' + fr('effectif des dopés positifs', 'effectif des positifs') + '.', 0.5], [590, 'Ça, c’est l’<b>effectif</b> des positifs. On veut une <b>fréquence</b> : ' + fr('effectif des dopés positifs', '590') + '.', 0.5], [100, 'Tu as donné un <b>effectif</b> (les 100 dopés). On veut une <b>fréquence</b> : ' + fr('effectif des dopés positifs', 'effectif des positifs') + '.', 0.5], [6.21, 'Tu as divisé dans le mauvais sens : ' + fr('effectif des dopés positifs', 'effectif des positifs') + '.', 0.05], [0.84, 'Ça, ce sont les <b>non dopés</b> parmi les positifs (' + fr('495', '590') + '). On veut les dopés.', 0.006]],
-                    indice: fr('dopés positifs', 'positifs') + '.',
-                    explication: 'On se restreint aux 590 positifs. Parmi eux, 95 sont dopés : ' + fr('95', '590') + ' ≈ 0,161, soit environ <b>0,16</b> (16 %).' }
+                    pieges: [[0.95, 'Ça, c’est la fréquence des positifs <b>parmi les dopés</b> (95 sur 100). On veut l’inverse : les dopés parmi les positifs.', 0.001], [0.0095, 'Tu as divisé par 10 000 : on se restreint aux 590 positifs.', 0.0002], [0.01, 'C’est la proportion de dopés dans toute la compétition. On veut les dopés <b>parmi les positifs</b> seulement.', 0.001], [0.17, 'Vérifie l’arrondi : ' + fraction('95', '590') + ' ≈ 0,161.', 0.001], [16, 'Écris une fréquence : un nombre entre 0 et 1 (ou 16 %).', 0.01], [95, 'Tu as donné un <b>effectif</b> (les 95 dopés positifs), pas une <b>fréquence</b>. Une fréquence est un nombre entre 0 et 1 : divise cet effectif par l’effectif des positifs.', 0.5], [495, 'Tu as donné un <b>effectif</b> (et c’est celui des non dopés positifs). On veut une <b>fréquence</b> : ' + fraction('effectif des dopés positifs', 'effectif des positifs') + '.', 0.5], [590, 'Ça, c’est l’<b>effectif</b> des positifs. On veut une <b>fréquence</b> : ' + fraction('effectif des dopés positifs', '590') + '.', 0.5], [100, 'Tu as donné un <b>effectif</b> (les 100 dopés). On veut une <b>fréquence</b> : ' + fraction('effectif des dopés positifs', 'effectif des positifs') + '.', 0.5], [6.21, 'Tu as divisé dans le mauvais sens : ' + fraction('effectif des dopés positifs', 'effectif des positifs') + '.', 0.05], [0.84, 'Ça, ce sont les <b>non dopés</b> parmi les positifs (' + fraction('495', '590') + '). On veut les dopés.', 0.006]],
+                    indice: fraction('dopés positifs', 'positifs') + '.',
+                    explication: 'On se restreint aux 590 positifs. Parmi eux, 95 sont dopés : ' + fraction('95', '590') + ' ≈ 0,161, soit environ <b>0,16</b> (16 %).' }
               ],
               bilan: ['Parmi les athlètes contrôlés positifs, seulement <b>16 %</b> environ sont réellement dopés.', 'C’est une <b>fréquence conditionnelle</b> : on se restreint aux positifs.'] },
 
@@ -404,25 +404,25 @@
                 encadre('', 'Choisir au hasard', '<p>Quand on choisit un individu <b>au hasard</b> (tous ont la même chance), la probabilité d’un évènement est égale à sa <b>fréquence</b> dans la population :</p><p style="text-align:center">' + P('A') + ' = nombre de cas favorables ÷ nombre de cas possibles.</p>') +
                 '<p>✍️ Donne les probabilités sous forme décimale.</p>',
               champs: [
-                  { lib: P('D') + ' =', attendu: 0.01, pourcent: true, pieges: [[100, 'Une probabilité est un nombre entre 0 et 1 : divise par le nombre total d’athlètes.'], [1, 'Une probabilité de 1 voudrait dire que tous sont dopés. 1 %, c’est 0,01.']], indice: fr('nombre de dopés', 'nombre total d’athlètes') + '.', explication: P('D') + ' = ' + fr('100', '10 000') + ' = 0,01.' },
-                  { lib: P('T') + ' =', attendu: 0.059, pourcent: true, pieges: [[590, 'Une probabilité est un nombre entre 0 et 1 : divise par le nombre total d’athlètes.'], [0.95, 'Ça, c’est la proportion de positifs <b>parmi les dopés</b>. Ici, on choisit un athlète parmi <b>tous</b> les 10 000.'], [0.0095, 'Ça ne compte que les positifs dopés. Il faut tous les positifs : 590.'], [0.59, 'Vérifie la division : ' + fr('590', '10 000') + '.']], indice: fr('nombre de tests positifs', 'nombre total d’athlètes') + '.', explication: P('T') + ' = ' + fr('590', '10 000') + ' = 0,059.' }
+                  { lib: P('D') + ' =', attendu: 0.01, pourcent: true, pieges: [[100, 'Une probabilité est un nombre entre 0 et 1 : divise par le nombre total d’athlètes.'], [1, 'Une probabilité de 1 voudrait dire que tous sont dopés. 1 %, c’est 0,01.']], indice: fraction('nombre de dopés', 'nombre total d’athlètes') + '.', explication: P('D') + ' = ' + fraction('100', '10 000') + ' = 0,01.' },
+                  { lib: P('T') + ' =', attendu: 0.059, pourcent: true, pieges: [[590, 'Une probabilité est un nombre entre 0 et 1 : divise par le nombre total d’athlètes.'], [0.95, 'Ça, c’est la proportion de positifs <b>parmi les dopés</b>. Ici, on choisit un athlète parmi <b>tous</b> les 10 000.'], [0.0095, 'Ça ne compte que les positifs dopés. Il faut tous les positifs : 590.'], [0.59, 'Vérifie la division : ' + fraction('590', '10 000') + '.']], indice: fraction('nombre de tests positifs', 'nombre total d’athlètes') + '.', explication: P('T') + ' = ' + fraction('590', '10 000') + ' = 0,059.' }
               ],
               bilan: [P('D') + ' = 0,01 et ' + P('T') + ' = 0,059 : on divise par l’effectif <b>total</b>, 10 000.'] },
 
             { titre: 'Probabilité « sachant que »', type: 'question',
               consigne: encadre('', 'Notation', '<p>La probabilité que ' + D + ' soit réalisé <b>sachant que</b> ' + T + ' est réalisé se note ' + Pc('T', 'D') + ' (on lit « P de D sachant T »).</p>' +
-                    '<p>On l’obtient en se <b>restreignant</b> aux individus qui réalisent ' + T + ' : ' + Pc('T', 'D') + ' = ' + fr('effectif de « ' + D + ' et ' + T + ' »', 'effectif de ' + T) + '.</p>') +
+                    '<p>On l’obtient en se <b>restreignant</b> aux individus qui réalisent ' + T + ' : ' + Pc('T', 'D') + ' = ' + fraction('effectif de « ' + D + ' et ' + T + ' »', 'effectif de ' + T) + '.</p>') +
                 encadre('attention', 'Attention à l’ordre', '<p>L’évènement écrit <b>en indice</b> est celui qu’on <b>sait</b> réalisé : c’est la sous-population dans laquelle on travaille.</p>') +
                 '<p>✍️ À l’aide du tableau (95 dopés positifs, 590 positifs, 100 dopés), calcule (arrondi au centième si besoin) :</p>',
               champs: [
                   { lib: Pc('T', 'D') + ' =', attendu: 0.16, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
                     pieges: [[0.95, 'Inversé ! Ici, on <b>sait</b> que le test est positif (' + T + ' en indice) : on se restreint aux 590 positifs.', 0.001], [0.0095, 'On ne divise pas par 10 000 : on se restreint aux 590 positifs.', 0.001]],
                     indice: 'On sait que le test est positif : on se restreint aux 590 positifs. Combien sont dopés ?',
-                    explication: 'On sait que ' + T + ' est réalisé : on travaille parmi les 590 positifs, dont 95 sont dopés. ' + Pc('T', 'D') + ' = ' + fr('95', '590') + ' ≈ 0,16. C’est la fréquence trouvée à l’étape 4.' },
+                    explication: 'On sait que ' + T + ' est réalisé : on travaille parmi les 590 positifs, dont 95 sont dopés. ' + Pc('T', 'D') + ' = ' + fraction('95', '590') + ' ≈ 0,16. C’est la fréquence trouvée à l’étape 4.' },
                   { lib: Pc('D', 'T') + ' =', attendu: 0.95, pourcent: true,
                     pieges: [[0.16, 'Inversé ! Ici, ' + D + ' est en indice : on <b>sait</b> que l’athlète est dopé. On se restreint aux 100 dopés.', 0.006], [0.0095, 'On ne divise pas par 10 000 : on se restreint aux 100 dopés.']],
                     indice: 'On sait que l’athlète est dopé : on se restreint aux 100 dopés. Combien ont un test positif ?',
-                    explication: 'On sait que ' + D + ' est réalisé : on travaille parmi les 100 dopés, dont 95 ont un test positif. ' + Pc('D', 'T') + ' = ' + fr('95', '100') + ' = 0,95. C’est le « 95 % » de l’énoncé.' }
+                    explication: 'On sait que ' + D + ' est réalisé : on travaille parmi les 100 dopés, dont 95 ont un test positif. ' + Pc('D', 'T') + ' = ' + fraction('95', '100') + ' = 0,95. C’est le « 95 % » de l’énoncé.' }
               ],
               bilan: [Pc('T', 'D') + ' ≈ 0,16 mais ' + Pc('D', 'T') + ' = 0,95 : en général, ' + Pc('T', 'D') + ' ≠ ' + Pc('D', 'T') + '.', 'L’erreur d’intuition de l’étape 1 venait de cette <b>confusion</b>.'] },
 
@@ -433,10 +433,10 @@
                     msgFaux: 'On <b>sait</b> que l’athlète est non dopé : c’est ' + Db + ' qui va en indice.', msgOk: Pc('!D', '!T') + ' = 0,95 (le second « 95 % » de l’énoncé).',
                     explication: 'Ce qu’on sait : l’athlète est <b>non dopé</b> (' + Db + ') → en indice. Ce qu’on cherche : un test <b>négatif</b> (' + Tb + ') → entre parenthèses. D’où ' + Pc('!D', '!T') + '.' },
                   { avant: 'Probabilité qu’un athlète soit <b>dopé et</b> contrôlé positif :', options: [['a', 'P(D ∩ T)'], ['b', 'P_T(D)'], ['c', 'P_D(T)']], attendu: 'a',
-                    msgFaux: 'Ici, on ne <b>sait</b> rien à l’avance : on cherche les deux à la fois, parmi tous les athlètes. Il n’y a pas d’indice.', msgOk: P('D∩T') + ' = ' + fr('95', '10 000') + ' = 0,0095 : on divise par l’effectif total.',
+                    msgFaux: 'Ici, on ne <b>sait</b> rien à l’avance : on cherche les deux à la fois, parmi tous les athlètes. Il n’y a pas d’indice.', msgOk: P('D∩T') + ' = ' + fraction('95', '10 000') + ' = 0,0095 : on divise par l’effectif total.',
                     explication: '« Dopé <b>et</b> positif » : les deux évènements sont réalisés en même temps. C’est l’intersection ' + D + ' ∩ ' + T + ', sans indice : ' + P('D∩T') + '.' },
                   { avant: '« Sachant que son test est négatif, probabilité que l’athlète soit dopé » :', options: [['a', 'P_D(T̄)'], ['b', 'P_T̄(D)'], ['c', 'P(D ∩ T̄)']], attendu: 'b',
-                    msgFaux: 'Ce qu’on <b>sait</b> (test négatif, ' + Tb + ') va en indice.', msgOk: Pc('!T', 'D') + ' = ' + fr('5', '9 410') + ' ≈ 0,0005 : un test négatif est très rassurant.',
+                    msgFaux: 'Ce qu’on <b>sait</b> (test négatif, ' + Tb + ') va en indice.', msgOk: Pc('!T', 'D') + ' = ' + fraction('5', '9 410') + ' ≈ 0,0005 : un test négatif est très rassurant.',
                     explication: '« Sachant que son test est négatif » : on sait ' + Tb + ' → en indice. On cherche « dopé » (' + D + ') → entre parenthèses. D’où ' + Pc('!T', 'D') + '.' }
               ],
               bilan: ['Ce qu’on <b>sait</b> (« sachant que », « parmi les… ») va <b>en indice</b>.', P('A∩B') + ' : A <b>et</b> B à la fois, parmi <b>tous</b> les individus (pas d’indice).'] },
@@ -484,24 +484,24 @@
                 '<p>✍️ Calcule (valeurs exactes) :</p>',
               champs: [
                   { lib: P('D∩T') + ' =', attendu: 0.0095, pieges: [[0.96, 'Sur un chemin, on <b>multiplie</b> les probabilités, on ne les additionne pas.'], [0.95, 'Il faut tout le chemin : la branche ' + D + ' (0,01), puis la branche ' + T + ' (0,95).'], [0.095, 'Vérifie le calcul : 0,01 × 0,95.']], indice: 'Chemin racine → ' + D + ' → ' + T + ' : 0,01 × 0,95.',
-                    explication: P('D∩T') + ' = 0,01 × 0,95 = 0,0095. On retrouve ' + fr('95', '10 000') + ' : les 95 dopés positifs du tableau.' },
+                    explication: P('D∩T') + ' = 0,01 × 0,95 = 0,0095. On retrouve ' + fraction('95', '10 000') + ' : les 95 dopés positifs du tableau.' },
                   { lib: P('!D∩T') + ' =', attendu: 0.0495, pieges: [[1.04, 'Sur un chemin, on <b>multiplie</b> les probabilités.'], [0.9405, 'Ça, c’est le chemin ' + Db + ' → ' + Tb + '. On veut ' + Db + ' → ' + T + '.'], [0.495, 'Vérifie le calcul : 0,99 × 0,05.']], indice: 'Chemin racine → ' + Db + ' → ' + T + ' : 0,99 × 0,05.',
-                    explication: P('!D∩T') + ' = 0,99 × 0,05 = 0,0495. On retrouve ' + fr('495', '10 000') + ' : les 495 faux positifs.' },
+                    explication: P('!D∩T') + ' = 0,99 × 0,05 = 0,0495. On retrouve ' + fraction('495', '10 000') + ' : les 495 faux positifs.' },
                   { lib: P('T') + ' =', attendu: 0.059, pieges: [[0.0095, 'Un test peut être positif de <b>deux</b> façons : athlète dopé, ou non dopé. Ajoute les deux chemins qui mènent à ' + T + '.'], [0.0495, 'Un test peut être positif de <b>deux</b> façons : ajoute les deux chemins qui mènent à ' + T + '.'], [1, 'On n’ajoute que les chemins qui mènent à ' + T + '.']], indice: 'Ajoute les probabilités des deux chemins qui mènent à ' + T + '.',
-                    explication: P('T') + ' = ' + P('D∩T') + ' + ' + P('!D∩T') + ' = 0,0095 + 0,0495 = 0,059. On retrouve ' + fr('590', '10 000') + '.' }
+                    explication: P('T') + ' = ' + P('D∩T') + ' + ' + P('!D∩T') + ' = 0,0095 + 0,0495 = 0,059. On retrouve ' + fraction('590', '10 000') + '.' }
               ],
               bilan: ['Probabilité d’un chemin = <b>produit</b> des probabilités de ses branches.', 'Pour ' + P('T') + ', on <b>ajoute</b> les chemins qui mènent à ' + T + ' : 0,059.'] },
 
             { titre: 'La formule des probabilités conditionnelles', type: 'question',
-              consigne: encadre('', 'Formule', '<p>Si ' + P('T') + ' ≠ 0 : </p><p style="text-align:center;font-size:1.1em">' + Pc('T', 'D') + ' = ' + fr(P('D∩T'), P('T')) + '</p>') +
+              consigne: encadre('', 'Formule', '<p>Si ' + P('T') + ' ≠ 0 : </p><p style="text-align:center;font-size:1.1em">' + Pc('T', 'D') + ' = ' + fraction(P('D∩T'), P('T')) + '</p>') +
                 '<p>✍️ Avec les résultats de l’étape précédente (' + P('D∩T') + ' = 0,0095 et ' + P('T') + ' = 0,059), calcule ' + Pc('T', 'D') + ', arrondi au centième. Retrouves-tu le résultat du tableau ?</p>',
               champs: [
                   { lib: Pc('T', 'D') + ' ≈', attendu: 0.16, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
-                    pieges: [[6.21, 'Division dans le mauvais sens : ' + fr(P('D∩T'), P('T')) + ', c’est ' + fr('0,0095', '0,059') + '.', 0.05], [0.00056, 'On divise, on ne multiplie pas.', 0.0001]],
-                    indice: 'Calcule ' + fr('0,0095', '0,059') + '.',
-                    explication: Pc('T', 'D') + ' = ' + fr('0,0095', '0,059') + ' ≈ 0,161, soit 0,16 : le même résultat que ' + fr('95', '590') + ' avec le tableau.' }
+                    pieges: [[6.21, 'Division dans le mauvais sens : ' + fraction(P('D∩T'), P('T')) + ', c’est ' + fraction('0,0095', '0,059') + '.', 0.05], [0.00056, 'On divise, on ne multiplie pas.', 0.0001]],
+                    indice: 'Calcule ' + fraction('0,0095', '0,059') + '.',
+                    explication: Pc('T', 'D') + ' = ' + fraction('0,0095', '0,059') + ' ≈ 0,161, soit 0,16 : le même résultat que ' + fraction('95', '590') + ' avec le tableau.' }
               ],
-              bilan: [Pc('T', 'D') + ' = ' + fr(P('D∩T'), P('T')) + ' : c’est la formule du cours.', 'Tableau croisé et arbre pondéré donnent le <b>même</b> résultat : à toi de choisir l’outil le plus pratique.'] },
+              bilan: [Pc('T', 'D') + ' = ' + fraction(P('D∩T'), P('T')) + ' : c’est la formule du cours.', 'Tableau croisé et arbre pondéré donnent le <b>même</b> résultat : à toi de choisir l’outil le plus pratique.'] },
 
             { titre: 'Quiz final · 5 questions', type: 'quiz',
               consigne: '<p>Pour finir, 5 questions rapides sur toute l’activité. ✍️ Réponds à chaque question, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
@@ -519,8 +519,8 @@
                     choix: ['0,9', '0,2', '0,1', '0,8'], bonne: 1,
                     explication: 'Probabilité d’un chemin : 0,4 × 0,5 = 0,2.' },
                   { texte: 'Sur 200 personnes, 50 sont vaccinées ; parmi les vaccinées, 10 tombent malades. La fréquence des malades <b>parmi les vaccinés</b> est :',
-                    choix: [fr('10', '200') + ' = 0,05', fr('10', '50') + ' = 0,2', fr('50', '200') + ' = 0,25', fr('50', '10') + ' = 5'], bonne: 1,
-                    explication: 'On se restreint aux 50 vaccinés : ' + fr('10', '50') + ' = 0,2.' }
+                    choix: [fraction('10', '200') + ' = 0,05', fraction('10', '50') + ' = 0,2', fraction('50', '200') + ' = 0,25', fraction('50', '10') + ' = 5'], bonne: 1,
+                    explication: 'On se restreint aux 50 vaccinés : ' + fraction('10', '50') + ' = 0,2.' }
               ] },
 
             { titre: 'Défi · Et si le dopage était fréquent ?', type: 'question',
@@ -533,8 +533,8 @@
                     explication: 'Arbre : ' + P('D') + ' = 0,2 et ' + P('!D') + ' = 0,8. ' + P('T') + ' = 0,2 × 0,95 + 0,8 × 0,05 = 0,19 + 0,04 = 0,23.' },
                   { lib: Pc('T', 'D') + ' ≈', attendu: 0.83, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
                     pieges: [[0.16, 'C’était le cas où 1 % des athlètes étaient dopés. Refais le calcul avec 20 %.', 0.006], [0.95, 'Ça, c’est ' + Pc('D', 'T') + '. On veut ' + Pc('T', 'D') + '.', 0.001], [0.19, 'Ça, c’est ' + P('D∩T') + ' : divise-le par ' + P('T') + '.', 0.001]],
-                    indice: Pc('T', 'D') + ' = ' + fr(P('D∩T'), P('T')) + ' = ' + fr('0,19', '0,23') + '.',
-                    explication: Pc('T', 'D') + ' = ' + fr('0,19', '0,23') + ' ≈ 0,826, soit environ 0,83. Avec un tableau de 10 000 athlètes : 1 900 vrais positifs, 400 faux positifs, ' + fr('1 900', '2 300') + ' ≈ 0,83.' }
+                    indice: Pc('T', 'D') + ' = ' + fraction(P('D∩T'), P('T')) + ' = ' + fraction('0,19', '0,23') + '.',
+                    explication: Pc('T', 'D') + ' = ' + fraction('0,19', '0,23') + ' ≈ 0,826, soit environ 0,83. Avec un tableau de 10 000 athlètes : 1 900 vrais positifs, 400 faux positifs, ' + fraction('1 900', '2 300') + ' ≈ 0,83.' }
               ],
               bilan: ['Avec 20 % de dopés, un test positif est beaucoup plus fiable : environ <b>83 %</b>.', 'La probabilité ' + Pc('T', 'D') + ' dépend beaucoup de la proportion de départ ' + P('D') + ' : c’est pour cela qu’on ne dépiste pas une maladie rare chez tout le monde.'] }
         ];
