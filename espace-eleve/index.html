@@ -282,7 +282,7 @@
         function accesTP(ex) {
             if (!ex.codeAcces) return true;
             var s = Interactif.session();
-            if (s && String(s.code || '').toUpperCase() === 'PROF-2NDE') return true;   // compte professeure (TEST-01 supprimé)
+            if (compteProf2nde()) return true;   // comptes professeure PROF-2NDE et PROF-1TC (TEST-01 supprimé)
             if (Interactif.accesTemporaire(ex, s) > 0) return true;   // code temporaire en cours
             try { return localStorage.getItem('tp-acces:' + ex.id) === Interactif.codeAccesTP(ex, s); } catch (e) { return false; }
         }
@@ -293,11 +293,12 @@
             var n = document.createElement('span'); n.className = 'tp-num'; n.textContent = m[1];
             el.appendChild(n); el.appendChild(document.createTextNode(m[2]));
         }
-        /* Compte PROF-2NDE : « Revenir à zéro » efface un TP (ses résultats en ligne, sa progression et son code d'accès
+        /* Comptes PROF-2NDE et PROF-1TC : « Revenir à zéro » efface un TP (ses résultats en ligne, sa progression et son code d'accès
            sur l'appareil). L'heure de remise à zéro est gardée sur l'appareil (clé « …:reinit », comme « Réinitialiser
            l'étape » dans le TP) : les résultats plus anciens sont ignorés même si l'effacement en ligne a échoué. */
-        function compteProf2nde() { var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'PROF-2NDE'; }
-        function cleLocaleTP(id) { var s = Interactif.session(); return id.replace(/^seconde\//, '') + ':' + (s ? s.code : 'invite'); }
+        var COMPTES_PROF_TP = ['PROF-2NDE', 'PROF-1TC'];
+        function compteProf2nde() { var s = Interactif.session(); return !!s && COMPTES_PROF_TP.indexOf(String(s.code || '').toUpperCase()) >= 0; }
+        function cleLocaleTP(id) { var s = Interactif.session(); return id.replace(/^(seconde|premiere)\//, '') + ':' + (s ? s.code : 'invite'); }
         function dateReinitTP(id) { try { return +localStorage.getItem(cleLocaleTP(id) + ':reinit') || 0; } catch (x) { return 0; } }
         function apresReinit(id, liste) {
             var d = dateReinitTP(id);
@@ -315,7 +316,7 @@
             });
             return Interactif.rpc('prof_tp_remise_a_zero', { p_jeton: s.jeton, p_exercices: ids });
         }
-        // colonne de droite pour PROF-2NDE : version interactive, version papier, revenir à zéro
+        // colonne de droite pour PROF-2NDE et PROF-1TC : version interactive, version papier, revenir à zéro
         function actionsProf(o, ex, res, listeTP, parExercice) {
             var d = document.createElement('div'); d.className = 'eval-liens';
             function lien(href, texte, nouvelOnglet) {
@@ -332,7 +333,7 @@
                 var msg = document.createElement('span'); msg.className = 'tp-msg';
                 b.onclick = function () {
                     var nom = (o && o.nom) || ex.titre;
-                    if (!confirm('Revenir à zéro pour « ' + nom + ' » ?\n\nLes résultats du compte PROF-2NDE à ce TP sont effacés, il repart de l’étape 1 et le code d’accès sera redemandé en mode élève.')) return;
+                    if (!confirm('Revenir à zéro pour « ' + nom + ' » ?\n\nLes résultats du compte ' + String(Interactif.session().code || '').toUpperCase() + ' à ce TP sont effacés, il repart de l’étape 1 et le code d’accès sera redemandé en mode élève.')) return;
                     var ids = [ex.id];
                     if (o && o.id && ids.indexOf(o.id) < 0) ids.push(o.id);
                     if (o && o.sinon && ids.indexOf(o.sinon) < 0) ids.push(o.sinon);
