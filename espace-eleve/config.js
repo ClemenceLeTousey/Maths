@@ -179,10 +179,10 @@ window.INTERACTIF_GROUPES = {
     'TP Python · Photographie numérique': {},
     'TP Python · Les structures conditionnelles': {},
     // Terminale ST2S : « serie » distinct des séries de Seconde (sinon la page prof mélange les colonnes des deux Séries 6)
-    'Série 6 · semaine du 9 au 13 novembre': { serie: 'TST2S · Série 6',
+    'Série 6 · semaine du 9 au 13 novembre': { section: 'Anciennes séries', serie: 'TST2S · Série 6',
         themes: ['Proportions', 'Coefficient multiplicateur', 'Équations du premier degré', 'Suites par récurrence', 'Images et antécédents',
                  'Évolutions successives', 'Résolution graphique', 'Équation de droite', 'Fonction inverse'] },
-    'Facultatif · Série 6 TST2S en temps limité ⏱': { serie: 'TST2S · Série 6' },
+    'Facultatif · Série 6 TST2S en temps limité ⏱': { section: 'Anciennes séries', serie: 'TST2S · Série 6' },
     'Série 7 · semaine du 16 au 20 novembre': { serie: 'TST2S · Série 7',
         themes: ['Taux d\'évolution, indices', 'Inéquations', 'Suites : terme général, modélisation', 'Dérivée de k/x, variations',
                  'Proportion de proportion', 'Signe', 'Dérivée d\'un polynôme', 'Résolution graphique', 'Évolutions successives'] },
