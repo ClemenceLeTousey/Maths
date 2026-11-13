@@ -323,7 +323,7 @@
 
             { titre: 'Une compétition de 10 000 athlètes', type: 'question',
               consigne: ENONCE + '<p>Pour y voir clair, on imagine une compétition de <b>10 000 athlètes</b>, qui respecte ces proportions.</p>' +
-                encadre('', 'Rappel : prendre un pourcentage d’un nombre', '<p>Prendre 1 % de 10 000, c’est calculer 0,01 × 10 000.</p>'),
+                encadre('', 'Rappel : prendre un pourcentage d’un nombre', '<p>Prendre 1 % de 10 000, c’est calculer ' + fr('1', '100') + ' × 10 000, soit 0,01 × 10 000.</p>'),
               champs: [
                   { lib: 'Nombre d’athlètes dopés', attendu: 100,
                     pieges: [[1, '1 %, c’est la proportion. On demande le <b>nombre</b> d’athlètes : 1 % de 10 000.'], [1000, 'Attention : 1 % = 0,01, et non 0,1.'], [9900, 'Ça, c’est le nombre de non dopés.']],
