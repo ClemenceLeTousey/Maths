@@ -168,9 +168,9 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'premiere', id: 'premiere/serie5', groupe: 'Série 5 · semaine du 7 au 11 décembre · à faire pour le vendredi 11 décembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S5', url: 'premiere/serie5.html', comptes: ['PROF-1TC'], ouverture: 'auto' },
     { niveau: 'premiere', id: 'premiere/serie6', groupe: 'Série 6 · semaine du 14 au 18 décembre · à faire pour le vendredi 18 décembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S6', url: 'premiere/serie6.html', comptes: ['PROF-1TC'], ouverture: 'auto' },
     { niveau: 'premiere', id: 'premiere/serie7', groupe: 'Série 7 · semaine du 21 décembre au 8 janvier · vacances de Noël, à faire pour le vendredi 8 janvier', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S7', url: 'premiere/serie7.html', comptes: ['PROF-1TC'], ouverture: 'auto' },
-    // Première (1TC) : activité d'introduction aux probabilités conditionnelles (onglet « Activités » de l'espace élève), code d'accès
-    { niveau: 'premiere', id: 'premiere/activite-probas', groupe: 'Activité · Probabilités conditionnelles', titre: 'Contrôlé positif… donc dopé ? (9 étapes + suite facultative)', court: '1 · Act. Probas', url: 'premiere/activite-probas.html', tp: true, vueProf: true,
-      codeAcces: '4faa0e5775e86206c01c5b9f5bbbdb08889dd89af0911746d84b05024a4033a3' }   // empreinte SHA-256 du code d'accès (voir Codes d'accès des TP)
+    // Première (1TC) : activité d'introduction aux probabilités conditionnelles (onglet « Activités » de l'espace élève), sans code d'accès
+    // (ancien code DOPAGE-517 : pour le remettre, ajouter codeAcces: '4faa0e5775e86206c01c5b9f5bbbdb08889dd89af0911746d84b05024a4033a3')
+    { niveau: 'premiere', id: 'premiere/activite-probas', groupe: 'Activité · Probabilités conditionnelles', titre: 'Contrôlé positif… donc dopé ?', court: '1 · Act. Probas', url: 'premiere/activite-probas.html', tp: true, vueProf: true }
 ];
 
 /* Description de chaque groupe (même libellé que « groupe » ci-dessus), affichée sous son titre sur la page élève :
