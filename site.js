@@ -871,10 +871,10 @@ document.addEventListener('click', function (e) {
         '.cloche > button:hover, .cloche > button:focus-visible, .cloche > button[aria-expanded="true"] { color: var(--text); outline: none; }' +
         '.cloche svg { width: 20px; height: 20px; }' +
         '.cloche .compte { position: absolute; top: 4px; right: 4px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: #e5383b; color: #fff; font: 700 11px/17px system-ui, sans-serif; text-align: center; }' +
-        '.cloche-panneau { position: fixed; right: 12px; width: min(360px, calc(100vw - 24px)); max-height: 65vh; overflow: auto; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.18); z-index: 1100; }' +
+        '.cloche-panneau { position: fixed; right: 12px; width: min(360px, calc(100vw - 24px)); max-height: 65vh; overflow-x: hidden; overflow-y: auto; overflow-wrap: anywhere; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.18); z-index: 1100; }' +
         '.cloche-tete { display: flex; align-items: center; gap: 6px; padding: 8px 10px 8px 14px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface); }' +
-        '.cloche-tete h2 { font-size: 0.95rem; margin: 0; flex: 1; }' +
-        '.cloche-tete button { background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); font: inherit; font-size: 0.8rem; padding: 4px 8px; cursor: pointer; }' +
+        '.cloche-tete h2 { font-size: 0.95rem; margin: 0; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }' +
+        '.cloche-tete button { background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); font: inherit; font-size: 0.8rem; padding: 4px 8px; cursor: pointer; flex: none; white-space: nowrap; }' +
         '.cloche-tete button:hover, .cloche-tete button:focus-visible { color: var(--text); border-color: var(--muted); outline: none; }' +
         '.cloche-reglages { display: grid; gap: 8px; padding: 4px 14px 6px; }' +
         '.cloche-reglages label { font-size: 0.9rem; display: flex; gap: 8px; align-items: center; }' +
@@ -922,8 +922,9 @@ document.addEventListener('click', function (e) {
             }, function () { /* base pas prête ou session expirée : pas de cloche active */ });
         }
         // Catégories (mêmes que maj-push-categories.sql) ; « prof » ne peut pas être coupée
-        var CATEGORIES = [['serie', '📅 Nouvelle série disponible'], ['rappel', '⏰ Série d\'automatismes non finie'], ['note', '📝 Nouvelle note'],
-                          ['eval', '📆 Évaluation à venir'], ['soutien', '🤝 Rappel soutien'], ['prof', '📣 Message de ta professeure']];
+        // 📝 Nouvelle note, 📆 Évaluation à venir, 🤝 Rappel soutien : retirées pour l'instant (voir onglet Notif de l'espace prof)
+        var CATEGORIES = [['serie', '📅 Nouvelle série disponible'], ['rappel', '⏰ Série d\'automatismes non finie'],
+                          ['prof', '📣 Message de ta professeure']];
         var reglages = false;
         function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
         function entete(titre, boutons) {
@@ -960,7 +961,8 @@ document.addEventListener('click', function (e) {
             panneau.innerHTML = '';
             var liste = (donnees && donnees.liste) || [];
             var boutons = [['⚙️', 'Choisir les notifications reçues sur le téléphone', function () { reglages = true; remplir(); }]];
-            if (liste.length) boutons.unshift(['Tout effacer', 'Effacer toutes les notifications', function () {
+            // ⚙️ en premier (juste après le titre) pour qu'elle soit toujours visible
+            if (liste.length) boutons.push(['Tout effacer', 'Effacer toutes les notifications', function () {
                 rpc('notifications_effacer', { p_jeton: s.jeton }).then(function () {
                     donnees = { non_lues: 0, liste: [] }; montrerCompte(0); pastille(0); remplir();
                 }).catch(function () {});

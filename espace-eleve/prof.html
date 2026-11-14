@@ -222,13 +222,18 @@
             <div class="panneau" role="tabpanel" id="panneau-notifs" aria-labelledby="onglet-notifs" hidden>
                 <h2>Notifications aux élèves</h2>
                 <p class="aide">Elles arrivent dans la cloche 🔔 du site et, pour les élèves qui les ont activées, sur leur téléphone. Envoi programmé : à l'heure prévue, à 15 minutes près.
-                   Automatiques : 🤝 rappel soutien la veille à 17h (le vendredi pour le lundi), 📝 nouvelle note à la publication dans Suivi Eval.</p>
+</p>
+                <p class="nt-alerte">⏸️ <b>À voir plus tard</b> : pour l'instant, seulement 📣 message de ta professeure, 📅 série disponible et ⏰ série non finie. Retirées (pas d'envoi, pas de choix dans les réglages des élèves) :<br>
+                   · 📝 <b>Nouvelle note</b> à la publication dans Suivi Eval : pour la remettre, relancer <code>maj-notes.sql</code> en décommentant le bloc « Nouvelle note » ;<br>
+                   · 🤝 <b>Rappel soutien</b> la veille à 17h (le vendredi pour le lundi) : pour le remettre, <code>insert into config values ('soutien_rappel_actif', 'oui') on conflict (cle) do update set valeur = 'oui';</code><br>
+                   · 📆 <b>Évaluation à venir</b> (modèle « Évaluation demain »).<br>
+                   Dans tous les cas, remettre aussi la catégorie dans <code>site.js</code> (réglages élèves) et <code>notifications-prof.js</code>.</p>
                 <div class="nt-form">
                     <div class="nt-ligne">
                         <span class="aide" style="margin:0">Modèles :</span>
                         <button type="button" class="secondaire" id="nt-modele-dispo">📅 Série disponible</button>
                         <button type="button" class="secondaire" id="nt-modele-rappel">⏰ Série d'automatismes non finie</button>
-                        <button type="button" class="secondaire" id="nt-modele-eval">📆 Évaluation demain</button>
+                        <button type="button" class="secondaire" id="nt-modele-eval" hidden>📆 Évaluation demain</button>
                     </div>
                     <label class="champ">Catégorie (l'élève peut couper chaque catégorie sur son téléphone, sauf 📣) <select id="nt-categorie"></select></label>
                     <label class="champ">Classes <select id="nt-classe"></select></label>

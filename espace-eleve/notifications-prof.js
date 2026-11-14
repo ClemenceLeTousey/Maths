@@ -251,7 +251,7 @@
                 return;
             }
             lance = true;
-            $('nt-categorie').innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + esc(c[1]) + '</option>'; }).join('');
+            $('nt-categorie').innerHTML = CATEGORIES.filter(function (c) { return ['note', 'eval', 'soutien'].indexOf(c[0]) < 0; }).map(function (c) { return '<option value="' + c[0] + '">' + esc(c[1]) + '</option>'; }).join('');
             $('nt-lien').innerHTML = LIENS.map(function (l) { return '<option value="' + l[0] + '">' + esc(l[1]) + '</option>'; }).join('');
             var l = series(), courante = l.filter(function (g) { return g.niveau === 'seconde'; })[0];
             $('nt-serie').innerHTML = l.map(function (g) {
