@@ -241,8 +241,9 @@
         var choixAncienne = document.getElementById('choix-ancienne'), derniersResultats = null;
 
         // remplit une table : titre de chaque groupe ; ligne d'en-têtes sous le premier seulement (au-dessus des Jours)
-        function remplir(t, exercices, parExercice) {
-            var GROUPES = window.INTERACTIF_GROUPES || {}, groupe = null, entetes = true;
+        // groupes : descriptions des groupes, complétées dans afficher() (anciennes séries, lien du corrigé)
+        function remplir(t, exercices, parExercice, groupes) {
+            var GROUPES = groupes || window.INTERACTIF_GROUPES || {}, groupe = null, entetes = true;
             t.innerHTML = '';
             exercices.forEach(function (ex) {
                 if (ex.groupe !== groupe) {
@@ -470,7 +471,7 @@
             });
             reafficherALOuverture(s, niv);
             var enCours = liste.filter(function (ex) { return !(GROUPES[ex.groupe] || {}).section; });
-            remplir(table, enCours, parExercice);
+            remplir(table, enCours, parExercice, GROUPES);
             if (!liste.length) {
                 var vide = document.createElement('tr'), c = document.createElement('td');
                 c.colSpan = 3; c.textContent = 'Pas encore d\'automatismes pour ta classe.';
@@ -491,7 +492,7 @@
             choixAncienne.appendChild(new Option('', '', false, !choisie));
             series.forEach(function (cle) { choixAncienne.appendChild(new Option(parSerie[cle].titre, cle, false, cle === choisie)); });
             tableAnciennes.hidden = !choisie;
-            if (choisie) remplir(tableAnciennes, parSerie[choisie].exercices, parExercice); else tableAnciennes.innerHTML = '';
+            if (choisie) remplir(tableAnciennes, parSerie[choisie].exercices, parExercice, GROUPES); else tableAnciennes.innerHTML = '';
         }
         choixAncienne.onchange = function () { afficher(derniersResultats); };
         // page restée ouverte : la nouvelle série apparaît à l'heure d'ouverture, sans recharger
