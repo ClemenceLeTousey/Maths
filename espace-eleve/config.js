@@ -44,7 +44,7 @@ window.CORRIGES_SERIES = {
     seconde: {
         6: '../automatismes-seconde/serie6-evaluation-corrige.pdf',
         7: '../automatismes-seconde/serie7-evaluation-corrige.pdf',
-        8: '../automatismes-seconde/serie8-papier-corrige.pdf',
+        8: '../automatismes-seconde/serie8-evaluation-corrige.pdf',
         9: '../automatismes-seconde/serie9-evaluation-corrige.pdf',
         10: '../automatismes-seconde/serie10-evaluation-corrige.pdf',
         12: '../automatismes-seconde/serie12-evaluation-corrige.pdf',
