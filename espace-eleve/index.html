@@ -462,6 +462,12 @@
                 var n = numSerie(ex), g = GROUPES[ex.groupe] || {};
                 if (n != null && n < derniere && !g.section) GROUPES[ex.groupe] = Object.assign({}, g, { section: 'Anciennes séries', serie: g.serie || 'Série ' + n });
             });
+            // corrigé de la série évaluée (CORRIGES_SERIES, config.js) : affiché dès que la série est dans « Anciennes séries »
+            liste.forEach(function (ex) {
+                var n = numSerie(ex), g = GROUPES[ex.groupe] || {}, url = /^Série \d+ ·/.test(ex.groupe) && ((window.CORRIGES_SERIES || {})[ex.niveau] || {})[n];
+                if (url && g.section && !g.texte)
+                    GROUPES[ex.groupe] = Object.assign({}, g, { texte: '🧾 <a href="' + url + '" target="_blank" rel="noopener">Corrigé de la série évaluée</a>' });
+            });
             reafficherALOuverture(s, niv);
             var enCours = liste.filter(function (ex) { return !(GROUPES[ex.groupe] || {}).section; });
             remplir(table, enCours, parExercice);

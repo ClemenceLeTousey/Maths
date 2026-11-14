@@ -36,6 +36,22 @@ window.NOTIF_CONFIG = {
    Nouveau code : python3 -c "import hashlib;print(hashlib.sha256(b'QUIZ-1234').hexdigest())" */
 window.INTERACTIF_CODE_DEBLOCAGE = '81fea9c97d311bb5192cf2554509b7f790d43628be32a19ef19e633154cacbc6';
 
+/* Corrigé de l'évaluation (Jour 4 sur papier) de chaque série, par numéro de série.
+   Le lien « 🧾 Corrigé de la série évaluée » apparaît sous la série dès qu'elle passe dans « Anciennes séries »
+   (pour chaque classe, à l'ouverture de la série suivante). Pas de corrigé pour une série absente d'ici.
+   Les PDF sont copiés depuis Automatismes Hebdo (« SérieN-J4 - Corrigé.pdf »). */
+window.CORRIGES_SERIES = {
+    seconde: {
+        6: '../automatismes-seconde/serie6-evaluation-corrige.pdf',
+        7: '../automatismes-seconde/serie7-evaluation-corrige.pdf',
+        8: '../automatismes-seconde/serie8-papier-corrige.pdf',
+        9: '../automatismes-seconde/serie9-evaluation-corrige.pdf',
+        10: '../automatismes-seconde/serie10-evaluation-corrige.pdf',
+        12: '../automatismes-seconde/serie12-evaluation-corrige.pdf',
+        13: '../automatismes-seconde/serie13-evaluation-corrige.pdf'
+    }
+};
+
 /* Ouverture automatique des séries d'automatismes : sur les lignes du catalogue marquées « ouverture: 'auto' »,
    chaque classe voit la série à partir de « jour » (avant le lundi de la « semaine du … » du groupe) à « heure ».
    Les comptes de « comptes » la voient avant (tests). Une classe absente d'ici (compte de test) : la plus tôt.
@@ -160,8 +176,7 @@ window.INTERACTIF_GROUPES = {
     'Série 13 · semaine du 14 au 18 décembre': {},
     'Facultatif · Série 13 en temps limité ⏱': {},
     'Série 8 · semaine du 9 au 13 novembre': {
-        section: 'Anciennes séries', serie: 'Série 8',
-        texte: '🧾 <a href="../automatismes-seconde/serie8-papier-corrige.pdf" target="_blank" rel="noopener">Corrigé de la série évaluée</a>'
+        section: 'Anciennes séries', serie: 'Série 8'
     },
     'Facultatif · Série 8 en temps limité ⏱': {
         section: 'Anciennes séries', serie: 'Série 8'
