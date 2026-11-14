@@ -457,16 +457,24 @@
             remplirTP(listeTP, parExercice);
             // dès qu'une série plus récente est visible, la précédente (et son bilan) passe d'elle-même dans « Anciennes séries »
             var numSerie = function (ex) { var m = /^(?:Facultatif · )?Série (\d+)/.exec(ex.groupe); return m ? +m[1] : null; };
-            var derniere = Math.max.apply(null, liste.map(numSerie).filter(function (n) { return n != null; }).concat([0]));
+            // série en cours = la plus récente OUVERTE pour la classe à cette date (pas celles vues en avance grâce à « comptes », ex. PROF-1TC)
+            var maintenantAff = new Date();
+            var ouverteClasse = function (ex) {
+                if (ex.ouverture === 'auto') { var d = Interactif.ouvertureSerie(ex, Interactif.classeSession(s)); return !!d && d <= maintenantAff; }
+                return !ex.comptes;
+            };
+            var derniere = Math.max.apply(null, liste.filter(ouverteClasse).map(numSerie).filter(function (n) { return n != null; }).concat([0]));
             GROUPES = Object.assign({}, GROUPES);
             liste.forEach(function (ex) {
                 var n = numSerie(ex), g = GROUPES[ex.groupe] || {};
                 if (n != null && n < derniere && !g.section) GROUPES[ex.groupe] = Object.assign({}, g, { section: 'Anciennes séries', serie: g.serie || 'Série ' + n });
+                // séries pas encore ouvertes (accès anticipé) : dans le menu, marquées « À venir », jamais en série en cours
+                else if (n != null && n > derniere && !ouverteClasse(ex)) GROUPES[ex.groupe] = Object.assign({}, g, { section: 'Séries à venir', serie: g.serie || 'Série ' + n, aVenir: true });
             });
             // corrigé de la série évaluée (CORRIGES_SERIES, config.js) : affiché dès que la série est dans « Anciennes séries »
             liste.forEach(function (ex) {
                 var n = numSerie(ex), g = GROUPES[ex.groupe] || {}, url = /^Série \d+ ·/.test(ex.groupe) && ((window.CORRIGES_SERIES || {})[ex.niveau] || {})[n];
-                if (url && g.section && !g.texte)
+                if (url && g.section && !g.aVenir && !g.texte)
                     GROUPES[ex.groupe] = Object.assign({}, g, { texte: '🧾 <a href="' + url + '" target="_blank" rel="noopener">Corrigé de la série évaluée</a>' });
             });
             reafficherALOuverture(s, niv);
@@ -483,7 +491,7 @@
                 var info = GROUPES[ex.groupe] || {};
                 if (!info.section) return;
                 var cle = info.serie || ex.groupe;
-                if (!parSerie[cle]) { parSerie[cle] = { titre: ex.groupe, exercices: [] }; series.push(cle); }
+                if (!parSerie[cle]) { parSerie[cle] = { titre: (info.aVenir ? '🔒 À venir · ' : '') + ex.groupe, exercices: [] }; series.push(cle); }
                 parSerie[cle].exercices.push(ex);
             });
             anciennes.hidden = !series.length;
