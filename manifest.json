@@ -11,7 +11,9 @@
   "background_color": "#f5f7fb",
   "categories": ["education"],
   "icons": [
-    { "src": "img/icone-appli-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "img/icone-appli-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    { "src": "img/icone-appli-mac-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/icone-appli-mac-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "img/icone-appli-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "img/icone-appli-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
