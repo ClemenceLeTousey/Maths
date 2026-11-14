@@ -47,6 +47,7 @@ window.CORRIGES_SERIES = {
         8: '../automatismes-seconde/serie8-evaluation-corrige.pdf',
         9: '../automatismes-seconde/serie9-evaluation-corrige.pdf',
         10: '../automatismes-seconde/serie10-evaluation-corrige.pdf',
+        11: '../automatismes-seconde/serie11-evaluation-corrige.pdf',
         12: '../automatismes-seconde/serie12-evaluation-corrige.pdf',
         13: '../automatismes-seconde/serie13-evaluation-corrige.pdf'
     }
