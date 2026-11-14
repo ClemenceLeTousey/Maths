@@ -39,12 +39,13 @@ window.INTERACTIF_CODE_DEBLOCAGE = '81fea9c97d311bb5192cf2554509b7f790d43628be32
 /* Corrigé de l'évaluation (Jour 4 sur papier) de chaque série, par numéro de série.
    Le lien « 🧾 Corrigé de la série évaluée » apparaît sous la série dès qu'elle passe dans « Anciennes séries »
    (pour chaque classe, à l'ouverture de la série suivante). Pas de corrigé pour une série absente d'ici.
-   Les PDF sont copiés depuis Automatismes Hebdo (« SérieN-J4 - Corrigé.pdf »). */
+   De préférence le lien de partage Nextcloud de « SérieN-J4 - Corrigé.pdf » (Automatismes Hebdo) : toujours à jour après recompilation
+   (garder le même nom de fichier) ; sinon une copie du PDF dans automatismes-seconde/. */
 window.CORRIGES_SERIES = {
     seconde: {
-        6: '../automatismes-seconde/serie6-evaluation-corrige.pdf',
-        7: '../automatismes-seconde/serie7-evaluation-corrige.pdf',
-        8: '../automatismes-seconde/serie8-evaluation-corrige.pdf',
+        6: 'https://nuage02.apps.education.fr/index.php/s/9ozZkqz9prBiALt',
+        7: 'https://nuage02.apps.education.fr/index.php/s/sizzX7ykBcx5XcD',
+        8: 'https://nuage02.apps.education.fr/index.php/s/QS9cKdgqfAiYcZi',
         9: '../automatismes-seconde/serie9-evaluation-corrige.pdf',
         10: '../automatismes-seconde/serie10-evaluation-corrige.pdf',
         11: '../automatismes-seconde/serie11-evaluation-corrige.pdf',
