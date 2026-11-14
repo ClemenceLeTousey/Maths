@@ -316,7 +316,7 @@ h2 { margin: 0; font-size: 1.1rem; }
     </div>
   </section>
 
-  <div class="fin">
+  <div class="fin" id="fin">
     <img src="img/icone-appli-192.png" alt="">
     <p><strong>C'est installé !</strong> Cherche cette icône sur ton écran d'accueil. Elle s'ouvre directement sur le site, sans barre d'adresse.</p>
   </div>
@@ -350,6 +350,12 @@ h2 { margin: 0; font-size: 1.1rem; }
 (function () {
   var tabs = { android: document.getElementById('tab-android'), iphone: document.getElementById('tab-iphone') };
   var panes = { android: document.getElementById('p-android'), iphone: document.getElementById('p-iphone') };
+  // « C'est installé ! » masqué quand l'onglet affiché est sur « Autre » ou « Je ne sais pas »
+  function majFin() {
+    var visible = panes.android.hidden ? panes.iphone : panes.android;
+    var b = visible.querySelector('[data-nav][aria-pressed="true"]');
+    document.getElementById('fin').hidden = !!b && (b.dataset.nav === 'autre' || b.dataset.nav === 'inconnu');
+  }
   function choisir(k, focus) {
     Object.keys(tabs).forEach(function (n) {
       var on = n === k;
@@ -359,6 +365,7 @@ h2 { margin: 0; font-size: 1.1rem; }
     });
     if (focus) tabs[k].focus();
     try { localStorage.setItem('tuto-onglet', k); } catch (e) {}
+    majFin();
   }
   tabs.android.addEventListener('click', function () { choisir('android'); });
   tabs.iphone.addEventListener('click', function () { choisir('iphone'); });
@@ -383,6 +390,7 @@ h2 { margin: 0; font-size: 1.1rem; }
     function nav(k) {
       pane.querySelectorAll('[data-nav]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.nav === k ? 'true' : 'false'); });
       pane.querySelectorAll('[data-pour]').forEach(function (el) { el.hidden = el.dataset.pour !== k; });
+      majFin();
       if (k !== 'autre' && k !== 'inconnu') { try { localStorage.setItem('tuto-nav-' + os, k); } catch (e) {} }
     }
     pane.querySelectorAll('[data-nav]').forEach(function (b) {
