@@ -11,6 +11,53 @@
    On peut utiliser <b>gras</b>, <i>italique</i>, et <span class='f'>…</span> pour qu'une formule ne soit pas coupée en fin de ligne. Ne pas oublier la virgule entre deux blocs. */
 window.LEXIQUE = [
 
+    /* ---------- Consignes ---------- */
+    { mot: "exprimer en fonction de", aussi: ["exprimer", "en fonction de", "exprimer … en fonction de …", "s'exprime en fonction de"],
+      def: "« <b>Exprimer A en fonction de x</b> », c'est donner une <b>égalité</b> liant A et x : on écrit <span class='f'>A = …</span>, où, à droite du signe =, on trouve un calcul dans lequel la seule lettre est x (plus des nombres).",
+      ex: "Le périmètre P d'un carré de côté x s'exprime en fonction de x : <span class='f'>P = 4x</span>. Si y = 2x + 6, exprimer x en fonction de y donne <span class='f'>x = (y − 6) ÷ 2</span>.",
+      astuce: "La lettre qu'on exprime est seule à gauche du =. À droite, il ne doit rester que l'autre lettre.",
+      voir: ["expression", "isoler"] },
+
+    { mot: "déterminer", aussi: ["détermine", "déterminez"],
+      def: "Trouver une valeur ou un résultat, par la méthode de son choix (calcul, lecture graphique, raisonnement…). Il faut montrer comment on l'a trouvé.",
+      ex: "« Déterminer l'image de 3 par f » : calculer f(3) ou le lire sur la courbe.",
+      voir: ["justifier", "calculer"] },
+
+    { mot: "calculer", aussi: ["calcule", "calculez"],
+      def: "Trouver un résultat en faisant des opérations, en écrivant les étapes. Si la consigne ne dit rien, on donne la <b>valeur exacte</b>.",
+      ex: "« Calculer 2/3 + 1/6 » : 4/6 + 1/6 = 5/6.",
+      voir: ["valeur exacte", "arrondi", "déterminer"] },
+
+    { mot: "justifier", aussi: ["justifie", "justifiez", "justification", "expliquer", "explique", "en justifiant"],
+      def: "Dire <b>pourquoi</b> la réponse est vraie : citer la propriété, le calcul ou l'observation qui permet de l'affirmer. Une réponse juste sans justification ne rapporte pas tous les points.",
+      ex: "« 15 est-il premier ? Justifier. » Non, car 15 = 3 × 5 (il a d'autres diviseurs que 1 et lui-même).",
+      voir: ["montrer que", "conclure"] },
+
+    { mot: "montrer que", aussi: ["démontrer", "démontrer que", "montrer", "prouver", "prouver que"],
+      def: "Le résultat est <b>donné</b> dans l'énoncé : il faut expliquer, étape par étape, pourquoi il est vrai (calcul ou raisonnement). On ne se contente pas de le recopier, ni de le vérifier sur un exemple.",
+      ex: "« Montrer que (x + 1)² − 1 = x² + 2x » : on développe le membre de gauche et on trouve bien le membre de droite.",
+      voir: ["justifier", "vérifier", "conclure"] },
+
+    { mot: "vérifier", aussi: ["vérifie", "vérifiez", "vérification"],
+      def: "Contrôler qu'un résultat est juste, en général en le <b>remplaçant</b> dans l'énoncé (ou en refaisant le calcul) pour voir si ça « marche ».",
+      ex: "Vérifier que 2 est solution de 3x − 1 = 5 : 3 × 2 − 1 = 5. C'est vrai, donc 2 est bien solution.",
+      voir: ["solution", "montrer que"] },
+
+    { mot: "en déduire", aussi: ["déduire", "en déduire que", "déduis"],
+      def: "Utiliser le résultat de la question <b>précédente</b> pour répondre, sans tout refaire depuis le début.",
+      ex: "1) Factoriser x² − 4x. 2) En déduire les solutions de x² − 4x = 0 : on utilise x(x − 4) = 0.",
+      voir: ["justifier", "conclure"] },
+
+    { mot: "conclure", aussi: ["conclusion", "conclus"],
+      def: "Écrire une phrase finale qui répond clairement à la question posée, à partir de ce qu'on vient de trouver.",
+      ex: "« … donc le prix a augmenté de 12 %. »",
+      voir: ["justifier", "en déduire"] },
+
+    { mot: "préciser", aussi: ["précise", "précisez", "donner", "donne", "donnez"],
+      def: "Écrire la réponse demandée sans forcément détailler de calcul (« donner »), ou ajouter un détail demandé, par exemple l'unité ou l'arrondi (« préciser »).",
+      ex: "« Donner l'aire en cm², arrondie au dixième. »",
+      voir: ["arrondi", "justifier"] },
+
     /* ---------- Nombres et calculs ---------- */
     { mot: "valeur ronde", aussi: ["nombre rond", "arrondir à une valeur ronde", "valeurs simples"],
       def: "Nombre « facile » pour calculer de tête : un nombre entier, souvent terminé par des zéros (10, 50, 200, 1 000…), ou un nombre simple comme 0,5 ou 2,5. On remplace un nombre compliqué par une valeur ronde proche pour trouver rapidement un <b>ordre de grandeur</b>.",
@@ -183,10 +230,10 @@ window.LEXIQUE = [
       voir: ["ordre de grandeur"] },
 
     /* ---------- Calcul littéral et équations ---------- */
-    { mot: "expression", aussi: ["expression littérale", "exprimer", "exprimer en fonction de", "en fonction de"],
-      def: "Une expression littérale est un calcul qui contient des lettres. « <b>Exprimer A en fonction de x</b> » : écrire A avec un calcul dans lequel la seule lettre est x.",
-      ex: "Le périmètre d'un carré de côté x s'exprime en fonction de x : P = 4x.",
-      voir: ["développer", "réduire"] },
+    { mot: "expression", aussi: ["expression littérale"],
+      def: "Une expression littérale est un calcul qui contient des lettres.",
+      ex: "4x + 3 et x² − 5x sont des expressions littérales.",
+      voir: ["exprimer en fonction de", "développer", "réduire"] },
 
     { mot: "développer", aussi: ["développement", "développer et réduire"],
       def: "Transformer un produit en somme (on « enlève les parenthèses »), grâce à la distributivité. C'est le contraire de factoriser.",
