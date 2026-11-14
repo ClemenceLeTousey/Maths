@@ -63,6 +63,14 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie11-j2', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 2', court: 'S11 · J2', url: 'seconde/serie11.html?j=2', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
     { niveau: 'seconde', id: 'seconde/serie11-j3', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 3', court: 'S11 · J3', url: 'seconde/serie11.html?j=3', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
     { niveau: 'seconde', id: 'seconde/serie11-j4', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 4 · bilan (à la maison)', court: 'S11 · J4', url: 'seconde/serie11.html?j=4', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
+    { niveau: 'seconde', id: 'seconde/serie12-j1', groupe: 'Série 12 · semaine du 7 au 11 décembre', titre: 'Jour 1', court: 'S12 · J1', url: 'seconde/serie12.html?j=1', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
+    { niveau: 'seconde', id: 'seconde/serie12-j2', groupe: 'Série 12 · semaine du 7 au 11 décembre', titre: 'Jour 2', court: 'S12 · J2', url: 'seconde/serie12.html?j=2', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
+    { niveau: 'seconde', id: 'seconde/serie12-j3', groupe: 'Série 12 · semaine du 7 au 11 décembre', titre: 'Jour 3', court: 'S12 · J3', url: 'seconde/serie12.html?j=3', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
+    { niveau: 'seconde', id: 'seconde/serie12-bilan', groupe: 'Facultatif · Série 12 en temps limité ⏱', titre: 'Bilan Série 12 (10 questions chronométrées)', court: 'S12 · Bilan', url: 'seconde/serie12-bilan.html', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
+    { niveau: 'seconde', id: 'seconde/serie13-j1', groupe: 'Série 13 · semaine du 14 au 18 décembre', titre: 'Jour 1', court: 'S13 · J1', url: 'seconde/serie13.html?j=1', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
+    { niveau: 'seconde', id: 'seconde/serie13-j2', groupe: 'Série 13 · semaine du 14 au 18 décembre', titre: 'Jour 2', court: 'S13 · J2', url: 'seconde/serie13.html?j=2', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
+    { niveau: 'seconde', id: 'seconde/serie13-j3', groupe: 'Série 13 · semaine du 14 au 18 décembre', titre: 'Jour 3', court: 'S13 · J3', url: 'seconde/serie13.html?j=3', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
+    { niveau: 'seconde', id: 'seconde/serie13-bilan', groupe: 'Facultatif · Série 13 en temps limité ⏱', titre: 'Bilan Série 13 (10 questions chronométrées)', court: 'S13 · Bilan', url: 'seconde/serie13-bilan.html', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
     { niveau: 'seconde', id: 'seconde/tp-photo', groupe: 'TP Python · Photographie numérique', titre: 'Créer et modifier une image (10 étapes)', court: 'TP Photo', url: 'seconde/tp-photo.html', tp: true,
       codeAcces: '2a04e66a8ad28d6c60b6cd57d4d4b45e894397c1baeb56b20bbe306c107ee99d' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
     // TP1 Premiers pas (version interactive du TP Capytale) : en préparation (PROF-2NDE et 2H-TARTAGLIA seulement ; retirer « comptes » pour publier)
@@ -147,6 +155,10 @@ window.INTERACTIF_GROUPES = {
     'Facultatif · Série 10 en temps limité ⏱': {},
     'Série 10 · semaine du 23 au 27 novembre': {},
     'Série 11 · semaine du 30 novembre au 4 décembre': {},
+    'Série 12 · semaine du 7 au 11 décembre': {},
+    'Facultatif · Série 12 en temps limité ⏱': {},
+    'Série 13 · semaine du 14 au 18 décembre': {},
+    'Facultatif · Série 13 en temps limité ⏱': {},
     'Série 8 · semaine du 9 au 13 novembre': {
         section: 'Anciennes séries', serie: 'Série 8',
         texte: '🧾 <a href="../automatismes-seconde/serie8-papier-corrige.pdf" target="_blank" rel="noopener">Corrigé de la série évaluée</a>'

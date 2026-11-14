@@ -77,12 +77,12 @@ window.LEXIQUE = [
       ex: "3/4 = 0,75 est un nombre décimal. 1/3 = 0,333… n'en est pas un (les 3 ne s'arrêtent jamais).",
       voir: ["fraction", "dixième"] },
 
-    { mot: "fraction", aussi: ["écriture fractionnaire", "forme fractionnaire"],
+    { mot: "fraction", aussi: ["écriture fractionnaire", "forme fractionnaire", "(fraction", "dfrac"],
       def: "Écriture a/b, qui veut dire « a divisé par b » (avec b ≠ 0). a est le <b>numérateur</b> (en haut), b le <b>dénominateur</b> (en bas).",
       ex: "3/4 : on partage en 4 parts égales et on en prend 3. 3/4 = 0,75.",
       voir: ["dénominateur", "fraction irréductible", "tiers", "quotient"] },
 
-    { mot: "fraction irréductible", aussi: ["irréductible", "simplifier une fraction"],
+    { mot: "fraction irréductible", aussi: ["irréductible", "simplifier une fraction", "(fraction irréductible)"],
       def: "Fraction qu'on ne peut plus simplifier : le numérateur et le dénominateur n'ont plus de diviseur commun (à part 1).",
       ex: "12/18 = 2/3 (on divise en haut et en bas par 6). 2/3 est irréductible.",
       voir: ["fraction", "simplifier"] },
@@ -156,6 +156,11 @@ window.LEXIQUE = [
       def: "Ordre croissant : du plus petit au plus grand. Ordre décroissant : du plus grand au plus petit.",
       ex: "Dans l'ordre croissant : 0,04 &lt; 0,045 &lt; 0,05.",
       voir: ["comparer"] },
+
+    { mot: "priorités opératoires", aussi: ["priorité", "priorités", "priorité des opérations", "ordre des opérations", "prioritaire"],
+      def: "Dans un calcul sans parenthèses, on effectue d'abord les <b>puissances</b>, puis les <b>multiplications et divisions</b>, puis les <b>additions et soustractions</b>.",
+      ex: "3 − 2/5 × 10 = 3 − 4 = −1 (on multiplie avant de soustraire). −3² = −9, mais (−3)² = 9.",
+      voir: ["fraction", "carré", "puissance"] },
 
     { mot: "intervalle", aussi: ["crochet", "crochets"],
       def: "Ensemble de tous les nombres compris entre deux bornes. Crochet tourné vers le nombre : borne comprise ; crochet tourné vers l'extérieur : borne exclue.",
@@ -274,7 +279,7 @@ window.LEXIQUE = [
       ex: "Un prix passe de 50 € à 60 € : t = (60 − 50)/50 = 0,2, soit une hausse de 20 %.",
       voir: ["coefficient multiplicateur", "évolutions successives"] },
 
-    { mot: "coefficient multiplicateur", aussi: ["cm", "coef multiplicateur", "coef"],
+    { mot: "coefficient multiplicateur", aussi: ["cm", "coef multiplicateur", "coef", "multiplié", "a été multiplié"],
       def: "Nombre par lequel on multiplie une valeur pour appliquer une évolution. Augmenter de t % : multiplier par 1 + t/100. Baisser de t % : multiplier par 1 − t/100.",
       ex: "+8 % : × 1,08. −25 % : × 0,75. Un coefficient de 0,9 correspond à une baisse de 10 %.",
       voir: ["taux d'évolution", "évolutions successives"] },
@@ -283,6 +288,11 @@ window.LEXIQUE = [
       def: "Deux grandeurs sont proportionnelles quand on passe de l'une à l'autre en multipliant toujours par le <b>même nombre</b>.",
       ex: "Le prix de pommes à 2 € le kg est proportionnel à la masse : 3 kg → 6 €, 5 kg → 10 €.",
       voir: ["proportion", "pourcentage"] },
+
+    { mot: "évolution réciproque", aussi: ["taux réciproque", "revenir au prix de départ", "revenir au départ", "retrouver la valeur de départ", "compenser"],
+      def: "Évolution qui ramène à la valeur de départ. Son coefficient multiplicateur est l'<b>inverse</b> du coefficient de la première évolution. Attention : une baisse de 20 % ne compense pas une hausse de 20 % !",
+      ex: "Hausse de 25 % : × 1,25. Pour revenir au départ : × 1/1,25 = × 0,8, c'est-à-dire une baisse de 20 %.",
+      voir: ["coefficient multiplicateur", "inverse", "évolutions successives"] },
 
     { mot: "évolutions successives", aussi: ["évolution globale", "taux global", "coefficient global", "coefficient multiplicateur global"],
       def: "Plusieurs évolutions à la suite. Le coefficient multiplicateur global est le <b>produit</b> des coefficients. Attention : on n'additionne pas les pourcentages !",
@@ -333,6 +343,12 @@ window.LEXIQUE = [
       ex: "A(2 ; 7) est sur la droite y = 3x + 1, car 3 × 2 + 1 = 7.",
       voir: ["coefficient directeur", "ordonnée à l'origine"] },
 
+    { mot: "point d'intersection", aussi: ["intersection", "se coupent", "coupe l'axe", "point commun"],
+      si: ["droite", "axe", "courbe"],
+      def: "Point où deux droites (ou une droite et un axe, ou deux courbes) se croisent : ses coordonnées vérifient les deux équations à la fois. Sur l'axe des abscisses, l'ordonnée vaut 0 ; sur l'axe des ordonnées, l'abscisse vaut 0.",
+      ex: "La droite y = 2x − 6 coupe l'axe des abscisses quand y = 0 : 2x − 6 = 0, donc x = 3. Le point d'intersection est (3 ; 0).",
+      voir: ["équation réduite", "abscisse et ordonnée"] },
+
     { mot: "coefficient directeur", aussi: ["pente", "coef directeur"],
       def: "Dans l'équation réduite y = mx + p, m est le coefficient directeur : quand x augmente de 1, y augmente de m. Avec deux points A et B de la droite : m = (y<sub>B</sub> − y<sub>A</sub>) ÷ (x<sub>B</sub> − x<sub>A</sub>).",
       ex: "A(1 ; 2) et B(3 ; 8) : m = (8 − 2)/(3 − 1) = 6/2 = 3.",
@@ -342,6 +358,11 @@ window.LEXIQUE = [
       def: "Dans y = mx + p, p est l'ordonnée à l'origine : c'est l'ordonnée du point où la droite coupe l'axe vertical (là où x = 0).",
       ex: "La droite y = 2x − 5 coupe l'axe des ordonnées au point (0 ; −5).",
       voir: ["équation réduite", "coefficient directeur"] },
+
+    { mot: "fonction carré", aussi: ["f(x)=x^2", "x au carré", "parabole"],
+      def: "La fonction carré associe à chaque nombre x son carré x² = x × x. Les images sont toujours positives ou nulles. Un nombre positif a <b>deux</b> antécédents (opposés l'un de l'autre), 0 en a un seul, un nombre négatif n'en a aucun. Sa courbe s'appelle une <b>parabole</b>.",
+      ex: "5² = 25 et (−5)² = 25 : 25 a deux antécédents, −5 et 5.",
+      voir: ["carré", "image (fonction)", "antécédent"] },
 
     { mot: "fonction inverse", aussi: ["1/x"],
       def: "La fonction qui, à tout nombre x non nul, associe son inverse 1/x. Elle n'est pas définie en 0.",
@@ -367,8 +388,8 @@ window.LEXIQUE = [
       def: "Droite qui « touche » la courbe en un point, en suivant sa direction à cet endroit. Son coefficient directeur est le nombre dérivé f'(a).",
       voir: ["dérivée", "coefficient directeur"] },
 
-    { mot: "diagramme", aussi: ["diagramme en barres", "diagramme circulaire", "histogramme", "graduation", "graduations"],
-      def: "Dessin qui représente des données. Avant de lire, on repère ce que représente chaque axe et la valeur d'une <b>graduation</b> (l'écart entre deux traits).",
+    { mot: "diagramme", aussi: ["diagramme en barres", "diagramme circulaire", "histogramme", "graduation", "graduations", "secteur", "camembert"],
+      def: "Dessin qui représente des données. Avant de lire, on repère ce que représente chaque axe et la valeur d'une <b>graduation</b> (l'écart entre deux traits). Dans un <b>diagramme circulaire</b>, l'angle de chaque secteur est proportionnel à l'effectif : le disque entier (360°) représente l'effectif total.",
       ex: "Si les graduations vont de 0 à 50 de 10 en 10 et qu'une barre s'arrête à mi-chemin entre 20 et 30, elle vaut 25.",
       voir: ["effectif", "pourcentage"] },
 
@@ -384,16 +405,23 @@ window.LEXIQUE = [
       voir: ["périmètre"] },
 
     { mot: "codage", aussi: ["codé", "codée", "figure codée", "code"],
+      si: ["segment", "figure", "longueur", "angle"],
       def: "Petits signes dessinés sur une figure pour donner une information : des signes identiques (traits, ronds…) sur des segments indiquent qu'ils ont la <b>même longueur</b> ; un petit carré indique un <b>angle droit</b>.",
       ex: "Sur un segment partagé en morceaux, tous les morceaux marqués d'un petit rond ont la même longueur.",
       voir: ["périmètre"] },
+
+    { mot: "trigonométrie", aussi: ["cosinus", "sinus", "cos(", "sin(", "tan(", "soh cah toa", "côté adjacent", "côté opposé", "adjacent", "mode degrés", "sin(30", "cos(60", "widehat"],
+      def: "Dans un triangle rectangle, pour un angle aigu : <b>cosinus</b> = côté adjacent ÷ hypoténuse ; <b>sinus</b> = côté opposé ÷ hypoténuse ; <b>tangente</b> = côté opposé ÷ côté adjacent. Le côté <b>adjacent</b> touche l'angle (et ce n'est pas l'hypoténuse) ; le côté <b>opposé</b> est en face de l'angle.",
+      ex: "ABC rectangle en A, AB = 4, AC = 3, BC = 5. Pour l'angle en B : cos = AB/BC = 4/5 ; sin = AC/BC = 3/5 ; tan = AC/AB = 3/4.",
+      astuce: "<b>SOH CAH TOA</b> : Sinus = Opposé/Hypoténuse, Cosinus = Adjacent/Hypoténuse, Tangente = Opposé/Adjacent. Avec la calculatrice, vérifie qu'elle est en mode <b>degrés</b>.",
+      voir: ["hypoténuse", "Pythagore"] },
 
     { mot: "hypoténuse", aussi: [],
       def: "Dans un triangle rectangle, c'est le côté opposé à l'angle droit. C'est le plus long des trois côtés.",
       ex: "ABC rectangle en A : l'hypoténuse est [BC].",
       voir: ["Pythagore"] },
 
-    { mot: "Pythagore", aussi: ["théorème de Pythagore"],
+    { mot: "Pythagore", aussi: ["théorème de Pythagore", "rectangle en"],
       def: "Dans un triangle rectangle, le carré de l'hypoténuse est égal à la somme des carrés des deux autres côtés.",
       ex: "ABC rectangle en A, AB = 3 et AC = 4 : BC² = 3² + 4² = 25, donc BC = 5.",
       voir: ["hypoténuse", "racine carrée"] },

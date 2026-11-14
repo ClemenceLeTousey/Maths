@@ -15,6 +15,11 @@
         jaune: ['yellow', 'gele'], noire: ['black', 'zwarte']
     };
     function coul(c, k) { return COULEURS[c.replace(/s$/, '')][k]; }
+    var TRANSPORTS = {
+        'en bus': ['by bus', 'met de bus'], 'en voiture': ['by car', 'met de auto'], 'à vélo': ['by bike', 'met de fiets'],
+        'à pied': ['on foot', 'te voet'], 'en train': ['by train', 'met de trein']
+    };
+    function transp(t, k) { return TRANSPORTS[t.trim()][k]; }
 
     // [français, anglais, néerlandais] ; une traduction peut être une fonction (groupes capturés) -> texte
     var R = [
@@ -191,6 +196,43 @@
         ['Que renvoie @ ?', 'What does $1 return?', 'Wat geeft $1 terug?'],
         ['Trouver <b>tous</b> les nombres @ pour lesquels @ renvoie @', 'Find <b>all</b> the numbers $1 for which $2 returns $3', 'Zoek <b>alle</b> getallen $1 waarvoor $2 de waarde $3 teruggeeft'],
 
+        /* ----- Séries 12 et 13 : droites, trigonométrie, évolutions, graphiques, fractions ----- */
+        ['La droite @ a pour équation @.', 'The line $1 has equation $2.', 'De lijn $1 heeft vergelijking $2.'],
+        ['Lequel de ces points appartient à @ ?', 'Which of these points lies on $1?', 'Welk van deze punten ligt op $1?'],
+        ['Le point @ de @ a pour ordonnée @. Donner son abscisse.', 'The point $1 on $2 has y-coordinate $3. Give its x-coordinate.', 'Het punt $1 op $2 heeft y-coördinaat $3. Geef de x-coördinaat.'],
+        ['Le point @ de @ a pour abscisse @. Donner son ordonnée.', 'The point $1 on $2 has x-coordinate $3. Give its y-coordinate.', 'Het punt $1 op $2 heeft x-coördinaat $3. Geef de y-coördinaat.'],
+        ['Donner les coordonnées de son point d\'intersection avec l\'axe des abscisses.', 'Give the coordinates of its point of intersection with the x-axis.', 'Geef de coördinaten van het snijpunt met de x-as.'],
+        ['Le point @ appartient à la droite @ d\'équation @. Déterminer @.', 'The point $1 lies on the line $2 with equation $3. Find $4.', 'Het punt $1 ligt op de lijn $2 met vergelijking $3. Bepaal $4.'],
+        ['Le triangle @ est rectangle en @, avec @, @ et @.', 'Triangle $1 has a right angle at $2, with $3, $4 and $5.', 'Driehoek $1 is rechthoekig in $2, met $3, $4 en $5.'],
+        ['Le triangle @ est rectangle en @, avec @ cm et @.', 'Triangle $1 has a right angle at $2, with $3 cm and $4.', 'Driehoek $1 is rechthoekig in $2, met $3 cm en $4.'],
+        ['La valeur de @ est :', 'The value of $1 is:', 'De waarde van $1 is:'],
+        ['On rappelle que @.', 'Reminder: $1.', 'Ter herinnering: $1.'],
+        ['À l\'aide de la calculatrice, calculer @ arrondi au dixième', 'Using a calculator, calculate $1 rounded to one decimal place', 'Bereken met de rekenmachine $1, afgerond op één decimaal'],
+        [' (fraction irréductible)', ' (fraction in lowest terms)', ' (onvereenvoudigbare breuk)'],
+        ['Un prix passe de @ € à @ €. Par quel nombre a-t-il été multiplié ?', 'A price goes from $1 € to $2 €. By what number has it been multiplied?', 'Een prijs gaat van $1 € naar $2 €. Met welk getal is de prijs vermenigvuldigd?'],
+        ['Un article coûte @ €. Son prix augmente de @. Quel est son nouveau prix (en €) ?', 'An item costs $1 €. Its price increases by $2. What is its new price (in €)?', 'Een artikel kost $1 €. De prijs stijgt met $2. Wat is de nieuwe prijs (in €)?'],
+        ['Un article coûte @ €. Son prix baisse de @. Quel est son nouveau prix (en €) ?', 'An item costs $1 €. Its price decreases by $2. What is its new price (in €)?', 'Een artikel kost $1 €. De prijs daalt met $2. Wat is de nieuwe prijs (in €)?'],
+        ['Un prix augmente de @, puis baisse de @.', 'A price increases by $1, then decreases by $2.', 'Een prijs stijgt met $1 en daalt daarna met $2.'],
+        ['Un prix baisse de @, puis augmente de @.', 'A price decreases by $1, then increases by $2.', 'Een prijs daalt met $1 en stijgt daarna met $2.'],
+        ['Quel est le taux d\'évolution global ? (négatif pour une baisse)', 'What is the overall percentage change? (negative for a decrease)', 'Wat is de totale procentuele verandering? (negatief bij een daling)'],
+        ['Un prix augmente de @. De quel pourcentage doit-il baisser pour revenir au prix de départ ?', 'A price increases by $1. By what percentage must it decrease to return to the original price?', 'Een prijs stijgt met $1. Met hoeveel procent moet hij dalen om weer de oorspronkelijke prijs te worden?'],
+        ['Un prix baisse de @. De quel pourcentage doit-il augmenter pour revenir au prix de départ ?', 'A price decreases by $1. By what percentage must it increase to return to the original price?', 'Een prijs daalt met $1. Met hoeveel procent moet hij stijgen om weer de oorspronkelijke prijs te worden?'],
+        ['Quelle est la probabilité de tirer une boule COUL ou COUL ?',
+            function (c, c2) { return 'What is the probability of drawing a ' + coul(c, 0) + ' or ' + coul(c2, 0) + ' ball?'; },
+            function (c, c2) { return 'Wat is de kans om een ' + coul(c, 1) + ' of ' + coul(c2, 1) + ' knikker te trekken?'; }],
+        ['Quelle est la probabilité de tirer une boule COUL ?',
+            function (c) { return 'What is the probability of drawing a ' + coul(c, 0) + ' ball?'; },
+            function (c) { return 'Wat is de kans om een ' + coul(c, 1) + ' knikker te trekken?'; }],
+        ['Le diagramme en barres donne le moyen de transport des élèves d\'un club.', 'The bar chart shows how the students in a club travel.', 'Het staafdiagram laat zien hoe de leerlingen van een club reizen.'],
+        ['Le diagramme en barres donne le moyen de transport des @ élèves d\'un club.', 'The bar chart shows how the $1 students in a club travel.', 'Het staafdiagram laat zien hoe de $1 leerlingen van een club reizen.'],
+        ['Le diagramme circulaire donne le moyen de transport des @ élèves d\'un club.', 'The pie chart shows how the $1 students in a club travel.', 'Het cirkeldiagram laat zien hoe de $1 leerlingen van een club reizen.'],
+        ['Combien d\'élèves viennent # ?',
+            function (t) { return 'How many students travel ' + transp(t, 0) + '?'; },
+            function (t) { return 'Hoeveel leerlingen komen ' + transp(t, 1) + '?'; }],
+        ['Quel pourcentage des élèves viennent # ?',
+            function (t) { return 'What percentage of the students travel ' + transp(t, 0) + '?'; },
+            function (t) { return 'Hoeveel procent van de leerlingen komt ' + transp(t, 1) + '?'; }],
+
         /* ----- Phrases générales (en dernier) ----- */
         ['@ est égal à :', '$1 is equal to:', '$1 is gelijk aan:'],
         ['Simplifier : @', 'Simplify: $1', 'Vereenvoudig: $1'],
@@ -284,6 +326,10 @@
                 return 'A product is zero if and only if at least one of its factors is zero.<br>' +
                     'Example: $' + eq + '$: $' + a + '=0$ or $' + b + '=0$, so $x=' + s1 + '$ or $x=' + s2 + '$.';
             },
+            trigo: 'In a right-angled triangle, for an acute angle: $\\cos=\\dfrac{\\text{adjacent}}{\\text{hypotenuse}}$ ; $\\sin=\\dfrac{\\text{opposite}}{\\text{hypotenuse}}$ ; $\\tan=\\dfrac{\\text{opposite}}{\\text{adjacent}}$ (<b>SOH CAH TOA</b>).',
+            milieu: function (ex) {
+                return 'The midpoint $M$ of $[AB]$ has as coordinates the <b>mean</b> of the coordinates of $A$ and $B$: $M\\left(\\dfrac{x_A+x_B}{2}\\ ;\\ \\dfrac{y_A+y_B}{2}\\right)$.<br>Example: ' + ex;
+            },
             pythagore: function (a, b, calc) {
                 return 'In a right-angled triangle, the square of the <b>hypotenuse</b> (the side opposite the right angle) equals the sum of the squares of the other two sides.<br>' +
                     'Example: sides of the right angle $' + a + '$ cm and $' + b + '$ cm: hypotenuse$^2=' + calc + '$ cm.';
@@ -330,6 +376,10 @@
             produit: function (eq, a, b, s1, s2) {
                 return 'Een product is nul als en slechts als minstens één van de factoren nul is.<br>' +
                     'Voorbeeld: $' + eq + '$: $' + a + '=0$ of $' + b + '=0$, dus $x=' + s1 + '$ of $x=' + s2 + '$.';
+            },
+            trigo: 'In een rechthoekige driehoek geldt voor een scherpe hoek: $\\cos=\\dfrac{\\text{aanliggende}}{\\text{schuine zijde}}$ ; $\\sin=\\dfrac{\\text{overstaande}}{\\text{schuine zijde}}$ ; $\\tan=\\dfrac{\\text{overstaande}}{\\text{aanliggende}}$ (<b>SOS CAS TOA</b>).',
+            milieu: function (ex) {
+                return 'De coördinaten van het midden $M$ van $[AB]$ zijn het <b>gemiddelde</b> van de coördinaten van $A$ en $B$: $M\\left(\\dfrac{x_A+x_B}{2}\\ ;\\ \\dfrac{y_A+y_B}{2}\\right)$.<br>Voorbeeld: ' + ex;
             },
             pythagore: function (a, b, calc) {
                 return 'In een rechthoekige driehoek is het kwadraat van de <b>schuine zijde</b> (de zijde tegenover de rechte hoek) gelijk aan de som van de kwadraten van de twee andere zijden.<br>' +
@@ -400,7 +450,39 @@
             milieu: 'The midpoint $M$ of $[AB]$ has as coordinates the <b>mean</b> of the coordinates of $A$ and $B$: $M\\left(\\dfrac{x_A+x_B}{2}\\ ;\\ \\dfrac{y_A+y_B}{2}\\right)$.<br>' +
                 'Example: $A(1\\ ;\\ 4)$ and $B(5\\ ;\\ -2)$: $M\\left(\\dfrac{1+5}{2}\\ ;\\ \\dfrac{4+(-2)}{2}\\right)=M(3\\ ;\\ 1)$.',
             proportionPourcent: 'For a proportion of a proportion, <b>multiply</b> the two proportions.<br>' +
-                'Example: $50\\,\\%$ of the students are girls and, of these, $40\\,\\%$ do sport: $0{,}5\\times0{,}4=0{,}2$, i.e. $20\\,\\%$ of the students.'
+                'Example: $50\\,\\%$ of the students are girls and, of these, $40\\,\\%$ do sport: $0{,}5\\times0{,}4=0{,}2$, i.e. $20\\,\\%$ of the students.',
+            droite: 'A point lies on the line with equation $y=mx+p$ if its coordinates satisfy the equation: replace $x$ with the <b>x-coordinate</b> (the first number); you must get the <b>y-coordinate</b> (the second one).<br>' +
+                'Example: $(d)$: $y=2x-1$. For $A(3\\ ;\\ 5)$: $2\\times3-1=5$, so $A\\in(d)$. For $B(5\\ ;\\ 3)$: $2\\times5-1=9\\neq3$, so $B\\notin(d)$.',
+            probaSimple: 'When all outcomes are equally likely: $P=\\dfrac{\\text{number of favourable outcomes}}{\\text{total number of outcomes}}$.<br>' +
+                'Example: $4$ red, $3$ green and $5$ blue balls ($12$ balls): $P(\\text{green})=\\dfrac{3}{12}=\\dfrac{1}{4}$. Type the answer <code>3/12</code> or <code>1/4</code>.',
+            medianeFinal: 'The <b>median</b>: <b>first put</b> the values in ascending order, then take the middle one.<br>' +
+                'Example: $15\\ ;\\ 3\\ ;\\ 8\\ ;\\ 11\\ ;\\ 6$ in order gives $3\\ ;\\ 6\\ ;\\ 8\\ ;\\ 11\\ ;\\ 15$: the median is $8$.',
+            trigo: E.trigo + '<br>The <b>adjacent</b> side touches the angle (it is not the hypotenuse); the <b>opposite</b> side faces the angle.<br>' +
+                'Example: $ABC$ right-angled at $A$, $AB=4$, $AC=3$, $BC=5$: $\\cos(\\widehat{ABC})=\\dfrac{AB}{BC}=\\dfrac{4}{5}$.',
+            trigoSimple: E.trigo + '<br>Example: $ABC$ right-angled at $A$, $AB=8$, $AC=6$, $BC=10$: $\\sin(\\widehat{ABC})=\\dfrac{AC}{BC}=\\dfrac{6}{10}=\\dfrac{3}{5}$.',
+            milieuSimple: E.milieu('$A(-3\\ ;\\ 2)$ and $B(5\\ ;\\ 8)$: $M\\left(\\dfrac{-3+5}{2}\\ ;\\ \\dfrac{2+8}{2}\\right)=M(1\\ ;\\ 5)$.'),
+            milieuFinal: E.milieu('$A(4\\ ;\\ -1)$ and $B(-2\\ ;\\ 7)$: $M\\left(\\dfrac{4+(-2)}{2}\\ ;\\ \\dfrac{-1+7}{2}\\right)=M(1\\ ;\\ 3)$.'),
+            inequationFinal: 'Solve an inequality like an equation; when you divide by a <b>positive</b> number, the inequality sign stays the same.<br>' +
+                'Example: $5x+2>17$ ; $5x>15$ ; $x>3$.',
+            evolutionCM: 'The <b>multiplier</b> is the number by which you multiply the starting value to get the final value: $CM=\\dfrac{\\text{final value}}{\\text{initial value}}$.<br>' +
+                'Example: a price goes from $50$ € to $60$ €: $CM=\\dfrac{60}{50}=1{,}2$, an increase of $20\\,\\%$.',
+            evolutionSimple: '$CM=\\dfrac{\\text{final value}}{\\text{initial value}}$. If $CM>1$, it is an increase; if $CM<1$, a decrease.<br>' +
+                'Example: a price goes from $80$ € to $60$ €: $CM=\\dfrac{60}{80}=0{,}75$; a decrease of $25\\,\\%$.',
+            proportionPourcentSimple: 'For a proportion of a proportion, <b>multiply</b> the two proportions.<br>' +
+                'Example: $40\\,\\%$ of the students are girls and, of these, $50\\,\\%$ do sport: $0{,}4\\times0{,}5=0{,}2$, i.e. $20\\,\\%$ of the students.',
+            proportionPourcentFinal: 'For a proportion of a proportion, <b>multiply</b> the two proportions.<br>' +
+                'Example: $30\\,\\%$ of the members are children and, of these, $50\\,\\%$ take part in competitions: $0{,}3\\times0{,}5=0{,}15$, i.e. $15\\,\\%$ of the members.',
+            pythagoreFinal: E.pythagore(5, 12, '25+144=169$, so hypotenuse $=13'),
+            carre: 'The square function: $f(x)=x^2=x\\times x$. For a negative number, use <b>brackets</b>: the square of a number is never negative.<br>' +
+                'Example: $f(-4)=(-4)^2=(-4)\\times(-4)=16$. Careful: $-4^2=-16$, because without brackets only $4$ is squared.',
+            droiteSimple: 'To find the y-coordinate of the point on the line $y=mx+p$ with a given x-coordinate, replace $x$ with that x-coordinate.<br>' +
+                'Example: $(d)$: $y=-3x+4$. The point with x-coordinate $2$ has y-coordinate $-3\\times2+4=-2$.',
+            probaFinal: 'When all outcomes are equally likely: $P=\\dfrac{\\text{number of favourable outcomes}}{\\text{total number of outcomes}}$.<br>' +
+                'Example: $2$ black and $6$ yellow balls ($8$ balls): $P(\\text{black})=\\dfrac{2}{8}=\\dfrac{1}{4}$.',
+            lireGraphique: 'In a bar chart, read the height of the bar on the vertical axis. First look at the <b>scale</b>: what is one gridline worth?<br>' +
+                'Example: the labelled gridlines are $0$, $10$, $20$… with one line in between: each line is worth $5$. A bar that stops on the $3$rd line is worth $15$.',
+            fractionsOps: 'To add two fractions, write them with the <b>same denominator</b>, then add the numerators (the denominator does not change).<br>' +
+                'Example: $\\dfrac{1}{4}+\\dfrac{5}{8}=\\dfrac{2}{8}+\\dfrac{5}{8}=\\dfrac{7}{8}$.'
         },
         nl: {
             calculPourcentage: N.pourc + '<br>Tips: $10\\,\\%$ is delen door $10$; $25\\,\\%$ is een kwart; $50\\,\\%$ de helft; $75\\,\\%$ driekwart.<br>' +
@@ -463,7 +545,39 @@
             milieu: 'De coördinaten van het midden $M$ van $[AB]$ zijn het <b>gemiddelde</b> van de coördinaten van $A$ en $B$: $M\\left(\\dfrac{x_A+x_B}{2}\\ ;\\ \\dfrac{y_A+y_B}{2}\\right)$.<br>' +
                 'Voorbeeld: $A(1\\ ;\\ 4)$ en $B(5\\ ;\\ -2)$: $M\\left(\\dfrac{1+5}{2}\\ ;\\ \\dfrac{4+(-2)}{2}\\right)=M(3\\ ;\\ 1)$.',
             proportionPourcent: 'Voor een deel van een deel <b>vermenigvuldig</b> je de twee delen.<br>' +
-                'Voorbeeld: $50\\,\\%$ van de leerlingen zijn meisjes en van hen sport $40\\,\\%$: $0{,}5\\times0{,}4=0{,}2$, dus $20\\,\\%$ van de leerlingen.'
+                'Voorbeeld: $50\\,\\%$ van de leerlingen zijn meisjes en van hen sport $40\\,\\%$: $0{,}5\\times0{,}4=0{,}2$, dus $20\\,\\%$ van de leerlingen.',
+            droite: 'Een punt ligt op de lijn met vergelijking $y=mx+p$ als de coördinaten aan de vergelijking voldoen: vervang $x$ door de <b>x-coördinaat</b> (het eerste getal); je moet de <b>y-coördinaat</b> (het tweede) krijgen.<br>' +
+                'Voorbeeld: $(d)$: $y=2x-1$. Voor $A(3\\ ;\\ 5)$: $2\\times3-1=5$, dus $A\\in(d)$. Voor $B(5\\ ;\\ 3)$: $2\\times5-1=9\\neq3$, dus $B\\notin(d)$.',
+            probaSimple: 'Als alle uitkomsten even waarschijnlijk zijn: $P=\\dfrac{\\text{aantal gunstige uitkomsten}}{\\text{totaal aantal uitkomsten}}$.<br>' +
+                'Voorbeeld: $4$ rode, $3$ groene en $5$ blauwe knikkers ($12$ knikkers): $P(\\text{groen})=\\dfrac{3}{12}=\\dfrac{1}{4}$. Typ het antwoord <code>3/12</code> of <code>1/4</code>.',
+            medianeFinal: 'De <b>mediaan</b>: zet de waarden <b>eerst</b> op volgorde van klein naar groot en neem dan de middelste.<br>' +
+                'Voorbeeld: $15\\ ;\\ 3\\ ;\\ 8\\ ;\\ 11\\ ;\\ 6$ geordend geeft $3\\ ;\\ 6\\ ;\\ 8\\ ;\\ 11\\ ;\\ 15$: de mediaan is $8$.',
+            trigo: N.trigo + '<br>De <b>aanliggende</b> zijde raakt de hoek (en is niet de schuine zijde); de <b>overstaande</b> zijde ligt tegenover de hoek.<br>' +
+                'Voorbeeld: $ABC$ rechthoekig in $A$, $AB=4$, $AC=3$, $BC=5$: $\\cos(\\widehat{ABC})=\\dfrac{AB}{BC}=\\dfrac{4}{5}$.',
+            trigoSimple: N.trigo + '<br>Voorbeeld: $ABC$ rechthoekig in $A$, $AB=8$, $AC=6$, $BC=10$: $\\sin(\\widehat{ABC})=\\dfrac{AC}{BC}=\\dfrac{6}{10}=\\dfrac{3}{5}$.',
+            milieuSimple: N.milieu('$A(-3\\ ;\\ 2)$ en $B(5\\ ;\\ 8)$: $M\\left(\\dfrac{-3+5}{2}\\ ;\\ \\dfrac{2+8}{2}\\right)=M(1\\ ;\\ 5)$.'),
+            milieuFinal: N.milieu('$A(4\\ ;\\ -1)$ en $B(-2\\ ;\\ 7)$: $M\\left(\\dfrac{4+(-2)}{2}\\ ;\\ \\dfrac{-1+7}{2}\\right)=M(1\\ ;\\ 3)$.'),
+            inequationFinal: 'Een ongelijkheid los je op als een vergelijking; als je deelt door een <b>positief</b> getal, blijft het ongelijkheidsteken hetzelfde.<br>' +
+                'Voorbeeld: $5x+2>17$ ; $5x>15$ ; $x>3$.',
+            evolutionCM: 'De <b>groeifactor</b> is het getal waarmee je de beginwaarde vermenigvuldigt om de eindwaarde te krijgen: $CM=\\dfrac{\\text{eindwaarde}}{\\text{beginwaarde}}$.<br>' +
+                'Voorbeeld: een prijs gaat van $50$ € naar $60$ €: $CM=\\dfrac{60}{50}=1{,}2$, een stijging van $20\\,\\%$.',
+            evolutionSimple: '$CM=\\dfrac{\\text{eindwaarde}}{\\text{beginwaarde}}$. Als $CM>1$, is het een stijging; als $CM<1$, een daling.<br>' +
+                'Voorbeeld: een prijs gaat van $80$ € naar $60$ €: $CM=\\dfrac{60}{80}=0{,}75$; een daling van $25\\,\\%$.',
+            proportionPourcentSimple: 'Voor een deel van een deel <b>vermenigvuldig</b> je de twee delen.<br>' +
+                'Voorbeeld: $40\\,\\%$ van de leerlingen zijn meisjes en van hen sport $50\\,\\%$: $0{,}4\\times0{,}5=0{,}2$, dus $20\\,\\%$ van de leerlingen.',
+            proportionPourcentFinal: 'Voor een deel van een deel <b>vermenigvuldig</b> je de twee delen.<br>' +
+                'Voorbeeld: $30\\,\\%$ van de leden zijn kinderen en van hen doet $50\\,\\%$ mee aan wedstrijden: $0{,}3\\times0{,}5=0{,}15$, dus $15\\,\\%$ van de leden.',
+            pythagoreFinal: N.pythagore(5, 12, '25+144=169$, dus schuine zijde $=13'),
+            carre: 'De kwadratische functie: $f(x)=x^2=x\\times x$. Zet een negatief getal tussen <b>haakjes</b>: het kwadraat van een getal is nooit negatief.<br>' +
+                'Voorbeeld: $f(-4)=(-4)^2=(-4)\\times(-4)=16$. Let op: $-4^2=-16$, want zonder haakjes wordt alleen $4$ gekwadrateerd.',
+            droiteSimple: 'Om de y-coördinaat te vinden van het punt op de lijn $y=mx+p$ met een gegeven x-coördinaat, vervang je $x$ door die x-coördinaat.<br>' +
+                'Voorbeeld: $(d)$: $y=-3x+4$. Het punt met x-coördinaat $2$ heeft y-coördinaat $-3\\times2+4=-2$.',
+            probaFinal: 'Als alle uitkomsten even waarschijnlijk zijn: $P=\\dfrac{\\text{aantal gunstige uitkomsten}}{\\text{totaal aantal uitkomsten}}$.<br>' +
+                'Voorbeeld: $2$ zwarte en $6$ gele knikkers ($8$ knikkers): $P(\\text{zwart})=\\dfrac{2}{8}=\\dfrac{1}{4}$.',
+            lireGraphique: 'In een staafdiagram lees je de hoogte van de staaf af op de verticale as. Kijk eerst naar de <b>schaalverdeling</b>: hoeveel is één lijn waard?<br>' +
+                'Voorbeeld: de lijnen met een getal zijn $0$, $10$, $20$… met één lijn ertussen: elke lijn is $5$ waard. Een staaf die op de $3$e lijn stopt, is $15$ waard.',
+            fractionsOps: 'Om twee breuken op te tellen, schrijf je ze met <b>dezelfde noemer</b> en tel je de tellers op (de noemer blijft hetzelfde).<br>' +
+                'Voorbeeld: $\\dfrac{1}{4}+\\dfrac{5}{8}=\\dfrac{2}{8}+\\dfrac{5}{8}=\\dfrac{7}{8}$.'
         }
     };
     function rappel(nom, langue, francais) {

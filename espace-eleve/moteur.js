@@ -834,9 +834,19 @@
         var d = new Date(mois >= 7 ? debut : debut + 1, mois, +m[1]);
         return d.getDay() === 1 ? d : null;
     }
+    // bilan facultatif (« Facultatif · Série 10 en temps limité ⏱ », sans « semaine du ») : il s'ouvre avec sa série
+    function groupeDeLaSerie(ex) {
+        var m = /^Facultatif · Série (\d+)\b/.exec(ex.groupe || ''), g = null;
+        if (!m) return null;
+        (window.INTERACTIF_CATALOGUE || []).some(function (e) {
+            if (e.niveau === ex.niveau && e.groupe.indexOf('Série ' + m[1] + ' · semaine du') === 0) { g = e.groupe; return true; }
+            return false;
+        });
+        return g;
+    }
     function ouvertureSerie(ex, classe) {
         if (!ex || ex.ouverture !== 'auto') return null;
-        var lundi = lundiGroupe(ex.groupe), regles = (window.OUVERTURE_SERIES || {})[ex.niveau] || {};
+        var lundi = lundiGroupe(ex.groupe) || lundiGroupe(groupeDeLaSerie(ex)), regles = (window.OUVERTURE_SERIES || {})[ex.niveau] || {};
         if (!lundi) return null;
         var c = String(classe || '').toUpperCase(), noms = regles[c] ? [c] : Object.keys(regles), mieux = null;
         // classe sans horaire (comptes de test, vue prof) : la plus tôt des classes

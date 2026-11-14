@@ -2802,6 +2802,436 @@
     };
 
     /* =====================================================================
+       Série 12 (semaine du 7 au 11 décembre) : point d'une droite, trigonométrie,
+       coefficient multiplicateur (QCM) ; probabilités, milieu, proportion de proportion
+       (questions simples) ; médiane, inéquations, Pythagore (automatismes finaux)
+       ===================================================================== */
+    function eqDroite(m, p) { return 'y=' + Interactif.poly([m, p]); }
+    // m x0 + p, écrit pas à pas : 3\times(-2)+5
+    function calculDroite(m, p, x) {
+        return (m === 1 ? '' : m === -1 ? '-' : m + '\\times') + Interactif.par(x) + (p < 0 ? '' : '+') + p;
+    }
+
+    /* ===== A17 · Point d'une droite y = mx + p ===== */
+    Auto.droite = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A17 · Équation de droite' }, m, p, x0, y0;
+        if (niveau === 1) {
+            do { m = A.nonNul(-4, 4); p = A.nonNul(-6, 6); x0 = A.nonNul(-3, 4); y0 = m * x0 + p; } while (y0 === x0 || y0 === 0 || Math.abs(y0) > 12);
+            q.texte = 'La droite $(d)$ a pour équation $' + eqDroite(m, p) + '$. Lequel de ces points appartient à $(d)$ ?';
+            q.explication = 'On remplace $x$ par $' + x0 + '$ dans l\'équation : $y=' + calculDroite(m, p, x0) + '=' + y0 + '$. Le point $' + coord(x0, y0) + '$ est sur $(d)$.<br>' +
+                'Piège : $' + coord(y0, x0) + '$ (abscisse et ordonnée inversées). L\'abscisse $x$ s\'écrit toujours en premier.';
+            var vus = {}, opts = [], cands = [[x0, y0, true], [y0, x0], [x0, m * x0 - p], [x0, m + x0 + p], [x0, -y0], [x0 + 1, y0], [x0, y0 + 1]];
+            cands.forEach(function (c) {
+                var t = '$' + coord(c[0], c[1]) + '$';
+                if (vus[t] || opts.length >= 4) return;
+                if (!c[2] && m * c[0] + p === c[1]) return;          // un piège qui serait sur la droite
+                vus[t] = 1; opts.push({ t: t, ok: !!c[2] });
+            });
+            return qcm(q, opts);
+        }
+        if (niveau === 2) {                 // abscisse d'un point dont on connaît l'ordonnée
+            do { m = A.nonNul(-5, 5); p = A.nonNul(-9, 9); x0 = A.nonNul(-6, 6); y0 = m * x0 + p; } while (Math.abs(m) === 1 || Math.abs(y0) > 30);
+            q.type = 'nombre';
+            q.texte = 'La droite $(d)$ a pour équation $' + eqDroite(m, p) + '$. Le point $A$ de $(d)$ a pour ordonnée $' + y0 + '$. Donner son abscisse.';
+            q.prefixe = 'x_A =';
+            q.attendu = x0;
+            q.explication = 'On cherche $x$ tel que $' + Interactif.poly([m, p]) + '=' + y0 + '$ : $' + Interactif.poly([m, 0]) + '=' + (y0 - p) + '$, donc $x=' + frac(y0 - p, m) + '=' + x0 + '$.<br>' +
+                'Vérification : $' + calculDroite(m, p, x0) + '=' + y0 + '$.';
+            return q;
+        }
+        do { m = A.nonNul(-6, 6); x0 = A.nonNul(-5, 5); p = -m * x0; } while (Math.abs(m) === 1);
+        q.type = 'champs';
+        q.texte = 'La droite $(d)$ a pour équation $' + eqDroite(m, p) + '$. Donner les coordonnées de son point d\'intersection avec l\'axe des abscisses.';
+        q.gabarit = '$\\Big($ [] $;$ [] $\\Big)$';
+        q.attendus = [x0, 0];
+        q.explication = 'Sur l\'axe des abscisses, l\'ordonnée est nulle : $y=0$. On résout $' + Interactif.poly([m, p]) + '=0$ : $' + Interactif.poly([m, 0]) + '=' + -p + '$, donc $x=' + frac(-p, m) + '=' + x0 + '$.<br>' +
+            'Le point d\'intersection est $' + coord(x0, 0) + '$.';
+        return q;
+    };
+
+    /* ===== A23 · Trigonométrie ===== */
+    // angle aigu au sommet N[1] : adjacent = [N0 N1], opposé = [N0 N2], hypoténuse = [N1 N2]
+    function angleTex(N) { return '\\widehat{' + N[0] + N[1] + N[2] + '}'; }
+    var TRIPLETS_TRIGO = [[3, 4, 5], [4, 3, 5], [6, 8, 10], [8, 6, 10], [5, 12, 13], [12, 5, 13], [8, 15, 17], [15, 8, 17], [9, 12, 15], [12, 9, 15]];
+    Auto.trigo = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A23 · Trigonométrie' }, N = nomsTriangle(), adj = N[0] + N[1], opp = N[0] + N[2], hyp = N[1] + N[2], ang = angleTex(N);
+        if (niveau === 1) {
+            var t = A.choix(TRIPLETS_TRIGO), fn = A.choix(['cos', 'sin', 'tan']);
+            var R = { cos: [t[0], t[2]], sin: [t[1], t[2]], tan: [t[1], t[0]] }, noms = { cos: [adj, hyp], sin: [opp, hyp], tan: [opp, adj] };
+            q.figure = triangleRectangle(N, t[0], t[1], [t[0], t[1], t[2]]); q.figureNote = adj + '=' + t[0] + ' ' + opp + '=' + t[1] + ' ' + hyp + '=' + t[2];
+            q.texte = 'Le triangle $' + N.join('') + '$ est rectangle en $' + N[0] + '$, avec $' + adj + '=' + t[0] + '$, $' + opp + '=' + t[1] + '$ et $' + hyp + '=' + t[2] + '$. La valeur de $\\' + fn + '(' + ang + ')$ est :';
+            q.explication = 'Pour l\'angle $' + ang + '$ : le côté adjacent est $[' + adj + ']$, le côté opposé est $[' + opp + ']$ et l\'hypoténuse est $[' + hyp + ']$.<br>' +
+                '$\\' + fn + '(' + ang + ')=' + frac(noms[fn][0], noms[fn][1]) + '=' + frac(R[fn][0], R[fn][1]) + (pgcd(R[fn][0], R[fn][1]) > 1 ? '=' + fracTex(R[fn][0], R[fn][1]) : '') + '$. Moyen mnémotechnique : <b>SOH CAH TOA</b>.';
+            var vus = {}, opts = [];
+            [[R[fn], true]].concat(['cos', 'sin', 'tan'].filter(function (g) { return g !== fn; }).map(function (g) { return [R[g]]; }), [[[R[fn][1], R[fn][0]]]]).forEach(function (o) {
+                var tx = '$' + fracTex(o[0][0], o[0][1]) + '$';
+                if (!vus[tx] && opts.length < 4) { vus[tx] = 1; opts.push({ t: tx, ok: !!o[1] }); }
+            });
+            return qcm(q, opts);
+        }
+        q.type = 'nombre';
+        if (niveau === 2) {                 // angles de 30° et 60° : on trouve la moitié de l'hypoténuse
+            var h = 2 * A.entier(3, 15), a60 = Math.random() < 0.5;
+            q.figure = a60 ? triangleRectangle(N, 1, 1.732, ['?', '', h + ' cm']) : triangleRectangle(N, 1.732, 1, ['', '?', h + ' cm']);
+            q.figureNote = hyp + '=' + h + ' angle ' + (a60 ? 60 : 30);
+            q.texte = 'Le triangle $' + N.join('') + '$ est rectangle en $' + N[0] + '$, avec $' + hyp + '=' + h + '$ cm et $' + ang + '=' + (a60 ? 60 : 30) + '^\\circ$. Calculer $' + (a60 ? adj : opp) + '$ (en cm).' +
+                ' On rappelle que $\\' + (a60 ? 'cos' : 'sin') + '(' + (a60 ? 60 : 30) + '^\\circ)=' + frac(1, 2) + '$.';
+            q.attendu = h / 2;
+            q.explication = a60
+                ? '$[' + adj + ']$ est le côté adjacent à l\'angle : $\\cos(' + ang + ')=' + frac(adj, hyp) + '$, donc $' + adj + '=' + hyp + '\\times\\cos(60^\\circ)=' + h + '\\times' + frac(1, 2) + '=' + h / 2 + '$ cm.'
+                : '$[' + opp + ']$ est le côté opposé à l\'angle : $\\sin(' + ang + ')=' + frac(opp, hyp) + '$, donc $' + opp + '=' + hyp + '\\times\\sin(30^\\circ)=' + h + '\\times' + frac(1, 2) + '=' + h / 2 + '$ cm.';
+            return q;
+        }
+        var a = A.entier(3, 12), deg = A.choix([25, 35, 40, 50, 55, 65, 70]), r = deg * Math.PI / 180, chercheHyp = Math.random() < 0.5;
+        var val = chercheHyp ? a / Math.cos(r) : a * Math.tan(r), rep = Math.round(val * 10) / 10;
+        var c2 = a * Math.tan(r);
+        q.figure = triangleRectangle(N, a, c2, [a + ' cm', chercheHyp ? '' : '?', chercheHyp ? '?' : '']);
+        q.figureNote = adj + '=' + a + ' angle ' + deg;
+        q.texte = 'Le triangle $' + N.join('') + '$ est rectangle en $' + N[0] + '$, avec $' + adj + '=' + a + '$ cm et $' + ang + '=' + deg + '^\\circ$. À l\'aide de la calculatrice, calculer $' + (chercheHyp ? hyp : opp) + '$ arrondi au dixième (en cm).';
+        q.attendu = rep;
+        q.explication = (chercheHyp
+            ? 'On connaît le côté adjacent et on cherche l\'hypoténuse : cosinus. $\\cos(' + ang + ')=' + frac(adj, hyp) + '$, donc $' + hyp + '=' + frac(adj, '\\cos(' + deg + '^\\circ)') + '=' + frac(a, '\\cos(' + deg + '^\\circ)') + '\\approx' + fr(rep) + '$ cm.'
+            : 'On connaît le côté adjacent et on cherche le côté opposé : tangente. $\\tan(' + ang + ')=' + frac(opp, adj) + '$, donc $' + opp + '=' + adj + '\\times\\tan(' + deg + '^\\circ)=' + a + '\\times\\tan(' + deg + '^\\circ)\\approx' + fr(rep) + '$ cm.') +
+            '<br>Attention : la calculatrice doit être en mode <b>degrés</b>.';
+        return q;
+    };
+
+    /* ===== A15 · Coefficient multiplicateur (évolutions) ===== */
+    Auto.evolutionCM = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A15 · Coefficient multiplicateur' }, v0, t, v1, cm;
+        if (niveau === 1) {
+            do { v0 = A.choix([20, 40, 50, 60, 80, 120, 150, 200]); t = A.choix([5, 10, 15, 20, 25, 30, 40]) * A.signe(); v1 = arrondi(v0 * (1 + t / 100)); } while (v1 % 1 || Math.abs(v1 - v0) === Math.abs(t));
+            cm = arrondi(1 + t / 100);
+            q.texte = 'Un prix passe de $' + v0 + '$ € à $' + fr(v1) + '$ €. Par quel nombre a-t-il été multiplié ?';
+            q.explication = 'Coefficient multiplicateur : $CM=' + frac('\\text{valeur finale}', '\\text{valeur initiale}') + '=' + frac(fr(v1), v0) + '=' + fr(cm) + '$.<br>' +
+                '$' + fr(cm) + (cm > 1 ? '>1' : '<1') + '$ : c\'est une ' + (cm > 1 ? 'hausse' : 'baisse') + ' de $' + pct(Math.abs(t)) + '$. Piège : $' + fr(Math.abs(v1 - v0)) + '$ est la variation (en €), pas le coefficient.';
+            var vus = {}, opts = [];
+            [[cm, true], [Math.abs(v1 - v0)], [arrondi(Math.abs(t) / 100)], [arrondi(Math.round(v0 / v1 * 100) / 100)], [arrondi(1 - t / 100)]].forEach(function (o) {
+                var tx = '$' + fr(o[0]) + '$';
+                if (!vus[tx] && opts.length < 4) { vus[tx] = 1; opts.push({ t: tx, ok: !!o[1] }); }
+            });
+            return qcm(q, opts);
+        }
+        if (niveau === 2) {
+            do { v0 = A.entier(4, 40) * 5; t = A.choix([4, 6, 8, 12, 15, 18, 24, 35]) * A.signe(); v1 = arrondi(v0 * (1 + t / 100)); } while (Math.round(v1 * 100) % 1);
+            q.type = 'nombre';
+            q.texte = 'Un article coûte $' + v0 + '$ €. Son prix ' + (t > 0 ? 'augmente' : 'baisse') + ' de $' + pct(Math.abs(t)) + '$. Quel est son nouveau prix (en €) ?';
+            q.attendu = v1;
+            q.explication = (t > 0 ? 'Hausse' : 'Baisse') + ' de $' + pct(Math.abs(t)) + '$ : on multiplie par $1' + (t > 0 ? '+' : '-') + fr(Math.abs(t) / 100) + '=' + fr(arrondi(1 + t / 100)) + '$.<br>' +
+                '$' + v0 + '\\times' + fr(arrondi(1 + t / 100)) + '=' + fr(v1) + '$ €.';
+            return q;
+        }
+        var t1, t2, glob;
+        do { t1 = A.choix([10, 20, 25, 30, 50]); t2 = A.choix([10, 20, 25, 40, 50]); glob = arrondi(((1 + t1 / 100) * (1 - t2 / 100) - 1) * 100); } while (t1 === t2 || glob === 0 || glob % 1);
+        var ordre = Math.random() < 0.5, c1 = arrondi(1 + t1 / 100), c2 = arrondi(1 - t2 / 100);
+        q.type = 'champs';
+        q.texte = 'Un prix ' + (ordre ? 'augmente de $' + pct(t1) + '$, puis baisse de $' + pct(t2) + '$' : 'baisse de $' + pct(t2) + '$, puis augmente de $' + pct(t1) + '$') + '. Quel est le taux d\'évolution global ? (négatif pour une baisse)';
+        q.gabarit = '[] $\\,\\%$';
+        q.attendus = [glob];
+        q.explication = 'On multiplie les coefficients : $' + (ordre ? fr(c1) + '\\times' + fr(c2) : fr(c2) + '\\times' + fr(c1)) + '=' + fr(arrondi(c1 * c2)) + '$.<br>' +
+            '$' + fr(arrondi(c1 * c2)) + '-1=' + fr(arrondi(c1 * c2 - 1)) + '$ : taux global $' + (glob > 0 ? '+' : '') + pct(glob) + '$ (et non $' + (t1 - t2 > 0 ? '+' : '') + pct(t1 - t2) + '$ : les pourcentages ne s\'additionnent pas).';
+        return q;
+    };
+
+    /* ===== A30 · Probabilités (sans choix proposés) ===== */
+    function urneAleatoire() {
+        var c = melanger(COULEURS).slice(0, 3), n, N;
+        do { n = [A.entier(1, 9), A.entier(1, 9), A.entier(1, 9)]; N = n[0] + n[1] + n[2]; } while (N < 8 || n[0] === n[1] || n[1] === n[2] || n[0] === n[2]);
+        var texte = 'Une urne contient ' + n.map(function (k, j) { return '$' + k + '$ boule' + (k > 1 ? 's ' + c[j][1] : ' ' + c[j][0]); }).join(', ').replace(/, ([^,]*)$/, ' et $1') +
+            ', indiscernables au toucher. On tire une boule au hasard.';
+        return { c: c, n: n, N: N, texte: texte };
+    }
+    Auto.probaSimple = function (niveau) {
+        if (niveau === 3) return Auto.probaUrne(3);
+        var u = urneAleatoire(), q = { niveau: niveau, objectif: 'A30 · Probabilités', type: 'nombre' }, i = A.entier(0, 2), j = (i + A.entier(1, 2)) % 3;
+        if (niveau === 1) {
+            q.texte = u.texte + ' Quelle est la probabilité de tirer une boule ' + u.c[i][0] + ' ? (fraction, par exemple <code>3/8</code>)';
+            q.attendu = u.n[i] / u.N;
+            q.explication = 'Il y a $' + u.N + '$ boules en tout, dont $' + u.n[i] + '$ ' + u.c[i][1].replace(/s$/, u.n[i] > 1 ? 's' : '') + ' : $P=' + frac(u.n[i], u.N) + (pgcd(u.n[i], u.N) > 1 ? '=' + fracTex(u.n[i], u.N) : '') + '$.';
+            return q;
+        }
+        var k = u.n[i] + u.n[j];
+        q.texte = u.texte + ' Quelle est la probabilité de tirer une boule ' + u.c[i][0] + ' ou ' + u.c[j][0] + ' ? (fraction, par exemple <code>3/8</code>)';
+        q.attendu = k / u.N;
+        q.explication = 'Boules ' + u.c[i][1] + ' ou ' + u.c[j][1] + ' : $' + u.n[i] + '+' + u.n[j] + '=' + k + '$ sur $' + u.N + '$. $P=' + frac(k, u.N) + (pgcd(k, u.N) > 1 ? '=' + fracTex(k, u.N) : '') + '$.<br>' +
+            'Autre méthode : c\'est le contraire de « tirer une boule ' + u.c[3 - i - j][0] + ' », $1-' + frac(u.n[3 - i - j], u.N) + '=' + frac(k, u.N) + '$.';
+        return q;
+    };
+
+    /* ===== A25 · Médiane (automatisme final) ===== */
+    Auto.medianeFinal = function (niveau) {
+        var q;
+        if (niveau === 1) { q = Auto.medianeSimple(1); delete q.rappel; return q; }
+        if (niveau === 2) { q = Auto.medianeSimple(3); q.niveau = 2; return q; }
+        return Auto.moyenneMediane(3);
+    };
+
+    /* ===== Repère · Milieu (sans choix proposés) ===== */
+    Auto.milieuSimple = function (niveau) {
+        if (niveau > 1) return Auto.milieu(niveau);
+        var q = { niveau: 1, objectif: 'Repère · Milieu d\'un segment', type: 'champs' }, xa, ya, xb, yb;
+        do { xa = A.entier(-6, 8); ya = A.entier(-6, 8); xb = xa + 2 * A.nonNul(-4, 4); yb = ya + 2 * A.nonNul(-4, 4); } while (xa === ya || Math.abs(xb) > 9 || Math.abs(yb) > 9);
+        q.texte = 'Dans un repère, $A' + coord(xa, ya) + '$ et $B' + coord(xb, yb) + '$. Donner les coordonnées du milieu $M$ de $[AB]$.';
+        q.gabarit = '$M\\Big($ [] $;$ [] $\\Big)$';
+        q.attendus = [(xa + xb) / 2, (ya + yb) / 2];
+        q.explication = '$x_M=' + frac(xa + (xb < 0 ? '' : '+') + xb, 2) + '=' + q.attendus[0] + '$ et $y_M=' + frac(ya + (yb < 0 ? '' : '+') + yb, 2) + '=' + q.attendus[1] + '$ : $M' + coord(q.attendus[0], q.attendus[1]) + '$.';
+        return q;
+    };
+
+    /* ===== A10 · Inéquations (automatisme final) ===== */
+    Auto.inequationFinal = function (niveau) {
+        var q;
+        if (niveau === 1) { q = Auto.inequationSimple(1); delete q.rappel; return q; }
+        if (niveau === 2) return Auto.inequationSimple(2);
+        return Auto.inequation(3);
+    };
+
+    /* ===== A14 · Proportion de proportion (sans choix proposés) ===== */
+    Auto.proportionPourcentSimple = function (niveau) {
+        if (niveau > 1) return Auto.proportionPourcent(niveau);
+        var q = { niveau: 1, objectif: 'A14 · Proportion de proportion', type: 'champs', gabarit: '[] $\\,\\%$' }, g = A.choix(GROUPES_PP), p1, p2;
+        do { p1 = A.choix([20, 30, 40, 50, 60, 80]); p2 = A.choix([10, 20, 25, 50]); } while (p1 * p2 % 100 || p1 === p2);
+        var r = p1 * p2 / 100;
+        q.texte = '$' + pct(p1) + '$ des ' + g[0] + ' ' + g[2] + '. Parmi ' + g[3] + ', $' + pct(p2) + '$ ' + g[4] + '. Quelle proportion des ' + g[1] + ' cela représente-t-il ?';
+        q.attendus = [r];
+        q.explication = 'Proportion de proportion : on <b>multiplie</b>, $' + fr(p1 / 100) + '\\times' + fr(p2 / 100) + '=' + fr(r / 100) + '$, soit $' + pct(r) + '$.';
+        return q;
+    };
+
+    /* ===== A22 · Pythagore (automatisme final) ===== */
+    Auto.pythagoreFinal = function (niveau) {
+        if (niveau === 1) { var q = Auto.pythagoreSimple(1); delete q.rappel; return q; }
+        return Auto.pythagoreQCM(niveau);
+    };
+
+    /* =====================================================================
+       Série 13 (semaine du 14 au 18 décembre) : fonction carré, lire un graphique,
+       fractions (QCM) ; droite, trigonométrie, coefficient multiplicateur (questions simples) ;
+       probabilités, milieu, proportion de proportion (automatismes finaux)
+       ===================================================================== */
+    /* ===== Fonctions · Fonction carré ===== */
+    Auto.carre = function (niveau) {
+        var q = { niveau: niveau, objectif: 'Fonctions · Fonction carré' }, a;
+        if (niveau === 1) {
+            a = A.entier(3, 9);
+            q.texte = 'Soit $f$ la fonction définie par $f(x)=x^2$. L\'image de $-' + a + '$ par $f$ est :';
+            q.explication = '$f(-' + a + ')=(-' + a + ')^2=(-' + a + ')\\times(-' + a + ')=' + a * a + '$ : un carré n\'est jamais négatif.<br>' +
+                'Pièges : $-' + a * a + '$ (on a oublié les parenthèses : $-' + a + '^2=-' + a * a + '$), $-' + 2 * a + '$ (on a multiplié par $2$).';
+            return qcm(q, [{ t: '$' + a * a + '$', ok: true }, { t: '$-' + a * a + '$', ok: false }, { t: '$-' + 2 * a + '$', ok: false }, { t: '$' + 2 * a + '$', ok: false }]);
+        }
+        if (niveau === 2) {
+            a = A.entier(2, 12);
+            q.type = 'champs';
+            q.texte = 'Soit $f$ la fonction définie par $f(x)=x^2$. Déterminer les antécédents de $' + a * a + '$ par $f$ (du plus petit au plus grand).';
+            q.gabarit = '$x=$ [] et $x=$ []';
+            q.attendus = [-a, a];
+            q.explication = 'On cherche les nombres dont le carré vaut $' + a * a + '$ : $x^2=' + a * a + '$ donne $x=' + a + '$ ou $x=-' + a + '$, car $(-' + a + ')^2=' + a * a + '$ aussi.<br>' +
+                'Un nombre positif a <b>deux</b> antécédents par la fonction carré.';
+            return q;
+        }
+        var k, b;
+        do { k = A.entier(2, 5) * A.signe(); b = A.nonNul(-9, 9); a = A.entier(2, 6); } while (k === -1);
+        var res = k * a * a + b;
+        q.type = 'nombre';
+        q.texte = 'Soit $f$ la fonction définie par $f(x)=' + Interactif.poly([k, 0, b]) + '$. Calculer $f(-' + a + ')$.';
+        q.attendu = res;
+        q.explication = 'On calcule d\'abord le carré (priorité) : $(-' + a + ')^2=' + a * a + '$.<br>$f(-' + a + ')=' + k + '\\times(-' + a + ')^2' + (b < 0 ? '' : '+') + b + '=' + k + '\\times' + a * a + (b < 0 ? '' : '+') + b + '=' + res + '$.<br>' +
+            'Piège : $(' + k + '\\times(-' + a + '))^2=' + k * k * a * a + '$ : il faut élever au carré <b>avant</b> de multiplier.';
+        return q;
+    };
+
+    /* ===== A24 · Lire un graphique ===== */
+    var TRANSPORTS = ['Bus', 'Voiture', 'Vélo', 'À pied', 'Train'];
+    // diagramme en barres : valeurs, pas des graduations (lignes), étiquettes un pas sur deux
+    function diagrammeBarres(noms, vals, pas) {
+        var max = Math.ceil(Math.max.apply(null, vals) / (2 * pas)) * 2 * pas, h = 200, bw = 46, gap = 26, ml = 46, mt = 14, mb = 30;
+        var W = ml + noms.length * (bw + gap) + 10, H = mt + h + mb, k;
+        function Y(v) { return mt + h - v / max * h; }
+        var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="Diagramme en barres">';
+        for (k = 0; k <= max; k += pas) {
+            s += '<line class="fig-grille" x1="' + ml + '" y1="' + Y(k) + '" x2="' + (W - 6) + '" y2="' + Y(k) + '"/>';
+            if (k % (2 * pas) === 0) s += '<text class="fig-txt" x="' + (ml - 7) + '" y="' + (Y(k) + 4) + '" text-anchor="end">' + k + '</text>';
+        }
+        s += '<line class="fig-axe" x1="' + ml + '" y1="' + Y(0) + '" x2="' + (W - 6) + '" y2="' + Y(0) + '"/><line class="fig-axe" x1="' + ml + '" y1="' + (mt - 6) + '" x2="' + ml + '" y2="' + Y(0) + '"/>';
+        noms.forEach(function (n, i) {
+            var x = ml + gap / 2 + i * (bw + gap);
+            s += '<rect class="fig-barre" x="' + x + '" y="' + Y(vals[i]) + '" width="' + bw + '" height="' + (Y(0) - Y(vals[i])) + '"/>';
+            s += '<text class="fig-txt" x="' + (x + bw / 2) + '" y="' + (Y(0) + 18) + '" text-anchor="middle">' + n + '</text>';
+        });
+        return s + '</svg>';
+    }
+    // diagramme circulaire : angles en degrés (somme 360), on écrit l'angle du secteur i0
+    function diagrammeCirculaire(noms, angles, i0) {
+        var R = 90, cx = 150, cy = 115, s = '<svg viewBox="0 0 300 230" width="300" height="230" role="img" aria-label="Diagramme circulaire">', debut = -90;
+        function P(a, r) { var t = a * Math.PI / 180; return [cx + r * Math.cos(t), cy + r * Math.sin(t)]; }
+        angles.forEach(function (a, i) {
+            var p1 = P(debut, R), p2 = P(debut + a, R), mil = debut + a / 2, e = P(mil, R + 20), v = P(mil, R * 0.58);
+            s += '<path class="' + (i === i0 ? 'fig-forme' : 'fig-code') + '" d="M' + cx + ',' + cy + ' L' + p1[0].toFixed(1) + ',' + p1[1].toFixed(1) +
+                ' A' + R + ',' + R + ' 0 ' + (a > 180 ? 1 : 0) + ' 1 ' + p2[0].toFixed(1) + ',' + p2[1].toFixed(1) + ' Z"/>';
+            s += '<text class="fig-txt" x="' + e[0].toFixed(1) + '" y="' + (e[1] + 4).toFixed(1) + '" text-anchor="' + (Math.cos(mil * Math.PI / 180) > 0.3 ? 'start' : Math.cos(mil * Math.PI / 180) < -0.3 ? 'end' : 'middle') + '">' + noms[i] + '</text>';
+            if (i === i0) s += '<text class="fig-txt fig-cote" x="' + v[0].toFixed(1) + '" y="' + (v[1] + 5).toFixed(1) + '" text-anchor="middle">' + a + '°</text>';
+            debut += a;
+        });
+        return s + '</svg>';
+    }
+    Auto.lireGraphique = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A24 · Lire un graphique' }, noms = melanger(TRANSPORTS).slice(0, 4), vals, i = A.entier(0, 3), pas, T;
+        if (niveau === 1) {
+            pas = A.choix([2, 5]);
+            do { vals = noms.map(function () { return A.entier(1, 9) * pas; }); } while (vals[i] % (2 * pas) === 0 || vals[i] < 3 * pas || vals.some(function (v, k) { return k !== i && v === vals[i]; }));
+            q.figure = diagrammeBarres(noms, vals, pas); q.figureNote = noms.map(function (n, k) { return n + ' ' + vals[k]; }).join(', ');
+            q.texte = 'Le diagramme en barres donne le moyen de transport des élèves d\'un club. Combien d\'élèves viennent ' + transport(noms[i]) + ' ?';
+            q.explication = 'Une graduation sur deux est écrite : chaque ligne vaut $' + pas + '$ élèves. Le haut de la barre « ' + noms[i] + ' » est sur la ligne $' + vals[i] + '$.<br>' +
+                'Pièges : $' + vals[i] / pas + '$ (on a compté les carreaux sans regarder l\'échelle), $' + (vals[i] + pas) + '$ (une ligne trop haut).';
+            var vus = {}, opts = [];
+            [[vals[i], true], [vals[i] / pas], [vals[i] + pas], [vals[i] - pas], [vals[(i + 1) % 4]], [vals[i] + 2 * pas]].forEach(function (o) {
+                if (!vus[o[0]] && opts.length < 4 && o[0] > 0) { vus[o[0]] = 1; opts.push({ t: '$' + o[0] + '$', ok: !!o[1] }); }
+            });
+            return qcm(q, opts);
+        }
+        q.type = 'nombre';
+        if (niveau === 2) {
+            T = A.choix([20, 25, 50]); pas = T === 50 ? 2 : 1;
+            do { vals = [A.entier(1, 8), A.entier(1, 8), A.entier(1, 8)].map(function (v) { return v * pas; }); vals.push(T - vals[0] - vals[1] - vals[2]); } while (vals[3] < pas || vals[3] > 9 * pas);
+            q.figure = diagrammeBarres(noms, vals, pas); q.figureNote = noms.map(function (n, k) { return n + ' ' + vals[k]; }).join(', ');
+            q.texte = 'Le diagramme en barres donne le moyen de transport des $' + T + '$ élèves d\'un club. Quel pourcentage des élèves viennent ' + transport(noms[i]) + ' ?';
+            q.type = 'champs';
+            q.gabarit = '[] $\\,\\%$';
+            q.attendus = [vals[i] * 100 / T];
+            q.explication = '« ' + noms[i] + ' » : $' + vals[i] + '$ élèves sur $' + T + '$. $' + frac(vals[i], T) + '=' + frac(vals[i] * 100 / T, 100) + '$, soit $' + pct(vals[i] * 100 / T) + '$.';
+            return q;
+        }
+        T = A.choix([24, 30, 36, 40, 60, 72, 90, 120]);
+        var u = 360 / T, eff;
+        do { eff = [A.entier(1, T / 3), A.entier(1, T / 3), A.entier(1, T / 3)]; eff.push(T - eff[0] - eff[1] - eff[2]); } while (eff[3] < 1 || eff.some(function (e) { return e * u < 30; }));
+        var angles = eff.map(function (e) { return e * u; });
+        q.figure = diagrammeCirculaire(noms, angles, i); q.figureNote = noms[i] + ' ' + angles[i] + '°';
+        q.texte = 'Le diagramme circulaire donne le moyen de transport des $' + T + '$ élèves d\'un club. Combien d\'élèves viennent ' + transport(noms[i]) + ' ?';
+        q.attendu = eff[i];
+        q.explication = 'Le disque entier ($360^\\circ$) représente les $' + T + '$ élèves : l\'angle est proportionnel à l\'effectif.<br>' +
+            'Effectif $=' + frac(angles[i] + '\\times' + T, 360) + '=' + eff[i] + '$ élèves. (Chaque élève correspond à $' + fr(u) + '^\\circ$.)';
+        return q;
+    };
+    function transport(n) { return { 'Bus': 'en bus', 'Voiture': 'en voiture', 'Vélo': 'à vélo', 'À pied': 'à pied', 'Train': 'en train' }[n]; }
+
+    /* ===== A2 · Fractions : opérations ===== */
+    Auto.fractionsOps = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A2 · Fractions' }, a, b, c, d, k;
+        if (niveau === 1) {                    // a/b + c/(kb)
+            do { b = A.entier(2, 7); k = A.entier(2, 4); d = k * b; a = A.entier(1, b - 1 || 1); c = A.entier(1, d - 1); } while (pgcd(a, b) > 1 || pgcd(c, d) > 1 || (a * k + c) % d === 0);
+            var n = a * k + c;
+            q.texte = '$' + frac(a, b) + '+' + frac(c, d) + '$ est égal à :';
+            q.explication = 'On met au même dénominateur $' + d + '$ : $' + frac(a, b) + '=' + frac(a * k, d) + '$. Puis $' + frac(a * k, d) + '+' + frac(c, d) + '=' + frac(n, d) + (pgcd(n, d) > 1 ? '=' + fracTex(n, d) : '') + '$.<br>' +
+                'Piège : $' + frac(a + c, b + d) + '$ : on n\'additionne <b>jamais</b> les dénominateurs.';
+            var vus = {}, opts = [];
+            [[fracTex(n, d), true], [frac(a + c, b + d)], [frac(a + c, d)], [frac(a * c, b * d)], [frac(a + c, b * d)]].forEach(function (o) {
+                if (!vus[o[0]] && opts.length < 4) { vus[o[0]] = 1; opts.push({ t: '$' + o[0] + '$', ok: !!o[1] }); }
+            });
+            return qcm(q, opts);
+        }
+        q.type = 'nombre'; q.irreductible = true;
+        if (niveau === 2) {                    // division de deux fractions
+            do { a = A.entier(1, 9); b = A.entier(2, 9); c = A.entier(1, 9); d = A.entier(2, 9); } while (pgcd(a, b) > 1 || pgcd(c, d) > 1 || a === c || (a * d) % (b * c) === 0);
+            q.texte = 'Calculer $' + frac(a, b) + '\\div' + frac(c, d) + '$ (fraction irréductible).';
+            q.attendu = (a * d) / (b * c);
+            q.explication = 'Diviser par une fraction, c\'est multiplier par son <b>inverse</b> : $' + frac(a, b) + '\\div' + frac(c, d) + '=' + frac(a, b) + '\\times' + frac(d, c) + '=' + frac(a + '\\times' + d, b + '\\times' + c) + '=' + frac(a * d, b * c) +
+                (pgcd(a * d, b * c) > 1 ? '=' + fracTex(a * d, b * c) : '') + '$.';
+            return q;
+        }
+        var e;                                 // e - a/b × c/d
+        do { e = A.entier(1, 3); a = A.entier(1, 7); b = A.entier(2, 9); c = A.entier(1, 9); d = A.entier(2, 9); } while (pgcd(a, b) > 1 || pgcd(c, d) > 1 || (a * c) % (b * d) === 0 || pgcd(a * c, b * d) === 1);
+        var pn = a * c, pd = b * d, g = pgcd(pn, pd);
+        q.texte = 'Calculer $A=' + e + '-' + frac(a, b) + '\\times' + frac(c, d) + '$ (fraction irréductible).';
+        q.attendu = e - pn / pd;
+        q.explication = 'Priorité à la multiplication : $' + frac(a, b) + '\\times' + frac(c, d) + '=' + frac(pn, pd) + '=' + fracTex(pn, pd) + '$.<br>' +
+            'Puis $' + e + '-' + fracTex(pn, pd) + '=' + frac(e * pd / g, pd / g) + '-' + fracTex(pn, pd) + '=' + fracTex(e * pd - pn, pd) + '$.<br>' +
+            'Piège : calculer d\'abord $' + e + '-' + frac(a, b) + '$ (la multiplication est prioritaire).';
+        return q;
+    };
+
+    /* ===== A17 · Droite (sans choix proposés) ===== */
+    Auto.droiteSimple = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A17 · Équation de droite', type: 'nombre' }, m, p, x0, y0;
+        if (niveau === 2) return Auto.droite(2);
+        if (niveau === 1) {
+            do { m = A.nonNul(-5, 5); p = A.nonNul(-9, 9); x0 = A.nonNul(-5, 5); } while (Math.abs(m) === 1);
+            y0 = m * x0 + p;
+            q.texte = 'La droite $(d)$ a pour équation $' + eqDroite(m, p) + '$. Le point $A$ de $(d)$ a pour abscisse $' + x0 + '$. Donner son ordonnée.';
+            q.prefixe = 'y_A =';
+            q.attendu = y0;
+            q.explication = 'On remplace $x$ par $' + x0 + '$ : $y_A=' + calculDroite(m, p, x0) + '=' + y0 + '$.';
+            return q;
+        }
+        do { m = A.nonNul(-5, 5); x0 = A.nonNul(-6, 6); y0 = A.entier(-12, 12); p = y0 - m * x0; } while (p === 0 || Math.abs(m) === 1);
+        q.texte = 'Le point $A' + coord(x0, y0) + '$ appartient à la droite $(d)$ d\'équation $y=' + Interactif.poly([m, 0]) + '+p$. Déterminer $p$.';
+        q.prefixe = 'p =';
+        q.attendu = p;
+        q.explication = '$A$ est sur $(d)$, donc ses coordonnées vérifient l\'équation : $' + y0 + '=' + (m === 1 ? '' : m === -1 ? '-' : m + '\\times') + Interactif.par(x0) + '+p$, soit $' + y0 + '=' + m * x0 + '+p$.<br>' +
+            'Donc $p=' + y0 + (m * x0 < 0 ? '+' + -m * x0 : '-' + m * x0) + '=' + p + '$.';
+        return q;
+    };
+
+    /* ===== A30 · Probabilités (automatisme final) ===== */
+    Auto.probaFinal = function (niveau) {
+        if (niveau === 1) { var q = Auto.probaSimple(1); delete q.rappel; return q; }
+        return niveau === 2 ? Auto.probaSimple(2) : Auto.probaUrne(3);
+    };
+
+    /* ===== A23 · Trigonométrie (sans choix proposés) ===== */
+    Auto.trigoSimple = function (niveau) {
+        if (niveau > 1) return Auto.trigo(niveau);
+        var q = { niveau: 1, objectif: 'A23 · Trigonométrie', type: 'nombre', irreductible: true }, N = nomsTriangle(), adj = N[0] + N[1], opp = N[0] + N[2], hyp = N[1] + N[2], ang = angleTex(N);
+        var t = A.choix(TRIPLETS_TRIGO), fn = A.choix(['cos', 'sin', 'tan']);
+        var R = { cos: [t[0], t[2]], sin: [t[1], t[2]], tan: [t[1], t[0]] }, noms = { cos: [adj, hyp], sin: [opp, hyp], tan: [opp, adj] };
+        q.figure = triangleRectangle(N, t[0], t[1], [t[0], t[1], t[2]]); q.figureNote = adj + '=' + t[0] + ' ' + opp + '=' + t[1] + ' ' + hyp + '=' + t[2];
+        q.texte = 'Le triangle $' + N.join('') + '$ est rectangle en $' + N[0] + '$, avec $' + adj + '=' + t[0] + '$, $' + opp + '=' + t[1] + '$ et $' + hyp + '=' + t[2] + '$. Donner $\\' + fn + '(' + ang + ')$ (fraction irréductible).';
+        q.attendu = R[fn][0] / R[fn][1];
+        q.explication = '$\\' + fn + '(' + ang + ')=' + frac(noms[fn][0], noms[fn][1]) + '=' + frac(R[fn][0], R[fn][1]) + (pgcd(R[fn][0], R[fn][1]) > 1 ? '=' + fracTex(R[fn][0], R[fn][1]) : '') + '$ (SOH CAH TOA).';
+        return q;
+    };
+
+    /* ===== Repère · Milieu (automatisme final) ===== */
+    Auto.milieuFinal = function (niveau) {
+        if (niveau === 1) { var q = Auto.milieuSimple(1); delete q.rappel; return q; }
+        return Auto.milieu(niveau);
+    };
+
+    /* ===== A15 · Coefficient multiplicateur (sans choix proposés) ===== */
+    Auto.evolutionSimple = function (niveau) {
+        var q = { niveau: niveau, objectif: 'A15 · Coefficient multiplicateur' }, v0, t, v1;
+        if (niveau === 3) return Auto.evolutionCM(3);
+        if (niveau === 1) {
+            do { v0 = A.choix([20, 40, 50, 60, 80, 120, 150, 200, 250]); t = A.choix([5, 10, 15, 20, 25, 30, 40, 60]) * A.signe(); v1 = arrondi(v0 * (1 + t / 100)); } while (v1 % 1 || t <= -60);
+            q.type = 'nombre';
+            q.texte = 'Un prix passe de $' + v0 + '$ € à $' + fr(v1) + '$ €. Par quel nombre a-t-il été multiplié ?';
+            q.attendu = arrondi(1 + t / 100);
+            q.explication = '$CM=' + frac('\\text{valeur finale}', '\\text{valeur initiale}') + '=' + frac(fr(v1), v0) + '=' + fr(q.attendu) + '$ : ' + (t > 0 ? 'hausse' : 'baisse') + ' de $' + pct(Math.abs(t)) + '$.';
+            return q;
+        }
+        var R = A.choix([[25, 20, 'h'], [100, 50, 'h'], [20, 25, 'b'], [50, 100, 'b']]);
+        q.type = 'champs';
+        q.gabarit = '[] $\\,\\%$';
+        if (R[2] === 'h') {
+            q.texte = 'Un prix augmente de $' + pct(R[0]) + '$. De quel pourcentage doit-il baisser pour revenir au prix de départ ?';
+            q.attendus = [R[1]];
+            q.explication = 'Hausse de $' + pct(R[0]) + '$ : $\\times' + fr(1 + R[0] / 100) + '$. Pour revenir au départ, on multiplie par l\'inverse : $' + frac(1, fr(1 + R[0] / 100)) + '=' + fr(1 / (1 + R[0] / 100)) + '=1-' + fr(R[1] / 100) + '$, soit une baisse de $' + pct(R[1]) + '$.<br>' +
+                'Piège : $' + pct(R[0]) + '$ (une baisse de $' + pct(R[0]) + '$ ne compense pas une hausse de $' + pct(R[0]) + '$).';
+        } else {
+            q.texte = 'Un prix baisse de $' + pct(R[0]) + '$. De quel pourcentage doit-il augmenter pour revenir au prix de départ ?';
+            q.attendus = [R[1]];
+            q.explication = 'Baisse de $' + pct(R[0]) + '$ : $\\times' + fr(1 - R[0] / 100) + '$. Pour revenir au départ, on multiplie par l\'inverse : $' + frac(1, fr(1 - R[0] / 100)) + '=' + fr(1 / (1 - R[0] / 100)) + '=1+' + fr(R[1] / 100) + '$, soit une hausse de $' + pct(R[1]) + '$.<br>' +
+                'Piège : $' + pct(R[0]) + '$ (une hausse de $' + pct(R[0]) + '$ ne compense pas une baisse de $' + pct(R[0]) + '$).';
+        }
+        return q;
+    };
+
+    /* ===== A14 · Proportion de proportion (automatisme final) ===== */
+    Auto.proportionPourcentFinal = function (niveau) {
+        if (niveau === 1) { var q = Auto.proportionPourcentSimple(1); delete q.rappel; return q; }
+        return Auto.proportionPourcent(niveau);
+    };
+
+    /* =====================================================================
        Rappels des questions vertes (bouton « Je ne sais pas, j'ai besoin d'un rappel ») :
        la méthode et un exemple différent de la question. Texte mixte HTML + $maths$.
        ===================================================================== */
@@ -2996,7 +3426,44 @@
         pythagoreSimple: 'Dans un triangle rectangle, le carré de l\'<b>hypoténuse</b> (côté opposé à l\'angle droit) est égal à la somme des carrés des deux autres côtés.<br>' +
             'Exemple : côtés de l\'angle droit $6$ cm et $8$ cm : hypoténuse$^2=36+64=100$, donc hypoténuse $=10$ cm.',
         produitNulFinal: 'Un produit est nul si et seulement si l\'un au moins de ses facteurs est nul.<br>' +
-            'Exemple : $(x-5)(x+1)=0$ : $x-5=0$ ou $x+1=0$, donc $x=5$ ou $x=-1$.'
+            'Exemple : $(x-5)(x+1)=0$ : $x-5=0$ ou $x+1=0$, donc $x=5$ ou $x=-1$.',
+        droite: 'Un point appartient à la droite d\'équation $y=mx+p$ si ses coordonnées vérifient l\'équation : on remplace $x$ par l\'<b>abscisse</b> (le premier nombre) et on doit trouver l\'<b>ordonnée</b> (le second).<br>' +
+            'Exemple : $(d)$ : $y=2x-1$. Pour $A(3\\ ;\\ 5)$ : $2\\times3-1=5$, donc $A\\in(d)$. Pour $B(5\\ ;\\ 3)$ : $2\\times5-1=9\\neq3$, donc $B\\notin(d)$.',
+        probaSimple: 'Quand toutes les issues ont la même chance (équiprobabilité) : $P=' + frac('\\text{nombre d\'issues favorables}', '\\text{nombre total d\'issues}') + '$.<br>' +
+            'Exemple : $4$ boules rouges, $3$ vertes et $5$ bleues ($12$ boules) : $P(\\text{verte})=' + frac(3, 12) + '=' + frac(1, 4) + '$. On écrit la réponse <code>3/12</code> ou <code>1/4</code>.',
+        medianeFinal: 'La <b>médiane</b> : on <b>range d\'abord</b> les valeurs dans l\'ordre croissant, puis on prend celle du milieu.<br>' +
+            'Exemple : $15\\ ;\\ 3\\ ;\\ 8\\ ;\\ 11\\ ;\\ 6$ rangée donne $3\\ ;\\ 6\\ ;\\ 8\\ ;\\ 11\\ ;\\ 15$ : la médiane est $8$.',
+        trigo: 'Dans un triangle rectangle, pour un angle aigu : $\\cos=' + frac('\\text{adjacent}', '\\text{hypoténuse}') + '$ ; $\\sin=' + frac('\\text{opposé}', '\\text{hypoténuse}') + '$ ; $\\tan=' + frac('\\text{opposé}', '\\text{adjacent}') + '$ (<b>SOH CAH TOA</b>).<br>' +
+            'Le côté <b>adjacent</b> touche l\'angle (ce n\'est pas l\'hypoténuse) ; le côté <b>opposé</b> est en face de l\'angle.<br>' +
+            'Exemple : $ABC$ rectangle en $A$, $AB=4$, $AC=3$, $BC=5$ : $\\cos(\\widehat{ABC})=' + frac('AB', 'BC') + '=' + frac(4, 5) + '$.',
+        milieuSimple: 'Le milieu $M$ de $[AB]$ a pour coordonnées la <b>moyenne</b> des coordonnées de $A$ et de $B$ : $M\\left(' + frac('x_A+x_B', 2) + '\\ ;\\ ' + frac('y_A+y_B', 2) + '\\right)$.<br>' +
+            'Exemple : $A(-3\\ ;\\ 2)$ et $B(5\\ ;\\ 8)$ : $M\\left(' + frac('-3+5', 2) + '\\ ;\\ ' + frac('2+8', 2) + '\\right)=M(1\\ ;\\ 5)$.',
+        inequationFinal: 'On résout une inéquation comme une équation ; quand on divise par un nombre <b>positif</b>, le sens de l\'inégalité ne change pas.<br>' +
+            'Exemple : $5x+2>17$ ; $5x>15$ ; $x>3$.',
+        evolutionCM: 'Le <b>coefficient multiplicateur</b> est le nombre par lequel on multiplie la valeur de départ pour obtenir la valeur d\'arrivée : $CM=' + frac('\\text{valeur finale}', '\\text{valeur initiale}') + '$.<br>' +
+            'Exemple : un prix passe de $50$ € à $60$ € : $CM=' + frac(60, 50) + '=1{,}2$, c\'est une hausse de $20\\,\\%$.',
+        proportionPourcentSimple: 'Pour une proportion de proportion, on <b>multiplie</b> les deux proportions.<br>' +
+            'Exemple : $40\\,\\%$ des élèves sont des filles et, parmi elles, $50\\,\\%$ font du sport : $0{,}4\\times0{,}5=0{,}2$, soit $20\\,\\%$ des élèves.',
+        pythagoreFinal: 'Dans un triangle rectangle, le carré de l\'<b>hypoténuse</b> (côté opposé à l\'angle droit) est égal à la somme des carrés des deux autres côtés.<br>' +
+            'Exemple : côtés de l\'angle droit $5$ cm et $12$ cm : hypoténuse$^2=25+144=169$, donc hypoténuse $=13$ cm.',
+        carre: 'La fonction carré : $f(x)=x^2=x\\times x$. Pour un nombre négatif, on met des <b>parenthèses</b> : le carré d\'un nombre n\'est jamais négatif.<br>' +
+            'Exemple : $f(-4)=(-4)^2=(-4)\\times(-4)=16$. Attention : $-4^2=-16$, car sans parenthèses on n\'élève que $4$ au carré.',
+        droiteSimple: 'Pour trouver l\'ordonnée du point de la droite $y=mx+p$ d\'abscisse donnée, on remplace $x$ par cette abscisse.<br>' +
+            'Exemple : $(d)$ : $y=-3x+4$. Le point d\'abscisse $2$ a pour ordonnée $-3\\times2+4=-2$.',
+        probaFinal: 'Quand toutes les issues ont la même chance (équiprobabilité) : $P=' + frac('\\text{nombre d\'issues favorables}', '\\text{nombre total d\'issues}') + '$.<br>' +
+            'Exemple : $2$ boules noires et $6$ jaunes ($8$ boules) : $P(\\text{noire})=' + frac(2, 8) + '=' + frac(1, 4) + '$.',
+        lireGraphique: 'Dans un diagramme en barres, on lit la hauteur de la barre sur l\'axe vertical. On regarde d\'abord l\'<b>échelle</b> : combien vaut une graduation ?<br>' +
+            'Exemple : les graduations écrites sont $0$, $10$, $20$… avec une ligne entre deux : chaque ligne vaut $5$. Une barre qui s\'arrête sur la $3^{\\text{e}}$ ligne vaut $15$.',
+        trigoSimple: 'Dans un triangle rectangle, pour un angle aigu : $\\cos=' + frac('\\text{adjacent}', '\\text{hypoténuse}') + '$ ; $\\sin=' + frac('\\text{opposé}', '\\text{hypoténuse}') + '$ ; $\\tan=' + frac('\\text{opposé}', '\\text{adjacent}') + '$ (<b>SOH CAH TOA</b>).<br>' +
+            'Exemple : $ABC$ rectangle en $A$, $AB=8$, $AC=6$, $BC=10$ : $\\sin(\\widehat{ABC})=' + frac('AC', 'BC') + '=' + frac(6, 10) + '=' + frac(3, 5) + '$.',
+        milieuFinal: 'Le milieu $M$ de $[AB]$ a pour coordonnées la <b>moyenne</b> des coordonnées de $A$ et de $B$ : $M\\left(' + frac('x_A+x_B', 2) + '\\ ;\\ ' + frac('y_A+y_B', 2) + '\\right)$.<br>' +
+            'Exemple : $A(4\\ ;\\ -1)$ et $B(-2\\ ;\\ 7)$ : $M\\left(' + frac('4+(-2)', 2) + '\\ ;\\ ' + frac('-1+7', 2) + '\\right)=M(1\\ ;\\ 3)$.',
+        fractionsOps: 'Pour additionner deux fractions, on les écrit avec le <b>même dénominateur</b>, puis on additionne les numérateurs (le dénominateur ne change pas).<br>' +
+            'Exemple : $' + frac(1, 4) + '+' + frac(5, 8) + '=' + frac(2, 8) + '+' + frac(5, 8) + '=' + frac(7, 8) + '$.',
+        evolutionSimple: '$CM=' + frac('\\text{valeur finale}', '\\text{valeur initiale}') + '$. Si $CM>1$, c\'est une hausse ; si $CM<1$, une baisse.<br>' +
+            'Exemple : un prix passe de $80$ € à $60$ € : $CM=' + frac(60, 80) + '=0{,}75$ ; c\'est une baisse de $25\\,\\%$.',
+        proportionPourcentFinal: 'Pour une proportion de proportion, on <b>multiplie</b> les deux proportions.<br>' +
+            'Exemple : $30\\,\\%$ des adhérents sont des enfants et, parmi eux, $50\\,\\%$ font de la compétition : $0{,}3\\times0{,}5=0{,}15$, soit $15\\,\\%$ des adhérents.'
     };
     // chaque question verte reçoit son rappel
     Object.keys(RAPPELS).forEach(function (nom) {
