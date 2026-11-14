@@ -177,6 +177,11 @@ window.LEXIQUE = [
       ex: "7 est un diviseur de 119, car 119 = 7 × 17. Donc 119 est un multiple de 7.",
       voir: ["nombre premier", "quotient"] },
 
+    { mot: "convertir", aussi: ["conversion", "conversions", "convertis", "convertir en", "conversion d'unités"],
+      def: "Écrire la même quantité avec une autre unité. Dans le tableau km, hm, dam, m, dm, cm, mm (ou g, L), on multiplie ou divise par 10 d'une colonne à la suivante ; pour les aires (m²) par 100, pour les volumes (m³) par 1 000.",
+      ex: "3,5 km = 3 500 m ; 1 L = 1 dm³ = 1 000 cm³ ; 72 km/h = 72 000 m ÷ 3 600 s = 20 m/s ; 1,2 h = 72 min.",
+      voir: ["ordre de grandeur"] },
+
     /* ---------- Calcul littéral et équations ---------- */
     { mot: "expression", aussi: ["expression littérale", "exprimer", "exprimer en fonction de", "en fonction de"],
       def: "Une expression littérale est un calcul qui contient des lettres. « <b>Exprimer A en fonction de x</b> » : écrire A avec un calcul dans lequel la seule lettre est x.",
@@ -258,6 +263,11 @@ window.LEXIQUE = [
       ex: "3x − 5 est du premier degré ; 2x² + x − 1 est du second degré.",
       voir: ["équation", "expression"] },
 
+    { mot: "substituer", aussi: ["remplacer", "remplacer x par", "pour x =", "substitution"],
+      def: "Remplacer une lettre par un nombre dans une expression, puis calculer. Un nombre négatif se met <b>entre parenthèses</b>, et on respecte les priorités (puissances, puis multiplications, puis additions).",
+      ex: "Pour x = −2 : 3x² − x = 3 × (−2)² − (−2) = 3 × 4 + 2 = 14.",
+      voir: ["image", "réduire"] },
+
     /* ---------- Proportions et évolutions ---------- */
     { mot: "proportion", aussi: ["part", "fréquence"],
       def: "Part d'un ensemble par rapport au tout : proportion = effectif de la partie ÷ effectif total. Elle s'écrit en fraction, en nombre décimal ou en pourcentage, et elle est toujours entre 0 et 1 (entre 0 % et 100 %).",
@@ -298,6 +308,16 @@ window.LEXIQUE = [
       def: "Plusieurs évolutions à la suite. Le coefficient multiplicateur global est le <b>produit</b> des coefficients. Attention : on n'additionne pas les pourcentages !",
       ex: "+50 % puis −20 % : 1,5 × 0,8 = 1,2, donc une hausse globale de 20 % (et pas de 30 %).",
       voir: ["coefficient multiplicateur", "taux d'évolution"] },
+
+    { mot: "remise", aussi: ["réduction", "rabais", "soldes"],
+      def: "Somme (en €) ou pourcentage qu'on retire d'un prix. Une remise de t % multiplie le prix par 1 − t/100.",
+      ex: "Remise de 12 € sur un article à 48 € : il coûte 36 €, c'est une baisse de 12 ÷ 48 = 25 %.",
+      voir: ["taux d'évolution"] },
+
+    { mot: "prise en charge", aussi: ["forfait", "frais fixes", "abonnement"],
+      def: "Somme fixe qu'on paie quoi qu'il arrive, à laquelle s'ajoute un prix qui dépend de la quantité (kilomètres, séances…).",
+      ex: "Taxi : 4 € de prise en charge + 2 € par km : pour x km, P = 2x + 4.",
+      voir: ["exprimer en fonction de"] },
 
     /* ---------- Fonctions et repérage ---------- */
     { mot: "fonction", aussi: ["f(x)"],
@@ -483,6 +503,11 @@ window.LEXIQUE = [
       ex: "A(2 ; 3) a pour symétrique (−2 ; −3) par rapport à l'origine, et (2 ; −3) par rapport à l'axe des abscisses.",
       voir: ["repère"] },
 
+    { mot: "distance", aussi: ["longueur AB", "distance AB", "calculer AB"],
+      def: "Dans un repère orthonormé, la distance entre A et B est <span class='f'>AB = √((x<sub>B</sub> − x<sub>A</sub>)² + (y<sub>B</sub> − y<sub>A</sub>)²)</span>. C'est le théorème de Pythagore dans le quadrillage.",
+      ex: "A(1 ; 2) et B(4 ; 6) : AB = √(3² + 4²) = √25 = 5.",
+      voir: ["milieu"] },
+
     /* ---------- Statistiques et suites ---------- */
     { mot: "moyenne", aussi: [],
       def: "Somme de toutes les valeurs, divisée par le nombre de valeurs.",
@@ -507,6 +532,32 @@ window.LEXIQUE = [
     { mot: "indiscernable", aussi: ["indiscernables", "indiscernables au toucher", "urne"],
       def: "Des objets indiscernables (au toucher) ne peuvent pas être distingués quand on les tire sans regarder : chacun a donc la <b>même chance</b> d'être tiré. Une <b>urne</b> est simplement un récipient (un sac, une boîte) dans lequel on tire au hasard.",
       voir: ["probabilité"] },
+
+    { mot: "étendue", aussi: ["etendue"],
+      def: "Différence entre la plus grande et la plus petite valeur d'une série. Elle mesure à quel point les valeurs sont dispersées.",
+      ex: "Série 3 ; 12 ; 7 ; 9 : étendue = 12 − 3 = 9.",
+      voir: ["médiane", "quartile"] },
+
+    { mot: "quartile", aussi: ["quartiles", "premier quartile", "troisième quartile", "Q1", "Q3"],
+      def: "On range les valeurs dans l'ordre croissant. Le <b>premier quartile Q<sub>1</sub></b> est la plus petite valeur telle qu'au moins 25 % des valeurs lui soient inférieures ou égales (rang : n ÷ 4, arrondi à l'entier au-dessus). Le <b>troisième quartile Q<sub>3</sub></b> : même chose avec 75 % (rang 3n ÷ 4, arrondi au-dessus).",
+      ex: "10 valeurs rangées : 10 ÷ 4 = 2,5, donc Q<sub>1</sub> est la 3<sup>e</sup> valeur ; 30 ÷ 4 = 7,5, donc Q<sub>3</sub> est la 8<sup>e</sup> valeur.",
+      voir: ["médiane", "étendue"] },
+
+    { mot: "événement contraire", aussi: ["contraire", "A barre", "non A", "évènement contraire"],
+      si: ["probabilité", "événement", "évènement", "P("],
+      def: "L'événement contraire de A, noté Ā, est réalisé quand A ne l'est pas. <span class='f'>P(Ā) = 1 − P(A)</span>.",
+      ex: "P(A) = 0,35, donc P(Ā) = 0,65.",
+      voir: ["probabilité"] },
+
+    { mot: "tableau croisé", aussi: ["tableau croisé d'effectifs", "tableau à double entrée", "tableau d'effectifs"],
+      def: "Tableau qui répartit une population selon deux critères (en lignes et en colonnes), avec les totaux. Une case donne l'effectif des personnes qui vérifient <b>les deux</b> critères.",
+      ex: "Pour P(F ∩ D), on lit la case « Fille / Demi-pens. » et on divise par le total général ; pour P<sub>F</sub>(D), on divise par le total de la ligne « Fille ».",
+      voir: ["probabilité conditionnelle", "probabilité"] },
+
+    { mot: "probabilité conditionnelle", aussi: ["sachant", "sachant que", "on sait que", "P_A(B)", "conditionnelle"],
+      def: "P<sub>A</sub>(B) est la probabilité de B <b>sachant que</b> A est réalisé : on ne regarde plus que les cas où A est réalisé. Avec un tableau : <span class='f'>P<sub>A</sub>(B) = effectif de « A et B » ÷ effectif de A</span>.",
+      ex: "Parmi 40 filles, 12 sont internes : P<sub>F</sub>(I) = 12/40 = 3/10.",
+      voir: ["tableau croisé", "probabilité"] },
 
     /* ---------- Algorithmique ---------- */
     { mot: "variable", aussi: ["affectation", "affecter"],

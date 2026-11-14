@@ -64,6 +64,10 @@ window.OUVERTURE_SERIES = {
         '2F': { jour: 'jeudi', heure: '18:00' },
         '2B': { jour: 'vendredi', heure: '17:00' },
         '2H': { jour: 'vendredi', heure: '17:00' }
+    },
+    // 1TC : la série s'ouvre le vendredi à 16h, avant la semaine où elle est à rendre (vendredi suivant)
+    premiere: {
+        '1TC': { jour: 'vendredi', heure: '16:00' }
     }
 };
 
@@ -157,6 +161,13 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'terminale', id: 'terminale/serie7-bilan', groupe: 'Facultatif · Série 7 TST2S en temps limité ⏱', titre: 'Bilan Série 7 (10 questions chronométrées)', court: 'T · S7 · Bilan', url: 'terminale/serie7-bilan.html' },
     // Première (1TC) : une série par semaine, à faire à la maison pour le vendredi suivant (10 questions par couleur, validation question par question)
     { niveau: 'premiere', id: 'premiere/serie1', groupe: 'Série 1 · à faire pour le vendredi 13 novembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S1', url: 'premiere/serie1.html' },
+    // Séries 2 à 7 : ouverture automatique le vendredi 16h (OUVERTURE_SERIES.premiere) ; la précédente passe d'elle-même dans « Anciennes séries » ; PROF-1TC les voit avant
+    { niveau: 'premiere', id: 'premiere/serie2', groupe: 'Série 2 · semaine du 16 au 20 novembre · à faire pour le vendredi 20 novembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S2', url: 'premiere/serie2.html', comptes: ['PROF-1TC'], ouverture: 'auto' },
+    { niveau: 'premiere', id: 'premiere/serie3', groupe: 'Série 3 · semaine du 23 au 27 novembre · à faire pour le vendredi 27 novembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S3', url: 'premiere/serie3.html', comptes: ['PROF-1TC'], ouverture: 'auto' },
+    { niveau: 'premiere', id: 'premiere/serie4', groupe: 'Série 4 · semaine du 30 novembre au 4 décembre · à faire pour le vendredi 4 décembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S4', url: 'premiere/serie4.html', comptes: ['PROF-1TC'], ouverture: 'auto' },
+    { niveau: 'premiere', id: 'premiere/serie5', groupe: 'Série 5 · semaine du 7 au 11 décembre · à faire pour le vendredi 11 décembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S5', url: 'premiere/serie5.html', comptes: ['PROF-1TC'], ouverture: 'auto' },
+    { niveau: 'premiere', id: 'premiere/serie6', groupe: 'Série 6 · semaine du 14 au 18 décembre · à faire pour le vendredi 18 décembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S6', url: 'premiere/serie6.html', comptes: ['PROF-1TC'], ouverture: 'auto' },
+    { niveau: 'premiere', id: 'premiere/serie7', groupe: 'Série 7 · semaine du 21 décembre au 8 janvier · vacances de Noël, à faire pour le vendredi 8 janvier', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S7', url: 'premiere/serie7.html', comptes: ['PROF-1TC'], ouverture: 'auto' },
     // Première (1TC) : activité d'introduction aux probabilités conditionnelles (onglet « Activités » de l'espace élève), code d'accès
     { niveau: 'premiere', id: 'premiere/activite-probas', groupe: 'Activité · Probabilités conditionnelles', titre: 'Contrôlé positif… donc dopé ? (13 étapes)', court: '1 · Act. Probas', url: 'premiere/activite-probas.html', tp: true, vueProf: true,
       codeAcces: '4faa0e5775e86206c01c5b9f5bbbdb08889dd89af0911746d84b05024a4033a3' }   // empreinte SHA-256 du code d'accès (voir Codes d'accès des TP)
@@ -231,8 +242,20 @@ window.INTERACTIF_GROUPES = {
                  'Proportion de proportion', 'Signe', 'Dérivée d\'un polynôme', 'Résolution graphique', 'Évolutions successives'] },
     'Facultatif · Série 7 TST2S en temps limité ⏱': { serie: 'TST2S · Série 7' },
     // Première (1TC) : « serie » distinct des séries de Seconde et de TST2S
-    'Série 1 · à faire pour le vendredi 13 novembre': { serie: '1TC · Série 1',
-        themes: ['Proportions', 'Appliquer un taux d\'évolution', 'Fractions', 'Équations du premier degré', 'Lire un diagramme'] }
+    'Série 1 · à faire pour le vendredi 13 novembre': { section: 'Anciennes séries', serie: '1TC · Série 1',
+        themes: ['Proportions', 'Appliquer un taux d\'évolution', 'Fractions', 'Équations du premier degré', 'Lire un diagramme'] },
+    'Série 2 · semaine du 16 au 20 novembre · à faire pour le vendredi 20 novembre': { serie: '1TC · Série 2',
+        themes: ['Calculer un taux d\'évolution', 'Puissances', 'Développer, réduire', 'Images et antécédents par le calcul', 'Indicateurs statistiques'] },
+    'Série 3 · semaine du 23 au 27 novembre · à faire pour le vendredi 27 novembre': { serie: '1TC · Série 3',
+        themes: ['Proportion de proportion', 'Écritures d\'un nombre', 'Calcul littéral élémentaire', 'Coefficient directeur', 'Probabilités'] },
+    'Série 4 · semaine du 30 novembre au 4 décembre · à faire pour le vendredi 4 décembre': { serie: '1TC · Série 4',
+        themes: ['Taux d\'évolution global', 'Comparer, encadrer, ranger', 'Factoriser', 'Point sur une courbe', 'Repérage'] },
+    'Série 5 · semaine du 7 au 11 décembre · à faire pour le vendredi 11 décembre': { serie: '1TC · Série 5',
+        themes: ['Taux d\'évolution réciproque', 'Ordre de grandeur', 'Isoler une variable', 'Équation réduite d\'une droite', 'Graphique et données'] },
+    'Série 6 · semaine du 14 au 18 décembre · à faire pour le vendredi 18 décembre': { serie: '1TC · Série 6',
+        themes: ['Appliquer un taux d\'évolution', 'Conversions d\'unités', 'Inéquations', 'Résolution graphique', 'Tableau croisé, probabilités conditionnelles'] },
+    'Série 7 · semaine du 21 décembre au 8 janvier · vacances de Noël, à faire pour le vendredi 8 janvier': { serie: '1TC · Série 7',
+        themes: ['Bilan : taux d\'évolution', 'Fractions', 'Équations du premier degré', 'Coefficient directeur', 'Probabilités'] }
 };
 
 /* Onglet « TP Python » de la page élève : les TP dans l'ordre d'affichage.
