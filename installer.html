@@ -45,6 +45,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 .retour { color: #c9d1e4; font-size: .85rem; text-decoration: none; display: inline-block; margin-top: .5rem; }
 .retour:hover, .retour:focus-visible { color: #fff; text-decoration: underline; }
@@ -86,8 +87,18 @@ button { font: inherit; cursor: pointer; }
 .onglet svg { width: 18px; height: 18px; }
 
 .panneau { display: grid; gap: 1rem; }
-.navig { margin: 0; font-size: .92rem; color: var(--muted); }
-.navig strong { color: var(--text); }
+.choix-nav { display: grid; gap: .5rem; }
+.choix-nav p { margin: 0; }
+.choix-nav > p:first-child { font-weight: 700; }
+.puces { display: flex; flex-wrap: wrap; gap: .4rem; }
+.puce {
+  border: 1px solid var(--line); background: var(--surface); color: var(--text);
+  border-radius: 999px; padding: .45rem .95rem; font-weight: 500;
+}
+.puce[aria-pressed="true"] { background: var(--orange); border-color: var(--orange); color: #fff; }
+.puce:focus-visible { outline: 3px solid var(--bleu); outline-offset: 2px; }
+.choix-nav .aide { font-size: .85rem; color: var(--muted); }
+.choix-nav .aide strong { color: var(--text); }
 ol.etapes { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; counter-reset: e; }
 ol.etapes > li {
   counter-increment: e; display: grid; grid-template-columns: 2.1rem 1fr; gap: .8rem; align-items: start;
@@ -166,8 +177,17 @@ h2 { margin: 0; font-size: 1.1rem; }
 
   <!-- ANDROID -->
   <section class="panneau" id="p-android" role="tabpanel" aria-labelledby="tab-android">
-    <p class="navig">Avec <strong>Chrome</strong>, le navigateur installé d'office sur la plupart des téléphones Android.</p>
-    <ol class="etapes">
+    <div class="choix-nav" role="group" aria-label="Navigateur sur Android">
+      <p>Quel navigateur utilises-tu ?</p>
+      <div class="puces">
+        <button type="button" class="puce" data-nav="chrome" aria-pressed="true">Chrome</button>
+        <button type="button" class="puce" data-nav="samsung" aria-pressed="false">Samsung Internet</button>
+        <button type="button" class="puce" data-nav="firefox" aria-pressed="false">Firefox</button>
+      </div>
+      <p class="aide">Pas sûr ? Sur la plupart des téléphones Android, c'est <strong>Chrome</strong> (le rond rouge, jaune et vert). Sur un Samsung, c'est souvent <strong>Samsung Internet</strong> (la planète violette).</p>
+    </div>
+
+    <ol class="etapes" data-pour="chrome">
       <li><div class="etape">
         <h3>Ouvre le site dans Chrome</h3>
         <p>Tape l'adresse ci-dessus ou scanne le QR code donné en classe.</p>
@@ -185,16 +205,58 @@ h2 { margin: 0; font-size: 1.1rem; }
         <p>Si Chrome te le propose, appuie ensuite sur <strong>« Ajouter »</strong> ou fais glisser l'icône sur l'écran de ton choix.</p>
       </div></li>
     </ol>
-    <div class="encadre">
-      <p><strong>Tu as un Samsung avec Samsung Internet ?</strong> Appuie sur le menu <span class="btn-ecran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</span> en bas à droite, puis <strong>« Ajouter la page à »</strong> → <strong>« Écran d'accueil »</strong>.</p>
-      <p><strong>Avec Firefox :</strong> menu <strong>⋮</strong> → <strong>« Ajouter à l'écran d'accueil »</strong>.</p>
-    </div>
+
+    <ol class="etapes" data-pour="samsung" hidden>
+      <li><div class="etape">
+        <h3>Ouvre le site dans Samsung Internet</h3>
+        <p>Tape l'adresse ci-dessus ou scanne le QR code donné en classe.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Ouvre le menu</h3>
+        <p>Appuie sur les trois traits <span class="btn-ecran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</span> en bas à droite de l'écran.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Choisis « Ajouter la page à »</h3>
+        <p>Puis <strong>« Écran d'accueil »</strong>. Sur certaines versions, la ligne s'appelle directement <strong>« Ajouter à l'écran d'accueil »</strong>.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Confirme avec « Ajouter »</h3>
+        <p>L'icône apparaît sur ton écran d'accueil.</p>
+      </div></li>
+    </ol>
+
+    <ol class="etapes" data-pour="firefox" hidden>
+      <li><div class="etape">
+        <h3>Ouvre le site dans Firefox</h3>
+        <p>Tape l'adresse ci-dessus ou scanne le QR code donné en classe.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Ouvre le menu</h3>
+        <p>Appuie sur les trois points <span class="btn-ecran"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>Menu</span>, en haut ou en bas à droite selon l'endroit où se trouve ta barre d'adresse.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Choisis « Ajouter à l'écran d'accueil »</h3>
+        <p>La ligne peut aussi s'appeler <strong>« Installer »</strong>. Fais défiler le menu si tu ne la vois pas.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Confirme avec « Ajouter »</h3>
+        <p>Si Firefox te le propose, fais glisser l'icône sur l'écran de ton choix.</p>
+      </div></li>
+    </ol>
   </section>
 
   <!-- IPHONE -->
   <section class="panneau" id="p-iphone" role="tabpanel" aria-labelledby="tab-iphone" hidden>
-    <p class="navig">Avec <strong>Safari</strong>, le navigateur à la boussole bleue, installé sur tous les iPhone.</p>
-    <ol class="etapes">
+    <div class="choix-nav" role="group" aria-label="Navigateur sur iPhone">
+      <p>Quel navigateur utilises-tu ?</p>
+      <div class="puces">
+        <button type="button" class="puce" data-nav="safari" aria-pressed="true">Safari</button>
+        <button type="button" class="puce" data-nav="chrome" aria-pressed="false">Chrome</button>
+      </div>
+      <p class="aide">Pas sûr ? <strong>Safari</strong>, c'est la boussole bleue, installée sur tous les iPhone.</p>
+    </div>
+
+    <ol class="etapes" data-pour="safari">
       <li><div class="etape">
         <h3>Ouvre le site dans Safari</h3>
         <p>Tape l'adresse ci-dessus ou scanne le QR code donné en classe avec l'appareil photo.</p>
@@ -212,8 +274,27 @@ h2 { margin: 0; font-size: 1.1rem; }
         <p>En haut à droite. Laisse le nom « Maths Lebrun ». Si l'option <strong>« Ouvrir en tant qu'app web »</strong> apparaît, laisse-la activée.</p>
       </div></li>
     </ol>
-    <div class="encadre">
-      <p><strong>Tu utilises Chrome sur iPhone ?</strong> Appuie sur l'icône Partager <span class="btn-ecran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M8 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2"/></svg>Partager</span> dans la barre d'adresse, puis <strong>« Sur l'écran d'accueil »</strong>. Si l'option n'y est pas, repasse par Safari.</p>
+
+    <ol class="etapes" data-pour="chrome" hidden>
+      <li><div class="etape">
+        <h3>Ouvre le site dans Chrome</h3>
+        <p>Tape l'adresse ci-dessus ou scanne le QR code donné en classe.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Appuie sur le bouton Partager</h3>
+        <p>C'est le carré avec une flèche vers le haut <span class="btn-ecran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M8 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2"/></svg>Partager</span>, à droite de la barre d'adresse, en haut de l'écran.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Choisis « Sur l'écran d'accueil »</h3>
+        <p>Fais défiler la liste vers le bas si tu ne la vois pas tout de suite.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Appuie sur « Ajouter »</h3>
+        <p>En haut à droite. Laisse le nom « Maths Lebrun ».</p>
+      </div></li>
+    </ol>
+    <div class="encadre" data-pour="chrome" hidden>
+      <p><strong>Pas de ligne « Sur l'écran d'accueil » ?</strong> Ton iPhone n'est sans doute pas à jour. Passe par Safari : choisis l'onglet Safari ci-dessus.</p>
     </div>
   </section>
 
@@ -272,6 +353,27 @@ h2 { margin: 0; font-size: 1.1rem; }
   try { var m = localStorage.getItem('tuto-onglet'); if (m === 'android' || m === 'iphone') depart = m; } catch (e) {}
   if (location.hash === '#iphone' || location.hash === '#android') depart = location.hash.slice(1);
   choisir(depart);
+
+  // Choix du navigateur dans chaque onglet (Android / iPhone)
+  var ua = navigator.userAgent;
+  var defaut = {
+    android: /SamsungBrowser/.test(ua) ? 'samsung' : /Firefox/.test(ua) ? 'firefox' : 'chrome',
+    iphone: /CriOS/.test(ua) ? 'chrome' : 'safari'
+  };
+  Object.keys(panes).forEach(function (os) {
+    var pane = panes[os];
+    function nav(k) {
+      pane.querySelectorAll('[data-nav]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.nav === k ? 'true' : 'false'); });
+      pane.querySelectorAll('[data-pour]').forEach(function (el) { el.hidden = el.dataset.pour !== k; });
+      try { localStorage.setItem('tuto-nav-' + os, k); } catch (e) {}
+    }
+    pane.querySelectorAll('[data-nav]').forEach(function (b) {
+      b.addEventListener('click', function () { nav(b.dataset.nav); });
+    });
+    var k = defaut[os];
+    try { var m = localStorage.getItem('tuto-nav-' + os); if (m && pane.querySelector('[data-nav="' + m + '"]')) k = m; } catch (e) {}
+    nav(k);
+  });
 
   var btn = document.getElementById('copier');
   btn.addEventListener('click', function () {
