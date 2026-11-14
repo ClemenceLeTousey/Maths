@@ -112,6 +112,18 @@
         .tableau input:disabled { opacity: .45; cursor: not-allowed; }
         .tableau input.active-phase { outline: 2px solid var(--c-act); outline-offset: 1px; }
         .aide-phase .explication { margin-top: 6px; }
+        .tableau input.case-aidee:not(.juste):not(.faux) { outline: 2px dashed #f59f00; outline-offset: 1px; }
+        /* aide à droite du tableau, ampoule clignotante */
+        .tableau-et-aide { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 18px; }
+        .tableau-et-aide .tableau { flex: 0 1 auto; max-width: 100%; }
+        .tableau-et-aide .aide-phase { flex: 1 1 220px; margin: 8px 0; }
+        .tableau-et-aide .aide-phase .explication { margin-top: 6px; }
+        .aide-phase button.lien { display: inline-flex; flex-direction: column; align-items: flex-start; text-align: left; }
+        .aide-phase button.lien .ampoule { font-size: 1.15rem; font-weight: 700; }
+        .aide-phase button.lien small { font-size: 0.8rem; color: var(--muted); }
+        .aide-phase button.clignote .ampoule { animation: clignote-aide 1.2s ease-in-out infinite; }
+        @keyframes clignote-aide { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+        @media (prefers-reduced-motion: reduce) { .aide-phase button.clignote .ampoule { animation: none; } }
         /* fractions */
         .frac { display: inline-block; vertical-align: middle; text-align: center; margin: 0 .15em; line-height: 1.2; font-size: .95em; }
         .frac > span { display: block; padding: 0 .2em; }
@@ -353,10 +365,18 @@
                   { lib: 'Dopé et négatif', attendu: 5, phase: 1,
                     aide: '<p>Regarde la colonne « Dopé » : elle contient <b>100</b> athlètes en tout (ligne Total).</p><p>Parmi eux, <b>95</b> ont un test positif (case déjà remplie). Les autres ont forcément un test négatif : combien en reste-t-il ?</p>',
                     pieges: [[95, 'Ça, ce sont les dopés <b>positifs</b> (déjà dans le tableau). On veut les dopés dont le test est <b>négatif</b>.'], [495, 'Tu as pris les 9 900 non dopés : dans cette colonne, on ne compte que les 100 dopés.']], indice: 'Dopé et négatif : les dopés qui restent, 100 − 95.' },
-                  { lib: 'Non dopé et positif', attendu: 495, pieges: [[9405, 'Inversé ! 95 % des non dopés ont un test <b>négatif</b>. Les positifs, ce sont les 5 % restants.'], [5, 'Tu as pris 5 % des 100 dopés : ici, on travaille sur les 9 900 non dopés.']], indice: 'Non dopé et positif : 5 % des 9 900 non dopés.' },
-                  { lib: 'Non dopé et négatif', attendu: 9405, pieges: [[495, 'Inversé ! 95 % des non dopés ont un test <b>négatif</b> : 0,95 × 9 900.'], [9900, 'Tous les non dopés n’ont pas un test négatif : seulement 95 % d’entre eux.']], indice: 'Non dopé et négatif : 95 % des 9 900 non dopés.' },
-                  { lib: 'Total des positifs', attendu: 590, pieges: [[95, 'Le total d’une ligne : on ajoute les dopés positifs <b>et</b> les non dopés positifs.']], indice: 'Total de la ligne « Test positif » : on additionne les deux cases de la ligne.' },
-                  { lib: 'Total des négatifs', attendu: 9410, indice: 'Total de la ligne « Test négatif » : on additionne les deux cases de la ligne (ou 10 000 − total des positifs).' }
+                  { lib: 'Non dopé et positif', attendu: 495,
+                    aide: '<p>Regarde la colonne « Non dopé » : elle contient <b>9 900</b> athlètes en tout (ligne Total).</p><p>L’énoncé dit que <b>95 %</b> des non dopés ont un test <b>négatif</b>. Ceux qui ont un test positif (le test se trompe) sont donc les <b>5 %</b> restants.</p><p>Calcule 5 % de 9 900, c’est-à-dire 0,05 × 9 900.</p>',
+                    pieges: [[9405, 'Inversé ! 95 % des non dopés ont un test <b>négatif</b>. Les positifs, ce sont les 5 % restants.'], [5, 'Tu as pris 5 % des 100 dopés : ici, on travaille sur les 9 900 non dopés.']], indice: 'Non dopé et positif : 5 % des 9 900 non dopés.' },
+                  { lib: 'Non dopé et négatif', attendu: 9405,
+                    aide: '<p>Regarde la colonne « Non dopé » : elle contient <b>9 900</b> athlètes en tout (ligne Total).</p><p>L’énoncé dit que le test est <b>négatif</b> pour <b>95 %</b> des non dopés : calcule 95 % de 9 900, c’est-à-dire 0,95 × 9 900.</p><p>Autre méthode : si la case « Non dopé / Test positif » est déjà remplie, il reste 9 900 moins cette case.</p>',
+                    pieges: [[495, 'Inversé ! 95 % des non dopés ont un test <b>négatif</b> : 0,95 × 9 900.'], [9900, 'Tous les non dopés n’ont pas un test négatif : seulement 95 % d’entre eux.']], indice: 'Non dopé et négatif : 95 % des 9 900 non dopés.' },
+                  { lib: 'Total des positifs', attendu: 590,
+                    aide: '<p>Cette case est au bout de la ligne « Test positif » : elle compte <b>tous</b> les athlètes dont le test est positif, qu’ils soient dopés <b>ou</b> non.</p><p>Additionne les deux cases de cette ligne : « Dopé » + « Non dopé ».</p>',
+                    pieges: [[95, 'Le total d’une ligne : on ajoute les dopés positifs <b>et</b> les non dopés positifs.']], indice: 'Total de la ligne « Test positif » : on additionne les deux cases de la ligne.' },
+                  { lib: 'Total des négatifs', attendu: 9410,
+                    aide: '<p>Cette case est au bout de la ligne « Test négatif » : elle compte <b>tous</b> les athlètes dont le test est négatif, qu’ils soient dopés <b>ou</b> non.</p><p>Additionne les deux cases de cette ligne : « Dopé » + « Non dopé ».</p><p>Pour vérifier : total des positifs + total des négatifs doit donner <b>10 000</b>.</p>',
+                    indice: 'Total de la ligne « Test négatif » : on additionne les deux cases de la ligne (ou 10 000 − total des positifs).' }
               ],
               explication: '<ul><li>Dopés : 0,95 × 100 = <b>95</b> positifs, donc 100 − 95 = <b>5</b> négatifs.</li><li>Non dopés : 0,95 × 9 900 = <b>9 405</b> négatifs, donc 9 900 − 9 405 = <b>495</b> positifs.</li><li>Totaux : 95 + 495 = <b>590</b> positifs ; 5 + 9 405 = <b>9 410</b> négatifs (et 590 + 9 410 = 10 000 ✓).</li></ul>',
               bilan: ['Parmi les 590 tests positifs, <b>495</b> concernent des athlètes <b>non dopés</b> : ce sont des <b>faux positifs</b>.', 'Ils sont plus nombreux que les 95 « vrais positifs » !'] },
@@ -838,19 +858,42 @@
                     var phaseG = faite ? 99 : listePh[0];
                     function phaseJuste(p) { return inputs.every(function (i) { var k = +i.dataset.k, v = i.value.trim(); return phasesG[k] !== p || (v && !verifierCase(e.champs[k], v)); }); }
                     while (phaseG < 99 && phaseJuste(phaseG)) phaseG = listePh[listePh.indexOf(phaseG) + 1] || 99;
-                    var aidePh = el('div', 'aide-phase');
+                    /* aide contextuelle : le bouton 💡 suit la case où se trouve l'élève (dernière case cliquée) */
+                    var aidePh = el('div', 'aide-phase'), caseAide = null, aideOuverte = false;
+                    var bAide = el('button', 'lien'); bAide.type = 'button';
+                    var tAide = el('div', 'explication'); tAide.hidden = true;
+                    aidePh.appendChild(bAide); aidePh.appendChild(tAide);
+                    bAide.onclick = function () { aideOuverte = !aideOuverte; montrerAide(); };
+                    function montrerAide() {
+                        var f = caseAide !== null ? e.champs[caseAide] : null;
+                        aidePh.hidden = !f || !f.aide;
+                        if (aidePh.hidden) return;
+                        bAide.innerHTML = '<span class="ampoule">💡 ' + (aideOuverte ? 'Masquer l’aide' : 'Aide') + '</span><small>case « ' + f.lib + ' »</small>';
+                        bAide.classList.toggle('clignote', !aideOuverte);
+                        tAide.innerHTML = f.aide; tAide.hidden = !aideOuverte;
+                        inputs.forEach(function (i) { i.classList.toggle('case-aidee', aideOuverte && +i.dataset.k === caseAide); });
+                    }
+                    inputs.forEach(function (i) {
+                        i.addEventListener('focus', function () {
+                            var k = +i.dataset.k;
+                            if (i.readOnly || i.disabled || !e.champs[k].aide || k === caseAide) return;
+                            caseAide = k; montrerAide();
+                        });
+                    });
                     function appliquerPhase() {
                         inputs.forEach(function (i) { var k = +i.dataset.k; i.disabled = phasesG[k] > phaseG; i.classList.toggle('active-phase', phasesG[k] === phaseG && listePh.length > 1); });
-                        aidePh.innerHTML = '';
-                        e.champs.forEach(function (f, k) {
-                            if (!f.aide || phasesG[k] !== phaseG || listePh.length < 2) return;
-                            var b = el('button', 'lien', '💡 Aide pour la case « ' + f.lib + ' »'); b.type = 'button';
-                            var t = el('div', 'explication', f.aide); t.hidden = true;
-                            b.onclick = function () { t.hidden = !t.hidden; };
-                            aidePh.appendChild(b); aidePh.appendChild(t);
-                        });
+                        /* case aidée par défaut : la première case ouverte encore vide (sinon la première ouverte) */
+                        var ouvertes = inputs.filter(function (i) { return !i.disabled && !i.readOnly && e.champs[+i.dataset.k].aide; });
+                        var c = ouvertes.filter(function (i) { return !i.value; })[0] || ouvertes[0];
+                        if (!ouvertes.some(function (i) { return +i.dataset.k === caseAide; })) { caseAide = c ? +c.dataset.k : null; aideOuverte = false; }
+                        montrerAide();
                     }
-                    g.insertBefore(aidePh, g.firstChild.nextSibling);
+                    var tabG = g.firstChild;
+                    if (tabG.classList && tabG.classList.contains('tableau')) {
+                        /* tableau : l'aide se place à droite (en dessous sur petit écran) */
+                        var cote = el('div', 'tableau-et-aide'); g.insertBefore(cote, tabG);
+                        cote.appendChild(tabG); cote.appendChild(aidePh);
+                    } else g.insertBefore(aidePh, tabG.nextSibling);
                     appliquerPhase();
                     var actG = el('div', 'actions'), bG = el('button', null, 'Valider'); bG.type = 'submit'; actG.appendChild(bG); g.appendChild(actG);
                     var aidesG = el('div', 'retour'); g.appendChild(aidesG);
