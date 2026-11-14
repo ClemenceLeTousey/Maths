@@ -295,6 +295,16 @@
             }
         }
 
+        /* ---------- Connexion obligatoire : pas d'activité sans compte (la progression est enregistrée sur le compte) ---------- */
+        if (!/[?&]vue-eleve=/.test(location.search) && !Interactif.session()) {
+            document.getElementById('barre-etapes').hidden = true;
+            document.getElementById('etapes').innerHTML = '<section class="etape courante"><div class="etape-tete"><span class="etape-num">🔑</span><h2>Connecte-toi pour commencer</h2></div>' +
+                '<div class="etape-corps"><p>Pour faire cette activité, tu dois être <b>connecté(e) à ton compte</b> : ta progression est enregistrée dessus, et tu pourras reprendre où tu t’es arrêté(e), en classe ou chez toi.</p>' +
+                '<p>👆 Entre ton <b>identifiant</b> et ton <b>mot de passe</b> (ceux de ta carte) dans le cadre en haut de la page, puis clique sur « Se connecter ». L’activité s’ouvrira toute seule.</p></div></section>';
+            Interactif.bandeau(document.getElementById('bandeau'), function () { location.reload(); });
+            return;
+        }
+
         /* ---------- Outils ---------- */
         function el(tag, classe, html) { var e = document.createElement(tag); if (classe) e.className = classe; if (html != null) e.innerHTML = html; return e; }
         function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -1358,7 +1368,7 @@
             bv.className = 'vue-prof';
             bv.innerHTML = '👩‍🏫 <b>Vue professeure</b> : activité de <b></b> telle qu’elle a été laissée (étapes validées : ' + Math.min(VUE.score || 0, NB) + ' / ' + NB + '). Rien n’est enregistré.';
             bv.querySelectorAll('b')[1].textContent = VUE.nom || VUE.code || 'l’élève';
-        } else Interactif.bandeau(document.getElementById('bandeau'), charger);
+        } else Interactif.bandeau(document.getElementById('bandeau'), function (s) { if (s) charger(); else location.reload(); });   // déconnexion : retour à l'écran « Connecte-toi »
         charger();
         if (!VUE && !gardeVue()) montrerGarde();
     })();
