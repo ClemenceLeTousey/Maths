@@ -183,8 +183,9 @@ h2 { margin: 0; font-size: 1.1rem; }
         <button type="button" class="puce" data-nav="chrome" aria-pressed="true">Chrome</button>
         <button type="button" class="puce" data-nav="samsung" aria-pressed="false">Samsung Internet</button>
         <button type="button" class="puce" data-nav="firefox" aria-pressed="false">Firefox</button>
+        <button type="button" class="puce" data-nav="autre" aria-pressed="false">Autre</button>
+        <button type="button" class="puce" data-nav="inconnu" aria-pressed="false">Je ne sais pas</button>
       </div>
-      <p class="aide">Pas sûr ? Sur la plupart des téléphones Android, c'est <strong>Chrome</strong> (le rond rouge, jaune et vert). Sur un Samsung, c'est souvent <strong>Samsung Internet</strong> (la planète violette).</p>
     </div>
 
     <ol class="etapes" data-pour="chrome">
@@ -205,6 +206,14 @@ h2 { margin: 0; font-size: 1.1rem; }
         <p>Si Chrome te le propose, appuie ensuite sur <strong>« Ajouter »</strong> ou fais glisser l'icône sur l'écran de ton choix.</p>
       </div></li>
     </ol>
+
+    <div class="encadre" data-pour="inconnu" hidden>
+      <p><strong>Le navigateur, c'est l'appli que tu utilises pour aller sur internet.</strong></p>
+      <p>Sur la plupart des téléphones Android, c'est <strong>Chrome</strong> (le rond rouge, jaune et vert). Sur un Samsung, c'est souvent <strong>Samsung Internet</strong> (la planète violette). Avec <strong>Firefox</strong>, c'est un renard orange. Une fois que tu l'as trouvé, choisis-le ci-dessus.</p>
+    </div>
+    <div class="encadre" data-pour="autre" hidden>
+      <p><strong>Envoie-moi un message</strong> et dis-moi quel navigateur tu utilises : je te donnerai la marche à suivre.</p>
+    </div>
 
     <ol class="etapes" data-pour="samsung" hidden>
       <li><div class="etape">
@@ -252,8 +261,17 @@ h2 { margin: 0; font-size: 1.1rem; }
       <div class="puces">
         <button type="button" class="puce" data-nav="safari" aria-pressed="true">Safari</button>
         <button type="button" class="puce" data-nav="chrome" aria-pressed="false">Chrome</button>
+        <button type="button" class="puce" data-nav="autre" aria-pressed="false">Autre</button>
+        <button type="button" class="puce" data-nav="inconnu" aria-pressed="false">Je ne sais pas</button>
       </div>
-      <p class="aide">Pas sûr ? <strong>Safari</strong>, c'est la boussole bleue, installée sur tous les iPhone.</p>
+    </div>
+
+    <div class="encadre" data-pour="inconnu" hidden>
+      <p><strong>Le navigateur, c'est l'appli que tu utilises pour aller sur internet.</strong></p>
+      <p>Sur iPhone, c'est le plus souvent <strong>Safari</strong> : la boussole bleue, installée sur tous les iPhone. Si tu utilises <strong>Chrome</strong>, c'est le rond rouge, jaune et vert. Une fois que tu l'as trouvé, choisis-le ci-dessus.</p>
+    </div>
+    <div class="encadre" data-pour="autre" hidden>
+      <p><strong>Envoie-moi un message</strong> et dis-moi quel navigateur tu utilises : je te donnerai la marche à suivre.</p>
     </div>
 
     <ol class="etapes" data-pour="safari">
@@ -365,7 +383,7 @@ h2 { margin: 0; font-size: 1.1rem; }
     function nav(k) {
       pane.querySelectorAll('[data-nav]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.nav === k ? 'true' : 'false'); });
       pane.querySelectorAll('[data-pour]').forEach(function (el) { el.hidden = el.dataset.pour !== k; });
-      try { localStorage.setItem('tuto-nav-' + os, k); } catch (e) {}
+      if (k !== 'autre' && k !== 'inconnu') { try { localStorage.setItem('tuto-nav-' + os, k); } catch (e) {} }
     }
     pane.querySelectorAll('[data-nav]').forEach(function (b) {
       b.addEventListener('click', function () { nav(b.dataset.nav); });
