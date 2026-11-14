@@ -46,11 +46,11 @@ window.CORRIGES_SERIES = {
         6: 'https://nuage02.apps.education.fr/index.php/s/9ozZkqz9prBiALt',
         7: 'https://nuage02.apps.education.fr/index.php/s/sizzX7ykBcx5XcD',
         8: 'https://nuage02.apps.education.fr/index.php/s/QS9cKdgqfAiYcZi',
-        9: '../automatismes-seconde/serie9-evaluation-corrige.pdf',
-        10: '../automatismes-seconde/serie10-evaluation-corrige.pdf',
-        11: '../automatismes-seconde/serie11-evaluation-corrige.pdf',
-        12: '../automatismes-seconde/serie12-evaluation-corrige.pdf',
-        13: '../automatismes-seconde/serie13-evaluation-corrige.pdf'
+        9: 'https://nuage02.apps.education.fr/index.php/s/RCGkGKP9S9ppLe8',
+        10: 'https://nuage02.apps.education.fr/index.php/s/xH8g3pjFQA9moqR',
+        11: 'https://nuage02.apps.education.fr/index.php/s/orJZGTCPDYacSwF',
+        12: 'https://nuage02.apps.education.fr/index.php/s/KzQKKznDtdKrRrE',
+        13: 'https://nuage02.apps.education.fr/index.php/s/tcHbnGwascs9eWH'
     }
 };
 
