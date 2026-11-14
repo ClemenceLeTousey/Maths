@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4.6 -3.6 9.2 7.2" width="276" height="216" font-family="sans-serif">
+  <!-- Série 8, Q5 : repère avec A(3 ; −1) et B(−2,5 ; 1,5), quadrillage de pas 0,5 -->
+  <rect x="-4.6" y="-3.6" width="9.2" height="7.2" fill="#fff"/>
+  <g stroke="#ccc" stroke-width="0.02">
+    <path d="M-4 -3V3M-3.5 -3V3M-3 -3V3M-2.5 -3V3M-2 -3V3M-1.5 -3V3M-1 -3V3M-0.5 -3V3M0.5 -3V3M1 -3V3M1.5 -3V3M2 -3V3M2.5 -3V3M3 -3V3M3.5 -3V3M4 -3V3"/>
+    <path d="M-4 -3H4M-4 -2.5H4M-4 -2H4M-4 -1.5H4M-4 -1H4M-4 -0.5H4M-4 0.5H4M-4 1H4M-4 1.5H4M-4 2H4M-4 2.5H4M-4 3H4"/>
+  </g>
+  <g stroke="#20232b" stroke-width="0.05">
+    <path d="M-4.3 0H4.3M0 -3.3V3.3"/>
+    <path d="M1 -0.15V0.15M-0.15 -1H0.15"/>
+  </g>
+  <g fill="#20232b" font-size="0.42">
+    <text x="-0.35" y="0.45">0</text>
+    <text x="0.9" y="0.55">1</text>
+    <text x="-0.4" y="-0.88">1</text>
+    <circle cx="3" cy="1" r="0.09"/>
+    <text x="3.12" y="0.85" font-style="italic" font-size="0.5">A</text>
+    <circle cx="-2.5" cy="-1.5" r="0.09"/>
+    <text x="-2.38" y="-1.62" font-style="italic" font-size="0.5">B</text>
+  </g>
+</svg>

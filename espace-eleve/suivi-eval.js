@@ -47,6 +47,33 @@
             { n: 4, comp: 'Calculer', qs: [['Factoriser D', 1.5], ['Factoriser E', 1.5]] },
             { n: 'bonus', comp: 'Calculer', qs: [['Développer F', 0.5, true], ['Développer G', 0.5, true], ['Factoriser H', 0.5, true], ['Factoriser I', 0.5, true]] }
         ] },
+        // Évaluations d'automatismes (CSV préparés par Claude à partir des copies scannées).
+        // Niveau 1 noté sur 9 ; niveaux 2 et 3 hors note : colonnes « Étoiles » (bleue = 2, rouge = 3) et « Étoiles détail ».
+        // Question : [intitulé, points, bonus, énoncé (montré à l'élève), figure (chemin depuis espace-eleve/)]
+        'Auto S8': { evaluation: 'Automatismes S8', sur: 9, ex: [
+            { n: 1, comp: 'Automatismes · niveau 1', qs: [
+                ['Q1 Identités remarquables (QCM)', 1, false, 'Le développement de (x − 3)² est :\nA. x² − 9    B. x² + 6x + 9    C. x² − 6x + 9    D. x² − 6x − 9'],
+                ['Q2 Puissances', 1, false, 'Écrire sous la forme d\'une seule puissance de 4 : 4³ / 4⁻²'],
+                ['Q3 Proportions', 1, false, 'Calculer 15 % de 460.'],
+                ['Q4 Vecteurs, Chasles (QCM)', 1, false, 'EF→ + CE→ + FG→ est égal à :\nA. GC→    B. CG→    C. EG→    D. CF→'],
+                ['Q5 Repère orthogonal', 1, false, 'Lire les coordonnées du point A.', 'seconde/img/s8-q5.svg'],
+                ['Q6 Ordre de grandeur', 1, false, 'Donner un ordre de grandeur de 49,6 % de 2 030.'],
+                ['Q7 Algo if / else (QCM)', 1, false, 'Qu\'affiche ce script ?\na = 15\nb = 9\nif a > b:\n    a = a - b\nelse:\n    b = b - a\nprint(a, b)\nA. 15  −6    B. 9  6    C. 15  9    D. 6  9'],
+                ['Q8 Images et antécédents', 1, false, 'Soit f la fonction définie par f(x) = −5x + 2. Calculer f(−3).'],
+                ['Q9 Comparer deux nombres', 1, false, 'Ranger dans l\'ordre croissant : 2,36 ; 9/4 ; 23 × 10⁻¹ ; 2,305']] }
+            ],
+            // énoncés des questions bonus, associés aux lignes « Bonus lus » (« Q1★★ : … »)
+            bonus: {
+                'Q1★★': 'Développer et réduire : A = (2x + 5)²', 'Q1★★★': 'Factoriser : B = 9x² − 49',
+                'Q2★★': 'Écrire sous la forme d\'une seule puissance de 3 : (3⁻²)³ × 3⁵ / 3⁻⁴', 'Q2★★★': 'Écrire sous la forme 2ᵃ × 5ᵇ : C = 10³ / (2² × 5)',
+                'Q3★★': 'Calculer 65 % de 140.', 'Q3★★★': 'Dans un club de 480 adhérents, 168 font de la compétition. Quel pourcentage des adhérents font de la compétition ?',
+                'Q4★★': 'Simplifier : AB→ − CB→ + CD→', 'Q4★★★': 'AB→ correspond à un déplacement de 2 carreaux vers la droite et 3 vers le haut, BC→ à 2 vers la droite et 1 vers le haut (carreaux de côté 1). Calculer AC sous la forme a√b.',
+                'Q5★★': 'Lire les coordonnées du point B (figure de Q5 ; ce sont des nombres décimaux).', 'Q5★★★': 'Le point E a la même abscisse que A et la même ordonnée que B. Donner ses coordonnées.',
+                'Q6★★': 'Donner un ordre de grandeur de 39,7 × 25,2.', 'Q6★★★': 'Donner un ordre de grandeur de 1 996 / 0,249.',
+                'Q7★★': 'def f(x):\n    y = 3 * x - 12\n    if y >= 0:\n        return y\n    else:\n        return -y\nQue renvoient f(6) et f(1) ?', 'Q7★★★': 'Avec la même fonction f, trouver tous les nombres x pour lesquels f(x) renvoie 9.',
+                'Q8★★': 'Soit g(x) = 3x² − 4x − 2. Calculer g(−2).', 'Q8★★★': 'Soit h(x) = x² + 3. Déterminer les antécédents de 52 par h.',
+                'Q9★★': 'Ranger dans l\'ordre croissant : −1,3 ; −5/4 ; −12 × 10⁻¹ ; −1,28', 'Q9★★★': 'Ranger dans l\'ordre croissant : 4/7 ; 0,57 ; 0,58 ; 3/5'
+            } },
         // DS 2 : pas de compétence affichée ; « retraits » = colonnes du CSV retirées de la note (montrées à l'élève)
         'DS2 sujets A-B': { evaluation: 'DS 2', sur: 20,
             retraits: [['Retrait calcul', 'Erreurs de calcul (plus de 4 sur le devoir)'], ['Titres', 'Titres des exercices ni soulignés ni surlignés'],
@@ -125,11 +152,26 @@
             else if (/^Noté sur$/i.test(h)) col.noteSur = i;
             else if (/^Erreurs/i.test(h)) col.erreurs = i;
             else if (/^Remarque$/i.test(h)) col.remarque = i;
+            else if (/^Étoiles$/i.test(h)) col.etoiles = i;
+            else if (/^Étoiles détail$/i.test(h)) col.etoilesDet = i;
+            else if (/^((?:\d+|bonus)\.\d+) lue$/i.test(h)) col['lu:' + /^(\S+)/.exec(h)[1]] = i;   // « 1.3 lue » : réponse lue sur la copie
+            else if (/^((?:\d+|bonus)\.\d+) erreur$/i.test(h)) col['te:' + /^(\S+)/.exec(h)[1]] = i;   // « 1.3 erreur » : type d'erreur repéré
+            else if (/^Bonus lus$/i.test(h)) col.bonusLus = i;   // « Q1★★ : 4x²+20x+25 ✓ 2 ★ | Q7★★ : … »
         });
         return l.slice(1).map(function (r) {
             var c = { grille: grille, nom: (r[col.nom] || '').trim(), sujet: (r[col.sujet] || '').trim(), notes: {}, erreurs: [],
                       remarque: col.remarque != null ? (r[col.remarque] || '').trim() : '', objs: {}, retraits: [],
-                      noteSur: col.noteSur != null ? nombre(r[col.noteSur]) : null };   // absent lors de certaines notions
+                      noteSur: col.noteSur != null ? nombre(r[col.noteSur]) : null,   // absent lors de certaines notions
+                      etoiles: col.etoiles != null ? nombre(r[col.etoiles]) : null,
+                      etoilesDet: col.etoilesDet != null ? (r[col.etoilesDet] || '').trim() : '',
+                      lus: {}, bonusLus: col.bonusLus != null ? (r[col.bonusLus] || '').split(' | ').map(function (x) { return x.trim(); }).filter(Boolean) : [] };
+            c.typesErr = {};
+            Object.keys(col).forEach(function (k) {
+                var v = (r[col[k]] || '').trim();
+                if (!v) return;
+                if (k.indexOf('lu:') === 0) c.lus[k.slice(3)] = v;
+                else if (k.indexOf('te:') === 0) c.typesErr[k.slice(3)] = v;
+            });
             (GRILLES[grille].retraits || []).forEach(function (o) {
                 var i = col['ret:' + o[0]], v = i != null ? nombre(r[i]) : null;
                 if (v) c.retraits.push({ l: o[1], v: Math.abs(v) });
@@ -346,6 +388,10 @@
             var qs = e.qs.map(function (q, k) {
                 var cle = e.n + '.' + (k + 1), n = c.notes[cle] || {};
                 var r = { l: q[0], max: q[1], v: n.v == null ? null : n.v, nf: !!n.nf, bonus: !!q[2] };
+                if (q[3]) r.enonce = q[3];   // énoncé, pour comprendre l'erreur sans la copie
+                if (q[4]) r.fig = q[4];
+                if (c.lus && c.lus[cle]) r.lu = c.lus[cle];   // réponse lue sur la copie (colonne « 1.k lue »)
+                if (c.typesErr && c.typesErr[cle]) r.typeErr = c.typesErr[cle];   // type d'erreur, toujours envoyé (indépendant de « avec commentaires »)
                 cles[cle] = 1;
                 // commentaires : erreurs rattachées à leur question, affichées sous sa ligne
                 if (avecCom) { var err = c.erreurs.filter(function (x) { return x.q === cle; }).map(function (x) { return x.texte; }); if (err.length) r.err = err; }
@@ -356,6 +402,12 @@
         (g.objs || []).forEach(function (o) { if (c.objs[o[0]]) det.objs.push({ c: o[0], t: o[1], niv: c.objs[o[0]] }); });
         if (c.retraits && c.retraits.length) det.retraits = c.retraits;
         if (c.noteSur) det.noteSur = c.noteSur;
+        if (c.etoiles != null) { det.etoiles = c.etoiles; if (c.etoilesDet) det.etoilesDet = c.etoilesDet; }   // compteur d'étoiles (automatismes)
+        // « Q1★★ : 4x²+20x+25 ✓ 2 ★ » → { q, enonce, texte } (énoncé repris de la grille)
+        if (c.bonusLus && c.bonusLus.length) det.bonusLus = c.bonusLus.map(function (x) {
+            var m = /^(Q\d+\s*★+)\s*:\s*(.*)$/.exec(x), cle = m ? m[1].replace(/\s/g, '') : '';
+            return m ? { q: cle, enonce: (g.bonus || {})[cle] || '', texte: m[2] } : x;
+        });
         if (avecCom) det.com = { erreurs: c.erreurs.filter(function (x) { return !cles[x.q]; }).map(function (x) {   // erreurs sans question reconnue
             var m = /^(\d+)\.(\d+)$/.exec(x.q);
             return (m ? 'Exercice ' + m[1] + ', question ' + m[2] : x.q) + ' · ' + x.texte;
