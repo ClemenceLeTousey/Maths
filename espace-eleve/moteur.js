@@ -227,6 +227,86 @@
         tete.parentNode.insertBefore(boite, tete.nextSibling);
     }
 
+    /* ---------- Clavier maths d'une question ----------
+       Petit bouton (icône de clavier) à côté de la réponse : il ouvre un pavé avec chiffres, carré, cube,
+       puissance, fraction, parenthèses, lettres de l'expression, flèches et effacement. Pratique sur téléphone,
+       où ² ^ / ( ) sont difficiles à trouver. Sur écran tactile, le clavier du téléphone est masqué
+       (inputmode="none") tant que le pavé est ouvert. Un seul pavé ouvert à la fois. */
+    var TACTILE = !!(window.matchMedia && matchMedia('(hover: none) and (pointer: coarse)').matches);
+    var paveOuvert = null;
+    var ICONE_CLAVIER = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">' +
+        '<rect x="1.8" y="5" width="20.4" height="14" rx="2.6"/>' +
+        '<path d="M5.5 9h1M9.2 9h1M12.9 9h1M16.6 9h1.9M5.5 12h1M9.2 12h1M12.9 12h1M16.6 12h1.9M7.5 15.3h9"/></svg>';
+
+    function clavierMaths(champs, lettres, avecEgal) {
+        var cible = champs[0];
+        champs.forEach(function (c) { c.addEventListener('focus', function () { cible = c; }); });
+
+        var bouton = el('button', 'q-clavier'); bouton.type = 'button';
+        bouton.innerHTML = ICONE_CLAVIER + '<span>Clavier maths</span>';
+        bouton.title = 'Ouvrir le clavier maths : carré, puissance, fraction, parenthèses…';
+        bouton.setAttribute('aria-label', 'Clavier maths');
+        bouton.setAttribute('aria-expanded', 'false');
+
+        var pave = el('div', 'q-pave'); pave.hidden = true;
+        pave.setAttribute('role', 'group'); pave.setAttribute('aria-label', 'Clavier maths');
+        // t : texte inséré ; tex : étiquette en maths ; a : action (efface, gauche, droite)
+        var lettresT = lettres.split('').slice(0, 3).map(function (l) { return { t: l, cl: 'lettre' }; });
+        var touches = [
+            { t: '7' }, { t: '8' }, { t: '9' }, { t: '+', cl: 'op' }, { t: '(', cl: 'op' }, { t: ')', cl: 'op' }, { a: 'efface', l: '⌫', cl: 'act', titre: 'Effacer' },
+            { t: '4' }, { t: '5' }, { t: '6' }, { t: '-', l: '−', cl: 'op' }, { t: '²', tex: '\\square^2', cl: 'op', titre: 'Au carré' }, { t: '³', tex: '\\square^3', cl: 'op', titre: 'Au cube' }, { a: 'gauche', l: '◀', cl: 'act', titre: 'Curseur à gauche' },
+            { t: '1' }, { t: '2' }, { t: '3' }, { t: '*', l: '×', cl: 'op', titre: 'Fois' }, { t: '/', tex: '\\frac{a}{b}', cl: 'op', titre: 'Fraction (barre de fraction)' }, { t: '^', tex: '\\square^n', cl: 'op', titre: 'Puissance' }, { a: 'droite', l: '▶', cl: 'act', titre: 'Curseur à droite' },
+            { t: '0' }, { t: ',', titre: 'Virgule' }
+        ].concat(lettresT, avecEgal ? [{ t: '=', cl: 'op', titre: 'Égal (calcul intermédiaire)' }] : []);
+
+        touches.forEach(function (k) {
+            var b = el('button', k.cl || null); b.type = 'button';
+            if (k.tex) maths(b, k.tex); else b.textContent = k.l || k.t;
+            b.setAttribute('aria-label', k.titre || k.l || k.t);
+            if (k.titre) b.title = k.titre;
+            b.addEventListener('click', function () { appuyer(k); });
+            pave.appendChild(b);
+        });
+        // la touche cliquée ne prend pas le focus : le curseur reste dans la case réponse
+        pave.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+
+        function appuyer(k) {
+            var c = cible;
+            if (!c || c.disabled) return;
+            var v = c.value, a = c.selectionStart, b = c.selectionEnd;
+            if (a == null || document.activeElement !== c && a === 0 && b === 0) a = b = v.length;
+            if (k.a === 'gauche') a = b = Math.max(0, a === b ? a - 1 : a);
+            else if (k.a === 'droite') a = b = Math.min(v.length, a === b ? b + 1 : b);
+            else {
+                if (k.a === 'efface') { if (a === b && a > 0) a--; c.value = v.slice(0, a) + v.slice(b); b = a; }
+                else { c.value = v.slice(0, a) + k.t + v.slice(b); a = b = a + k.t.length; }
+                c.dispatchEvent(new Event('input', { bubbles: true }));     // aperçu en direct
+            }
+            c.focus();
+            try { c.setSelectionRange(a, b); } catch (e) {}
+        }
+
+        function basculer(ouvrir) {
+            if (ouvrir && paveOuvert && paveOuvert !== api) paveOuvert.basculer(false);
+            pave.hidden = !ouvrir;
+            bouton.setAttribute('aria-expanded', String(ouvrir));
+            paveOuvert = ouvrir ? api : (paveOuvert === api ? null : paveOuvert);
+            if (TACTILE) champs.forEach(function (c) { c.inputMode = ouvrir ? 'none' : ''; });
+            if (ouvrir && cible && !cible.disabled) {
+                if (TACTILE) cible.blur();         // referme le clavier du téléphone s'il était ouvert
+                cible.focus();
+                try { cible.setSelectionRange(cible.value.length, cible.value.length); } catch (e) {}
+            }
+        }
+        bouton.addEventListener('click', function () { basculer(pave.hidden); });
+
+        var api = {
+            bouton: bouton, pave: pave, basculer: basculer,
+            retirer: function () { basculer(false); bouton.remove(); pave.remove(); }
+        };
+        return api;
+    }
+
     /* ---------- Déroulé d'un exercice ----------
        def = { id, titre, nb, generer: function (i) -> question,
                parNiveau (séries verte/bleue/rouge), parQuestion (avec parNiveau : chaque question se valide seule) }
@@ -404,9 +484,13 @@
                     };
                 }
                 // parQuestion (avec parNiveau) : un bouton « Valider » par question, en plus du bouton de la série
+                var clavier = (type === 'expr' || type === 'nombre' || type === 'champs')
+                    ? clavierMaths(champs, type === 'expr' ? (q.variables || 'x') : '', type === 'nombre') : null;
+                if (clavier) saisie.appendChild(clavier.bouton);
                 if ((!def.parNiveau || def.parQuestion) && !def.chrono) saisie.appendChild(bouton);
                 li.appendChild(saisie);
                 li.appendChild(apercu); li.appendChild(retour);
+                if (clavier) li.appendChild(clavier.pave);
 
                 // questions vertes : rappel de méthode à la demande (noté dans le détail pour la professeure)
                 var aide = false, btnRappel = null;
@@ -443,6 +527,24 @@
                     };
                     li.appendChild(btnRappel);
                 }
+                // questions de Pythagore (q.carres) : tableau des carrés de 1 à 25 à déplier (outil, ne compte pas comme un rappel)
+                var btnCarres = null;
+                if (q.carres) {
+                    btnCarres = el('button', 'secondaire rappel-btn carres-btn'); btnCarres.type = 'button';
+                    btnCarres.textContent = '🔢 Tableau des carrés';
+                    var boiteCarres = null;
+                    btnCarres.onclick = function () {
+                        if (!boiteCarres) {
+                            var t = '<table class="q-carres"><tr><th>n</th>', u = '<tr><th>n²</th>', k;
+                            for (k = 1; k <= 25; k++) { t += '<td>' + k + '</td>'; u += '<td>' + k * k + '</td>'; }
+                            boiteCarres = el('div', 'q-carres-boite');
+                            boiteCarres.innerHTML = t + '</tr>' + u + '</tr></table>';
+                            btnCarres.after(boiteCarres);
+                        } else boiteCarres.hidden = !boiteCarres.hidden;
+                        btnCarres.textContent = boiteCarres.hidden ? '🔢 Tableau des carrés' : '🔢 Masquer le tableau des carrés';
+                    };
+                    li.appendChild(btnCarres);
+                }
                 bouton.onclick = valider;
 
                 // Lit la réponse ; renvoie null (avec un message) si elle est vide ou mal écrite
@@ -468,6 +570,8 @@
                     var juste = res.ok;
                     bouton.disabled = true; bouton.remove();
                     if (btnRappel) { btnRappel.remove(); btnRappel = null; }
+                    if (btnCarres) { if (btnCarres.nextSibling && btnCarres.nextSibling.className === 'q-carres-boite') btnCarres.nextSibling.remove(); btnCarres.remove(); btnCarres = null; }
+                    if (clavier) { clavier.retirer(); clavier = null; }
                     champs.forEach(function (c) { c.disabled = true; });
                     li.querySelectorAll('.q-option').forEach(function (b, k) {
                         b.disabled = true;

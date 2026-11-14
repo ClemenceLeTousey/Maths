@@ -3475,6 +3475,16 @@
         };
     });
 
+    // questions de Pythagore (triangles rectangles, normes de vecteurs) : bouton « 🔢 Tableau des carrés » (moteur.js)
+    ['pythagore', 'pythagoreQCM', 'pythagoreSimple', 'pythagoreFinal', 'normeVecteur', 'normeSimplifier', 'normeColineaire'].forEach(function (nom) {
+        var generer = Auto[nom];
+        Auto[nom] = function (niveau) {
+            var q = generer(niveau);
+            if (!(nom === 'normeColineaire' && niveau === 3)) q.carres = true;   // niveau 3 : « sans refaire de calcul de Pythagore »
+            return q;
+        };
+    });
+
     window.Auto = Auto;
 })();
 

@@ -274,6 +274,14 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
     line-height: 1.6;
 }
 .q-rappel strong { color: var(--c-seconde); }
+/* Tableau des carrés (questions de Pythagore, q.carres) */
+.q-carres-boite { margin: 8px 0 4px 34px; overflow-x: auto; max-width: calc(100% - 34px); }
+.q-carres-boite[hidden] { display: none; }
+.q-carres { border-collapse: collapse; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.q-carres th, .q-carres td { border: 1px solid var(--line); padding: 3px 7px; text-align: center; }
+.q-carres th { background: var(--bleu-doux); color: var(--c-seconde); }
+.q-carres tr:last-child td { font-weight: 600; }
+@media print { .carres-btn, .q-carres-boite { display: none !important; } }
 .palier-aide { display: block; margin-top: 4px; font-weight: 500; color: var(--attention); }
 .rep-aide { font-size: 0.85em; color: var(--attention); }
 
@@ -303,3 +311,32 @@ table.res th.groupe { text-align: left; background: var(--bleu-doux); color: var
 .fenetre p { margin: 0 0 12px; }
 .fenetre p:last-child { margin: 0; text-align: right; }
 body.fenetre-ouverte { overflow: hidden; }
+
+/* Clavier maths de chaque question (moteur.js, clavierMaths) */
+.interactif button.q-clavier {
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; font-size: 0.85rem; font-weight: 600;
+    background: var(--surface); color: var(--c-seconde); border: 1px solid var(--line);
+}
+.interactif button.q-clavier:hover, .interactif button.q-clavier:focus-visible { border-color: var(--c-seconde); outline: none; }
+.interactif button.q-clavier[aria-expanded="true"] { background: var(--c-seconde); color: var(--badge-text); border-color: var(--c-seconde); }
+.q-pave {
+    display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; max-width: 420px; margin-top: 8px;
+    padding: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+}
+.q-pave[hidden] { display: none; }
+.interactif .q-pave button {
+    min-height: 42px; padding: 0; font-family: var(--f-mono); font-size: 1.1rem; font-weight: 600;
+    background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 8px;
+    touch-action: manipulation; user-select: none; -webkit-user-select: none;
+}
+.interactif .q-pave button:hover { border-color: var(--c-seconde); }
+.interactif .q-pave button:active { background: var(--bleu-doux); }
+.interactif .q-pave button.op { color: var(--c-seconde); }
+.interactif .q-pave button.lettre { font-style: italic; color: var(--c-seconde); }
+.interactif .q-pave button.act { background: var(--bleu-doux); color: var(--c-seconde); }
+.q-pave .katex { font-size: 1em; }
+@media (max-width: 600px) {
+    .interactif button.q-clavier span { display: none; }
+    .q-pave { max-width: none; }
+}
+@media print { .q-clavier, .q-pave { display: none !important; } }
