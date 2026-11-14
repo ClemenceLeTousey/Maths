@@ -35,6 +35,7 @@
         .interactif .sommaire button.courante { border: 2px solid var(--c-act); }
         .interactif .sommaire button:disabled { opacity: .4; cursor: default; }
         .interactif .sommaire button.acces-quiz { margin-left: auto; border-radius: 999px; padding: 0 14px; background: var(--c-act); border-color: var(--c-act); color: var(--badge-text); letter-spacing: .05em; }
+        .interactif .sommaire button.acces-consignes { border-radius: 999px; padding: 0 12px; width: auto; background: var(--surface); color: var(--text); }
         .interactif .sommaire button.acces-quiz.fait { background: var(--ok); border-color: var(--ok); }
         .interactif .sommaire button.fait.passee { background: var(--muted); border-color: var(--muted); }
 
@@ -61,6 +62,25 @@
         .etape-corps ol { list-style: decimal; }
         .encadre { border-left: 4px solid var(--c-act); background: var(--bleu-doux); border-radius: 0 8px 8px 0; padding: 8px 12px; margin: 10px 0; }
         .encadre.astuce { border-left-color: var(--ok); }
+        /* tableau + rappel des notations à droite (en dessous sur petit écran) */
+        .tableau-et-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }
+        .tableau-et-legende .tableau { flex: 0 1 auto; max-width: 100%; }
+        .legende-ev { flex: 1 1 220px; border: 1px dashed var(--line); border-radius: 8px; padding: 6px 12px; }
+        .legende-ev ul { margin: 4px 0 0; padding-left: 18px; }
+        .legende-ev li { margin: 3px 0; }
+        /* étape « notations » : une phrase, puis des cases à cocher avec la notation écrite en grand */
+        .case-choix { border-top: 1px solid var(--line); padding: 8px 0 4px; }
+        .case-choix .choix-phrase { margin: 0 0 6px; }
+        .choix-options { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+        .choix-options label { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 14px; cursor: pointer; font-size: 1.2rem; }
+        .choix-options label:has(input:checked) { border-color: var(--c-act); background: var(--bleu-doux); }
+        .choix-options input { margin: 0; }
+        .case-choix .retour.case-retour { display: block; margin-top: 6px; }
+        /* page de garde */
+        .garde .garde-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 14px; }
+        .garde .encadre ul { margin: 4px 0 0; }
+        .garde .encadre li { margin: 3px 0; }
+        .interactif .garde button.garde-commencer { display: block; margin: 14px auto 4px; font-size: 1.1rem; padding: 10px 26px; }
         .encadre.attention { border-left-color: var(--ko); }
         .encadre.bilan { text-align: left; }
         .encadre.bilan ol { margin: 4px 0 0; padding-left: 24px; }
@@ -75,8 +95,8 @@
         .enonce ul { margin: 4px 0; }
 
         /* notations : barre au-dessus d'un évènement, indices */
-        .ev { font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 1.08em; white-space: nowrap; }
-        .ev .bar { text-decoration: overline; }
+        .ev { font-family: Arial, Helvetica, sans-serif; font-style: normal; font-size: 1.05em; white-space: nowrap; }
+        .ev .bar { text-decoration: overline; text-decoration-thickness: max(1.5px, .07em); }
         .ev sub { font-size: 0.72em; }
 
         /* lignes « étiquette | case | Valider | ✓/✗ » */
@@ -91,6 +111,13 @@
             .case-ligne .retour.case-retour, .case-ligne .explic { grid-column: 1 / -1; }
         }
         .case-ligne .explic { grid-column: 1 / -1; }
+        .case-ligne.avec-aide { grid-template-columns: minmax(13.5em, max-content) 9em auto auto 1fr; }
+        @media (max-width: 640px) { .case-ligne.avec-aide { grid-template-columns: 1fr auto; } }
+        .case-ligne .aide-texte { grid-column: 1 / -1; margin: 2px 0 4px; }
+        .case-ligne button.aide-case { white-space: nowrap; }
+        .case-ligne button.aide-case .ampoule { font-weight: 700; }
+        .case-ligne button.aide-case.clignote .ampoule { animation: clignote-aide 1.2s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) { .case-ligne button.aide-case.clignote .ampoule { animation: none; } }
         .case-ligne.prevision { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
         .case-ligne.prevision label { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
         .case-ligne.prevision .retour.case-retour { flex: 1 1 100%; }
@@ -138,7 +165,7 @@
         .arbre { position: relative; width: 100%; max-width: 560px; aspect-ratio: 560 / 300; margin: 10px auto; }
         .arbre svg { position: absolute; inset: 0; width: 100%; height: 100%; }
         .arbre svg line { stroke: var(--text); stroke-width: 2; }
-        .arbre svg text { fill: var(--text); font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 22px; }
+        .arbre svg text { fill: var(--text); font-family: Arial, Helvetica, sans-serif; font-style: normal; font-size: 22px; }
         .arbre input { position: absolute; transform: translate(-50%, -50%); width: 4.6em; text-align: center; font-family: var(--f-mono); padding: 3px 4px; }
         .arbre .poids { position: absolute; transform: translate(-50%, -50%); background: var(--surface); padding: 0 4px; font-family: var(--f-mono); }
 
@@ -279,9 +306,9 @@
         var D = '<span class="ev">D</span>', T = '<span class="ev">T</span>';
         var Db = '<span class="ev"><span class="bar">D</span></span>', Tb = '<span class="ev"><span class="bar">T</span></span>';
         function ev(x) { return x.replace(/!([A-Z])/g, '<span class="bar">$1</span>'); }
-        function P(x) { return '<span class="ev">P(' + ev(x).replace(/∩/g, '<span style="font-style:normal"> ∩ </span>') + ')</span>'; }
+        function P(x) { return '<span class="ev">p(' + ev(x).replace(/∩/g, '<span style="font-style:normal"> ∩ </span>') + ')</span>'; }
         function fraction(a, b) { return '<span class="frac"><span>' + a + '</span><span class="sr">/</span><span>' + b + '</span></span>'; }
-        function Pc(s, x) { return '<span class="ev">P<sub>' + ev(s) + '</sub>(' + ev(x) + ')</span>'; }
+        function Pc(s, x) { return '<span class="ev">p<sub>' + ev(s) + '</sub>(' + ev(x) + ')</span>'; }
 
         /* Nombres : virgule ou point, espaces, pourcentage (16 % → 0,16 si « pourcent » est permis) */
         function num(s, pourcent) {
@@ -319,6 +346,9 @@
         /* ---------- Données de l'activité ---------- */
         var ENONCE = '<div class="enonce">Lors d’une grande compétition, <b>1 %</b> des athlètes sont dopés. Le test antidopage :' +
             '<ul><li>est <b>positif</b> pour <b>95 %</b> des athlètes <b>dopés</b> ;</li><li>est <b>négatif</b> pour <b>95 %</b> des athlètes <b>non dopés</b>.</li></ul></div>';
+        var TABLEAU_COMPLET = '<div class="tableau"><table><tr><th></th><th>Dopé</th><th>Non dopé</th><th>Total</th></tr>' +
+            '<tr><th>Test positif</th><td>95</td><td>495</td><td>590</td></tr><tr><th>Test négatif</th><td>5</td><td>9 405</td><td>9 410</td></tr>' +
+            '<tr><th>Total</th><td>100</td><td>9 900</td><td>10 000</td></tr></table></div>';
         var EXPLIC_FAUX_POSITIFS = 'Les non dopés sont 9 900. Le test se trompe pour 5 % d’entre eux (il est positif alors qu’ils ne sont pas dopés) : 0,05 × 9 900 = 495 « faux positifs ».';
 
         /* ---------- Les étapes ----------
@@ -342,6 +372,7 @@
                     indice: 'Calcule 1 % de 10 000.',
                     explication: '1 % = 1/100 = 0,01. Donc 1 % de 10 000 = 0,01 × 10 000 = 100 athlètes dopés.' },
                   { lib: 'Nombre d’athlètes non dopés', attendu: 9900,
+                    aide: '<p>Chaque athlète est soit <b>dopé</b>, soit <b>non dopé</b> : les deux groupes ensemble font les <b>10 000</b> athlètes.</p><p>Tu connais déjà le nombre de dopés (case du dessus). Les non dopés, ce sont tous les autres : fais 10 000 moins le nombre de dopés.</p><p>Autre méthode : s’il y a 1 % de dopés, il y a 100 % − 1 % = 99 % de non dopés. Calcule 99 % de 10 000, c’est-à-dire 0,99 × 10 000.</p>',
                     pieges: [[100, 'Ça, ce sont les dopés. On demande les autres.'], [99, 'Il y a 99 % de non dopés : 99 % de 10 000.'], [9000, 'Vérifie : 10 000 − 100.']],
                     indice: 'Tous les athlètes qui ne sont pas dopés : 10 000 moins les dopés.',
                     explication: 'Les non dopés sont tous les autres : 10 000 − 100 = 9 900 (c’est aussi 99 % de 10 000).' }
@@ -382,17 +413,22 @@
               bilan: ['Parmi les 590 tests positifs, <b>495</b> concernent des athlètes <b>non dopés</b> : ce sont des <b>faux positifs</b>.', 'Ils sont plus nombreux que les 95 « vrais positifs » !'] },
 
             { titre: 'Parmi les contrôlés positifs…', type: 'question',
-              consigne: '<div class="tableau"><table><tr><th></th><th>Dopé</th><th>Non dopé</th><th>Total</th></tr>' +
-                '<tr><th>Test positif</th><td>95</td><td>495</td><td>590</td></tr><tr><th>Test négatif</th><td>5</td><td>9 405</td><td>9 410</td></tr>' +
-                '<tr><th>Total</th><td>100</td><td>9 900</td><td>10 000</td></tr></table></div>' +
-                encadre('', 'Rappel : fréquence conditionnelle', '<p>La fréquence des A <b>parmi</b> les B, c’est ' + fraction('effectif de « A et B »', 'effectif des B') + '. On se restreint à la sous-population des B.</p>') +
+              consigne: TABLEAU_COMPLET +
+                encadre('', 'Nouvelle notion : la fréquence conditionnelle', '<p>Quand on calcule une fréquence <b>parmi</b> une partie seulement de la population (les B), on parle de <b>fréquence conditionnelle</b>. Cette partie s’appelle la <b>population de référence</b> : c’est elle qui sert de total.</p>' +
+                    '<p>La fréquence des A <b>parmi</b> les B, c’est ' + fraction('effectif de « A et B »', 'effectif des B') + '.</p>' +
+                    '<p>Exemple : parmi les 100 dopés, la fréquence des tests positifs est ' + fraction('effectif de « dopé et positif »', 'effectif des dopés') + ' = ' + fraction('95', '100') + ' = 0,95.</p>') +
                 '<p>✍️ Parmi les athlètes contrôlés <b>positifs</b>, quelle est la fréquence des athlètes <b>réellement dopés</b> ?</p>',
               champs: [
-                  { lib: 'Effectif de la sous-population (les positifs)', attendu: 590,
+                  { lib: 'Effectif de la population de référence (les positifs)', attendu: 590,
+                    aide: '<p>« <b>Parmi</b> les contrôlés positifs » : on ne regarde plus les 10 000 athlètes, seulement ceux dont le test est <b>positif</b>. C’est la <b>population de référence</b>.</p><p>Dans le tableau, c’est la ligne « Test positif ». Combien sont-ils en tout ? Lis la case <b>Total</b> de cette ligne.</p>',
                     pieges: [[100, 'Ça, ce sont les dopés. On se restreint aux athlètes contrôlés <b>positifs</b>.'], [10000, 'On ne prend pas tous les athlètes : seulement ceux qui sont contrôlés positifs.']],
                     indice: 'Lis le total de la ligne « Test positif ».',
                     explication: '« Parmi les contrôlés positifs » : on ne regarde que la ligne « Test positif ». Il y en a 590.' },
                   { lib: 'Fréquence des dopés parmi eux (arrondie au centième)', attendu: 0.16, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
+                    aide: '<ul><li><b>Population totale</b> : les 10 000 athlètes. Elle ne sert pas ici.</li>' +
+                        '<li><b>Population de référence</b> (après « parmi ») : les athlètes contrôlés <b>positifs</b>, c’est-à-dire la ligne « Test positif ». Son total (590) va au <b>dénominateur</b>.</li>' +
+                        '<li><b>Ce qu’on cherche dans cette population de référence</b> : les athlètes <b>dopés</b>. Sur la ligne « Test positif », lis la case de la colonne « Dopé » : elle va au <b>numérateur</b>.</li></ul>' +
+                        '<p>Fréquence = ' + fraction('effectif des dopés positifs', 'effectif des positifs') + '. Fais la division à la calculatrice 🧮, puis arrondis au centième (2 chiffres après la virgule).</p>',
                     pieges: [[0.95, 'Ça, c’est la fréquence des positifs <b>parmi les dopés</b> (95 sur 100). On veut l’inverse : les dopés parmi les positifs.', 0.001], [0.0095, 'Tu as divisé par 10 000 : on se restreint aux 590 positifs.', 0.0002], [0.01, 'C’est la proportion de dopés dans toute la compétition. On veut les dopés <b>parmi les positifs</b> seulement.', 0.001], [0.17, 'Vérifie l’arrondi : ' + fraction('95', '590') + ' ≈ 0,161.', 0.001], [16, 'Écris une fréquence : un nombre entre 0 et 1 (ou 16 %).', 0.01], [95, 'Tu as donné un <b>effectif</b> (les 95 dopés positifs), pas une <b>fréquence</b>. Une fréquence est un nombre entre 0 et 1 : divise cet effectif par l’effectif des positifs.', 0.5], [495, 'Tu as donné un <b>effectif</b> (et c’est celui des non dopés positifs). On veut une <b>fréquence</b> : ' + fraction('effectif des dopés positifs', 'effectif des positifs') + '.', 0.5], [590, 'Ça, c’est l’<b>effectif</b> des positifs. On veut une <b>fréquence</b> : ' + fraction('effectif des dopés positifs', '590') + '.', 0.5], [100, 'Tu as donné un <b>effectif</b> (les 100 dopés). On veut une <b>fréquence</b> : ' + fraction('effectif des dopés positifs', 'effectif des positifs') + '.', 0.5], [6.21, 'Tu as divisé dans le mauvais sens : ' + fraction('effectif des dopés positifs', 'effectif des positifs') + '.', 0.05], [0.84, 'Ça, ce sont les <b>non dopés</b> parmi les positifs (' + fraction('495', '590') + '). On veut les dopés.', 0.006]],
                     indice: fraction('dopés positifs', 'positifs') + '.',
                     explication: 'On se restreint aux 590 positifs. Parmi eux, 95 sont dopés : ' + fraction('95', '590') + ' ≈ 0,161, soit environ <b>0,16</b> (16 %).' }
@@ -421,7 +457,8 @@
 
             { titre: 'De la fréquence à la probabilité', type: 'question',
               consigne: '<p>On choisit maintenant <b>au hasard</b> un athlète parmi les 10 000. On note :</p><ul><li>' + D + ' l’évènement « l’athlète est dopé » ;</li><li>' + T + ' l’évènement « le test de l’athlète est positif ».</li></ul>' +
-                encadre('', 'Choisir au hasard', '<p>Quand on choisit un individu <b>au hasard</b> (tous ont la même chance), la probabilité d’un évènement est égale à sa <b>fréquence</b> dans la population :</p><p style="text-align:center">' + P('A') + ' = nombre de cas favorables ÷ nombre de cas possibles.</p>') +
+                TABLEAU_COMPLET +
+                encadre('', 'Choisir au hasard', '<p>Quand on choisit un individu <b>au hasard</b> (tous ont la même chance), la probabilité d’un évènement est égale à sa <b>fréquence</b> dans la population :</p><p style="text-align:center">' + P('A') + ' = ' + fraction('nombre de cas favorables', 'nombre de cas possibles') + '</p>') +
                 '<p>✍️ Donne les probabilités sous forme décimale.</p>',
               champs: [
                   { lib: P('D') + ' =', attendu: 0.01, pourcent: true, pieges: [[100, 'Une probabilité est un nombre entre 0 et 1 : divise par le nombre total d’athlètes.'], [1, 'Une probabilité de 1 voudrait dire que tous sont dopés. 1 %, c’est 0,01.']], indice: fraction('nombre de dopés', 'nombre total d’athlètes') + '.', explication: P('D') + ' = ' + fraction('100', '10 000') + ' = 0,01.' },
@@ -430,41 +467,76 @@
               bilan: [P('D') + ' = 0,01 et ' + P('T') + ' = 0,059 : on divise par l’effectif <b>total</b>, 10 000.'] },
 
             { titre: 'Probabilité « sachant que »', type: 'question',
-              consigne: encadre('', 'Notation', '<p>La probabilité que ' + D + ' soit réalisé <b>sachant que</b> ' + T + ' est réalisé se note ' + Pc('T', 'D') + ' (on lit « P de D sachant T »).</p>' +
+              consigne: encadre('', 'Notation', '<p>La probabilité que ' + D + ' soit réalisé <b>sachant que</b> ' + T + ' est réalisé se note ' + Pc('T', 'D') + ' (on lit « p de D sachant T »).</p>' +
                     '<p>On l’obtient en se <b>restreignant</b> aux individus qui réalisent ' + T + ' : ' + Pc('T', 'D') + ' = ' + fraction('effectif de « ' + D + ' et ' + T + ' »', 'effectif de ' + T) + '.</p>') +
-                encadre('attention', 'Attention à l’ordre', '<p>L’évènement écrit <b>en indice</b> est celui qu’on <b>sait</b> réalisé : c’est la sous-population dans laquelle on travaille.</p>') +
-                '<p>✍️ À l’aide du tableau (95 dopés positifs, 590 positifs, 100 dopés), calcule (arrondi au centième si besoin) :</p>',
+                encadre('attention', 'Attention à l’ordre', '<p>L’évènement écrit <b>en indice</b> (en bas, à droite du P) est celui qu’on <b>sait</b> réalisé : c’est la population de référence dans laquelle on travaille. Il donne le <b>dénominateur</b>.</p><p>L’évènement entre parenthèses est celui qu’on <b>cherche</b> dans cette population de référence.</p>') +
+                '<div class="tableau-et-legende">' + TABLEAU_COMPLET +
+                    '<div class="legende-ev"><b>Rappel des notations</b><ul>' +
+                    '<li>' + D + ' : « l’athlète est <b>dopé</b> » (colonne « Dopé »)</li>' +
+                    '<li>' + T + ' : « le test est <b>positif</b> » (ligne « Test positif »)</li></ul></div></div>' +
+                '<p>✍️ À l’aide du tableau, calcule (arrondi au centième si besoin) :</p>',
               champs: [
                   { lib: Pc('T', 'D') + ' =', attendu: 0.16, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
-                    pieges: [[0.95, 'Inversé ! Ici, on <b>sait</b> que le test est positif (' + T + ' en indice) : on se restreint aux 590 positifs.', 0.001], [0.0095, 'On ne divise pas par 10 000 : on se restreint aux 590 positifs.', 0.001]],
+                    aide: '<p>On lit « p de D <b>sachant</b> T ».</p><ol>' +
+                        '<li><b>Ce qu’on sait</b> (en indice) : ' + T + ', le test est positif. Population de référence : la ligne « Test positif ». Son total va au <b>dénominateur</b>.</li>' +
+                        '<li><b>Ce qu’on cherche</b> (entre parenthèses) : ' + D + ', l’athlète est dopé. Sur la ligne « Test positif », lis la case de la colonne « Dopé » : elle va au <b>numérateur</b>.</li>' +
+                        '<li>Divise, puis arrondis au centième.</li></ol><p>Ce calcul, tu l’as déjà fait à l’étape 4 !</p>',
+                    pieges: [[0.95, 'Inversé ! Ici, on <b>sait</b> que le test est positif (' + T + ' en indice) : on se restreint aux 590 positifs.', 0.001], [0.0095, 'On ne divise pas par 10 000 : on se restreint aux 590 positifs.', 0.001], [0.84, 'Ça, ce sont les <b>non dopés</b> parmi les positifs. On cherche les <b>dopés</b> (' + D + ' entre parenthèses).', 0.006], [95, 'Ça, c’est un <b>effectif</b>. Une probabilité est un nombre entre 0 et 1 : divise par l’effectif de la population de référence.', 0.5]],
                     indice: 'On sait que le test est positif : on se restreint aux 590 positifs. Combien sont dopés ?',
                     explication: 'On sait que ' + T + ' est réalisé : on travaille parmi les 590 positifs, dont 95 sont dopés. ' + Pc('T', 'D') + ' = ' + fraction('95', '590') + ' ≈ 0,16. C’est la fréquence trouvée à l’étape 4.' },
                   { lib: Pc('D', 'T') + ' =', attendu: 0.95, pourcent: true,
-                    pieges: [[0.16, 'Inversé ! Ici, ' + D + ' est en indice : on <b>sait</b> que l’athlète est dopé. On se restreint aux 100 dopés.', 0.006], [0.0095, 'On ne divise pas par 10 000 : on se restreint aux 100 dopés.']],
+                    aide: '<p>On lit « p de T <b>sachant</b> D ». Les lettres sont inversées par rapport à la case du dessus : la population de référence change !</p><ol>' +
+                        '<li><b>Ce qu’on sait</b> (en indice) : ' + D + ', l’athlète est dopé. Population de référence : la colonne « Dopé ». Son total (ligne Total) va au <b>dénominateur</b>.</li>' +
+                        '<li><b>Ce qu’on cherche</b> (entre parenthèses) : ' + T + ', le test est positif. Dans la colonne « Dopé », lis la case de la ligne « Test positif » : elle va au <b>numérateur</b>.</li>' +
+                        '<li>Divise.</li></ol>',
+                    pieges: [[0.16, 'Inversé ! Ici, ' + D + ' est en indice : on <b>sait</b> que l’athlète est dopé. On se restreint aux 100 dopés.', 0.006], [0.0095, 'On ne divise pas par 10 000 : on se restreint aux 100 dopés.'], [0.05, 'Ça, ce sont les dopés dont le test est <b>négatif</b>. On cherche un test <b>positif</b> (' + T + ' entre parenthèses).'], [95, 'Ça, c’est un <b>effectif</b>. Une probabilité est un nombre entre 0 et 1 : divise par l’effectif de la population de référence.', 0.5]],
                     indice: 'On sait que l’athlète est dopé : on se restreint aux 100 dopés. Combien ont un test positif ?',
                     explication: 'On sait que ' + D + ' est réalisé : on travaille parmi les 100 dopés, dont 95 ont un test positif. ' + Pc('D', 'T') + ' = ' + fraction('95', '100') + ' = 0,95. C’est le « 95 % » de l’énoncé.' }
               ],
               bilan: [Pc('T', 'D') + ' ≈ 0,16 mais ' + Pc('D', 'T') + ' = 0,95 : en général, ' + Pc('T', 'D') + ' ≠ ' + Pc('D', 'T') + '.', 'L’erreur d’intuition de l’étape 1 venait de cette <b>confusion</b>.'] },
 
             { titre: 'Lire et écrire les notations', type: 'choix',
-              consigne: '<p>✍️ Pour chaque phrase, choisis la bonne notation.</p><p class="aide">Dans les listes, l’indice est écrit après « _ » : P_T(D) signifie ' + Pc('T', 'D') + '.</p>',
+              consigne: encadre('', 'Rappel de seconde : évènement contraire et « et »', '<ul><li>' + Db + ' (« D barre ») est l’évènement <b>contraire</b> de ' + D + ' : « l’athlète n’est <b>pas</b> dopé ».</li><li>De même, ' + Tb + ' : « le test est <b>négatif</b> ».</li><li>' + D + ' ∩ ' + T + ' (« D <b>inter</b> T ») : ' + D + ' <b>et</b> ' + T + ' sont réalisés en même temps (dopé <b>et</b> positif).</li></ul>') +
+                encadre('astuce', 'Méthode', '<ol><li>Cherche ce qu’on <b>sait</b> déjà (« sachant que », « parmi les… », « un athlète non dopé… ») : il va <b>en indice</b>.</li><li>Ce qu’on <b>cherche</b> va <b>entre parenthèses</b>.</li><li>Si on ne sait rien à l’avance et qu’on veut deux choses <b>à la fois</b> (« … et … »), pas d’indice : c’est ∩.</li></ol>') +
+                '<p>✍️ Pour chaque phrase, coche la bonne notation, puis valide.</p>',
               lignes: [
-                  { avant: 'Probabilité qu’un athlète <b>non dopé</b> ait un test <b>négatif</b> :', options: [['a', 'P_D(T)'], ['b', 'P_T̄(D̄)'], ['c', 'P_D̄(T̄)'], ['d', 'P(D̄ ∩ T̄)']], attendu: 'c',
+                  { avant: 'Probabilité qu’un athlète <b>non dopé</b> ait un test <b>négatif</b> :', options: [['a', 'p_D(T)', Pc('D', 'T')], ['b', 'p_T̄(D̄)', Pc('!T', '!D')], ['c', 'p_D̄(T̄)', Pc('!D', '!T')], ['d', 'p(D̄ ∩ T̄)', P('!D∩!T')]], attendu: 'c',
                     msgFaux: 'On <b>sait</b> que l’athlète est non dopé : c’est ' + Db + ' qui va en indice.', msgOk: Pc('!D', '!T') + ' = 0,95 (le second « 95 % » de l’énoncé).',
                     explication: 'Ce qu’on sait : l’athlète est <b>non dopé</b> (' + Db + ') → en indice. Ce qu’on cherche : un test <b>négatif</b> (' + Tb + ') → entre parenthèses. D’où ' + Pc('!D', '!T') + '.' },
-                  { avant: 'Probabilité qu’un athlète soit <b>dopé et</b> contrôlé positif :', options: [['a', 'P(D ∩ T)'], ['b', 'P_T(D)'], ['c', 'P_D(T)']], attendu: 'a',
+                  { avant: 'Probabilité qu’un athlète soit <b>dopé et</b> contrôlé positif :', options: [['a', 'p(D ∩ T)', P('D∩T')], ['b', 'p_T(D)', Pc('T', 'D')], ['c', 'p_D(T)', Pc('D', 'T')]], attendu: 'a',
                     msgFaux: 'Ici, on ne <b>sait</b> rien à l’avance : on cherche les deux à la fois, parmi tous les athlètes. Il n’y a pas d’indice.', msgOk: P('D∩T') + ' = ' + fraction('95', '10 000') + ' = 0,0095 : on divise par l’effectif total.',
                     explication: '« Dopé <b>et</b> positif » : les deux évènements sont réalisés en même temps. C’est l’intersection ' + D + ' ∩ ' + T + ', sans indice : ' + P('D∩T') + '.' },
-                  { avant: '« Sachant que son test est négatif, probabilité que l’athlète soit dopé » :', options: [['a', 'P_D(T̄)'], ['b', 'P_T̄(D)'], ['c', 'P(D ∩ T̄)']], attendu: 'b',
+                  { avant: '« Sachant que son test est négatif, probabilité que l’athlète soit dopé » :', options: [['a', 'p_D(T̄)', Pc('D', '!T')], ['b', 'p_T̄(D)', Pc('!T', 'D')], ['c', 'p(D ∩ T̄)', P('D∩!T')]], attendu: 'b',
                     msgFaux: 'Ce qu’on <b>sait</b> (test négatif, ' + Tb + ') va en indice.', msgOk: Pc('!T', 'D') + ' = ' + fraction('5', '9 410') + ' ≈ 0,0005 : un test négatif est très rassurant.',
                     explication: '« Sachant que son test est négatif » : on sait ' + Tb + ' → en indice. On cherche « dopé » (' + D + ') → entre parenthèses. D’où ' + Pc('!T', 'D') + '.' }
               ],
               bilan: ['Ce qu’on <b>sait</b> (« sachant que », « parmi les… ») va <b>en indice</b>.', P('A∩B') + ' : A <b>et</b> B à la fois, parmi <b>tous</b> les individus (pas d’indice).'] },
 
+            { titre: 'Quiz · 5 questions', type: 'quiz',
+              consigne: '<p>Pour finir, 5 questions rapides sur ce que tu viens de faire (étapes 1 à 8). Tu peux utiliser la calculatrice 🧮.</p><p>✍️ Réponds à chaque question, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
+              questions: [
+                  { texte: 'Dans un lycée de 800 élèves, <b>15 %</b> sont internes. Combien d’élèves sont internes ?',
+                    choix: ['15', '120', '680', '53'], bonne: 1,
+                    explication: '15 % de 800 : 0,15 × 800 = 120 (comme à l’étape 2).' },
+                  { texte: 'Sur 200 personnes, 50 sont vaccinées ; parmi les vaccinées, 10 tombent malades. La fréquence des malades <b>parmi les vaccinés</b> est :',
+                    choix: [fraction('10', '200') + ' = 0,05', fraction('10', '50') + ' = 0,2', fraction('50', '200') + ' = 0,25', fraction('50', '10') + ' = 5'], bonne: 1,
+                    explication: '« Parmi les vaccinés » : on se restreint aux 50 vaccinés (population de référence) : ' + fraction('10', '50') + ' = 0,2 (comme à l’étape 4).' },
+                  { texte: 'Avec les mêmes 200 personnes, on en choisit une <b>au hasard</b>. On note V « être vacciné » et M « tomber malade ». ' + P('V∩M') + ' vaut :',
+                    choix: [fraction('10', '200') + ' = 0,05', fraction('10', '50') + ' = 0,2', fraction('50', '200') + ' = 0,25'], bonne: 0,
+                    explication: 'V ∩ M : vacciné <b>et</b> malade, parmi <b>toutes</b> les 200 personnes (pas d’indice) : ' + fraction('10', '200') + ' = 0,05.' },
+                  { texte: 'Dans un lycée, on choisit un élève au hasard. On note F « être une fille » et L « porter des lunettes ». ' + Pc('F', 'L') + ' désigne la probabilité :',
+                    choix: ['que l’élève soit une fille et porte des lunettes', 'que l’élève porte des lunettes, sachant que c’est une fille', 'que l’élève soit une fille, sachant qu’il porte des lunettes'], bonne: 1,
+                    explication: 'L’évènement en indice (F) est celui qu’on sait réalisé ; celui entre parenthèses (L) est celui qu’on cherche.' },
+                  { texte: '« 30 % des fumeurs ont une maladie respiratoire. » Avec F : « être fumeur » et M : « avoir une maladie respiratoire », cela s’écrit :',
+                    choix: [Pc('F', 'M') + ' = 0,3', Pc('M', 'F') + ' = 0,3', P('F∩M') + ' = 0,3'], bonne: 0,
+                    explication: '« Parmi les fumeurs » : on sait que F est réalisé, F va en indice.' }
+              ] },
+
+            /* ---------- Pour aller plus loin (facultatif) : proposé seulement une fois le quiz fait ---------- */
             { titre: 'L’arbre pondéré', type: 'grille',
               consigne: ENONCE +
                 encadre('', 'Arbre pondéré', '<ul><li>Les branches du <b>premier niveau</b> portent ' + P('D') + ' et ' + P('!D') + '.</li><li>Les branches du <b>second niveau</b> portent des probabilités <b>conditionnelles</b> : sur les branches qui partent de ' + D + ', on lit des probabilités <b>sachant</b> ' + D + '.</li><li>La somme des probabilités des branches issues d’un même nœud vaut <b>1</b>.</li></ul>') +
-                '<p>✍️ Complète l’arbre avec des nombres décimaux, puis valide.</p>',
+                '<p>✍️ Complète l’arbre avec des nombres décimaux (par exemple 0,95 et non 95 %), puis valide. Clique sur une case puis sur 💡 pour avoir de l’aide sur cette branche.</p>',
               grille: function () {
                   function pos(x, y) { return 'style="left:' + (x / 5.6).toFixed(2) + '%;top:' + (y / 3).toFixed(2) + '%"'; }
                   return '<div class="arbre"><svg viewBox="0 0 560 300" aria-hidden="true">' +
@@ -484,12 +556,24 @@
                       '</div>';
               },
               champs: [
-                  { lib: P('D'), attendu: 0.01, pourcent: true, pieges: [[0.95, 'Au premier niveau, on lit la proportion de dopés dans toute la compétition : 1 %.'], [1, '1 % s’écrit 0,01.']], indice: 'Branche vers ' + D + ' : proportion d’athlètes dopés, 1 %.' },
-                  { lib: P('!D'), attendu: 0.99, pourcent: true, pieges: [[0.05, 'Au premier niveau, on lit la proportion de non dopés : 1 − 0,01.'], [0.95, 'Au premier niveau, on lit la proportion de non dopés : 1 − 0,01.']], indice: 'Les deux branches issues de la racine ont une somme égale à 1.' },
-                  { lib: Pc('D', 'T'), attendu: 0.95, pourcent: true, pieges: [[0.05, 'Inversé : 95 % des dopés ont un test <b>positif</b>.'], [0.0095, 'Sur une branche, on n’écrit pas le produit : seulement la probabilité sachant ' + D + '.']], indice: 'Parmi les dopés, quelle part a un test positif ?' },
-                  { lib: Pc('D', '!T'), attendu: 0.05, pourcent: true, pieges: [[0.95, 'Inversé : seulement 5 % des dopés ont un test négatif.']], indice: 'Les deux branches issues de ' + D + ' ont une somme égale à 1.' },
-                  { lib: Pc('!D', 'T'), attendu: 0.05, pourcent: true, pieges: [[0.95, 'Inversé : 95 % des non dopés ont un test <b>négatif</b>, donc seulement 5 % un test positif.'], [0.0495, 'Sur une branche, on n’écrit pas le produit : seulement la probabilité sachant ' + Db + '.']], indice: 'Parmi les non dopés, quelle part a (à tort) un test positif ?' },
-                  { lib: Pc('!D', '!T'), attendu: 0.95, pourcent: true, pieges: [[0.05, 'Inversé : 95 % des non dopés ont un test négatif.']], indice: 'Les deux branches issues de ' + Db + ' ont une somme égale à 1.' }
+                  { lib: P('D'), attendu: 0.01, pourcent: true,
+                    aide: '<p>Cette branche part de la racine (à gauche) et va vers ' + D + ' : on y écrit la probabilité qu’un athlète choisi au hasard soit <b>dopé</b>.</p><p>L’énoncé dit que <b>1 %</b> des athlètes sont dopés. Écris 1 % sous forme décimale : 1 % = ' + fraction('1', '100') + ' = … </p>',
+                    pieges: [[0.95, 'Au premier niveau, on lit la proportion de dopés dans toute la compétition : 1 %.'], [1, '1 % s’écrit 0,01.'], [0.1, 'Attention : 1 % = ' + fraction('1', '100') + ' = 0,01, et non 0,1.'], [100, 'Ça, c’est le nombre de dopés. Sur l’arbre, on écrit une probabilité : 1 % = 0,01.']], indice: 'Branche vers ' + D + ' : proportion d’athlètes dopés, 1 %.' },
+                  { lib: P('!D'), attendu: 0.99, pourcent: true,
+                    aide: '<p>Cette branche part de la racine et va vers ' + Db + ' : on y écrit la probabilité qu’un athlète soit <b>non dopé</b>.</p><p>Les deux branches qui partent de la racine ont une somme égale à <b>1</b> (un athlète est soit dopé, soit non dopé). Calcule 1 − 0,01.</p>',
+                    pieges: [[0.05, 'Au premier niveau, on lit la proportion de non dopés : 1 − 0,01.'], [0.95, 'Au premier niveau, on lit la proportion de non dopés : 1 − 0,01.'], [99, 'Écris un nombre décimal : 99 % = 0,99.'], [0.9, 'Vérifie : 1 − 0,01 = 0,99.']], indice: 'Les deux branches issues de la racine ont une somme égale à 1.' },
+                  { lib: Pc('D', 'T'), attendu: 0.95, pourcent: true,
+                    aide: '<p>Cette branche part de ' + D + ' et va vers ' + T + ' : on se place <b>parmi les dopés</b>, et on écrit la probabilité que leur test soit <b>positif</b>.</p><p>Relis l’énoncé : le test est positif pour … % des athlètes <b>dopés</b>. Écris ce pourcentage en nombre décimal.</p>',
+                    pieges: [[0.05, 'Inversé : 95 % des dopés ont un test <b>positif</b>.'], [0.0095, 'Sur une branche, on n’écrit pas le produit : seulement la probabilité sachant ' + D + '.'], [95, 'Écris un nombre décimal : 95 % = 0,95.']], indice: 'Parmi les dopés, quelle part a un test positif ?' },
+                  { lib: Pc('D', '!T'), attendu: 0.05, pourcent: true,
+                    aide: '<p>Cette branche part de ' + D + ' et va vers ' + Tb + ' : parmi les <b>dopés</b>, probabilité que le test soit <b>négatif</b>.</p><p>Les deux branches qui partent de ' + D + ' ont une somme égale à <b>1</b> : fais 1 moins la branche ' + D + ' → ' + T + '.</p>',
+                    pieges: [[0.95, 'Inversé : seulement 5 % des dopés ont un test négatif.'], [5, 'Écris un nombre décimal : 5 % = 0,05.'], [0.5, 'Attention : 5 % = 0,05, et non 0,5.']], indice: 'Les deux branches issues de ' + D + ' ont une somme égale à 1.' },
+                  { lib: Pc('!D', 'T'), attendu: 0.05, pourcent: true,
+                    aide: '<p>Cette branche part de ' + Db + ' et va vers ' + T + ' : parmi les <b>non dopés</b>, probabilité que le test soit <b>positif</b> (le test se trompe).</p><p>L’énoncé dit que 95 % des non dopés ont un test <b>négatif</b>. Les autres ont un test positif : 100 % − 95 % = … %. Écris-le en nombre décimal.</p>',
+                    pieges: [[0.95, 'Inversé : 95 % des non dopés ont un test <b>négatif</b>, donc seulement 5 % un test positif.'], [0.0495, 'Sur une branche, on n’écrit pas le produit : seulement la probabilité sachant ' + Db + '.'], [5, 'Écris un nombre décimal : 5 % = 0,05.'], [0.5, 'Attention : 5 % = 0,05, et non 0,5.']], indice: 'Parmi les non dopés, quelle part a (à tort) un test positif ?' },
+                  { lib: Pc('!D', '!T'), attendu: 0.95, pourcent: true,
+                    aide: '<p>Cette branche part de ' + Db + ' et va vers ' + Tb + ' : parmi les <b>non dopés</b>, probabilité que le test soit <b>négatif</b>.</p><p>Relis la deuxième phrase de l’énoncé, ou fais 1 moins la branche ' + Db + ' → ' + T + '.</p>',
+                    pieges: [[0.05, 'Inversé : 95 % des non dopés ont un test négatif.'], [95, 'Écris un nombre décimal : 95 % = 0,95.']], indice: 'Les deux branches issues de ' + Db + ' ont une somme égale à 1.' }
               ],
               explication: '<ul><li>Premier niveau : ' + P('D') + ' = 0,01 et ' + P('!D') + ' = 1 − 0,01 = 0,99.</li><li>Depuis ' + D + ' : ' + Pc('D', 'T') + ' = 0,95 et ' + Pc('D', '!T') + ' = 0,05.</li><li>Depuis ' + Db + ' : ' + Pc('!D', '!T') + ' = 0,95 (énoncé) et ' + Pc('!D', 'T') + ' = 1 − 0,95 = 0,05.</li></ul>',
               bilan: ['Second niveau = probabilités <b>conditionnelles</b> : la branche ' + D + ' → ' + T + ' porte ' + Pc('D', 'T') + '.', 'Depuis chaque nœud, la somme des branches vaut <b>1</b>.'] },
@@ -500,8 +584,9 @@
                   '<text x="212" y="84">D</text><text x="212" y="236">D</text><line x1="212" y1="214" x2="228" y2="214" style="stroke-width:1.5"/><text x="432" y="40">T</text><text x="432" y="126">T</text><line x1="432" y1="104" x2="446" y2="104" style="stroke-width:1.5"/><text x="432" y="190">T</text><text x="432" y="276">T</text><line x1="432" y1="254" x2="446" y2="254" style="stroke-width:1.5"/></svg>' +
                   '<span class="poids" style="left:18.75%;top:29.3%">0,01</span><span class="poids" style="left:18.75%;top:70.7%">0,99</span>' +
                   '<span class="poids" style="left:58.9%;top:10%">0,95</span><span class="poids" style="left:58.9%;top:40%">0,05</span><span class="poids" style="left:58.9%;top:60%">0,05</span><span class="poids" style="left:58.9%;top:90%">0,95</span></div>' +
-                encadre('', 'Probabilité d’un chemin', '<p>La probabilité d’un <b>chemin</b> est le <b>produit</b> des probabilités portées par ses branches. Par exemple :</p><p style="text-align:center">' + P('D∩T') + ' = ' + P('D') + ' × ' + Pc('D', 'T') + '.</p>') +
-                '<p>✍️ Calcule (valeurs exactes) :</p>',
+                encadre('', 'Probabilité d’un chemin', '<p>Un <b>chemin</b> va de la racine (à gauche) jusqu’au bout d’une branche (à droite). Le chemin racine → ' + D + ' → ' + T + ' correspond à « dopé <b>et</b> positif », c’est-à-dire ' + D + ' ∩ ' + T + '.</p><p>La probabilité d’un chemin est le <b>produit</b> des probabilités portées par ses branches. Par exemple :</p><p style="text-align:center">' + P('D∩T') + ' = ' + P('D') + ' × ' + Pc('D', 'T') + '.</p>') +
+                encadre('astuce', 'Pour la dernière case', '<p>Un test peut être <b>positif</b> pour un athlète dopé, mais aussi pour un athlète non dopé. Repère <b>tous</b> les chemins qui se terminent par ' + T + ' : ' + P('T') + ' est la <b>somme</b> de leurs probabilités.</p>') +
+                '<p>✍️ Calcule (valeurs exactes, calculatrice 🧮 en bas à droite si besoin) :</p>',
               champs: [
                   { lib: P('D∩T') + ' =', attendu: 0.0095, pieges: [[0.96, 'Sur un chemin, on <b>multiplie</b> les probabilités, on ne les additionne pas.'], [0.95, 'Il faut tout le chemin : la branche ' + D + ' (0,01), puis la branche ' + T + ' (0,95).'], [0.095, 'Vérifie le calcul : 0,01 × 0,95.']], indice: 'Chemin racine → ' + D + ' → ' + T + ' : 0,01 × 0,95.',
                     explication: P('D∩T') + ' = 0,01 × 0,95 = 0,0095. On retrouve ' + fraction('95', '10 000') + ' : les 95 dopés positifs du tableau.' },
@@ -514,45 +599,29 @@
 
             { titre: 'La formule des probabilités conditionnelles', type: 'question',
               consigne: encadre('', 'Formule', '<p>Si ' + P('T') + ' ≠ 0 : </p><p style="text-align:center;font-size:1.1em">' + Pc('T', 'D') + ' = ' + fraction(P('D∩T'), P('T')) + '</p>') +
-                '<p>✍️ Avec les résultats de l’étape précédente (' + P('D∩T') + ' = 0,0095 et ' + P('T') + ' = 0,059), calcule ' + Pc('T', 'D') + ', arrondi au centième. Retrouves-tu le résultat du tableau ?</p>',
+                '<p>✍️ Avec les résultats de l’étape précédente (' + P('D∩T') + ' = 0,0095 et ' + P('T') + ' = 0,059), calcule ' + Pc('T', 'D') + ', arrondi au centième. Retrouves-tu le résultat du tableau ?</p>' +
+                '<p class="aide">Remplace chaque probabilité de la formule par sa valeur, puis fais la division à la calculatrice 🧮 (en bas à droite).</p>',
               champs: [
                   { lib: Pc('T', 'D') + ' ≈', attendu: 0.16, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
-                    pieges: [[6.21, 'Division dans le mauvais sens : ' + fraction(P('D∩T'), P('T')) + ', c’est ' + fraction('0,0095', '0,059') + '.', 0.05], [0.00056, 'On divise, on ne multiplie pas.', 0.0001]],
+                    pieges: [[6.21, 'Division dans le mauvais sens : ' + fraction(P('D∩T'), P('T')) + ', c’est ' + fraction('0,0095', '0,059') + '.', 0.05], [0.00056, 'On divise, on ne multiplie pas.', 0.0001], [0.95, 'Ça, c’est ' + Pc('D', 'T') + ' (lu sur l’arbre). On veut ' + Pc('T', 'D') + ' : utilise la formule.', 0.001]],
                     indice: 'Calcule ' + fraction('0,0095', '0,059') + '.',
                     explication: Pc('T', 'D') + ' = ' + fraction('0,0095', '0,059') + ' ≈ 0,161, soit 0,16 : le même résultat que ' + fraction('95', '590') + ' avec le tableau.' }
               ],
               bilan: [Pc('T', 'D') + ' = ' + fraction(P('D∩T'), P('T')) + ' : c’est la formule du cours.', 'Tableau croisé et arbre pondéré donnent le <b>même</b> résultat : à toi de choisir l’outil le plus pratique.'] },
 
-            { titre: 'Quiz final · 5 questions', type: 'quiz',
-              consigne: '<p>Pour finir, 5 questions rapides sur toute l’activité. ✍️ Réponds à chaque question, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
-              questions: [
-                  { texte: 'Dans un lycée, on choisit un élève au hasard. ' + Pc('F', 'L') + ' désigne la probabilité :',
-                    choix: ['que l’élève soit une fille et porte des lunettes', 'que l’élève porte des lunettes, sachant que c’est une fille', 'que l’élève soit une fille, sachant qu’il porte des lunettes'], bonne: 1,
-                    explication: 'L’évènement en indice (F) est celui qu’on sait réalisé.' },
-                  { texte: '« 30 % des fumeurs ont une maladie respiratoire. » Avec F : « être fumeur » et M : « avoir une maladie respiratoire », cela s’écrit :',
-                    choix: [Pc('F', 'M') + ' = 0,3', Pc('M', 'F') + ' = 0,3', P('F∩M') + ' = 0,3'], bonne: 0,
-                    explication: '« Parmi les fumeurs » : on sait que F est réalisé, F va en indice.' },
-                  { texte: 'Dans un arbre pondéré, deux branches partent du nœud A. L’une porte 0,7. L’autre porte :',
-                    choix: ['0,7', '0,3', '1,7', 'on ne peut pas savoir'], bonne: 1,
-                    explication: 'La somme des branches issues d’un même nœud vaut 1 : 1 − 0,7 = 0,3.' },
-                  { texte: 'On sait que ' + P('A') + ' = 0,4 et ' + Pc('A', 'B') + ' = 0,5. Alors ' + P('A∩B') + ' vaut :',
-                    choix: ['0,9', '0,2', '0,1', '0,8'], bonne: 1,
-                    explication: 'Probabilité d’un chemin : 0,4 × 0,5 = 0,2.' },
-                  { texte: 'Sur 200 personnes, 50 sont vaccinées ; parmi les vaccinées, 10 tombent malades. La fréquence des malades <b>parmi les vaccinés</b> est :',
-                    choix: [fraction('10', '200') + ' = 0,05', fraction('10', '50') + ' = 0,2', fraction('50', '200') + ' = 0,25', fraction('50', '10') + ' = 5'], bonne: 1,
-                    explication: 'On se restreint aux 50 vaccinés : ' + fraction('10', '50') + ' = 0,2.' }
-              ] },
-
             { titre: 'Défi · Et si le dopage était fréquent ?', type: 'question',
               consigne: '<p>On garde le <b>même test</b> (positif pour 95 % des dopés, négatif pour 95 % des non dopés), mais cette fois <b>20 %</b> des athlètes sont dopés.</p>' +
-                '<p>✍️ Calcule la probabilité qu’un athlète contrôlé positif soit réellement dopé (tableau ou arbre, au choix), arrondie au centième.</p>',
+                '<p>✍️ Calcule la probabilité qu’un athlète contrôlé positif soit réellement dopé (tableau ou arbre, au choix), arrondie au centième.</p>' +
+                encadre('astuce', 'Par où commencer ?', '<p><b>Avec l’arbre</b> : refais le même arbre qu’à l’étape « L’arbre pondéré » sur ton brouillon. Seules les deux premières branches changent : ' + P('D') + ' = 0,2 et ' + P('!D') + ' = 1 − 0,2 = 0,8. Les branches du second niveau ne changent pas (même test).</p>' +
+                    '<p>Ensuite, comme à l’étape « Suivre un chemin » : ' + P('T') + ' = somme des chemins qui finissent par ' + T + ', puis la formule ' + Pc('T', 'D') + ' = ' + fraction(P('D∩T'), P('T')) + '.</p>' +
+                    '<p><b>Avec un tableau</b> : imagine 10 000 athlètes, dont 20 % de dopés (2 000), et complète le tableau croisé comme à l’étape 3.</p>'),
               champs: [
                   { lib: P('T') + ' =', attendu: 0.23, tol: 1e-6, pourcent: true,
-                    pieges: [[0.19, 'Il manque les faux positifs : les non dopés (0,8) dont le test est positif (0,05).'], [0.04, 'Il manque les vrais positifs : 0,2 × 0,95.']],
+                    pieges: [[0.19, 'Il manque les faux positifs : les non dopés (0,8) dont le test est positif (0,05).'], [0.04, 'Il manque les vrais positifs : 0,2 × 0,95.'], [0.2, 'Ça, c’est ' + P('D') + ', la proportion de dopés. On veut la probabilité d’un test positif.'], [0.059, 'C’était le résultat avec 1 % de dopés. Refais le calcul avec ' + P('D') + ' = 0,2.', 0.0001], [2300, 'Ça, c’est un <b>effectif</b> (sur 10 000 athlètes). Écris une probabilité : divise par 10 000.', 0.5]],
                     indice: P('T') + ' = 0,2 × 0,95 + 0,8 × 0,05.',
                     explication: 'Arbre : ' + P('D') + ' = 0,2 et ' + P('!D') + ' = 0,8. ' + P('T') + ' = 0,2 × 0,95 + 0,8 × 0,05 = 0,19 + 0,04 = 0,23.' },
                   { lib: Pc('T', 'D') + ' ≈', attendu: 0.83, tol: 0.0051, pourcent: true, arrondi: 'arrondi au centième',
-                    pieges: [[0.16, 'C’était le cas où 1 % des athlètes étaient dopés. Refais le calcul avec 20 %.', 0.006], [0.95, 'Ça, c’est ' + Pc('D', 'T') + '. On veut ' + Pc('T', 'D') + '.', 0.001], [0.19, 'Ça, c’est ' + P('D∩T') + ' : divise-le par ' + P('T') + '.', 0.001]],
+                    pieges: [[0.16, 'C’était le cas où 1 % des athlètes étaient dopés. Refais le calcul avec 20 %.', 0.006], [0.95, 'Ça, c’est ' + Pc('D', 'T') + '. On veut ' + Pc('T', 'D') + '.', 0.001], [0.19, 'Ça, c’est ' + P('D∩T') + ' : divise-le par ' + P('T') + '.', 0.001], [1.21, 'Division dans le mauvais sens : ' + fraction(P('D∩T'), P('T')) + ' = ' + fraction('0,19', '0,23') + '.', 0.01], [0.17, 'Ça, ce sont les <b>non dopés</b> parmi les positifs (' + fraction('0,04', '0,23') + '). On veut les dopés.', 0.006]],
                     indice: Pc('T', 'D') + ' = ' + fraction(P('D∩T'), P('T')) + ' = ' + fraction('0,19', '0,23') + '.',
                     explication: Pc('T', 'D') + ' = ' + fraction('0,19', '0,23') + ' ≈ 0,826, soit environ 0,83. Avec un tableau de 10 000 athlètes : 1 900 vrais positifs, 400 faux positifs, ' + fraction('1 900', '2 300') + ' ≈ 0,83.' }
               ],
@@ -560,15 +629,18 @@
         ];
         var NB = ETAPES.length;
         var N_QUIZ = ETAPES.findIndex(function (e) { return e.type === 'quiz'; }) + 1;
+        var PASSER_AUTORISE = false;   // bouton « ⏭ Passer » : non, les étapes se font dans l'ordre (les aides servent à débloquer)
+        var QUIZ_EN_AVANCE = false;    // bouton « QUIZ » du sommaire : non, le quiz s'ouvre après l'étape 8
+        var COEUR = N_QUIZ || NB;   // étapes 1 à COEUR : l'activité ; au-delà : « Pour aller plus loin », visible une fois le quiz fait
         var ERREURS_AVANT_EXPLICATION = 2;
 
         /* ---------- Progression : appareil + base (même format que les TP de Seconde) ---------- */
-        var debut = Date.now(), faites = 0, reponses = {}, lus = {}, erreurs = {}, passees = {};
+        var debut = Date.now(), faites = 0, reponses = {}, lus = {}, erreurs = {}, passees = {}, suiteVue = false;
         var VUE = null;   // vue professeure (onglet Suivi TP) : ?vue-eleve=1
         try { if (/[?&]vue-eleve=/.test(location.search)) VUE = JSON.parse(localStorage.getItem('tp-vue-eleve')); } catch (e) {}
         function cle() { var s = Interactif.session(); return 'activite-probas:' + (s ? s.code : 'invite'); }
         function lireLocal() { try { return JSON.parse(localStorage.getItem(cle())) || {}; } catch (e) { return {}; } }
-        function ecrireLocal() { if (VUE) return; try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, reponses: reponses, lus: lus, erreurs: erreurs, passees: passees })); } catch (e) {} }
+        function ecrireLocal() { if (VUE) return; try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, reponses: reponses, lus: lus, erreurs: erreurs, passees: passees, suite: suiteVue })); } catch (e) {} }
 
         function scoreQuiz(e, n) { var v = reponses[n] || []; return e.questions.filter(function (q, i) { return String(q.bonne) === v[i]; }).length; }
         function lisible(e, n) {
@@ -605,7 +677,7 @@
                 restaurer(VUE.details); afficher(); return;
             }
             var l = lireLocal();
-            faites = l.faites || 0; reponses = l.reponses || {}; lus = l.lus || {}; erreurs = l.erreurs || {}; passees = l.passees || {};
+            faites = l.faites || 0; reponses = l.reponses || {}; lus = l.lus || {}; erreurs = l.erreurs || {}; passees = l.passees || {}; suiteVue = !!l.suite;
             afficher();
             var s = Interactif.session();
             if (!s) return;
@@ -657,17 +729,42 @@
 
         /* ---------- Affichage ---------- */
         var zone = document.getElementById('etapes');
+        function suiteOuverte() { return COEUR < NB && (suiteVue || faites > COEUR || modeTest()); }
         function progression() {
-            var n = Math.min(faites, NB);
-            document.getElementById('progres-texte').textContent = n >= NB ? 'Activité terminée : ' + NB + ' étapes sur ' + NB + ' ✓' : 'Étape ' + (n + 1) + ' sur ' + NB;
-            document.getElementById('progres-barre').style.width = (100 * n / NB) + '%';
+            var n = Math.min(faites, NB), t;
+            if (n < COEUR) t = 'Étape ' + (n + 1) + ' sur ' + COEUR;
+            else if (n >= NB) t = 'Activité terminée ✓ · Pour aller plus loin : terminé aussi ✓';
+            else if (!suiteOuverte()) t = 'Activité terminée : ' + COEUR + ' étapes sur ' + COEUR + ' ✓';
+            else t = 'Activité terminée ✓ · Pour aller plus loin : étape ' + (n + 1) + ' (' + (n - COEUR + 1) + ' sur ' + (NB - COEUR) + ')';
+            document.getElementById('progres-texte').textContent = t;
+            document.getElementById('progres-barre').style.width = (100 * Math.min(n, COEUR) / COEUR) + '%';
             sommaire();
+        }
+        /* fin de l'activité (quiz fait) : proposition de la suite facultative */
+        function propositionSuite() {
+            var z = el('div', 'proposition-suite', '<p class="fin">🎉 Bravo, tu as terminé l’activité !</p>');
+            if (COEUR >= NB) return z;
+            var box = el('div', 'encadre astuce', '<b>Pour aller plus loin (facultatif)</b><p>Tu as encore du temps ou tu veux en savoir plus ? ' + (NB - COEUR) + ' étapes de plus : l’<b>arbre pondéré</b>, les <b>chemins</b> d’un arbre, la <b>formule</b> des probabilités conditionnelles et un <b>défi</b>.</p>');
+            if (!suiteOuverte()) {
+                var b = el('button', null, 'Découvrir la suite →'); b.type = 'button';
+                b.onclick = function () {
+                    suiteVue = true; ecrireLocal(); b.remove(); progression();
+                    var c = zone.querySelector('[data-n="' + (COEUR + 1) + '"]') || carte(COEUR + 1);
+                    zone.appendChild(c);
+                    setTimeout(function () { c.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+                };
+                box.appendChild(b);
+            }
+            z.appendChild(box);
+            return z;
         }
         function sommaire() {
             var nav = document.getElementById('sommaire');
             nav.innerHTML = '';
             nav.appendChild(el('span', 'aide', 'Aller à l’étape :'));
             ETAPES.forEach(function (e, k) {
+                if (k + 1 > COEUR && !suiteOuverte()) return;   // suite cachée tant que l'activité n'est pas finie
+                if (k + 1 === COEUR + 1) nav.appendChild(el('span', 'aide', '· Pour aller plus loin :'));
                 var n = k + 1, b = el('button', n <= faites ? 'fait' + (passees[n] ? ' passee' : '') : n === faites + 1 ? 'courante' : null, String(n));
                 b.type = 'button'; b.title = 'Étape ' + n + ' · ' + e.titre;
                 b.disabled = n > faites + 1 && !modeTest();
@@ -683,7 +780,7 @@
                 };
                 nav.appendChild(b);
             });
-            if (N_QUIZ) {
+            if (N_QUIZ && QUIZ_EN_AVANCE) {
                 var fait = quizRepondu();
                 var bq = el('button', 'acces-quiz' + (fait ? ' fait' : ''), fait ? 'QUIZ ✓' : 'QUIZ'); bq.type = 'button';
                 bq.title = fait ? 'Revoir le quiz final (déjà validé)' : 'Aller directement au quiz final';
@@ -694,12 +791,24 @@
                 };
                 nav.appendChild(bq);
             }
+            if (!VUE) {
+                var bg = el('button', 'acces-consignes', 'ℹ️ Consignes'); bg.type = 'button';
+                bg.title = 'Revoir les consignes, les aides et le déroulement';
+                bg.onclick = montrerGarde;
+                nav.appendChild(bg);
+            }
         }
         function afficher() {
             zone.innerHTML = '';
             progression();
-            for (var n = 1; n <= Math.min(faites + 1, NB); n++) { var c = carte(n); zone.appendChild(c); if (VUE && n <= faites) c.ouvrir(); }
-            if (faites >= NB) zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé l’activité !'));
+            var fin = Math.min(faites + 1, NB);
+            function ajouter(n) { var c = carte(n); zone.appendChild(c); if (VUE && n <= faites) c.ouvrir(); }
+            for (var n = 1; n <= Math.min(fin, COEUR); n++) ajouter(n);
+            if (faites >= COEUR) {
+                zone.appendChild(propositionSuite());
+                if (suiteOuverte()) for (n = COEUR + 1; n <= fin; n++) ajouter(n);
+            }
+            if (faites >= NB && COEUR < NB) zone.appendChild(el('p', 'fin', '🏆 Tu as aussi terminé « Pour aller plus loin » : bravo !'));
         }
 
         // encadré « Solution » (compte professeure et vue professeure)
@@ -707,7 +816,7 @@
             var h = '<b>🔑 Solution</b> <span class="aide">(visible seulement en mode professeure)</span>';
             if (e.champs) h += '<ul>' + e.champs.map(function (c) { return '<li>' + c.lib + ' → <b>' + fr(c.attendu) + '</b></li>'; }).join('') + '</ul>';
             if (e.type === 'qcm') h += '<p>' + e.choix[e.bonne] + '</p>';
-            if (e.type === 'choix') h += '<ul>' + e.lignes.map(function (l) { return '<li>' + l.avant + ' <b>' + l.options.filter(function (o) { return o[0] === l.attendu; })[0][1] + '</b></li>'; }).join('') + '</ul>';
+            if (e.type === 'choix') h += '<ul>' + e.lignes.map(function (l) { return '<li>' + l.avant + ' <b>' + l.options.filter(function (o) { return o[0] === l.attendu; }).map(function (o) { return o[2] || o[1]; })[0] + '</b></li>'; }).join('') + '</ul>';
             if (e.type === 'quiz') h += '<ol>' + e.questions.map(function (q) { return '<li>' + q.choix[q.bonne] + '</li>'; }).join('') + '</ol>';
             if (e.type === 'sondage') h += '<p>Toutes les réponses sont acceptées (la bonne est C, révélée à l’étape 5).</p>';
             return el('div', 'solution-prof', h);
@@ -784,7 +893,16 @@
                 var i = el('input'); i.autocomplete = 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', 'off'); i.inputMode = 'decimal';
                 i.value = valeur || ''; l.appendChild(i); form.appendChild(l);
                 var b = el('button', null, 'Valider'); b.type = 'submit'; form.appendChild(b);
+                var bAi = null, tAi = null;
+                if (f.aide) {   /* 💡 Aide au bout de la ligne (clignote tant qu'elle est fermée) */
+                    form.classList.add('avec-aide');
+                    bAi = el('button', 'lien aide-case clignote', '<span class="ampoule">💡 Aide</span>'); bAi.type = 'button';
+                    tAi = el('div', 'explication aide-texte', f.aide); tAi.hidden = true;
+                    bAi.onclick = function () { tAi.hidden = !tAi.hidden; bAi.classList.toggle('clignote', tAi.hidden); bAi.firstChild.textContent = tAi.hidden ? '💡 Aide' : '💡 Masquer l’aide'; };
+                    form.appendChild(bAi);
+                }
                 var r = el('span', 'retour case-retour'); form.appendChild(r);
+                if (tAi) form.appendChild(tAi);
                 parent.appendChild(form);
                 var nbFaux = 0, juste = false;
                 var ex = f.explication ? zoneExplication(form, f.explication) : null;
@@ -937,12 +1055,17 @@
                 if (e.type === 'choix') {
                     var zc = el('div', 'reponses'), okc = [], valc = e.lignes.map(function (x, k) { return (reponses[n] || [])[k] || ''; });
                     e.lignes.forEach(function (lg, k) {
-                        var f = el('form', 'case-ligne prevision');
-                        var lab = el('label', null, '<span>' + lg.avant + '</span>');
-                        var sel = el('select'); sel.appendChild(new Option('…', ''));
-                        lg.options.forEach(function (o) { sel.appendChild(new Option(o[1], o[0], false, o[0] === valc[k])); });
-                        lab.appendChild(sel); f.appendChild(lab);
-                        var b = el('button', null, 'Valider'); b.type = 'submit'; f.appendChild(b);
+                        var f = el('form', 'case-choix');
+                        f.appendChild(el('p', 'choix-phrase', lg.avant));
+                        var rangee = el('div', 'choix-options'), radios = [];
+                        lg.options.forEach(function (o) {
+                            var l = el('label'), i = el('input'); i.type = 'radio'; i.name = 'choix-' + n + '-' + k; i.value = o[0]; i.checked = o[0] === valc[k];
+                            i.onchange = function () { r.textContent = ''; okc[k] = false; };
+                            l.appendChild(i); l.appendChild(el('span', null, o[2] || o[1])); rangee.appendChild(l); radios.push(i);
+                        });
+                        var b = el('button', null, 'Valider'); b.type = 'submit'; rangee.appendChild(b);
+                        f.appendChild(rangee);
+                        var sel = { get value() { var c = radios.filter(function (x) { return x.checked; })[0]; return c ? c.value : ''; } };
                         var r = el('span', 'retour case-retour'); f.appendChild(r);
                         var nb = 0;
                         var exC = lg.explication ? zoneExplication(f, lg.explication) : null;
@@ -950,7 +1073,6 @@
                             okc[k] = ok; r.className = 'retour case-retour ' + (ok ? 'ok' : 'ko'); r.innerHTML = ok ? '✓ ' + lg.msgOk : '✗ ' + lg.msgFaux;
                             if (exC) { if (ok) exC.cacher(); else if (nb >= ERREURS_AVANT_EXPLICATION) exC.montrer(); }
                         }
-                        sel.onchange = function () { r.textContent = ''; okc[k] = false; };
                         f.onsubmit = function (ev) {
                             ev.preventDefault();
                             if (!sel.value) { r.className = 'retour case-retour ko'; r.textContent = 'Choisis une réponse.'; return; }
@@ -1073,13 +1195,17 @@
                 var attenteBilan = null;
                 var ouvrirSuite = function () {
                     if (attenteBilan) attenteBilan.remove();
-                    if (n < NB) {
+                    if (n === COEUR && COEUR < NB) {   // fin de l'activité : on propose la suite (cachée jusqu'ici)
+                        progression();
+                        var prop = propositionSuite(); zone.appendChild(prop);
+                        setTimeout(function () { prop.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 600);
+                    } else if (n < NB) {
                         var suivante = zone.querySelector('[data-n="' + (n + 1) + '"]');
                         if (suivante) suivante.remove(); else suivante = carte(n + 1);
                         zone.appendChild(suivante);
                         if (suivante.quizFait) setTimeout(suivante.quizFait, 0);
                         setTimeout(function () { suivante.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 600);
-                    } else zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé l’activité !'));
+                    } else zone.appendChild(el('p', 'fin', COEUR < NB ? '🏆 Tu as aussi terminé « Pour aller plus loin » : bravo !' : '🎉 Bravo, tu as terminé l’activité !'));
                 };
                 var bilanCase = corps.querySelector('.encadre.bilan .lu input');
                 if (bilanCase && !bilanCase.checked && !force) {
@@ -1103,7 +1229,7 @@
             }
 
             // « Passer » : l'étape ne compte pas, on peut y revenir (le sondage et le quiz ne se passent pas)
-            if (n === faites + 1 && !VUE && e.type !== 'sondage' && e.type !== 'quiz') {
+            if (PASSER_AUTORISE && n === faites + 1 && !VUE && e.type !== 'sondage' && e.type !== 'quiz') {
                 var zPasser = el('div', 'zone-passer', '<span class="aide">' + (genre() === 'F' ? 'Bloquée' : genre() === 'M' ? 'Bloqué' : 'Bloqué(e)') + ' ? Tu peux passer cette étape et y revenir plus tard.</span>');
                 var bPasser = el('button', null, '⏭ Passer'); bPasser.type = 'button';
                 bPasser.onclick = function () {
@@ -1129,6 +1255,44 @@
             mesurer(); addEventListener('resize', mesurer);
             if (window.ResizeObserver) new ResizeObserver(mesurer).observe(barre);
         })();
+
+        /* ---------- Page de garde : consignes, aides, quiz, durée (à l'arrivée, puis bouton « Consignes ») ---------- */
+        function gardeVue() { try { return localStorage.getItem(cle() + ':garde') === '1'; } catch (x) { return false; } }
+        function montrerGarde() {
+            var g = genre(), e_ = g === 'F' ? 'e' : g === 'M' ? '' : '(e)';
+            var vieille = document.getElementById('garde'); if (vieille) vieille.remove();
+            var barre = document.getElementById('barre-etapes'), zoneE = document.getElementById('etapes');
+            var s = el('section', 'etape courante garde');
+            s.id = 'garde';
+            s.innerHTML = '<div class="etape-tete"><span class="etape-num">📋</span><h2>Avant de commencer</h2></div><div class="etape-corps">' +
+                '<p>Un test antidopage se trompe rarement… Alors un athlète contrôlé <b>positif</b> est-il forcément dopé ? Tu vas le découvrir pas à pas, avec un tableau croisé, puis avec des <b>probabilités conditionnelles</b>.</p>' +
+                '<p>C’est une activité de <b>découverte</b> : on ne te demande pas de savoir déjà faire. Tout est expliqué au fur et à mesure.</p>' +
+                '<div class="garde-grille">' +
+                '<div class="encadre"><b>⏱ Durée estimée : 1 h</b><ul><li><b>Étapes 1 à 8</b> : ton intuition, le tableau croisé, les fréquences, puis les probabilités « sachant que ».</li><li><b>Étape 9</b> : un quiz de 5 questions.</li></ul></div>' +
+                '<div class="encadre astuce"><b>💡 Les aides</b><ul>' +
+                    '<li>Lis chaque encadré et coche « <b>J’ai lu</b> » : c’est obligatoire pour valider.</li>' +
+                    '<li>Si tu te trompes, un <b>message</b> t’explique ton erreur : lis-le avant de réessayer.</li>' +
+                    '<li>Le bouton <b>💡 Aide</b> qui clignote donne un coup de pouce sur la case où tu es.</li>' +
+                    '<li>Après 2 erreurs, le bouton <b>« Voir l’explication »</b> apparaît.</li>' +
+                    '<li>La <b>calculatrice 🧮</b> est en bas à droite de l’écran.</li></ul></div>' +
+                '<div class="encadre attention"><b>➡️ Dans l’ordre</b><p>Les étapes se font <b>dans l’ordre</b> : l’étape suivante s’ouvre quand tu as réussi la précédente. Si tu bloques, utilise les aides : elles sont faites pour ça.</p></div>' +
+                '<div class="encadre attention"><b>📝 Le quiz (étape 9)</b><p>Il s’ouvre après l’étape 8 : 5 questions sur tout ce que tu as fait. Tu n’as droit qu’à <b>une seule validation</b> : relis tes réponses avant de valider. Ta professeure voit ton score.</p></div>' +
+                '<div class="encadre astuce"><b>💾 Pas besoin d’enregistrer</b><p>Chaque étape réussie est <b>enregistrée automatiquement</b>' + (Interactif.session() ? '' : ' (si tu es connecté' + e_ + ' à ton compte)') + '. Tu peux fermer la page et reprendre plus tard, en classe ou chez toi : tu repartiras là où tu t’es arrêté' + e_ + '.</p></div>' +
+                '</div>' +
+                '<p>🚀 Une fois le quiz terminé, une suite <b>facultative</b> te sera proposée pour aller plus loin.</p>' +
+                '</div>';
+            var b = el('button', 'garde-commencer', faites > 0 ? 'Reprendre l’activité →' : 'Commencer l’activité →'); b.type = 'button';
+            b.onclick = function () {
+                try { localStorage.setItem(cle() + ':garde', '1'); } catch (x) {}
+                s.remove(); barre.hidden = false; zoneE.hidden = false;
+                var cible = zoneE.querySelector('section.etape.courante') || zoneE;
+                setTimeout(function () { cible.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+            };
+            s.querySelector('.etape-corps').appendChild(b);
+            barre.hidden = true; zoneE.hidden = true;
+            barre.parentNode.insertBefore(s, barre);
+            window.scrollTo(0, 0);
+        }
 
         /* ---------- Calculatrice (bouton 🧮 en bas à droite) ---------- */
         (function () {
@@ -1196,6 +1360,7 @@
             bv.querySelectorAll('b')[1].textContent = VUE.nom || VUE.code || 'l’élève';
         } else Interactif.bandeau(document.getElementById('bandeau'), charger);
         charger();
+        if (!VUE && !gardeVue()) montrerGarde();
     })();
     </script>
 </body>

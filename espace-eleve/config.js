@@ -169,7 +169,7 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'premiere', id: 'premiere/serie6', groupe: 'Série 6 · semaine du 14 au 18 décembre · à faire pour le vendredi 18 décembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S6', url: 'premiere/serie6.html', comptes: ['PROF-1TC'], ouverture: 'auto' },
     { niveau: 'premiere', id: 'premiere/serie7', groupe: 'Série 7 · semaine du 21 décembre au 8 janvier · vacances de Noël, à faire pour le vendredi 8 janvier', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S7', url: 'premiere/serie7.html', comptes: ['PROF-1TC'], ouverture: 'auto' },
     // Première (1TC) : activité d'introduction aux probabilités conditionnelles (onglet « Activités » de l'espace élève), code d'accès
-    { niveau: 'premiere', id: 'premiere/activite-probas', groupe: 'Activité · Probabilités conditionnelles', titre: 'Contrôlé positif… donc dopé ? (13 étapes)', court: '1 · Act. Probas', url: 'premiere/activite-probas.html', tp: true, vueProf: true,
+    { niveau: 'premiere', id: 'premiere/activite-probas', groupe: 'Activité · Probabilités conditionnelles', titre: 'Contrôlé positif… donc dopé ? (9 étapes + suite facultative)', court: '1 · Act. Probas', url: 'premiere/activite-probas.html', tp: true, vueProf: true,
       codeAcces: '4faa0e5775e86206c01c5b9f5bbbdb08889dd89af0911746d84b05024a4033a3' }   // empreinte SHA-256 du code d'accès (voir Codes d'accès des TP)
 ];
 
@@ -302,7 +302,7 @@ window.INTERACTIF_BAREMES = {
     },
     'seconde/tp-premiers-pas': { nonNote: true },   // TP1 : rappels (Capytale déjà fait en classe), non noté
     'seconde/tp-boucles': { nonNote: true },   // TP3 : entraînement, non noté
-    'premiere/activite-probas': { nonNote: true, bonus: [13], quiz: [12], quizSur: 5 },   // 1TC : activité d'introduction, non notée ; quiz (étape 12) suivi à part, défi (étape 13) en bonus
+    'premiere/activite-probas': { nonNote: true, bonus: [10, 11, 12, 13], quiz: [9], quizSur: 5 },   // 1TC : activité d'introduction, non notée ; quiz (étape 9) suivi à part ; « Pour aller plus loin » (étapes 10 à 13 : arbre, chemins, formule, défi) en bonus
     'seconde/tp-pixels': {
         // TP4 · A : lire et prévoir (6,5) · B : modifier (8) · C : créer (5,5) · quiz à part
         //       A               B                C         quiz
