@@ -821,6 +821,47 @@
         return null;
     }
 
+    /* Ouverture automatique d'une série (« ouverture: 'auto' » dans le catalogue, horaires dans OUVERTURE_SERIES) :
+       date d'ouverture pour une classe, comptée à partir du lundi de « semaine du 23 au 27 novembre ». */
+    var MOIS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    var DECALAGE_JOUR = { lundi: 0, dimanche: -1, samedi: -2, vendredi: -3, jeudi: -4, mercredi: -5, mardi: -6 };
+    function lundiGroupe(groupe) {
+        var m = /semaine du (\d+)(?:er)?(?: ([a-zéû]+))? au (\d+)(?:er)? ([a-zéû]+)/i.exec(groupe || '');
+        if (!m) return null;
+        var mois = MOIS_FR.indexOf((m[2] || m[4]).toLowerCase());
+        if (mois < 0) return null;
+        var auj = new Date(), debut = auj.getMonth() >= 7 ? auj.getFullYear() : auj.getFullYear() - 1;
+        var d = new Date(mois >= 7 ? debut : debut + 1, mois, +m[1]);
+        return d.getDay() === 1 ? d : null;
+    }
+    function ouvertureSerie(ex, classe) {
+        if (!ex || ex.ouverture !== 'auto') return null;
+        var lundi = lundiGroupe(ex.groupe), regles = (window.OUVERTURE_SERIES || {})[ex.niveau] || {};
+        if (!lundi) return null;
+        var c = String(classe || '').toUpperCase(), noms = regles[c] ? [c] : Object.keys(regles), mieux = null;
+        // classe sans horaire (comptes de test, vue prof) : la plus tôt des classes
+        noms.forEach(function (n) {
+            var r = regles[n], h = String(r.heure || '00:00').split(':');
+            var d = new Date(lundi.getFullYear(), lundi.getMonth(), lundi.getDate() + (DECALAGE_JOUR[r.jour] || 0), +h[0], +(h[1] || 0));
+            if (!mieux || d < mieux) mieux = d;
+        });
+        return mieux || lundi;
+    }
+    /* Exercice visible pour cette session : pas archivé ; « comptes » = accès anticipé (tests) ;
+       « ouverture: 'auto' » = visible de la classe à partir de son horaire d'ouverture */
+    function visible(ex, s) {
+        if (ex.archive) return false;
+        var code = s ? String(s.code || '').toUpperCase() : '';
+        if (ex.comptes && ex.comptes.indexOf(code) >= 0) return true;
+        if (ex.ouverture === 'auto') { var d = ouvertureSerie(ex, classeSession(s)); return !!d && d <= new Date(); }
+        return !ex.comptes;
+    }
+    /* Publiée pour au moins une classe (page prof) */
+    function publie(ex) {
+        if (ex.ouverture === 'auto') { var d = ouvertureSerie(ex, ''); return !!d && d <= new Date(); }
+        return !ex.comptes;
+    }
+
     /* Classe de la session (à défaut : début du code élève, ex. 2H-TARTAGLIA -> 2H) */
     function classeSession(s) {
         if (!s) return '';
@@ -962,6 +1003,6 @@
     window.Interactif = {
         scriptFige: scriptFige,
         rpc: rpc, session: session, connecter: connecter, deconnecter: deconnecter,
-        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, codeAccesTP: codeAccesTP, tpFerme: tpFerme, accesTemporaire: accesTemporaire, ouvrirTemporaire: ouvrirTemporaire, minuteurAcces: minuteurAcces, couleurs: couleurs, bilanCouleurs: bilanCouleurs, pastilles: pastilles
+        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, visible: visible, publie: publie, ouvertureSerie: ouvertureSerie, classeSession: classeSession, codeAccesTP: codeAccesTP, tpFerme: tpFerme, accesTemporaire: accesTemporaire, ouvrirTemporaire: ouvrirTemporaire, minuteurAcces: minuteurAcces, couleurs: couleurs, bilanCouleurs: bilanCouleurs, pastilles: pastilles
     };
 })();

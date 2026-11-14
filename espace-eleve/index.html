@@ -449,12 +449,20 @@
             (resultats || []).forEach(function (r) { (parExercice[r.exercice] = parExercice[r.exercice] || []).push(r); });
             var s = Interactif.session(), niv = s && Interactif.niveauClasse(s.classe);
             var GROUPES = window.INTERACTIF_GROUPES || {};
-            var code = s ? String(s.code || '').toUpperCase() : '';
-            // « comptes » : exercice réservé à certains comptes (séries préparées à l'avance, testées avec TEST-01)
-            var liste = INTERACTIF_CATALOGUE.filter(function (ex) { return !ex.archive && (!niv || ex.niveau === niv) && (!ex.comptes || ex.comptes.indexOf(code) >= 0); });
+            // « comptes » : accès anticipé (séries préparées, testées avec TEST-01) ; « ouverture: 'auto' » : ouverte selon la classe (OUVERTURE_SERIES)
+            var liste = INTERACTIF_CATALOGUE.filter(function (ex) { return (!niv || ex.niveau === niv) && Interactif.visible(ex, s); });
             var listeTP = liste.filter(function (ex) { return ex.tp; });
             liste = liste.filter(function (ex) { return !ex.tp; });
             remplirTP(listeTP, parExercice);
+            // dès qu'une série plus récente est visible, la précédente (et son bilan) passe d'elle-même dans « Anciennes séries »
+            var numSerie = function (ex) { var m = /^(?:Facultatif · )?Série (\d+)/.exec(ex.groupe); return m ? +m[1] : null; };
+            var derniere = Math.max.apply(null, liste.map(numSerie).filter(function (n) { return n != null; }).concat([0]));
+            GROUPES = Object.assign({}, GROUPES);
+            liste.forEach(function (ex) {
+                var n = numSerie(ex), g = GROUPES[ex.groupe] || {};
+                if (n != null && n < derniere && !g.section) GROUPES[ex.groupe] = Object.assign({}, g, { section: 'Anciennes séries', serie: g.serie || 'Série ' + n });
+            });
+            reafficherALOuverture(s, niv);
             var enCours = liste.filter(function (ex) { return !(GROUPES[ex.groupe] || {}).section; });
             remplir(table, enCours, parExercice);
             if (!liste.length) {
@@ -480,6 +488,18 @@
             if (choisie) remplir(tableAnciennes, parSerie[choisie].exercices, parExercice); else tableAnciennes.innerHTML = '';
         }
         choixAncienne.onchange = function () { afficher(derniersResultats); };
+        // page restée ouverte : la nouvelle série apparaît à l'heure d'ouverture, sans recharger
+        var minuteurOuverture = null;
+        function reafficherALOuverture(s, niv) {
+            clearTimeout(minuteurOuverture);
+            var maintenant = Date.now(), prochaine = null;
+            INTERACTIF_CATALOGUE.forEach(function (ex) {
+                if (ex.archive || (niv && ex.niveau !== niv)) return;
+                var d = Interactif.ouvertureSerie(ex, Interactif.classeSession(s));
+                if (d && d > maintenant && (!prochaine || d < prochaine)) prochaine = d;
+            });
+            if (prochaine && prochaine - maintenant < 864e5) minuteurOuverture = setTimeout(function () { afficher(derniersResultats); }, prochaine - maintenant + 1000);
+        }
 
         /* ---------- Soutien : cases à cocher selon l'emploi du temps ---------- */
         var zoneSoutien = document.getElementById('soutien-semaines');

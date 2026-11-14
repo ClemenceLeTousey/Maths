@@ -207,7 +207,10 @@
         function motsDans(texte) {
             var t = ' ' + normaliser(texte) + ' ', vus = [];
             index.forEach(function (x) {
-                if (x.cles.some(function (c) { return c.length >= 4 && t.indexOf(' ' + c + ' ') >= 0; })) vus.push(x.f.mot);
+                if (!x.cles.some(function (c) { return c.length >= 4 && t.indexOf(' ' + c + ' ') >= 0; })) return;
+                // mot à plusieurs sens : seulement si le contexte de la question correspond (champ « si »)
+                if (x.si && !x.si.some(function (c) { return t.indexOf(' ' + c + ' ') >= 0; })) return;
+                vus.push(x.f.mot);
             });
             return vus.sort(function (a, b) { return a.localeCompare(b, 'fr'); });
         }
@@ -250,7 +253,7 @@
             // mot trouvé tel quel : on ne propose que des mots vraiment proches (pas les ressemblances approximatives)
             var premier = r[0], autres = r.slice(1).filter(function (x) { return x.n >= (premier.n === 100 ? 70 : 45); }).slice(0, 6);
             // une fiche si le mot est reconnu sans ambiguïté ; sinon (ex. « valeur » : ronde, exacte, approchée ?) la liste des possibilités
-            if (premier.n === 100 || !autres.length || premier.n > autres[0].n) {
+            if (!autres.length || premier.n > autres[0].n) {
                 zone.innerHTML = fiche(premier.f) +
                     (autres.length ? '<div class="v-sous">Tu cherchais peut-être</div>' + puces(autres.map(function (x) { return x.f.mot; })) : '') +
                     (premier.n < 100 ? blocDemande(t, false) : '');
@@ -319,7 +322,7 @@
             lexique = (window.LEXIQUE || []).slice();
             index = lexique.map(function (f) {
                 var cles = [f.mot].concat(f.aussi || []).map(normaliser).filter(Boolean);
-                return { f: f, cles: cles };
+                return { f: f, cles: cles, si: f.si ? f.si.map(normaliser).filter(Boolean) : null };
             });
             afficher();
         }

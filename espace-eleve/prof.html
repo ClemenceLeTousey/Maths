@@ -357,7 +357,7 @@
             try { sessionStorage.removeItem('interactif-prof'); } catch (e) {}
             location.reload();
         };
-        document.getElementById('classe').onchange = afficher;
+        document.getElementById('classe').onchange = function () { remplirSeries(); afficher(); };
         remplirSeries();
         document.getElementById('serie').onchange = function () { document.getElementById('detail').innerHTML = ''; afficher(); };
         if (mdp) charger();
@@ -380,6 +380,7 @@
                 sel.innerHTML = '';
                 classes.forEach(function (c) { var o = document.createElement('option'); o.textContent = c; sel.appendChild(o); });
                 if (classes.indexOf(avant) >= 0) sel.value = avant;
+                remplirSeries();
                 afficher();
                 SuiviTP.remplir();
                 Interactif.rpc('prof_creneaux', { p_mdp: mdp }).then(function (l) { inscriptions = l || []; afficherSoutien(); },
@@ -403,8 +404,16 @@
                 var m = o && /^TP\s*\d+/.exec(o.nom);
                 return m ? m[0].replace(/\s+/, '') + (o.id === id ? '' : ' (ancien)') + ' · ' : '';
             }
-            TPS.forEach(function (e) { $tp.appendChild(new Option(numeroTP(e.id) + e.titre.replace(/\s*\(.*\)$/, '') + ' · ' + e.groupe.replace(/^TP Python · /, '') + (e.comptes ? ' (en test)' : ''), e.id)); });
-            if (TPS.length) $tp.value = TPS[TPS.length - 1].id;   // par défaut : le TP le plus récent du catalogue
+            // TP de la classe choisie seulement (TP Python en seconde, activité dopage en 1TC…) ; classe de test = tous
+            function remplirTP() {
+                var n = Interactif.niveauClasse($classe.value), avant = $tp.value;
+                var liste = TPS.filter(function (e) { return !n || !e.niveau || e.niveau === n; });
+                $tp.innerHTML = '';
+                liste.forEach(function (e) { $tp.appendChild(new Option(numeroTP(e.id) + e.titre.replace(/\s*\(.*\)$/, '') + ' · ' + e.groupe.replace(/^TP Python · /, '') + (e.comptes ? ' (en test)' : ''), e.id)); });
+                if (liste.some(function (e) { return e.id === avant; })) $tp.value = avant;
+                else if (liste.length) $tp.value = liste[liste.length - 1].id;   // par défaut : le TP le plus récent du catalogue
+            }
+            remplirTP();
 
             // meilleure tentative (plus d'étapes, puis la plus récente) et note
             function resultat(code, id) {
@@ -462,7 +471,7 @@
                 $classe.innerHTML = '';
                 classes.forEach(function (c) { $classe.appendChild(new Option(c, c)); });
                 if (classes.indexOf(avant) >= 0) $classe.value = avant;
-                remplirEleves(); afficher();
+                remplirTP(); remplirEleves(); afficher();
             }
             function remplirEleves() {
                 var avant = $eleve.value;
@@ -502,6 +511,7 @@
                 if (!donnees) return;
                 $table.innerHTML = ''; $detail.innerHTML = '';
                 var id = $tp.value, liste = eleves();
+                if (!id) { $detail.textContent = 'Aucun TP pour cette classe.'; return; }
                 if ($eleve.value) liste = liste.filter(function (e) { return e.code === $eleve.value; });
                 enteteTriable($table, ['Code', 'Nom', 'Étapes réussies', 'Bonus', 'Erreurs', 'Note TP /20', 'Quiz', 'Note globale /20', 'Temps', 'Dernière activité']);
                 var notes = [], quizs = [], globales = [];
@@ -602,7 +612,7 @@
                 a.download = 'notes-' + id.replace(/\//g, '-') + '-' + $classe.value + '.csv';
                 a.click();
             };
-            $classe.onchange = function () { remplirEleves(); afficher(); };
+            $classe.onchange = function () { remplirTP(); remplirEleves(); afficher(); };
             $tp.onchange = afficher;
             $eleve.onchange = afficher;
             return { remplir: remplir, afficher: afficher };
@@ -653,21 +663,29 @@
             var m = /Série \d+/.exec(ex.groupe);
             return g.serie || (m ? m[0] : ex.groupe);
         }
+        // niveau de la classe choisie (2B -> seconde…) ; null (classe de test) = tous les niveaux
+        function niveauChoisi() { return Interactif.niveauClasse(document.getElementById('classe').value); }
+        function duNiveau(ex) { var n = niveauChoisi(); return !n || !ex.niveau || ex.niveau === n; }
+        // secondes : les TP ont leur onglet « Suivi TP », ils ne sont pas repris dans le Suivi QF
+        function tpMasque(ex) { return !!ex.tp && niveauChoisi() === 'seconde'; }
         function remplirSeries() {
-            var sel = document.getElementById('serie'), vues = [], enTest = {}, enCours = null;
+            var sel = document.getElementById('serie'), avant = sel.value, vues = [], enTest = {}, enCours = null;
+            sel.innerHTML = '';
             INTERACTIF_CATALOGUE.forEach(function (ex) {
-                if (ex.archive) return;
+                if (ex.archive || !duNiveau(ex) || tpMasque(ex)) return;
                 var s = serieDe(ex), g = (window.INTERACTIF_GROUPES || {})[ex.groupe] || {};
                 if (vues.indexOf(s) < 0) { vues.push(s); enTest[s] = true; }
-                if (!ex.comptes) enTest[s] = false;
-                // série en cours : la première série ouverte aux élèves hors « Anciennes séries »
-                if (!enCours && !ex.comptes && g.section !== 'Anciennes séries' && /^Série \d+$/.test(s)) enCours = s;
+                var pub = Interactif.publie(ex);   // « ouverture: 'auto' » : publiée dès la première classe ouverte
+                if (pub) enTest[s] = false;
+                // série en cours : la plus récente ouverte aux élèves hors « Anciennes séries »
+                if (pub && g.section !== 'Anciennes séries' && /^Série \d+$/.test(s) && (!enCours || +s.slice(6) > +enCours.slice(6))) enCours = s;
             });
             vues.map(function (s) {
-                return [s, s + (s === enCours ? ' (en cours)' : enTest[s] ? ' (en test)' : '')];
+                return [s, s + (s === enCours ? ' (en cours)' : enTest[s] ? ' (pas encore publiée)' : '')];
             }).concat([['*', 'Toutes les séries']])
                 .forEach(function (c) { var o = document.createElement('option'); o.value = c[0]; o.textContent = c[1]; sel.appendChild(o); });
-            if (enCours) sel.value = enCours;
+            if (avant && (avant === '*' || vues.indexOf(avant) >= 0)) sel.value = avant;
+            else if (enCours) sel.value = enCours;
         }
 
         /* ---------- Tableau ---------- */
@@ -675,8 +693,8 @@
             var choix = document.getElementById('serie').value;
             // séries archivées et exercices retirés : pas de colonne (résultats gardés en base)
             var masques = (window.INTERACTIF_MASQUES_PROF || []).concat(
-                INTERACTIF_CATALOGUE.filter(function (e) { return e.archive; }).map(function (e) { return e.id; }));
-            var ids = INTERACTIF_CATALOGUE.filter(function (e) { return !e.archive && (choix === '*' || serieDe(e) === choix); })
+                INTERACTIF_CATALOGUE.filter(function (e) { return e.archive || tpMasque(e); }).map(function (e) { return e.id; }));
+            var ids = INTERACTIF_CATALOGUE.filter(function (e) { return !e.archive && duNiveau(e) && !tpMasque(e) && (choix === '*' || serieDe(e) === choix); })
                                           .map(function (e) { return e.id; });
             // résultats d'exercices hors catalogue : seulement dans « Toutes les séries »
             if (choix === '*') donnees.resultats.forEach(function (r) { if (ids.indexOf(r.exercice) < 0 && masques.indexOf(r.exercice) < 0 && !/#acces-temp$/.test(r.exercice)) ids.push(r.exercice); });

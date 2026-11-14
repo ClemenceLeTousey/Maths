@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="../../manifest.json">
+<meta name="apple-mobile-web-app-title" content="Maths Lebrun">
+<title>Feuille 6 ¾ – Corrigé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Même habillage que la page de remédiation DS1 : une colonne de lecture, thème clair fixe (projection en classe). */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --paper: #FFFFFF;
+  --ink: #1D2733;
+  --muted: #5B6878;
+  --line: #DCE3EB;
+  --calc: #1C7ED6;        /* bleu « Rappel » des feuilles LaTeX */
+  --calc-soft: #EAF3FC;
+  --sky: #339AF0;         /* pastille d'exercice */
+  --obj: #F76707;         /* objectifs de la feuille */
+  --green: #2F9E44;
+  --green-soft: #EBF7EE;
+  --star-green: #40C057;
+  --star-blue: #228BE6;
+  --star-red: #FA5252;
+  --red: #E03131;
+  --red-soft: #FDEEEE;
+  --amber-soft: #FFF8E6;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* sinon display:grid (rappel, entraînement) l’emporte sur hidden */
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+main.wrap { padding-bottom: 64px; }
+b, strong { font-weight: 500; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+button { font: inherit; }
+a { color: var(--calc); }
+:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+
+/* En-tête collant : titre + boutons d'exercices */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); }
+.top .wrap { display: grid; gap: 8px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--muted); }
+.brand b { color: var(--ink); font-size: 17px; }
+.brand a { margin-left: auto; font-size: 14px; text-decoration: none; }
+.exnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.exnav button { flex: none; border: 1px solid var(--sky); background: var(--paper); color: var(--sky); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-weight: 500; font-size: 15px; }
+.exnav button:hover { background: var(--calc-soft); }
+.exnav button.on { background: var(--sky); color: #fff; }
+
+/* Exercice */
+.obj { margin: 24px 0 6px; color: var(--obj); font-size: 18px; }
+.obj b { font-weight: 600; }
+.exo { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.exo-h { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 4px; padding: 1px 10px; font-weight: 500; }
+.stars { letter-spacing: 1px; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: 15px; }
+.exo-b { padding: 12px 16px 16px; display: grid; gap: 14px; }
+.consigne { margin: 0; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--calc); background: var(--paper); color: var(--calc); border-radius: 6px; padding: 5px 14px; cursor: pointer; font-size: 15px; font-weight: 500; }
+.btn:hover { background: var(--calc-soft); }
+.btn.solid { background: var(--calc); color: #fff; }
+.btn.solid:hover { background: #1971C2; }
+.btn.ghost { border-color: var(--line); color: var(--ink); }
+.btn.green { border-color: var(--green); color: var(--green); }
+.btn.green:hover { background: var(--green-soft); }
+.btn.on { background: var(--calc); color: #fff; }
+.btn.green.on { background: var(--green); color: #fff; }
+.btn.sm { font-size: 14px; padding: 3px 10px; }
+
+.rappel { background: var(--calc-soft); border-left: 3px solid var(--calc); padding: 14px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rappel > div { min-width: 0; overflow-x: auto; }
+.rappel h3 { font-size: 16px; color: var(--calc); margin-bottom: 4px; }
+.rappel p { margin: 0 0 6px; }
+.rappel .att h3 { color: var(--red); }
+
+h2.part { font-size: 19px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+h2.part small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.items { display: grid; gap: 10px; }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.item.open { border-color: var(--calc); }
+.item .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.item .q { min-width: 0; overflow-x: auto; font-size: 18px; }
+.item .row .btn { margin-left: auto; }
+.res { display: inline-block; border: 1px solid var(--green); background: var(--green-soft); border-radius: 4px; padding: 0 8px; overflow-x: auto; max-width: 100%; }
+.item .resline { display: none; }
+.showres .sheet .item .resline, .item.raw .resline { display: block; }
+
+/* Réponse de l'élève (entraînement avec nouvelles valeurs) */
+.aide { margin: 0; font-size: 15px; color: var(--muted); }
+.aide code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.answer { display: grid; gap: 6px; min-width: 0; }
+.ans-row, .ab { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; min-width: 0; }
+.ans-row label, .ab label { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 260px; max-width: 480px; }
+.ab label { flex: 0 1 180px; }
+.answer input[type="text"] { font: inherit; font-size: 17px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); min-width: 0; width: 100%; }
+.answer input[type="text"]:focus { outline: none; border-color: var(--calc); box-shadow: 0 0 0 2px var(--calc-soft); }
+.ans-prev { min-height: 1.5em; color: var(--muted); font-size: 15px; overflow-x: auto; }
+.choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.choices label { display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; background: var(--paper); }
+.choices label:has(input:checked) { border-color: var(--calc); background: var(--calc-soft); }
+.ans-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb { border-radius: 4px; padding: 6px 12px; font-size: 15px; overflow-x: auto; }
+.fb.ok { background: var(--green-soft); border-left: 3px solid var(--green); }
+.fb.warn { background: var(--amber-soft); border-left: 3px solid #F59F00; }
+.fb.ko { background: var(--red-soft); border-left: 3px solid var(--red); }
+.train .item.good { border-color: var(--green); }
+.qfig { overflow-x: auto; }
+.qfig svg, .fig svg { display: block; max-width: none; }
+
+.steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
+.step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--calc); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 500; }
+.step .m { overflow-x: auto; min-width: 0; }
+.step .m mjx-container[display="true"] { margin: 2px 0 !important; text-align: left !important; }
+.step .x { color: var(--muted); font-size: 15px; }
+.step .x em { font-style: normal; color: var(--ink); }
+.step .h { min-width: 0; overflow-x: auto; }
+.step .fig { overflow-x: auto; margin: 2px 0 6px; }
+/* Tableau de double distributivité (Ex. 4) : termes de la 1re parenthèse en colonnes, de la 2de en lignes */
+.tdd { border-collapse: collapse; margin: 4px 0 6px; }
+.tdd th, .tdd td { border: 1px solid var(--line); padding: 4px 14px; text-align: center; min-width: 56px; }
+.tdd th { background: var(--bg); font-weight: 400; }
+.tdd th.coin { color: var(--muted); }
+.step-ctrl { display: flex; gap: 8px; flex-wrap: wrap; }
+.concl { background: var(--green-soft); border-left: 3px solid var(--green); padding: 6px 12px; overflow-x: auto; }
+.piege { background: var(--red-soft); border-left: 3px solid var(--red); padding: 6px 12px; font-size: 15px; }
+.piege b { color: var(--red); }
+
+.train { border-top: 2px dashed var(--line); padding-top: 14px; display: grid; gap: 12px; }
+.train h2 { color: var(--green); }
+.train .item { border-color: #CFE8D5; background: #FBFEFB; }
+.train .item.open { border-color: var(--green); }
+
+.foot { margin-top: 18px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .comp { margin-left: 0; }
+  .item .row .btn { margin-left: 0; }
+}
+/* Feuille 6 ¾ (repris de la feuille 6) : énoncé d'exercice, figures, réponses à plusieurs cases */
+.enonce { margin: 0; }
+.enonce p { margin: 0 0 6px; }
+.enonce ul { margin: 4px 0 0; padding-left: 22px; }
+.efig { overflow-x: auto; }
+.efig svg { display: block; max-width: none; margin-top: 4px; }
+.progs { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
+.prog { border: 1px solid var(--sky); border-radius: 6px; overflow: hidden; min-width: 190px; background: var(--paper); }
+.prog b { display: block; background: var(--sky); color: #fff; padding: 2px 10px; font-weight: 500; }
+.prog div { padding: 4px 10px; font-size: 16px; }
+.nl { flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; border: 1.5px solid var(--ink); border-radius: 50%; font-size: 13px; font-weight: 600; margin-right: 6px; vertical-align: 1px; }
+.item .q.txt { font-size: 17px; }
+.ans-row label .lab { white-space: nowrap; }
+.ans-row label.wide { flex-basis: 320px; }
+.choices.yn { margin: 0; }
+/* Exercices ouverts : une question, puis une carte par méthode */
+.grp { display: grid; gap: 10px; }
+.grp + .grp { margin-top: 10px; }
+.grp-q { font-size: 17px; font-weight: 500; }
+.grp > .resline { display: none; }
+.showres .sheet .grp > .resline { display: block; }
+.meth { flex: none; background: var(--calc-soft); color: var(--calc); border-radius: 4px; padding: 0 8px; font-size: 14px; font-weight: 600; margin-right: 8px; }
+.ouvert { margin: 0; font-size: 15px; color: var(--muted); }
+</style>
+<script src="../../barre.js"></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Feuille d’exercices n°6 ¾ — Corrigé</b><span>Équations et inéquations : pour aller plus loin</span><a href="../../seconde/">Page des Secondes</a></div>
+    <nav class="exnav" id="exnav" aria-label="Exercices"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] } },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<script>
+'use strict';
+const R = String.raw;
+const $ = (s, el = document) => el.querySelector(s);
+const app = $('#app'), nav = $('#exnav');
+const EQV = '\\Longleftrightarrow\\ ';
+/* Raccourcis d'étapes : E = ligne de calcul (+ explication), H = texte, C = conclusion */
+const E = (e, x) => (x ? { e, x } : { e });
+const H = h => ({ h });
+const C = h => ({ h: `<b>Conclusion :</b> ${h}` });
+/* Question « factoriser puis résoudre » : forme factorisée, puis produit nul */
+function prodNul(q, fact, a, b, sol, res, extra = []) {
+  return { q: `\\(${q}\\)`, res,
+    steps: [...fact, E(EQV + `${a}=0\\ \\text{ou}\\ ${b}=0`, 'Propriété du produit nul : un produit est nul si et seulement si l’un de ses facteurs est nul.'), ...sol, ...extra] };
+}
+
+const RAP = {
+  eq: { t: 'Résoudre une équation', h: R`<p>On garde une équation équivalente si on <b>ajoute ou soustrait</b> un même nombre (ou un même terme en \(x\)) aux deux membres, ou si on <b>multiplie ou divise</b> les deux membres par un même nombre <b>non nul</b>.</p>` },
+  param: { t: 'Équation avec paramètre', h: R`<p>Le paramètre (\(m\), \(a\)…) est un nombre fixé mais inconnu : on le traite comme un nombre. L’inconnue reste \(x\).</p><p>« \(4\) est solution » : on remplace \(x\) par \(4\), et on obtient une équation d’inconnue \(m\).</p>` },
+  pn: { t: 'Produit nul', h: R`<p>\(A\times B=0 \Longleftrightarrow A=0\ \text{ou}\ B=0\).</p><p>Méthode : tout ramener dans un membre (\(\ldots=0\)), factoriser, puis appliquer le produit nul.</p>` },
+  id: { t: 'Identités remarquables', h: R`<p>\((a+b)^2=a^2+2ab+b^2\)<br>\((a-b)^2=a^2-2ab+b^2\)<br>\(a^2-b^2=(a-b)(a+b)\)</p>` },
+  fc: { t: 'Facteur commun', h: R`<p>\(ka+kb=k(a+b)\) et \(ka-kb=k(a-b)\).</p><p>Le facteur commun peut être une expression entière : \((x+1)(2x-3)+(x+1)(x+4)=(x+1)\big[(2x-3)+(x+4)\big]\).</p>` },
+  meth: { t: 'Mettre en équation', h: R`<p>① Choisir l’inconnue. ② Traduire l’énoncé par une équation. ③ Résoudre. ④ Vérifier que les solutions conviennent (une longueur est positive !), puis conclure.</p>` },
+  pyth: { t: 'Théorème de Pythagore', h: R`<p>Si ABC est rectangle en A, alors \(\text{BC}^2=\text{AB}^2+\text{AC}^2\) : l’hypoténuse est le plus grand côté.</p>` },
+  ineq: { t: 'Résoudre une inéquation', h: R`<p>Mêmes règles que pour une équation, <b>sauf</b> : si on multiplie ou divise par un nombre <b>négatif</b>, on <b>change le sens</b> de l’inégalité.</p>` },
+  frac: { t: 'Supprimer les fractions', h: R`<p>On multiplie les deux membres par un dénominateur commun (positif : le sens ne change pas). On met des parenthèses aux numérateurs : \(6\times\dfrac{x-1}{2}=3(x-1)\).</p>` }
+};
+const S1 = '<span style="color:var(--star-green)">★</span><span style="color:#ADB5BD">☆☆</span>';
+const S2 = '<span style="color:var(--star-blue)">★★</span><span style="color:#ADB5BD">☆</span>';
+const S3 = '<span style="color:var(--star-red)">★★★</span>';
+const PARTIES = { A: 'Équations avec paramètre', B: 'Factoriser pour résoudre : équations produit nul', C: 'Mettre en équation… puis factoriser', D: 'Inéquations plus complexes' };
+
+/* Figures (SVG) */
+const SVGS = 'font-family="Source Sans 3, Arial, sans-serif" font-size="15" fill="#1D2733"';
+const _figRectCarre = `<svg width="300" height="150" viewBox="0 0 300 150" ${SVGS} role="img" aria-label="Rectangle de dimensions 2x+1 et x+3, carré de côté 2x+1">
+  <rect x="50" y="40" width="100" height="68" fill="#EAF3FC" stroke="#1D2733" stroke-width="1.6"/>
+  <text x="100" y="128" text-anchor="middle"><tspan font-style="italic">2x</tspan> + 1</text><text x="44" y="79" text-anchor="end"><tspan font-style="italic">x</tspan> + 3</text>
+  <rect x="180" y="8" width="100" height="100" fill="#FEF0E6" stroke="#1D2733" stroke-width="1.6"/>
+  <text x="230" y="128" text-anchor="middle"><tspan font-style="italic">2x</tspan> + 1</text></svg>`;
+const figTriangle = `<svg width="200" height="150" viewBox="0 0 200 150" ${SVGS} role="img" aria-label="Triangle rectangle de côtés x, x+1 et x+2">
+  <polygon points="40,120 160,120 40,30" fill="#EAF3FC" stroke="#1D2733" stroke-width="1.6"/>
+  <polyline points="40,108 52,108 52,120" fill="none" stroke="#1D2733"/>
+  <text x="32" y="80" text-anchor="end" font-style="italic">x</text><text x="100" y="140" text-anchor="middle"><tspan font-style="italic">x</tspan> + 1</text>
+  <text x="108" y="66"><tspan font-style="italic">x</tspan> + 2</text></svg>`;
+const figCadre = `<svg width="190" height="190" viewBox="0 0 190 190" ${SVGS} role="img" aria-label="Photo carrée de 10 cm dans un cadre de largeur x">
+  <rect x="20" y="10" width="150" height="150" fill="#FDD9BF" stroke="#1D2733" stroke-width="1.6"/>
+  <rect x="40" y="30" width="110" height="110" fill="#EAF3FC" stroke="#1D2733" stroke-width="1.6"/>
+  <text x="95" y="90" text-anchor="middle">photo</text>
+  <line x1="95" y1="11" x2="95" y2="29" stroke="#1D2733"/><text x="100" y="25" font-style="italic">x</text>
+  <line x1="40" y1="175" x2="150" y2="175" stroke="#1D2733"/><text x="95" y="188" text-anchor="middle">10 cm</text></svg>`;
+
+/* Droite réelle (non à l’échelle) : bornes [{v, ouvert}], sens 'd' (vers la droite), 'g' ou 'entre' */
+function droite(bornes, sens) {
+  const W = 300, y = 26, X = bornes.length === 1 ? [150] : [100, 200];
+  let seg = '';
+  if (sens === 'd') seg = `<line x1="${X[0]}" y1="${y}" x2="${W - 14}" y2="${y}" stroke="#E03131" stroke-width="4"/>`;
+  if (sens === 'g') seg = `<line x1="10" y1="${y}" x2="${X[0]}" y2="${y}" stroke="#E03131" stroke-width="4"/>`;
+  if (sens === 'entre') seg = `<line x1="${X[0]}" y1="${y}" x2="${X[1]}" y2="${y}" stroke="#E03131" stroke-width="4"/>`;
+  const pts = bornes.map((b, i) => `<line x1="${X[i]}" y1="${y - 6}" x2="${X[i]}" y2="${y + 6}" stroke="#1D2733" stroke-width="1.5"/>` +
+    (b.ouvert ? `<circle cx="${X[i]}" cy="${y}" r="5" fill="#fff" stroke="#E03131" stroke-width="2"/>` : `<circle cx="${X[i]}" cy="${y}" r="5" fill="#E03131"/>`) +
+    `<text x="${X[i]}" y="${y + 24}" text-anchor="middle">${b.v}</text>`).join('');
+  return { h: `<div class="fig"><svg width="${W}" height="56" viewBox="0 0 ${W} 56" ${SVGS} role="img" aria-label="Solutions sur une droite">
+    <line x1="6" y1="${y}" x2="${W - 6}" y2="${y}" stroke="#1D2733" stroke-width="1.5"/><polyline points="${W - 14},${y - 5} ${W - 6},${y} ${W - 14},${y + 5}" fill="none" stroke="#1D2733" stroke-width="1.5"/>${seg}${pts}</svg></div>` };
+}
+
+/* =====================================================================
+   Les exercices de la feuille 6 ¾. Item : { q, res, steps:[{e|h, x}], piege? }
+   ===================================================================== */
+const EX = [
+{ n: 1, partie: 'A', stars: S2, comp: 'Calculer', rappel: [RAP.param, RAP.eq],
+  att: R`<p>Dans la question 2, l’inconnue devient \(m\) : on remplace \(x\) par \(4\), puis on résout en \(m\).</p>`,
+  enonce: R`<p>Soit \(m\) un nombre réel. On considère l’équation d’inconnue \(x\) : \((E)\ :\ 2x+m=5x-7\).</p>`,
+  main: [
+    { q: R`Résoudre l’équation \((E)\) lorsque \(m=2\).`, res: R`\(x=3\)`,
+      steps: [E('2x+2=5x-7', 'On remplace \\(m\\) par \\(2\\).'), E(EQV + '-3x+2=-7', 'On soustrait \\(5x\\) aux deux membres.'), E(EQV + '-3x=-9', 'On soustrait \\(2\\).'), E(EQV + 'x=3', 'On divise par \\(-3\\).'), C('la solution est \\(3\\).')] },
+    { q: R`Déterminer la valeur de \(m\) pour laquelle le nombre \(4\) est solution de \((E)\).`, res: R`\(m=5\)`,
+      steps: [E('2\\times4+m=5\\times4-7', 'On remplace \\(x\\) par \\(4\\) : l’inconnue est maintenant \\(m\\).'), E(EQV + '8+m=13'), E(EQV + 'm=5'), C('\\(4\\) est solution de \\((E)\\) lorsque \\(m=5\\).')] },
+    { q: R`Résoudre \((E)\) dans le cas général : exprimer sa solution en fonction de \(m\).`, res: R`\(x=\dfrac{m+7}{3}\)`,
+      steps: [E('2x+m=5x-7'), E(EQV + 'm=3x-7', 'On soustrait \\(2x\\) : on regroupe les \\(x\\) du côté où ils sont les plus nombreux.'), E(EQV + 'm+7=3x', 'On ajoute \\(7\\).'), E(EQV + 'x=\\dfrac{m+7}{3}', 'On divise par \\(3\\).'),
+        H('<span class="x">Contrôle : pour \\(m=2\\), on retrouve \\(x=\\dfrac{9}{3}=3\\).</span>')] },
+    { q: R`Pour quelles valeurs de \(m\) la solution de \((E)\) est-elle strictement positive ?`, res: R`\(m>-7\)`,
+      steps: [E('\\dfrac{m+7}{3}>0', 'La solution doit être strictement positive.'), E(EQV + 'm+7>0', 'On multiplie par \\(3>0\\) : le sens ne change pas.'), E(EQV + 'm>-7'), C('la solution est strictement positive pour \\(m>-7\\).')] }
+  ] },
+
+{ n: 2, partie: 'A', stars: S3, comp: 'Raisonner', rappel: [RAP.param, RAP.eq],
+  att: R`<p>On ne divise par \(m-2\) que si \(m-2\neq0\), c’est-à-dire \(m\neq2\) : le cas \(m=2\) se traite à part.</p>`,
+  enonce: R`<p>Soit \(m\) un nombre réel. On considère l’équation d’inconnue \(x\) : \((E_m)\ :\ mx+3=2x+m\).</p>`,
+  main: [
+    { q: R`Résoudre \((E_m)\) pour \(m=5\), puis pour \(m=-1\).`, res: R`\(m=5\) : \(x=\dfrac{2}{3}\) ; \(m=-1\) : \(x=\dfrac{4}{3}\).`,
+      steps: [E('5x+3=2x+5', 'Pour \\(m=5\\).'), E(EQV + '3x=2'), E(EQV + 'x=\\dfrac{2}{3}'),
+        E('-x+3=2x-1', 'Pour \\(m=-1\\) : \\(-1\\times x=-x\\).'), E(EQV + '-3x=-4'), E(EQV + 'x=\\dfrac{4}{3}', 'On divise par \\(-3\\).')] },
+    { q: R`Résoudre \((E_m)\) pour \(m=2\). Que remarque-t-on ?`, res: 'aucune solution',
+      steps: [E('2x+3=2x+2'), E(EQV + '3=2', 'On soustrait \\(2x\\) : les \\(x\\) disparaissent.'), C('\\(3=2\\) est faux, quel que soit \\(x\\) : l’équation <b>n’a pas de solution</b>.')] },
+    { q: R`Montrer que \((E_m)\) peut s’écrire \((m-2)\,x=m-3\). En déduire, lorsque \(m\neq2\), la solution en fonction de \(m\).`, res: R`\(x=\dfrac{m-3}{m-2}\)`,
+      steps: [E('mx+3=2x+m'), E(EQV + 'mx-2x=m-3', 'On soustrait \\(2x\\) et \\(3\\) aux deux membres.'), E(EQV + '(m-2)\\,x=m-3', 'On factorise par \\(x\\).'),
+        E(EQV + 'x=\\dfrac{m-3}{m-2}', 'Si \\(m\\neq2\\), alors \\(m-2\\neq0\\) : on peut diviser par \\(m-2\\).')],
+      piege: 'Diviser par \\(m-2\\) sans vérifier qu’il est non nul : pour \\(m=2\\), c’est impossible (question 2).' },
+    { q: R`Pour quelle valeur de \(m\) la solution est-elle égale à \(0\) ? Existe-t-il une valeur de \(m\) pour laquelle elle est égale à \(1\) ?`, res: R`\(m=3\) ; non, aucune valeur pour \(1\).`,
+      steps: [E('\\dfrac{m-3}{m-2}=0\\ ' + EQV + 'm-3=0\\ ' + EQV + 'm=3', 'Un quotient est nul quand son numérateur est nul.'),
+        E('\\dfrac{m-3}{m-2}=1\\ ' + EQV + 'm-3=m-2\\ ' + EQV + '-3=-2', 'On multiplie par \\(m-2\\neq0\\).'),
+        C('la solution vaut \\(0\\) pour \\(m=3\\) ; \\(-3=-2\\) est faux : la solution n’est <b>jamais</b> égale à \\(1\\).')] }
+  ] },
+
+{ n: 3, partie: 'A', stars: S2, comp: 'Calculer', rappel: [RAP.eq],
+  att: R`<p>On isole la lettre demandée exactement comme on isole \(x\) dans une équation : les autres lettres jouent le rôle de nombres connus.</p>`,
+  enonce: R`<p>Dans les formules suivantes, toutes les grandeurs sont strictement positives. Exprimer la lettre demandée en fonction des autres.</p>`,
+  main: [
+    { q: R`Périmètre d’un rectangle : \(P=2(L+\ell)\). Exprimer \(\ell\).`, res: R`\(\ell=\dfrac{P}{2}-L\)`,
+      steps: [E('\\dfrac{P}{2}=L+\\ell', 'On divise par \\(2\\).'), E(EQV + '\\ell=\\dfrac{P}{2}-L', 'On soustrait \\(L\\).')] },
+    { q: R`Vitesse moyenne : \(v=\dfrac{d}{t}\). Exprimer \(t\).`, res: R`\(t=\dfrac{d}{v}\)`,
+      steps: [E('vt=d', 'On multiplie par \\(t\\neq0\\).'), E(EQV + 't=\\dfrac{d}{v}', 'On divise par \\(v\\neq0\\).')] },
+    { q: R`Températures : \(F=1{,}8\,C+32\). Exprimer \(C\).`, res: R`\(C=\dfrac{F-32}{1{,}8}\)`,
+      steps: [E('F-32=1{,}8\\,C', 'On soustrait \\(32\\).'), E(EQV + 'C=\\dfrac{F-32}{1{,}8}', 'On divise par \\(1{,}8\\).')] },
+    { q: R`Aire d’un trapèze : \(\mathcal{A}=\dfrac{(B+b)\,h}{2}\). Exprimer \(b\).`, res: R`\(b=\dfrac{2\mathcal{A}}{h}-B\)`,
+      steps: [E('2\\mathcal{A}=(B+b)\\,h', 'On multiplie par \\(2\\).'), E(EQV + '\\dfrac{2\\mathcal{A}}{h}=B+b', 'On divise par \\(h\\neq0\\).'), E(EQV + 'b=\\dfrac{2\\mathcal{A}}{h}-B', 'On soustrait \\(B\\).')] }
+  ] },
+
+{ n: 4, partie: 'B', stars: S1, comp: 'Calculer', rappel: [RAP.pn],
+  att: R`<p>Un facteur constant non nul (comme \(-4\)) ne donne pas de solution : \(-4\neq0\).</p>`,
+  enonce: '<p>Résoudre les équations suivantes.</p>',
+  main: [
+    prodNul('(x-3)(x+5)=0', [], 'x-3', 'x+5', [E(EQV + 'x=3\\ \\text{ou}\\ x=-5')], R`\(\mathcal{S}=\{-5\,;\,3\}\)`),
+    prodNul('(2x+1)(4-x)=0', [], '2x+1', '4-x', [E(EQV + 'x=-\\dfrac{1}{2}\\ \\text{ou}\\ x=4')], R`\(\mathcal{S}=\left\{-\frac{1}{2}\,;\,4\right\}\)`),
+    prodNul('x(3x-7)=0', [], 'x', '3x-7', [E(EQV + 'x=0\\ \\text{ou}\\ x=\\dfrac{7}{3}')], R`\(\mathcal{S}=\left\{0\,;\,\frac{7}{3}\right\}\)`),
+    { q: R`\((5x+2)^2=0\)`, res: R`\(\mathcal{S}=\left\{-\frac{2}{5}\right\}\)`,
+      steps: [E('(5x+2)(5x+2)=0', 'Un carré est un produit de deux facteurs égaux.'), E(EQV + '5x+2=0'), E(EQV + 'x=-\\dfrac{2}{5}'), C('une seule solution, \\(-\\dfrac{2}{5}\\).')] },
+    prodNul('-4(x+1)(2x-6)=0', [H('\\(-4\\neq0\\) : seuls les deux autres facteurs peuvent être nuls.')], 'x+1', '2x-6', [E(EQV + 'x=-1\\ \\text{ou}\\ x=3')], R`\(\mathcal{S}=\{-1\,;\,3\}\)`),
+    prodNul('(6-3x)(x+9)=0', [], '6-3x', 'x+9', [E(EQV + 'x=2\\ \\text{ou}\\ x=-9', '\\(6-3x=0\\Longleftrightarrow -3x=-6\\Longleftrightarrow x=2\\).')], R`\(\mathcal{S}=\{-9\,;\,2\}\)`)
+  ] },
+
+{ n: 5, partie: 'B', stars: S2, comp: 'Calculer', rappel: [RAP.pn, RAP.fc, RAP.id],
+  att: R`<p>On ne divise jamais par une expression qui contient \(x\) (elle peut valoir \(0\) : on perdrait une solution). On ramène tout dans un membre et on factorise.</p><p>Facteur caché : \(x^2-9=(x-3)(x+3)\), \(2x+2=2(x+1)\)…</p>`,
+  enonce: '<p>Factoriser, puis résoudre les équations suivantes. <i>Selon les cas : facteur commun, identité remarquable… ou facteur commun caché !</i></p>',
+  main: [
+    prodNul('x^2+5x=0', [E('x(x+5)=0', 'Facteur commun \\(x\\).')], 'x', 'x+5', [E(EQV + 'x=0\\ \\text{ou}\\ x=-5')], R`\(\mathcal{S}=\{-5\,;\,0\}\)`),
+    prodNul('x^2-49=0', [E('x^2-7^2=0', 'Forme \\(a^2-b^2\\).'), E(EQV + '(x-7)(x+7)=0')], 'x-7', 'x+7', [E(EQV + 'x=7\\ \\text{ou}\\ x=-7')], R`\(\mathcal{S}=\{-7\,;\,7\}\)`),
+    prodNul('3x^2=12x', [E('3x^2-12x=0', 'On ramène tout dans le membre de gauche.'), E(EQV + '3x(x-4)=0', 'Facteur commun \\(3x\\).')], 'x', 'x-4', [E(EQV + 'x=0\\ \\text{ou}\\ x=4')], R`\(\mathcal{S}=\{0\,;\,4\}\)`, [],
+    ),
+    { q: R`\(x^2-6x+9=0\)`, res: R`\(\mathcal{S}=\{3\}\)`,
+      steps: [E('(x-3)^2=0', 'Forme \\(a^2-2ab+b^2\\) avec \\(a=x\\), \\(b=3\\) : \\(2\\times x\\times3=6x\\).'), E(EQV + 'x-3=0'), E(EQV + 'x=3'), C('une seule solution, \\(3\\).')] },
+    prodNul('(x+1)(2x-3)+(x+1)(x+4)=0', [E('(x+1)\\big[(2x-3)+(x+4)\\big]=0', 'Facteur commun \\(x+1\\).'), E(EQV + '(x+1)(3x+1)=0', 'On réduit le crochet.')], 'x+1', '3x+1', [E(EQV + 'x=-1\\ \\text{ou}\\ x=-\\dfrac{1}{3}')], R`\(\mathcal{S}=\left\{-1\,;\,-\frac{1}{3}\right\}\)`),
+    prodNul('9x^2-25=0', [E('(3x)^2-5^2=0', 'Forme \\(a^2-b^2\\) avec \\(a=3x\\) et \\(b=5\\).'), E(EQV + '(3x-5)(3x+5)=0')], '3x-5', '3x+5', [E(EQV + 'x=\\dfrac{5}{3}\\ \\text{ou}\\ x=-\\dfrac{5}{3}')], R`\(\mathcal{S}=\left\{-\frac{5}{3}\,;\,\frac{5}{3}\right\}\)`),
+    { q: R`\(x^3-4x=0\) <i>(trois solutions)</i>`, res: R`\(\mathcal{S}=\{-2\,;\,0\,;\,2\}\)`,
+      steps: [E('x(x^2-4)=0', 'Facteur commun \\(x\\).'), E(EQV + 'x(x-2)(x+2)=0', 'On factorise encore \\(x^2-4=x^2-2^2\\).'), E(EQV + 'x=0\\ \\text{ou}\\ x-2=0\\ \\text{ou}\\ x+2=0', 'Produit nul, avec trois facteurs.'), C('les solutions sont \\(-2\\), \\(0\\) et \\(2\\).')] },
+    prodNul('(x+2)^2-16=0', [E('(x+2)^2-4^2=0', 'Forme \\(a^2-b^2\\) avec \\(a=x+2\\) et \\(b=4\\).'), E(EQV + '(x+2-4)(x+2+4)=0'), E(EQV + '(x-2)(x+6)=0')], 'x-2', 'x+6', [E(EQV + 'x=2\\ \\text{ou}\\ x=-6')], R`\(\mathcal{S}=\{-6\,;\,2\}\)`),
+    prodNul('5x(x-1)=2(x-1)', [E('5x(x-1)-2(x-1)=0', 'On ramène tout à gauche (surtout pas de division par \\(x-1\\) !).'), E(EQV + '(x-1)(5x-2)=0', 'Facteur commun \\(x-1\\).')], 'x-1', '5x-2', [E(EQV + 'x=1\\ \\text{ou}\\ x=\\dfrac{2}{5}')], R`\(\mathcal{S}=\left\{\frac{2}{5}\,;\,1\right\}\)`, [],
+    ),
+    { q: R`\(4x^2+20x+25=0\)`, res: R`\(\mathcal{S}=\left\{-\frac{5}{2}\right\}\)`,
+      steps: [E('(2x+5)^2=0', 'Forme \\(a^2+2ab+b^2\\) avec \\(a=2x\\), \\(b=5\\) : \\(2\\times2x\\times5=20x\\).'), E(EQV + '2x+5=0'), E(EQV + 'x=-\\dfrac{5}{2}'), C('une seule solution, \\(-\\dfrac{5}{2}\\).')] },
+    prodNul('(2x-1)(x+3)-(2x-1)(4x-5)=0', [E('(2x-1)\\big[(x+3)-(4x-5)\\big]=0', 'Facteur commun \\(2x-1\\).'), E(EQV + '(2x-1)(x+3-4x+5)=0', 'Le signe « \\(-\\) » devant la parenthèse change tous les signes.'), E(EQV + '(2x-1)(-3x+8)=0')], '2x-1', '-3x+8', [E(EQV + 'x=\\dfrac{1}{2}\\ \\text{ou}\\ x=\\dfrac{8}{3}')], R`\(\mathcal{S}=\left\{\frac{1}{2}\,;\,\frac{8}{3}\right\}\)`),
+    prodNul('(x+1)^2=2x+2', [E('(x+1)^2-2(x+1)=0', 'Facteur caché : \\(2x+2=2(x+1)\\). On ramène tout à gauche.'), E(EQV + '(x+1)\\big[(x+1)-2\\big]=0', 'Facteur commun \\(x+1\\).'), E(EQV + '(x+1)(x-1)=0')], 'x+1', 'x-1', [E(EQV + 'x=-1\\ \\text{ou}\\ x=1')], R`\(\mathcal{S}=\{-1\,;\,1\}\)`),
+    prodNul('16-(3x+1)^2=0', [E('4^2-(3x+1)^2=0', 'Forme \\(a^2-b^2\\) avec \\(a=4\\) et \\(b=3x+1\\).'), E(EQV + '\\big[4-(3x+1)\\big]\\big[4+(3x+1)\\big]=0'), E(EQV + '(3-3x)(3x+5)=0')], '3-3x', '3x+5', [E(EQV + 'x=1\\ \\text{ou}\\ x=-\\dfrac{5}{3}')], R`\(\mathcal{S}=\left\{-\frac{5}{3}\,;\,1\right\}\)`),
+    prodNul('(x-2)^2+(x-2)(3x+1)=0', [E('(x-2)\\big[(x-2)+(3x+1)\\big]=0', 'Facteur commun \\(x-2\\) : \\((x-2)^2=(x-2)(x-2)\\).'), E(EQV + '(x-2)(4x-1)=0')], 'x-2', '4x-1', [E(EQV + 'x=2\\ \\text{ou}\\ x=\\dfrac{1}{4}')], R`\(\mathcal{S}=\left\{\frac{1}{4}\,;\,2\right\}\)`),
+    prodNul('x^2-10x+25=3(x-5)', [E('(x-5)^2=3(x-5)', 'Facteur caché : \\(x^2-10x+25=(x-5)^2\\).'), E(EQV + '(x-5)^2-3(x-5)=0'), E(EQV + '(x-5)\\big[(x-5)-3\\big]=0'), E(EQV + '(x-5)(x-8)=0')], 'x-5', 'x-8', [E(EQV + 'x=5\\ \\text{ou}\\ x=8')], R`\(\mathcal{S}=\{5\,;\,8\}\)`),
+    prodNul('(2x-1)^2=(x+3)^2', [E('(2x-1)^2-(x+3)^2=0', 'On ramène tout à gauche : forme \\(a^2-b^2\\).'), E(EQV + '\\big[(2x-1)-(x+3)\\big]\\big[(2x-1)+(x+3)\\big]=0'), E(EQV + '(x-4)(3x+2)=0')], 'x-4', '3x+2', [E(EQV + 'x=4\\ \\text{ou}\\ x=-\\dfrac{2}{3}')], R`\(\mathcal{S}=\left\{-\frac{2}{3}\,;\,4\right\}\)`),
+    prodNul('(3x+1)(x-5)=(3x+1)(2x+7)', [E('(3x+1)(x-5)-(3x+1)(2x+7)=0', 'On ramène tout à gauche.'), E(EQV + '(3x+1)\\big[(x-5)-(2x+7)\\big]=0'), E(EQV + '(3x+1)(-x-12)=0')], '3x+1', '-x-12', [E(EQV + 'x=-\\dfrac{1}{3}\\ \\text{ou}\\ x=-12')], R`\(\mathcal{S}=\left\{-12\,;\,-\frac{1}{3}\right\}\)`),
+    prodNul('(x-3)(2x+1)+x^2-9=0', [E('(x-3)(2x+1)+(x-3)(x+3)=0', 'Facteur caché : \\(x^2-9=(x-3)(x+3)\\).'), E(EQV + '(x-3)\\big[(2x+1)+(x+3)\\big]=0'), E(EQV + '(x-3)(3x+4)=0')], 'x-3', '3x+4', [E(EQV + 'x=3\\ \\text{ou}\\ x=-\\dfrac{4}{3}')], R`\(\mathcal{S}=\left\{-\frac{4}{3}\,;\,3\right\}\)`),
+    prodNul('(4x-3)^2-(4x-3)=0', [E('(4x-3)\\big[(4x-3)-1\\big]=0', 'Facteur commun \\(4x-3\\) : \\((4x-3)=(4x-3)\\times1\\).'), E(EQV + '(4x-3)(4x-4)=0')], '4x-3', '4x-4', [E(EQV + 'x=\\dfrac{3}{4}\\ \\text{ou}\\ x=1')], R`\(\mathcal{S}=\left\{\frac{3}{4}\,;\,1\right\}\)`),
+    prodNul('4x^2-1-(2x+1)(x-5)=0', [E('(2x-1)(2x+1)-(2x+1)(x-5)=0', 'Facteur caché : \\(4x^2-1=(2x)^2-1^2=(2x-1)(2x+1)\\).'), E(EQV + '(2x+1)\\big[(2x-1)-(x-5)\\big]=0'), E(EQV + '(2x+1)(x+4)=0')], '2x+1', 'x+4', [E(EQV + 'x=-\\dfrac{1}{2}\\ \\text{ou}\\ x=-4')], R`\(\mathcal{S}=\left\{-4\,;\,-\frac{1}{2}\right\}\)`),
+    prodNul('(5x-2)(x+4)=25x^2-4', [E('(5x-2)(x+4)-(5x-2)(5x+2)=0', 'Facteur caché : \\(25x^2-4=(5x-2)(5x+2)\\). On ramène tout à gauche.'), E(EQV + '(5x-2)\\big[(x+4)-(5x+2)\\big]=0'), E(EQV + '(5x-2)(-4x+2)=0')], '5x-2', '-4x+2', [E(EQV + 'x=\\dfrac{2}{5}\\ \\text{ou}\\ x=\\dfrac{1}{2}')], R`\(\mathcal{S}=\left\{\frac{2}{5}\,;\,\frac{1}{2}\right\}\)`),
+    { q: R`\(x^2+9=0\) ?`, res: 'aucune solution',
+      steps: [H('Un carré est toujours positif : \\(x^2\\geq0\\), donc \\(x^2+9\\geq9>0\\).'), C('\\(x^2+9\\) ne vaut jamais \\(0\\) : l’équation <b>n’a pas de solution</b>.')],
+      piege: 'Écrire \\(x^2+9=(x-3)(x+3)\\) : c’est \\(x^2-9\\). Une <b>somme</b> de deux carrés ne se factorise pas.' }
+  ] },
+
+{ n: 6, partie: 'C', stars: S2, comp: 'Modéliser', rappel: [RAP.meth, RAP.pn],
+  att: R`<p>« Trouver <b>tous</b> les nombres » : une équation avec \(x^2\) peut avoir deux solutions. Ne divisez pas par \(x\) !</p>`,
+  enonce: '<p>Pour chaque phrase, on note \\(x\\) le nombre cherché. Traduire la phrase par une équation, puis trouver <b>tous</b> les nombres qui conviennent.</p>',
+  main: [
+    { q: 'Le carré d’un nombre est égal à son quintuple.', res: '\\(0\\) et \\(5\\)',
+      steps: [E('x^2=5x'), E(EQV + 'x^2-5x=0'), E(EQV + 'x(x-5)=0'), E(EQV + 'x=0\\ \\text{ou}\\ x=5'), C('les nombres \\(0\\) et \\(5\\).')] },
+    { q: 'Un nombre est égal à son carré.', res: '\\(0\\) et \\(1\\)',
+      steps: [E('x=x^2'), E(EQV + 'x^2-x=0'), E(EQV + 'x(x-1)=0'), E(EQV + 'x=0\\ \\text{ou}\\ x=1'), C('les nombres \\(0\\) et \\(1\\).')] },
+    { q: 'Le carré de la somme d’un nombre et de \\(1\\) est égal à \\(36\\).', res: '\\(-7\\) et \\(5\\)',
+      steps: [E('(x+1)^2=36', '« La somme d’un nombre et de 1 » : \\(x+1\\) ; on en prend le carré.'), E(EQV + '(x+1)^2-6^2=0'), E(EQV + '(x+1-6)(x+1+6)=0'), E(EQV + '(x-5)(x+7)=0'), E(EQV + 'x=5\\ \\text{ou}\\ x=-7'), C('les nombres \\(-7\\) et \\(5\\).')],
+      piege: 'Oublier la solution négative : \\((-7+1)^2=(-6)^2=36\\) aussi.' },
+    { q: 'Le produit d’un nombre par le nombre qui le suit est égal au triple du nombre qui le suit.', res: '\\(-1\\) et \\(3\\)',
+      steps: [E('x(x+1)=3(x+1)', 'Le nombre qui suit \\(x\\) est \\(x+1\\).'), E(EQV + 'x(x+1)-3(x+1)=0'), E(EQV + '(x+1)(x-3)=0', 'Facteur commun \\(x+1\\).'), E(EQV + 'x=-1\\ \\text{ou}\\ x=3'), C('les nombres \\(-1\\) et \\(3\\).')] }
+  ] },
+
+{ n: 7, partie: 'C', stars: S2, comp: 'Modéliser', rappel: [RAP.id, RAP.pn],
+  att: R`<p>« Soustraire 9 » se fait <b>après</b> avoir élevé au carré : \((x+4)^2-9\), et non \((x+4-9)^2\).</p>`,
+  enonce: '<p>On considère les deux programmes de calcul suivants.</p><div class="progs"><div class="prog"><b>Programme A</b><div>Choisir un nombre.<br>Lui ajouter 4.<br>Élever le résultat au carré.<br>Soustraire 9.</div></div><div class="prog"><b>Programme B</b><div>Choisir un nombre.<br>Le multiplier par lui-même.<br>Ajouter 8 fois le nombre de départ.</div></div></div>',
+  main: [
+    { q: 'Calculer le résultat du programme A lorsqu’on choisit \\(1\\), puis \\(-1\\).', res: '\\(16\\) et \\(0\\)',
+      steps: [H('Avec \\(1\\) : \\(1+4=5\\), \\(5^2=25\\), \\(25-9=16\\).'), H('Avec \\(-1\\) : \\(-1+4=3\\), \\(3^2=9\\), \\(9-9=0\\).')] },
+    { q: 'Exprimer en fonction de \\(x\\) le résultat de chaque programme.', res: 'A : \\((x+4)^2-9\\) ; B : \\(x^2+8x\\)',
+      steps: [H('Programme A : \\(x\\to x+4\\to (x+4)^2\\to (x+4)^2-9\\).'), H('Programme B : \\(x\\to x\\times x=x^2\\to x^2+8x\\).')] },
+    { q: 'Montrer que le résultat du programme A peut s’écrire \\((x+1)(x+7)\\).', res: 'voir la correction détaillée',
+      steps: [E('(x+4)^2-9=(x+4)^2-3^2', 'Forme \\(a^2-b^2\\) avec \\(a=x+4\\) et \\(b=3\\).'), E('=(x+4-3)(x+4+3)'), E('=(x+1)(x+7)')] },
+    { q: 'Quels nombres faut-il choisir pour obtenir \\(0\\) avec le programme A ?', res: '\\(-1\\) et \\(-7\\)',
+      steps: [E('(x+1)(x+7)=0', 'On utilise la forme factorisée.'), E(EQV + 'x=-1\\ \\text{ou}\\ x=-7'), C('il faut choisir \\(-1\\) ou \\(-7\\) (on retrouve \\(-1\\) de la question 1).')] },
+    { q: 'Quels nombres faut-il choisir pour que le programme A donne le même résultat que le programme B ? Expliquer.', res: 'aucun',
+      steps: [E('(x+4)^2-9=x^2+8x+16-9=x^2+8x+7', 'On développe le résultat de A.'), E('x^2+8x+7=x^2+8x\\ ' + EQV + '7=0', 'On écrit \\(A=B\\) et on soustrait \\(x^2+8x\\).'),
+        C('\\(7=0\\) est faux : <b>aucun nombre</b> ne convient. Le programme A donne toujours \\(7\\) de plus que le programme B.')] }
+  ] },
+
+{ n: 8, partie: 'C', stars: S2, comp: 'Représenter', rappel: [RAP.fc, RAP.meth],
+  att: R`<p>Une longueur est positive : on élimine les solutions qui ne conviennent pas au problème.</p>`,
+  enonce: `<p>On considère un rectangle de dimensions \\(2x+1\\) et \\(x+3\\), et un carré de côté \\(2x+1\\) (en cm), où \\(x>0\\).</p><div class="efig">${_figRectCarre}</div>`,
+  main: [
+    { q: 'Exprimer en fonction de \\(x\\) l’aire de chacune des deux figures.', res: 'Rectangle : \\((2x+1)(x+3)\\) ; carré : \\((2x+1)^2\\)',
+      steps: [H('Aire du rectangle : longueur × largeur \\(=(2x+1)(x+3)\\).'), H('Aire du carré : côté² \\(=(2x+1)^2\\).')] },
+    { q: 'Montrer que les deux aires sont égales lorsque \\((2x+1)(2-x)=0\\).', res: 'voir la correction détaillée',
+      steps: [E('(2x+1)(x+3)=(2x+1)^2'), E(EQV + '(2x+1)(x+3)-(2x+1)^2=0', 'On ramène tout à gauche.'), E(EQV + '(2x+1)\\big[(x+3)-(2x+1)\\big]=0', 'Facteur commun \\(2x+1\\).'), E(EQV + '(2x+1)(2-x)=0')] },
+    { q: 'En déduire la valeur de \\(x\\). Pourquoi l’une des solutions ne convient-elle pas ?', res: '\\(x=2\\)',
+      steps: [E('2x+1=0\\ \\text{ou}\\ 2-x=0\\ ' + EQV + 'x=-\\dfrac{1}{2}\\ \\text{ou}\\ x=2'), H('\\(x>0\\) : la solution \\(-\\dfrac{1}{2}\\) ne convient pas (le côté \\(2x+1\\) vaudrait \\(0\\)).'),
+        C('les aires sont égales pour \\(x=2\\) : le rectangle mesure \\(5\\times5\\), son aire vaut \\(25\\) cm², comme le carré.')] }
+  ] },
+
+{ n: 9, partie: 'C', stars: S3, comp: 'Chercher', rappel: [RAP.pyth, RAP.id, RAP.pn],
+  att: R`<p>L’hypoténuse est le <b>plus grand</b> côté : ici \(x+2\).</p>`,
+  enonce: `<p>On cherche un triangle rectangle dont les longueurs des trois côtés sont trois nombres entiers consécutifs \\(x\\), \\(x+1\\) et \\(x+2\\).</p><div class="efig">${figTriangle}</div>`,
+  main: [
+    { q: 'Grâce au théorème de Pythagore, montrer que \\(x^2-2x-3=0\\).', res: 'voir la correction détaillée',
+      steps: [E('(x+2)^2=x^2+(x+1)^2', 'Pythagore : hypoténuse² = somme des carrés des deux autres côtés.'), E(EQV + 'x^2+4x+4=x^2+x^2+2x+1', 'On développe avec les identités remarquables.'), E(EQV + '0=x^2-2x-3', 'On soustrait \\(x^2+4x+4\\) aux deux membres.')] },
+    { q: 'Vérifier que \\(x^2-2x-3=(x-1)^2-4\\), puis factoriser.', res: '\\((x-3)(x+1)\\)',
+      steps: [E('(x-1)^2-4=x^2-2x+1-4=x^2-2x-3'), E('(x-1)^2-2^2=(x-1-2)(x-1+2)=(x-3)(x+1)', 'Forme \\(a^2-b^2\\).')] },
+    { q: 'Conclure : quelles sont les longueurs des côtés ?', res: '\\(3\\), \\(4\\) et \\(5\\)',
+      steps: [E('(x-3)(x+1)=0\\ ' + EQV + 'x=3\\ \\text{ou}\\ x=-1'), H('Une longueur est positive : \\(x=3\\).'), C('les côtés mesurent \\(3\\), \\(4\\) et \\(5\\) ; et \\(3^2+4^2=9+16=25=5^2\\).')] }
+  ] },
+
+{ n: 10, partie: 'C', stars: S3, comp: 'Chercher', rappel: [RAP.meth, RAP.id, RAP.pn],
+  att: R`<p>Le grand carré a pour côté \(10+2x\) : le cadre est des <b>deux</b> côtés de la photo.</p>`,
+  enonce: `<p><i>Question ouverte.</i> Une photo carrée de 10 cm de côté est entourée d’un cadre de largeur constante. Quelle doit être la largeur du cadre pour que son aire soit égale à 44 cm² ?</p><div class="efig">${figCadre}</div>`,
+  main: [
+    { q: 'Largeur du cadre', res: '\\(1\\) cm',
+      steps: [H('On note \\(x\\) la largeur du cadre (\\(x>0\\)). Le grand carré (photo + cadre) a pour côté \\(10+2x\\).'),
+        H('Aire du cadre = aire du grand carré − aire de la photo \\(=(10+2x)^2-10^2\\).'),
+        E('(10+2x)^2-100=44'), E(EQV + '(10+2x)^2-144=0', 'On soustrait \\(44\\) : \\(100+44=144=12^2\\).'),
+        E(EQV + '(10+2x-12)(10+2x+12)=0', 'Forme \\(a^2-b^2\\).'), E(EQV + '(2x-2)(2x+22)=0'), E(EQV + 'x=1\\ \\text{ou}\\ x=-11'),
+        C('\\(x>0\\), donc le cadre doit avoir une largeur de \\(1\\) cm (et \\(12^2-10^2=144-100=44\\)).')],
+      piege: 'Prendre \\(10+x\\) pour côté du grand carré : le cadre ajoute \\(x\\) de chaque côté.' }
+  ] },
+
+{ n: 11, partie: 'D', stars: S2, comp: 'Calculer', rappel: [RAP.id, RAP.ineq],
+  att: R`<p>Développer avec soin, y compris le signe « \(-\) » devant une parenthèse : \(-(x+2)^2=-(x^2+4x+4)\).</p>`,
+  enonce: '<p>Résoudre les inéquations suivantes, puis représenter leurs solutions sur une droite.</p>',
+  main: [
+    { q: R`\(3(2x-1)-4(x+2)\geq 5-(x-7)\)`, res: R`\(x\geq\dfrac{23}{3}\)`,
+      steps: [E('6x-3-4x-8\\geq 5-x+7', 'On développe.'), E(EQV + '2x-11\\geq 12-x', 'On réduit.'), E(EQV + '3x\\geq 23'), E(EQV + 'x\\geq\\dfrac{23}{3}'), droite([{ v: '23/3' }], 'd')] },
+    { q: R`\((x+3)^2\leq(x-1)(x+5)\)`, res: R`\(x\leq -7\)`,
+      steps: [E('x^2+6x+9\\leq x^2+4x-5', 'On développe les deux membres.'), E(EQV + '6x+9\\leq 4x-5', 'On soustrait \\(x^2\\) : les \\(x^2\\) disparaissent.'), E(EQV + '2x\\leq -14'), E(EQV + 'x\\leq -7'), droite([{ v: '−7' }], 'g')] },
+    { q: R`\((x-4)(x+4)\geq(x-2)^2\)`, res: R`\(x\geq 5\)`,
+      steps: [E('x^2-16\\geq x^2-4x+4'), E(EQV + '-16\\geq -4x+4'), E(EQV + '4x\\geq 20'), E(EQV + 'x\\geq 5'), droite([{ v: '5' }], 'd')] },
+    { q: R`\((2x-1)^2-4x(x+2)>3\)`, res: R`\(x<-\dfrac{1}{6}\)`,
+      steps: [E('4x^2-4x+1-4x^2-8x>3', 'On développe.'), E(EQV + '-12x+1>3'), E(EQV + '-12x>2'), E(EQV + 'x<-\\dfrac{1}{6}', 'On divise par \\(-12\\), qui est <b>négatif</b> : on <b>change le sens</b>.'), droite([{ v: '−1/6', ouvert: true }], 'g')] },
+    { q: R`\((3x+2)^2-(3x-2)^2\leq 12x+12\)`, res: R`\(x\leq 1\)`,
+      steps: [E('(9x^2+12x+4)-(9x^2-12x+4)\\leq 12x+12'), E(EQV + '24x\\leq 12x+12'), E(EQV + '12x\\leq 12'), E(EQV + 'x\\leq 1'), droite([{ v: '1' }], 'g')] },
+    { q: R`\(x(x+6)-(x+2)^2<3(x-3)\)`, res: R`\(x>5\)`,
+      steps: [E('x^2+6x-(x^2+4x+4)<3x-9'), E(EQV + '2x-4<3x-9'), E(EQV + '-x<-5'), E(EQV + 'x>5', 'On divise par \\(-1\\) : on change le sens.'), droite([{ v: '5', ouvert: true }], 'd')] }
+  ] },
+
+{ n: 12, partie: 'D', stars: S2, comp: 'Calculer', rappel: [RAP.frac, RAP.ineq],
+  att: R`<p>Multiplier par un dénominateur commun <b>positif</b> ne change pas le sens, même si une fraction a un dénominateur négatif.</p>`,
+  enonce: '<p><b>Avec des fractions.</b> Résoudre les inéquations suivantes.</p>',
+  main: [
+    { q: R`\(\dfrac{x}{3}-\dfrac{x-1}{2}<1\)`, res: R`\(x>-3\)`,
+      steps: [E('2x-3(x-1)<6', 'On multiplie par \\(6\\).'), E(EQV + '-x+3<6'), E(EQV + '-x<3'), E(EQV + 'x>-3', 'On divise par \\(-1\\) : on change le sens.')] },
+    { q: R`\(\dfrac{3x-2}{4}\geq\dfrac{x}{2}+\dfrac{1}{3}\)`, res: R`\(x\geq\dfrac{10}{3}\)`,
+      steps: [E('3(3x-2)\\geq 6x+4', 'On multiplie par \\(12\\).'), E(EQV + '9x-6\\geq 6x+4'), E(EQV + '3x\\geq 10'), E(EQV + 'x\\geq\\dfrac{10}{3}')] },
+    { q: R`\(\dfrac{1-2x}{5}>\dfrac{x+3}{-2}\)`, res: R`\(x>-17\)`,
+      steps: [E('2(1-2x)>-5(x+3)', 'On multiplie par \\(10>0\\) : \\(10\\times\\dfrac{x+3}{-2}=-5(x+3)\\).'), E(EQV + '2-4x>-5x-15'), E(EQV + 'x>-17')] }
+  ] },
+
+{ n: 13, partie: 'D', stars: S3, comp: 'Raisonner', rappel: [RAP.ineq],
+  att: R`<p>Quand les \(x\) disparaissent, on regarde si l’inégalité obtenue est vraie ou fausse.</p>`,
+  enonce: '<p><b>Que remarque-t-on ?</b> Résoudre les inéquations suivantes.</p>',
+  main: [
+    { q: R`\(\dfrac{2x+1}{4}-\dfrac{x-3}{6}\geq\dfrac{x}{3}\)`, res: 'tous les réels',
+      steps: [E('3(2x+1)-2(x-3)\\geq 4x', 'On multiplie par \\(12\\).'), E(EQV + '4x+9\\geq 4x'), E(EQV + '9\\geq 0'), C('toujours vrai : <b>tous les réels</b> sont solutions.')] },
+    { q: R`\(2(x-1)-3(1-x)<5x-6\)`, res: 'aucune solution',
+      steps: [E('2x-2-3+3x<5x-6'), E(EQV + '5x-5<5x-6'), E(EQV + '-5<-6'), C('toujours faux : <b>aucune solution</b>.')] },
+    { q: R`\((x+1)^2-(x-1)^2>4x-1\)`, res: 'tous les réels',
+      steps: [E('(x^2+2x+1)-(x^2-2x+1)>4x-1'), E(EQV + '4x>4x-1'), E(EQV + '0>-1'), C('toujours vrai : <b>tous les réels</b> sont solutions.')] }
+  ] },
+
+{ n: 14, partie: 'D', stars: S3, comp: 'Raisonner', rappel: [RAP.ineq],
+  att: R`<p>Dans une double inégalité, on fait la même opération sur les <b>trois</b> membres ; si on divise par un négatif, les <b>deux</b> sens changent.</p>`,
+  enonce: '<p><b>Plusieurs conditions à la fois.</b> Déterminer les réels \\(x\\) qui vérifient les conditions suivantes, puis représenter les solutions sur une droite.</p>',
+  main: [
+    { q: R`\(-3<2x+1\leq 7\)`, res: R`\(-2<x\leq 3\)`,
+      steps: [E('-4<2x\\leq 6', 'On soustrait \\(1\\) aux trois membres.'), E(EQV + '-2<x\\leq 3', 'On divise par \\(2\\).'), droite([{ v: '−2', ouvert: true }, { v: '3' }], 'entre')] },
+    { q: R`\(1\leq 5-2x<9\)`, res: R`\(-2<x\leq 2\)`,
+      steps: [E('-4\\leq -2x<4', 'On soustrait \\(5\\).'), E(EQV + '2\\geq x>-2', 'On divise par \\(-2\\) : les deux sens changent.'), E(EQV + '-2<x\\leq 2', 'On relit de gauche à droite.'), droite([{ v: '−2', ouvert: true }, { v: '2' }], 'entre')] },
+    { q: R`\(2x-3>1\) et \(5-x\geq 1\)`, res: R`\(2<x\leq 4\)`,
+      steps: [E('2x-3>1\\ ' + EQV + 'x>2'), E('5-x\\geq 1\\ ' + EQV + '-x\\geq -4\\ ' + EQV + 'x\\leq 4'), C('les deux conditions : \\(2<x\\leq 4\\).'), droite([{ v: '2', ouvert: true }, { v: '4' }], 'entre')] },
+    { q: R`\(3x-1<x+5\) et \(4x+2\geq 6x-8\)`, res: R`\(x<3\)`,
+      steps: [E('3x-1<x+5\\ ' + EQV + '2x<6\\ ' + EQV + 'x<3'), E('4x+2\\geq 6x-8\\ ' + EQV + '-2x\\geq -10\\ ' + EQV + 'x\\leq 5'),
+        C('un nombre strictement inférieur à \\(3\\) est aussi inférieur à \\(5\\) : les solutions sont \\(x<3\\).'), droite([{ v: '3', ouvert: true }], 'g')] }
+  ] },
+
+{ n: 15, partie: 'D', stars: S3, comp: 'Chercher', rappel: [RAP.param, RAP.ineq],
+  att: R`<p>Le sens de l’inégalité dépend du <b>signe</b> du nombre par lequel on divise : ici \(m-3\).</p>`,
+  enonce: '<p>Soit \\(m\\) un nombre réel. On considère l’inéquation d’inconnue \\(x\\) : \\((I_m)\\ :\\ mx+2>3x-1\\).</p>',
+  main: [
+    { q: 'Résoudre \\((I_m)\\) pour \\(m=5\\), puis pour \\(m=1\\). Pourquoi le sens ne se comporte-t-il pas de la même façon ?', res: '\\(x>-\\dfrac{3}{2}\\) ; \\(x<\\dfrac{3}{2}\\)',
+      steps: [E('5x+2>3x-1\\ ' + EQV + '2x>-3\\ ' + EQV + 'x>-\\dfrac{3}{2}', 'Pour \\(m=5\\) : on divise par \\(2>0\\), le sens ne change pas.'),
+        E('x+2>3x-1\\ ' + EQV + '-2x>-3\\ ' + EQV + 'x<\\dfrac{3}{2}', 'Pour \\(m=1\\) : on divise par \\(-2<0\\), le sens change.')] },
+    { q: 'Résoudre \\((I_m)\\) pour \\(m=3\\). Que remarque-t-on ?', res: 'tous les réels',
+      steps: [E('3x+2>3x-1\\ ' + EQV + '2>-1'), C('toujours vrai : <b>tous les réels</b> sont solutions.')] },
+    { q: 'Pour quelles valeurs de \\(m\\) le nombre \\(1\\) est-il solution de \\((I_m)\\) ?', res: '\\(m>0\\)',
+      steps: [E('m\\times1+2>3\\times1-1', 'On remplace \\(x\\) par \\(1\\).'), E(EQV + 'm+2>2'), E(EQV + 'm>0')] }
+  ] },
+
+{ n: 16, partie: 'D', stars: S3, comp: 'Modéliser', rappel: [RAP.id, RAP.ineq],
+  att: R`<p>« Supérieure ou égale » : \(\geq\). Et \(x\) est une longueur, donc \(x>0\).</p>`,
+  enonce: '<p><i>Question ouverte.</i> On considère un carré de côté \\(x+2\\) et un rectangle de dimensions \\(x\\) et \\(x+5\\) (en cm), où \\(x>0\\). Pour quelles valeurs de \\(x\\) l’aire du carré est-elle supérieure ou égale à celle du rectangle ?</p>',
+  main: [
+    { q: 'Valeurs de \\(x\\)', res: '\\(0<x\\leq 4\\)',
+      steps: [H('Aire du carré : \\((x+2)^2\\) ; aire du rectangle : \\(x(x+5)\\).'), E('(x+2)^2\\geq x(x+5)'), E(EQV + 'x^2+4x+4\\geq x^2+5x'), E(EQV + '4\\geq x'),
+        C('comme \\(x>0\\) : pour \\(x\\) compris entre \\(0\\) (exclu) et \\(4\\) (inclus). Pour \\(x=4\\), les aires sont égales : \\(6^2=36=4\\times9\\).')] }
+  ] }
+];
+
+
+/* Feuille allégée : exercice 5 réduit à 12 équations ; retirés : rectangle et carré, « Que remarque-t-on ? » */
+{ const e5 = EX.find(e => e.n === 5); e5.main = [0, 1, 2, 3, 4, 7, 8, 6, 15, 11, 17, 21].map(i => e5.main[i]); }
+EX.splice(EX.findIndex(e => e.n === 13), 1);
+EX.splice(EX.findIndex(e => e.n === 8), 1);
+EX.forEach((e, i) => { e.n = i + 1; });
+
+/* =====================================================================
+   Affichage
+   ===================================================================== */
+function typeset(el) { if (window.MathJax && MathJax.typesetPromise) MathJax.startup.promise.then(() => MathJax.typesetPromise([el])).catch(() => {}); }
+
+function itemHTML(it, id, k) {
+  return `<div class="item" data-id="${id}">
+    <div class="row"><span class="q txt"><span class="nl">${k}</span>${it.q}</span><button type="button" class="btn sm" data-open>Correction détaillée</button></div>
+    <div class="resline">Réponse : <span class="res">${it.res}</span></div>
+    <div class="corr" hidden><ol class="steps"></ol>
+      <div class="step-ctrl"><button type="button" class="btn solid sm" data-next>Étape suivante</button><button type="button" class="btn ghost sm" data-all>Tout afficher</button><button type="button" class="btn ghost sm" data-reset hidden>Recommencer</button></div>
+      <div class="end" hidden><div class="concl">Réponse : ${it.res}</div>${it.piege ? `<div class="piege" style="margin-top:8px"><b>Erreur à éviter :</b> ${it.piege}</div>` : ''}</div>
+    </div></div>`;
+}
+function stepHTML(st, k) {
+  let inner = '';
+  if (st.e) inner += `<div class="m">\\[${st.e}\\]</div>`;
+  if (st.h) inner += `<div class="h">${st.h}</div>`;
+  if (st.x) inner += `<div class="x">${st.x}</div>`;
+  return `<span class="n">${k}</span><div>${inner}</div>`;
+}
+function wireItem(el, it) {
+  const corr = $('.corr', el), ol = $('.steps', corr), end = $('.end', corr);
+  const bN = $('[data-next]', corr), bA = $('[data-all]', corr), bR = $('[data-reset]', corr);
+  let k = 0;
+  const add = () => { const li = document.createElement('li'); li.className = 'step'; li.innerHTML = stepHTML(it.steps[k], k + 1); k++; ol.appendChild(li); typeset(li); };
+  const sync = () => { const fin = k >= it.steps.length; bN.hidden = fin; bA.hidden = fin; bR.hidden = !fin; end.hidden = !fin; if (fin) typeset(end); };
+  $('[data-open]', el).addEventListener('click', e => {
+    const open = corr.hidden;
+    corr.hidden = !open; el.classList.toggle('open', open);
+    e.currentTarget.textContent = open ? 'Masquer la correction' : 'Correction détaillée';
+    if (open && k === 0) { add(); sync(); }
+  });
+  bN.addEventListener('click', () => { add(); sync(); });
+  bA.addEventListener('click', () => { while (k < it.steps.length) add(); sync(); });
+  bR.addEventListener('click', () => { ol.innerHTML = ''; k = 0; add(); sync(); });
+}
+
+function render(n) {
+  const ex = EX.find(e => e.n === n) || EX[0];
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.n === ex.n));
+  app.innerHTML = `
+    <p class="obj"><b>Partie ${ex.partie} :</b> ${PARTIES[ex.partie]}</p>
+    <article class="exo">
+      <div class="exo-h"><span class="pill">Exercice ${ex.n}</span><span class="stars">${ex.stars}</span><span class="comp">${ex.comp}</span></div>
+      <div class="exo-b">
+        <div class="enonce">${ex.enonce}</div>
+        <div class="tools">
+          <button type="button" class="btn" data-rappel>Rappel</button>
+          <button type="button" class="btn ghost" data-res>Réponses seules</button>
+        </div>
+        <div class="rappel" hidden>${ex.rappel.map(b => `<div><h3>${b.t}</h3>${b.h}</div>`).join('')}<div class="att"><h3>Attention !</h3>${ex.att}</div></div>
+        <div class="sheet"><h2 class="part">Corrigé de la feuille <small>clique sur « Correction détaillée » pour la suivre étape par étape</small></h2>
+          <div class="items">${ex.main.map((it, i) => itemHTML(it, `m${i}`, ex.main.length > 1 ? i + 1 : '?')).join('')}</div></div>
+      </div>
+    </article>
+    <nav class="foot">${ex.n > 1 ? `<button type="button" class="btn ghost" data-go="${ex.n - 1}">← Exercice ${ex.n - 1}</button>` : '<span></span>'}${ex.n < EX.length ? `<button type="button" class="btn ghost" data-go="${ex.n + 1}">Exercice ${ex.n + 1} →</button>` : ''}</nav>`;
+  ex.main.forEach((it, i) => wireItem($(`[data-id="m${i}"]`, app), it));
+  const rap = $('.rappel', app), bRap = $('[data-rappel]', app);
+  bRap.addEventListener('click', () => { rap.hidden = !rap.hidden; bRap.classList.toggle('on', !rap.hidden); if (!rap.hidden) typeset(rap); });
+  const bRes = $('[data-res]', app), body = $('.exo-b', app);
+  bRes.addEventListener('click', () => { body.classList.toggle('showres'); bRes.classList.toggle('on'); });
+  app.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.go; }));
+  typeset(app);
+  window.scrollTo(0, 0);
+}
+nav.innerHTML = EX.map(e => `<button type="button" data-n="${e.n}">Exercice ${e.n}</button>`).join('');
+nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { location.hash = 'ex' + b.dataset.n; }));
+const route = () => render(+(location.hash.match(/^#ex(\d+)$/) || [])[1] || 1);
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>

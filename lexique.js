@@ -5,6 +5,8 @@
    - def   : l'explication, en mots simples ;
    - ex    : un exemple (facultatif) ;
    - astuce: un moyen mnémotechnique (facultatif) ;
+   - si    : (facultatif) pour un mot qui a plusieurs sens : le 📖 d'une question ne propose cette fiche
+             que si l'un de ces mots est aussi dans la question (ex. « image » en géométrie ou pour une fonction) ;
    - voir  : mots proches, écrits exactement comme le « mot » d'une autre fiche (facultatif).
    On peut utiliser <b>gras</b>, <i>italique</i>, et <span class='f'>…</span> pour qu'une formule ne soit pas coupée en fin de ligne. Ne pas oublier la virgule entre deux blocs. */
 window.LEXIQUE = [
@@ -291,24 +293,25 @@ window.LEXIQUE = [
     { mot: "fonction", aussi: ["f(x)"],
       def: "Procédé qui, à chaque nombre x, associe <b>un seul</b> nombre, noté f(x).",
       ex: "f(x) = 2x + 1 : au nombre 3, la fonction f associe f(3) = 2 × 3 + 1 = 7.",
-      voir: ["image", "antécédent", "courbe représentative"] },
+      voir: ["image (fonction)", "antécédent", "courbe représentative"] },
 
-    { mot: "image", aussi: [],
-      def: "L'image de x par f est le nombre f(x) obtenu à partir de x. Chaque nombre a une seule image. Sur la courbe : on part de x sur l'axe horizontal et on lit le résultat sur l'axe vertical. (En géométrie, l'image d'un point par une transformation est le point obtenu après la transformation.)",
+    { mot: "image (fonction)", aussi: ["image", "images", "image fonction", "image par une fonction", "image par f", "image d'un nombre"],
+      si: ["fonction", "f(x)", "courbe", "antécédent", "nombre", "graphique"],
+      def: "L'image de x par f est le nombre f(x) obtenu à partir de x. Chaque nombre a une seule image. Sur la courbe : on part de x sur l'axe horizontal et on lit le résultat sur l'axe vertical. (En géométrie, le mot « image » a un autre sens : voir « image (géométrie) ».)",
       ex: "f(x) = x² : l'image de 3 est f(3) = 9.",
       astuce: "<b>A</b>ntécédent et <b>I</b>mage sont rangés dans l'ordre alphabétique, comme <b>H</b>orizontal et <b>V</b>ertical : sur la courbe, les antécédents se lisent sur l'axe horizontal, les images sur l'axe vertical.",
-      voir: ["antécédent", "fonction", "translation"] },
+      voir: ["antécédent", "fonction", "image (géométrie)"] },
 
     { mot: "antécédent", aussi: [],
       def: "Un antécédent de y par f est un nombre x tel que f(x) = y : on part du résultat pour retrouver le nombre de départ. Un nombre peut avoir aucun, un ou plusieurs antécédents. Sur la courbe : on part de y sur l'axe vertical et on lit sur l'axe horizontal.",
       ex: "f(x) = x² : 9 a deux antécédents, 3 et −3, car f(3) = 9 et f(−3) = 9.",
       astuce: "<b>A</b>ntécédent et <b>I</b>mage sont rangés dans l'ordre alphabétique, comme <b>H</b>orizontal et <b>V</b>ertical : sur la courbe, les antécédents se lisent sur l'axe horizontal, les images sur l'axe vertical.",
-      voir: ["image", "fonction"] },
+      voir: ["image (fonction)", "fonction"] },
 
     { mot: "courbe représentative", aussi: ["courbe", "représentation graphique", "graphique"],
       def: "Ensemble des points de coordonnées (x ; f(x)) : chaque point de la courbe a pour abscisse un nombre x et pour ordonnée son image f(x).",
       ex: "Si le point (2 ; 5) est sur la courbe de f, alors f(2) = 5.",
-      voir: ["image", "abscisse et ordonnée", "résoudre graphiquement"] },
+      voir: ["image (fonction)", "abscisse et ordonnée", "résoudre graphiquement"] },
 
     { mot: "résoudre graphiquement", aussi: ["résolution graphique", "graphiquement"],
       def: "Trouver les solutions en lisant la courbe. Pour f(x) = k : on trace la droite horizontale à la hauteur k et on lit les <b>abscisses</b> des points où elle coupe la courbe. Pour f(x) &gt; k : on lit les abscisses des points de la courbe situés <b>au-dessus</b> de cette droite.",
@@ -343,7 +346,7 @@ window.LEXIQUE = [
     { mot: "fonction inverse", aussi: ["1/x"],
       def: "La fonction qui, à tout nombre x non nul, associe son inverse 1/x. Elle n'est pas définie en 0.",
       ex: "L'image de 4 est 1/4 = 0,25. L'antécédent de 2 est 1/2 = 0,5.",
-      voir: ["inverse", "fonction", "image"] },
+      voir: ["inverse", "fonction", "image (fonction)"] },
 
     { mot: "sens de variation", aussi: ["variation", "croissante", "décroissante", "tableau de variation", "tableau de variations"],
       def: "Une fonction est <b>croissante</b> sur un intervalle si, quand x augmente, f(x) augmente aussi (la courbe « monte »). Elle est <b>décroissante</b> si f(x) diminue (la courbe « descend »).",
@@ -436,9 +439,16 @@ window.LEXIQUE = [
       ex: "Vecteur (3 ; 4) : norme = √(9 + 16) = √25 = 5.",
       voir: ["vecteur", "Pythagore"] },
 
+    { mot: "image (géométrie)", aussi: ["image", "images", "image géométrie", "image d'un point", "image d'une figure", "image par une translation", "image par une transformation", "transformation"],
+      si: ["translation", "symétrie", "symétrique", "rotation", "homothétie", "transformation", "vecteur", "figure", "point", "quadrillage"],
+      def: "En géométrie, l'image d'un point (ou d'une figure) par une <b>transformation</b> (translation, symétrie…) est le point (ou la figure) obtenu <b>après</b> la transformation. On part du point de départ, on applique le déplacement, et on arrive sur son image.",
+      ex: "Par la translation qui transforme A en B, l'image du point A est le point B. Si le déplacement est « 3 carreaux à droite, 1 en haut », l'image de K s'obtient en partant de K et en faisant ce même déplacement.",
+      astuce: "Pense à ton <b>image dans un miroir</b> : toi, tu es le point de départ ; ce que tu vois dans le miroir, c'est ton image, ce qu'on obtient <b>à l'arrivée</b>. En géométrie, c'est pareil : on part d'un point, on applique la transformation (ici le miroir, c'est-à-dire une symétrie), et le point d'arrivée est son image.",
+      voir: ["translation", "symétrique", "vecteur", "image (fonction)"] },
+
     { mot: "translation", aussi: [],
       def: "Transformation qui fait <b>glisser</b> une figure, sans la tourner ni la retourner : tous les points bougent du même déplacement. La translation qui transforme A en B est la translation de vecteur AB.",
-      voir: ["vecteur", "image", "superposable"] },
+      voir: ["vecteur", "image (géométrie)", "superposable"] },
 
     { mot: "symétrique", aussi: ["symétrie"],
       def: "Symétrique d'un point par rapport à un point O : O est le milieu du segment qui les relie. Par rapport à une droite : effet miroir, la droite coupe le segment en son milieu, à angle droit.",
