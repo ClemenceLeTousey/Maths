@@ -148,7 +148,8 @@ window.INTERACTIF_GROUPES = {
     'Série 10 · semaine du 23 au 27 novembre': {},
     'Série 11 · semaine du 30 novembre au 4 décembre': {},
     'Série 8 · semaine du 9 au 13 novembre': {
-        section: 'Anciennes séries', serie: 'Série 8'
+        section: 'Anciennes séries', serie: 'Série 8',
+        texte: '🧾 <a href="../automatismes-seconde/serie8-papier-corrige.pdf" target="_blank" rel="noopener">Corrigé de la série évaluée</a>'
     },
     'Facultatif · Série 8 en temps limité ⏱': {
         section: 'Anciennes séries', serie: 'Série 8'
