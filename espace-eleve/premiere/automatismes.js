@@ -351,3 +351,12 @@
 
     window.AutoP = AutoP;
 })();
+
+// Bouton « 📖 Vocabulaire » dans la barre du haut (vocabulaire.js et lexique.js, à la racine du site)
+(function () {
+    var ici = document.currentScript && document.currentScript.src;
+    if (!ici) return;
+    var s = document.createElement('script');
+    s.src = new URL('../../vocabulaire.js', ici).href;
+    document.head.appendChild(s);
+})();

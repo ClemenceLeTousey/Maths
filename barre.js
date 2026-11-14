@@ -207,4 +207,10 @@
         effets();
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && mode()) { ecrire(CLE_MODE, ''); effets(); } });
     });
+
+
+    /* ---------- Bouton « 📖 Vocabulaire » (vocabulaire.js, mots dans lexique.js) ---------- */
+    var vocab = document.createElement('script');
+    vocab.src = base + 'vocabulaire.js';
+    (document.head || racine).appendChild(vocab);
 })();
