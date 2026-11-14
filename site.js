@@ -777,7 +777,7 @@ document.addEventListener('click', function (e) {
 (function () {
     var script = document.currentScript;
     var base = script ? script.src.replace(/site\.js(\?.*)?$/, '') : '';
-    // Site ouvert comme application installée (écran d'accueil) : pas de lien vers l'espace professeure ni NumWorks
+    // Site ouvert comme application installée (écran d'accueil) : pas de lien vers l'espace professeure, NumWorks ni le tuto d'installation
     var appli = (window.matchMedia && (matchMedia('(display-mode: standalone)').matches ||
                  matchMedia('(display-mode: fullscreen)').matches ||
                  matchMedia('(display-mode: minimal-ui)').matches)) || navigator.standalone === true;
@@ -793,9 +793,9 @@ document.addEventListener('click', function (e) {
         LIENS.push({ texte: 'Espace professeure', href: 'espace-eleve/prof.html', actif: /\/espace-eleve\/prof\.html$/ });
     }
     document.addEventListener('DOMContentLoaded', function () {
-        if (appli) {   // liens masqués dans l'appli : Espace professeure, NumWorks
+        if (appli) {   // liens masqués dans l'appli : Espace professeure, NumWorks, Installer l'appli
             document.querySelectorAll('.nav-links a').forEach(function (a) {
-                if (a.textContent.trim() === 'Espace professeure' || /numworks\.html$/i.test(a.getAttribute('href') || ''))
+                if (a.textContent.trim() === 'Espace professeure' || /(numworks|installer)\.html$/i.test(a.getAttribute('href') || ''))
                     a.parentNode.classList.add('lien-espace-prof');
             });
         }

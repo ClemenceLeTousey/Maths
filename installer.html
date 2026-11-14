@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Installer l'appli Maths Lebrun</title>
+<meta name="description" content="Tuto : installer le site Maths Lebrun comme une application sur Android ou iPhone.">
+<meta name="theme-color" content="#14213d">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-title" content="Maths Lebrun">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Mise en page : une colonne étroite façon écran de téléphone, onglets Android / iPhone, étapes numérotées. */
+:root {
+  --nuit: #14213d;
+  --orange: #ff6f26;
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --text: #14213d;
+  --muted: #5d6782;
+  --line: #e3e7ef;
+  --vert: #0f9d76;
+  --bleu: #2f6fdf;
+  --bleu-doux: #edf3ff;
+  --orange-doux: #fff1e8;
+  --f-texte: "Lexend", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --nuit: #0b1222; --orange: #ff8a4d; --bg: #10141c; --surface: #171c26;
+    --text: #e6eaf2; --muted: #98a2b6; --line: #283042; --vert: #34c79c;
+    --bleu: #6e9fff; --bleu-doux: #1b2540; --orange-doux: #2c1d14;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --nuit: #0b1222; --orange: #ff8a4d; --bg: #10141c; --surface: #171c26;
+  --text: #e6eaf2; --muted: #98a2b6; --line: #283042; --vert: #34c79c;
+  --bleu: #6e9fff; --bleu-doux: #1b2540; --orange-doux: #2c1d14;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+.retour { color: #c9d1e4; font-size: .85rem; text-decoration: none; display: inline-block; margin-top: .5rem; }
+.retour:hover, .retour:focus-visible { color: #fff; text-decoration: underline; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--f-texte); font-size: 1rem; line-height: 1.55;
+}
+.bandeau { background: var(--nuit); color: #fff; }
+.bandeau .in, main {
+  max-width: 34rem; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.bandeau .in { padding-block: 1.75rem 1.5rem; display: flex; gap: 1rem; align-items: center; }
+.bandeau img { width: 64px; height: 64px; border-radius: 16px; flex: none; background: #fff; }
+.bandeau h1 { margin: 0; font-size: 1.45rem; line-height: 1.2; font-weight: 700; text-wrap: balance; }
+.bandeau p { margin: .25rem 0 0; color: #c9d1e4; font-size: .92rem; }
+main { padding-block: 1.25rem 2.5rem; display: grid; gap: 1.25rem; }
+.pourquoi { margin: 0; color: var(--muted); }
+.adresse {
+  display: flex; flex-wrap: wrap; gap: .5rem; align-items: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .75rem .9rem;
+}
+.adresse span { font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; width: 100%; }
+.adresse code { font-family: var(--f-mono); font-size: .88rem; overflow-wrap: anywhere; flex: 1 1 12rem; min-width: 0; }
+button { font: inherit; cursor: pointer; }
+.copier {
+  border: 1px solid var(--line); background: var(--bg); color: var(--text);
+  border-radius: 8px; padding: .3rem .7rem; font-size: .85rem;
+}
+.copier:focus-visible, .onglet:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+
+.onglets { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; background: var(--line); padding: .3rem; border-radius: 14px; }
+.onglet {
+  border: 0; border-radius: 10px; padding: .65rem .5rem; background: transparent; color: var(--muted);
+  font-weight: 500; display: flex; align-items: center; justify-content: center; gap: .45rem;
+}
+.onglet[aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgb(0 0 0 / .12); }
+.onglet svg { width: 18px; height: 18px; }
+
+.panneau { display: grid; gap: 1rem; }
+.navig { margin: 0; font-size: .92rem; color: var(--muted); }
+.navig strong { color: var(--text); }
+ol.etapes { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; counter-reset: e; }
+ol.etapes > li {
+  counter-increment: e; display: grid; grid-template-columns: 2.1rem 1fr; gap: .8rem; align-items: start;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: .9rem;
+}
+ol.etapes > li::before {
+  content: counter(e); width: 2.1rem; height: 2.1rem; border-radius: 50%;
+  background: var(--orange); color: #fff; font-weight: 700; display: grid; place-items: center;
+}
+.etape { min-width: 0; }
+.etape h3 { margin: .2rem 0 .2rem; font-size: 1.02rem; font-weight: 700; text-wrap: balance; }
+.etape p { margin: 0; color: var(--muted); font-size: .93rem; }
+.btn-ecran {
+  display: inline-flex; align-items: center; gap: .35rem; vertical-align: middle;
+  border: 1px solid var(--line); background: var(--bleu-doux); color: var(--bleu);
+  border-radius: 8px; padding: .1rem .45rem; font-size: .85rem; font-weight: 500; white-space: nowrap;
+}
+.btn-ecran svg { width: 16px; height: 16px; flex: none; }
+.encadre {
+  border-radius: 12px; padding: .8rem .95rem; font-size: .9rem;
+  background: var(--orange-doux); border: 1px solid color-mix(in srgb, var(--orange) 35%, transparent);
+}
+.encadre strong { color: var(--text); }
+.encadre p { margin: 0; }
+.encadre p + p { margin-top: .4rem; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .95rem; font-size: .92rem; }
+summary { cursor: pointer; font-weight: 500; }
+details ul { margin: .5rem 0 0; padding-left: 1.1rem; color: var(--muted); display: grid; gap: .35rem; }
+.fin {
+  display: flex; gap: .8rem; align-items: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: .9rem;
+}
+.fin img { width: 48px; height: 48px; border-radius: 12px; flex: none; }
+.fin p { margin: 0; font-size: .93rem; min-width: 0; }
+h2 { margin: 0; font-size: 1.1rem; }
+.depannage { display: grid; gap: .6rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .panneau { animation: entre .2s ease-out; }
+  @keyframes entre { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+}
+</style>
+</head>
+<body>
+
+
+<header class="bandeau">
+  <div class="in">
+    <img src="img/icone-appli-192.png" alt="Icône de l'appli Maths Lebrun">
+    <div>
+      <h1>Installer l'appli Maths Lebrun sur ton téléphone</h1>
+      <p>2 minutes, gratuit, sans passer par un store.</p>
+      <a class="retour" href="index.html">← Retour au site</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <p class="pourquoi">Une fois installée, l'appli s'ouvre d'un seul geste depuis ton écran d'accueil, en plein écran, comme une vraie application : cours, exercices interactifs et automatismes.</p>
+
+  <div class="adresse">
+    <span>Adresse du site</span>
+    <code id="url">https://clemenceletousey.github.io/Maths/</code>
+    <button class="copier" id="copier" type="button">Copier</button>
+  </div>
+
+  <div class="onglets" role="tablist" aria-label="Type de téléphone">
+    <button class="onglet" role="tab" id="tab-android" aria-controls="p-android" aria-selected="true" type="button">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 9h12v8a1.5 1.5 0 0 1-1.5 1.5H15V21a1 1 0 0 1-2 0v-2.5h-2V21a1 1 0 0 1-2 0v-2.5H7.5A1.5 1.5 0 0 1 6 17zM4 9.5a1 1 0 0 1 2 0v5a1 1 0 0 1-2 0zm14 0a1 1 0 0 1 2 0v5a1 1 0 0 1-2 0zM6.2 8a5.8 5.8 0 0 1 3-4.3L8.3 2.4a.4.4 0 0 1 .7-.4l.9 1.4a6 6 0 0 1 4.2 0l.9-1.4a.4.4 0 0 1 .7.4l-.9 1.3a5.8 5.8 0 0 1 3 4.3z"/></svg>
+      Android
+    </button>
+    <button class="onglet" role="tab" id="tab-iphone" aria-controls="p-iphone" aria-selected="false" type="button">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.4 2-3.5 2-3.6a4.3 4.3 0 0 0-3.4-1.8c-1.4-.2-2.8.8-3.5.8s-1.9-.8-3-.8a4.5 4.5 0 0 0-3.8 2.3c-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2-1.1 2.8-2.3a10 10 0 0 0 1.3-2.6 3.9 3.9 0 0 1-2.5-3.6zM14.1 5.6A4 4 0 0 0 15 2.7a4.1 4.1 0 0 0-2.7 1.4 3.8 3.8 0 0 0-1 2.8 3.4 3.4 0 0 0 2.8-1.3z"/></svg>
+      iPhone
+    </button>
+  </div>
+
+  <!-- ANDROID -->
+  <section class="panneau" id="p-android" role="tabpanel" aria-labelledby="tab-android">
+    <p class="navig">Avec <strong>Chrome</strong>, le navigateur installé d'office sur la plupart des téléphones Android.</p>
+    <ol class="etapes">
+      <li><div class="etape">
+        <h3>Ouvre le site dans Chrome</h3>
+        <p>Tape l'adresse ci-dessus ou scanne le QR code donné en classe.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Ouvre le menu</h3>
+        <p>Appuie sur les trois points <span class="btn-ecran"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>Menu</span> en haut à droite de l'écran.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Choisis « Ajouter à l'écran d'accueil »</h3>
+        <p>Selon ton téléphone, la ligne peut s'appeler <strong>« Installer l'application »</strong>. C'est la même chose.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Confirme avec « Installer »</h3>
+        <p>Si Chrome te le propose, appuie ensuite sur <strong>« Ajouter »</strong> ou fais glisser l'icône sur l'écran de ton choix.</p>
+      </div></li>
+    </ol>
+    <div class="encadre">
+      <p><strong>Tu as un Samsung avec Samsung Internet ?</strong> Appuie sur le menu <span class="btn-ecran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</span> en bas à droite, puis <strong>« Ajouter la page à »</strong> → <strong>« Écran d'accueil »</strong>.</p>
+      <p><strong>Avec Firefox :</strong> menu <strong>⋮</strong> → <strong>« Ajouter à l'écran d'accueil »</strong>.</p>
+    </div>
+  </section>
+
+  <!-- IPHONE -->
+  <section class="panneau" id="p-iphone" role="tabpanel" aria-labelledby="tab-iphone" hidden>
+    <p class="navig">Avec <strong>Safari</strong>, le navigateur à la boussole bleue, installé sur tous les iPhone.</p>
+    <ol class="etapes">
+      <li><div class="etape">
+        <h3>Ouvre le site dans Safari</h3>
+        <p>Tape l'adresse ci-dessus ou scanne le QR code donné en classe avec l'appareil photo.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Appuie sur le bouton Partager</h3>
+        <p>C'est le carré avec une flèche vers le haut <span class="btn-ecran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M8 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2"/></svg>Partager</span>, en bas de l'écran. Si tu ne le vois pas, appuie d'abord sur les trois points <span class="btn-ecran"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>···</span>.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Choisis « Sur l'écran d'accueil »</h3>
+        <p>Fais défiler la liste vers le bas pour trouver la ligne avec un petit <strong>+</strong> dans un carré. Elle s'appelle aussi parfois <strong>« Ajouter à l'écran d'accueil »</strong>.</p>
+      </div></li>
+      <li><div class="etape">
+        <h3>Appuie sur « Ajouter »</h3>
+        <p>En haut à droite. Laisse le nom « Maths Lebrun ». Si l'option <strong>« Ouvrir en tant qu'app web »</strong> apparaît, laisse-la activée.</p>
+      </div></li>
+    </ol>
+    <div class="encadre">
+      <p><strong>Tu utilises Chrome sur iPhone ?</strong> Appuie sur l'icône Partager <span class="btn-ecran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M8 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2"/></svg>Partager</span> dans la barre d'adresse, puis <strong>« Sur l'écran d'accueil »</strong>. Si l'option n'y est pas, repasse par Safari.</p>
+    </div>
+  </section>
+
+  <div class="fin">
+    <img src="img/icone-appli-192.png" alt="">
+    <p><strong>C'est installé !</strong> Cherche cette icône sur ton écran d'accueil. Elle s'ouvre directement sur le site, sans barre d'adresse.</p>
+  </div>
+
+  <section class="depannage">
+    <h2>Ça ne marche pas ?</h2>
+    <details>
+      <summary>Je ne trouve pas la bonne ligne dans le menu</summary>
+      <ul>
+        <li>Fais défiler le menu jusqu'en bas : la ligne est souvent cachée plus loin.</li>
+        <li>Vérifie que tu es bien dans le navigateur (Chrome ou Safari), et pas dans l'aperçu ouvert par Instagram, Snapchat, Pronote ou l'ENT. Dans ce cas, choisis d'abord « Ouvrir dans le navigateur ».</li>
+      </ul>
+    </details>
+    <details>
+      <summary>Sur iPhone, je ne vois pas « Sur l'écran d'accueil »</summary>
+      <ul>
+        <li>Tout en bas de la liste Partager, appuie sur « Modifier les actions » et active « Sur l'écran d'accueil ».</li>
+        <li>Navigation privée : quitte-la et recommence dans un onglet normal.</li>
+      </ul>
+    </details>
+    <details>
+      <summary>Je veux supprimer l'appli</summary>
+      <ul>
+        <li>Appui long sur l'icône, puis « Supprimer » (ou « Désinstaller » sur Android). Rien d'autre n'est effacé de ton téléphone.</li>
+      </ul>
+    </details>
+  </section>
+</main>
+
+<script>
+(function () {
+  var tabs = { android: document.getElementById('tab-android'), iphone: document.getElementById('tab-iphone') };
+  var panes = { android: document.getElementById('p-android'), iphone: document.getElementById('p-iphone') };
+  function choisir(k, focus) {
+    Object.keys(tabs).forEach(function (n) {
+      var on = n === k;
+      tabs[n].setAttribute('aria-selected', on ? 'true' : 'false');
+      tabs[n].tabIndex = on ? 0 : -1;
+      panes[n].hidden = !on;
+    });
+    if (focus) tabs[k].focus();
+    try { localStorage.setItem('tuto-onglet', k); } catch (e) {}
+  }
+  tabs.android.addEventListener('click', function () { choisir('android'); });
+  tabs.iphone.addEventListener('click', function () { choisir('iphone'); });
+  document.querySelector('.onglets').addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      choisir(tabs.android.getAttribute('aria-selected') === 'true' ? 'iphone' : 'android', true);
+    }
+  });
+  var depart = /iPhone|iPad|iPod/.test(navigator.userAgent) ? 'iphone' : 'android';
+  try { var m = localStorage.getItem('tuto-onglet'); if (m === 'android' || m === 'iphone') depart = m; } catch (e) {}
+  if (location.hash === '#iphone' || location.hash === '#android') depart = location.hash.slice(1);
+  choisir(depart);
+
+  var btn = document.getElementById('copier');
+  btn.addEventListener('click', function () {
+    var txt = document.getElementById('url').textContent;
+    function select() {
+      var r = document.createRange(); r.selectNodeContents(document.getElementById('url'));
+      var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(function () { btn.textContent = 'Copié'; setTimeout(function () { btn.textContent = 'Copier'; }, 1800); }, select);
+    } else { select(); }
+  });
+})();
+</script>
+</body>
+</html>
