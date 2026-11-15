@@ -453,11 +453,115 @@
         }, function (x) { msg.textContent = 'Erreur : ' + x.message; });
     }
 
+    /* ---------- Moyennes du trimestre (export CSV de Pronote « MATHEMATIQUES (n).csv ») ----------
+       Ligne 1 : dates ; ligne 2 : « 4 » (coef. 4, sur 20 = DS) ou « 2-/10 » (coef., sur) ; puis une ligne par élève
+       (« NOM Prénom » ; moyenne ; notes, ou Abs / N.Not / X). Publié comme l'évaluation « Trimestre n » :
+       l'élève voit en haut de son onglet Évaluations sa moyenne, sa moyenne aux DS et toutes ses notes. */
+    var CLE_PRONOTE = 'suivi-eval-pronote';
+    var pronote = {};   // nom du fichier -> texte
+
+    function lirePronote(texte) {
+        var l = lignesCSV(texte);
+        if (l.length < 3 || !/Moyenne/i.test(l[1][1] || '')) return null;
+        var cols = [];
+        for (var i = 2; i < l[0].length; i++) {
+            var d = (l[0][i] || '').trim(), b = /^(\d+(?:[.,]\d+)?)(?:\s*-?\s*\/\s*(\d+(?:[.,]\d+)?))?$/.exec((l[1][i] || '').trim());
+            if (!/^\d{1,2}\/\d{1,2}$/.test(d) || !b) continue;
+            var jm = d.split('/').map(Number);
+            cols.push({ i: i, date: d, coef: nombre(b[1]), sur: b[2] ? nombre(b[2]) : 20, ordre: (jm[1] >= 8 ? jm[1] - 8 : jm[1] + 4) * 100 + jm[0] });
+        }
+        cols.sort(function (a, b) { return a.ordre - b.ordre; });
+        // intitulés : coef. 4 sur 20 = devoir surveillé, sur 10 = interrogation, autre barème = automatismes
+        var nb = { ds: 0, it: 0 };
+        cols.forEach(function (c) {
+            if (c.sur === 20 && c.coef >= 4) { c.ds = true; c.l = 'Devoir surveillé ' + (++nb.ds); }
+            else if (c.sur === 10) c.l = 'Interrogation ' + (++nb.it);
+            else c.l = 'Automatismes';
+        });
+        var eleves = [];
+        l.slice(2).forEach(function (r) {
+            var nom = (r[0] || '').trim();
+            if (!nom || /^Moyenne/i.test(nom)) return;
+            var e = { nom: nom, moyenne: nombre(r[1]), evals: [] }, ds = [];
+            cols.forEach(function (c) {
+                var brut = (r[c.i] || '').trim(), v = nombre(brut);
+                if (brut === 'X' || !brut) return;   // pas dans la classe à cette date
+                var x = { d: c.date, l: c.l, sur: c.sur };
+                if (v != null) { x.v = v; if (c.ds) ds.push(v); } else x.etat = brut === 'Abs' ? 'Absent(e)' : brut === 'N.Not' ? 'Non noté' : brut;
+                if (c.ds) x.ds = true;
+                e.evals.push(x);
+            });
+            e.moyenneDS = ds.length ? Math.round(100 * ds.reduce(function (s, v) { return s + v; }, 0) / ds.length) / 100 : null;
+            e.nbDS = ds.length;
+            eleves.push(e);
+        });
+        return { cols: cols, eleves: eleves };
+    }
+
+    // identifiants des élèves (comptes-*.csv) : nom normalisé -> [codes]
+    function codesParNom() {
+        var noms = window.interactifNoms ? window.interactifNoms() : {}, m = {};
+        Object.keys(noms).forEach(function (code) { var k = sansAccents(noms[code]); (m[k] = m[k] || []).push(code); });
+        return m;
+    }
+    // classe d'un export = préfixe de code le plus fréquent parmi ses élèves (« 2H-… »)
+    function classePronote(p, m) {
+        var compte = {};
+        p.eleves.forEach(function (e) { (m[sansAccents(e.nom)] || []).forEach(function (code) { var c = code.split('-')[0].toUpperCase(); compte[c] = (compte[c] || 0) + 1; }); });
+        return Object.keys(compte).sort(function (a, b) { return compte[b] - compte[a]; })[0] || null;
+    }
+
+    function afficherPronote() {
+        var zone = $('se-pronote-zone'), noms = Object.keys(pronote).sort();
+        if (!noms.length) { zone.innerHTML = ''; return; }
+        var m = codesParNom(), avecNoms = Object.keys(m).length, trim = $('se-trim').value;
+        var h = '<div class="tableau-defile"><table class="res se-table"><tr><th>Fichier</th><th>Classe</th><th>Élèves</th><th>Évaluations</th><th></th></tr>';
+        noms.forEach(function (f) {
+            var p = lirePronote(pronote[f]);
+            if (!p) { h += '<tr><td>' + esc(f) + '</td><td colspan="4">non reconnu (export Pronote attendu)</td></tr>'; return; }
+            var cl = avecNoms ? classePronote(p, m) : null;
+            h += '<tr><td>' + esc(f) + '</td><td>' + (cl ? esc(cl) : '<span class="n-tent">?</span>') + '</td><td>' + p.eleves.filter(function (e) { return e.moyenne != null; }).length + '</td><td>' +
+                 p.cols.map(function (c) { return esc(c.l) + ' <span class="n-tent">(' + c.date + ', /' + fmt(c.sur) + ')</span>'; }).join(' · ') + '</td><td>' +
+                 '<button type="button" data-pronote="' + esc(f) + '"' + (cl ? '' : ' disabled') + '>Publier T' + esc(trim) + '</button></td></tr>';
+        });
+        h += '</table></div>';
+        if (!avecNoms) h += '<p class="aide">Chargez d\'abord les fichiers comptes-*.csv (onglet Suivi QF, « Noms ») : ils donnent la classe de chaque fichier et l\'identifiant de chaque élève.</p>';
+        h += '<p class="aide" id="se-pronote-msg" aria-live="polite"></p>';
+        zone.innerHTML = h;
+    }
+
+    function publierPronote(f) {
+        var mdp = mdpProf(), msg = $('se-pronote-msg'), p = lirePronote(pronote[f]), m = codesParNom(), cl = classePronote(p, m);
+        var trim = $('se-trim').value, ev = 'Trimestre ' + trim;
+        if (!mdp) { msg.textContent = 'Reconnectez-vous à l\'espace professeure pour publier.'; return; }
+        var envoi = [], sansCompte = [];
+        p.eleves.forEach(function (e) {
+            if (e.moyenne == null) return;   // pas de moyenne (arrivé(e) dans une autre classe, non noté(e))
+            var code = (m[sansAccents(e.nom)] || []).filter(function (c) { return c.toUpperCase().indexOf(cl + '-') === 0; })[0];
+            if (!code) { sansCompte.push(e.nom); return; }
+            envoi.push({ code: code, total: e.moyenne, sur: 20, detail: { trimestre: Number(trim), moyenne: e.moyenne, moyenneDS: e.moyenneDS, nbDS: e.nbDS, evals: e.evals } });
+        });
+        if (!envoi.length) { msg.textContent = 'Aucun élève reconnu dans ' + f + '.'; return; }
+        var q = 'Publier les moyennes du trimestre ' + trim + ' pour ' + envoi.length + ' élève(s) de ' + cl + ' ?';
+        if (sansCompte.length) q += '\n\nNon publiés (pas d\'identifiant en ' + cl + ') : ' + sansCompte.join(', ') + '.';
+        if (!confirm(q)) return;
+        msg.textContent = 'Publication…';
+        Interactif.rpc('prof_publier_notes', { p_mdp: mdp, p_evaluation: ev, p_notes: envoi }).then(function (n) {
+            msg.textContent = '✓ « ' + ev + ' » publié pour ' + n + ' élève(s) de ' + cl + '.' + (sansCompte.length ? ' Non publiés : ' + sansCompte.join(', ') + '.' : '');
+        }, function (x) { msg.textContent = 'Non publié : ' + x.message; });
+    }
+
+    function lireTexte(f) {   // Pronote exporte parfois en Windows-1252
+        return f.arrayBuffer().then(function (b) {
+            try { return new TextDecoder('utf-8', { fatal: true }).decode(b); } catch (e) { return new TextDecoder('windows-1252').decode(b); }
+        });
+    }
+
     /* ---------- Fichiers ---------- */
     function memoriser() {
         try {
-            if ($('se-memoriser').checked) localStorage.setItem(CLE, JSON.stringify(fichiers));
-            else localStorage.removeItem(CLE);
+            if ($('se-memoriser').checked) { localStorage.setItem(CLE, JSON.stringify(fichiers)); localStorage.setItem(CLE_PRONOTE, JSON.stringify(pronote)); }
+            else { localStorage.removeItem(CLE); localStorage.removeItem(CLE_PRONOTE); }
         } catch (e) { $('se-etat').textContent = 'Fichiers trop volumineux pour être mémorisés sur cet ordinateur.'; }
     }
 
@@ -478,20 +582,29 @@
     }
 
     window.SuiviEval = {
+        pronote: function () { if (lance) afficherPronote(); },
         demarrer: function () {
             if (lance) return;
             lance = true;
             try {
                 var gardes = JSON.parse(localStorage.getItem(CLE));
                 if (gardes) { fichiers = gardes; $('se-memoriser').checked = true; }
+                pronote = JSON.parse(localStorage.getItem(CLE_PRONOTE)) || {};
             } catch (e) {}
+            $('se-pronote').onchange = function (e) {
+                Promise.all(Array.from(e.target.files).map(function (f) { return lireTexte(f).then(function (t) { pronote[f.name] = t; }); }))
+                    .then(function () { memoriser(); afficherPronote(); });
+                e.target.value = '';
+            };
+            $('se-trim').onchange = afficherPronote;
+            $('se-pronote-zone').onclick = function (e) { var b = e.target.closest('button[data-pronote]'); if (b) publierPronote(b.dataset.pronote); };
             $('se-csv').onchange = function (e) { ajouter(Array.from(e.target.files)); e.target.value = ''; };
             $('se-memoriser').onchange = memoriser;
             $('se-classe').onchange = afficher;
             $('se-oublier').onclick = function () {
-                fichiers = {};
-                try { localStorage.removeItem(CLE); } catch (e) {}
-                afficher();
+                fichiers = {}; pronote = {};
+                try { localStorage.removeItem(CLE); localStorage.removeItem(CLE_PRONOTE); } catch (e) {}
+                afficher(); afficherPronote();
             };
             $('se-bilan').onclick = function (e) {
                 var b = e.target.closest('button[data-publier], button[data-retirer]');
@@ -499,7 +612,7 @@
                 var td = e.target.closest('td[data-ev][data-nom]');
                 if (td) copieEleve(td.dataset.ev, td.dataset.nom);
             };
-            afficher();
+            afficher(); afficherPronote();
         }
     };
 })();

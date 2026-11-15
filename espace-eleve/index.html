@@ -94,6 +94,16 @@
         .ma-note .typerr-q { margin-top: 2px; font-size: 0.85rem; color: var(--ko); text-align: left; white-space: normal; }
         .ma-note ul.err-q { margin: 4px 0 0; padding-left: 18px; text-align: left; font-size: 0.85rem; color: var(--muted); }
         .ma-note .legende { margin: 6px 0 0; }
+        /* Mon trimestre (moyennes Pronote publiées par la professeure) */
+        .mon-trimestre .tuiles { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 12px; }
+        .mon-trimestre .tuile { flex: 1 1 200px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+        .mon-trimestre .tuile .t { font-size: 0.9rem; color: var(--muted); }
+        .mon-trimestre .tuile .v { font-size: 1.6rem; font-weight: 700; margin-top: 2px; }
+        .mon-trimestre .tuile .v small { font-size: 0.9rem; font-weight: 400; color: var(--muted); }
+        .mon-trimestre .tuile .v.n-bon, .mon-trimestre .tuile .v.n-moyen, .mon-trimestre .tuile .v.n-faible { background: none; }
+        .mon-trimestre table td:nth-child(n+3), .mon-trimestre table th:nth-child(n+3) { text-align: center; white-space: nowrap; }
+        .mon-trimestre table td, .mon-trimestre table th { text-align: left; }
+        .mon-trimestre tr.ds td:nth-child(2) { font-weight: 600; }
             #liste-tp td { vertical-align: middle; text-align: left; }
             #liste-tp th.coin { border: none; background: var(--bg); }   /* case vide en haut à gauche */
             #liste-tp .tp-num { color: var(--c-seconde); }
@@ -809,6 +819,39 @@
             contenu.insertBefore(bloc, contenu.firstChild);
         }
 
+        // Moyennes du trimestre (export Pronote publié depuis Suivi Eval, évaluation « Trimestre n ») : en haut de l'onglet Évaluations.
+        function blocTrimestre(n) {
+            var d = n.detail || {}, t = d.trimestre || Number((/\d+/.exec(n.evaluation) || [1])[0]);
+            var sec = el('section', 'soutien mon-trimestre'); sec.id = 'mon-trimestre-' + t;
+            sec.appendChild(el('h2', null, 'Mon ' + (t === 1 ? '1er' : t + 'e') + ' trimestre'));
+            var tuiles = el('div', 'tuiles');
+            function tuile(titre, v, note) {
+                var x = el('div', 'tuile'); x.appendChild(el('div', 't', titre));
+                var vv = el('div', 'v ' + (v == null ? '' : classeNote(v / 20)), v == null ? '—' : fmtN(v));
+                if (v != null) vv.appendChild(el('small', null, ' / 20'));
+                x.appendChild(vv);
+                if (note) x.appendChild(el('div', 'aide', note));
+                tuiles.appendChild(x);
+            }
+            var ordinal = ['premier', 'deuxième', 'troisième'][t - 1] || t + 'e';
+            tuile('Moyenne du ' + ordinal + ' trimestre', d.moyenne != null ? d.moyenne : n.total);
+            tuile('Moyenne aux devoirs surveillés', d.moyenneDS, 'Sans les interrogations ni les automatismes' + (d.nbDS ? ' (' + d.nbDS + ' DS)' : '') + '.');
+            sec.appendChild(tuiles);
+            if (d.evals && d.evals.length) {
+                sec.appendChild(el('p', 'com', 'Mes notes aux évaluations :'));
+                var defile = el('div', 'tableau-defile'), tb = el('table', 'res'), tete = el('tr');
+                ['Date', 'Évaluation', 'Note'].forEach(function (h) { tete.appendChild(el('th', null, h)); }); tb.appendChild(tete);
+                d.evals.forEach(function (e) {
+                    var r = el('tr', e.ds ? 'ds' : null);
+                    r.appendChild(el('td', null, e.d)); r.appendChild(el('td', null, e.l));
+                    r.appendChild(e.v == null ? el('td', 'n-tent', e.etat || '—') : el('td', classeNote(e.v / e.sur), fmtN(e.v) + ' / ' + fmtN(e.sur)));
+                    tb.appendChild(r);
+                });
+                defile.appendChild(tb); sec.appendChild(defile);
+            }
+            return sec;
+        }
+
         // menus dépliables de l'onglet Évaluations : nombre d'éléments entre parenthèses, message si vide
         function compterGroupes() {
             document.querySelectorAll('.groupe-evals').forEach(function (g) {
@@ -819,7 +862,7 @@
         }
 
         function mesNotes(s) {
-            document.querySelectorAll('#panneau-evaluations .ma-note, #autres-notes, #mes-etoiles, #groupe-autos li').forEach(function (x) { x.remove(); });
+            document.querySelectorAll('#panneau-evaluations .ma-note, #autres-notes, #mes-etoiles, #groupe-autos li, .mon-trimestre').forEach(function (x) { x.remove(); });
             document.querySelectorAll('.aide-notes').forEach(function (x) { x.hidden = true; });
             compterGroupes();
             if (!s) return;
@@ -828,6 +871,12 @@
                 document.querySelectorAll('.aide-notes').forEach(function (x) { x.hidden = !(liste && liste.length); });
                 var autres = [];
                 compteurEtoiles(liste || []);
+                var trims = (liste || []).filter(function (n) { return /^Trimestre \d/.test(n.evaluation); });
+                liste = (liste || []).filter(function (n) { return trims.indexOf(n) < 0; });
+                trims.sort(function (a, b) { return b.evaluation.localeCompare(a.evaluation); }).forEach(function (n) {   // le plus récent en haut
+                    var panneau = document.getElementById('panneau-evaluations'), premier = panneau.querySelector('section:not(.mon-trimestre)');
+                    panneau.insertBefore(blocTrimestre(n), premier);
+                });
                 (liste || []).forEach(function (n) {
                     var li = Array.prototype.filter.call(document.querySelectorAll('#panneau-evaluations li[data-eval]'), function (x) { return x.dataset.eval === n.evaluation; })[0];
                     if (li) li.appendChild(blocNote(n));

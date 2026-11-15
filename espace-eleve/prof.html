@@ -215,6 +215,13 @@
                 </div>
                 <p class="aide" id="se-etat" aria-live="polite"></p>
                 <p class="aide" id="se-fichiers"></p>
+                <h3>Moyennes du trimestre (Pronote)</h3>
+                <p class="aide">Dans Pronote, exporter le relevé de notes de la classe en CSV (« MATHEMATIQUES (n).csv ») et le charger ici : la classe est reconnue grâce aux comptes. « Publier » montre à chaque élève, en haut de son onglet Évaluations, sa moyenne du trimestre, sa moyenne aux devoirs surveillés (notes coef. 4 seulement) et ses notes à chaque évaluation.</p>
+                <div class="outils">
+                    <label>Trimestre <select id="se-trim"><option>1</option><option>2</option><option>3</option></select></label>
+                    <label>Exports Pronote : <input type="file" id="se-pronote" accept=".csv" multiple></label>
+                </div>
+                <div id="se-pronote-zone"></div>
                 <div id="se-bilan"></div>
                 <div id="se-eleve"></div>
             </div>
@@ -650,7 +657,7 @@
                         if (c.length >= 2 && c[1]) noms[c[1].trim().toUpperCase()] = c[0].replace(/^"|"$/g, '').trim();
                     });
                 });
-                memoriser(); afficher(); SuiviTP.remplir();
+                memoriser(); afficher(); SuiviTP.remplir(); if (window.SuiviEval) SuiviEval.pronote();
             });
         };
         document.getElementById('memoriser').onchange = memoriser;
