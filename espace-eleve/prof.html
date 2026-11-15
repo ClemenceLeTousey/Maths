@@ -21,6 +21,7 @@
     <script src="suivi-eval.js"></script>
     <script src="notifications-prof.js"></script>
     <script src="en-ligne.js"></script>
+    <script src="remediation-suivi.js"></script>
     <style>
         .interactif { max-width: 1100px; }
         .outils { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 16px; }
@@ -117,6 +118,12 @@
         #pt-etat.ko { color: var(--ko); }
         /* Onglet Suivi Eval : bilan des grilles de notation */
         #panneau-suivi-eval h3 { margin: 18px 0 4px; }
+        #rm-tableau .rm-c { text-align: center; font-variant-numeric: tabular-nums; font-size: 0.85rem; }
+        #rm-tableau th.rm-c { min-width: 5.5em; max-width: 8em; white-space: normal; }
+        #rm-tableau td:first-child { white-space: nowrap; }
+        #rm-tableau .rm-vide td { color: #8A94A0; }
+        #rm-tableau .rm-vu { color: #8A94A0; font-style: italic; }
+        #rm-tableau .rm-code { color: #8A94A0; font-size: 0.8em; }
         .se-eval { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; margin-top: 14px; }
         .se-eval summary { cursor: pointer; }
         .se-eval h4 { margin: 14px 0 6px; }
@@ -193,6 +200,7 @@
                 <button type="button" role="tab" id="onglet-messages" aria-controls="panneau-messages" data-onglet="messages">Messages</button>
                 <button type="button" role="tab" id="onglet-suivi-eval" aria-controls="panneau-suivi-eval" data-onglet="suivi-eval">Suivi Eval</button>
                 <button type="button" role="tab" id="onglet-suivi-tp" aria-controls="panneau-suivi-tp" data-onglet="suivi-tp">Suivi TP</button>
+                <button type="button" role="tab" id="onglet-remediation" aria-controls="panneau-remediation" data-onglet="remediation">Remédiation</button>
                 <button type="button" role="tab" id="onglet-notifs" aria-controls="panneau-notifs" data-onglet="notifs">Notifications</button>
                 <button type="button" role="tab" id="onglet-plan" aria-controls="panneau-plan" data-onglet="plan">Plan de travail</button>
                 <button type="button" role="tab" id="onglet-en-ligne" aria-controls="panneau-en-ligne" data-onglet="en-ligne">En ligne</button>
@@ -321,6 +329,18 @@
                 <div id="el-tableau"></div>
             </div>
 
+            <div class="panneau" role="tabpanel" id="panneau-remediation" aria-labelledby="onglet-remediation" hidden>
+                <h2>Suivi des remédiations en ligne</h2>
+                <p class="aide">Progression des élèves sur la page de remédiation, quand ils sont connectés à l'espace élève : nombre d'exercices réussis par thème (vert dès 40 %, vert foncé dès 80 % ; « vu » = thème ouvert sans exercice réussi), temps passé page affichée, dernière activité. Une page ouverte sans connexion n'est pas comptée. Nécessite le script maj-remediation.sql dans Supabase (sinon, enregistrement de secours toutes les 10 minutes). Cliquer sur « Actualiser » (onglet Suivi QF) pour les dernières données.</p>
+                <div class="outils">
+                    <label>Classe <select id="rm-classe"></select></label>
+                    <label>Remédiation <select id="rm-choix"></select></label>
+                    <button type="button" id="rm-csv" class="secondaire">Exporter (CSV)</button>
+                </div>
+                <p id="rm-resume" aria-live="polite"></p>
+                <div class="tableau-defile"><table class="res" id="rm-tableau"></table></div>
+            </div>
+
             <div class="panneau" role="tabpanel" id="panneau-suivi-tp" aria-labelledby="onglet-suivi-tp" hidden>
                 <h2>Suivi des TP</h2>
                 <p class="aide">Barème automatique : chaque étape réussie rapporte ses points (colonne « Points » du détail), note plafonnée à 20 ; une étape passée (bouton « Passer ») ne rapporte rien tant qu’elle n’est pas réussie. TP Conditions : note du TP selon l'avancée (4 après le cours, 8 après l'Ex. 1, 15 après l'Ex. 4, 20 après l'Ex. 6, bonus 0,5) ; quiz final noté à part sur 5. Note globale = 0,75 × note TP + 0,25 × quiz ramené sur 20 (quiz pas encore fait : compté 0, signalé par *). Les erreurs (réponses fausses avant la bonne) sont indiquées pour information. Barème réglable dans <code>config.js</code> (INTERACTIF_BAREMES).</p>
@@ -360,6 +380,7 @@
         try { noms = JSON.parse(localStorage.getItem(CLE_NOMS)) || {}; document.getElementById('memoriser').checked = Object.keys(noms).length > 0; } catch (e) {}
         try { mdp = sessionStorage.getItem('interactif-prof'); } catch (e) {}
         window.interactifNoms = function () { return noms; };   // pour les onglets Suivi Eval et Notifications
+        window.interactifDonnees = function () { return donnees; };   // pour l'onglet Remédiation
 
         var form = document.getElementById('f-prof');
         form.onsubmit = function (e) { e.preventDefault(); mdp = form.mdp.value; charger(); };
@@ -395,6 +416,7 @@
                 remplirSeries();
                 afficher();
                 SuiviTP.remplir();
+                if (window.SuiviRemed) SuiviRemed.afficher();
                 Interactif.rpc('prof_creneaux', { p_mdp: mdp }).then(function (l) { inscriptions = l || []; afficherSoutien(); },
                     function (x) { inscriptions = null; document.getElementById('soutien-etat').textContent = 'Inscriptions indisponibles (' + x.message + ') : le script maj-soutien.sql a-t-il été lancé dans Supabase ?'; });
                 chargerMessages();
@@ -657,7 +679,7 @@
                         if (c.length >= 2 && c[1]) noms[c[1].trim().toUpperCase()] = c[0].replace(/^"|"$/g, '').trim();
                     });
                 });
-                memoriser(); afficher(); SuiviTP.remplir(); if (window.SuiviEval) SuiviEval.pronote();
+                memoriser(); afficher(); SuiviTP.remplir(); if (window.SuiviEval) SuiviEval.pronote(); if (window.SuiviRemed) SuiviRemed.afficher();
             });
         };
         document.getElementById('memoriser').onchange = memoriser;
@@ -1062,6 +1084,7 @@
             if (nom === 'notifs' && !document.getElementById('vue').hidden) NotifProf.demarrer();
             if (nom === 'messages') marquerMessagesLus();
             if (nom === 'en-ligne' && !document.getElementById('vue').hidden) EnLigne.demarrer();
+            if (nom === 'remediation' && !document.getElementById('vue').hidden) SuiviRemed.demarrer();
         }
         onglets.forEach(function (o) {
             o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };
