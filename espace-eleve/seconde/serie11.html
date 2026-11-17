@@ -8,15 +8,15 @@
     <link rel="manifest" href="../../manifest.json">
     <meta name="apple-mobile-web-app-title" content="Maths Lebrun">
     <link rel="stylesheet" href="../../style.css">
-    <link rel="stylesheet" href="../interactif.css?v=20261114c">
+    <link rel="stylesheet" href="../interactif.css?v=20261117a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
     <script src="../../site.js"></script>
     <script src="../config.js"></script>
     <script src="../expr.js?v=20261026"></script>
-    <script src="../moteur.js?v=20261114c"></script>
-    <script src="automatismes.js?v=20261114c"></script>
-    <script src="traduction.js?v=20261106c"></script>
+    <script src="../moteur.js?v=20261117b"></script>
+    <script src="automatismes.js?v=20261117c"></script>
+    <script src="traduction.js?v=20261117a"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -46,7 +46,7 @@
     (function () {
         var J1 = [Auto.probaUrne, Auto.medianeSimple, Auto.arithmetiqueFinal],
             J2 = [Auto.milieu, Auto.inequationSimple, Auto.isolerFinal],
-            J3 = [Auto.proportionPourcent, Auto.pythagoreSimple, Auto.produitNulFinal];
+            J3 = [Auto.proportionPourcent, Auto.equationNbSolutionsSimple, Auto.produitNulFinal];
         // Jour 4 : bilan à la maison (le J4 en classe est pris par le DS 3) : les 9 types de la semaine
         var JOURS = { 1: J1, 2: J2, 3: J3, 4: J1.concat(J2, J3) };
         var j = Number(new URLSearchParams(location.search).get('j')) || 1;

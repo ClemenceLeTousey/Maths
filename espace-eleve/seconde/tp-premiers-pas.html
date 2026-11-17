@@ -8,7 +8,7 @@
     <link rel="manifest" href="../../manifest.json">
     <meta name="apple-mobile-web-app-title" content="Maths Lebrun">
     <link rel="stylesheet" href="../../style.css">
-    <link rel="stylesheet" href="../interactif.css?v=20261114c">
+    <link rel="stylesheet" href="../interactif.css?v=20261117a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
@@ -127,7 +127,7 @@
         .reponses input { width: 6em; font-family: var(--f-mono); }
         .reponses input.long { width: 10em; }
         /* cases où une réponse est attendue : fond bleu très léger (la ligne de console garde son fond, règle plus bas) */
-        .interactif input:not([type]), .interactif .pourquoi select { background: var(--bleu-doux); }
+        .interactif input:not([type]), .interactif .pourquoi select, .interactif table.trace select { background: var(--case-fond); border-color: var(--case-bord); }
         .reponses.une-par-une { flex-direction: column; align-items: stretch; gap: 8px; }
         /* lignes « étiquette | case | Valider | ✓/✗ » alignées en colonnes */
         .case-ligne { display: grid; grid-template-columns: minmax(13.5em, max-content) 12em auto 1fr; align-items: center; gap: 6px 10px; }
@@ -180,7 +180,7 @@
         table.trace td.vide { background: var(--bg); }
         table.trace th small { display: block; font-weight: normal; font-size: 0.75rem; color: var(--muted); line-height: 1.2; }
         table.trace td.donnee { font-family: var(--f-mono); color: var(--muted); }
-        table.trace select { font: inherit; padding: 2px 4px; border: 1px solid var(--line); border-radius: 6px; background: var(--bleu-doux); color: var(--text); }
+        table.trace select { font: inherit; padding: 2px 4px; border: 1px solid var(--case-bord); border-radius: 6px; background: var(--case-fond); color: var(--text); }
         table.trace select.juste { outline: 2px solid var(--ok); } table.trace select.fausse { outline: 2px solid var(--ko); }
         .suivi .case-retour { display: block; margin-top: 6px; }
         table.trace input, .case-ligne input.tour { width: 3.6em; text-align: center; font-family: var(--f-mono); }
@@ -190,7 +190,7 @@
         .pourquoi .case-ligne .retour.case-retour { grid-column: 1 / -1; }
         pre.code.surligne span.l { display: block; padding: 0 6px; }
         pre.code.surligne span.boucle { background: rgba(255, 212, 59, .35); box-shadow: inset 3px 0 0 #f59f00; }
-        .pourquoi select { font: inherit; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--text); }
+        .pourquoi select { font: inherit; padding: 3px 6px; border: 1px solid var(--case-bord); border-radius: 6px; background: var(--case-fond); color: var(--text); }
         .qcm { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
         .qcm label { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
         .qcm label:has(input:checked) { border-color: var(--c-seconde); background: var(--bleu-doux); }

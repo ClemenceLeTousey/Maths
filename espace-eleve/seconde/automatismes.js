@@ -2611,6 +2611,101 @@
         return Auto.scriptSiSinon(3);
     };
 
+    /* ===== A10 · Équation : aucune, une ou une infinité de solutions (QCM, préparation DS 3) =====
+       niveau 1 : k(x + p) + q = k'x + r ; niveau 2 : (x + a)² = x² + bx + c ;
+       niveau 3 : (mx + a)² = (mx + b)(mx + d). Les termes en x (et x²) s'éliminent sauf dans le cas « une ». */
+    function optionsNbSolutions(cas, v, leurre) {
+        if (String(leurre) === '0' || String(leurre) === String(v)) leurre = typeof leurre === 'number' ? leurre + (v === leurre + 1 ? 2 : 1) : 1;
+        var t = function (x) { return 'une seule solution : $x=' + x + '$'; };
+        return [
+            { t: 'aucune solution', ok: cas === 'aucune' },
+            { t: 'une infinité de solutions (tous les réels)', ok: cas === 'tous' },
+            { t: t(cas === 'une' ? v : leurre), ok: cas === 'une' },
+            { t: t(cas === 'une' ? leurre : 0), ok: false }
+        ];
+    }
+    function conclusionConstantes(g, d) {
+        return g === d ? 'Il reste $' + g + '=' + d + '$ : c\'est <b>toujours vrai</b>, tous les réels sont solutions.'
+            : 'Il reste $' + g + '=' + d + '$ : c\'est <b>impossible</b>, l\'équation n\'a aucune solution.';
+    }
+    Auto.equationNbSolutions = function (niveau) {
+        var poly = Interactif.poly, q = { niveau: niveau, objectif: 'A10 · Équations' }, cas, g, d, gd, dd, L, x0, leurre, num, den;
+        cas = A.choix(niveau === 3 ? ['aucune', 'aucune', 'une'] : ['aucune', 'tous', 'une']);
+        if (niveau === 1) {
+            var k = A.entier(2, 6), p = A.nonNul(-5, 5), c = A.nonNul(-6, 6), k2 = k, r;
+            L = k * p + c;
+            if (cas === 'aucune') r = L + A.nonNul(-5, 5);
+            else if (cas === 'tous') r = L;
+            else { do { k2 = A.entier(1, 7); } while (k2 === k); do { x0 = A.nonNul(-6, 6); } while (x0 === 0); r = (k - k2) * x0 + L; }
+            g = k + '(' + poly([1, p]) + ')' + (c > 0 ? '+' : '') + c; d = poly([k2, r]);
+            gd = poly([k, L]);
+            q.explication = 'On développe le membre de gauche : $' + k + 'x' + (k * p > 0 ? '+' : '') + k * p + (c > 0 ? '+' : '') + c + '=' + gd + '$, l\'équation devient $' + gd + '=' + d + '$.<br>' +
+                (cas === 'une' ? 'On regroupe : $' + poly([k - k2, 0]) + '=' + (r - L) + '$, donc $x=' + x0 + '$.'
+                    : 'On soustrait $' + poly([k, 0]) + '$ des deux côtés. ' + conclusionConstantes(L, r));
+            leurre = cas === 'une' ? -x0 : (r - L !== 0 ? r - L : L);
+        } else if (niveau === 2) {
+            var a = A.nonNul(-6, 6), b = 2 * a, cc;
+            if (cas === 'aucune') cc = a * a + A.nonNul(-6, 6);
+            else if (cas === 'tous') cc = a * a;
+            else { do { b = A.nonNul(-9, 9); } while (b === 2 * a); x0 = A.nonNul(-5, 5); cc = a * a + (2 * a - b) * x0; }
+            g = '(' + poly([1, a]) + ')^2'; d = poly([1, b, cc]);
+            gd = poly([1, 2 * a, a * a]);
+            q.explication = 'Identité remarquable : $' + g + '=' + gd + '$, l\'équation devient $' + gd + '=' + d + '$.<br>' +
+                (cas === 'une' ? 'Les $x^2$ s\'éliminent : $' + poly([2 * a - b, 0]) + '=' + (cc - a * a) + '$, donc $x=' + x0 + '$.'
+                    : 'On soustrait $' + poly([1, 2 * a, 0]) + '$ des deux côtés. ' + conclusionConstantes(a * a, cc));
+            leurre = cas === 'une' ? -x0 : (cc - a * a !== 0 ? cc - a * a : a);
+        } else {
+            var m = A.entier(2, 3), a3 = A.nonNul(-4, 4), b3, d3, tt;
+            if (cas === 'aucune') { do { tt = A.entier(1, 4); b3 = a3 + tt; d3 = a3 - tt; } while (b3 === 0 || d3 === 0); }
+            else {
+                do { b3 = A.nonNul(-5, 5); d3 = A.nonNul(-5, 5); num = b3 * d3 - a3 * a3; den = m * (2 * a3 - b3 - d3); }
+                while (den === 0 || num === 0 || b3 === d3 || num % den !== 0 || Math.abs(num / den) > 10);
+            }
+            g = '(' + poly([m, a3]) + ')^2'; d = '(' + poly([m, b3]) + ')(' + poly([m, d3]) + ')';
+            gd = poly([m * m, 2 * a3 * m, a3 * a3]); dd = poly([m * m, m * (b3 + d3), b3 * d3]);
+            q.explication = 'On développe : $' + g + '=' + gd + '$ et $' + d + '=' + dd + '$.<br>' +
+                (cas === 'une' ? 'Les $x^2$ s\'éliminent : $' + poly([m * (2 * a3 - b3 - d3), 0]) + '=' + num + '$, donc $x=' + fracTex(num, den) + '$.'
+                    : 'Les termes en $x^2$ et en $x$ s\'éliminent. ' + conclusionConstantes(a3 * a3, b3 * d3));
+            x0 = cas === 'une' ? fracTex(num, den) : null;
+            leurre = cas === 'une' ? fracTex(-num, den) : a3 * a3 - b3 * d3;
+        }
+        q.texte = 'L\'équation $' + g + '=' + d + '$ a :';
+        q.qcmLignes = true;   // options longues : une par ligne
+        q.explication += '<br>Piège : quand les $x$ disparaissent, on ne « force » pas une solution, on regarde si l\'égalité qui reste est vraie ou fausse.';
+        return qcm(q, optionsNbSolutions(cas, x0, leurre));
+    };
+
+    /* ===== A10 · Équation : valeur du paramètre (question simple, préparation DS 3) ===== */
+    Auto.equationNbSolutionsSimple = function (niveau) {
+        var poly = Interactif.poly, q = { niveau: niveau, objectif: 'A10 · Équations', type: 'nombre' };
+        if (niveau === 1) {
+            var k = A.entier(2, 6), p = A.nonNul(-5, 5), r = A.nonNul(-9, 9);
+            q.prefixe = 'k =';
+            q.texte = 'Pour quelle valeur du nombre $k$ l\'équation $' + k + '(' + poly([1, p]) + ')+k=' + poly([k, r]) + '$ a-t-elle une infinité de solutions ?';
+            q.attendu = r - k * p;
+            q.explication = 'On développe : $' + poly([k, k * p]) + '+k=' + poly([k, r]) + '$. Les $' + poly([k, 0]) + '$ s\'éliminent : il reste $' + (k * p) + '+k=' + r + '$.<br>' +
+                'Pour que ce soit toujours vrai, il faut $k=' + r + (k * p > 0 ? '-' + k * p : '+' + -k * p) + '=' + (r - k * p) + '$.';
+            return q;
+        }
+        if (niveau === 2) {
+            var a = A.nonNul(-7, 7);
+            q.prefixe = 'c =';
+            q.texte = 'Pour quelle valeur du nombre $c$ l\'équation $(' + poly([1, a]) + ')^2=' + poly([1, 2 * a, 0]) + '+c$ a-t-elle une infinité de solutions ?';
+            q.attendu = a * a;
+            q.explication = 'Identité remarquable : $(' + poly([1, a]) + ')^2=' + poly([1, 2 * a, a * a]) + '$. Les $x^2$ et les $' + poly([2 * a, 0]) + '$ s\'éliminent : il reste $' + a * a + '=c$.<br>' +
+                'Pour $c=' + a * a + '$, l\'égalité est toujours vraie : tous les réels sont solutions.';
+            return q;
+        }
+        var k3 = A.nonNul(-6, 6), p3 = A.nonNul(-9, 9), r3;
+        do { r3 = A.nonNul(-9, 9); } while (r3 === p3);
+        q.prefixe = 'm =';
+        q.texte = 'Pour quelle valeur du nombre $m$ l\'équation $mx' + (p3 > 0 ? '+' : '') + p3 + '=' + poly([k3, r3]) + '$ n\'a-t-elle aucune solution ?';
+        q.attendu = k3;
+        q.explication = 'Si $m\\neq' + k3 + '$, on obtient $(m' + (k3 > 0 ? '-' + k3 : '+' + -k3) + ')x=' + (r3 - p3) + '$ : une seule solution.<br>' +
+            'Si $m=' + k3 + '$, les termes en $x$ s\'éliminent et il reste $' + p3 + '=' + r3 + '$ : impossible, aucune solution. Donc $m=' + k3 + '$.';
+        return q;
+    };
+
     /* =====================================================================
        Série 11 (semaine du 30 novembre au 4 décembre ; J4 = bilan à la maison, DS 3) :
        probabilités, milieu, proportion de proportion (QCM) ; médiane, inéquations,
@@ -3463,14 +3558,25 @@
         evolutionSimple: '$CM=' + frac('\\text{valeur finale}', '\\text{valeur initiale}') + '$. Si $CM>1$, c\'est une hausse ; si $CM<1$, une baisse.<br>' +
             'Exemple : un prix passe de $80$ € à $60$ € : $CM=' + frac(60, 80) + '=0{,}75$ ; c\'est une baisse de $25\\,\\%$.',
         proportionPourcentFinal: 'Pour une proportion de proportion, on <b>multiplie</b> les deux proportions.<br>' +
-            'Exemple : $30\\,\\%$ des adhérents sont des enfants et, parmi eux, $50\\,\\%$ font de la compétition : $0{,}3\\times0{,}5=0{,}15$, soit $15\\,\\%$ des adhérents.'
+            'Exemple : $30\\,\\%$ des adhérents sont des enfants et, parmi eux, $50\\,\\%$ font de la compétition : $0{,}3\\times0{,}5=0{,}15$, soit $15\\,\\%$ des adhérents.',
+        equationNbSolutions: 'En résolvant une équation, il arrive que les termes en $x$ <b>s\'éliminent</b> des deux côtés. Il reste alors une égalité entre deux nombres :<br>' +
+            '– si elle est <b>vraie</b> (par exemple $5=5$), tous les réels sont solutions : $S=\\mathbb{R}$ ;<br>' +
+            '– si elle est <b>fausse</b> (par exemple $5=8$), il n\'y a <b>aucune</b> solution : $S=\\emptyset$.<br>' +
+            'Exemple : $2(x+1)=2x+3$ donne $2x+2=2x+3$, soit $2=3$ : faux, aucune solution.',
+        equationNbSolutionsSimple: '1. On développe et on réduit chaque membre.<br>' +
+            '2. Les termes en $x$ s\'éliminent : il reste une égalité entre nombres qui contient $k$.<br>' +
+            '3. Pour avoir une <b>infinité</b> de solutions, cette égalité doit être <b>toujours vraie</b> : on résout cette petite équation d\'inconnue $k$.<br>' +
+            'Exemple : $3(x+1)+k=3x+10$ donne $3x+3+k=3x+10$, il reste $3+k=10$, donc $k=7$.'
     };
+    // titre de l'encadré quand ce n'est pas un « Rappel » (moteur.js : q.rappelTitre)
+    var RAPPEL_TITRES = { equationNbSolutionsSimple: 'Méthode' };
     // chaque question verte reçoit son rappel
     Object.keys(RAPPELS).forEach(function (nom) {
         var generer = Auto[nom];
         Auto[nom] = function (niveau) {
             var q = generer(niveau);
             if (niveau === 1) { q.rappel = RAPPELS[nom]; q.rappelNom = nom; }   // rappelNom : traduction du rappel (traduction.js)
+            if (niveau === 1 && RAPPEL_TITRES[nom]) q.rappelTitre = RAPPEL_TITRES[nom];
             return q;
         };
     });

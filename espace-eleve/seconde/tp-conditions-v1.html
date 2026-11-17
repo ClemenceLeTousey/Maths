@@ -8,7 +8,7 @@
     <link rel="manifest" href="../../manifest.json">
     <meta name="apple-mobile-web-app-title" content="Maths Lebrun">
     <link rel="stylesheet" href="../../style.css">
-    <link rel="stylesheet" href="../interactif.css?v=20261114c">
+    <link rel="stylesheet" href="../interactif.css?v=20261117a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
@@ -103,6 +103,7 @@
         .reponses label code { white-space: nowrap; }
         .reponses input { width: 6em; font-family: var(--f-mono); }
         .reponses input.long { width: 10em; }
+        .interactif input:not([type]), .interactif .pourquoi select, .interactif table.trace select { background: var(--case-fond); border-color: var(--case-bord); }
         .reponses.une-par-une { flex-direction: column; align-items: stretch; gap: 8px; }
         /* lignes « étiquette | case | Valider | ✓/✗ » alignées en colonnes */
         .case-ligne { display: grid; grid-template-columns: minmax(13.5em, max-content) 12em auto 1fr; align-items: center; gap: 6px 10px; }
@@ -127,7 +128,7 @@
         .pourquoi { margin-top: 10px; }
         .pourquoi p { margin: 6px 0; }
         .pourquoi .case-ligne { margin: 6px 0; }
-        .pourquoi select { font: inherit; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--text); }
+        .pourquoi select { font: inherit; padding: 3px 6px; border: 1px solid var(--case-bord); border-radius: 6px; background: var(--case-fond); color: var(--text); }
         .qcm { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
         .qcm label { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
         .qcm label:has(input:checked) { border-color: var(--c-seconde); background: var(--bleu-doux); }

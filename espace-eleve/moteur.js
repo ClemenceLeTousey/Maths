@@ -464,7 +464,7 @@
                         return { ok: r === q.attendu, r: r };
                     };
                 } else if (type === 'qcm') {
-                    var choix = -1, groupe = el('div', 'q-qcm');
+                    var choix = -1, groupe = el('div', 'q-qcm' + (q.qcmLignes ? ' q-qcm-lignes' : ''));  // q.qcmLignes : une option par ligne
                     q.options.forEach(function (o, k) {
                         var b = el('button', 'q-option'); b.type = 'button';
                         b.innerHTML = '<span class="q-lettre">' + 'ABCDEF'[k] + '</span> ' + mixte(o);
@@ -503,7 +503,7 @@
                     };
                     var libelleRappel = function () {
                         var tr = rappelTraduit();
-                        btnRappel.textContent = tr ? tr.mots.bouton : 'Je ne sais pas, j\'ai besoin d\'un rappel';
+                        btnRappel.textContent = tr ? tr.mots.bouton : (q.rappelTitre === 'Méthode' ? 'Je ne sais pas, j\'ai besoin de la méthode' : 'Je ne sais pas, j\'ai besoin d\'un rappel');
                         if (tr) btnRappel.lang = tr.lg; else btnRappel.removeAttribute('lang');
                     };
                     var remplirRappel = function () {
@@ -511,7 +511,7 @@
                         boiteRappel.lang = tr ? tr.lg : 'fr';
                         boiteRappel.innerHTML = tr
                             ? '<strong>' + tr.mots.titre + '</strong><br>' + mixte(tr.texte) + '<br><em>' + tr.mots.fin + '</em>'
-                            : '<strong>Rappel</strong><br>' + mixte(q.rappel) + '<br><em>À toi maintenant : réponds à la question.</em>';
+                            : '<strong>' + (q.rappelTitre || 'Rappel') + '</strong><br>' + mixte(q.rappel) + '<br><em>À toi maintenant : réponds à la question.</em>';
                     };
                     li.majRappel = function () { if (boiteRappel) remplirRappel(); else if (btnRappel) libelleRappel(); };
                     btnRappel = el('button', 'secondaire rappel-btn'); btnRappel.type = 'button';

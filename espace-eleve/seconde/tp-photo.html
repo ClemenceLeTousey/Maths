@@ -8,7 +8,7 @@
     <link rel="manifest" href="../../manifest.json">
     <meta name="apple-mobile-web-app-title" content="Maths Lebrun">
     <link rel="stylesheet" href="../../style.css">
-    <link rel="stylesheet" href="../interactif.css?v=20261114c">
+    <link rel="stylesheet" href="../interactif.css?v=20261117a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
@@ -78,6 +78,7 @@
         .reponses label { display: flex; align-items: center; gap: 6px; }
         .reponses input { width: 7em; font-family: var(--f-mono); }
         .reponses input.long { width: 12em; }
+        .interactif input:not([type]), .interactif .pourquoi select, .interactif table.trace select { background: var(--case-fond); border-color: var(--case-bord); }
 
         .sortie:empty { display: none; }
         .sortie { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--bg); }

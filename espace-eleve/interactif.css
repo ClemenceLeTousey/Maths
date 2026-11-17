@@ -5,6 +5,13 @@
     :root { --ok: #51cf66; --ko: #ff8787; --attention: #ffa94d; --ok-fond: #142a1a; --ko-fond: #2e1717; }
 }
 
+/* Cases à remplir des TP : bleu plus soutenu en mode clair (sombre et thèmes : inchangé) */
+:root { --case-fond: #d3e1ff; --case-bord: #5d86d6; }
+:root[data-theme="dark"], :root.matrix, :root.futur, :root.halloween { --case-fond: var(--bleu-doux); --case-bord: var(--line); }
+@media (prefers-color-scheme: dark) and (hover: none) and (pointer: coarse) {
+    :root { --case-fond: var(--bleu-doux); --case-bord: var(--line); }
+}
+
 .interactif { max-width: 820px; margin: 24px auto 40px; padding: 0 16px; }
 
 .interactif button {
@@ -80,6 +87,8 @@ table.res td.cliquable:hover { outline: 2px solid var(--c-seconde); outline-offs
 .q-texte { flex: 1 1 0; min-width: 0; }
 .q-texte .katex-display { margin: 0.5em 0; }
 .q-qcm { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; flex: 1 1 100%; }
+.q-qcm.q-qcm-lignes { grid-template-columns: 1fr; }
+.q-qcm.q-qcm-lignes .q-option { text-align: left; }
 .interactif button.q-option {
     background: var(--surface); color: var(--text); border: 1px solid var(--line); text-align: left;
     display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 1rem;
