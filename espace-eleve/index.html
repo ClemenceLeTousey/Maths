@@ -100,6 +100,9 @@
         .mon-trimestre .tuile .t { font-size: 0.9rem; color: var(--muted); }
         .mon-trimestre .tuile .v { font-size: 1.6rem; font-weight: 700; margin-top: 2px; }
         .mon-trimestre .tuile .v small { font-size: 0.9rem; font-weight: 400; color: var(--muted); }
+        .mon-trimestre .appreciation { margin: 0 0 12px; padding: 10px 14px; border: 1px solid var(--line); border-left-width: 4px; border-radius: 10px; background: var(--surface); }
+        .mon-trimestre .appreciation .t { font-size: 0.9rem; color: var(--muted); }
+        .mon-trimestre .appreciation p { margin: 4px 0 0; line-height: 1.45; }
         .mon-trimestre .tuile .v.n-bon, .mon-trimestre .tuile .v.n-moyen, .mon-trimestre .tuile .v.n-faible { background: none; }
         .mon-trimestre table td:nth-child(n+3), .mon-trimestre table th:nth-child(n+3) { text-align: center; white-space: nowrap; }
         .mon-trimestre table td, .mon-trimestre table th { text-align: left; }
@@ -839,6 +842,12 @@
             tuile('Moyenne du ' + ordinal + ' trimestre', d.moyenne != null ? d.moyenne : n.total);
             tuile('Moyenne aux devoirs surveillés', d.moyenneDS, 'Sans les interrogations ni les automatismes' + (d.nbDS ? ' (' + d.nbDS + ' DS)' : '') + '.');
             sec.appendChild(tuiles);
+            if (d.appreciation) {
+                var app = el('div', 'appreciation');
+                app.appendChild(el('div', 't', 'Appréciation du ' + ordinal + ' trimestre'));
+                app.appendChild(el('p', null, d.appreciation));
+                sec.appendChild(app);
+            }
             if (d.evals && d.evals.length) {
                 sec.appendChild(el('p', 'com', 'Mes notes aux évaluations :'));
                 var defile = el('div', 'tableau-defile'), tb = el('table', 'res'), tete = el('tr');

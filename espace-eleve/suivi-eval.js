@@ -498,6 +498,26 @@
         return { cols: cols, eleves: eleves };
     }
 
+    // Export Pronote des appréciations (« Élève;H.Abs.;Ret.;N.Notes;Moy.;App. A : Appréciations ») : nom normalisé -> appréciation
+    function lireAppreciations(texte) {
+        var l = lignesCSV(texte);
+        if (!l.length || !/^[ÉE]l[èe]ve/i.test((l[0][0] || '').trim())) return null;
+        var col = -1;
+        l[0].forEach(function (h, i) { if (col < 0 && /^App/i.test(h.trim())) col = i; });
+        if (col < 0) return null;
+        var m = {}, eleves = [];
+        l.slice(1).forEach(function (r) {
+            var nom = (r[0] || '').trim(), a = (r[col] || '').trim();
+            if (nom && a) { m[sansAccents(nom)] = a; eleves.push({ nom: nom }); }
+        });
+        return { app: m, nb: eleves.length, eleves: eleves };
+    }
+    function toutesAppreciations() {
+        var m = {};
+        Object.keys(pronote).forEach(function (f) { var a = lireAppreciations(pronote[f]); if (a) Object.assign(m, a.app); });
+        return m;
+    }
+
     // identifiants des élèves (comptes-*.csv) : nom normalisé -> [codes]
     function codesParNom() {
         var noms = window.interactifNoms ? window.interactifNoms() : {}, m = {};
@@ -516,11 +536,20 @@
         if (!noms.length) { zone.innerHTML = ''; return; }
         var m = codesParNom(), avecNoms = Object.keys(m).length, trim = $('se-trim').value;
         var h = '<div class="tableau-defile"><table class="res se-table"><tr><th>Fichier</th><th>Classe</th><th>Élèves</th><th>Évaluations</th><th></th></tr>';
+        var apps = toutesAppreciations();
         noms.forEach(function (f) {
+            var a = lireAppreciations(pronote[f]);
+            if (a) {
+                var cla = avecNoms ? classePronote(a, m) : null;
+                h += '<tr><td>' + esc(f) + '</td><td>' + (cla ? esc(cla) : '<span class="n-tent">?</span>') + '</td><td>' + a.nb + '</td><td>Appréciations du trimestre</td><td><span class="n-tent">jointes à « Publier T' + esc(trim) + ' »</span></td></tr>';
+                return;
+            }
             var p = lirePronote(pronote[f]);
             if (!p) { h += '<tr><td>' + esc(f) + '</td><td colspan="4">non reconnu (export Pronote attendu)</td></tr>'; return; }
             var cl = avecNoms ? classePronote(p, m) : null;
-            h += '<tr><td>' + esc(f) + '</td><td>' + (cl ? esc(cl) : '<span class="n-tent">?</span>') + '</td><td>' + p.eleves.filter(function (e) { return e.moyenne != null; }).length + '</td><td>' +
+            var nbApp = p.eleves.filter(function (e) { return apps[sansAccents(e.nom)]; }).length;
+            h += '<tr><td>' + esc(f) + '</td><td>' + (cl ? esc(cl) : '<span class="n-tent">?</span>') + '</td><td>' + p.eleves.filter(function (e) { return e.moyenne != null; }).length +
+                 (nbApp ? ' <span class="n-tent">(' + nbApp + ' appréciation(s))</span>' : '') + '</td><td>' +
                  p.cols.map(function (c) { return esc(c.l) + ' <span class="n-tent">(' + c.date + ', /' + fmt(c.sur) + ')</span>'; }).join(' · ') + '</td><td>' +
                  '<button type="button" data-pronote="' + esc(f) + '"' + (cl ? '' : ' disabled') + '>Publier T' + esc(trim) + '</button></td></tr>';
         });
@@ -534,15 +563,19 @@
         var mdp = mdpProf(), msg = $('se-pronote-msg'), p = lirePronote(pronote[f]), m = codesParNom(), cl = classePronote(p, m);
         var trim = $('se-trim').value, ev = 'Trimestre ' + trim;
         if (!mdp) { msg.textContent = 'Reconnectez-vous à l\'espace professeure pour publier.'; return; }
-        var envoi = [], sansCompte = [];
+        var envoi = [], sansCompte = [], apps = toutesAppreciations();
         p.eleves.forEach(function (e) {
             if (e.moyenne == null) return;   // pas de moyenne (arrivé(e) dans une autre classe, non noté(e))
             var code = (m[sansAccents(e.nom)] || []).filter(function (c) { return c.toUpperCase().indexOf(cl + '-') === 0; })[0];
             if (!code) { sansCompte.push(e.nom); return; }
-            envoi.push({ code: code, total: e.moyenne, sur: 20, detail: { trimestre: Number(trim), moyenne: e.moyenne, moyenneDS: e.moyenneDS, nbDS: e.nbDS, evals: e.evals } });
+            var detail = { trimestre: Number(trim), moyenne: e.moyenne, moyenneDS: e.moyenneDS, nbDS: e.nbDS, evals: e.evals };
+            if (apps[sansAccents(e.nom)]) detail.appreciation = apps[sansAccents(e.nom)];
+            envoi.push({ code: code, total: e.moyenne, sur: 20, detail: detail });
         });
         if (!envoi.length) { msg.textContent = 'Aucun élève reconnu dans ' + f + '.'; return; }
-        var q = 'Publier les moyennes du trimestre ' + trim + ' pour ' + envoi.length + ' élève(s) de ' + cl + ' ?';
+        var nbApp = envoi.filter(function (x) { return x.detail.appreciation; }).length;
+        var q = 'Publier les moyennes du trimestre ' + trim + ' pour ' + envoi.length + ' élève(s) de ' + cl + ' ?' +
+                (nbApp ? '\n\nAvec l\'appréciation du trimestre pour ' + nbApp + ' élève(s).' : '\n\nSans appréciation (aucun export d\'appréciations chargé pour ces élèves).');
         if (sansCompte.length) q += '\n\nNon publiés (pas d\'identifiant en ' + cl + ') : ' + sansCompte.join(', ') + '.';
         if (!confirm(q)) return;
         msg.textContent = 'Publication…';
