@@ -14,6 +14,7 @@
     <script src="config.js"></script>
     <script src="moteur.js?v=20261114c"></script>
     <script src="soutien.js"></script>
+    <script src="sondage.js?v=20261118"></script>
     <style>
         .soutien { margin-top: 4px; }
         table.res tr.entetes th { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
@@ -1018,6 +1019,7 @@
             mesNotes(s);
             mesMessages(s);
             notifications(s);
+            if (window.SONDAGE) SONDAGE.verifier(s);   // fenêtre « Une petite question » (sondage.js)
             if (!s) return;
             Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(afficher, function (x) {
                 if (/Session/.test(x.message)) { Interactif.deconnecter(); Interactif.bandeau(document.getElementById('bandeau'), charger); }
