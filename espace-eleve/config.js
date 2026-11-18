@@ -103,7 +103,7 @@ window.INTERACTIF_CATALOGUE = [
     // TP4 Pixels et TP5 Filtres : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
     { niveau: 'seconde', id: 'seconde/tp-pixels', groupe: 'TP Python · Créer une image pixel par pixel', titre: 'Pixels, couleurs, double boucle (9 étapes)', court: 'TP Pixels', url: 'seconde/tp-pixels.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
       codeAcces: '0e9a00530e9b3e7bb719421ed987bc824b42e1415efed2b85a4cefabec7162bc', antiTriche: true },
-    { niveau: 'seconde', id: 'seconde/tp-filtres', groupe: 'TP Python · Retoucher une photo : les filtres', titre: 'getpixel, filtres, contours (9 étapes)', court: 'TP Filtres', url: 'seconde/tp-filtres.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
+    { niveau: 'seconde', id: 'seconde/tp-filtres', groupe: 'TP Python · Retoucher une photo : les filtres', titre: 'getpixel, filtres, contours (9 étapes)', court: 'TP Filtres', url: 'seconde/tp-filtres.html', tp: true, vueProf: true, comptes: ['PROF-2NDE', 'JIMMY'],
       codeAcces: '37add347a24e9e04cf1a91317563727261e1122f32b4ec611c81fb60a5c575ff', antiTriche: true },
     // TP2 hybride (PDF grands caractères à lire + questions en ligne, mêmes numéros) : 2H-TARTAGLIA seulement dans la liste (PROF-2NDE y accède par la case « Version hybride » du TP2), même code d'accès que le TP2
     { niveau: 'seconde', id: 'seconde/tp-conditions-hybride', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif · questions en ligne (13 questions)', court: 'TP Cond. hyb.', url: 'seconde/tp-conditions-hybride.html', tp: true, vueProf: true, comptes: ['2H-TARTAGLIA'],
@@ -275,12 +275,12 @@ window.INTERACTIF_TP_ORDRE = [
     { niveau: 'seconde', nom: 'TP5 · Retoucher une photo : les filtres', id: 'seconde/tp-filtres' },
     // TP6 à TP11 : préparés (sujets PDF), version interactive à venir ; PROF-2NDE seulement (retirer « comptes » pour publier)
     // Les corrigés restent hors ligne (dépôt public) : les ajouter avec « corrige » au moment de les donner.
-    { niveau: 'seconde', nom: 'TP6 · Les listes en Python', texte: 'Indices, ajout, parcours d’une liste', pdf: 'seconde/tp/tp6-sujet.pdf', comptes: ['PROF-2NDE'] },
-    { niveau: 'seconde', nom: 'TP7 · Balayage et dichotomie', texte: 'Valeurs approchées de √2', pdf: 'seconde/tp/tp7-sujet.pdf', comptes: ['PROF-2NDE'] },
-    { niveau: 'seconde', nom: 'TP8 · Simulation et loi des grands nombres', texte: 'Simuler une expérience aléatoire', pdf: 'seconde/tp/tp8-sujet.pdf', comptes: ['PROF-2NDE'] },
-    { niveau: 'seconde', nom: 'TP9 · Géométrie repérée', texte: 'Milieu, distance, alignement', pdf: 'seconde/tp/tp9-sujet.pdf', comptes: ['PROF-2NDE'] },
-    { niveau: 'seconde', nom: 'TP10 · Extremums et longueur de courbe', texte: 'Approcher un extremum, une longueur', pdf: 'seconde/tp/tp10-sujet.pdf', comptes: ['PROF-2NDE'] },
-    { niveau: 'seconde', nom: 'TP11 · Statistiques et tableaux croisés', texte: 'Indicateurs, filtrer et croiser', pdf: 'seconde/tp/tp11-sujet.pdf', comptes: ['PROF-2NDE'] },
+    { niveau: 'seconde', nom: 'TP6 · Les listes en Python', texte: 'Indices, ajout, parcours d’une liste', pdf: 'seconde/tp/tp6-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
+    { niveau: 'seconde', nom: 'TP7 · Balayage et dichotomie', texte: 'Valeurs approchées de √2', pdf: 'seconde/tp/tp7-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
+    { niveau: 'seconde', nom: 'TP8 · Simulation et loi des grands nombres', texte: 'Simuler une expérience aléatoire', pdf: 'seconde/tp/tp8-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
+    { niveau: 'seconde', nom: 'TP9 · Géométrie repérée', texte: 'Milieu, distance, alignement', pdf: 'seconde/tp/tp9-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
+    { niveau: 'seconde', nom: 'TP10 · Extremums et longueur de courbe', texte: 'Approcher un extremum, une longueur', pdf: 'seconde/tp/tp10-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
+    { niveau: 'seconde', nom: 'TP11 · Statistiques et tableaux croisés', texte: 'Indicateurs, filtrer et croiser', pdf: 'seconde/tp/tp11-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
     // Première (1TC) : activités interactives en plusieurs étapes (onglet « Activités »)
     { niveau: 'premiere', nom: 'Probabilités conditionnelles · Contrôlé positif… donc dopé ?', id: 'premiere/activite-probas' }
 ];

@@ -643,7 +643,7 @@ def _console(ligne, n):
             try { ouvert = localStorage.getItem('tp-acces:' + ID) === FICHE.codeAcces; } catch (x) {}
             // compte PROF-2NDE en « mode élève » : le code est demandé, comme à un élève
             var modeEleve = false; try { modeEleve = localStorage.getItem('tp-mode') === 'eleve'; } catch (x) {}
-            if (!ouvert && !(ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE' && !modeEleve)) {
+            if (!ouvert && !(ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE' && !modeEleve) && !(ses && String(ses.code || '').toUpperCase() === 'JIMMY')) {   // JIMMY : jamais de code d'accès
                 document.getElementById('barre-etapes').hidden = true;
                 document.getElementById('py-etat').hidden = true;
                 var zv = document.getElementById('etapes');

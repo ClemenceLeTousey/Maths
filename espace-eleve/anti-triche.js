@@ -53,6 +53,8 @@
         if (courant) courant.detacher();
         var g = { terminer: function () {}, confirmer: function (m) { return confirm(m); }, detacher: function () {} };
         if (!o.actif || !window.INTERACTIF_CODE_DEBLOCAGE) return g;
+        // compte JIMMY : pas de quiz surveillé (ni plein écran ni blocage)
+        try { var ses = window.Interactif && Interactif.session(); if (ses && String(ses.code || '').toUpperCase() === 'JIMMY') return g; } catch (x) {}
 
         var id = o.id, fq = o.formulaire, carte = o.carte;
         var etat = lire(id);

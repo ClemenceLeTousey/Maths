@@ -328,6 +328,7 @@
             if (!ex.codeAcces) return true;
             var s = Interactif.session();
             if (compteProf2nde()) return true;   // comptes professeure PROF-2NDE et PROF-1TC (TEST-01 supprimé)
+            if (s && String(s.code || '').toUpperCase() === 'JIMMY') return true;   // compte JIMMY : TP Python sans code d'accès
             if (Interactif.accesTemporaire(ex, s) > 0) return true;   // code temporaire en cours
             try { return localStorage.getItem('tp-acces:' + ex.id) === Interactif.codeAccesTP(ex, s); } catch (e) { return false; }
         }
