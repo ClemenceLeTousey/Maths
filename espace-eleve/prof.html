@@ -18,11 +18,11 @@
     <script src="moteur.js?v=20261114c"></script>
     <script src="soutien.js"></script>
     <script src="plan-travail.js"></script>
-    <script src="suivi-eval.js"></script>
+    <script src="suivi-eval.js?v=20261118"></script>
     <script src="notifications-prof.js"></script>
-    <script src="en-ligne.js"></script>
-    <script src="remediation-suivi.js"></script>
-    <script src="sondage.js?v=20261118b"></script>
+    <script src="en-ligne.js?v=20261118"></script>
+    <script src="remediation-suivi.js?v=20261118"></script>
+    <script src="sondage.js?v=20261118d"></script>
     <style>
         .interactif { max-width: 1100px; }
         .outils { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 16px; }
@@ -198,7 +198,6 @@
         <div id="vue" hidden>
             <div class="onglets" role="tablist" aria-label="Rubriques de l'espace professeure">
                 <button type="button" role="tab" id="onglet-suivi" aria-controls="panneau-suivi" data-onglet="suivi">Suivi QF</button>
-                <button type="button" role="tab" id="onglet-messages" aria-controls="panneau-messages" data-onglet="messages">Messages</button>
                 <button type="button" role="tab" id="onglet-suivi-eval" aria-controls="panneau-suivi-eval" data-onglet="suivi-eval">Suivi Eval</button>
                 <button type="button" role="tab" id="onglet-suivi-tp" aria-controls="panneau-suivi-tp" data-onglet="suivi-tp">Suivi TP</button>
                 <button type="button" role="tab" id="onglet-remediation" aria-controls="panneau-remediation" data-onglet="remediation">Remédiation</button>
@@ -206,6 +205,8 @@
                 <button type="button" role="tab" id="onglet-plan" aria-controls="panneau-plan" data-onglet="plan">Plan de travail</button>
                 <button type="button" role="tab" id="onglet-en-ligne" aria-controls="panneau-en-ligne" data-onglet="en-ligne">En ligne</button>
                 <button type="button" role="tab" id="onglet-sondage" aria-controls="panneau-sondage" data-onglet="sondage">Sondage</button>
+                <button type="button" role="tab" id="onglet-messages" aria-controls="panneau-messages" data-onglet="messages">Messages</button>
+                <button type="button" role="tab" id="onglet-comptes" aria-controls="panneau-comptes" data-onglet="comptes">Comptes</button>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-messages" aria-labelledby="onglet-messages" hidden>
@@ -360,6 +361,19 @@
                 </div>
             </div>
 
+            <div class="panneau" role="tabpanel" id="panneau-comptes" aria-labelledby="onglet-comptes" hidden>
+                <h2>Comptes des élèves</h2>
+                <p class="aide">Chargez ici les fichiers <code>comptes-*.csv</code> (dossier « Exercices interactifs/comptes » sur cet ordinateur) pour afficher les noms à la place des codes dans tous les onglets. Les fichiers sont lus par le navigateur et ne sont jamais envoyés ; seuls le nom et le code sont gardés (pas les mots de passe).</p>
+                <div class="outils">
+                    <label>Fichiers : <input type="file" id="noms" accept=".csv" multiple></label>
+                    <label><input type="checkbox" id="memoriser"> mémoriser les noms sur cet ordinateur</label>
+                    <button type="button" id="noms-oublier" class="secondaire">Oublier les noms</button>
+                </div>
+                <p id="comptes-resume" aria-live="polite"></p>
+                <div class="tableau-defile"><table class="res" id="comptes-tableau" style="width:auto"></table></div>
+                <div id="comptes-sans-nom"></div>
+            </div>
+
             <div class="panneau" role="tabpanel" id="panneau-remediation" aria-labelledby="onglet-remediation" hidden>
                 <h2>Suivi des remédiations en ligne</h2>
                 <p class="aide">Progression des élèves sur la page de remédiation, quand ils sont connectés à l'espace élève : nombre d'exercices réussis par thème (vert dès 40 %, vert foncé dès 80 % ; « vu » = thème ouvert sans exercice réussi), temps passé page affichée, dernière activité. Une page ouverte sans connexion n'est pas comptée. Nécessite le script maj-remediation.sql dans Supabase (sinon, enregistrement de secours toutes les 10 minutes). Cliquer sur « Actualiser » (onglet Suivi QF) pour les dernières données.</p>
@@ -389,8 +403,7 @@
             <div class="outils">
                 <label>Classe <select id="classe"></select></label>
                 <label>Série <select id="serie"></select></label>
-                <label>Noms : <input type="file" id="noms" accept=".csv" multiple> (fichiers comptes-*.csv, lus sur cet ordinateur uniquement)</label>
-                <label><input type="checkbox" id="memoriser"> mémoriser les noms sur cet ordinateur</label>
+                <span class="aide" style="margin:0" id="noms-rappel"></span>
                 <button type="button" id="export">Exporter en CSV</button>
                 <button type="button" id="actualiser">Actualiser</button>
                 <button type="button" id="deconnexion" class="secondaire">Se déconnecter</button>
@@ -449,6 +462,7 @@
                 afficher();
                 SuiviTP.remplir();
                 if (window.SuiviRemed) SuiviRemed.afficher();
+                afficherComptes();
                 Interactif.rpc('prof_creneaux', { p_mdp: mdp }).then(function (l) { inscriptions = l || []; afficherSoutien(); },
                     function (x) { inscriptions = null; document.getElementById('soutien-etat').textContent = 'Inscriptions indisponibles (' + x.message + ') : le script maj-soutien.sql a-t-il été lancé dans Supabase ?'; });
                 chargerMessages();
@@ -711,9 +725,46 @@
                         if (c.length >= 2 && c[1]) noms[c[1].trim().toUpperCase()] = c[0].replace(/^"|"$/g, '').trim();
                     });
                 });
-                memoriser(); afficher(); SuiviTP.remplir(); if (window.SuiviEval) SuiviEval.pronote(); if (window.SuiviRemed) SuiviRemed.afficher();
+                memoriser(); nomsChanges();
             });
+            e.target.value = '';   // permet de recharger le même fichier
         };
+        document.getElementById('noms-oublier').onclick = function () {
+            if (!Object.keys(noms).length || !confirm('Oublier tous les noms chargés sur cet ordinateur ?')) return;
+            Object.keys(noms).forEach(function (k) { delete noms[k]; });
+            document.getElementById('memoriser').checked = false; memoriser(); nomsChanges();
+        };
+        // après un changement de noms : tous les onglets qui les affichent
+        function nomsChanges() {
+            afficherComptes();
+            if (!donnees) return;
+            afficher(); SuiviTP.remplir(); if (window.SuiviEval) SuiviEval.pronote(); if (window.SuiviRemed) SuiviRemed.afficher();
+            if (window.SONDAGE && !document.getElementById('panneau-sondage').hidden) SONDAGE.demarrer();
+        }
+        window.afficherComptes = afficherComptes;   // pour l'ouverture de l'onglet (autre script)
+        afficherComptes();
+        // onglet Comptes : noms chargés par classe, comptes de la base sans nom
+        function afficherComptes() {
+            var n = Object.keys(noms).length, resume = document.getElementById('comptes-resume');
+            document.getElementById('noms-rappel').textContent = n ? n + ' noms chargés' : 'Noms : onglet Comptes';
+            var tab = document.getElementById('comptes-tableau'), sans = document.getElementById('comptes-sans-nom');
+            if (!donnees) {
+                resume.innerHTML = '<b>' + n + '</b> nom' + (n > 1 ? 's' : '') + ' chargé' + (n > 1 ? 's' : '') + '.';
+                tab.innerHTML = ''; sans.innerHTML = ''; return;
+            }
+            var parClasse = {};
+            donnees.eleves.forEach(function (e) { (parClasse[e.classe] = parClasse[e.classe] || []).push(e.code); });
+            var classes = Object.keys(parClasse).sort(ordreClasses), manquants = [];
+            tab.innerHTML = '<tr><th>Classe</th><th>Comptes</th><th>Avec nom</th></tr>' + classes.map(function (c) {
+                var avec = parClasse[c].filter(function (code) { return noms[code]; }).length;
+                parClasse[c].forEach(function (code) { if (!noms[code]) manquants.push(code); });
+                var ok = avec === parClasse[c].length;
+                return '<tr><td>' + c + '</td><td>' + parClasse[c].length + '</td><td' + (ok ? ' style="background:#D3F9D8;color:#1b1b1b"' : '') + '>' + avec + (ok ? ' ✓' : '') + '</td></tr>';
+            }).join('');
+            resume.innerHTML = '<b>' + n + '</b> nom' + (n > 1 ? 's' : '') + ' chargé' + (n > 1 ? 's' : '') + ' · ' + donnees.eleves.length + ' comptes dans la base' +
+                (Object.keys(noms).length && document.getElementById('memoriser').checked ? ' · mémorisés sur cet ordinateur' : '');
+            sans.innerHTML = manquants.length ? '<p class="aide" style="margin-top:12px">Comptes sans nom (' + manquants.length + ') : ' + manquants.sort().join(', ') + '</p>' : '';
+        }
         document.getElementById('memoriser').onchange = memoriser;
         function memoriser() {
             try {
@@ -1118,6 +1169,7 @@
             if (nom === 'en-ligne' && !document.getElementById('vue').hidden) EnLigne.demarrer();
             if (nom === 'remediation' && !document.getElementById('vue').hidden) SuiviRemed.demarrer();
             if (nom === 'sondage' && !document.getElementById('vue').hidden) SONDAGE.demarrer();
+            if (nom === 'comptes' && window.afficherComptes) afficherComptes();
         }
         onglets.forEach(function (o) {
             o.onclick = function () { ouvrirOnglet(o.dataset.onglet); };

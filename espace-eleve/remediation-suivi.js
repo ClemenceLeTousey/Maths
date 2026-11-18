@@ -3,7 +3,7 @@
    Progression des élèves sur les pages de remédiation en ligne (remediation-seconde/remediation-ds2.html…).
    La page envoie, pour l'élève connecté, les exercices réussis par thème, les thèmes ouverts et le temps
    passé (exercice « remediation-ds2 » dans la table resultats ; voir maj-remediation.sql).
-   Les noms viennent des fichiers comptes-*.csv chargés dans Suivi QF (sur cet ordinateur seulement).
+   Les noms viennent des fichiers comptes-*.csv chargés dans l'onglet Comptes (sur cet ordinateur seulement).
    ========================================================================== */
 var SuiviRemed = (function () {
     var REMEDIATIONS = [

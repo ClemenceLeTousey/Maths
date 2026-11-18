@@ -30,7 +30,13 @@ window.SONDAGE = (function () {
         'dialog.sondage .sondage-etat { flex: 1 1 100%; margin: 0; color: var(--muted); font-size: 0.9rem; min-height: 1.2em; }' +
         '.so-statut { display: inline-block; font-size: 0.8rem; padding: 1px 8px; border-radius: 10px; border: 1px solid var(--line); color: var(--muted); }' +
         '.so-statut.on { color: #fff; background: #2f9e44; border-color: #2f9e44; }' +
-        '.so-classes { display: flex; flex-wrap: wrap; gap: 4px 16px; }';
+        '.so-classes { display: flex; flex-wrap: wrap; gap: 4px 16px; }' +
+        '.so-colonnes { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }' +
+        '.so-col { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }' +
+        '.so-col h4 { margin: 0 0 6px; display: flex; justify-content: space-between; gap: 8px; }' +
+        '.so-col ul { margin: 0; padding-left: 1.1em; font-size: 0.92rem; }' +
+        '.so-nb { color: var(--muted); font-weight: 600; }' +
+        '.so-manque { border-style: dashed; }';
     function style() {
         if ($('sondage-style')) return;
         var st = document.createElement('style'); st.id = 'sondage-style'; st.textContent = STYLE;
@@ -162,12 +168,31 @@ window.SONDAGE = (function () {
                 '<span style="display:inline-block;height:12px;border-radius:4px;background:var(--c-seconde);vertical-align:middle;width:' + Math.round(160 * v / max) + 'px"></span> ' +
                 v + (liste.length ? ' <span class="n-tent">(' + pc + ' %)</span>' : '') + '</td></tr>';
         }).join('') + '</table>';
+        function nomEleve(code) { return n[code] ? esc(n[code]) : esc(code); }
+        function tri(a, b) { return (n[a] || a).localeCompare(n[b] || b, 'fr'); }
+        function liEleve(code, classe) { return '<li>' + nomEleve(code) + ' <span class="n-tent">' + esc(n[code] ? code : classe) + '</span></li>'; }
+        var classeDe = {}; eleves().forEach(function (e) { classeDe[e.code] = e.classe; });
+        // une colonne par réponse : qui a répondu quoi
+        var colonnes = options.map(function (o) {
+            var codes = liste.filter(function (r) { return r.reponse === o; }).map(function (r) { classeDe[r.code] = r.classe; return r.code; }).sort(tri);
+            return '<div class="so-col"><h4>' + esc(o) + ' <span class="so-nb">' + codes.length + '</span></h4>' +
+                (codes.length ? '<ul>' + codes.map(function (c) { return liEleve(c, classeDe[c]); }).join('') + '</ul>' : '<p class="aide" style="margin:0">Personne</p>') + '</div>';
+        });
+        // élèves visés qui n'ont pas encore répondu
+        var ont = {}; liste.forEach(function (r) { ont[r.code] = 1; });
+        var tous = !x.codes.length && !x.classes.length;
+        var manquent = eleves().filter(function (e) { return !ont[e.code] && (tous || x.codes.indexOf(e.code) >= 0 || x.classes.indexOf(e.classe) >= 0); })
+            .map(function (e) { return e.code; }).sort(tri);
+        if (eleves().length) colonnes.push('<div class="so-col so-manque"><h4>Pas encore répondu <span class="so-nb">' + manquent.length + '</span></h4>' +
+            (manquent.length ? '<ul>' + manquent.map(function (c) { return liEleve(c, classeDe[c]); }).join('') + '</ul>' : '<p class="aide" style="margin:0">Tout le monde a répondu 🎉</p>') + '</div>');
         var lignes = liste.slice().sort(function (a, b) { return a.classe.localeCompare(b.classe) || (n[a.code] || a.code).localeCompare(n[b.code] || b.code, 'fr'); });
-        zone.innerHTML = barres + (lignes.length ? '<div class="tableau-defile"><table class="res"><tr><th>Élève</th><th>Classe</th><th>Réponse</th><th>Date</th></tr>' +
+        zone.innerHTML = barres + '<div class="so-colonnes">' + colonnes.join('') + '</div>' +
+            (Object.keys(n).length ? '' : '<p class="aide">Pour voir les noms à la place des codes, chargez les fichiers comptes-*.csv dans l\'onglet Comptes.</p>') +
+            (lignes.length ? '<details style="margin-top:12px"><summary class="aide" style="margin:0;cursor:pointer">Détail avec les dates</summary><div class="tableau-defile"><table class="res"><tr><th>Élève</th><th>Classe</th><th>Réponse</th><th>Date</th></tr>' +
             lignes.map(function (r) {
                 return '<tr><td>' + (n[r.code] ? esc(n[r.code]) + ' <span class="n-tent">' + esc(r.code) + '</span>' : esc(r.code)) + '</td><td>' + esc(r.classe) + '</td><td>' + esc(r.reponse) + '</td>' +
                     '<td>' + new Date(r.repondu_le).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + '</td></tr>';
-            }).join('') + '</table></div>' : '<p class="aide">Aucune réponse pour l\'instant.</p>');
+            }).join('') + '</table></div></details>' : '');
     }
 
     function peindre() {

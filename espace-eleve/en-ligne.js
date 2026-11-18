@@ -4,7 +4,7 @@
    voir « Présence » dans moteur.js). En ligne = vu il y a moins de 2 minutes ;
    les élèves vus dans la dernière heure restent affichés en gris.
    Nécessite le script maj-en-ligne.sql dans Supabase. Les noms viennent des fichiers
-   comptes-*.csv chargés dans Suivi QF (sur cet ordinateur seulement).
+   comptes-*.csv chargés dans l'onglet Comptes (sur cet ordinateur seulement).
    ========================================================================== */
 (function () {
     var EN_LIGNE_S = 120, ACTUALISER_MS = 20000;
@@ -50,7 +50,7 @@
         };
         zone.innerHTML = '<div class="tableau-defile"><table class="res"><tr><th>Élève</th><th>Classe</th><th>Page ouverte</th><th>Dernier signal</th></tr>' +
             actifs.map(ligne).join('') + recents.map(ligne).join('') + '</table></div>' +
-            (Object.keys(window.interactifNoms ? window.interactifNoms() : {}).length ? '' : '<p class="aide">Pour voir les noms, chargez les fichiers comptes-*.csv dans l\'onglet Suivi QF (« Noms »).</p>');
+            (Object.keys(window.interactifNoms ? window.interactifNoms() : {}).length ? '' : '<p class="aide">Pour voir les noms, chargez les fichiers comptes-*.csv dans l\'onglet Comptes.</p>');
     }
 
     function charger() {

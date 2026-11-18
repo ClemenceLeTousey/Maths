@@ -343,7 +343,7 @@
     }
 
     /* ---------- Publication aux élèves (onglet « Évaluations » de l'espace élève) ----------
-       Les noms des CSV sont remplacés ici par les codes (fichiers comptes-*.csv chargés dans l'onglet Suivi QF) :
+       Les noms des CSV sont remplacés ici par les codes (fichiers comptes-*.csv chargés dans l'onglet Comptes) :
        seuls le code, la note et la grille partent dans la base. */
     var publiees = null;   // [{ evaluation, classe, n, publie_le }] ou null si indisponible
     function mdpProf() { try { return sessionStorage.getItem('interactif-prof'); } catch (e) { return null; } }
@@ -424,7 +424,7 @@
             // homonymes : on garde le code de la classe affichée
             if (!parNomNorm[k] || code.toUpperCase().indexOf(classe.toUpperCase() + '-') === 0) parNomNorm[k] = code;
         });
-        if (!Object.keys(parNomNorm).length) { msg.textContent = 'Chargez d\'abord les fichiers comptes-*.csv (onglet Suivi QF, « Noms ») pour faire le lien nom → identifiant.'; return; }
+        if (!Object.keys(parNomNorm).length) { msg.textContent = 'Chargez d\'abord les fichiers comptes-*.csv (onglet Comptes) pour faire le lien nom → identifiant.'; return; }
         var de = donneesClasse(classe)[ev], envoi = [], sansCompte = [], avecCom = $('se-avec-com').checked;
         Object.keys(de.eleves).sort(parNom).forEach(function (nm) {
             var c = de.eleves[nm];
@@ -554,7 +554,7 @@
                  '<button type="button" data-pronote="' + esc(f) + '"' + (cl ? '' : ' disabled') + '>Publier T' + esc(trim) + '</button></td></tr>';
         });
         h += '</table></div>';
-        if (!avecNoms) h += '<p class="aide">Chargez d\'abord les fichiers comptes-*.csv (onglet Suivi QF, « Noms ») : ils donnent la classe de chaque fichier et l\'identifiant de chaque élève.</p>';
+        if (!avecNoms) h += '<p class="aide">Chargez d\'abord les fichiers comptes-*.csv (onglet Comptes) : ils donnent la classe de chaque fichier et l\'identifiant de chaque élève.</p>';
         h += '<p class="aide" id="se-pronote-msg" aria-live="polite"></p>';
         zone.innerHTML = h;
     }
