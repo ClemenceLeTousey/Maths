@@ -136,17 +136,16 @@
   .ex-ligne { margin: 6px 0; }
   .ex-ligne[hidden] { display: none; }
 
-  .schema { display: flex; flex-direction: column; align-items: flex-start; margin: 10px 0; overflow-x: auto; max-width: 100%; }
-  .schema-rangee { display: flex; align-items: center; gap: 4px; }
+  .schema-defile { overflow-x: auto; max-width: 100%; margin: 10px 0; padding: 10px 6px 4px; }
+  .schema { display: inline-grid; align-items: center; column-gap: 4px; }
   .boite { border: 1.5px solid var(--ink); border-radius: 6px; padding: 4px 10px; text-align: center; background: #fff; min-width: 5.5em; }
   .boite small { display: block; color: var(--muted); font-size: 0.78em; line-height: 1.2; }
   .fleche { display: flex; flex-direction: column; align-items: center; color: var(--ink); font-size: 0.9em; padding: 0 2px; }
-  .global { position: relative; margin: 4px 0 0; border: 2px solid var(--accent); border-top: none; border-radius: 0 0 14px 14px;
-            height: 16px; align-self: stretch; margin-left: 2.5em; margin-right: 2.5em; }
-  .global span { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); color: var(--accent);
-                 background: var(--panel); padding: 0 6px; white-space: nowrap; }
-  .global::after { content: ""; position: absolute; right: -7px; top: -9px; border: 6px solid transparent; border-bottom: 9px solid var(--accent); }
-  .schema-espace { height: 22px; }
+  .global { position: relative; margin-top: 2px; border: 2px solid var(--accent); border-top: none; border-radius: 0 0 14px 14px;
+            height: 18px; }
+  /* pointe vers le haut, centrée sur le trait vertical de droite, qui touche la dernière boîte */
+  .global::after { content: ""; position: absolute; right: -5px; top: -8px; border: 6px solid transparent; border-bottom: 9px solid var(--accent); }
+  .global-label { text-align: center; color: var(--accent); padding-top: 2px; }
 
   footer { max-width: 900px; margin: 0 auto; padding: 0 16px 30px; color: var(--muted); font-size: 0.8em; }
 </style>
@@ -394,15 +393,21 @@ function etape(parent, o, fini) {
 /* ================= Schémas ================= */
 var FLECHE = '<svg width="58" height="12" viewBox="0 0 58 12" aria-hidden="true"><line x1="0" y1="6" x2="54" y2="6" stroke="currentColor" stroke-width="1.6"/><path d="M49 1.5 L56 6 L49 10.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
 // boites = [{ haut, bas }], coefs = ['\times0{,}60', …] (TeX), global = TeX ou null
+// Grille : chaque boîte occupe deux colonnes (ses deux moitiés), chaque flèche une colonne.
+// La flèche globale va du milieu de la première boîte (ligne 2) au milieu de la dernière (ligne 3n-1).
 function schema(boites, coefs, global) {
-  var r = '<div class="schema"><div class="schema-rangee">';
+  var n = boites.length;
+  var r = '<div class="schema-defile"><div class="schema" style="grid-template-columns:repeat(' + (3 * n - 1) + ',auto)">';
   boites.forEach(function (b, k) {
-    if (k) r += '<div class="fleche"><span>' + M('$' + coefs[k - 1] + '$') + '</span>' + FLECHE + '</div>';
-    r += '<div class="boite">' + M(b.haut) + (b.bas ? '<small>' + b.bas + '</small>' : '') + '</div>';
+    if (k) r += '<div class="fleche" style="grid-row:1;grid-column:' + (3 * k) + '"><span>' + M('$' + coefs[k - 1] + '$') + '</span>' + FLECHE + '</div>';
+    r += '<div class="boite" style="grid-row:1;grid-column:' + (3 * k + 1) + ' / span 2">' + M(b.haut) + (b.bas ? '<small>' + b.bas + '</small>' : '') + '</div>';
   });
-  r += '</div>';
-  if (global) r += '<div class="global"><span>' + M('$' + global + '$') + '</span></div><div class="schema-espace"></div>';
-  return r + '</div>';
+  if (global) {
+    var col = 'grid-column:2 / ' + (3 * n - 1);
+    r += '<div class="global" style="grid-row:2;' + col + '"></div>';
+    r += '<div class="global-label" style="grid-row:3;' + col + '">' + M('$' + global + '$') + '</div>';
+  }
+  return r + '</div></div>';
 }
 var TRIANGLE = '<svg width="150" height="120" viewBox="0 0 150 120" aria-label="Triangle magique : n en haut, p fois N en bas">' +
   '<path d="M10 110 L140 110 L75 10 Z" fill="#fff" stroke="#2f6fdf" stroke-width="2"/>' +
