@@ -1,0 +1,1041 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+<link rel="manifest" href="../manifest.json">
+<meta name="apple-mobile-web-app-title" content="Maths Lebrun">
+<title>Proportions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<!--
+  Séquence 4 (Information chiffrée), partie 1 « Proportions » : exercices interactifs.
+  Trois thèmes (onglets) : population / sous-population ; proportion, partie, tout ;
+  proportion de proportion. Pour chacun : rappel du cours, exemple du cours pas à pas,
+  puis exercices du plan de travail (séance 1), guidés avec la rédaction des corrigés
+  (étapes 1-2-3 ; p1, p2 nommés puis p = p1 x p2). Rien n'est enregistré.
+-->
+<style>
+  :root {
+    --bg: #fbfaf7; --panel: #ffffff; --ink: #1f2328; --muted: #6b7280; --line: #e4e2dc;
+    --accent: #2f6fdf; --accent-doux: #edf3ff;
+    --ok: #2b8a3e; --ok-fond: #ebfbee; --ko: #c92a2a; --ko-fond: #fff5f5; --warn: #b35c00;
+    --ex: #0c8599; --ex-fond: #e6f6f8;
+    --vert: #2b8a3e; --bleu: #1c7ed6; --rouge: #c92a2a;
+    --encre: #1f3aa6;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font-family: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+         font-weight: 400; font-size: 19px; line-height: 1.5; }
+  @media (max-width: 600px) { body { font-size: 17px; } }
+  .katex { font-size: 1.05em; }
+  header, main, nav.onglets { max-width: 900px; margin: 0 auto; padding: 0 16px; }
+  header { padding-top: 20px; }
+  h1 { font-size: 30px; font-weight: 500; margin: 0 0 2px; }
+  .sous-titre { color: var(--muted); margin: 0 0 6px; }
+  .intro { color: var(--muted); font-size: 0.92em; margin: 6px 0 14px; }
+
+  nav.onglets { display: flex; gap: 8px; flex-wrap: wrap; position: sticky; top: 0; z-index: 5;
+                background: var(--bg); padding-top: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  nav.onglets button { font: inherit; font-size: 0.95em; border: 1px solid var(--line); background: var(--panel);
+                       color: var(--ink); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+  nav.onglets button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  nav.onglets .compte { font-size: 0.8em; opacity: 0.8; margin-left: 4px; }
+
+  main { padding-bottom: 60px; }
+  section.theme[hidden] { display: none; }
+  h2 { font-size: 24px; font-weight: 500; margin: 22px 0 10px; }
+  h3 { font-size: 20px; font-weight: 500; margin: 30px 0 10px; color: var(--accent); }
+  h3.appro { color: var(--rouge); }
+  .bloc-titre { font-size: 0.82em; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin: 22px 0 8px; }
+
+  details.rappel { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+                   border-radius: 8px; padding: 10px 16px; margin: 8px 0 16px; }
+  details.rappel summary { cursor: pointer; color: var(--accent); font-weight: 500; }
+  .encadre { border: 1px solid var(--accent); border-radius: 6px; padding: 8px 12px; margin: 8px 0; background: var(--accent-doux); }
+  .attention { border-left: 4px solid var(--warn); background: #fff4e6; padding: 8px 12px; border-radius: 6px; margin: 8px 0; }
+  .rappel-flex { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .rappel-flex > div:first-child { flex: 1 1 320px; }
+
+  .carte { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin: 12px 0; }
+  .carte.exemple { border-left: 4px solid var(--ex); }
+  .carte.exo.appro { border-left: 4px solid var(--rouge); }
+  .carte.exo { border-left: 4px solid var(--accent); }
+  .carte.fini { border-color: var(--ok); }
+  .entete { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .pill { color: #fff; font-weight: 600; font-size: 0.85em; padding: 2px 10px; border-radius: 6px; background: var(--accent); }
+  .exemple .pill { background: var(--ex); }
+  .appro .pill { background: var(--rouge); }
+  .etoiles { letter-spacing: 1px; }
+  .etoiles.n1 { color: var(--vert); } .etoiles.n2 { color: var(--bleu); } .etoiles.n3 { color: var(--rouge); }
+  .etoiles .vide { color: #c9c9c9; }
+  .tag { font-size: 0.8em; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; }
+  .statut { margin-left: auto; font-size: 0.85em; }
+  .statut.ok { color: var(--ok); } .statut.aide { color: var(--warn); }
+  .enonce { margin: 4px 0 8px; }
+  .partie-titre { margin: 14px 0 4px; color: var(--muted); }
+
+  .etape { border-top: 1px dashed var(--line); padding: 10px 0 6px; }
+  .etape-titre { display: flex; gap: 8px; align-items: baseline; color: var(--ink); }
+  .num { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 1.5em; height: 1.5em;
+         border-radius: 50%; border: 1.5px solid var(--ok); background: var(--ok-fond); color: var(--ok);
+         font-size: 0.8em; font-weight: 600; }
+  .etape-corps { margin: 8px 0 4px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  button.btn { font: inherit; font-size: 0.92em; padding: 6px 16px; border-radius: 8px; cursor: pointer;
+               border: 1px solid var(--accent); background: var(--accent); color: #fff; }
+  button.btn.secondaire { background: var(--panel); color: var(--accent); }
+  button.btn.ex { border-color: var(--ex); background: var(--ex); }
+  button.btn:disabled { opacity: 0.5; cursor: default; }
+  .retour { min-height: 0; margin-top: 6px; font-size: 0.95em; }
+  .retour.ok { color: var(--ok); } .retour.ko { color: var(--ko); } .retour.warn { color: var(--warn); }
+  button.btn.pouce { background: #fff8db; border-color: #e0b400; color: #7a5a00; }
+  .coup-de-pouce { margin: 8px 0 2px; padding: 8px 12px; background: #fff8db; border-left: 4px solid #e0b400; border-radius: 6px; }
+  .coup-de-pouce .cdp-titre { display: block; font-size: 0.82em; color: #7a5a00; margin-bottom: 2px; }
+  .coup-de-pouce svg { display: block; margin: 6px auto 0; }
+  .modele { margin-top: 6px; padding: 6px 10px; background: var(--ok-fond); border-radius: 6px; color: var(--ink); }
+
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; }
+  .opts.lignes { grid-template-columns: 1fr; }
+  button.opt { font: inherit; text-align: left; background: var(--panel); color: var(--ink); border: 1px solid var(--line);
+               border-radius: 8px; padding: 8px 12px 8px 36px; cursor: pointer; position: relative; }
+  button.opt::before { content: ""; position: absolute; left: 11px; top: 0.85em; width: 14px; height: 14px;
+                       border: 1.5px solid var(--muted); border-radius: 3px; background: #fff; }
+  button.opt.choisie { border-color: var(--accent); outline: 2px solid var(--accent); }
+  button.opt.choisie::before { background: var(--accent); border-color: var(--accent); }
+  button.opt.ko { border-color: var(--ko); outline: 2px solid var(--ko); }
+  button.opt.bonne { border-color: var(--ok); outline: 2px solid var(--ok); }
+  button.opt.bonne::before { background: var(--ok); border-color: var(--ok); }
+  button.opt:disabled { cursor: default; }
+
+  .ligne-sel { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 6px 0; }
+  .ligne-sel label { min-width: 15em; }
+  select { font: inherit; font-size: 0.95em; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+           background: #fff; color: var(--ink); max-width: 100%; }
+  .gabarit { line-height: 2.6; }
+  input.champ { font: inherit; width: 6.5em; padding: 3px 6px; border: 1.5px solid #9db6e8; border-radius: 6px;
+                background: #f3f7ff; text-align: center; color: var(--encre); }
+  input.champ:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  input.champ.ok { border-color: var(--ok); background: var(--ok-fond); color: var(--ok); }
+  input.champ.ko { border-color: var(--ko); background: var(--ko-fond); }
+  input.champ:disabled { opacity: 1; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.2; margin: 0 2px; }
+  .frac input.champ { margin: 2px 0; }
+  .frac .barre { align-self: stretch; border-top: 1.6px solid var(--ink); }
+
+  .copie { margin-top: 12px; border: 1px solid #c8d6f5; background: #fbfcff; border-radius: 8px; padding: 10px 14px; }
+  .copie-titre { font-size: 0.82em; color: var(--muted); margin-bottom: 4px; }
+  .copie .ligne { margin: 4px 0; color: var(--encre); }
+  .copie .num { margin-right: 6px; }
+
+  .ex-ligne { margin: 6px 0; }
+  .ex-ligne[hidden] { display: none; }
+
+  .schema { display: flex; flex-direction: column; align-items: flex-start; margin: 10px 0; overflow-x: auto; max-width: 100%; }
+  .schema-rangee { display: flex; align-items: center; gap: 4px; }
+  .boite { border: 1.5px solid var(--ink); border-radius: 6px; padding: 4px 10px; text-align: center; background: #fff; min-width: 5.5em; }
+  .boite small { display: block; color: var(--muted); font-size: 0.78em; line-height: 1.2; }
+  .fleche { display: flex; flex-direction: column; align-items: center; color: var(--ink); font-size: 0.9em; padding: 0 2px; }
+  .global { position: relative; margin: 4px 0 0; border: 2px solid var(--accent); border-top: none; border-radius: 0 0 14px 14px;
+            height: 16px; align-self: stretch; margin-left: 2.5em; margin-right: 2.5em; }
+  .global span { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); color: var(--accent);
+                 background: var(--panel); padding: 0 6px; white-space: nowrap; }
+  .global::after { content: ""; position: absolute; right: -7px; top: -9px; border: 6px solid transparent; border-bottom: 9px solid var(--accent); }
+  .schema-espace { height: 22px; }
+
+  footer { max-width: 900px; margin: 0 auto; padding: 0 16px 30px; color: var(--muted); font-size: 0.8em; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Proportions</h1>
+  <p class="sous-titre">Seconde · Séquence 4 · Information chiffrée</p>
+  <p class="intro">Pour chaque thème : un rappel du cours, un exemple du cours pas à pas, puis les exercices du plan de travail.
+  Les exercices se font étape par étape, avec la rédaction du cours. À la fin de chaque exercice, ta rédaction complète est prête à être recopiée dans ton cahier.</p>
+</header>
+<nav class="onglets" id="onglets" role="tablist"></nav>
+<main id="app"></main>
+<footer>Lycée Lebrun 2026-27 · Clémence Le Tousey · CC BY-NC-SA 4.0</footer>
+
+<script>
+(function () {
+'use strict';
+var T = String.raw;
+var PAGE_PRETE = false;   // pas de mise au point automatique pendant la construction de la page
+
+/* ================= Outils ================= */
+function M(s) {
+  return String(s).replace(/\$([^$]+?)\$/g, function (t, x) {
+    return window.katex ? katex.renderToString(x, { throwOnError: false }) : x;
+  });
+}
+function h(tag, cls, html) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html != null) e.innerHTML = html;
+  return e;
+}
+function bouton(txt, cls) { var b = h('button', 'btn' + (cls ? ' ' + cls : ''), txt); b.type = 'button'; return b; }
+function melange(a) {
+  a = a.slice();
+  for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+function net(x) { return +(+x).toFixed(10); }
+function arr(a, dec) { var f = Math.pow(10, dec); return net(Math.round(a * f + (a >= 0 ? 1e-9 : -1e-9)) / f); }
+function proche(u, v, tol) { return Math.abs(u - v) <= (tol || 1e-9) * Math.max(1, Math.abs(v)); }
+// nombre au format TeX français : 21\,050 ; 0{,}95
+function fr(x) {
+  var s = String(net(x)), neg = s[0] === '-';
+  if (neg) s = s.slice(1);
+  var p = s.split('.');
+  var e = p[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+  return (neg ? '-' : '') + e + (p[1] ? '{,}' + p[1] : '');
+}
+// même chose en texte simple (pour remplir une case)
+function frT(x) { return fr(x).replace(/\\,/g, ' ').replace('{,}', ','); }
+// lecture d'une saisie : 0,35 ; 35 % ; 7/15 ; 21 050
+function lire(s) {
+  s = s.replace(/[\s  ]/g, '').replace(/,/g, '.');
+  var pct = false;
+  if (/%$/.test(s)) { pct = true; s = s.slice(0, -1); }
+  if (/^\d*\.?\d+\/\d*\.?\d+$/.test(s)) {
+    var q = s.split('/').map(Number);
+    return q[1] ? { v: q[0] / q[1], pct: pct } : null;
+  }
+  if (!/^-?(\d+\.?\d*|\.\d+)$/.test(s)) return null;
+  return { v: parseFloat(s), pct: pct };
+}
+/* Vérifie une case. sp = { a: valeur attendue, mode: 'val' | 'dec' (proportion décimale) | 'pct' (pourcentage),
+   dec: arrondi (nombre de décimales, -1 = dizaine), mot: 'au centième', alt: [autres valeurs], tol, pieges: [{v, msg}], msg } */
+function verifierCase(sp, brut) {
+  if (!brut.trim()) return { vide: true };
+  var r = lire(brut);
+  if (!r) return { ok: false, msg: '« ' + brut + ' » n\'est pas un nombre : écris par exemple 0,35 ou 297,5.' };
+  var v = r.v;
+  if (sp.mode === 'dec') {
+    if (r.pct) v = v / 100;
+    else if (v > 1 && proche(v / 100, sp.a, sp.tol || 1e-6))
+      return { ok: false, msg: T`Dans un calcul, une proportion s'écrit en écriture décimale : $` + fr(v) + T`\,\%=` + fr(v / 100) + '$.' };
+  } else if (sp.mode === 'pct') {
+    if (!r.pct && sp.a > 1 && proche(v * 100, sp.a, 5e-3))
+      return { ok: false, msg: 'Tu as donné l\'écriture décimale. Pour l\'écrire en pourcentage, on la multiplie par 100.' };
+  }
+  var cibles = [sp.a].concat(sp.alt || []);
+  var bon = cibles.some(function (c) {
+    if (sp.tolAbs != null) return Math.abs(v - c) <= sp.tolAbs;
+    return sp.dec == null ? proche(v, c, sp.tol) : proche(v, arr(c, sp.dec));
+  });
+  if (bon) return { ok: true };
+  var pieges = sp.pieges || [];
+  for (var i = 0; i < pieges.length; i++) if (proche(v, pieges[i].v, 5e-3)) return { ok: false, msg: pieges[i].msg };
+  if (sp.tolAbs != null && cibles.some(function (c) { return Math.abs(v - c) < 0.01; }))
+    return { ok: false, msg: 'Presque ! Garde au moins 4 chiffres après la virgule.' };
+  if (sp.dec != null && cibles.some(function (c) { return Math.abs(v - c) < Math.pow(10, 1 - sp.dec); }))
+    return { ok: false, msg: 'Presque ! Arrondis ' + sp.mot + '.' };
+  return { ok: false, msg: sp.msg || 'Ce n\'est pas ça : vérifie ce nombre.' };
+}
+function valeurMontree(sp) {
+  if (sp.voir) return sp.voir;
+  return frT(sp.dec == null ? sp.a : arr(sp.a, sp.dec));
+}
+
+/* ================= Contrôles d'une étape ================= */
+// QCM : options = [{ t, ok, fb }] ; pas de lettres, une case devant chaque proposition
+function ctrlQcm(corps, s) {
+  var opts = s.fixe ? s.options.slice() : melange(s.options);
+  var g = h('div', 'opts' + (s.lignes ? ' lignes' : '')), choix = -1, bts = [];
+  opts.forEach(function (o, k) {
+    var b = h('button', 'opt', M(o.t)); b.type = 'button';
+    b.onclick = function () {
+      if (b.disabled) return;
+      choix = k;
+      bts.forEach(function (x) { x.classList.remove('choisie', 'ko'); });
+      b.classList.add('choisie');
+    };
+    bts.push(b); g.appendChild(b);
+  });
+  corps.appendChild(g);
+  return {
+    verifier: function () {
+      if (choix < 0) return { vide: true, msg: 'Choisis une réponse.' };
+      if (opts[choix].ok) return { ok: true };
+      bts[choix].classList.add('ko');
+      return { ok: false, msg: opts[choix].fb || 'Ce n\'est pas ça, réessaie.' };
+    },
+    montrer: function () { },
+    figer: function () {
+      bts.forEach(function (b, k) { b.disabled = true; b.classList.remove('choisie', 'ko'); if (opts[k].ok) b.classList.add('bonne'); });
+    }
+  };
+}
+// Listes déroulantes : lignes = [{ label, bonne }], options = textes ; inverse : message si les deux premières sont échangées
+function ctrlSelects(corps, s) {
+  var sels = s.lignes.map(function (l) {
+    var d = h('div', 'ligne-sel');
+    var lab = h('label', null, M(l.label));
+    var sel = document.createElement('select');
+    sel.appendChild(new Option('— choisir —', ''));
+    s.options.forEach(function (o) { sel.appendChild(new Option(o, o)); });
+    sel.addEventListener('change', function () { sel.style.borderColor = ''; });
+    d.appendChild(lab); d.appendChild(sel); corps.appendChild(d);
+    return sel;
+  });
+  return {
+    verifier: function () {
+      if (sels.some(function (x) { return !x.value; })) return { vide: true, msg: 'Choisis une réponse sur chaque ligne.' };
+      var faux = [];
+      sels.forEach(function (x, k) {
+        var ok = x.value === s.lignes[k].bonne;
+        x.style.borderColor = ok ? 'var(--ok)' : 'var(--ko)';
+        if (!ok) faux.push(k);
+      });
+      if (!faux.length) return { ok: true };
+      if (s.inverse && sels[0].value === s.lignes[1].bonne && sels[1].value === s.lignes[0].bonne)
+        return { ok: false, msg: s.inverse };
+      return { ok: false, msg: s.msg || 'Les réponses entourées de rouge ne conviennent pas.' };
+    },
+    montrer: function () { sels.forEach(function (x, k) { x.value = s.lignes[k].bonne; }); },
+    figer: function () { sels.forEach(function (x) { x.disabled = true; x.style.borderColor = 'var(--ok)'; }); }
+  };
+}
+// Cases à remplir : gabarit avec {0}, {1}… et {f:0:1} (fraction de deux cases)
+function ctrlChamps(corps, s) {
+  var champs = [];
+  // on remplace {k} par un emplacement, on met en forme tout le gabarit (HTML + maths), puis on pose les cases
+  var html = s.gabarit
+    .replace(/\{f:(\d+):(\d+)\}/g, '<span class="frac"><span data-c="$1"></span><span class="barre"></span><span data-c="$2"></span></span>')
+    .replace(/\{(\d+)\}/g, '<span data-c="$1"></span>');
+  var zone = h('div', 'gabarit', M(html));
+  zone.querySelectorAll('[data-c]').forEach(function (place) {
+    var k = +place.getAttribute('data-c');
+    var c = document.createElement('input');
+    c.className = 'champ'; c.type = 'text'; c.autocomplete = 'off'; c.spellcheck = false;
+    c.setAttribute('aria-label', 'case ' + (k + 1));
+    if (s.specs[k].w) c.style.width = s.specs[k].w + 'em';
+    c.addEventListener('input', function () { c.classList.remove('ok', 'ko'); });
+    champs[k] = c;
+    place.replaceWith(c);
+  });
+  corps.appendChild(zone);
+  return {
+    champs: champs,
+    verifier: function () {
+      if (champs.some(function (c) { return !c.value.trim(); })) return { vide: true, msg: 'Complète toutes les cases.' };
+      var msg = null;
+      champs.forEach(function (c, k) {
+        var r = verifierCase(s.specs[k], c.value);
+        c.classList.remove('ok', 'ko');
+        c.classList.add(r.ok ? 'ok' : 'ko');
+        if (!r.ok && !msg) msg = r.msg;
+      });
+      return msg ? { ok: false, msg: msg } : { ok: true };
+    },
+    montrer: function () { champs.forEach(function (c, k) { c.value = valeurMontree(s.specs[k]); }); },
+    figer: function () { champs.forEach(function (c) { c.disabled = true; c.classList.remove('ko'); c.classList.add('ok'); }); }
+  };
+}
+
+/* Une étape : titre, contrôle, bouton Valider ; après 2 erreurs, « Voir la réponse ».
+   o = { num, titre, kind: 'qcm'|'selects'|'champs', …, modele (affiché dans l'étape), copie (ajouté à la rédaction) } */
+function etape(parent, o, fini) {
+  var box = h('div', 'etape');
+  box.appendChild(h('div', 'etape-titre', (o.num ? '<span class="num">' + o.num + '</span>' : '') + '<span>' + M(o.titre) + '</span>'));
+  var corps = h('div', 'etape-corps'); box.appendChild(corps);
+  var ctrl = o.kind === 'qcm' ? ctrlQcm(corps, o) : o.kind === 'selects' ? ctrlSelects(corps, o) : ctrlChamps(corps, o);
+  var actions = h('div', 'actions'), ret = h('div', 'retour');
+  var bV = bouton('Valider'), bR = bouton('Voir la réponse', 'secondaire');
+  bR.hidden = true;
+  actions.appendChild(bV);
+  // coup de pouce : un indice sur la méthode, sans donner la réponse
+  var pouce = false, bP = null;
+  if (o.aide) {
+    bP = bouton('💡 J\'ai besoin d\'un coup de pouce', 'pouce');
+    bP.onclick = function () {
+      pouce = true;
+      var d = h('div', 'coup-de-pouce', '<span class="cdp-titre">💡 Coup de pouce</span>' + M(o.aide));
+      corps.parentNode.insertBefore(d, actions);
+      bP.remove();
+      var c0 = corps.querySelector('input:not([disabled]), select:not([disabled])');
+      if (c0) c0.focus({ preventScroll: true });
+    };
+    actions.appendChild(bP);
+  }
+  actions.appendChild(bR);
+  box.appendChild(actions); box.appendChild(ret);
+  parent.appendChild(box);
+  var essais = 0, aide = false;
+  bV.onclick = function () {
+    var r = ctrl.verifier();
+    if (r.vide) { ret.className = 'retour warn'; ret.innerHTML = M(r.msg || 'Complète toutes les cases.'); return; }
+    if (r.ok) return terminer();
+    essais++;
+    ret.className = 'retour ko'; ret.innerHTML = '✗ ' + M(r.msg || 'Ce n\'est pas ça, réessaie.');
+    if (essais >= 2) bR.hidden = false;
+  };
+  bR.onclick = function () { aide = true; ctrl.montrer(); terminer(); };
+  corps.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); bV.click(); } });
+  var premier = corps.querySelector('input, select');
+  if (premier && PAGE_PRETE) premier.focus({ preventScroll: true });
+  function terminer() {
+    ctrl.figer(); actions.remove();
+    ret.className = 'retour ' + (aide ? 'warn' : 'ok');
+    ret.textContent = aide ? 'Voici la réponse : relis-la bien avant de continuer.' : '✓ Bravo !';
+    if (o.modele) box.appendChild(h('div', 'modele', M(o.modele)));
+    fini(aide, o.copie, pouce);
+  }
+}
+
+/* ================= Schémas ================= */
+var FLECHE = '<svg width="58" height="12" viewBox="0 0 58 12" aria-hidden="true"><line x1="0" y1="6" x2="54" y2="6" stroke="currentColor" stroke-width="1.6"/><path d="M49 1.5 L56 6 L49 10.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+// boites = [{ haut, bas }], coefs = ['\times0{,}60', …] (TeX), global = TeX ou null
+function schema(boites, coefs, global) {
+  var r = '<div class="schema"><div class="schema-rangee">';
+  boites.forEach(function (b, k) {
+    if (k) r += '<div class="fleche"><span>' + M('$' + coefs[k - 1] + '$') + '</span>' + FLECHE + '</div>';
+    r += '<div class="boite">' + M(b.haut) + (b.bas ? '<small>' + b.bas + '</small>' : '') + '</div>';
+  });
+  r += '</div>';
+  if (global) r += '<div class="global"><span>' + M('$' + global + '$') + '</span></div><div class="schema-espace"></div>';
+  return r + '</div>';
+}
+var TRIANGLE = '<svg width="150" height="120" viewBox="0 0 150 120" aria-label="Triangle magique : n en haut, p fois N en bas">' +
+  '<path d="M10 110 L140 110 L75 10 Z" fill="#fff" stroke="#2f6fdf" stroke-width="2"/>' +
+  '<line x1="40" y1="64" x2="110" y2="64" stroke="#2f6fdf" stroke-width="1.6"/>' +
+  '<line x1="75" y1="64" x2="75" y2="110" stroke="#2f6fdf" stroke-width="1" stroke-dasharray="3 3"/>' +
+  '<text x="75" y="54" text-anchor="middle" font-size="20" font-style="italic" fill="#1f2328">n</text>' +
+  '<text x="50" y="96" text-anchor="middle" font-size="20" font-style="italic" fill="#1f2328">p</text>' +
+  '<text x="100" y="96" text-anchor="middle" font-size="20" font-style="italic" fill="#1f2328">N</text>' +
+  '<text x="75" y="95" text-anchor="middle" font-size="15" fill="#1f2328">×</text></svg>';
+
+/* ================= Exercice guidé « partie / tout / proportion » ================= */
+var CHERCHE = {
+  p: { t: T`On connaît la partie et le tout ; on cherche la proportion $p$.`, f: T`$p=\dfrac{n}{N}$` },
+  n: { t: T`On connaît le tout et la proportion ; on cherche la partie $n$.`, f: T`$n=p\times N$` },
+  N: { t: T`On connaît la partie et la proportion ; on cherche le tout $N$.`, f: T`$N=\dfrac{n}{p}$` }
+};
+function etapesPnN(s) {
+  var c = s.cherche, tex = s.tex || {};
+  var tn = tex.n || fr(s.n), tN = tex.N || fr(s.N), tp = tex.p || fr(s.p);
+  var u = s.u || '';
+  var L = [];
+  // Étape 1
+  L.push({
+    num: 1, titre: 'Quelle est la population (le tout) ? Quelle est la sous-population (la partie) ?', kind: 'selects',
+    lignes: [{ label: 'La population (le tout) :', bonne: s.tout.opt }, { label: 'La sous-population (la partie) :', bonne: s.partie.opt }],
+    options: melange([s.tout.opt, s.partie.opt].concat(s.distract || [])),
+    inverse: 'Tu as échangé le tout et la partie : la partie est contenue dans le tout.',
+    aide: s.aide1 || T`Le tout, c'est le groupe entier dont parle l'énoncé ; la partie est un morceau de ce groupe.<br>Repère : dans « $19\,\%$ des élèves du lycée », le tout est ce qui suit « des » (les élèves du lycée).`,
+    copie: '<span class="num">1</span>La population (le tout) : ' + s.tout.redac + '.<br>La sous-population (la partie) : ' + s.partie.redac + '.'
+  });
+  // Étape 2
+  var phrase2 = c === 'p' ? CHERCHE.p.t
+    : c === 'n' ? 'On connaît ' + s.mot + ' du tout $N=' + tN + '$' + u + ' et la proportion $p=' + tp + '$.<br>On cherche ' + s.mot + ' $n$ de la partie.'
+    : 'On connaît ' + s.mot + ' de la partie $n=' + tn + '$' + u + ' et la proportion $p=' + tp + '$.<br>On cherche ' + s.mot + ' $N$ du tout.';
+  var FB = {
+    p: 'La proportion est donnée dans l\'énoncé (c\'est le pourcentage) : ce n\'est pas elle qu\'on cherche.',
+    n: c === 'N' ? 'Le nombre donné dans l\'énoncé est la partie : c\'est le tout qui manque.' : 'Il n\'y a pas de pourcentage dans l\'énoncé : on connaît la partie et le tout.',
+    N: c === 'n' ? 'Le tout est donné dans l\'énoncé : c\'est la partie qui manque.' : 'Il n\'y a pas de pourcentage dans l\'énoncé : on connaît la partie et le tout.'
+  };
+  if (!s.rapide) {
+    L.push({
+      num: 2, titre: 'Que connaît-on, que cherche-t-on ?', kind: 'qcm', lignes: true, fixe: true,
+      options: ['p', 'n', 'N'].map(function (k) { return { t: CHERCHE[k].t, ok: k === c, fb: FB[k] }; }),
+      copie: '<span class="num">2</span>' + phrase2,
+      aide: T`Repère les nombres donnés dans l'énoncé :<br>• un pourcentage, c'est la proportion $p$ ;<br>• le nombre du groupe entier, c'est le tout $N$ ;<br>• le nombre du morceau, c'est la partie $n$.<br>Celui qui manque, c'est celui qu'on cherche.`
+    });
+    var nom = { p: 'la proportion $p$', n: 'la partie $n$', N: 'le tout $N$' }[c];
+    L.push({
+      num: 3, titre: 'Quelle formule utilise-t-on ?', kind: 'qcm', fixe: true,
+      aide: 'Le triangle magique : cache avec ton doigt ce que tu cherches ; ce qui reste donne le calcul (barre = division, côte à côte = produit).' + TRIANGLE,
+      options: ['p', 'n', 'N'].map(function (k) {
+        return { t: CHERCHE[k].f, ok: k === c, fb: 'On cherche ' + nom + ' : dans le triangle magique, on cache ce qu\'on cherche ; ce qui reste donne le calcul.' };
+      })
+    });
+  }
+  // Étape 3 : le calcul
+  var gab, specs, calcul, verif, res;
+  if (c === 'p') {
+    var pv = s.n / s.N, exact = s.dec == null;
+    res = exact ? net(pv * 100) : arr(pv * 100, s.dec);
+    gab = T`$p=\dfrac{n}{N}=$ {f:0:1} ` + (exact ? '$=$' : '$\\approx$') + ' {2} $\\,\\%$';
+    specs = [
+      { a: s.n, mode: 'val', w: s.w, msg: 'En haut (au numérateur), on écrit la partie $n$.', pieges: s.piegesN },
+      { a: s.N, mode: 'val', w: s.w, msg: 'En bas (au dénominateur), on écrit le tout $N$.', pieges: s.piegesD },
+      { a: pv * 100, mode: 'pct', dec: s.dec, mot: s.mot, w: 5,
+        pieges: (s.pieges || []).concat([{ v: s.N / s.n * 100, msg: 'Tu as calculé $\\dfrac{N}{n}$ : la partie va en haut, le tout en bas.' }]) }
+    ];
+    calcul = exact
+      ? 'On calcule $p=\\dfrac{n}{N}=\\dfrac{' + tn + '}{' + tN + '}=' + fr(pv) + '=' + fr(res) + '\\,\\%$.'
+      : 'On calcule $p=\\dfrac{n}{N}=\\dfrac{' + tn + '}{' + tN + '}\\approx' + fr(arr(pv, s.dec + 2)) + '$, soit environ $' + fr(res) + '\\,\\%$.';
+    verif = s.verif || 'Vérification : on a bien $0\\leq p\\leq1$.';
+  } else if (c === 'n') {
+    var nv = net(s.p * s.N);
+    res = nv;
+    gab = T`$n=p\times N=$ {0} $\times$ {1} $=$ {2}` + u + (s.arrondi ? T`, soit environ {3}` + u + ' (' + s.arrondi.mot + ')' : '');
+    specs = [
+      { a: s.p, mode: 'dec', w: 5, msg: 'Le premier facteur est la proportion $p$.', pieges: s.piegesP },
+      { a: s.N, mode: 'val', msg: 'Le second facteur est le tout $N$.' },
+      { a: nv, mode: 'val', pieges: [{ v: s.N / s.p, msg: 'Tu as divisé : ton résultat est plus grand que le tout, c\'est impossible pour une partie. On multiplie : $n=p\\times N$.' }] }
+    ];
+    if (s.arrondi) specs.push({ a: nv, mode: 'val', dec: s.arrondi.dec, mot: s.arrondi.mot, msg: 'Arrondis ' + s.arrondi.mot + '.' });
+    calcul = 'On calcule $n=p\\times N=' + tp + '\\times' + tN + '=' + fr(nv) + '$.';
+    verif = 'Vérification : on a $' + fr(nv) + '<' + tN + '$, la partie est plus petite que le tout, c\'est cohérent.';
+  } else {
+    var Nv = s.n / s.p;
+    res = s.dec == null ? net(Nv) : arr(Nv, s.dec);
+    gab = T`$N=\dfrac{n}{p}=$ {f:0:1} ` + (s.dec == null ? '$=$' : '$\\approx$') + ' {2}' + u;
+    specs = [
+      { a: s.n, mode: 'val', alt: s.altN, msg: 'En haut, on écrit la partie $n$.' },
+      { a: s.p, mode: 'dec', w: 5, tol: s.tolP, voir: s.voirP, msg: s.msgP || 'En bas, on écrit la proportion $p$ (en écriture décimale).', pieges: s.piegesP },
+      { a: Nv, mode: 'val', dec: s.dec, mot: s.mot2, alt: s.altRes, w: s.w,
+        pieges: [{ v: s.n * s.p, msg: 'Tu as multiplié : ton résultat est plus petit que la partie, c\'est impossible pour le tout. On divise : $N=\\dfrac{n}{p}$.' }].concat(s.pieges || []) }
+    ];
+    calcul = 'On calcule $N=\\dfrac{n}{p}=\\dfrac{' + tn + '}{' + tp + '}' + (s.dec == null ? '=' : '\\approx') + fr(res) + '$.';
+    verif = 'Vérification : on a $' + tn + '<' + fr(res) + '$, la partie est plus petite que le tout, c\'est cohérent.';
+  }
+  var motArr = c === 'p' ? s.mot : c === 'N' ? s.mot2 : s.arrondi && s.arrondi.mot;
+  var DECIMAL = T`Un pourcentage s'écrit en décimal en divisant par $100$ : par exemple $35\,\%=\dfrac{35}{100}=0{,}35$.`;
+  var aide3 = c === 'p'
+    ? T`En haut de la fraction : la partie $n$ ; en bas : le tout $N$ (ceux de l'étape 1).<br>Fais la division à la calculatrice, puis multiplie par $100$ pour obtenir le pourcentage.`
+    : c === 'n'
+    ? (tex.p ? 'La proportion $p=' + tex.p + '$ a été trouvée juste avant.' : DECIMAL) + T`<br>Puis on multiplie la proportion par le tout $N$. La partie trouvée doit être plus petite que le tout.`
+    : (tex.p ? 'La proportion $p=' + tex.p + '$ a été trouvée à la question précédente : tape-la telle quelle (avec la barre /).' : DECIMAL) +
+      T`<br>Puis on divise la partie $n$ par la proportion $p$. Le tout trouvé doit être plus grand que la partie : sinon, tu as multiplié au lieu de diviser.`;
+  if (motArr) aide3 += '<br>N\'oublie pas d\'arrondir ' + motArr + '.';
+  L.push({
+    num: 3, titre: 'Le calcul' + (s.consigneCalcul ? ' ' + s.consigneCalcul : ''), kind: 'champs', gabarit: gab, specs: specs, aide: aide3,
+    copie: (s.rapide ? '<span class="num">2</span>' + phrase2 + '<br>' : '') + '<span class="num">3</span>' + calcul + '<br>' + verif + '<br>' + s.phrase
+  });
+  return L;
+}
+
+/* ================= Exercice guidé « proportion de proportion » ================= */
+var LETTRES = ['A', 'B', 'C', 'D'];
+function etapesPP(s) {
+  var ps = s.ps, k = ps.length, L = [];
+  var prod = ps.reduce(function (a, b) { return a * b; }, 1), somme = ps.reduce(function (a, b) { return a + b; }, 0);
+  L.push({
+    num: 1, titre: 'Repère les populations emboîtées (de la plus grande à la plus petite).', kind: 'selects',
+    lignes: s.niveaux.map(function (n, i) {
+      return { label: '$' + LETTRES[i] + '$ : ' + (i ? 'une sous-population de $' + LETTRES[i - 1] + '$' : 'la population de départ'), bonne: n };
+    }),
+    options: melange(s.niveaux.concat(s.distract || [])),
+    msg: 'Chaque groupe doit être contenu dans le précédent, du plus grand au plus petit.',
+    aide: T`Commence par le groupe le plus grand : tout le monde. Puis les mots « parmi eux », « d'entre elles », « de ses ventes »… indiquent le groupe suivant, plus petit, qui est contenu dans le précédent.`,
+    copie: '<span class="num">1</span>' + s.niveaux.map(function (n, i) { return '$' + LETTRES[i] + '$ : ' + n; }).join(' ; ') + '.'
+  });
+  var gab2 = ps.map(function (p, i) { return s.pnoms[i] + T` : $p_` + (i + 1) + '=$ {' + i + '}'; }).join('<br>');
+  L.push({
+    num: 2, titre: 'Nomme les proportions (en écriture décimale).', kind: 'champs', gabarit: gab2,
+    aide: T`Chaque pourcentage de l'énoncé porte sur un groupe différent : $p_1$ est celui qui porte sur $A$, $p_2$ celui qui porte sur $B$…<br>En écriture décimale, on divise par $100$ : par exemple $52\,\%=0{,}52$ et $8{,}5\,\%=0{,}085$.`,
+    specs: ps.map(function (p, i) {
+      return { a: p, mode: 'dec', w: 5, msg: '$p_' + (i + 1) + '$ est la ' + s.pnoms[i].charAt(0).toLowerCase() + s.pnoms[i].slice(1) + '.' };
+    }),
+    copie: '<span class="num">2</span>' + ps.map(function (p, i) { return s.pnoms[i] + ' : $p_' + (i + 1) + '=' + fr(p) + '$.'; }).join('<br>') +
+      schema(s.niveaux.map(function (n) { return { haut: n }; }), ps.map(function (p) { return '\\times' + fr(p); }), '\\times p')
+  });
+  var noms = ps.map(function (p, i) { return 'p_' + (i + 1); }).join('\\times ');
+  var gab3 = '$p=' + noms + '=$ ' + ps.map(function (p, i) { return '{' + i + '}'; }).join(' $\\times$ ') +
+    (s.decProd == null ? ' $=$ ' : ' $\\approx$ ') + '{' + k + '}<br>soit {' + (k + 1) + '} $\\,\\%$' + (s.mot ? ' (arrondi ' + s.mot + ')' : '');
+  var specs3 = ps.map(function (p) { return { a: p, mode: 'dec', alt: ps, w: 5, msg: 'On recopie les proportions $p_1$, $p_2$… trouvées à l\'étape 2.' }; });
+  specs3.push({ a: prod, mode: 'dec', tolAbs: s.decProd == null ? null : 6e-4, voir: s.decProd == null ? null : frT(arr(prod, s.decProd)), w: 6,
+    pieges: [{ v: somme, msg: 'Tu as additionné : on multiplie les proportions, on ne les additionne pas.' }] });
+  specs3.push({ a: prod * 100, mode: 'pct', dec: s.dec, mot: s.mot, w: 5,
+    pieges: [{ v: somme * 100, msg: 'On multiplie les proportions, on ne les additionne pas.' }] });
+  var calc = 'Donc $p=' + noms + '=' + ps.map(fr).join('\\times') + (s.decProd == null && s.dec == null ? '=' : '\\approx') +
+    fr(s.decProd == null ? prod : arr(prod, s.decProd)) + '$ : ';
+  L.push({ num: 3, titre: 'On multiplie les proportions.', kind: 'champs', gabarit: gab3, specs: specs3,
+    aide: T`Recopie les proportions de l'étape 2 et multiplie-les à la calculatrice (on n'additionne pas !).<br>Pour obtenir le pourcentage, multiplie le résultat par $100$.` +
+      (s.mot ? ' Arrondis ' + s.mot + '.' : '') + (s.decProd != null ? ' Pour le produit, garde au moins 4 chiffres après la virgule.' : ''),
+    copie: '<span class="num">3</span>' + calc + s.phrase });
+  if (s.effectif) {
+    var e = s.effectif, nv = net(prod * e.N);
+    L.push({ num: 4, titre: e.titre, kind: 'champs',
+      aide: T`On cherche une partie d'un effectif : $n=p\times N$, avec la proportion $p$ trouvée à l'étape 3 et l'effectif total $N$.`,
+      gabarit: T`$n=p\times N=$ {0} $\times$ {1} $=$ {2}, soit environ {3} ` + e.u,
+      specs: [{ a: prod, mode: 'dec', w: 6 }, { a: e.N, mode: 'val' }, { a: nv, mode: 'val', w: 7 }, { a: nv, mode: 'val', dec: 0, mot: 'à l\'unité' }],
+      copie: '<span class="num">4</span>On calcule $n=p\\times N=' + fr(prod) + '\\times' + fr(e.N) + '=' + fr(nv) + '$ : ' + e.phrase });
+  }
+  return L;
+}
+
+/* ================= Rendu ================= */
+var ETAT = {};   // id du thème -> { total, faits }
+function majCompteurs() {
+  THEMES.forEach(function (t) {
+    var b = document.querySelector('[data-onglet="' + t.id + '"] .compte');
+    if (b) b.textContent = ETAT[t.id].faits + '/' + ETAT[t.id].total;
+  });
+}
+
+function etoiles(n) {
+  return '<span class="etoiles n' + n + '">' + '★★★'.slice(0, n) + '<span class="vide">' + '☆☆☆'.slice(0, 3 - n) + '</span></span>';
+}
+var CADRES = { classe: 'En classe', maison: '🏠 À la maison', appro: 'Approfondissement', temps: 'En classe, si le temps le permet' };
+
+function exemple(parent, ex) {
+  var c = h('div', 'carte exemple');
+  c.appendChild(h('div', 'entete', '<span class="pill">Exemple</span>' + (ex.source ? '<span class="tag">' + ex.source + '</span>' : '')));
+  c.appendChild(h('div', 'enonce', M(ex.enonce)));
+  var lignes = ex.etapes.map(function (t) { var d = h('div', 'ex-ligne', M(t)); d.hidden = true; c.appendChild(d); return d; });
+  var actions = h('div', 'actions');
+  var b1 = bouton('Étape suivante', 'ex'), b2 = bouton('Tout afficher', 'secondaire');
+  actions.appendChild(b1); actions.appendChild(b2); c.appendChild(actions);
+  var k = 0;
+  b1.onclick = function () { if (k < lignes.length) lignes[k++].hidden = false; if (k >= lignes.length) actions.remove(); };
+  b2.onclick = function () { lignes.forEach(function (l) { l.hidden = false; }); actions.remove(); };
+  parent.appendChild(c);
+}
+
+function exercice(parent, ex, themeId) {
+  ETAT[themeId].total++;
+  var c = h('div', 'carte exo' + (ex.cadre === 'appro' ? ' appro' : ''));
+  parent.appendChild(c);
+  var dejaFait = false;
+  function lancer() {
+    c.innerHTML = ''; c.classList.remove('fini');
+    var ent = h('div', 'entete', '<span class="pill">Exercice ' + ex.num + (ex.page ? ' p. ' + ex.page : '') + '</span>' +
+      etoiles(ex.niv) + '<span class="tag">' + ex.comp + '</span><span class="tag">' + CADRES[ex.cadre] + '</span>');
+    var statut = h('span', 'statut'); ent.appendChild(statut);
+    c.appendChild(ent);
+    c.appendChild(h('div', 'enonce', M(ex.enonce)));
+    var aideTotale = false, pouceTotal = false, ip = 0;
+    function partie() {
+      if (ip >= ex.parts.length) return finir();
+      var p = ex.parts[ip++];
+      var zone = h('div', 'partie'); c.appendChild(zone);
+      if (p.titre) zone.appendChild(h('div', 'partie-titre', M(p.titre)));
+      var etapes = p.type === 'pnN' ? etapesPnN(p) : p.type === 'pp' ? etapesPP(p) : p.etapes;
+      var copie = null;
+      if (p.type === 'pnN' || p.type === 'pp') {
+        copie = h('div', 'copie'); copie.hidden = true;
+        copie.appendChild(h('div', 'copie-titre', 'Ma rédaction (à recopier dans le cahier)'));
+      }
+      var j = 0, zEt = h('div'); zone.appendChild(zEt); if (copie) zone.appendChild(copie);
+      (function suivante() {
+        if (j >= etapes.length) return partie();
+        etape(zEt, etapes[j++], function (aide, texteCopie, pouce) {
+          if (aide) aideTotale = true;
+          if (pouce) pouceTotal = true;
+          if (copie && texteCopie) { copie.hidden = false; copie.appendChild(h('div', 'ligne', M(texteCopie))); }
+          suivante();
+        });
+      })();
+    }
+    function finir() {
+      c.classList.add('fini');
+      statut.className = 'statut ' + (aideTotale ? 'aide' : 'ok');
+      statut.textContent = aideTotale ? '✓ terminé avec de l\'aide' : pouceTotal ? '✓ réussi avec un coup de pouce' : '✓ réussi';
+      var a = h('div', 'actions'), r = bouton('↻ Recommencer cet exercice', 'secondaire');
+      r.onclick = lancer; a.appendChild(r); c.appendChild(a);
+      if (!dejaFait) { dejaFait = true; ETAT[themeId].faits++; majCompteurs(); }
+    }
+    partie();
+  }
+  lancer();
+}
+
+/* ================= Contenu ================= */
+// coup de pouce automatique d'après la question (thème 1), sinon celui donné en 4e argument
+var POUCES = [
+  [/sous-population/, T`La sous-population, c'est le morceau de la population dont parle le pourcentage (ou le petit nombre). Elle est contenue dans la population.`],
+  [/population/, T`La population, c'est le groupe entier qu'on étudie. Repère : dans « $19\,\%$ des élèves du lycée », le tout est ce qui suit « des ».`],
+  [/individu/, T`Un individu, c'est un seul élément de la population : ce qu'on compte un par un (un élève, un objet, un animal…).`]
+];
+function qcm(titre, options, modele, aide) {
+  if (!aide) POUCES.some(function (p) { if (p[0].test(titre)) { aide = p[1]; return true; } return false; });
+  return { kind: 'qcm', titre: titre, lignes: options.some(function (o) { return o.t.length > 45; }), options: options, modele: modele, aide: aide };
+}
+function bon(t) { return { t: t, ok: true }; }
+function non(t, fb) { return { t: t, fb: fb }; }
+
+var THEMES = [
+/* ---------------------------------------------------------------- */
+{ id: 'population', onglet: '1. Population', titre: 'Reconnaître une population et une sous-population',
+  rappel: T`<p>On appelle <i>population</i> un ensemble d'éléments appelés les <i>individus</i> ;
+  on appelle <i>sous-population</i> une partie de la population.<br>
+  Les individus ne sont pas toujours des personnes : ce peuvent aussi être des objets, des animaux…</p>
+  <p>Repère : dans « $19\,\%$ <u>des élèves du lycée</u> », le tout (la population) est ce qui suit « des ».</p>`,
+  blocs: [
+  { exemple: { source: 'Cours', enonce: T`On étudie les élèves d'un lycée. Un individu est un élève. Quelques sous-populations : les élèves de Seconde, les filles, les demi-pensionnaires, les élèves qui font du sport…<br><br>On étudie maintenant les voitures d'un parking, dont certaines sont électriques.`,
+    etapes: ['Population : les voitures du parking.', 'Individu : une voiture.', 'Sous-population : les voitures électriques.'] } },
+  { titre: 'Exercices' },
+  { exo: { num: 23, page: 259, niv: 1, comp: 'Calculer', cadre: 'maison',
+    enonce: T`$19\,\%$ des élèves d'un lycée sont externes, ce qui représente $285$ élèves.`,
+    parts: [{ etapes: [
+      qcm('La population est :', [bon('les élèves du lycée'), non('les élèves externes', 'Les externes ne sont qu\'une partie des élèves : c\'est la sous-population.'), non('les $285$ élèves', 'Ces $285$ élèves sont les externes : une partie seulement.')], 'Population : les élèves du lycée.'),
+      qcm('Un individu est :', [bon('un élève du lycée'), non('un lycée', 'On étudie les élèves d\'un seul lycée, pas des lycées.'), non('$19\\,\\%$', '$19\\,\\%$ est une proportion, pas un individu.')], 'Individu : un élève du lycée.'),
+      qcm('La sous-population est :', [bon('les élèves externes'), non('les élèves du lycée', 'C\'est le tout : la population.'), non('les élèves demi-pensionnaires', 'L\'énoncé parle des externes.')], 'Sous-population : les élèves externes (il y en a $285$).')
+    ] }] } },
+  { exo: { num: 17, page: 259, niv: 1, comp: 'Calculer', cadre: 'maison',
+    enonce: T`Après le passage de la tempête Irma en septembre 2017, $95\,\%$ des $21\,050$ bâtiments de l'île de Saint-Martin ont été détruits.`,
+    parts: [{ etapes: [
+      qcm('La population est :', [bon('les bâtiments de l\'île'), non('les bâtiments détruits', 'Ce n\'est qu\'une partie des bâtiments ($95\\,\\%$).'), non('les habitants de l\'île', 'L\'énoncé compte des bâtiments, pas des personnes.')], T`Population : les bâtiments de l'île ($21\,050$ bâtiments).`),
+      qcm('Un individu est :', [bon('un bâtiment'), non('un habitant', 'L\'énoncé compte des bâtiments, pas des personnes.'), non('une tempête', 'On ne compte pas des tempêtes.')], 'Individu : un bâtiment. Les individus ne sont pas forcément des personnes !'),
+      qcm('La sous-population est :', [bon('les bâtiments détruits'), non('les bâtiments de l\'île', 'C\'est le tout : la population.'), non('les habitants dont la maison est détruite', 'L\'énoncé compte des bâtiments.')], 'Sous-population : les bâtiments détruits.')
+    ] }] } },
+  { exo: { num: 45, page: 260, niv: 2, comp: 'Calculer', cadre: 'classe',
+    enonce: T`En juillet 2018, on estime à $33$ millions le nombre d'utilisateurs de Facebook en France, soit $1{,}5\,\%$ des utilisateurs dans le monde.`,
+    parts: [{ etapes: [
+      qcm('La population est :', [bon('les utilisateurs de Facebook dans le monde'), non('les utilisateurs de Facebook en France', 'Ils ne représentent que $1{,}5\\,\\%$ : c\'est la partie.'), non('les habitants de la France', 'On ne parle pas de tous les Français, mais des utilisateurs de Facebook.')], T`Population : les utilisateurs de Facebook dans le monde. Repère : « $1{,}5\,\%$ des utilisateurs dans le monde ».`),
+      qcm('La sous-population est :', [bon('les utilisateurs de Facebook en France'), non('les utilisateurs de Facebook dans le monde', 'C\'est le tout : la population.'), non('les habitants de la France', 'On ne parle pas de tous les Français, mais des utilisateurs de Facebook.')], T`Sous-population : les utilisateurs de Facebook en France ($33$ millions).`)
+    ] }] } },
+  { exo: { num: 41, page: 260, niv: 1, comp: 'Raisonner', cadre: 'maison',
+    enonce: T`En 1998, le film <i>Titanic</i> avait enregistré $20\,634\,793$ entrées. Cette année-là, $170{,}1$ millions d'entrées ont été enregistrées en France, tous films confondus.`,
+    parts: [{ etapes: [
+      qcm('La population est :', [bon('toutes les entrées au cinéma en France en 1998'), non('les entrées pour Titanic', 'C\'est une partie seulement des entrées de 1998.'), non('les films sortis en 1998', 'On compte des entrées (des billets), pas des films.')], 'Population : toutes les entrées au cinéma en France en 1998.'),
+      qcm('Un individu est :', [bon('une entrée (un billet)'), non('un film', 'On compte des entrées, pas des films.'), non('un cinéma', 'On compte des entrées, pas des salles de cinéma.')], 'Individu : une entrée.'),
+      qcm('La sous-population est :', [bon('les entrées pour Titanic'), non('les entrées de 2008', 'Elles ne font pas partie des entrées de 1998.'), non('les films de 1998', 'On compte des entrées, pas des films.')], 'Sous-population : les entrées pour Titanic.')
+    ] }] } },
+  { exo: { num: 42, page: 260, niv: 2, comp: 'Calculer', cadre: 'maison',
+    enonce: T`Dans une classe de $30$ élèves, $12$ sont internes. Dans une autre classe de $25$ élèves, $11$ sont internes.<br>On cherche la proportion d'internes <i>sur l'ensemble des deux classes</i>.`,
+    parts: [{ etapes: [
+      qcm('La population est :', [bon('les $55$ élèves des deux classes'), non('les $30$ élèves de la première classe', 'On regarde l\'ensemble des deux classes.'), non('les $23$ internes des deux classes', 'C\'est la partie : la sous-population.')], T`Population : les élèves des deux classes, $30+25=55$ élèves.`),
+      qcm('La sous-population est :', [bon('les $23$ internes des deux classes'), non('les $12$ internes de la première classe', 'On regarde l\'ensemble des deux classes.'), non('les $55$ élèves des deux classes', 'C\'est le tout : la population.')], T`Sous-population : les internes des deux classes, $12+11=23$ élèves.`)
+    ] }] } },
+  { exo: { num: 50, page: 261, niv: 1, comp: 'Calculer', cadre: 'classe',
+    enonce: T`Un journal assure $15\,\%$ du marché (les ventes de journaux en France). Ses exemplaires numériques représentent $49\,\%$ de ses ventes.<br><span style="color:var(--muted)">Ici, le tout change d'un pourcentage à l'autre !</span>`,
+    parts: [{ etapes: [
+      qcm('Pour « $15\\,\\%$ », la population (le tout) est :', [bon('les ventes de journaux en France'), non('les ventes de ce journal', 'C\'est la partie : elles représentent $15\\,\\%$ du marché.'), non('les exemplaires numériques du journal', 'Relis : $15\\,\\%$ du marché.')], 'Pour $15\\,\\%$ : le tout est le marché (les ventes de journaux en France) ; la partie, les ventes du journal.',
+        'Lis ce qui suit le pourcentage : « $15\\,\\%$ du marché ». Le tout, c\'est le marché.'),
+      qcm('Pour « $49\\,\\%$ », la population (le tout) est :', [bon('les ventes de ce journal'), non('les ventes de journaux en France', 'Relis : « $49\\,\\%$ de ses ventes », c\'est-à-dire des ventes du journal.'), non('les exemplaires numériques du journal', 'C\'est la partie : ils représentent $49\\,\\%$ des ventes du journal.')], 'Pour $49\\,\\%$ : le tout est les ventes du journal ; la partie, les exemplaires numériques. Le tout a changé : c\'est une proportion de proportion (thème 3).',
+        'Lis ce qui suit le pourcentage : « $49\\,\\%$ de ses ventes ». « Ses », c\'est-à-dire celles de qui ?')
+    ] }] } }
+  ] },
+/* ---------------------------------------------------------------- */
+{ id: 'proportion', onglet: '2. Proportion, partie, tout', titre: 'Calculer une proportion, la partie ou le tout',
+  rappel: T`<div class="rappel-flex"><div>
+  <p>Une population compte $N$ individus, une sous-population en compte $n$. La <i>proportion</i> d'individus de la sous-population est</p>
+  <div class="encadre">$p=\dfrac{n}{N}=\dfrac{\text{partie}}{\text{tout}}$ &nbsp; avec $0\leq p\leq1$ (fraction, décimal ou pourcentage).</div>
+  <p>Les trois égalités suivantes sont équivalentes :</p>
+  <div class="encadre">$p=\dfrac{n}{N}\iff n=p\times N\iff N=\dfrac{n}{p}$</div>
+  <p>Prendre $t\,\%$ d'une quantité, c'est la multiplier par $\dfrac{t}{100}$.</p>
+  </div><div style="text-align:center">` + TRIANGLE + T`<br><small>On cache ce qu'on cherche :<br>ce qui reste donne le calcul.</small></div></div>
+  <p><i>Méthode.</i> Devant un problème de proportion, on se pose trois questions :</p>
+  <ol><li>Quelle est la population (le tout, $N$) ? Quelle est la sous-population (la partie, $n$) ?</li>
+  <li>Que connaît-on, que cherche-t-on : la proportion, la partie ou le tout ?</li>
+  <li>On applique la bonne formule, puis on vérifie que le résultat est cohérent (une partie est plus petite que le tout).</li></ol>`,
+  blocs: [
+  { sous: 'a. Calculer une proportion' },
+  { exemple: { source: 'Cours', enonce: T`Dans une classe de $30$ élèves, $12$ sont externes. Quelle est la proportion d'externes dans cette classe ?`,
+    etapes: [
+      T`<span class="num">1</span>La population (le tout) : les élèves de la classe, d'effectif $N=30$.<br>La sous-population (la partie) : les externes, d'effectif $n=12$.`,
+      T`<span class="num">2</span>On connaît la partie et le tout ; on cherche la proportion $p$.`,
+      T`<span class="num">3</span>On calcule $p=\dfrac{n}{N}=\dfrac{12}{30}=0{,}4=40\,\%$.<br>Vérification : on a bien $0\leq p\leq1$.<br>Il y a $40\,\%$ d'externes dans cette classe.`
+    ] } },
+  { exo: { num: 35, page: 260, niv: 1, comp: 'Calculer', cadre: 'maison',
+    enonce: T`<i>Flash.</i> Sur un budget de vacances de $600$ €, $180$ € sont consacrés aux loisirs. Quelle proportion du budget cela représente-t-il ?`,
+    parts: [{ type: 'pnN', cherche: 'p', n: 180, N: 600,
+      tout: { opt: 'le budget de vacances', redac: T`le budget de vacances, de valeur $N=600$ €` },
+      partie: { opt: 'les loisirs', redac: T`les loisirs, de valeur $n=180$ €` },
+      distract: ['les vacances', 'les euros dépensés hors loisirs'],
+      phrase: T`Les loisirs représentent $30\,\%$ du budget.` }] } },
+  { exo: { num: 21, page: 259, niv: 1, comp: 'Calculer', cadre: 'maison',
+    enonce: T`La forêt amazonienne s'étend sur $5{,}5$ millions de km$^2$ et se situe en Amérique du Sud, continent de $17{,}84$ millions de km$^2$. Calculer la proportion de la superficie du continent occupée par la forêt amazonienne. Donner le résultat en pourcentage, arrondi au centième.`,
+    parts: [{ type: 'pnN', cherche: 'p', n: 5.5, N: 17.84, dec: 2, mot: 'au centième', consigneCalcul: '(nombres en millions de km², résultat arrondi au centième)',
+      tout: { opt: 'le continent sud-américain', redac: T`le continent, de superficie $N=17{,}84$ millions de km$^2$` },
+      partie: { opt: 'la forêt amazonienne', redac: T`la forêt amazonienne, de superficie $n=5{,}5$ millions de km$^2$` },
+      distract: ['la surface de la Terre'],
+      piegesN: [{ v: 5.5e6, msg: 'Garde les nombres en millions de km² : $n=5{,}5$.' }],
+      piegesD: [{ v: 17.84e6, msg: 'Garde les nombres en millions de km² : $N=17{,}84$.' }],
+      phrase: T`La forêt amazonienne occupe environ $30{,}83\,\%$ de la superficie de l'Amérique du Sud.` }] } },
+  { exo: { num: 41, page: 260, niv: 1, comp: 'Raisonner', cadre: 'maison',
+    enonce: T`En 1998, le film <i>Titanic</i> avait enregistré $20\,634\,793$ entrées. Cette année-là, $170{,}1$ millions d'entrées ont été enregistrées en France, tous films confondus.<br>En 2008, le film <i>Bienvenue chez les Ch'tis</i> enregistrait $20\,489\,303$ entrées pour $212{,}7$ millions d'entrées au total cette année-là.<br>Lequel de ces deux films a attiré la plus grande proportion de spectateurs ?`,
+    parts: [
+      { type: 'pnN', titre: 'Pour <i>Titanic</i> (résultat en pourcentage, arrondi au centième) :', cherche: 'p', n: 20634793, N: 170100000, dec: 2, mot: 'au centième', w: 9,
+        tout: { opt: 'toutes les entrées de 1998', redac: T`toutes les entrées de l'année 1998, $N=170\,100\,000$` },
+        partie: { opt: 'les entrées pour Titanic', redac: T`les entrées du film <i>Titanic</i>, $n=20\,634\,793$` },
+        distract: ['toutes les entrées de 2008', 'les entrées pour Les Ch\'tis'],
+        piegesD: [{ v: 170.1, msg: 'Attention aux unités : $170{,}1$ millions $=170\\,100\\,000$.' }],
+        phrase: T`<i>Titanic</i> a attiré environ $12{,}13\,\%$ des entrées de 1998.` },
+      { type: 'pnN', titre: 'Pour <i>Bienvenue chez les Ch\'tis</i> (même méthode, plus rapide) :', rapide: true, cherche: 'p', n: 20489303, N: 212700000, dec: 2, mot: 'au centième', w: 9,
+        tout: { opt: 'toutes les entrées de 2008', redac: T`toutes les entrées de l'année 2008, $N=212\,700\,000$` },
+        partie: { opt: 'les entrées pour Les Ch\'tis', redac: T`les entrées du film <i>Les Ch'tis</i>, $n=20\,489\,303$` },
+        distract: ['toutes les entrées de 1998', 'les entrées pour Titanic'],
+        piegesD: [{ v: 212.7, msg: 'Attention aux unités : $212{,}7$ millions $=212\\,700\\,000$.' }],
+        phrase: T`<i>Les Ch'tis</i> a attiré environ $9{,}63\,\%$ des entrées de 2008.` },
+      { etapes: [qcm('Conclusion : quel film a attiré la plus grande proportion de spectateurs ?', [
+        bon('<i>Titanic</i>'),
+        non('<i>Bienvenue chez les Ch\'tis</i>', 'Compare les proportions, pas les nombres d\'entrées : $9{,}63\\,\\%<12{,}13\\,\\%$.'),
+        non('les deux, à égalité', 'Ils ont presque le même nombre d\'entrées, mais pas la même proportion : le tout n\'est pas le même.')],
+        T`C'est <i>Titanic</i> ($12{,}13\,\%>9{,}63\,\%$), alors que les deux films ont fait à peu près le même nombre d'entrées : le tout (les entrées de l'année) a changé.`,
+        'Ne compare pas les nombres d\'entrées : compare les deux pourcentages que tu viens de calculer.')] }
+    ] } },
+  { exo: { num: 42, page: 260, niv: 2, comp: 'Calculer', cadre: 'maison',
+    enonce: T`Dans une classe de $30$ élèves, $12$ sont internes. Dans une autre classe de $25$ élèves, $11$ sont internes.<br>1. Calculer la proportion d'élèves internes dans chacune des deux classes.<br>2. Calculer la proportion d'élèves internes sur l'ensemble des deux classes. Donner le résultat en pourcentage, arrondi au centième.`,
+    parts: [
+      { titre: '1. Dans chaque classe :', etapes: [{ kind: 'champs', titre: 'Complète.',
+        aide: T`Dans chaque classe : $p=\dfrac{\text{partie}}{\text{tout}}=\dfrac{\text{nombre d'internes}}{\text{nombre d'élèves}}$, puis on multiplie par $100$ pour le pourcentage.`,
+        gabarit: T`Classe 1 : $p=$ {f:0:1} $=$ {2} $\,\%$<br>Classe 2 : $p=$ {f:3:4} $=$ {5} $\,\%$`,
+        specs: [{ a: 12, mode: 'val', msg: 'En haut, la partie : les internes de la classe 1.' }, { a: 30, mode: 'val', msg: 'En bas, le tout : les élèves de la classe 1.' }, { a: 40, mode: 'pct', w: 5 },
+                { a: 11, mode: 'val', msg: 'En haut, la partie : les internes de la classe 2.' }, { a: 25, mode: 'val', msg: 'En bas, le tout : les élèves de la classe 2.' }, { a: 44, mode: 'pct', w: 5 }],
+        modele: T`Pour la classe 1, on calcule $p=\dfrac{12}{30}=0{,}4=40\,\%$. Pour la classe 2, on calcule $p=\dfrac{11}{25}=0{,}44=44\,\%$.` }] },
+      { type: 'pnN', titre: '2. Sur l\'ensemble des deux classes :', cherche: 'p', n: 23, N: 55, dec: 2, mot: 'au centième',
+        tout: { opt: 'les élèves des deux classes', redac: T`les élèves des deux classes, $N=30+25=55$` },
+        partie: { opt: 'les internes des deux classes', redac: T`les internes des deux classes, $n=12+11=23$` },
+        distract: ['les élèves de la classe 1', 'les internes de la classe 1'],
+        piegesN: [{ v: 12, msg: 'On prend les internes des deux classes : $12+11$.' }],
+        piegesD: [{ v: 30, msg: 'On prend les élèves des deux classes : $30+25$.' }],
+        pieges: [{ v: 84, msg: 'On n\'additionne pas $40\\,\\%$ et $44\\,\\%$ : ils ne portent pas sur la même population.' },
+                 { v: 42, msg: 'Ce n\'est pas la moyenne de $40\\,\\%$ et $44\\,\\%$ : les deux classes n\'ont pas le même effectif. Reviens aux effectifs.' }],
+        verif: T`Vérification : le résultat est bien compris entre $40\,\%$ et $44\,\%$.`,
+        phrase: T`Sur les deux classes, il y a environ $41{,}82\,\%$ d'internes : ce n'est ni $40\,\%+44\,\%$, ni la moyenne $42\,\%$.` }
+    ] } },
+
+  { sous: 'b. Trouver la partie' },
+  { exemple: { source: 'Cours', enonce: T`Un lycée compte $1\,200$ élèves dont $35\,\%$ sont demi-pensionnaires. Combien y a-t-il de demi-pensionnaires ?`,
+    etapes: [
+      T`<span class="num">1</span>La population (le tout) : les élèves du lycée, d'effectif $N=1\,200$.<br>La sous-population (la partie) : les demi-pensionnaires, d'effectif $n$.`,
+      T`<span class="num">2</span>On connaît l'effectif du tout $N=1\,200$ et la proportion $p=0{,}35$.<br>On cherche l'effectif $n$ de la partie.`,
+      T`<span class="num">3</span>$n=p\times N=0{,}35\times1\,200=420$ demi-pensionnaires.<br>Vérification : $420<1\,200$ : la partie est plus petite que le tout, cohérent.`
+    ] } },
+  { exo: { num: 22, page: 259, niv: 1, comp: 'Calculer', cadre: 'maison',
+    enonce: T`Pour leurs vacances, Mario et ses amis ont un budget total de $850$ €. Ils prévoient $35\,\%$ de ce budget pour l'hébergement. Combien leur coûterait l'hébergement ?`,
+    parts: [{ type: 'pnN', cherche: 'n', p: 0.35, N: 850, mot: 'la valeur', u: ' €',
+      tout: { opt: 'le budget total', redac: T`le budget total, de valeur $N=850$ €` },
+      partie: { opt: 'l\'hébergement', redac: T`l'hébergement, de valeur $n$` },
+      distract: ['Mario et ses amis', 'les vacances'],
+      phrase: T`L'hébergement coûterait $297{,}50$ €.` }] } },
+  { exo: { num: 17, page: 259, niv: 1, comp: 'Calculer', cadre: 'maison',
+    enonce: T`Après le passage de la tempête Irma en septembre 2017, $95\,\%$ des $21\,050$ bâtiments de l'île de Saint-Martin ont été détruits. Combien de bâtiments cela représente-t-il ? Arrondir à la dizaine.`,
+    parts: [{ type: 'pnN', cherche: 'n', p: 0.95, N: 21050, mot: 'l\'effectif', arrondi: { dec: -1, mot: 'à la dizaine' },
+      tout: { opt: 'les bâtiments de l\'île', redac: T`les bâtiments de l'île, d'effectif $N=21\,050$` },
+      partie: { opt: 'les bâtiments détruits', redac: T`les bâtiments détruits, d'effectif $n$` },
+      distract: ['les habitants de l\'île', 'la tempête Irma'],
+      phrase: T`Environ $20\,000$ bâtiments ont été détruits.` }] } },
+
+  { sous: 'c. Trouver le tout' },
+  { exemple: { source: 'Cours', enonce: T`Une veste est vendue avec une remise de $30\,\%$, ce qui fait économiser $36$ €. Quel était son prix ?`,
+    etapes: [
+      T`<span class="num">1</span>La population (le tout) : le prix de la veste, de valeur $N$.<br>La sous-population (la partie) : la remise, de valeur $n=36$ €.`,
+      T`<span class="num">2</span>On connaît la valeur de la partie $n=36$ € et la proportion $p=0{,}30$.<br>On cherche la valeur $N$ du tout.`,
+      T`<span class="num">3</span>$N=\dfrac{n}{p}=\dfrac{36}{0{,}30}=120$ €.<br>Vérification : $36<120$ : la partie est plus petite que le tout, cohérent.`
+    ] } },
+  { exo: { num: 23, page: 259, niv: 1, comp: 'Calculer', cadre: 'maison',
+    enonce: T`$19\,\%$ des élèves d'un lycée sont externes, ce qui représente $285$ élèves. Combien d'élèves y a-t-il dans ce lycée ?`,
+    parts: [{ type: 'pnN', cherche: 'N', n: 285, p: 0.19, mot: 'l\'effectif',
+      tout: { opt: 'les élèves du lycée', redac: T`les élèves du lycée, d'effectif $N$` },
+      partie: { opt: 'les élèves externes', redac: T`les externes, d'effectif $n=285$` },
+      distract: ['les élèves demi-pensionnaires'],
+      phrase: T`Il y a $1\,500$ élèves dans ce lycée.` }] } },
+  { exo: { num: 36, page: 260, niv: 1, comp: 'Calculer', cadre: 'maison',
+    enonce: T`<i>Flash.</i> $300$ articles du magasin sont en soldes, ce qui représente $25\,\%$ de la totalité des articles. Combien y a-t-il d'articles dans ce magasin ?`,
+    parts: [{ type: 'pnN', cherche: 'N', n: 300, p: 0.25, mot: 'l\'effectif',
+      tout: { opt: 'les articles du magasin', redac: T`les articles du magasin, d'effectif $N$` },
+      partie: { opt: 'les articles en soldes', redac: T`les articles en soldes, d'effectif $n=300$` },
+      distract: ['les articles hors soldes', 'les clients du magasin'],
+      phrase: T`Il y a $1\,200$ articles dans le magasin.` }] } },
+  { exo: { num: 45, page: 260, niv: 2, comp: 'Calculer', cadre: 'classe',
+    enonce: T`En juillet 2018, on estime à $33$ millions le nombre d'utilisateurs de Facebook en France, soit $1{,}5\,\%$ des utilisateurs dans le monde. Combien d'utilisateurs de Facebook estime-t-on qu'il y avait dans le monde en juillet 2018 ?`,
+    parts: [{ type: 'pnN', cherche: 'N', n: 33, p: 0.015, mot: 'l\'effectif', u: ' millions', altN: [33e6], altRes: [2.2e9], w: 8,
+      tout: { opt: 'les utilisateurs de Facebook dans le monde', redac: T`les utilisateurs dans le monde, d'effectif $N$` },
+      partie: { opt: 'les utilisateurs de Facebook en France', redac: T`les utilisateurs en France, d'effectif $n=33$ millions` },
+      distract: ['les habitants de la France'],
+      piegesP: [{ v: 0.15, msg: T`$1{,}5\,\%=\dfrac{1{,}5}{100}=0{,}015$.` }],
+      pieges: [{ v: 220, msg: T`Vérifie $p$ : $1{,}5\,\%=0{,}015$ (et non $0{,}15$).` }],
+      phrase: T`Il y avait environ $2\,200$ millions, soit $2{,}2$ milliards d'utilisateurs de Facebook dans le monde.` }] } },
+
+  { appro: 'Approfondissement' },
+  { exo: { num: 46, page: 261, niv: 3, comp: 'Modéliser', cadre: 'appro',
+    enonce: T`Pour faire du béton pour des fondations, les professionnels du bâtiment ont l'habitude de dire : « $7$ volumes de gravier pour $5$ volumes de sable, $2$ volumes de ciment et $1$ volume d'eau ».<br>1. Quelle proportion de gravier retrouve-t-on dans ce béton ? Donner le résultat en pourcentage, arrondi au centième.<br>2. Avec $4$ m$^3$ de gravier, quel volume de béton peut-on faire ? Arrondir au centième.`,
+    parts: [
+      { type: 'pnN', titre: '1.', cherche: 'p', n: 7, N: 15, dec: 2, mot: 'au centième',
+        tout: { opt: 'le béton (tous les volumes)', redac: T`le béton, soit $N=7+5+2+1=15$ volumes` },
+        partie: { opt: 'le gravier', redac: T`le gravier, $n=7$ volumes` },
+        distract: ['le sable', 'le ciment'],
+        piegesD: [{ v: 8, msg: 'Le tout, c\'est tout le béton : gravier + sable + ciment + eau.' }, { v: 14, msg: 'N\'oublie pas l\'eau : elle fait partie du béton.' }],
+        phrase: T`Le béton contient environ $46{,}67\,\%$ de gravier.` },
+      { type: 'pnN', titre: '2.', cherche: 'N', n: 4, p: 7 / 15, mot: 'le volume', u: ' m³', dec: 2, mot2: 'au centième',
+        tex: { p: T`\dfrac{7}{15}` }, tolP: 2e-4, voirP: '7/15',
+        msgP: T`En bas, la proportion de gravier : $p=\dfrac{7}{15}$ (garde la valeur exacte, ou au moins 4 chiffres après la virgule).`,
+        tout: { opt: 'le béton fabriqué', redac: T`le volume de béton, $N$` },
+        partie: { opt: 'le gravier', redac: T`le gravier, $n=4$ m$^3$` },
+        distract: ['le sable', 'l\'eau'],
+        phrase: T`On peut faire environ $8{,}57$ m$^3$ de béton.` }
+    ] } },
+  { exo: { num: 49, page: 261, niv: 3, comp: 'Représenter', cadre: 'appro',
+    enonce: T`Lors d'un congrès international, $76$ personnalités parlent anglais, ce qui correspond à $80\,\%$ des participants. $60\,\%$ de l'ensemble des participants sont des femmes et, parmi elles, $49$ parlent anglais.<br>1. Calculer le nombre de personnes présentes au congrès.<br>2. Construire un tableau à double entrée donnant la répartition des effectifs.<br>3. La proportion de personnes parlant anglais est-elle plus importante chez les hommes ou chez les femmes ?`,
+    parts: [
+      { type: 'pnN', titre: '1.', cherche: 'N', n: 76, p: 0.8, mot: 'l\'effectif',
+        tout: { opt: 'les participants au congrès', redac: T`les participants, d'effectif $N$` },
+        partie: { opt: 'les participants qui parlent anglais', redac: T`les anglophones, d'effectif $n=76$` },
+        distract: ['les femmes du congrès', 'les femmes qui parlent anglais'],
+        phrase: T`Il y a $95$ participants au congrès.` },
+      { titre: '2.', etapes: [{ kind: 'champs', titre: T`Complète le tableau (commence par les femmes : $60\,\%$ de $95$).`,
+        aide: T`Les femmes : $0{,}6\times95$. Les hommes : le reste des $95$ participants.<br>Ensuite, chaque case s'obtient par une soustraction : dans chaque ligne et chaque colonne, la dernière case est le total des autres.`,
+        gabarit: T`<table style="border-collapse:collapse;line-height:1.6" border="1" cellpadding="6"><tr><th></th><th>Femmes</th><th>Hommes</th><th>Total</th></tr>` +
+          T`<tr><th>Anglais</th><td>$49$</td><td>{0}</td><td>$76$</td></tr><tr><th>Pas anglais</th><td>{1}</td><td>{2}</td><td>{3}</td></tr>` +
+          T`<tr><th>Total</th><td>{4}</td><td>{5}</td><td>$95$</td></tr></table>`,
+        specs: [{ a: 27, mode: 'val', w: 3.5 }, { a: 8, mode: 'val', w: 3.5 }, { a: 11, mode: 'val', w: 3.5 }, { a: 19, mode: 'val', w: 3.5 },
+                { a: 57, mode: 'val', w: 3.5, msg: T`Femmes : $0{,}6\times95=57$.` }, { a: 38, mode: 'val', w: 3.5 }],
+        modele: T`Femmes : $0{,}6\times95=57$ ; hommes : $95-57=38$ ; hommes anglophones : $76-49=27$ ; puis on complète par différences.` }] },
+      { titre: '3.', etapes: [
+        { kind: 'champs', titre: 'Proportion d\'anglophones (en pourcentage, arrondi au centième) :',
+          aide: T`Attention, le tout change : chez les femmes, le tout est le nombre de femmes (pas $95$) ; chez les hommes, le nombre d'hommes. Prends les nombres dans ton tableau.`,
+          gabarit: T`Chez les femmes : $p=$ {f:0:1} $\approx$ {2} $\,\%$<br>Chez les hommes : $p=$ {f:3:4} $\approx$ {5} $\,\%$`,
+          specs: [{ a: 49, mode: 'val', w: 3.5 }, { a: 57, mode: 'val', w: 3.5, msg: 'Le tout : les femmes du congrès.' }, { a: 4900 / 57, mode: 'pct', dec: 2, mot: 'au centième', w: 5 },
+                  { a: 27, mode: 'val', w: 3.5 }, { a: 38, mode: 'val', w: 3.5, msg: 'Le tout : les hommes du congrès.' }, { a: 2700 / 38, mode: 'pct', dec: 2, mot: 'au centième', w: 5 }] },
+        qcm('La proportion d\'anglophones est plus importante :', [bon('chez les femmes'), non('chez les hommes', 'Compare tes deux pourcentages.')],
+          T`Chez les femmes ($85{,}96\,\%$) plutôt que chez les hommes ($71{,}05\,\%$).`,
+          'Compare les deux pourcentages de l\'étape précédente, pas les nombres de personnes.')
+      ] }
+    ] } }
+  ] },
+/* ---------------------------------------------------------------- */
+{ id: 'pdp', onglet: '3. Proportion de proportion', titre: 'Proportion de proportion',
+  rappel: T`<p><i>Situation.</i> Dans un lycée de $1\,000$ élèves, $60\,\%$ des élèves font du sport ; parmi ces sportifs, $40\,\%$ sont des garçons.</p>` +
+    schema([{ haut: '$1\\,000$', bas: 'élèves' }, { haut: '$600$', bas: 'sportifs' }, { haut: '$240$', bas: 'garçons sportifs' }], ['\\times0{,}60', '\\times0{,}40'], '\\times0{,}24') +
+    T`<p>On considère une population $A$, une sous-population $B$ de $A$ et une sous-population $C$ de $B$.<br>
+    $p_1$ est la proportion d'individus de $B$ dans $A$ ; $p_2$ est la proportion d'individus de $C$ dans $B$.</p>
+    <div class="encadre">La proportion d'individus de $C$ dans $A$ est le produit $p=p_1\times p_2$.</div>
+    <div class="attention">Attention : on multiplie les proportions, on ne les additionne pas. Des pourcentages ne s'additionnent que s'ils portent sur la même population et sur des sous-populations sans individu commun.</div>`,
+  blocs: [
+  { exemple: { source: 'Cours', enonce: T`Dans une entreprise, $52\,\%$ des salariés sont des femmes et $25\,\%$ d'entre elles sont cadres. Quelle est la proportion de femmes cadres parmi les salariés ?`,
+    etapes: [
+      T`<span class="num">1</span>$A$ : les salariés ; $B$ : les femmes ; $C$ : les femmes cadres.`,
+      T`<span class="num">2</span>Proportion de femmes parmi les salariés : $p_1=0{,}52$.<br>Proportion de cadres parmi les femmes : $p_2=0{,}25$.` +
+        schema([{ haut: 'salariés' }, { haut: 'femmes' }, { haut: 'femmes cadres' }], ['\\times0{,}52', '\\times0{,}25'], '\\times p'),
+      T`<span class="num">3</span>Donc $p=p_1\times p_2=0{,}52\times0{,}25=0{,}13$ : $13\,\%$ des salariés sont des femmes cadres.`
+    ] } },
+  { titre: 'Exercices' },
+  { exo: { num: 24, page: 259, niv: 1, comp: 'Calculer', cadre: 'maison',
+    enonce: T`$50\,\%$ des foyers français possèdent au moins un animal de compagnie et, pour $20\,\%$ de ces foyers, il s'agit de chats. Quelle proportion des foyers français possède au moins un chat ? Exprimer le résultat en pourcentage.`,
+    parts: [{ type: 'pp', niveaux: ['les foyers français', 'les foyers qui ont un animal', 'les foyers qui ont un chat'], distract: ['les chats'],
+      ps: [0.5, 0.2], pnoms: ['Proportion de foyers ayant un animal parmi les foyers français', 'Proportion de foyers ayant un chat parmi ceux qui ont un animal'],
+      phrase: T`$10\,\%$ des foyers français possèdent au moins un chat.` }] } },
+  { exo: { num: 50, page: 261, niv: 1, comp: 'Calculer', cadre: 'classe',
+    enonce: T`Un journal assure $15\,\%$ du marché. Ses exemplaires numériques représentent $49\,\%$ de ses ventes. Calculer la proportion d'exemplaires numériques de ce journal parmi l'ensemble des ventes en France.`,
+    parts: [{ type: 'pp', niveaux: ['les ventes de journaux en France', 'les ventes du journal', 'les exemplaires numériques du journal'], distract: ['les journaux papier'],
+      ps: [0.15, 0.49], pnoms: ['Proportion des ventes du journal parmi les ventes en France', 'Proportion d\'exemplaires numériques parmi les ventes du journal'],
+      phrase: T`les exemplaires numériques de ce journal représentent $7{,}35\,\%$ des ventes en France.` }] } },
+  { exo: { num: 18, page: 259, niv: 1, comp: 'Raisonner', cadre: 'maison',
+    enonce: T`$x$ est un nombre réel. Quelle proportion est la plus grande : $50\,\%$ de $50\,\%$ de $x$ ; $75\,\%$ de $25\,\%$ de $x$ ; $25\,\%$ de $75\,\%$ de $x$ ?`,
+    parts: [{ etapes: [
+      { kind: 'champs', titre: 'On multiplie les proportions. Complète :',
+        aide: T`« $75\,\%$ de $25\,\%$ », c'est $0{,}75\times0{,}25$. Multiplie à la calculatrice, puis multiplie le résultat par $100$ pour l'écrire en pourcentage.`,
+        gabarit: T`$50\,\%$ de $50\,\%$ de $x$, c'est $0{,}5\times0{,}5\times x$, soit {0} $\,\%$ de $x$.<br>$75\,\%$ de $25\,\%$ de $x$, c'est {1} $\,\%$ de $x$.<br>$25\,\%$ de $75\,\%$ de $x$, c'est {2} $\,\%$ de $x$.`,
+        specs: [{ a: 25, mode: 'pct', w: 5, pieges: [{ v: 100, msg: 'On n\'additionne pas : on multiplie $0{,}5\\times0{,}5$.' }] },
+                { a: 18.75, mode: 'pct', w: 5, pieges: [{ v: 100, msg: 'On n\'additionne pas : on multiplie $0{,}75\\times0{,}25$.' }] },
+                { a: 18.75, mode: 'pct', w: 5, pieges: [{ v: 100, msg: 'On n\'additionne pas : on multiplie $0{,}25\\times0{,}75$.' }] }] },
+      qcm('Pour $x>0$, quelle est la plus grande ?', [bon('$50\\,\\%$ de $50\\,\\%$ de $x$'), non('$75\\,\\%$ de $25\\,\\%$ de $x$', 'Compare : $18{,}75\\,\\%<25\\,\\%$.'), non('$25\\,\\%$ de $75\\,\\%$ de $x$', 'Compare : $18{,}75\\,\\%<25\\,\\%$.'), non('elles sont toutes égales', 'Les deux dernières sont égales, mais pas la première.')],
+        T`C'est $50\,\%$ de $50\,\%$ de $x$ ($25\,\%$ de $x$). Les deux dernières sont égales ($18{,}75\,\%$ de $x$) : l'ordre ne compte pas dans un produit.`,
+        'Compare les trois pourcentages que tu viens de calculer.')
+    ] }] } },
+  { exo: { num: 25, page: 259, niv: 2, comp: 'Représenter', cadre: 'maison',
+    enonce: T`Dans une grande entreprise, $38{,}3\,\%$ des salariés sont des cadres et, parmi eux, $86{,}5\,\%$ optent fréquemment pour le télétravail.<br>1. Modéliser la situation à l'aide d'un schéma judicieusement choisi.<br>2. Quelle proportion des salariés sont des cadres qui optent pour le télétravail ? Donner le résultat en pourcentage, arrondi au dixième.`,
+    parts: [{ type: 'pp', niveaux: ['les salariés', 'les cadres', 'les cadres en télétravail'], distract: ['les salariés qui ne sont pas cadres'],
+      ps: [0.383, 0.865], pnoms: ['Proportion de cadres parmi les salariés', 'Proportion de cadres en télétravail parmi les cadres'],
+      decProd: 4, dec: 1, mot: 'au dixième',
+      phrase: T`environ $33{,}1\,\%$ des salariés sont des cadres qui optent pour le télétravail.` }] } },
+  { exo: { num: 53, page: 261, niv: 2, comp: 'Calculer', cadre: 'temps',
+    enonce: T`À la session de juin 2018, $52\,\%$ des candidats se sont présentés aux épreuves des séries générales de l'ancien baccalauréat. Le taux de réussite s'est élevé à $91{,}1\,\%$, dont $54{,}1\,\%$ de mentions.<br>Calculer la proportion de bacheliers des séries générales ayant obtenu une mention parmi tous les candidats de la session de juin 2018. Donner le résultat en pourcentage, arrondi au dixième.`,
+    parts: [{ type: 'pp', niveaux: ['tous les candidats', 'les candidats des séries générales', 'les bacheliers des séries générales', 'les bacheliers avec mention'],
+      ps: [0.52, 0.911, 0.541], pnoms: ['Proportion de candidats des séries générales parmi les candidats', 'Proportion de bacheliers parmi ces candidats', 'Proportion de mentions parmi ces bacheliers'],
+      decProd: 4, dec: 1, mot: 'au dixième',
+      phrase: T`environ $25{,}6\,\%$ des candidats sont des bacheliers des séries générales avec mention.` }] } },
+
+  { appro: 'Approfondissement' },
+  { exo: { num: 51, page: 261, niv: 3, comp: 'Chercher', cadre: 'appro',
+    enonce: T`À la suite d'une épidémie de grippe, $2{,}75\,\%$ des élèves d'un lycée sont malades et absents depuis plus d'une semaine, et $5\,\%$ des élèves sont malades. Parmi les élèves malades, quelle est la proportion d'élèves absents depuis plus d'une semaine ?`,
+    parts: [{ etapes: [
+      { kind: 'champs', titre: 'Nomme les proportions (en écriture décimale).',
+        aide: T`Les malades sont une partie des élèves ; les malades absents depuis plus d'une semaine sont une partie des malades.<br>Les deux pourcentages de l'énoncé portent sur tous les élèves : écris-les en décimal ($2{,}75\,\%=0{,}0275$).`,
+        gabarit: T`Proportion d'élèves malades parmi les élèves : $p_1=$ {0}<br>Proportion d'élèves absents depuis plus d'une semaine parmi les malades : $p_2$, inconnue.<br>Proportion d'élèves malades et absents depuis plus d'une semaine parmi les élèves : $p=$ {1}`,
+        specs: [{ a: 0.05, mode: 'dec', w: 5 }, { a: 0.0275, mode: 'dec', w: 6 }] },
+      { kind: 'champs', titre: 'On a $p=p_1\\times p_2$. On cherche $p_2$ : on divise.',
+        aide: T`C'est comme $n=p\times N$ dans le triangle magique : quand on cherche un des deux facteurs d'un produit, on divise le produit par l'autre facteur.`,
+        gabarit: T`$p_2=\dfrac{p}{p_1}=$ {f:0:1} $=$ {2}, soit {3} $\,\%$.`,
+        specs: [{ a: 0.0275, mode: 'dec', w: 6, msg: 'En haut, la proportion globale $p$.' }, { a: 0.05, mode: 'dec', w: 6, msg: 'En bas, $p_1$.' },
+                { a: 0.55, mode: 'dec', w: 5, pieges: [{ v: 0.001375, msg: 'On cherche $p_2$ : on divise $p$ par $p_1$, on ne multiplie pas.' }] }, { a: 55, mode: 'pct', w: 5 }],
+        modele: T`On a $p=p_1\times p_2$, c'est-à-dire $0{,}0275=0{,}05\times p_2$, donc $p_2=\dfrac{0{,}0275}{0{,}05}=0{,}55$. Parmi les élèves malades, $55\,\%$ sont absents depuis plus d'une semaine.` }
+    ] }] } },
+  { exo: { num: 54, page: 261, niv: 3, comp: 'Chercher', cadre: 'appro',
+    enonce: T`$54\,\%$ des salariés d'une entreprise sont des hommes. $7\,\%$ des hommes et $11\,\%$ des femmes sont cadres.<br>1. Quel est le pourcentage de cadres dans l'entreprise ?<br>2. L'entreprise compte $85$ cadres. Quel est le nombre total de salariés dans cette entreprise ?`,
+    parts: [
+      { titre: '1.', etapes: [
+        { kind: 'champs', titre: 'Les hommes cadres, parmi les salariés :',
+          aide: T`$p_1$ : la proportion d'hommes parmi les salariés ; $p_2$ : la proportion de cadres parmi les hommes. En décimal : $54\,\%=0{,}54$.`, gabarit: T`$p=p_1\times p_2=$ {0} $\times$ {1} $=$ {2}`,
+          specs: [{ a: 0.54, mode: 'dec', alt: [0.07], w: 5 }, { a: 0.07, mode: 'dec', alt: [0.54], w: 5 }, { a: 0.0378, mode: 'dec', w: 6 }] },
+        { kind: 'champs', titre: 'Les femmes cadres, parmi les salariés :',
+          aide: T`L'énoncé ne donne pas la proportion de femmes : les salariés sont soit des hommes, soit des femmes, donc la proportion de femmes est $1-0{,}54$.`, gabarit: T`$p=p_1\times p_2=$ {0} $\times$ {1} $=$ {2}`,
+          specs: [{ a: 0.46, mode: 'dec', alt: [0.11], w: 5, pieges: [{ v: 0.54, msg: 'La proportion de femmes parmi les salariés est $1-0{,}54$.' }] },
+                  { a: 0.11, mode: 'dec', alt: [0.46], w: 5 }, { a: 0.0506, mode: 'dec', w: 6 }] },
+        { kind: 'champs', titre: 'Hommes cadres et femmes cadres : même population (les salariés), aucun individu commun. On additionne.',
+          aide: T`On additionne les deux proportions trouvées juste avant (elles portent toutes les deux sur les salariés). Ce ne sont pas $7\,\%$ et $11\,\%$ qu'on additionne !`,
+          gabarit: T`$p=$ {0} $+$ {1} $=$ {2}, soit {3} $\,\%$ de cadres.`,
+          specs: [{ a: 0.0378, mode: 'dec', alt: [0.0506], w: 6 }, { a: 0.0506, mode: 'dec', alt: [0.0378], w: 6 }, { a: 0.0884, mode: 'dec', w: 6 },
+                  { a: 8.84, mode: 'pct', w: 5, pieges: [{ v: 18, msg: '$7\\,\\%$ et $11\\,\\%$ ne portent pas sur la même population (les hommes, les femmes) : on ne peut pas les additionner.' }, { v: 9, msg: 'Ce n\'est pas la moyenne : il n\'y a pas autant d\'hommes que de femmes.' }] }],
+          modele: T`Hommes cadres : $0{,}54\times0{,}07=0{,}0378$. Femmes cadres : $0{,}46\times0{,}11=0{,}0506$. Les deux groupes portent sur la même population et n'ont pas d'individu commun : $0{,}0378+0{,}0506=0{,}0884$. Il y a $8{,}84\,\%$ de cadres dans l'entreprise.` }
+      ] },
+      { type: 'pnN', titre: '2.', cherche: 'N', n: 85, p: 0.0884, mot: 'l\'effectif', dec: 1, mot2: 'au dixième', consigneCalcul: '(arrondi au dixième)',
+        tout: { opt: 'les salariés de l\'entreprise', redac: T`les salariés, d'effectif $N$` },
+        partie: { opt: 'les cadres', redac: T`les cadres, d'effectif $n=85$` },
+        distract: ['les femmes cadres', 'les hommes'],
+        phrase: T`L'entreprise compte environ $962$ salariés.` }
+    ] } },
+  { exo: { num: 90, page: 266, niv: 3, comp: 'Chercher', cadre: 'appro',
+    enonce: T`Lorsqu'il va chez son cardiologue, M. Charrier paie sa consultation. $70\,\%$ de ce montant lui est remboursé par la Sécurité sociale. Sur le montant restant à sa charge après ce remboursement, sa mutuelle lui rembourse $80\,\%$. Il lui reste finalement $6$ € à sa charge.<br>1. Quel pourcentage du prix de la consultation sa mutuelle lui rembourse-t-elle ?<br>2. Quel pourcentage du prix de la consultation a-t-il finalement payé ?<br>3. Quel était le montant de sa consultation au départ ?`,
+    parts: [
+      { titre: '1.', etapes: [{ kind: 'champs', titre: 'Proportion de proportion :',
+        aide: T`La Sécurité sociale rembourse $70\,\%$ du prix : il reste donc $1-0{,}7$ du prix à sa charge. La mutuelle rembourse $80\,\%$ de ce reste (pas du prix) : on multiplie les deux proportions.`,
+        gabarit: T`Proportion du prix restant à charge après la Sécurité sociale : $p_1=$ {0}<br>Proportion remboursée par la mutuelle sur ce reste : $p_2=$ {1}<br>$p=p_1\times p_2=$ {2} : la mutuelle rembourse {3} $\,\%$ du prix.`,
+        specs: [{ a: 0.3, mode: 'dec', w: 5, pieges: [{ v: 0.7, msg: '$70\\,\\%$ est remboursé : il reste $1-0{,}7$ à sa charge.' }] }, { a: 0.8, mode: 'dec', w: 5 },
+                { a: 0.24, mode: 'dec', w: 5 }, { a: 24, mode: 'pct', w: 5, pieges: [{ v: 80, msg: 'La mutuelle rembourse $80\\,\\%$ du reste, pas $80\\,\\%$ du prix.' }] }],
+        modele: T`$p_1=1-0{,}7=0{,}3$ et $p_2=0{,}8$, donc $p=0{,}3\times0{,}8=0{,}24$ : la mutuelle rembourse $24\,\%$ du prix.` }] },
+      { titre: '2.', etapes: [{ kind: 'champs', titre: 'Ce qu\'il paie lui-même :',
+        aide: T`Sur le reste ($0{,}3$ du prix), la mutuelle rembourse $80\,\%$ : il en paie donc $1-0{,}8$. On multiplie ensuite par $0{,}3$.`,
+        gabarit: T`Il paie $1-0{,}8=$ {0} du reste, donc $p=$ {1} $\times$ {2} $=$ {3} : il paie {4} $\,\%$ du prix.`,
+        specs: [{ a: 0.2, mode: 'dec', w: 5 }, { a: 0.3, mode: 'dec', alt: [0.2], w: 5 }, { a: 0.2, mode: 'dec', alt: [0.3], w: 5 }, { a: 0.06, mode: 'dec', w: 5 }, { a: 6, mode: 'pct', w: 5 }],
+        modele: T`Il paie $0{,}3\times0{,}2=0{,}06$, soit $6\,\%$ du prix. Vérification : $70\,\%+24\,\%+6\,\%=100\,\%$.` }] },
+      { type: 'pnN', titre: '3.', cherche: 'N', n: 6, p: 0.06, mot: 'la valeur', u: ' €',
+        tout: { opt: 'le prix de la consultation', redac: T`le prix de la consultation, $N$` },
+        partie: { opt: 'ce qu\'il paie lui-même', redac: T`ce qu'il paie, $n=6$ €` },
+        distract: ['le remboursement de la mutuelle'],
+        phrase: T`La consultation coûtait $100$ €.` }
+    ] } }
+  ] }
+];
+
+/* ================= Construction de la page ================= */
+var nav = document.getElementById('onglets'), app = document.getElementById('app');
+THEMES.forEach(function (t) {
+  ETAT[t.id] = { total: 0, faits: 0 };
+  var b = h('button', null, t.onglet + ' <span class="compte"></span>'); b.type = 'button';
+  b.setAttribute('role', 'tab'); b.dataset.onglet = t.id;
+  b.onclick = function () { montrer(t.id); history.replaceState(null, '', '#' + t.id); window.scrollTo(0, 0); };
+  nav.appendChild(b);
+  var s = h('section', 'theme'); s.id = 'theme-' + t.id;
+  s.appendChild(h('h2', null, t.titre));
+  var d = h('details', 'rappel'); d.open = true;
+  d.appendChild(h('summary', null, 'Rappel du cours'));
+  d.appendChild(h('div', null, M(t.rappel)));
+  s.appendChild(d);
+  t.blocs.forEach(function (bl) {
+    if (bl.exemple) exemple(s, bl.exemple);
+    else if (bl.exo) exercice(s, bl.exo, t.id);
+    else if (bl.titre) s.appendChild(h('div', 'bloc-titre', bl.titre));
+    else if (bl.sous) s.appendChild(h('h3', null, bl.sous));
+    else if (bl.appro) s.appendChild(h('h3', 'appro', bl.appro));
+  });
+  app.appendChild(s);
+});
+function montrer(id) {
+  THEMES.forEach(function (t) {
+    document.getElementById('theme-' + t.id).hidden = t.id !== id;
+    nav.querySelector('[data-onglet="' + t.id + '"]').setAttribute('aria-selected', String(t.id === id));
+  });
+}
+majCompteurs();
+var dep = (location.hash || '').slice(1);
+montrer(ETAT[dep] ? dep : THEMES[0].id);
+PAGE_PRETE = true;
+})();
+</script>
+</body>
+</html>
