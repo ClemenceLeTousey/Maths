@@ -644,11 +644,11 @@ function renderMath(){
   });
 }
 
-// La page s'ouvre (et se recale à chaque question) sur la carte de la
-// question : l'en-tête avec le titre et le lien Sommaire reste accessible
+// La page s'ouvre (et se recale à chaque question) pile sur l'énoncé, juste
+// sous le minuteur : l'en-tête, le badge et le minuteur restent accessibles
 // en remontant.
 function scrollToPage(behavior){
-  const top = document.getElementById("page").getBoundingClientRect().top + window.scrollY - 16;
+  const top = document.getElementById("question-row").getBoundingClientRect().top + window.scrollY - 8;
   window.scrollTo({ top: Math.max(0, top), behavior: behavior || "auto" });
 }
 
