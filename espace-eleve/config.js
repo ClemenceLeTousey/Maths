@@ -76,11 +76,11 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie9-j2', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 2', court: 'S9 · J2', url: 'seconde/serie9.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie9-j3', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 3', court: 'S9 · J3', url: 'seconde/serie9.html?j=3' },
     { niveau: 'seconde', id: 'seconde/serie9-bilan', groupe: 'Facultatif · Série 9 en temps limité ⏱', titre: 'Bilan Série 9 (10 questions chronométrées)', court: 'S9 · Bilan', url: 'seconde/serie9-bilan.html' },
-    // Séries 10 et 11 : ouverture automatique (2F le jeudi 18h, 2B et 2H le vendredi 17h, voir OUVERTURE_SERIES) ; TEST-01 et JIMMY les voient avant
-    { niveau: 'seconde', id: 'seconde/serie10-j1', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 1', court: 'S10 · J1', url: 'seconde/serie10.html?j=1', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
-    { niveau: 'seconde', id: 'seconde/serie10-j2', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 2', court: 'S10 · J2', url: 'seconde/serie10.html?j=2', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
-    { niveau: 'seconde', id: 'seconde/serie10-j3', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 3', court: 'S10 · J3', url: 'seconde/serie10.html?j=3', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
-    { niveau: 'seconde', id: 'seconde/serie10-bilan', groupe: 'Facultatif · Série 10 en temps limité ⏱', titre: 'Bilan Série 10 (10 questions chronométrées)', court: 'S10 · Bilan', url: 'seconde/serie10-bilan.html', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
+    // Série 10 publiée pour tous le 20/11. Séries 11 à 13 : ouverture automatique (2F le jeudi 18h, 2B et 2H le vendredi 17h, voir OUVERTURE_SERIES) ; TEST-01 et JIMMY les voient avant
+    { niveau: 'seconde', id: 'seconde/serie10-j1', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 1', court: 'S10 · J1', url: 'seconde/serie10.html?j=1' },
+    { niveau: 'seconde', id: 'seconde/serie10-j2', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 2', court: 'S10 · J2', url: 'seconde/serie10.html?j=2' },
+    { niveau: 'seconde', id: 'seconde/serie10-j3', groupe: 'Série 10 · semaine du 23 au 27 novembre', titre: 'Jour 3', court: 'S10 · J3', url: 'seconde/serie10.html?j=3' },
+    { niveau: 'seconde', id: 'seconde/serie10-bilan', groupe: 'Facultatif · Série 10 en temps limité ⏱', titre: 'Bilan Série 10 (10 questions chronométrées)', court: 'S10 · Bilan', url: 'seconde/serie10-bilan.html' },
     { niveau: 'seconde', id: 'seconde/serie11-j1', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 1', court: 'S11 · J1', url: 'seconde/serie11.html?j=1', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
     { niveau: 'seconde', id: 'seconde/serie11-j2', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 2', court: 'S11 · J2', url: 'seconde/serie11.html?j=2', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
     { niveau: 'seconde', id: 'seconde/serie11-j3', groupe: 'Série 11 · semaine du 30 novembre au 4 décembre', titre: 'Jour 3', court: 'S11 · J3', url: 'seconde/serie11.html?j=3', comptes: ['TEST-01', 'JIMMY'], ouverture: 'auto' },
@@ -179,8 +179,12 @@ window.INTERACTIF_CATALOGUE = [
    Quand une nouvelle série arrive, mettre la précédente ET son bilan facultatif en section: 'Anciennes séries', avec le même serie: 'Série N'.
    Chaque libellé ne doit figurer qu'une fois : une clé répétée plus bas écrase la première (le bilan resterait affiché). */
 window.INTERACTIF_GROUPES = {
-    'Facultatif · Série 9 en temps limité ⏱': {},
-    'Série 9 · semaine du 16 au 20 novembre': {},
+    'Facultatif · Série 9 en temps limité ⏱': {
+        section: 'Anciennes séries', serie: 'Série 9'
+    },
+    'Série 9 · semaine du 16 au 20 novembre': {
+        section: 'Anciennes séries', serie: 'Série 9'
+    },
     'Facultatif · Série 10 en temps limité ⏱': {},
     'Série 10 · semaine du 23 au 27 novembre': {},
     'Série 11 · semaine du 30 novembre au 4 décembre': {},
