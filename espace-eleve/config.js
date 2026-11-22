@@ -71,6 +71,18 @@ window.OUVERTURE_SERIES = {
     }
 };
 
+/* Strikes (strikes.js, onglet « Strikes » de l'espace prof) : série pas faite en entier à la date limite.
+   niveaux : élèves qui voient leur compteur ; comptes : comptes de test qui le voient en plus (et seuls cochés d'avance
+   dans les classes hors « niveaux ») ; limite : jour et heure de la semaine de la série ; seuil : strikes avant la colle.
+   ESSAI (22/11) : niveaux vide = seul PROF-TST2S voit le compteur. Après l'essai, ouvrir à toutes les classes :
+   niveaux: ['seconde', 'premiere', 'terminale'] */
+window.STRIKES_CONFIG = {
+    niveaux: [],
+    comptes: ['PROF-TST2S'],
+    limite: { jour: 'vendredi', heure: '23:59' },
+    seuil: 3
+};
+
 window.INTERACTIF_CATALOGUE = [
     { niveau: 'seconde', id: 'seconde/serie9-j1', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 1', court: 'S9 · J1', url: 'seconde/serie9.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie9-j2', groupe: 'Série 9 · semaine du 16 au 20 novembre', titre: 'Jour 2', court: 'S9 · J2', url: 'seconde/serie9.html?j=2' },
