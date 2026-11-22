@@ -84,6 +84,11 @@
         /* titre du cadre seulement (le <b> placé directement dedans), pas les mots en gras des paragraphes */
         .encadre > b:first-child { display: block; margin-bottom: 2px; }
         .tableau { overflow-x: auto; margin: 8px 0; }
+        .brouillon { margin: 4px 0; }
+        .brouillon > summary { cursor: pointer; color: var(--c-seconde); font-weight: 600; }
+        .brouillon td { padding: 2px 4px; }
+        .brouillon input { width: 4.5em; font: inherit; text-align: center; padding: 2px 4px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface, #fff); color: inherit; }
+        .brouillon > button { margin-top: 2px; }
         .tableau table { border-collapse: collapse; }
         .tableau th, .tableau td { border: 1px solid var(--line); padding: 4px 10px; text-align: center; white-space: nowrap; }
         .tableau th { background: var(--bleu-doux); text-align: left; }
@@ -440,9 +445,39 @@ def _e_somme(ns, src, out):
     return "Le script doit afficher 55, une seule fois."
 
 
+# Résultat tapé en dur (refusé, comme à l'étape 8) et, pour les boucles avec compteur,
+# valeur affichée = le compteur lui-même (print(p), pas print(p - 1) ni une phrase).
+def _sans_commentaires(src):
+    return "\n".join(re.sub(r"#.*", "", x).rstrip() for x in src.split("\n"))
+
+
+def _pas_en_dur(src, nombre, resultat=None):
+    if re.search(r"(?<![\w.])" + re.escape(nombre) + r"(?!\w)", _sans_commentaires(src)):
+        raise Stop(f"Ne tape pas le résultat {resultat or nombre} : c’est la boucle qui doit le calculer.")
+
+
+def _phrase_autour(l, nombre):
+    # « Il faut 22 pliages » : le bon nombre, mais avec une phrase autour
+    if l and l[-1] != nombre and re.search(r"(?<![\w.])" + nombre + r"(?![\w.])", l[-1]):
+        raise Stop(f"Ton script trouve bien {nombre}, mais affiche seulement le nombre, sans phrase autour : print(compteur), avec le nom de ton compteur.")
+
+
+def _affiche_compteur(src):
+    code = _sans_commentaires(src)
+    compteurs = [m.group(1) for m in re.finditer(r"^[ \t]+(\w+)\s*(?:\+=\s*1|=\s*(\w+)\s*\+\s*1)\s*$", code, re.M)
+                 if m.group(2) in (None, m.group(1))]
+    if not compteurs:
+        raise Stop("Il faut un compteur qui augmente de 1 dans la boucle (par exemple n = n + 1).")
+    prints = re.findall(r"^[ \t]*print\((.*)\)[ \t]*$", code, re.M)
+    arg = prints[-1].strip() if prints else ""
+    if arg not in compteurs:
+        raise Stop(f"Affiche directement le compteur de la boucle, avec print({compteurs[0]}) : c’est lui qui contient le résultat, sans calcul ni phrase autour.")
+
+
 # Étape 9 · le capital au bout de 10 ans
 def _e_capital(ns, src, out):
     _avec(src, "for", "Garde la boucle for du script de départ.")
+    _pas_en_dur(src, "1343", "1343.92")
     l = _lignes(out)
     if l == ["1343.92"]:
         return None
@@ -516,9 +551,11 @@ def _tableau_while(cond, notes, noms, fmt):
 # Étape 10 · doubler son capital (while)
 def _e_doubler(ns, src, out):
     _avec(src, "while", "Utilise la boucle while du script de départ.")
+    _pas_en_dur(src, "24")
     l = _lignes(out)
+    _phrase_autour(l, "24")
     if l == ["24"]:
-        return None
+        return _affiche_compteur(src)
     noms = ["capital", "annee"]
     cond, notes = _suivi_while(src, noms)
     def fmt(k, x):
@@ -637,9 +674,11 @@ def _mm(x):
 def _e_eiffel(ns, src, out):
     code = "\n".join(re.sub(r"#.*", "", x).rstrip() for x in src.split("\n"))
     _avec(code, "while", "On ne sait pas à l'avance combien de pliages il faut : utilise une boucle while.")
+    _pas_en_dur(src, "22")
     l = _lignes(out)
+    _phrase_autour(l, "22")
     if l and l[-1] == "22":
-        return None
+        return _affiche_compteur(src)
     if not l:
         return "Ton script n'affiche rien : affiche le nombre de pliages à la fin, avec print."
     mw = re.search(r"^\s*while\s+(.+?)\s*:", code, re.M)
@@ -712,9 +751,11 @@ def _e_compter(ns, src, out):
     if m:
         return "Ne modifie pas la fonction fizzbuzz : " + m
     _avec(src, "for", "Utilise une boucle for de 1 à 100.")
+    _pas_en_dur(src, "27")
     l = _lignes(out)
+    _phrase_autour(l, "27")
     if l and l[-1] == "27":
-        return None
+        return _affiche_compteur(src)
     if l and l[-1] == "33":
         return "33, c'est le nombre de multiples de 3 : mais les multiples de 15 donnent « FizzBuzz », pas « Fizz »."
     if l and l[-1] == "26":
@@ -1087,6 +1128,30 @@ def _console(ligne, n):
                     return '<tr><th>' + l[0] + '</th>' + l.slice(1).map(function (v) { return v == null ? '<td class="vide"></td>' : '<td>' + v + '</td>'; }).join('') + '</tr>';
                 }).join('') + '</table></div>';
         }
+        /* Quiz : tableau de suivi « brouillon » à remplir librement (facultatif, ni corrigé ni enregistré).
+           lignes : intitulés des lignes (variables, test du while, affichage) ; colonnes « avant », tour 1, 2, 3, puis « + un tour ». */
+        function brouillonQuiz(lignes) {
+            var d = el('details', 'brouillon');
+            d.appendChild(el('summary', null, '✏️ Tableau de brouillon pour suivre les variables <span class="aide">(facultatif, non corrigé)</span>'));
+            var div = el('div', 'tableau'), t = el('table', 'trace'), tete = el('tr', 'tour');
+            tete.appendChild(el('th', null, 'Tour de boucle n°')); tete.appendChild(el('th', 'num-tour sortie', 'avant'));
+            t.appendChild(tete);
+            var rangs = lignes.map(function (l) { var tr = el('tr'); tr.appendChild(el('th', null, l)); t.appendChild(tr); return tr; });
+            function colonne() {
+                rangs.forEach(function (tr) {
+                    var td = el('td'), i = el('input'); i.type = 'text'; i.autocomplete = 'off'; i.spellcheck = false;
+                    i.onkeydown = function (ev) { if (ev.key === 'Enter') ev.preventDefault(); };   // Entrée ne valide pas le quiz
+                    td.appendChild(i); tr.appendChild(td);
+                });
+            }
+            colonne();
+            function tour() { var k = tete.children.length - 1; tete.appendChild(el('th', 'num-tour', String(k))); colonne(); }
+            tour(); tour(); tour();
+            div.appendChild(t); d.appendChild(div);
+            var b = el('button', 'secondaire', '+ un tour'); b.type = 'button'; b.onclick = tour;
+            d.appendChild(b);
+            return d;
+        }
         var LISTE = '<p class="aide">Plusieurs nombres ? Sépare-les par des espaces ou des virgules, par exemple : <code>2, 4, 6</code></p>';
 
         /* Ancienne version de l'étape 3 (cases l'une sous l'autre, éditeur et console visibles dès le départ).
@@ -1261,6 +1326,7 @@ def _console(ligne, n):
                     choix: ['0, 1, 2', '1, 2, 3', '0, 1, 2, 3', '3 seulement'], bonne: 0,
                     explication: '<code>range(3)</code> part de 0 et s’arrête avant 3.' },
                   { texte: 'Qu’affiche ce script ?', code: 's = 0\nfor i in range(4):\n    s = s + 2\nprint(s)\n',
+                    brouillon: ['<code>i</code>', '<code>s</code>'],
                     choix: ['2', '6', '8', '2, 4, 6, 8'], bonne: 2,
                     explication: 'La boucle fait 4 tours et ajoute 2 à chaque fois : 4 × 2 = 8.' +
                         suiviQuiz(['avant', 1, 2, 3, 4], [['<code>i</code>', null, 0, 1, 2, 3], ['<code>s</code>', 0, 2, 4, 6, 8]]) +
@@ -1269,6 +1335,7 @@ def _console(ligne, n):
                     choix: ['4', '3', '4.6', '5'], bonne: 1,
                     explication: '23 = 5 × 4 + 3 : le reste est 3.' },
                   { texte: 'Qu’affiche ce script ?', code: 'x = 3\nwhile x < 20:\n    x = x + 5\nprint(x)\n',
+                    brouillon: ['Test <code>x &lt; 20</code>', '<code>x</code>'],
                     choix: ['18', '20', '23', '28'], bonne: 2,
                     explication: '<code>x</code> vaut 3, 8, 13, 18, puis 23 ; 23 &lt; 20 est faux : la boucle s’arrête.' +
                         suiviQuiz(['avant', 1, 2, 3, 4, 'sortie'], [
@@ -1349,6 +1416,7 @@ def _console(ligne, n):
                             '<code>for k in range(1, 10): print(5 * k)</code>', '<code>for k in range(1, 11): print(k + 5)</code>'], bonne: 0,
                     explication: '<code>k</code> doit aller de 1 à 10 : <code>range(1, 11)</code>, car 11 est exclu. Avec <code>range(10)</code>, on affiche 0, 5, …, 45 ; avec <code>range(1, 10)</code>, on s’arrête à 45.' },
                   { texte: 'Qu’affiche ce script ?', code: 's = 0\nfor i in range(1, 4):\n    s = s + i\n    print(s)\n',
+                    brouillon: ['<code>i</code>', '<code>s</code>', 'Affichage'],
                     choix: ['6', '1, puis 3, puis 6', '1, puis 2, puis 3', '0, puis 1, puis 3, puis 6'], bonne: 1,
                     explication: '<code>print(s)</code> est <b>décalé</b> : il est dans la boucle, donc exécuté à chaque tour.' +
                         suiviQuiz(['avant', 1, 2, 3], [['<code>i</code>', null, 1, 2, 3], ['<code>s</code>', 0, 1, 3, 6], ['Affichage', null, 1, 3, 6]]) +
@@ -1357,6 +1425,7 @@ def _console(ligne, n):
                     choix: ['<code>prix = prix * 1.1</code>', '<code>prix = prix + 10</code>', '<code>prix = prix * 0.1</code>', '<code>prix = prix * 10</code>'], bonne: 0,
                     explication: 'Augmenter de 10 %, c’est multiplier par le coefficient multiplicateur <i>CM</i> = 1 + 10/100 = 1,1, qui s’écrit <code>1.1</code> en Python. Ajouter 10, c’est ajouter 10 €, pas 10 %.' },
                   { texte: 'Qu’affiche ce script ?', code: 'x = 1\nn = 0\nwhile x < 50:\n    x = 3 * x\n    n = n + 1\nprint(n)\n',
+                    brouillon: ['Test <code>x &lt; 50</code>', '<code>x</code>', '<code>n</code>'],
                     choix: ['3', '4', '5', '81'], bonne: 1,
                     explication: '<code>n</code> compte les tours de boucle.' +
                         suiviQuiz(['avant', 1, 2, 3, 4, 'sortie'], [
@@ -1431,6 +1500,7 @@ def _console(ligne, n):
               consigne: '<p>Pour finir la partie C, 5 questions rapides. ✍️ Réponds à chaque question <b>sans ordinateur</b>, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
               questions: [
                   { texte: 'Que renvoie <code>produit(4)</code> ?', code: 'def produit(n):\n    p = 1\n    for i in range(1, n + 1):\n        p = p * i\n    return p\n',
+                    brouillon: ['<code>i</code>', '<code>p</code>'],
                     choix: ['4', '10', '24', '6'], bonne: 2,
                     explication: '<code>i</code> prend les valeurs 1, 2, 3 et 4 : la fonction renvoie 1 × 2 × 3 × 4 = 24.' +
                         suiviQuiz(['avant', 1, 2, 3, 4], [['<code>i</code>', null, 1, 2, 3, 4], ['<code>p</code>', 1, 1, 2, 6, 24]]) +
@@ -1446,6 +1516,7 @@ def _console(ligne, n):
                     choix: ['<code>n % 2 == 1</code>', '<code>n % 2 == 0</code>', '<code>n // 2 == 1</code>', '<code>n / 2 == 1</code>'], bonne: 0,
                     explication: 'Un nombre impair a pour reste 1 dans la division par 2. <code>n % 2 == 0</code> signifie au contraire « <code>n</code> est pair ».' },
                   { texte: 'Qu’affiche ce script ?', code: 'e = 1\np = 0\nwhile e <= 1000:\n    e = 2 * e\n    p = p + 1\nprint(p)\n',
+                    brouillon: ['Test <code>e &lt;= 1000</code>', '<code>e</code>', '<code>p</code>'],
                     choix: ['9', '10', '11', '1024'], bonne: 1,
                     explication: 'C’est le schéma de la feuille pliée : <code>e</code> double à chaque tour et <code>p</code> compte les tours. ' +
                         'Après 9 tours, <code>e</code> vaut 512 et 512 ⩽ 1 000 : on fait un tour de plus. Après 10 tours, <code>e</code> vaut 1 024 : la condition est fausse, on sort de la boucle. Le script affiche 10.' }
@@ -2693,6 +2764,7 @@ def _console(ligne, n):
                         var bq0 = el('div', 'quiz-q');
                         bq0.appendChild(el('p', null, '<b>Question ' + (i + 1) + '.</b> ' + q.texte));
                         if (q.code) bq0.appendChild(el('div', null, py(q.code)));
+                        if (q.brouillon) bq0.appendChild(brouillonQuiz(q.brouillon));
                         var radios = q.choix.map(function (t, j) {
                             var l = el('label'), inp = el('input'); inp.type = 'radio'; inp.name = 'quiz-' + n + '-' + i; inp.value = j;
                             l.appendChild(inp); l.appendChild(el('span', null, t)); bq0.appendChild(l); return inp;
