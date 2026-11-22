@@ -621,17 +621,71 @@ def _e_multiples(ns, src, out):
     return "Le script doit afficher 7, 14, 21, …, 98 (les 14 multiples de 7 entre 1 et 100), un par ligne."
 
 
-# Étape 14 · plier une feuille (page blanche)
+# Étape 14 (affichée 12) · plier une feuille (page blanche) : noms de variables libres ;
+# diagnostic à partir du script (nombre de la condition, épaisseur de départ, compteur) + tableau de suivi.
+def _nombre(t):
+    try:
+        return float(t.replace("_", ""))
+    except ValueError:
+        return None
+
+
+def _mm(x):
+    return f"{x:,.1f}".rstrip("0").rstrip(".").replace(",", " ").replace(".", ",")
+
+
 def _e_eiffel(ns, src, out):
-    _avec(src, "while", "On ne sait pas à l'avance combien de pliages il faut : utilise une boucle while.")
+    code = "\n".join(re.sub(r"#.*", "", x).rstrip() for x in src.split("\n"))
+    _avec(code, "while", "On ne sait pas à l'avance combien de pliages il faut : utilise une boucle while.")
     l = _lignes(out)
     if l and l[-1] == "22":
         return None
-    if l and l[-1] == "21":
-        return "Il manque un pliage : vérifie ta condition, on plie tant que l'épaisseur ne dépasse pas 330000 mm."
     if not l:
         return "Ton script n'affiche rien : affiche le nombre de pliages à la fin, avec print."
-    return "Ce n'est pas le bon nombre de pliages. Vérifie l'épaisseur de départ (0.1 mm), qu'elle double à chaque tour, et que le compteur augmente de 1."
+    mw = re.search(r"^\s*while\s+(.+?)\s*:", code, re.M)
+    cond = mw.group(1) if mw else ""
+    # compteur : variable augmentée de 1 dans la boucle ; épaisseur : autre variable de la condition
+    mc = re.search(r"^[ \t]+(\w+)\s*(?:\+=\s*1|=\s*\1\s*\+\s*1)\s*$", code, re.M)
+    compteur = mc.group(1) if mc else None
+    vars_cond = [v for v in re.findall(r"[A-Za-z_]\w*", cond) if v not in ("and", "or", "not") and v != compteur]
+    ep = vars_cond[0] if vars_cond else None
+    nombres = [x for x in (_nombre(t) for t in re.findall(r"\d[\d_]*(?:\.\d+)?(?:e\d+)?", cond)) if x is not None]
+    depart = None
+    if ep:
+        md = re.search(r"^" + re.escape(ep) + r"\s*=\s*([\d_.e]+)\s*$", code, re.M)
+        depart = _nombre(md.group(1)) if md else None
+    double = bool(ep) and re.search(r"^[ \t]+" + re.escape(ep) + r"\s*(?:\*=\s*2\b|=\s*(?:2\s*\*\s*" + re.escape(ep) + r"|" + re.escape(ep) + r"\s*\*\s*2|" + re.escape(ep) + r"\s*\+\s*" + re.escape(ep) + r")\s*$)", code, re.M)
+    noms = [v for v in (ep, compteur) if v]
+    try:
+        cond_suivi, notes = _suivi_while(src, noms) if noms else (None, [])
+    except Stop:
+        cond_suivi, notes = None, []   # trop de tours : pas de tableau
+    tab = _tableau_while(cond_suivi, notes, noms, lambda k, x: _mm(x) if isinstance(x, float) else str(x)) if notes else None
+    tours = sum(1 for t, _ in notes if t)
+    if nombres and not any(abs(x - 330000) < 1e-6 for x in nombres):
+        x = nombres[0]
+        if abs(x - 330) < 1e-6:
+            m = f"Ta condition compare {ep or 'l’épaisseur'} à 330 : ce sont des mètres, alors que l'épaisseur est en millimètres. La tour Eiffel mesure 330 m, soit 330 000 mm."
+        else:
+            m = (f"Ta condition compare {ep or 'l’épaisseur'} à {_mm(x)} : vérifie ce nombre ! La tour Eiffel mesure 330 m, soit 330 000 mm "
+                 "(attention au nombre de zéros : 330000 en Python).")
+    elif ep and depart is not None and abs(depart - 0.1) > 1e-9:
+        m = f"Au départ, {ep} vaut {_mm(depart)} : l'épaisseur d'une feuille est 0,1 mm, qui s'écrit 0.1 en Python."
+    elif ep and not double:
+        m = f"À chaque pliage, l'épaisseur double : dans la boucle, écris {ep} = 2 * {ep} (multiplier par 2, et non ajouter 2)."
+    elif not compteur:
+        m = "Je ne trouve pas de compteur : il faut une variable qui vaut 0 au départ et qui augmente de 1 à chaque pliage (par exemple pliages = pliages + 1)."
+    elif notes and not notes[0][0]:
+        m = f"Ta condition {cond} est fausse dès le départ : la boucle ne fait aucun tour. La condition d'un while dit quand on CONTINUE : on plie tant que l'épaisseur ne dépasse pas 330 000 mm."
+    elif l[-1] == "21":
+        m = "Il manque un pliage : vérifie ta condition, on plie tant que l'épaisseur ne dépasse pas 330000 mm."
+    elif notes and tours and notes[-1][1].get(compteur) != tours:
+        m = f"La boucle fait {tours} tours, mais {compteur} vaut {notes[-1][1].get(compteur)} à la fin : le compteur doit augmenter de 1 à chaque tour."
+    else:
+        m = "Ce n'est pas le bon nombre de pliages. Vérifie l'épaisseur de départ (0.1 mm), qu'elle double à chaque tour, et que le compteur augmente de 1."
+    if tab:
+        m = (m + " Voici ce que fait ton script, tour par tour :", tab)
+    return m
 
 
 def _fizz_ref(n):
