@@ -945,10 +945,13 @@
         s += '<text class="fig-nom-pt" x="' + (X(T.a) - 8) + '" y="' + (Y(T.y0) - 8) + '" text-anchor="end">A</text>';
         return s + '</svg>';
     }
-    function tirageTangente(niveau, positif) {
+    // entier : nombre dérivé entier à tous les niveaux (J1) ; sinon (J2, J3) des fractions apparaissent en bleu et en rouge
+    function tirageTangente(niveau, positif, entier) {
         var PENTES = niveau === 1 ? [[1, 1], [2, 1], [3, 1], [-1, 1], [-2, 1]]
-                   : niveau === 2 ? [[0, 1], [-1, 1], [-2, 1], [-3, 1], [2, 1], [3, 1]]
-                   : [[1, 2], [-1, 2], [3, 2], [-3, 2], [1, 3], [-2, 3]];
+                   : niveau === 2 ? (entier ? [[0, 1], [-1, 1], [-2, 1], [-3, 1], [2, 1], [3, 1]]
+                                            : [[0, 1], [-1, 1], [-2, 1], [-3, 1], [2, 1], [1, 2], [-1, 2], [3, 2]])
+                   : (entier ? [[-3, 1], [-2, 1], [-4, 1], [3, 1], [4, 1], [0, 1]]
+                             : [[1, 2], [-1, 2], [3, 2], [-3, 2], [1, 3], [-2, 3], [2, 3], [-1, 3]]);
         for (;;) {
             var P = A.choix(PENTES), s = P[0] / P[1], den = P[1], a = A.entier(positif ? 1 : 0, 4), y0 = A.entier(positif ? 1 : -1, 4), b = A.choix([0.5, -0.5, 1, -1, 0.25, -0.25]);
             var T = { xmin: positif ? 0 : -2, xmax: 7, ymin: positif ? 0 : -3, ymax: 6, a: a, y0: y0, s: s, num: P[0], den: den, b: b };
@@ -966,7 +969,7 @@
     }
     AutoT.nombreDerive = function (niveau, forme) {
         forme = forme || 2;
-        var q = { niveau: niveau, objectif: 'Dérivation · Lire un nombre dérivé' }, T = tirageTangente(niveau, forme === 3);
+        var q = { niveau: niveau, objectif: 'Dérivation · Lire un nombre dérivé' }, T = tirageTangente(niveau, forme === 3, forme === 1);
         var sTex = T.den === 1 ? String(T.num) : (T.num < 0 ? '-' : '') + frac(Math.abs(T.num), T.den);
         var B = T.droite ? [T.a + T.den, T.y0 + T.num] : [T.a - T.den, T.y0 - T.num];
         var lecture = 'La tangente passe par $A(' + T.a + '\\,;\\,' + T.y0 + ')$ et par le point $(' + B[0] + '\\,;\\,' + B[1] + ')$. ' +
