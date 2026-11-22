@@ -167,6 +167,12 @@
         table.trace th.num-tour { font-family: var(--f-mono); min-width: 3.6em; }
         table.trace th.num-tour.sortie { font-family: inherit; font-style: italic; color: var(--muted); }
         table.trace td.vide { background: var(--bg); }
+        .tableau.avec-fleches { position: relative; padding: 2px 0 46px; }
+        .tableau.avec-fleches table.trace td { padding-top: 14px; padding-bottom: 14px; }
+        .tableau .fleches { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+        .tableau .fleches path { fill: none; stroke: var(--c-seconde); stroke-width: 2; }
+        .tableau .fleches text { fill: var(--c-seconde); font-size: 12px; font-weight: 600; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+        table.trace td.source-fleche { outline: 2px dashed var(--c-seconde); outline-offset: -3px; }
         table.trace th small { display: block; font-weight: normal; font-size: 0.75rem; color: var(--muted); line-height: 1.2; }
         table.trace td.donnee { font-family: var(--f-mono); color: var(--muted); }
         table.trace select { font: inherit; padding: 2px 4px; border: 1px solid var(--case-bord); border-radius: 6px; background: var(--case-fond); color: var(--text); }
@@ -375,12 +381,46 @@ def _e_table7(ns, src, out):
     if l == bon:
         return None
     if l == [str(7 * i) for i in range(10)]:
-        return "Ta table commence à 0 : elle doit commencer à 7 (7 × 1). Pense à range(1, 11)."
+        return "Ta table commence à 0 : elle doit commencer à 7 (7 × 1). Utilise range avec une borne de départ et une borne de fin, comme range(3, 8) dans le Script A."
     if l == bon[:-1]:
-        return "Il manque 70 : range(1, 10) s'arrête à 9."
+        return "Il manque 70 : la borne de fin de range est exclue."
     if l and l[0] == "0":
         return "Ta table commence à 0 : elle doit commencer à 7."
     return "Le script doit afficher les dix nombres 7, 14, 21, …, 70, un par ligne."
+
+
+# Étape 7 · le script affiche 55 : correction attendue (range(1, 11) + print non décalé)
+# ou autre façon juste (acceptée avec une remarque) ; résultat tapé en dur : refusé.
+_CONSIGNE_SOMME = "C’est accepté, mais la consigne demandait de corriger le script proposé : changer la borne de range (range(1, 11)) et enlever le décalage de print, sans toucher au reste. "
+
+
+def _somme_variante(src):
+    code = "\n".join(re.sub(r"#.*", "", x).rstrip() for x in src.split("\n"))
+    if re.search(r"(?<![\w.])55(?![\w.])", code):
+        raise Stop("Ne tape pas le résultat 55 : c’est la boucle qui doit le calculer.")
+    prints = re.findall(r"^[ \t]*print\((.*)\)[ \t]*$", code, re.M)
+    arg = prints[-1].replace(" ", "") if prints else ""
+    if "somme" not in arg:
+        raise Stop("Le résultat doit être calculé par la boucle : affiche la variable somme avec print(somme).")
+    if arg != "somme":
+        return {"remarque": _CONSIGNE_SOMME + f"Ici, tu as rattrapé le résultat au moment de l’affichage (print({prints[-1].strip()})) : c’est la boucle elle-même qu’il fallait corriger, pour que somme contienne directement 55."}
+    m = re.search(r"\bfor\s+(\w+)\s+in\s+range\(([^)]*)\)", code)
+    if not m:
+        return {"remarque": _CONSIGNE_SOMME}
+    var, bornes = m.group(1), m.group(2).replace(" ", "")
+    calcul = re.search(r"^[ \t]+somme\s*(=\s*somme\s*\+\s*" + var + r"|=\s*" + var + r"\s*\+\s*somme|\+=\s*" + var + r")[ \t]*$", code, re.M)
+    init = re.search(r"^somme\s*=\s*0[ \t]*$", code, re.M)
+    if bornes == "1,11" and calcul and init:
+        return None
+    if not init:
+        return {"remarque": _CONSIGNE_SOMME + "Ici, tu as changé la valeur de départ de somme : elle doit rester à 0, et c’est la borne de range qu’il fallait corriger."}
+    if not calcul:
+        return {"remarque": _CONSIGNE_SOMME + f"Ici, tu as modifié le calcul dans la boucle (par exemple {var} + 1 au lieu de {var}) : c’est juste, mais il suffisait de changer la borne de range, sans toucher au calcul."}
+    if bornes in ("11", "0,11"):
+        return {"remarque": _CONSIGNE_SOMME + f"Ici, range({m.group(2).strip()}) fait un tour de plus, avec {var} = 0 : ajouter 0 ne change pas la somme, donc c’est juste. Mais la correction attendue garde le départ à 1 : range(1, 11)."}
+    if bornes == "10,0,-1":
+        return {"remarque": _CONSIGNE_SOMME + "Ici, tu parcours les nombres de 10 à 1 : l’ordre ne change pas la somme, donc c’est juste. Mais la correction attendue est range(1, 11)."}
+    return {"remarque": _CONSIGNE_SOMME + f"Ici, tu as écrit range({m.group(2).strip()}) : ton script affiche bien 55, mais la correction attendue est range(1, 11)."}
 
 
 # Étape 7 · corriger le script de la somme (55, une seule fois)
@@ -390,7 +430,7 @@ def _e_somme(ns, src, out):
         return "Sans la fonction sum : corrige la boucle."
     l = _lignes(out)
     if l == ["55"]:
-        return None
+        return _somme_variante(src)
     if len(l) > 1:
         return "Le script affiche encore plusieurs nombres : print doit être exécuté une seule fois, après la boucle (enlève le décalage)."
     if l == ["45"]:
@@ -648,6 +688,8 @@ def _executer(src, n, verif):
             m = str(e)
         if isinstance(m, tuple):   # message + tableau de suivi
             m, res["tableau"] = m
+        if isinstance(m, dict):    # réussi, avec une remarque (autre façon que celle attendue)
+            res["remarque"], m = m.get("remarque"), None
         res["ok"], res["msg"] = m is None, m
     return json.dumps(res)
 
@@ -765,7 +807,7 @@ def _console(ligne, n):
         }
 
         // message d'aide : \n = retour à la ligne, `…` = code (en bleu)
-        function miseEnForme(m) { return esc(m).replace(/\n/g, '<br>').replace(/`([^`]+)`/g, '<code class="forme">$1</code>'); }
+        function miseEnForme(m) { return esc(m).replace(/\n/g, '<br>').replace(/`([^`]+)`/g, '<code class="forme">$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>'); }
 
         // une ligne « étiquette [case] Valider ✓/✗ » ; apres(v, ok) à chaque validation ; init(ok) au chargement
         function ligneCase(parent, etiquette, valeur, verif, apres, init, afficherEtat, garde) {
@@ -918,7 +960,7 @@ def _console(ligne, n):
             return cm;
         }
 
-        var SCRIPT_A = 'for i in range(1, 6):\n    print(i)\n';
+        var SCRIPT_A = 'for i in range(3, 8):\n    print(i)\n';
         var SCRIPT_B = 'for k in range(4):\n    print(3 * k)\n';
         var SCRIPT_C = 'for i in range(3):\n    print("Bonjour")\nprint("Fin")\n';
         var SCRIPT_D = 'for i in range(3):\n    print("Bonjour")\n    print("Fin")\n';
@@ -973,11 +1015,17 @@ def _console(ligne, n):
             { titre: 'A · La boucle for', type: 'prevoir',
               consigne: encadre('', 'La boucle bornée « for »', '<ul><li>Elle répète des instructions un nombre de fois <b>connu à l’avance</b> (en Scratch : « répéter 5 fois »).</li>' +
                     '<li>La variable <code>i</code> (le <b>compteur</b>) prend successivement toutes les valeurs de <code>range(…)</code> :</li></ul>' + TABLE_RANGE +
+                    '<ul><li>Le nom du compteur est <b>libre</b> : <code>i</code>, <code>k</code>, <code>n</code>, <code>annee</code>… (sans accent ni espace). On choisit souvent un nom qui rappelle ce que compte la boucle.</li></ul>' +
                     '<ul><li>Comme pour <code>if</code> : deux-points <code>:</code> en fin de ligne, puis les instructions répétées sont <b>décalées</b> (indentation).</li></ul>') +
                 py('for i in range(5):\n    print(i)') + '<p>Ce script affiche 0, 1, 2, 3 et 4, un nombre par ligne.</p>' +
                 PREVOIR_SCRIPT + LISTE,
               scripts: [
-                  { nom: 'Script A', code: SCRIPT_A, attendu: '1 2 3 4 5', liste: true },
+                  { nom: 'Script A', code: SCRIPT_A, attendu: 5, libelle: 'Je prévois que le script affiche ', apres: ' nombres.',
+                    libelleVerif: 'Nombre de nombres affichés dans la console :', aideVerif: 'Exécute le script et compte les nombres affichés.',
+                    intro: '<code>i</code> prend successivement les valeurs de <code>range(3, 8)</code>.', surligne: [1, 2],
+                    car: [{ valeur: '3', avant: 'Premier nombre affiché :', raison: 'range(3, 8) commence à 3', aide: 'Par quelle valeur commence range(3, 8) ?' },
+                          { valeur: '7', avant: 'Dernier nombre affiché :', raison: '8 est exclu', aide: 'range(3, 8) s’arrête avant 8.' },
+                          { fin: 'Le script affiche 3, 4, 5, 6 et 7 : cela fait 5 nombres (8 − 3 = 5), et non 6.' }] },
                   { nom: 'Script B', code: SCRIPT_B, attendu: '0 3 6 9', liste: true,
                     intro: '<code>k</code> prend successivement les valeurs de <code>range(4)</code>.', surligne: [1, 2],
                     car: [{ valeur: '4', avant: 'Nombre de tours de boucle :', raison: 'range(4) donne 4 valeurs : 0, 1, 2 et 3', aide: 'Compte les valeurs de range(4) : on part de 0 et on s’arrête avant 4.' },
@@ -1019,15 +1067,22 @@ def _console(ligne, n):
                 encadre('', 'Suivre les variables', 'À chaque tour, <code>i</code> prend la valeur suivante de <code>range(1, 11)</code>, puis <code>somme = somme + i</code> remplace <code>somme</code> par sa valeur actuelle <b>plus</b> <code>i</code>.') +
                 '<p>✍️ <b>Sans ordinateur</b>, suis les valeurs des variables tour après tour. Tu pourras ensuite exécuter le script pour vérifier.</p>',
               script: SOMME,
+              qcmAvant: { question: 'Dans ce script, quelles valeurs prend <code>i</code> ?',
+                          choix: ['1, 2, 3, …, 10', '1, 2, 3, …, 11', '0, 1, 2, …, 10', '0, 1, 2, …, 11'], bonne: 0,
+                          pourquoi: ['', 'Le nombre 11 est exclu : range(1, 11) s’arrête avant 11.', 'range(1, 11) commence à 1, pas à 0.', 'range(1, 11) commence à 1, et 11 est exclu.'],
+                          raison: '`range(1, 11)` va de 1 jusqu’à 11 − 1 = 10 : la boucle fait 10 tours' },
               guide: 2, maxTours: 10,      // tours 1 et 2 faits à part, puis tableau avec ajout de colonnes (jusqu'au 10e tour)
+              donneesGuide: [[0]],         // au 1er tour guidé, la valeur de i est donnée (vue dans le QCM)
               donneesTableau: [0],         // dans le tableau, la valeur de i est déjà écrite : on ne cherche que somme
               avant: [null, 0],            // valeurs avant la boucle (null = pas encore définie)
               lignes: [
                   { nom: 'i', f: function (k) { return k; }, aide: '`for i in range(1, 11):` : `i` prend successivement les valeurs 1, 2 jusqu’à 11 − 1 = 10' },
-                  { nom: 'somme', f: function (k) { return k * (k + 1) / 2; }, aide: '`somme = somme + i` : ajoute la valeur de i du même tour à la valeur précédente de somme.' }
+                  { nom: 'somme', f: function (k) { return k * (k + 1) / 2; }, aide: '`somme = somme + i` : ajoute la valeur de i du même tour à la valeur précédente de somme.',
+                    fleches: function (k) { return [{ ligne: 1, tour: k - 1, texte: 'valeur précédente' }, { ligne: 0, tour: k, texte: '+ i' }]; },
+                    aideGuide: function (k) { return '`somme = somme + i` : ajoute la valeur de `i` du même tour (ici ' + k + ') à la valeur précédente de `somme` (ici ' + (k * (k - 1) / 2) + ').'; } }
               ],
               contexte: function (k) {
-                  return k === 1 ? 'Avant la boucle, <code>somme</code> vaut 0. Au 1<sup>er</sup> tour, <code>i</code> prend la première valeur de <code>range(1, 11)</code>, puis l’instruction <code>somme = somme + i</code> est exécutée.'
+                  return k === 1 ? 'Avant la boucle, <code>somme</code> vaut 0. Au 1<sup>er</sup> tour, <code>i</code> prend la première valeur de <code>range(1, 11)</code>.<br>Comme on vient de le voir, <code>i</code> prend donc la valeur 1, puis l’instruction <code>somme = somme + i</code> est exécutée.'
                                  : 'Au 2<sup>e</sup> tour, <code>i</code> prend la valeur suivante de <code>range(1, 11)</code>, puis <code>somme</code> augmente de <code>i</code>.';
               },
               raison: function (k) { return '`i` vaut ' + k + ', et `somme` devient ' + (k * (k - 1) / 2) + ' + ' + k + ' = ' + (k * (k + 1) / 2); },
@@ -1086,11 +1141,10 @@ def _console(ligne, n):
               consigne: encadre('', 'La division euclidienne', '<p>La division euclidienne de 17 par 5 s’écrit 17 = 5 × 3 + 2 : le <b>quotient</b> est 3 et le <b>reste</b> est 2.</p>' +
                     '<div class="tableau"><table><tr><th></th><th>En Python</th><th>Résultat</th></tr><tr><th>Quotient</th><td><code>17 // 5</code></td><td>3</td></tr><tr><th>Reste</th><td><code>17 % 5</code></td><td>2</td></tr></table></div>' +
                     '<p>Un nombre <code>n</code> est <b>divisible</b> par <code>d</code> lorsque le reste est nul : <code>n % 2 == 0</code> signifie « <code>n</code> est pair ».</p>') +
-                '<p>✍️ <b>Prévois</b> chaque résultat, puis vérifie en tapant le calcul dans la console (à droite).</p>',
-              code: '# Tape les calculs dans la console, à droite, puis appuie sur Entrée.\n', exemple: '23 % 4',
-              champs: ['17 // 5', '20 // 3', '20 % 4', '2026 % 2', '7 % 2'],
-              attendus: [3, 6, 0, 0, 1],
-              aides: ['17 = 5 × 3 + 2 : quel est le quotient ?', '20 = 3 × 6 + 2 : quel est le quotient ?', '20 est-il divisible par 4 ?', '2026 est-il pair ?', '7 = 2 × 3 + 1 : quel est le reste ?'],
+                '<p>✍️ <b>Prévois</b> chaque résultat, sans ordinateur, puis valide : chaque réponse est corrigée tout de suite.</p>',
+              champs: ['19 // 4', '20 // 3', '20 % 4', '2026 % 2', '7 % 2'],
+              attendus: [4, 6, 0, 0, 1],
+              aides: ['19 = 4 × 4 + 3 : quel est le quotient ?', '20 = 3 × 6 + 2 : quel est le quotient ?', '20 est-il divisible par 4 ?', '2026 est-il pair ?', '7 = 2 × 3 + 1 : quel est le reste ?'],
               bilan: [
                   '<code>a // b</code> donne le <b>quotient</b>, <code>a % b</code> donne le <b>reste</b>.',
                   '<code>n % 2</code> vaut 0 si <code>n</code> est pair, 1 s’il est impair.'
@@ -1111,7 +1165,7 @@ def _console(ligne, n):
                           libelleVerif: 'Le dernier nombre affiché dans la console est', aideVerif: 'Exécute le script et regarde le dernier nombre affiché.',
                           intro: '<code>range(1, 10)</code> donne à <code>i</code> les valeurs 1, 2, …', surligne: [2, 4],
                           car: [{ valeur: '9', avant: 'Au dernier tour, <code>i</code> vaut', raison: '10 est exclu de range(1, 10)', aide: 'range(1, 10) s’arrête avant 10.' },
-                                { valeur: '9', avant: 'Nombre de nombres affichés :', raison: 'print est décalé : il est exécuté à chaque tour', aide: 'print est-il dans la boucle ? Combien de tours fait-elle ?' },
+                                { valeur: '9', avant: 'Nombre de nombres affichés :', raison: 'print est décalé : il est donc exécuté à chaque tour (il est **dans** la boucle)', aide: 'Il y a autant d’affichages que de valeurs prises par i. On rappelle que i prend les valeurs 1, 2, …, jusqu’à 9.' },
                                 { fin: '10 n’est jamais ajouté : le dernier nombre affiché est 1 + 2 + … + 9 = 45.' }] }],
               code: SOMME_BUG, verifCode: true, console: false,
               solutionCode: SOMME,
@@ -1123,6 +1177,11 @@ def _console(ligne, n):
 
             { titre: 'B · Placement bancaire', type: 'code',
               consigne: '<p>On place 1 000 € sur un compte rémunéré à 3 % par an : chaque année, le capital est multiplié par le coefficient multiplicateur <i>CM</i> = 1 + 3/100 = 1,03.</p>' +
+                encadre('', 'Un compteur qui s’appelle annee', '<ul><li>Jusqu’ici, le compteur s’appelait <code>i</code> ou <code>k</code>. Ici, on l’appelle <code>annee</code> (sans accent) : <b>un tour de boucle = une année</b>.</li>' +
+                    '<li><code>range(10)</code> donne à <code>annee</code> les valeurs 0, 1, …, 9 : la boucle fait <b>10 tours</b>, donc 10 années.</li>' +
+                    '<li>On ne se sert pas de <code>annee</code> dans les instructions décalées : il sert seulement à répéter 10 fois.</li></ul>') +
+                encadre('astuce', 'Même idée que l’accumulateur', '<p>Avec <code>somme = somme + i</code>, la nouvelle somme se calcule à partir de l’ancienne. Ici, c’est pareil avec le capital, mais on <b>multiplie</b> au lieu d’ajouter :</p>' +
+                    '<div class="tableau"><table><tr><th>Années écoulées</th><td>0</td><td>1</td><td>2</td><td>…</td></tr><tr><th>Capital (€)</th><td>1 000</td><td>1 000 × 1,03 = 1 030</td><td>1 030 × 1,03 = 1 060,90</td><td>…</td></tr></table></div>') +
                 '<p>✍️ Remplace les pointillés pour que le script calcule le capital au bout de <b>10 ans</b>. <code>round(capital, 2)</code> arrondit au centième.</p>',
               code: 'capital = 1000\nfor annee in range(10):\n    capital = ...\nprint(round(capital, 2))\n', console: false,
               solutionCode: 'capital = 1000\nfor annee in range(10):\n    capital = capital * 1.03\nprint(round(capital, 2))\n',
@@ -1356,7 +1415,10 @@ def _console(ligne, n):
             if (e.type === 'quiz') return e.questions.map(function (q, i) {
                 return 'Q' + (i + 1) + ' : « ' + sansBalises(q.choix[v[i]] || '…') + ' » ' + (String(q.bonne) === v[i] ? '✓' : '✗');
             }).join('\n') + '\nScore : ' + scoreQuiz(e, n) + ' / ' + e.questions.length;
-            if (e.type === 'trace') return 'Tableau de suivi : ' + v.join(' ; ');
+            if (e.type === 'trace') {
+                var vq = v.slice(), q0 = vq.length && /^\?/.test(vq[0]) ? vq.shift() : '';
+                return (q0 && e.qcmAvant ? 'QCM : « ' + sansBalises(e.qcmAvant.choix[+q0.slice(1)] || '…') + ' »\n' : '') + 'Tableau de suivi : ' + vq.join(' ; ');
+            }
             if (e.type === 'question') return e.champs.map(function (c, k) { return c + ' → ' + (v[k] || '…'); }).join('\n');
             if (e.type === 'prevoir') {
                 var lignes = e.scripts.map(function (sc, k) {
@@ -1393,6 +1455,7 @@ def _console(ligne, n):
                 }).join('') + '</ul>';
             } else if (e.type === 'trace') {
                 var tk = []; for (var k = 1; k <= e.maxTours; k++) tk.push(k);
+                if (e.qcmAvant) h += '<p>QCM : ' + e.qcmAvant.question + ' → <b>' + e.qcmAvant.choix[e.qcmAvant.bonne] + '</b></p>';
                 h += '<p>' + e.lignes.map(function (lg) { return '<code>' + esc(lg.nom) + '</code> : ' + tk.map(function (k) { return lg.f(k); }).join(', '); }).join('<br>') + '<br>Le script affiche <b>' + e.final.attendu + '</b>.</p>';
             } else if (e.type === 'qcm') {
                 h += '<p>Bonne réponse : <b>' + e.choix[e.bonne] + '</b></p>';
@@ -1819,7 +1882,9 @@ def _console(ligne, n):
                         });
                     });
                     if (fausses.length) return '✗ ' + fausses.length + ' case' + (fausses.length > 1 ? 's' : '') + ' à revoir (en rouge). ' + miseEnForme(fausses[0]);
-                    if (!cols[cols.length - 1].sortie()) return '✗ Le test est encore vrai : la boucle fait un tour de plus. Ajoute un tour.';
+                    var derC = cols[cols.length - 1];
+                    if (!derC.sortie()) return 'Presque ! Toutes tes cases sont justes, mais le tableau n’est pas fini : après le ' + (derC.k === 1 ? '1<sup>er</sup>' : derC.k + '<sup>e</sup>') +
+                        ' tour, Python refait le test avec les nouvelles valeurs de la dernière colonne. Clique sur « + Ajouter un tour » pour écrire le résultat de ce test.';
                     return null;
                 }
                 function bon() {
@@ -1831,7 +1896,7 @@ def _console(ligne, n):
                     if (!exigerLu()) return;
                     if (cols.some(function (c) { return c.ins.some(function (x, j) { return !(j && c.sortie()) && !x.value.trim(); }); })) { r.className = 'retour case-retour ko'; r.textContent = 'Complète toutes les cases du tableau.'; return; }
                     var m = verifier(true);
-                    if (m) { r.className = 'retour case-retour ko'; r.innerHTML = m; suivant(valeur(), false); return; }
+                    if (m) { r.className = 'retour case-retour' + (/^Presque/.test(m) ? '' : ' ko'); r.innerHTML = m; suivant(valeur(), false); return; }
                     bon(); suivant(valeur(), true);
                 };
                 if (garde && !verifier(false)) { verifier(true); bon(); auChargement(true); }
@@ -1979,8 +2044,15 @@ def _console(ligne, n):
                                 if (r.err) ligneHisto((r.ligne ? 'Ligne ' + r.ligne + ' · ' : '') + r.err, 'err');
                             } else montrer(sortie, r);
                             if (r.ligne) { marque = r.ligne - 1; cm.addLineClass(marque, 'background', 'ligne-erreur'); }
+                            var ancienneRq = c.querySelector('.remarque-code'); if (ancienneRq) ancienneRq.remove();
                             if (!(e.type === 'code' || e.verifCode) || r.err) return;
-                            if (r.ok) reussi();
+                            if (r.ok) {
+                                reussi();
+                                if (r.remarque) {
+                                    var rq = el('div', 'encadre attention remarque-code', '<b>Remarque</b><br>' + miseEnForme(r.remarque));
+                                    retour.parentNode.insertBefore(rq, retour.nextSibling);
+                                }
+                            }
                             else {
                                 faux(); retour.className = 'retour ko'; retour.textContent = '✗ Pas encore. ' + r.msg;
                                 if (r.tableau) retour.appendChild(tableauSuivi(r.tableau));
@@ -1993,17 +2065,28 @@ def _console(ligne, n):
                     // une case = une ligne avec son propre bouton Valider ; l'étape est réussie quand toutes sont justes
                     var cases = el('div', 'reponses une-par-une');
                     var valeurs = e.champs.map(function (x, k) { return (reponses[n] || [])[k] || ''; }), oks = [];
-                    var verif = e.verifierCase || function (k, v) { return controleCase(k, v, e); };
+                    var verif0 = e.verifierCase || function (k, v) { return controleCase(k, v, e); }, verif = verif0;
+                    var montrerConsole = null;
+                    if (e.consoleSiFaux && zoneCode) {
+                        // la console n'apparaît (sous les cases) qu'après une prévision fausse
+                        zoneCode.hidden = !(erreurs[n] > 0) && !modeTest();
+                        montrerConsole = function () { if (!zoneCode.hidden) return; zoneCode.hidden = false; if (cm) cm.refresh(); };
+                        verif = function (k, v) {
+                            var m = verif0(k, v);
+                            return m && m !== FORME_SIMPLE ? m + '\nTape ' + e.champs[k] + ' dans la console, en dessous, pour vérifier.' : m;
+                        };
+                    }
                     e.champs.forEach(function (lib, k) {
                         ligneCase(cases, e.etiquettesTexte ? esc(lib) : '<code>' + esc(lib) + '</code>', valeurs[k],
                             function (v) { return verif(k, v); },
                             function (v, ok) {
-                                if (!ok) faux();
+                                if (!ok) { faux(); if (montrerConsole) montrerConsole(); }
                                 oks[k] = ok; valeurs[k] = v; reponses[n] = valeurs.slice(); ecrireLocal();
                                 if (ok && e.champs.every(function (x, j) { return oks[j]; })) reussi();
                             }, function (ok) { oks[k] = ok; }, true, exigerLu);
                     });
                     corps.appendChild(cases);
+                    if (montrerConsole) corps.appendChild(zoneCode);   // console déplacée sous les cases
                 }
                 if (e.type === 'prevoir') {
                     /* Pour chaque cas, l'un après l'autre : prévision (verrouillée).
@@ -2168,10 +2251,11 @@ def _console(ligne, n):
                        qui reprend les valeurs trouvées, avec des colonnes à ajouter (jusqu'à e.maxTours).
                        reponses[n] = valeurs tour par tour (e.lignes.length par tour), puis « =réponse finale ». */
                     var L = e.lignes, memoT = (reponses[n] || []).slice();
+                    var qcmT = memoT.length && /^\?/.test(memoT[0]) ? memoT.shift() : '';   // réponse au QCM d'avant (e.qcmAvant)
                     var finalT = memoT.length && /^=/.test(memoT[memoT.length - 1]) ? memoT.pop().slice(1) : '';
                     var tours = [];
                     for (var q = 0; q + L.length <= memoT.length; q += L.length) tours.push(memoT.slice(q, q + L.length));
-                    var sauverT = function () { reponses[n] = [].concat.apply([], tours).concat(finalT ? ['=' + finalT] : []); ecrireLocal(); };
+                    var sauverT = function () { reponses[n] = (qcmT ? [qcmT] : []).concat([].concat.apply([], tours)).concat(finalT ? ['=' + finalT] : []); ecrireLocal(); };
                     var justeT = function (k, j, v) { return Math.abs(num(v) - L[j].f(k)) < 1e-9; };
                     var tourJuste = function (k) { var t = tours[k - 1]; return !!t && L.every(function (lg, j) { return justeT(k, j, t[j]); }); };
                     var ordinal = function (k) { return k === 1 ? '1<sup>er</sup>' : k + '<sup>e</sup>'; };
@@ -2188,7 +2272,13 @@ def _console(ligne, n):
                         var bl = el('div', 'bloc-script'); bl.appendChild(el('h3', null, ordinal(k) + ' tour'));
                         bl.appendChild(el('p', null, e.contexte(k)));
                         var f = el('form', 'case-ligne prevision'), ins = [];
+                        var donneesG = (e.donneesGuide || [])[k - 1] || [];
                         L.forEach(function (lg, j) {
+                            if (donneesG.indexOf(j) >= 0) {   // valeur donnée : écrite en clair, pas de case
+                                f.appendChild(el('span', null, (j ? 'puis ' : '') + '<code>' + esc(lg.nom) + '</code> vaut <b>' + lg.f(k) + '</b>'));
+                                ins.push({ value: String(lg.f(k)), classList: { add: function () {}, remove: function () {}, toggle: function () {} } });
+                                return;
+                            }
                             var lab = el('label', null, (j ? 'puis ' : '') + '<code>' + esc(lg.nom) + '</code> vaut ');
                             var inp = caseT((tours[k - 1] || [])[j], lg.nom + ', ' + ordinalTxt(k) + ' tour'); inp.className = 'tour';
                             lab.appendChild(inp); f.appendChild(lab); ins.push(inp);
@@ -2205,13 +2295,13 @@ def _console(ligne, n):
                             ev.preventDefault();
                             if (!exigerLu() || bt.hidden) return;
                             var v = ins.map(function (x) { return x.value.trim(); });
-                            if (v.some(function (x) { return !x; })) { r.className = 'retour case-retour ko'; r.textContent = 'Complète les ' + L.length + ' cases.'; return; }
+                            if (v.some(function (x) { return !x; })) { r.className = 'retour case-retour ko'; r.textContent = L.length - donneesG.length > 1 ? 'Complète les ' + (L.length - donneesG.length) + ' cases.' : 'Complète la case.'; return; }
                             var formesG = ins.filter(function (x, j) { return formeNonSimple(x.value, L[j].f(k)); });
                             if (formesG.length) { formesG.forEach(function (x) { x.classList.add('fausse'); }); r.className = 'retour case-retour ko'; r.textContent = '✗ ' + FORME_SIMPLE; return; }
                             tours = tours.slice(0, k - 1); tours[k - 1] = v; sauverT();
                             var fausses = [];
                             ins.forEach(function (x, j) { var ok = justeT(k, j, v[j]); x.classList.toggle('juste', ok); x.classList.toggle('fausse', !ok); if (!ok) fausses.push(j); });
-                            if (fausses.length) { faux(); r.className = 'retour case-retour ko'; r.innerHTML = '✗ ' + miseEnForme(L[fausses[0]].aide); return; }
+                            if (fausses.length) { faux(); r.className = 'retour case-retour ko'; var lgF = L[fausses[0]]; r.innerHTML = '✗ ' + miseEnForme(lgF.aideGuide ? lgF.aideGuide(k) : lgF.aide); return; }
                             fini();
                         };
                         if (tourJuste(k)) fini();
@@ -2222,6 +2312,45 @@ def _console(ligne, n):
                         tableauT.appendChild(el('h3', null, 'La suite, dans un tableau'));
                         tableauT.appendChild(el('p', null, e.consigneTableau));
                         var wrap = el('div', 'tableau'), t = el('table', 'trace'); wrap.appendChild(t); tableauT.appendChild(wrap);
+                        /* flèches (L[j].fleches) : des cases d'où viennent les valeurs vers la case visée (ligne j, tour k) */
+                        var cibleF = null;
+                        var cellT = function (j, k) { return rangs[j + 1].children[k + 1]; };   // k = 0 : avant la boucle
+                        var dessinerF = function () {
+                            var ancien = wrap.querySelector('svg.fleches'); if (ancien) ancien.remove();
+                            [].forEach.call(t.querySelectorAll('.source-fleche'), function (x) { x.classList.remove('source-fleche'); });
+                            wrap.classList.toggle('avec-fleches', !!cibleF);
+                            if (!cibleF || !L[cibleF.j].fleches || !wrap.offsetWidth) return;
+                            var NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+                            svg.setAttribute('class', 'fleches'); svg.setAttribute('width', wrap.scrollWidth); svg.setAttribute('height', wrap.scrollHeight);
+                            svg.innerHTML = '<defs><marker id="pointe-' + n + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--c-seconde); stroke: none"/></marker></defs>';
+                            var rw = wrap.getBoundingClientRect(), pos = function (c) {
+                                var r = c.getBoundingClientRect();
+                                return { x: r.left - rw.left + wrap.scrollLeft, y: r.top - rw.top, w: r.width, h: r.height };
+                            };
+                            var cb = cellT(cibleF.j, cibleF.k); if (!cb) return;
+                            var B = pos(cb);
+                            L[cibleF.j].fleches(cibleF.k).forEach(function (sf) {
+                                var cs = cellT(sf.ligne, sf.tour); if (!cs) return;
+                                cs.classList.add('source-fleche');
+                                var A = pos(cs), d, tx, ty;
+                                if (sf.ligne === cibleF.j) {   // même ligne : arc au-dessous, du bas de la source au bas de la cible
+                                    var x1 = A.x + A.w / 2, x2 = B.x + B.w / 2, yb = A.y + A.h - 10, ym = A.y + A.h + 26;
+                                    d = 'M' + x1 + ',' + yb + ' C' + x1 + ',' + ym + ' ' + x2 + ',' + ym + ' ' + x2 + ',' + (B.y + B.h - 10);
+                                    tx = (x1 + x2) / 2; ty = A.y + A.h + 36;
+                                } else {                        // ligne au-dessus : flèche verticale, à droite, de la source à la cible
+                                    var xv = A.x + A.w / 2, y1 = A.y + A.h / 2 + 10, y2 = B.y + 10;
+                                    d = 'M' + xv + ',' + y1 + ' L' + xv + ',' + y2;
+                                    tx = xv + 7; ty = (y1 + y2) / 2 + 4;
+                                }
+                                var p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); p.setAttribute('marker-end', 'url(#pointe-' + n + ')'); svg.appendChild(p);
+                                var tt = document.createElementNS(NS, 'text'); tt.setAttribute('x', tx); tt.setAttribute('y', ty);
+                                tt.setAttribute('text-anchor', sf.ligne === cibleF.j ? 'middle' : 'start');
+                                tt.textContent = sf.texte; svg.appendChild(tt);
+                            });
+                            wrap.appendChild(svg);
+                        };
+                        var viserF = function (j, k) { cibleF = j == null ? null : { j: j, k: k }; requestAnimationFrame(dessinerF); };
+                        window.addEventListener('resize', function () { if (cibleF) dessinerF(); });
                         var rangs = [el('tr')].concat(L.map(function () { return el('tr'); }));
                         rangs[0].appendChild(el('th', null, 'Tour de boucle'));
                         L.forEach(function (lg, j) { rangs[j + 1].appendChild(el('th', null, 'Valeur de <code>' + esc(lg.nom) + '</code>')); });
@@ -2236,6 +2365,7 @@ def _console(ligne, n):
                                 if (fixe) { td.textContent = vals[j]; rangs[j + 1].appendChild(td); return null; }
                                 if ((e.donneesTableau || []).indexOf(j) >= 0) { td.textContent = String(lg.f(k)); td.className = 'donnee'; rangs[j + 1].appendChild(td); return null; }
                                 var inp = caseT(vals[j], lg.nom + ', ' + ordinalTxt(k) + ' tour'); td.appendChild(inp); rangs[j + 1].appendChild(td);
+                                if (lg.fleches) inp.addEventListener('focus', function () { viserF(j, k); });   // flèches vers la case où l'on écrit
                                 return inp;
                             });
                             if (!fixe) colonnes.push({ k: k, ins: ins });
@@ -2263,16 +2393,18 @@ def _console(ligne, n):
                             cms.push(miniEditeur(verifT, e.script, n + '-v')); rafraichir();
                         };
                         var corrigerT = function (marquer) {
-                            var fausses = [];
+                            var fausses = [], viseeF = false;
                             colonnes.forEach(function (c) { c.ins.forEach(function (x, j) {
                                 if (!x) return;   // valeur donnée
                                 var ok = justeT(c.k, j, x.value);
                                 if (marquer) { x.classList.toggle('juste', ok); x.classList.toggle('fausse', !ok); }
-                                if (!ok) fausses.push(L[j].aide);
+                                if (marquer && !ok && !fausses.length) { viserF(L[j].fleches ? j : null, c.k); viseeF = true; }   // flèches sur la 1re case fausse
+                                if (!ok) fausses.push((L[j].aideGuide ? 'Au ' + ordinalTxt(c.k) + ' tour, ' + L[j].aideGuide(c.k) : L[j].aide));
                             }); });
                             var okF = Math.abs(num(iF.value) - e.final.attendu) < 1e-9;
                             if (marquer) { iF.classList.toggle('juste', okF); iF.classList.toggle('fausse', !okF); }
                             if (!okF) fausses.push(e.final.aide);
+                            if (marquer && !viseeF) viserF(null);
                             return fausses;
                         };
                         fF.onsubmit = function (ev) {
@@ -2295,8 +2427,39 @@ def _console(ligne, n):
                             retour.textContent = ''; montrerVerifT(); reussi();
                         };
                         if (finalT && !corrigerT(false).length) { corrigerT(true); montrerVerifT(); }
+                        else {   // au départ : flèches vers la 1re case à remplir d'une ligne qui en a
+                            var c0 = colonnes.filter(function (c) { return c.ins.some(function (x, j) { return x && L[j].fleches && !justeT(c.k, j, x.value); }); })[0];
+                            if (c0) c0.ins.some(function (x, j) { if (x && L[j].fleches && !justeT(c0.k, j, x.value)) { viserF(j, c0.k); return true; } });
+                        }
                     };
-                    guideT(1);
+                    var qcmAvantT = function () {
+                        /* e.qcmAvant = { question, choix, bonne, pourquoi[], raison } : QCM à réussir avant le 1er tour */
+                        var Q = e.qcmAvant, bl = el('div', 'bloc-script');
+                        bl.appendChild(el('p', null, '<b>Pour commencer.</b> ' + Q.question));
+                        var f = el('form', 'qcm'), rQ = el('span', 'retour case-retour');
+                        var radios = Q.choix.map(function (t, k) {
+                            var l = el('label'), i = el('input'); i.type = 'radio'; i.name = 'qcm-avant-' + n; i.value = k;
+                            l.appendChild(i); l.appendChild(el('span', null, t)); f.appendChild(l); return i;
+                        });
+                        var bt = el('button', null, 'Valider'); bt.type = 'submit'; f.appendChild(bt); f.appendChild(rQ);
+                        bl.appendChild(f); zoneT.appendChild(bl);
+                        var fini = function () {
+                            radios.forEach(function (x, k) { x.disabled = true; x.checked = k === Q.bonne; });
+                            bt.hidden = true; rQ.className = 'retour case-retour ok'; rQ.innerHTML = '✓<br>' + miseEnForme(Q.raison) + '.';
+                            guideT(1);
+                        };
+                        f.onsubmit = function (ev) {
+                            ev.preventDefault();
+                            if (!exigerLu() || bt.hidden) return;
+                            var k = radios.findIndex(function (x) { return x.checked; });
+                            if (k < 0) { rQ.className = 'retour case-retour ko'; rQ.textContent = 'Choisis une réponse.'; return; }
+                            qcmT = '?' + k; sauverT();
+                            if (k !== Q.bonne) { faux(); rQ.className = 'retour case-retour ko'; rQ.innerHTML = '✗ ' + miseEnForme(Q.pourquoi[k] || 'Relis le tableau de l’étape 1.'); return; }
+                            fini();
+                        };
+                        if (qcmT === '?' + Q.bonne || tours.length) fini();
+                    };
+                    if (e.qcmAvant) qcmAvantT(); else guideT(1);
                 }
                 if (e.type === 'quiz') {
                     // une seule validation, puis correction question par question ; score gardé dans les détails (q / qmax)
