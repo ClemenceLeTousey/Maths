@@ -1737,7 +1737,9 @@ def _console(ligne, n):
                 b.disabled = n > faites + 1 && !modeTest();
                 b.onclick = function () {
                     var c = zone.querySelector('[data-n="' + n + '"]');
-                    if (!c && modeTest()) {   // mode professeure : étape pas encore atteinte, ouverte à sa place
+                    // mode professeure : étape pas encore atteinte, ouverte à sa place ; élève : étape suivante pas encore affichée
+                    // (après un quiz, elle ne s'ouvre qu'avec « Continuer » : la barre doit aussi l'ouvrir)
+                    if (!c && (modeTest() || n === faites + 1)) {
                         c = carte(n);
                         var apres = Array.prototype.filter.call(zone.querySelectorAll('section.etape'), function (x) { return +x.dataset.n > n; })[0];
                         zone.insertBefore(c, apres || null); c.rafraichir();
@@ -2723,7 +2725,7 @@ def _console(ligne, n):
                     suite = ouvrirSuite;
                 } else if (e.type === 'quiz' && !force && n < NB) {   // après le quiz : on laisse lire la correction, la suite s'ouvre sur demande
                     var mD = /Défi(\s*\d+)?/.exec(ETAPES[n].titre);
-                    var bSuite = el('button', null, (mD ? 'Passer au d' + mD[0].slice(1) : 'Passer à l’étape suivante') + ' →'); bSuite.type = 'button';
+                    var bSuite = el('button', null, 'Continuer : ' + (mD ? 'd' + mD[0].slice(1) : nomEtape(n + 1).toLowerCase()) + ' →'); bSuite.type = 'button';
                     bSuite.onclick = function () { bSuite.remove(); ouvrirSuite(); };
                     corps.appendChild(bSuite);
                 } else ouvrirSuite();
