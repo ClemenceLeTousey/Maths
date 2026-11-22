@@ -582,14 +582,27 @@ def _somme_entiers_remarque(src):
 
 def _e_somme_entiers(ns, src, out):
     code = "\n".join(re.sub(r"#.*", "", x) for x in src.split("\n"))   # « for » dans un commentaire ne compte pas
-    _avec(code, "for", "Utilise une boucle for et un accumulateur, comme à l'étape 3.")
     if re.search(r"\bsum\s*\(", code):
         return "Sans la fonction sum : utilise une boucle et un accumulateur."
-    m = _verifier(ns, src, "somme_entiers", 1, [
-        ((10,), 55, "Vérifie le range : pour que n soit compris, on écrit range(1, n + 1)."),
-        ((1,), 1), ((5,), 15), ((100,), 5050), ((3,), 6)],
+    if not re.search(r"\bfor\b", code):
+        # sans boucle mais juste (formule n(n + 1)/2) : on félicite, sans valider l'étape
+        try:
+            juste = _verifier(ns, src, "somme_entiers", 1, _CAS_SOMME_ENTIERS) is None
+        except Stop:
+            juste = False
+        if juste:
+            return ("💡 Bravo, ta fonction renvoie les bons résultats sans boucle : c’est une très bonne idée, et c’est malin ! "
+                    "C’est la formule 1 + 2 + … + n = n × (n + 1) / 2, celle que Gauss aurait trouvée à 10 ans. "
+                    "Mais ici, la demande est d’utiliser une boucle for et un accumulateur, comme à l’étape 3 : à toi de jouer !")
+        raise Stop("Utilise une boucle for et un accumulateur, comme à l'étape 3.")
+    m = _verifier(ns, src, "somme_entiers", 1, _CAS_SOMME_ENTIERS,
         "Vérifie le range (range(1, n + 1)) et que return est après la boucle, pas dedans.")
     return m if m else _somme_entiers_remarque(src)
+
+
+_CAS_SOMME_ENTIERS = [
+    ((10,), 55, "Vérifie le range : pour que n soit compris, on écrit range(1, n + 1)."),
+    ((1,), 1), ((5,), 15), ((100,), 5050), ((3,), 6)]
 
 
 # Étape 13 · multiples de 7 avec %
@@ -2210,7 +2223,9 @@ def _console(ligne, n):
                                 }
                             }
                             else {
-                                faux(); retour.className = 'retour ko'; retour.textContent = '✗ Pas encore. ' + r.msg;
+                                var idee = /^💡/.test(r.msg);   // 💡 : idée juste mais hors consigne (pas comptée comme une erreur)
+                                if (!idee) faux();
+                                retour.className = 'retour ko'; retour.textContent = (idee ? '' : '✗ Pas encore. ') + r.msg;
                                 if (r.tableau) retour.appendChild(tableauSuivi(r.tableau));
                             }
                         });
