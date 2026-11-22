@@ -5,8 +5,9 @@
        · compteurs de la classe, « Colle faite » à 3 strikes.
    - Espace élève, onglet Automatismes : Strikes.eleve(session) → compteur.
    Règles dans STRIKES_CONFIG (config.js). Base : maj-strikes.sql.
-   « En entier » = chaque jour de la série (J1, J2, J3, et J4 s'il existe) a ses
-   trois couleurs validées avant la date limite. Le bilan facultatif ne compte pas.
+   Seule la série VERTE est obligatoire : un strike = un jour de la série (J1, J2, J3,
+   et J4 s'il existe) dont la série verte n'est pas validée avant la date limite.
+   Le bleu, le rouge et le bilan facultatif ne comptent pas.
    ========================================================================== */
 var Strikes = (function () {
     var $ = function (id) { return document.getElementById(id); };
@@ -62,15 +63,15 @@ var Strikes = (function () {
     }
 
     /* ---------- État d'un élève pour une série ---------- */
-    var NOMS_COUL = { 1: 'verte', 2: 'bleue', 3: 'rouge' };
+    var OBLIGATOIRES = [1];   // couleurs obligatoires : la verte seulement
     function etatJour(resultats, code, id, limite) {
         var tous = resultats.filter(function (r) { return r.code === code && r.exercice === id; });
         var aTemps = tous.filter(function (r) { return new Date(r.fait_le) <= limite; });
         function manque(liste) {
-            if (!liste.length) return [1, 2, 3];
+            if (!liste.length) return OBLIGATOIRES.slice();
             var c = Interactif.bilanCouleurs(liste).couleurs;
             if (!c) return [];                       // exercice sans couleurs : un résultat suffit
-            return [1, 2, 3].filter(function (n) { return !c[n]; });
+            return OBLIGATOIRES.filter(function (n) { return !c[n]; });
         }
         var m = manque(aTemps);
         return { ok: !m.length, manque: m, retard: m.length > 0 && !manque(tous).length, rien: !tous.length };
@@ -78,10 +79,8 @@ var Strikes = (function () {
     function etatSerie(resultats, code, s) {
         var jours = s.jours.map(function (j) { return Object.assign({ nom: j.nom }, etatJour(resultats, code, j.id, s.limite)); });
         var incomplets = jours.filter(function (j) { return !j.ok; });
-        var motif = incomplets.map(function (j) {
-            return j.manque.length === 3 ? j.nom : j.nom + ' (' + j.manque.map(function (n) { return NOMS_COUL[n]; }).join(', ') + ')';
-        }).join(', ');
-        if (motif) motif += incomplets.length > 1 ? ' non faits' : ' non fait';
+        var motif = incomplets.map(function (j) { return j.nom; }).join(', ');
+        if (motif) motif = motif === 'Série' ? 'Série verte non faite' : motif + ' : série verte non faite';   // 1TC : un seul exercice
         return { jours: jours, complet: !incomplets.length, motif: motif };
     }
 
@@ -140,9 +139,7 @@ var Strikes = (function () {
                 st.jours.forEach(function (j) {
                     if (j.ok) html += '<td class="sk-ok" title="Fait à temps">✓</td>';
                     else if (j.retard) html += '<td class="sk-retard" title="Fini après la date limite">⏰ retard</td>';
-                    else if (j.rien) html += '<td class="sk-ko" title="Rien de fait">✗</td>';
-                    else html += '<td class="sk-ko" title="Couleurs manquantes à la date limite">' +
-                        j.manque.map(function (k) { return '<span class="pastille n' + k + '">✗</span>'; }).join('') + '</td>';
+                    else html += '<td class="sk-ko" title="Série verte pas faite à la date limite">✗</td>';
                 });
                 html += '<td>' + pions(ouverts(e.code).length, seuil) + '</td><td>';
                 if (deja) html += '<span class="sk-donne" title="' + esc(deja.motif) + '">⚡ le ' + dateCourte(deja.donne_le) + '</span>' +
@@ -285,7 +282,7 @@ var Strikes = (function () {
             }).join('') + '</ul>';
             var soldes = l.length - o.length;
             if (soldes) html += '<p class="sk-regle">Strikes effacés après une colle : ' + soldes + '.</p>';
-            html += '<p class="sk-regle">Une série pas finie en entier (les trois couleurs de chaque jour) le vendredi soir = 1 strike. À ' + seuil + ' strikes : colle.</p>';
+            html += '<p class="sk-regle">Série verte (obligatoire) pas faite le vendredi soir = 1 strike. À ' + seuil + ' strikes : colle.</p>';
             bloc.innerHTML = html;
             bloc.classList.toggle('alerte', o.length > 0);
             bloc.hidden = false;
