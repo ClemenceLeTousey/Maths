@@ -1447,13 +1447,15 @@ def _console(ligne, n):
                         else if (e.scripts.every(function (x, j) { return finis[j]; })) { if (zoneCode) ouvrirCode(); else reussi(); }
                     }
                     var blocs = [], charge = false;
+                    // un nouveau cas se place AVANT la zone « corriger » (sinon elle remonterait entre les premiers cas)
+                    function ajouterBloc(bloc) { if (zoneCode && zoneCode.parentNode === corps) corps.insertBefore(bloc, zoneCode); else corps.appendChild(bloc); }
                     function montrerCas(k) {
                         var sc = e.scripts[k];
                         var bloc = el('div', 'bloc-script'); blocs[k] = bloc;
                         if (sc.question) {
                             // simple question à valider avant les prévisions
                             var lq = el('div', 'reponses une-par-une'); bloc.appendChild(lq);
-                            corps.appendChild(bloc);
+                            ajouterBloc(bloc);
                             charge = true;
                             ligneCase(lq, sc.question, rep[k][0],
                                 function (v) { if (formeNonSimple(v, sc.attendu)) return FORME_SIMPLE; return egal(v, sc.attendu, sc.tol) ? null : sc.aide; },
@@ -1554,7 +1556,7 @@ def _console(ligne, n):
                             rep[k][0] = v; sauver(); if (!egal(v, sc.attendu, sc.tol)) faux(); apresPrevision(true);
                             rafraichir();
                         };
-                        corps.appendChild(bloc);
+                        ajouterBloc(bloc);
                         charge = true;      // reconstruction depuis les réponses gardées : on ne valide rien
                         if (rep[k][0]) apresPrevision(false);
                         charge = false;
