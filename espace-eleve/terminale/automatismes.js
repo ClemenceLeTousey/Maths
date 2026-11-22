@@ -667,6 +667,357 @@
         return q;
     };
 
+
+    /* ===================================================================
+       SÉRIE 8 : un automatisme par question, sous trois formes
+       forme 1 = reconnaître (QCM, J1), 2 = produire (J2), 3 = mobiliser en contexte (J3)
+       =================================================================== */
+    function valFrac(f) { return f[0] / f[1]; }
+    function texF(f) { return fracTex(f[0], f[1]); }        // [n, d] simplifiée
+    function brute(n, d) { return frac(n, d); }             // [n, d] telle quelle (pour les erreurs typiques)
+    // options d'un QCM numérique : on retire les distracteurs de même valeur que la bonne réponse
+    function qcmValeurs(q, bonne, vBonne, autres) {
+        return qcm(q, bonne, autres.filter(function (o) { return Math.abs(o[1] - vBonne) > 1e-9; }).map(function (o) { return o[0]; }));
+    }
+
+    /* ---------- C1 · Fractions ---------- */
+    AutoT.fractions = function (niveau, forme) {
+        forme = forme || 2;
+        var q = { niveau: niveau, objectif: 'Calcul · Fractions' }, a, b, c, d, k, n, r;
+        var RAPPEL = 'Même dénominateur : $' + frac('a', 'd') + '+' + frac('c', 'd') + '=' + frac('a+c', 'd') + '$ (on n\'additionne jamais les dénominateurs).<br>' +
+            'Sinon, on met d\'abord au même dénominateur : $' + frac(2, 3) + '+' + frac(1, 6) + '=' + frac(4, 6) + '+' + frac(1, 6) + '=' + frac(5, 6) + '$.<br>' +
+            'Produit : $' + frac('a', 'b') + '\\times' + frac('c', 'd') + '=' + frac('a\\times c', 'b\\times d') + '$ ; diviser par une fraction, c\'est multiplier par son inverse.';
+        if (forme === 1) {
+            q.texte = 'Quel est le résultat de ';
+            if (niveau === 1) {
+                do { b = A.choix([3, 4, 5, 6, 7]); k = A.choix([2, 3]); d = k * b; a = A.entier(1, b - 1); c = A.entier(1, d - 1); } while (pgcd(a, b) > 1 || pgcd(c, d) > 1);
+                r = [a * k + c, d];
+                q.texte += '$' + frac(a, b) + '+' + frac(c, d) + '$ ?';
+                q.explication = '$' + frac(a, b) + '=' + frac(a * k, d) + '$, donc $' + frac(a, b) + '+' + frac(c, d) + '=' + frac(a * k, d) + '+' + frac(c, d) + '=' + frac(a * k + c, d) +
+                    (pgcd(r[0], r[1]) > 1 ? '=' + texF(r) : '') + '$. On n\'additionne pas les dénominateurs.';
+                q.rappel = RAPPEL;
+                return qcmValeurs(q, '$' + texF(r) + '$', valFrac(r), [
+                    ['$' + brute(a + c, b + d) + '$', (a + c) / (b + d)], ['$' + brute(a + c, d) + '$', (a + c) / d], ['$' + brute(a * c, b * d) + '$', a * c / (b * d)], ['$' + brute(a + c, b) + '$', (a + c) / b]]);
+            }
+            do { a = A.entier(1, 7); b = A.entier(2, 9); c = A.entier(1, 7); d = A.entier(2, 9); } while (a >= b || c >= d || pgcd(a, b) > 1 || pgcd(c, d) > 1 || b === d);
+            if (niveau === 2) {
+                r = [a * c, b * d];
+                q.texte += '$' + frac(a, b) + '\\times' + frac(c, d) + '$ ?';
+                q.explication = 'On multiplie les numérateurs entre eux et les dénominateurs entre eux : $' + frac(a + '\\times' + c, b + '\\times' + d) + '=' + frac(a * c, b * d) + (pgcd(r[0], r[1]) > 1 ? '=' + texF(r) : '') + '$.';
+                return qcmValeurs(q, '$' + texF(r) + '$', valFrac(r), [
+                    ['$' + texF([a * d, b * c]) + '$', a * d / (b * c)], ['$' + brute(a + c, b + d) + '$', (a + c) / (b + d)], ['$' + texF([a * c, b + d]) + '$', a * c / (b + d)], ['$' + texF([a + c, b * d]) + '$', (a + c) / (b * d)]]);
+            }
+            r = [a * d, b * c];
+            q.texte += '$' + frac(a, b) + '\\div' + frac(c, d) + '$ ?';
+            q.explication = 'Diviser par $' + frac(c, d) + '$, c\'est multiplier par son inverse $' + frac(d, c) + '$ : $' + frac(a, b) + '\\times' + frac(d, c) + '=' + frac(a * d, b * c) + (pgcd(r[0], r[1]) > 1 ? '=' + texF(r) : '') + '$.';
+            return qcmValeurs(q, '$' + texF(r) + '$', valFrac(r), [
+                ['$' + texF([a * c, b * d]) + '$', a * c / (b * d)], ['$' + texF([b * c, a * d]) + '$', b * c / (a * d)], ['$' + texF([a * d, b + c]) + '$', a * d / (b + c)], ['$' + texF([a + d, b + c]) + '$', (a + d) / (b + c)]]);
+        }
+        if (forme === 2) {
+            q.type = 'nombre'; q.irreductible = true;
+            if (niveau === 1) {
+                do { b = A.choix([2, 3, 4, 5]); k = A.choix([2, 3, 4]); d = k * b; a = A.entier(1, b - 1); c = A.entier(1, d - 1); } while (d > 15 || pgcd(a, b) > 1 || pgcd(c, d) > 1);
+                var plus = Math.random() < 0.6 || a * k <= c;
+                r = [plus ? a * k + c : a * k - c, d];
+                q.texte = 'Calculer $' + frac(a, b) + (plus ? '+' : '-') + frac(c, d) + '$. Donner une fraction irréductible.';
+                q.attendu = valFrac(r);
+                q.explication = '$' + frac(a, b) + (plus ? '+' : '-') + frac(c, d) + '=' + frac(a * k, d) + (plus ? '+' : '-') + frac(c, d) + '=' + frac(r[0], d) + (pgcd(r[0], r[1]) > 1 ? '=' + texF(r) : '') + '$.';
+                q.rappel = RAPPEL;
+                return q;
+            }
+            if (niveau === 2) {
+                do { b = A.choix([2, 3, 4, 5, 7]); d = A.choix([3, 4, 5, 7, 9]); a = A.entier(1, b - 1); c = A.entier(1, d - 1); } while (pgcd(b, d) > 1 || a * d <= c * b || pgcd(a, b) > 1 || pgcd(c, d) > 1);
+                r = [a * d - c * b, b * d];
+                q.texte = 'Calculer $' + frac(a, b) + '-' + frac(c, d) + '$. Donner une fraction irréductible.';
+                q.attendu = valFrac(r);
+                q.explication = 'Dénominateur commun $' + (b * d) + '$ : $' + frac(a, b) + '-' + frac(c, d) + '=' + frac(a * d, b * d) + '-' + frac(c * b, b * d) + '=' + frac(r[0], r[1]) + (pgcd(r[0], r[1]) > 1 ? '=' + texF(r) : '') + '$.';
+                return q;
+            }
+            if (Math.random() < 0.5) {      // priorité : a/b + c/d × e/f
+                var e, f;
+                do { a = A.entier(1, 5); b = A.choix([2, 3, 4, 6]); c = A.entier(1, 5); d = A.entier(2, 6); e = A.entier(1, 5); f = A.entier(2, 6); }
+                while (a >= b || c >= d || e >= f || pgcd(a, b) > 1 || pgcd(c, d) > 1 || pgcd(e, f) > 1 || (b * d * f) % 1);
+                var p = [c * e, d * f], g = pgcd(p[0], p[1]); p = [p[0] / g, p[1] / g];
+                r = [a * p[1] + p[0] * b, b * p[1]];
+                q.texte = 'Calculer $' + frac(a, b) + '+' + frac(c, d) + '\\times' + frac(e, f) + '$. Donner une fraction irréductible.';
+                q.attendu = valFrac(r);
+                q.explication = 'La multiplication est prioritaire : $' + frac(c, d) + '\\times' + frac(e, f) + '=' + texF([c * e, d * f]) + '$. Puis $' + frac(a, b) + '+' + texF(p) + '=' + texF(r) + '$.';
+                return q;
+            }
+            do { a = A.entier(1, 9); b = A.entier(2, 9); c = A.entier(1, 9); d = A.entier(2, 9); } while (pgcd(a, b) > 1 || pgcd(c, d) > 1 || a === c || b === d || (a * d) % (b * c) === 0);
+            r = [a * d, b * c];
+            q.texte = 'Calculer $' + frac(a, b) + '\\div' + frac(c, d) + '$. Donner une fraction irréductible.';
+            q.attendu = valFrac(r);
+            q.explication = 'On multiplie par l\'inverse : $' + frac(a, b) + '\\times' + frac(d, c) + '=' + frac(a * d, b * c) + (pgcd(r[0], r[1]) > 1 ? '=' + texF(r) : '') + '$.';
+            return q;
+        }
+        // forme 3 : en contexte
+        var C = A.choix(CONTEXTES);
+        if (niveau === 1) {
+            do { b = A.choix([3, 4, 5, 6, 8, 10]); a = A.entier(1, b - 1); } while (pgcd(a, b) > 1);
+            n = b * A.entier(3, 12);
+            q.type = 'nombre';
+            q.texte = 'Sur $' + fr(n) + '$ ' + C[0] + ', les $' + frac(a, b) + '$ ' + C[1] + '. Combien sont-ils ?';
+            q.attendu = a * n / b;
+            q.explication = '$' + frac(a, b) + '\\times' + fr(n) + '=' + frac(a + '\\times' + fr(n), b) + '=' + fr(q.attendu) + '$ (on peut diviser par $' + b + '$, puis multiplier par $' + a + '$).';
+            q.rappel = 'Prendre les $' + frac('a', 'b') + '$ d\'une quantité $N$, c\'est calculer $' + frac('a', 'b') + '\\times N$ : on divise $N$ par $b$, puis on multiplie par $a$.<br>' +
+                'Exemple : les $' + frac(3, 4) + '$ de $40$ : $40\\div4=10$, puis $3\\times10=30$.';
+            return q;
+        }
+        q.type = 'nombre'; q.irreductible = true;
+        if (niveau === 2) {
+            var P = A.choix([[1, 2, 1, 3], [1, 3, 1, 4], [1, 2, 1, 5], [1, 3, 1, 5], [1, 4, 1, 5], [2, 5, 1, 3], [1, 4, 1, 6], [1, 6, 3, 4], [2, 3, 1, 4], [3, 10, 1, 4]]);
+            var S2 = A.choix([['des patients d\'un service sont hospitalisés pour une fracture', 'pour une infection', 'Les autres sont en observation. Quelle fraction des patients est en observation ?'],
+                              ['des élèves d\'une classe viennent au lycée en bus', 'à pied', 'Les autres viennent en voiture. Quelle fraction des élèves vient en voiture ?'],
+                              ['du budget d\'un centre de santé sert aux salaires', 'au matériel', 'Le reste sert aux locaux. Quelle fraction du budget sert aux locaux ?']]);
+            var m = P[1] * P[3] / pgcd(P[1], P[3]);
+            r = [m - P[0] * m / P[1] - P[2] * m / P[3], m];
+            q.texte = '$' + frac(P[0], P[1]) + '$ ' + S2[0] + ', et $' + frac(P[2], P[3]) + '$ ' + S2[1] + '. ' + S2[2];
+            q.attendu = valFrac(r);
+            q.explication = 'Le total vaut $1=' + frac(m, m) + '$. $1-' + frac(P[0], P[1]) + '-' + frac(P[2], P[3]) + '=' + frac(m, m) + '-' + frac(P[0] * m / P[1], m) + '-' + frac(P[2] * m / P[3], m) + '=' + frac(r[0], m) + (pgcd(r[0], m) > 1 ? '=' + texF(r) : '') + '$.';
+            return q;
+        }
+        do { a = A.entier(1, 4); b = A.entier(2, 6); c = A.entier(1, 4); d = A.entier(2, 6); } while (a >= b || c >= d || pgcd(a, b) > 1 || pgcd(c, d) > 1);
+        var S3 = A.choix([['des salariés d\'une clinique sont des femmes', 'parmi elles', 'travaillent de nuit', 'des salariés sont des femmes qui travaillent de nuit'],
+                          ['des patients d\'un hôpital sont des enfants', 'parmi eux', 'sont vaccinés contre la grippe', 'des patients sont des enfants vaccinés contre la grippe'],
+                          ['des adhérents d\'une association sont bénévoles', 'parmi eux', 'ont plus de 60 ans', 'des adhérents sont des bénévoles de plus de 60 ans']]);
+        r = [a * c, b * d];
+        q.texte = 'Les $' + frac(a, b) + '$ ' + S3[0] + ' ; ' + S3[1] + ', les $' + frac(c, d) + '$ ' + S3[2] + '. Quelle fraction ' + S3[3] + ' ?';
+        q.attendu = valFrac(r);
+        q.explication = 'Les $' + frac(c, d) + '$ des $' + frac(a, b) + '$ : on multiplie, $' + frac(c, d) + '\\times' + frac(a, b) + '=' + frac(a * c, b * d) + (pgcd(r[0], r[1]) > 1 ? '=' + texF(r) : '') + '$.';
+        return q;
+    };
+
+    /* ---------- E2 · Appliquer un taux d'évolution ---------- */
+    AutoT.appliquerTaux = function (niveau, forme) {
+        forme = forme || 2;
+        var q = { niveau: niveau, objectif: niveau === 3 ? 'Évolutions · Retrouver une valeur initiale' : 'Évolutions · Appliquer un taux d\'évolution' };
+        var t, hausse, V, cm, Vf;
+        function cmTex(t, h) { return 'CM=1' + (h ? '+' : '-') + frac(t, 100) + '=' + fr(arrondi(1 + (h ? t : -t) / 100)); }
+        function ev(h, t) { return (h ? 'augmente' : 'baisse') + ' de $' + pct(t) + '$'; }
+        var RAPPEL = 'Augmenter de $t\\,\\%$, c\'est multiplier par $CM=1+' + frac('t', 100) + '$ ; diminuer de $t\\,\\%$, c\'est multiplier par $CM=1-' + frac('t', 100) + '$.<br>' +
+            'Valeur finale $=$ valeur initiale $\\times\\, CM$. Exemple : $80$ € augmenté de $15\\,\\%$ : $CM=1{,}15$ et $80\\times1{,}15=92$ €.';
+        var CTX = [['Un tarif de consultation de $@$ €', 'Quel est le nouveau tarif (en €) ?', 'un tarif de consultation vaut $@$ €', 'Quel était le tarif initial (en €) ?'],
+                   ['Un service hospitalier compte $@$ lits. Ce nombre', 'Combien de lits compte-t-il ensuite ?', 'un service hospitalier compte $@$ lits', 'Combien de lits comptait-il avant ?'],
+                   ['Un centre de vaccination reçoit $@$ personnes par semaine. Ce nombre', 'Combien de personnes reçoit-il ensuite par semaine ?', 'un centre de vaccination reçoit $@$ personnes par semaine', 'Combien en recevait-il avant ?'],
+                   ['Le budget d\'une association est de $@$ €. Il', 'Quel est son nouveau budget (en €) ?', 'le budget d\'une association est de $@$ €', 'Quel était le budget initial (en €) ?']];
+        function tirage(liste, mult) {
+            do { t = A.choix(liste); hausse = Math.random() < 0.5; V = A.entier(2, 25) * mult; cm = arrondi(1 + (hausse ? t : -t) / 100); Vf = arrondi(V * cm); }
+            while (Vf % 1 || Vf <= 0);
+        }
+        if (niveau < 3) {
+            if (niveau === 1) tirage([10, 20, 25, 50], 20); else tirage([5, 15, 30, 35, 40, 12, 4, 60], 25);
+            var expl = '$' + cmTex(t, hausse) + '$ et $' + fr(V) + '\\times' + fr(cm) + '=' + fr(Vf) + '$.';
+            if (niveau === 1) q.rappel = RAPPEL;
+            if (forme === 1) {
+                q.texte = 'Une valeur de $' + fr(V) + '$ ' + ev(hausse, t) + '. Sa nouvelle valeur est :';
+                q.explication = expl + ' (On n\'ajoute pas $' + fr(t) + '$ à la valeur de départ.)';
+                return qcmValeurs(q, '$' + fr(Vf) + '$', Vf, [
+                    ['$' + fr(hausse ? V + t : V - t) + '$', hausse ? V + t : V - t], ['$' + fr(arrondi(V * (1 + (hausse ? -t : t) / 100))) + '$', V * (1 + (hausse ? -t : t) / 100)],
+                    ['$' + fr(arrondi(V * t / 100)) + '$', V * t / 100], ['$' + fr(arrondi(V * (1 + (hausse ? t : -t) / 10))) + '$', V * (1 + (hausse ? t : -t) / 10)]]);
+            }
+            q.type = 'nombre';
+            q.attendu = Vf;
+            q.explication = expl;
+            if (forme === 2) { q.texte = 'Une valeur de $' + fr(V) + '$ ' + ev(hausse, t) + '. Calculer sa nouvelle valeur.'; return q; }
+            var c3 = A.choix(CTX);
+            q.texte = c3[0].replace('@', fr(V)) + ' ' + ev(hausse, t) + '. ' + c3[1];
+            return q;
+        }
+        // niveau 3 : valeur initiale
+        var R = A.choix([[25, true], [20, true], [50, true], [10, true], [5, true], [20, false], [25, false], [10, false], [50, false], [40, false], [5, false]]);
+        t = R[0]; hausse = R[1]; cm = arrondi(1 + (hausse ? t : -t) / 100); V = A.entier(2, 25) * 20; Vf = arrondi(V * cm);
+        var expl3 = '$' + cmTex(t, hausse) + '$ et $V_i\\times' + fr(cm) + '=' + fr(Vf) + '$, donc $V_i=' + frac(fr(Vf), fr(cm)) + '=' + fr(V) + '$. ' +
+            '(Attention : ' + (hausse ? 'retirer' : 'ajouter') + ' $' + pct(t) + '$ à la valeur finale est faux.)';
+        var apres = 'Après ' + (hausse ? 'une hausse' : 'une baisse') + ' de $' + pct(t) + '$, ';
+        if (forme === 1) {
+            q.texte = apres + 'une valeur vaut $' + fr(Vf) + '$. Sa valeur initiale était :';
+            q.explication = expl3;
+            var faux = arrondi(Vf * (1 + (hausse ? -t : t) / 100));
+            return qcmValeurs(q, '$' + fr(V) + '$', V, [['$' + fr(faux) + '$', faux], ['$' + fr(hausse ? Vf - t : Vf + t) + '$', hausse ? Vf - t : Vf + t], ['$' + fr(arrondi(Vf * cm)) + '$', Vf * cm]]);
+        }
+        q.type = 'nombre'; q.attendu = V; q.explication = expl3;
+        if (forme === 2) { q.texte = apres + 'une valeur vaut $' + fr(Vf) + '$. Calculer sa valeur initiale.'; return q; }
+        var c = A.choix(CTX);
+        q.texte = apres + c[2].replace('@', fr(Vf)) + '. ' + c[3];
+        return q;
+    };
+
+    /* ---------- F4 · Équation de courbe : appartenance d'un point, coordonnées ---------- */
+    AutoT.pointCourbe = function (niveau, forme) {
+        forme = forme || 2;
+        var q = { niveau: niveau, objectif: 'Fonctions · Point sur une courbe' }, co, x0, y0, f;
+        var RAPPEL = 'Le point $M(a\\,;\\,b)$ appartient à la courbe de $f$ lorsque $f(a)=b$ : on calcule l\'image de l\'abscisse et on la compare à l\'ordonnée.<br>' +
+            'Exemple : $f(x)=x^2-3x$ et $M(4\\,;\\,4)$ : $f(4)=16-12=4$, donc $M$ est sur la courbe. Attention : $(-3)^2=9$.';
+        function P(c) { return function (x) { var s = 0; c.forEach(function (k) { s = s * x + k; }); return s; }; }
+        function pt(x, y) { return '(' + fr(x) + '\\,;\\,' + fr(y) + ')'; }
+        function calcul(c, x) {                               // f(x0) détaillé, x0 entre parenthèses s'il est négatif
+            var X = x < 0 ? '(' + x + ')' : String(x), deg = c.length - 1, morceaux = [];
+            c.forEach(function (k, i) {
+                var p = deg - i; if (!k) return;
+                var m = p === 0 ? fr(Math.abs(k)) : (Math.abs(k) === 1 ? '' : fr(Math.abs(k)) + '\\times') + X + (p > 1 ? '^' + p : '');
+                morceaux.push((k < 0 ? '-' : (morceaux.length ? '+' : '')) + m);
+            });
+            return morceaux.join('');
+        }
+        if (niveau === 1) { co = [1, A.nonNul(-5, 5), A.entier(-5, 5)]; }
+        else if (niveau === 2) { co = [A.choix([2, 3, -1, -2]), A.nonNul(-5, 5), A.entier(-6, 6)]; }
+        else { co = [1, 0, A.nonNul(-4, 4), A.entier(-5, 5)]; }
+        f = P(co);
+        var fTex = 'f(x)=' + poly(co);
+        if (forme === 1) {
+            var xs = niveau === 1 ? [0, 1, 2, 3, -1] : [-3, -2, -1, 1, 2];
+            x0 = A.choix(xs.filter(function (x) { return x !== 0 || niveau === 1; }));
+            y0 = f(x0);
+            var autres = melanger(xs.filter(function (x) { return x !== x0; })).slice(0, 3).map(function (x, i) {
+                var faux = [f(x) + A.nonNul(-2, 2), P(co.map(function (k, j) { return j === 0 && co.length === 3 ? -k : k; }))(x), -f(x)][i % 3];
+                if (faux === f(x)) faux = f(x) + 1;
+                return '$' + pt(x, faux) + '$';
+            });
+            q.texte = 'On note $\\mathcal{C}$ la courbe représentative de la fonction $f$ définie par $' + fTex + '$. Quel point appartient à $\\mathcal{C}$ ?';
+            q.explication = 'On calcule l\'image de l\'abscisse : $f(' + x0 + ')=' + calcul(co, x0) + '=' + fr(y0) + '$ : c\'est bien l\'ordonnée du point $' + pt(x0, y0) + '$. Pour les autres points, l\'image de l\'abscisse n\'est pas égale à l\'ordonnée.';
+            if (niveau === 1) q.rappel = RAPPEL;
+            return qcm(q, '$' + pt(x0, y0) + '$', autres);
+        }
+        if (forme === 2) {
+            q.type = 'nombre';
+            if (niveau < 3) {
+                x0 = niveau === 1 ? A.entier(1, 4) : A.entier(-3, -1);
+                q.texte = 'Le point $A' + '(' + x0 + '\\,;\\,y)$ appartient à la courbe représentative de la fonction $f$ définie par $' + fTex + '$. Calculer $y$.';
+                q.attendu = f(x0);
+                q.explication = '$y=f(' + x0 + ')=' + calcul(co, x0) + '=' + fr(q.attendu) + '$.';
+                if (niveau === 1) q.rappel = RAPPEL;
+                return q;
+            }
+            var m = A.nonNul(-5, 5), p = A.entier(-8, 8), xa = A.entier(-4, 6);
+            if (m === 1) m = 2;
+            var yb = m * xa + p;
+            q.texte = 'Le point $B(x\\,;\\,' + fr(yb) + ')$ appartient à la droite d\'équation $y=' + poly([m, p]) + '$. Calculer $x$.';
+            q.attendu = xa;
+            q.explication = 'On résout $' + poly([m, p]) + '=' + fr(yb) + '$ : $' + fr(m) + 'x=' + fr(yb) + (p ? terme(-p) : '') + '=' + fr(yb - p) + '$, donc $x=' + frac(fr(yb - p), fr(m)) + '=' + fr(xa) + '$.';
+            return q;
+        }
+        // forme 3 : en situation
+        if (niveau === 1) {
+            var b1 = A.choix([6, 8, 10, 12]), t1 = A.entier(1, b1 / 2);
+            q.type = 'nombre';
+            q.texte = 'La concentration d\'un médicament dans le sang, $t$ heures après la prise, est $C(t)=-t^2+' + b1 + 't$ (en mg/L). Quelle est l\'ordonnée du point de la courbe de $C$ d\'abscisse $' + t1 + '$ ?';
+            q.attendu = -t1 * t1 + b1 * t1;
+            q.explication = '$C(' + t1 + ')=-' + t1 + '^2+' + b1 + '\\times' + t1 + '=' + (-t1 * t1) + '+' + (b1 * t1) + '=' + q.attendu + '$ : ' + t1 + ' h après la prise, la concentration est de $' + q.attendu + '$ mg/L.';
+            q.rappel = RAPPEL;
+            return q;
+        }
+        if (niveau === 2) {
+            var b2, t2, vrai, dedans = Math.random() < 0.5, yy;
+            do { b2 = A.choix([6, 8, 10, 12]); t2 = A.entier(1, b2 - 1); vrai = -t2 * t2 + b2 * t2; yy = dedans ? vrai : vrai + A.nonNul(-3, 3); } while (yy === t2 || yy <= 0);
+            q.texte = 'La concentration d\'un médicament dans le sang, $t$ heures après la prise, est $C(t)=-t^2+' + b2 + 't$ (en mg/L). Le point $A(' + t2 + '\\,;\\,' + yy + ')$ est-il sur la courbe de $C$ ?';
+            q.explication = '$C(' + t2 + ')=-' + t2 + '^2+' + b2 + '\\times' + t2 + '=' + vrai + '$' + (dedans ? ' : c\'est l\'ordonnée de $A$.' : ', qui n\'est pas égal à $' + yy + '$.');
+            q.qcmLignes = true;
+            var oui = 'Oui : ' + t2 + ' h après la prise, la concentration est de $' + yy + '$ mg/L', inv = 'Oui : ' + yy + ' h après la prise, la concentration est de $' + t2 + '$ mg/L', non = 'Non, car $C(' + t2 + ')=' + vrai + '$';
+            return dedans ? qcm(q, oui, [inv, 'Non, car $C(' + t2 + ')\\neq' + yy + '$']) : qcm(q, non, [oui, inv]);
+        }
+        var x3 = A.choix([-2, -1, 1, 2, 3]), b3 = A.nonNul(-6, 6), c3 = A.entier(-6, 6), y3 = x3 * x3 + b3 * x3 + c3;
+        q.type = 'nombre';
+        q.texte = 'La courbe représentative de la fonction $f$ définie par $f(x)=x^2+bx' + terme(c3).replace('+0', '') + '$ passe par le point $A' + pt(x3, y3) + '$. Calculer $b$.';
+        if (!c3) q.texte = q.texte.replace('bx+0', 'bx').replace('bx-0', 'bx');
+        q.attendu = b3;
+        var X3 = x3 < 0 ? '(' + x3 + ')' : x3;
+        q.explication = '$f(' + x3 + ')=' + fr(y3) + '$ : $' + X3 + '^2+b\\times' + X3 + (c3 ? terme(c3) : '') + '=' + fr(y3) + '$, soit $' + (x3 * x3 + c3) + (x3 < 0 ? '-' + (x3 === -1 ? '' : -x3) : '+' + (x3 === 1 ? '' : x3)) + 'b=' + fr(y3) + '$, donc $b=' + fr(b3) + '$.';
+        return q;
+    };
+
+    /* ---------- F9 · Lire graphiquement le nombre dérivé (coefficient directeur d'une tangente) ---------- */
+    // courbe y = y0 + s(x-a) + b(x-a)² : sa tangente en A(a ; y0) est y = y0 + s(x-a), et passe par des nœuds du quadrillage
+    function figureTangente(T) {
+        var o = { xmin: T.xmin, xmax: T.xmax, ymin: T.ymin, ymax: T.ymax, c: 32 }, c = 32, m = 22;
+        function X(x) { return m + (x - o.xmin) * c; }
+        function Y(y) { return m + (o.ymax - y) * c; }
+        o.courbe = T.points; o.nom = T.nom;
+        var s = repere(o).replace('</svg>', '');
+        var xa = Math.max(o.xmin, T.a - 3), xb = Math.min(o.xmax, T.a + 3);
+        function yt(x) { return T.y0 + T.s * (x - T.a); }
+        if (T.s !== 0) {
+            var lo = (o.ymin - T.y0) / T.s + T.a, hi = (o.ymax - T.y0) / T.s + T.a;
+            xa = Math.max(xa, Math.min(lo, hi)); xb = Math.min(xb, Math.max(lo, hi));
+        }
+        s += '<line class="fig-seg" style="stroke:#e03131" x1="' + X(xa) + '" y1="' + Y(yt(xa)) + '" x2="' + X(xb) + '" y2="' + Y(yt(xb)) + '"/>';
+        s += '<circle class="fig-pt" cx="' + X(T.a) + '" cy="' + Y(T.y0) + '" r="4.5"/>';
+        s += '<text class="fig-nom-pt" x="' + (X(T.a) - 8) + '" y="' + (Y(T.y0) - 8) + '" text-anchor="end">A</text>';
+        return s + '</svg>';
+    }
+    function tirageTangente(niveau, positif) {
+        var PENTES = niveau === 1 ? [[1, 1], [2, 1], [3, 1], [-1, 1], [-2, 1]]
+                   : niveau === 2 ? [[0, 1], [-1, 1], [-2, 1], [-3, 1], [2, 1], [3, 1]]
+                   : [[1, 2], [-1, 2], [3, 2], [-3, 2], [1, 3], [-2, 3]];
+        for (;;) {
+            var P = A.choix(PENTES), s = P[0] / P[1], den = P[1], a = A.entier(positif ? 1 : 0, 4), y0 = A.entier(positif ? 1 : -1, 4), b = A.choix([0.5, -0.5, 1, -1, 0.25, -0.25]);
+            var T = { xmin: positif ? 0 : -2, xmax: 7, ymin: positif ? 0 : -3, ymax: 6, a: a, y0: y0, s: s, num: P[0], den: den, b: b };
+            // un second nœud du quadrillage sur la tangente, à droite (ou à gauche) de A
+            var droite = a + den <= T.xmax && y0 + P[0] <= T.ymax && y0 + P[0] >= T.ymin, gauche = a - den >= T.xmin && y0 - P[0] <= T.ymax && y0 - P[0] >= T.ymin;
+            if (!droite && !gauche) continue;
+            var pts = [], ok = true;
+            for (var x = a; x >= T.xmin - 1e-9; x -= 0.05) { var y = y0 + s * (x - a) + b * (x - a) * (x - a); if (y < T.ymin || y > T.ymax) break; pts.unshift([x, y]); }
+            for (x = a + 0.05; x <= T.xmax + 1e-9; x += 0.05) { y = y0 + s * (x - a) + b * (x - a) * (x - a); if (y < T.ymin || y > T.ymax) break; pts.push([x, y]); }
+            if (pts[0][0] > a - 1.5 || pts[pts.length - 1][0] < a + 1.5) continue;
+            T.points = pts; T.droite = droite;
+            T.fig = function (nom) { T.nom = nom; return figureTangente(T); };
+            return T;
+        }
+    }
+    AutoT.nombreDerive = function (niveau, forme) {
+        forme = forme || 2;
+        var q = { niveau: niveau, objectif: 'Dérivation · Lire un nombre dérivé' }, T = tirageTangente(niveau, forme === 3);
+        var sTex = T.den === 1 ? String(T.num) : (T.num < 0 ? '-' : '') + frac(Math.abs(T.num), T.den);
+        var B = T.droite ? [T.a + T.den, T.y0 + T.num] : [T.a - T.den, T.y0 - T.num];
+        var lecture = 'La tangente passe par $A(' + T.a + '\\,;\\,' + T.y0 + ')$ et par le point $(' + B[0] + '\\,;\\,' + B[1] + ')$. ' +
+            (T.num === 0 ? 'Elle est horizontale : son coefficient directeur est $0$.' :
+            'Quand $x$ augmente de $' + T.den + '$, $y$ ' + (T.num > 0 ? 'augmente' : 'diminue') + ' de $' + Math.abs(T.num) + '$ : le coefficient directeur vaut $' + (T.den === 1 ? '' : frac(T.num, T.den) + (T.num < 0 ? '=' + sTex : '')) + (T.den === 1 ? sTex : '') + '$.');
+        var RAPPEL = 'Le nombre dérivé $f\'(a)$ est le <b>coefficient directeur</b> de la tangente à la courbe au point d\'abscisse $a$.<br>' +
+            'On le lit sur la tangente : on avance de $1$ (ou de quelques carreaux) vers la droite, et on compte de combien on monte (positif) ou on descend (négatif) : $' + frac('\\text{variation de } y', '\\text{variation de } x') + '$.<br>' +
+            'Tangente horizontale : $f\'(a)=0$.';
+        var CTX = [['C', 'la concentration $C(t)$ d\'un médicament dans le sang (en mg/L) en fonction du temps $t$ (en heures)', 'mg/L par heure', 'la concentration', 'mg/L'],
+                   ['B', 'le nombre $B(t)$ de bactéries d\'une culture (en milliers) en fonction du temps $t$ (en heures)', 'milliers de bactéries par heure', 'le nombre de bactéries', 'milliers'],
+                   ['N', 'le nombre $N(t)$ de patients présents aux urgences (en dizaines) en fonction du temps $t$ (en heures)', 'dizaines de patients par heure', 'le nombre de patients', 'dizaines']];
+        if (forme === 3) {
+            var C = A.choix(CTX), F = C[0];
+            q.figure = T.fig('𝒞'); q.figureNote = 'courbe de ' + F + ', tangente en A(' + T.a + ';' + T.y0 + ') de coefficient ' + T.num + '/' + T.den;
+            var intro = 'La courbe donne ' + C[1] + '. On a tracé sa tangente au point $A$ d\'abscisse $' + T.a + '$. ';
+            if (niveau === 2) {
+                var sens = function (v) { return v === 0 ? 'ne varie pas (à cet instant)' : (v > 0 ? 'augmente' : 'diminue') + ' à la vitesse de $' + fr(Math.abs(v)) + '$ ' + C[2]; };
+                q.texte = intro + 'À l\'instant $t=' + T.a + '$, ' + C[3] + ' :';
+                q.explication = lecture + ' Donc $' + F + '\'(' + T.a + ')=' + sTex + '$ : ' + C[3] + ' ' + sens(T.s) + '.';
+                q.qcmLignes = true;
+                var d3 = [T.y0, T.s + 1, T.s - 1, 2 * T.s].filter(function (v) { return v !== T.s && v !== -T.s; })[0];
+                return qcm(q, sens(T.s), [sens(T.s === 0 ? 1 : -T.s), 'vaut $' + T.y0 + '$ ' + C[4], sens(d3)]);
+            }
+            q.type = 'nombre';
+            q.texte = intro + 'Lire $' + F + '\'(' + T.a + ')$.';
+            q.prefixe = F + '\'(' + T.a + ')=';
+            q.attendu = T.s;
+            q.explication = lecture + ' Donc $' + F + '\'(' + T.a + ')=' + sTex + '$ : à cet instant, ' + C[3] + (T.s === 0 ? ' ne varie pas.' : ' ' + (T.s > 0 ? 'augmente' : 'diminue') + ' à la vitesse de $' + (T.den === 1 ? Math.abs(T.num) : frac(Math.abs(T.num), T.den)) + '$ ' + C[2] + '.');
+            if (niveau === 1) q.rappel = RAPPEL;
+            return q;
+        }
+        q.figure = T.fig('𝒞<tspan font-size="12">f</tspan>');
+        q.figureNote = 'tangente en A(' + T.a + ';' + T.y0 + ') de coefficient ' + T.num + '/' + T.den;
+        var enonce = 'On a tracé la courbe $\\mathcal{C}_f$ d\'une fonction $f$ et sa tangente au point $A$ d\'abscisse $' + T.a + '$. ';
+        q.explication = lecture + ' Donc $f\'(' + T.a + ')=' + sTex + '$.';
+        if (niveau === 1) q.rappel = RAPPEL;
+        if (forme === 1) {
+            q.texte = enonce + 'Que vaut $f\'(' + T.a + ')$ ?';
+            var inv = T.num === 0 || (T.den === 1 && Math.abs(T.num) === 1) ? null : texF([T.den, T.num]);
+            var p = T.y0 - T.s * T.a, pTex = p % 1 ? null : String(p);
+            return qcmValeurs(q, '$' + sTex + '$', T.s, [['$' + (T.num === 0 ? 1 : (T.den === 1 ? String(-T.num) : (T.num > 0 ? '-' : '') + frac(Math.abs(T.num), T.den))) + '$', T.num === 0 ? 1 : -T.s],
+                ['$' + T.y0 + '$', T.y0], inv ? ['$' + inv + '$', T.den / T.num] : ['$' + T.a + '$', T.a], pTex ? ['$' + pTex + '$', p] : ['$' + (T.a + 1) + '$', T.a + 1],
+                ['$1$', 1], ['$-1$', -1], ['$2$', 2]]);
+        }
+        q.type = 'nombre';
+        q.texte = enonce + 'Lire $f\'(' + T.a + ')$.';
+        q.prefixe = 'f\'(' + T.a + ')=';
+        q.attendu = T.s;
+        return q;
+    };
+
     window.AutoT = AutoT;
 })();
 

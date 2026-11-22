@@ -171,6 +171,10 @@ window.INTERACTIF_CATALOGUE = [
     { niveau: 'terminale', id: 'terminale/serie7-j2', groupe: 'Série 7 · semaine du 16 au 20 novembre', titre: 'Jour 2', court: 'T · S7 · J2', url: 'terminale/serie7.html?j=2' },
     { niveau: 'terminale', id: 'terminale/serie7-j3', groupe: 'Série 7 · semaine du 16 au 20 novembre', titre: 'Jour 3', court: 'T · S7 · J3', url: 'terminale/serie7.html?j=3' },
     { niveau: 'terminale', id: 'terminale/serie7-bilan', groupe: 'Facultatif · Série 7 TST2S en temps limité ⏱', titre: 'Bilan Série 7 (10 questions chronométrées)', court: 'T · S7 · Bilan', url: 'terminale/serie7-bilan.html' },
+    { niveau: 'terminale', id: 'terminale/serie8-j1', groupe: 'Série 8 · semaine du 23 au 27 novembre', titre: 'Jour 1', court: 'T · S8 · J1', url: 'terminale/serie8.html?j=1' },
+    { niveau: 'terminale', id: 'terminale/serie8-j2', groupe: 'Série 8 · semaine du 23 au 27 novembre', titre: 'Jour 2', court: 'T · S8 · J2', url: 'terminale/serie8.html?j=2' },
+    { niveau: 'terminale', id: 'terminale/serie8-j3', groupe: 'Série 8 · semaine du 23 au 27 novembre', titre: 'Jour 3', court: 'T · S8 · J3', url: 'terminale/serie8.html?j=3' },
+    { niveau: 'terminale', id: 'terminale/serie8-bilan', groupe: 'Facultatif · Série 8 TST2S en temps limité ⏱', titre: 'Bilan Série 8 (10 questions chronométrées)', court: 'T · S8 · Bilan', url: 'terminale/serie8-bilan.html' },
     // Première (1TC) : une série par semaine, à faire à la maison pour le vendredi suivant (10 questions par couleur, validation question par question)
     { niveau: 'premiere', id: 'premiere/serie1', groupe: 'Série 1 · à faire pour le vendredi 13 novembre', titre: '30 questions (10 vertes, 10 bleues, 10 rouges)', court: '1 · S1', url: 'premiere/serie1.html' },
     // Séries 2 à 7 : ouverture automatique le vendredi 16h (OUVERTURE_SERIES.premiere) ; la précédente passe d'elle-même dans « Anciennes séries » ; PROF-1TC les voit avant
@@ -253,10 +257,13 @@ window.INTERACTIF_GROUPES = {
         themes: ['Proportions', 'Coefficient multiplicateur', 'Équations du premier degré', 'Suites par récurrence', 'Images et antécédents',
                  'Évolutions successives', 'Résolution graphique', 'Équation de droite', 'Fonction inverse'] },
     'Facultatif · Série 6 TST2S en temps limité ⏱': { section: 'Anciennes séries', serie: 'TST2S · Série 6' },
-    'Série 7 · semaine du 16 au 20 novembre': { serie: 'TST2S · Série 7',
+    'Série 7 · semaine du 16 au 20 novembre': { section: 'Anciennes séries', serie: 'TST2S · Série 7',
         themes: ['Taux d\'évolution, indices', 'Inéquations', 'Suites : terme général, modélisation', 'Dérivée de k/x, variations',
                  'Proportion de proportion', 'Signe', 'Dérivée d\'un polynôme', 'Résolution graphique', 'Évolutions successives'] },
-    'Facultatif · Série 7 TST2S en temps limité ⏱': { serie: 'TST2S · Série 7' },
+    'Facultatif · Série 7 TST2S en temps limité ⏱': { section: 'Anciennes séries', serie: 'TST2S · Série 7' },
+    'Série 8 · semaine du 23 au 27 novembre': { serie: 'TST2S · Série 8',
+        themes: ['Fractions', 'Appliquer un taux d\'évolution', 'Point sur une courbe', 'Lire un nombre dérivé'] },
+    'Facultatif · Série 8 TST2S en temps limité ⏱': { serie: 'TST2S · Série 8' },
     // Première (1TC) : « serie » distinct des séries de Seconde et de TST2S
     'Série 1 · à faire pour le vendredi 13 novembre': { section: 'Anciennes séries', serie: '1TC · Série 1',
         themes: ['Proportions', 'Appliquer un taux d\'évolution', 'Fractions', 'Équations du premier degré', 'Lire un diagramme'] },
