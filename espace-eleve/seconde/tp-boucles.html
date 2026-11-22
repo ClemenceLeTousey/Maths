@@ -41,6 +41,7 @@
         .interactif .sommaire button.courante { border: 2px solid var(--c-seconde); }
         .interactif .sommaire button:disabled { opacity: .4; cursor: default; }
         .interactif .sommaire button.acces-quiz { border-radius: 999px; padding: 0 14px; background: var(--c-seconde); border-color: var(--c-seconde); color: var(--badge-text); letter-spacing: .05em; }
+        .interactif .sommaire button.defi { border-radius: 999px; padding: 0 12px; letter-spacing: .05em; }
         .interactif .sommaire button.acces-quiz.fait { background: var(--ok); border-color: var(--ok); }
         .interactif .sommaire button.acces-quiz.passee { background: var(--muted); border-color: var(--muted); }
         .interactif .sommaire button.acces-quiz.courante { outline: 2px solid var(--c-seconde); outline-offset: 2px; }
@@ -1573,13 +1574,16 @@ def _console(ligne, n):
         var QUIZ_N = ETAPES.map(function (e, k) { return e.type === 'quiz' ? k + 1 : 0; }).filter(Boolean);
         // anti-triche : le quiz A garde l'identifiant de l'ancien quiz final unique (état déjà enregistré sur les appareils)
         // numéros affichés : les quiz ne sont pas numérotés (1 … 5, Quiz A, 6 … 9, Quiz B…)
-        var NB_ETAPES = NB - QUIZ_N.length;
+        // défis (partie D) : « Défi 1, 2, 3 » au lieu d'un numéro d'étape
+        function numDefi(n) { var m = /Défi\s*(\d+)/.exec(ETAPES[n - 1].titre); return m ? m[1] : null; }
+        var NB_DEFIS = ETAPES.filter(function (e, k) { return numDefi(k + 1); }).length;
+        var NB_ETAPES = NB - QUIZ_N.length - NB_DEFIS;
         function lettreQuiz(n) { return (/^Quiz (\w)/.exec(ETAPES[n - 1].titre) || ['', ''])[1]; }
-        function numAffiche(n) { var k = 0; for (var i = 1; i <= n; i++) if (QUIZ_N.indexOf(i) < 0) k++; return k; }
+        function numAffiche(n) { var k = 0; for (var i = 1; i <= n; i++) if (QUIZ_N.indexOf(i) < 0 && !numDefi(i)) k++; return k; }
         function estQuiz(n) { return QUIZ_N.indexOf(n) >= 0; }
-        function nomEtape(n) { return estQuiz(n) ? 'Quiz ' + lettreQuiz(n) : 'Étape ' + numAffiche(n); }
+        function nomEtape(n) { return estQuiz(n) ? 'Quiz ' + lettreQuiz(n) : numDefi(n) ? 'Défi ' + numDefi(n) : 'Étape ' + numAffiche(n); }
         // titre complet (suivi de la professeure) : « Étape 6 · B · La table de 7 », « Quiz A · 5 questions »
-        function titreComplet(n) { return estQuiz(n) ? ETAPES[n - 1].titre : nomEtape(n) + ' · ' + ETAPES[n - 1].titre; }
+        function titreComplet(n) { return estQuiz(n) || numDefi(n) ? ETAPES[n - 1].titre : nomEtape(n) + ' · ' + ETAPES[n - 1].titre; }
         function idQuiz(n) { return n === QUIZ_N[0] ? ID : ID + ':quiz' + n; }
 
         /* ---------- Ancienne numérotation (avant le 22/11/2026) ----------
@@ -1878,8 +1882,9 @@ def _console(ligne, n):
 
         function progression() {
             var n = Math.min(faites, NB);
-            document.getElementById('progres-texte').textContent = n >= NB ? 'TP terminé : ' + NB_ETAPES + ' étapes et ' + QUIZ_N.length + ' quiz ✓'
-                : estQuiz(n + 1) ? nomEtape(n + 1) + ' (' + numAffiche(n + 1) + ' étapes sur ' + NB_ETAPES + ' faites)' : nomEtape(n + 1) + ' sur ' + NB_ETAPES;
+            document.getElementById('progres-texte').textContent = n >= NB ? 'TP terminé : ' + NB_ETAPES + ' étapes, ' + QUIZ_N.length + ' quiz et ' + NB_DEFIS + ' défis ✓'
+                : estQuiz(n + 1) ? nomEtape(n + 1) + ' (' + numAffiche(n + 1) + ' étapes sur ' + NB_ETAPES + ' faites)'
+                : numDefi(n + 1) ? nomEtape(n + 1) + ' sur ' + NB_DEFIS : nomEtape(n + 1) + ' sur ' + NB_ETAPES;
             document.getElementById('progres-barre').style.width = (100 * n / NB) + '%';
             sommaire();
         }
@@ -1900,7 +1905,7 @@ def _console(ligne, n):
                     nav.appendChild(bq);
                     return;
                 }
-                var b = el('button', n <= faites ? 'fait' + (passees[n] ? ' passee' : '') : n === faites + 1 ? 'courante' : null, String(numAffiche(n)));
+                var b = el('button', (n <= faites ? 'fait' + (passees[n] ? ' passee' : '') : n === faites + 1 ? 'courante' : '') + (numDefi(n) ? ' defi' : ''), numDefi(n) ? 'DÉFI ' + numDefi(n) : String(numAffiche(n)));
                 b.type = 'button'; b.title = titreComplet(n) + (n <= faites && passees[n] ? ' (passée : tu peux y revenir)' : '');
                 b.disabled = n > faites + 1 && !modeTest();
                 b.onclick = function () {
@@ -1939,7 +1944,7 @@ def _console(ligne, n):
             var c = el('section', 'etape' + (faite ? ' faite' + (passees[n] ? ' passee' : '') : ' courante'));
             c.dataset.n = n;
             var tete = el('div', 'etape-tete');
-            tete.appendChild(el('span', 'etape-num', faite ? (passees[n] ? '⏭' : '✓') : estQuiz(n) ? 'Q' : String(numAffiche(n))));
+            tete.appendChild(el('span', 'etape-num', faite ? (passees[n] ? '⏭' : '✓') : estQuiz(n) ? 'Q' : numDefi(n) ? 'D' + numDefi(n) : String(numAffiche(n))));
             tete.appendChild(el('h2', null, esc(e.titre)));
             if (compteProf() && !modeTest()) {   // compte professeure, mode élève : refaire l'étape
                 var bReinit = el('button', 'lien reinit', '↺ Réinitialiser l’étape'); bReinit.type = 'button';
