@@ -551,15 +551,45 @@ def _somme_ref(n):
     return n * (n + 1) // 2
 
 
-# Étape 12 · somme_entiers(n)
+# Étape 12 (affichée 10) · somme_entiers(n)
+# Toute fonction juste avec une boucle for est acceptée ; si elle diffère de la solution
+# (range(n + 1), compteur « _ », i + 1, ordre inverse, +=…), une remarque l'explique (comme à l'étape 8).
+def _somme_entiers_remarque(src):
+    code = "\n".join(re.sub(r"#.*", "", x).rstrip() for x in src.split("\n"))
+    m = re.search(r"\bfor\s+(\w+)\s+in\s+range\(([^)]*)\)", code)
+    if not m:
+        return None
+    var, bornes, ecrit = m.group(1), m.group(2).replace(" ", ""), m.group(2).strip()
+    acc = re.search(r"^[ \t]+(\w+)\s*(?:\+=|=\s*\1\s*\+)", code, re.M)
+    acc = acc.group(1) if acc else "somme"
+    rq = []
+    if bornes in ("n+1", "0,n+1"):
+        rq.append(f"range({ecrit}) fait un tour de plus, avec {var} = 0 au premier tour : ajouter 0 ne change pas la somme, donc c’est juste. Mais on peut partir directement de 1 : range(1, n + 1).")
+    elif bornes in ("n", "0,n"):
+        rq.append(f"Avec range({ecrit}), {var} va de 0 à n − 1 : en ajoutant {var} + 1, tu ajoutes bien 1, 2, …, n, donc c’est juste. Plus direct : range(1, n + 1), en ajoutant {var}.")
+    elif bornes in ("n,0,-1",):
+        rq.append(f"Tu parcours les nombres de n à 1 : l’ordre ne change pas la somme, donc c’est juste. Le plus courant est range(1, n + 1).")
+    elif bornes not in ("1,n+1",):
+        rq.append(f"Tu as écrit range({ecrit}) : ta fonction renvoie les bons résultats, mais le plus simple pour aller de 1 à n est range(1, n + 1).")
+    if var == "_":
+        rq.append(f"Le nom _ est d’habitude réservé à un compteur dont on ne se sert pas (une boucle qui sert seulement à répéter). Ici, tu l’ajoutes à {acc} : donne-lui plutôt un vrai nom, comme i.")
+    if re.search(r"^[ \t]+" + re.escape(acc) + r"\s*\+=", code, re.M):
+        rq.append(f"{acc} += … est un raccourci de {acc} = {acc} + … : c’est juste, et très utilisé en Python.")
+    if not rq:
+        return None
+    return {"remarque": " ".join(rq)}
+
+
 def _e_somme_entiers(ns, src, out):
-    _avec(src, "for", "Utilise une boucle for et un accumulateur, comme à l'étape 3.")
-    if re.search(r"\bsum\s*\(", src):
+    code = "\n".join(re.sub(r"#.*", "", x) for x in src.split("\n"))   # « for » dans un commentaire ne compte pas
+    _avec(code, "for", "Utilise une boucle for et un accumulateur, comme à l'étape 3.")
+    if re.search(r"\bsum\s*\(", code):
         return "Sans la fonction sum : utilise une boucle et un accumulateur."
-    return _verifier(ns, src, "somme_entiers", 1, [
+    m = _verifier(ns, src, "somme_entiers", 1, [
         ((10,), 55, "Vérifie le range : pour que n soit compris, on écrit range(1, n + 1)."),
         ((1,), 1), ((5,), 15), ((100,), 5050), ((3,), 6)],
         "Vérifie le range (range(1, n + 1)) et que return est après la boucle, pas dedans.")
+    return m if m else _somme_entiers_remarque(src)
 
 
 # Étape 13 · multiples de 7 avec %
