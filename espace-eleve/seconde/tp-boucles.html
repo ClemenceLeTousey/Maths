@@ -40,8 +40,10 @@
         .interactif .sommaire button.fait { background: var(--ok); border-color: var(--ok); color: #fff; }
         .interactif .sommaire button.courante { border: 2px solid var(--c-seconde); }
         .interactif .sommaire button:disabled { opacity: .4; cursor: default; }
-        .interactif .sommaire button.acces-quiz { margin-left: auto; border-radius: 999px; padding: 0 14px; background: var(--c-seconde); border-color: var(--c-seconde); color: var(--badge-text); letter-spacing: .05em; }
+        .interactif .sommaire button.acces-quiz { border-radius: 999px; padding: 0 14px; background: var(--c-seconde); border-color: var(--c-seconde); color: var(--badge-text); letter-spacing: .05em; }
         .interactif .sommaire button.acces-quiz.fait { background: var(--ok); border-color: var(--ok); }
+        .interactif .sommaire button.acces-quiz.passee { background: var(--muted); border-color: var(--muted); }
+        .interactif .sommaire button.acces-quiz.courante { outline: 2px solid var(--c-seconde); outline-offset: 2px; }
 
         .etapes { display: flex; flex-direction: column; gap: 14px; }
         .etape { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
@@ -373,7 +375,7 @@ def _avec(src, mot, msg):
         raise Stop(msg)
 
 
-# Étape 6 · la table de 7 (7, 14, …, 70)
+# Étape 7 · la table de 7 (7, 14, …, 70)
 def _e_table7(ns, src, out):
     _avec(src, "for", "Utilise une boucle for, comme dans le script de départ.")
     l = _lignes(out)
@@ -389,7 +391,7 @@ def _e_table7(ns, src, out):
     return "Le script doit afficher les dix nombres 7, 14, 21, …, 70, un par ligne."
 
 
-# Étape 7 · le script affiche 55 : correction attendue (range(1, 11) + print non décalé)
+# Étape 8 · le script affiche 55 : correction attendue (range(1, 11) + print non décalé)
 # ou autre façon juste (acceptée avec une remarque) ; résultat tapé en dur : refusé.
 _CONSIGNE_SOMME = "C’est accepté, mais la consigne demandait de corriger le script proposé : changer la borne de range (range(1, 11)) et enlever le décalage de print, sans toucher au reste. "
 
@@ -423,7 +425,7 @@ def _somme_variante(src):
     return {"remarque": _CONSIGNE_SOMME + f"Ici, tu as écrit range({m.group(2).strip()}) : ton script affiche bien 55, mais la correction attendue est range(1, 11)."}
 
 
-# Étape 7 · corriger le script de la somme (55, une seule fois)
+# Étape 8 · corriger le script de la somme (55, une seule fois)
 def _e_somme(ns, src, out):
     _avec(src, "for", "Garde la boucle for : on corrige le script, on ne le réécrit pas.")
     if re.search(r"\bsum\s*\(", src):
@@ -438,7 +440,7 @@ def _e_somme(ns, src, out):
     return "Le script doit afficher 55, une seule fois."
 
 
-# Étape 8 · le capital au bout de 10 ans
+# Étape 9 · le capital au bout de 10 ans
 def _e_capital(ns, src, out):
     _avec(src, "for", "Garde la boucle for du script de départ.")
     l = _lignes(out)
@@ -511,7 +513,7 @@ def _tableau_while(cond, notes, noms, fmt):
     return lignes
 
 
-# Étape 9 · doubler son capital (while)
+# Étape 10 · doubler son capital (while)
 def _e_doubler(ns, src, out):
     _avec(src, "while", "Utilise la boucle while du script de départ.")
     l = _lignes(out)
@@ -549,7 +551,7 @@ def _somme_ref(n):
     return n * (n + 1) // 2
 
 
-# Étape 10 · somme_entiers(n)
+# Étape 12 · somme_entiers(n)
 def _e_somme_entiers(ns, src, out):
     _avec(src, "for", "Utilise une boucle for et un accumulateur, comme à l'étape 3.")
     if re.search(r"\bsum\s*\(", src):
@@ -560,7 +562,7 @@ def _e_somme_entiers(ns, src, out):
         "Vérifie le range (range(1, n + 1)) et que return est après la boucle, pas dedans.")
 
 
-# Étape 11 · multiples de 7 avec %
+# Étape 13 · multiples de 7 avec %
 def _e_multiples(ns, src, out):
     _avec(src, "for", "Utilise une boucle for qui parcourt les nombres de 1 à 100.")
     if "%" not in src:
@@ -576,7 +578,7 @@ def _e_multiples(ns, src, out):
     return "Le script doit afficher 7, 14, 21, …, 98 (les 14 multiples de 7 entre 1 et 100), un par ligne."
 
 
-# Étape 12 · plier une feuille (page blanche)
+# Étape 14 · plier une feuille (page blanche)
 def _e_eiffel(ns, src, out):
     _avec(src, "while", "On ne sait pas à l'avance combien de pliages il faut : utilise une boucle while.")
     l = _lignes(out)
@@ -599,7 +601,7 @@ def _fizz_ref(n):
     return n
 
 
-# Étape 14 · corriger fizzbuzz
+# Étape 16 · corriger fizzbuzz
 def _e_fizzbuzz(ns, src, out):
     return _verifier(ns, src, "fizzbuzz", 1,
                      [((15,), "FizzBuzz", "Le cas le plus restrictif (multiple de 15) doit être testé en premier.")]
@@ -607,7 +609,7 @@ def _e_fizzbuzz(ns, src, out):
                      "Teste fizzbuzz(30), fizzbuzz(33) et fizzbuzz(35) dans la console.")
 
 
-# Étape 15 · compter les Fizz
+# Étape 17 · compter les Fizz
 def _e_compter(ns, src, out):
     m = _e_fizzbuzz(ns, src, out)
     if m:
@@ -633,15 +635,15 @@ def _syr_ref(n):
     return e
 
 
-# Étape 16 · Syracuse
+# Étape 18 · Syracuse
 def _e_syracuse(ns, src, out):
     _avec(src, "while", "Utilise une boucle while : on s'arrête quand n vaut 1.")
     return _verifier(ns, src, "syracuse", 1, [((n,), _syr_ref(n)) for n in [6, 1, 2, 7, 27, 3, 16]],
                      "syracuse(6) doit renvoyer 8 : compte une étape à chaque transformation de n.")
 
 
-_ETAPES = {6: _e_table7, 7: _e_somme, 8: _e_capital, 9: _e_doubler, 10: _e_somme_entiers,
-           11: _e_multiples, 12: _e_eiffel, 14: _e_fizzbuzz, 15: _e_compter, 16: _e_syracuse}
+_ETAPES = {7: _e_table7, 8: _e_somme, 9: _e_capital, 10: _e_doubler, 12: _e_somme_entiers,
+           13: _e_multiples, 14: _e_eiffel, 16: _e_fizzbuzz, 17: _e_compter, 18: _e_syracuse}
 
 
 def _erreur(e, src):
@@ -1150,6 +1152,34 @@ def _console(ligne, n):
                   '<code>n % 2</code> vaut 0 si <code>n</code> est pair, 1 s’il est impair.'
               ] },
 
+            { titre: 'Quiz A · 5 questions', type: 'quiz',
+              consigne: '<p>Pour finir la partie A, 5 questions rapides. ✍️ Réponds à chaque question <b>sans ordinateur</b>, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
+              questions: [
+                  { texte: 'Combien de nombres ce script affiche-t-il ?', code: 'for i in range(2, 7):\n    print(i)\n',
+                    choix: ['4', '5', '6', '7'], bonne: 1,
+                    explication: '<code>i</code> prend les valeurs 2, 3, 4, 5 et 6 : 7 est exclu.' +
+                        suiviQuiz([1, 2, 3, 4, 5], [['<code>i</code>', 2, 3, 4, 5, 6], ['Affichage', 2, 3, 4, 5, 6]]) +
+                        '5 tours de boucle, donc 5 nombres affichés.' },
+                  { texte: 'Quelles valeurs prend <code>i</code> dans <code>for i in range(3):</code> ?',
+                    choix: ['0, 1, 2', '1, 2, 3', '0, 1, 2, 3', '3 seulement'], bonne: 0,
+                    explication: '<code>range(3)</code> part de 0 et s’arrête avant 3.' },
+                  { texte: 'Qu’affiche ce script ?', code: 's = 0\nfor i in range(4):\n    s = s + 2\nprint(s)\n',
+                    choix: ['2', '6', '8', '2, 4, 6, 8'], bonne: 2,
+                    explication: 'La boucle fait 4 tours et ajoute 2 à chaque fois : 4 × 2 = 8.' +
+                        suiviQuiz(['avant', 1, 2, 3, 4], [['<code>i</code>', null, 0, 1, 2, 3], ['<code>s</code>', 0, 2, 4, 6, 8]]) +
+                        '<code>print</code> est après la boucle : il n’affiche qu’un seul nombre, la dernière valeur de <code>s</code>.' },
+                  { texte: 'Que vaut <code>23 % 5</code> ?',
+                    choix: ['4', '3', '4.6', '5'], bonne: 1,
+                    explication: '23 = 5 × 4 + 3 : le reste est 3.' },
+                  { texte: 'Qu’affiche ce script ?', code: 'x = 3\nwhile x < 20:\n    x = x + 5\nprint(x)\n',
+                    choix: ['18', '20', '23', '28'], bonne: 2,
+                    explication: '<code>x</code> vaut 3, 8, 13, 18, puis 23 ; 23 &lt; 20 est faux : la boucle s’arrête.' +
+                        suiviQuiz(['avant', 1, 2, 3, 4, 'sortie'], [
+                            ['Test <code>x &lt; 20</code>', null, '3 &lt; 20 vrai', '8 &lt; 20 vrai', '13 &lt; 20 vrai', '18 &lt; 20 vrai', '23 &lt; 20 <b>faux</b>'],
+                            ['<code>x</code>', 3, 8, 13, 18, 23, null]]) +
+                        'Le test est faux au 5<sup>e</sup> passage : on sort de la boucle et <code>print(x)</code> affiche 23.' }
+              ] },
+
             { titre: 'B · La table de 7', type: 'code',
               consigne: '<p>On reprend le script B, qui affiche 0, 3, 6, 9.</p><p>✍️ Modifie-le pour qu’il affiche la <b>table de multiplication de 7</b> : 7, 14, 21, …, 70 (un nombre par ligne).</p>',
               code: SCRIPT_B, console: false,
@@ -1193,18 +1223,57 @@ def _console(ligne, n):
             { titre: 'B · Doubler son capital', type: 'code',
               consigne: '<p>On cherche maintenant au bout de combien d’années le capital aura <b>doublé</b> (dépassé 2 000 €).</p>' +
                 encadre('', 'Pourquoi while ?', 'On ne sait pas à l’avance combien de tours il faudra : c’est justement ce qu’on cherche ! On utilise donc une boucle <code>while</code> et un <b>compteur</b> <code>annee</code>.') +
-                '<p>✍️ Remplace les pointillés, puis exécute le script.</p>',
+                encadre('', 'Compter les tours : augmenter de 1', '<p>Dans le script F (étape 4), la variable <code>n</code> comptait les tours grâce à l’instruction <code>n = n + 1</code>. Python l’exécute en deux temps :</p>' +
+                    '<ol><li>il calcule <code>n + 1</code> avec la valeur <i>actuelle</i> de <code>n</code> ;</li><li>il range le résultat dans <code>n</code> : l’ancienne valeur est remplacée.</li></ol>' +
+                    '<div class="tableau"><table><tr><th><code>n</code> avant l’instruction</th><td>0</td><td>1</td><td>2</td><td>3</td><td>…</td></tr><tr><th><code>n</code> après l’instruction</th><td>1</td><td>2</td><td>3</td><td>4</td><td>…</td></tr></table></div>' +
+                    '<ul><li>Ce n’est pas une équation : le signe <code>=</code> veut dire « prend la valeur ».</li>' +
+                    '<li>C’est un accumulateur (étape 3) qui ajoute toujours 1 : on dit qu’on <b>incrémente</b> <code>n</code>.</li>' +
+                    '<li>Le compteur vaut 0 <b>avant</b> la boucle (aucun tour n’est encore fait), et l’instruction est <b>décalée</b> dans la boucle : elle est exécutée une fois par tour.</li>' +
+                    '<li>Avec <code>for</code>, le compteur avance tout seul. Avec <code>while</code>, c’est à toi de le faire avancer !</li></ul>') +
+                '<p>✍️ Remplace les pointillés, puis exécute le script.</p>' +
+                encadre('astuce', 'Rappel : le placement', '<ul><li>Comme à l’étape 8, on place 1 000 € à 3 % par an : au départ, <code>capital = 1000</code> et <code>annee = 0</code>.</li>' +
+                    '<li>Augmenter de 3 %, c’est multiplier par le coefficient multiplicateur <i>CM</i> = 1 + 3/100 = 1 + 0,03 = 1,03.</li>' +
+                    '<li>En Python, la virgule s’écrit avec un point : 1,03 devient <code>1.03</code>. L’instruction <code>capital = capital * 1.03</code> calcule donc le capital de l’année suivante.</li>' +
+                    '<li>Chaque tour de boucle représente une année de plus : le capital est multiplié par 1,03, et le compteur <code>annee</code> doit augmenter de 1.</li></ul>'),
               code: 'capital = 1000\nannee = 0\nwhile ...:\n    capital = capital * 1.03\n    annee = ...\nprint(annee)\n', console: false,
               solutionCode: 'capital = 1000\nannee = 0\nwhile capital <= 2000:\n    capital = capital * 1.03\n    annee = annee + 1\nprint(annee)\n',
               bilan: [
                   'Le capital aura doublé au bout de <b>24 ans</b> (environ 2 032,79 €).',
-                  'Au bout de 23 ans, il ne vaut encore que 1 973,59 €.',
-                  'Le compteur <code>annee</code> augmente de 1 à chaque tour.'
+                  'Au bout de 23 ans, il ne vaut encore que 1 973,59 € : la condition <code>capital &lt;= 2000</code> est encore vraie, donc on fait un tour de plus.',
+                  'Au 24<sup>e</sup> tour, le capital passe à 2 032,79 € : il <b>dépasse 2 000 €</b>, la condition devient fausse et on <b>sort de la boucle</b>.',
+                  'Le nombre 24 affiché est la valeur du <b>compteur</b> <code>annee</code> : parti de 0, il augmente de 1 à chaque tour. La boucle a fait 24 tours, et un tour = une année.'
+              ] },
+
+            { titre: 'Quiz B · 5 questions', type: 'quiz',
+              consigne: '<p>Pour finir la partie B, 5 questions rapides. ✍️ Réponds à chaque question <b>sans ordinateur</b>, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
+              questions: [
+                  { texte: 'Quel script affiche 5, 10, 15, …, 50 (un nombre par ligne) ?',
+                    choix: ['<code>for k in range(1, 11): print(5 * k)</code>', '<code>for k in range(10): print(5 * k)</code>',
+                            '<code>for k in range(1, 10): print(5 * k)</code>', '<code>for k in range(1, 11): print(k + 5)</code>'], bonne: 0,
+                    explication: '<code>k</code> doit aller de 1 à 10 : <code>range(1, 11)</code>, car 11 est exclu. Avec <code>range(10)</code>, on affiche 0, 5, …, 45 ; avec <code>range(1, 10)</code>, on s’arrête à 45.' },
+                  { texte: 'Qu’affiche ce script ?', code: 's = 0\nfor i in range(1, 4):\n    s = s + i\n    print(s)\n',
+                    choix: ['6', '1, puis 3, puis 6', '1, puis 2, puis 3', '0, puis 1, puis 3, puis 6'], bonne: 1,
+                    explication: '<code>print(s)</code> est <b>décalé</b> : il est dans la boucle, donc exécuté à chaque tour.' +
+                        suiviQuiz(['avant', 1, 2, 3], [['<code>i</code>', null, 1, 2, 3], ['<code>s</code>', 0, 1, 3, 6], ['Affichage', null, 1, 3, 6]]) +
+                        'Pour n’afficher que 6, il faudrait écrire <code>print(s)</code> après la boucle, sans décalage.' },
+                  { texte: 'Un prix augmente de 10 % chaque année. Quelle instruction, placée dans la boucle, calcule le prix de l’année suivante ?',
+                    choix: ['<code>prix = prix * 1.1</code>', '<code>prix = prix + 10</code>', '<code>prix = prix * 0.1</code>', '<code>prix = prix * 10</code>'], bonne: 0,
+                    explication: 'Augmenter de 10 %, c’est multiplier par le coefficient multiplicateur <i>CM</i> = 1 + 10/100 = 1,1, qui s’écrit <code>1.1</code> en Python. Ajouter 10, c’est ajouter 10 €, pas 10 %.' },
+                  { texte: 'Qu’affiche ce script ?', code: 'x = 1\nn = 0\nwhile x < 50:\n    x = 3 * x\n    n = n + 1\nprint(n)\n',
+                    choix: ['3', '4', '5', '81'], bonne: 1,
+                    explication: '<code>n</code> compte les tours de boucle.' +
+                        suiviQuiz(['avant', 1, 2, 3, 4, 'sortie'], [
+                            ['Test <code>x &lt; 50</code>', null, '1 &lt; 50 vrai', '3 &lt; 50 vrai', '9 &lt; 50 vrai', '27 &lt; 50 vrai', '81 &lt; 50 <b>faux</b>'],
+                            ['<code>x</code>', 1, 3, 9, 27, 81, null],
+                            ['<code>n</code>', 0, 1, 2, 3, 4, null]]) +
+                        'La boucle fait 4 tours : le script affiche 4 (et non 81, qui est la valeur de <code>x</code>).' },
+                  { texte: 'Dans le script de la question 4, on oublie la ligne <code>n = n + 1</code>. Que se passe-t-il ?',
+                    choix: ['Le script affiche 0.', 'La boucle ne s’arrête jamais.', 'Le script affiche 4.', 'Python affiche un message d’erreur.'], bonne: 0,
+                    explication: '<code>x</code> est toujours multiplié par 3 : la boucle s’arrête bien après 4 tours. Mais personne ne fait avancer le compteur : <code>n</code> reste égal à 0, et le script affiche 0. Avec <code>while</code>, c’est à toi de faire avancer le compteur !' }
               ] },
 
             { titre: 'C · Somme des entiers', type: 'code',
-              consigne: '<p class="aide">Si la séance est terminée : la partie C, le quiz et les défis se font à la maison.</p>' +
-                '<p>✍️ Écris le corps de la fonction <code>somme_entiers(n)</code>, qui <b>renvoie</b> la somme 1 + 2 + … + <i>n</i>. Inspire-toi de l’accumulateur de l’étape 3.</p><p>Teste-la avec <code>somme_entiers(10)</code> (55) et <code>somme_entiers(100)</code>.</p>',
+              consigne: '<p>✍️ Écris le corps de la fonction <code>somme_entiers(n)</code>, qui <b>renvoie</b> la somme 1 + 2 + … + <i>n</i>. Inspire-toi de l’accumulateur de l’étape 3.</p><p>Teste-la avec <code>somme_entiers(10)</code> (55) et <code>somme_entiers(100)</code>.</p>',
               code: 'def somme_entiers(n):\n    \n', exemple: 'somme_entiers(4)',
               solutionCode: 'def somme_entiers(n):\n    somme = 0\n    for i in range(1, n + 1):\n        somme = somme + i\n    return somme\n',
               coupsDePouce: [
@@ -1261,32 +1330,28 @@ def _console(ligne, n):
                   'Le record est de <b>12 pliages</b>, réussi en 2002 par Britney Gallivan, alors lycéenne américaine, avec une bande de papier d’environ 1,2 km de long (<a href="https://www.guinnessworldrecords.com/world-records/494571-most-times-to-fold-a-piece-of-paper" target="_blank" rel="noopener">voir le record sur le site du Guinness World Records</a>) ! ' +
                   'Pour atteindre la tour Eiffel, il en faudrait 22…' },
 
-            { titre: 'Quiz final · 5 questions', type: 'quiz',
-              consigne: '<p>Pour finir, 5 questions rapides sur tout le TP. ✍️ Réponds à chaque question <b>sans ordinateur</b>, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
+            { titre: 'Quiz C · 5 questions', type: 'quiz',
+              consigne: '<p>Pour finir la partie C, 5 questions rapides. ✍️ Réponds à chaque question <b>sans ordinateur</b>, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
               questions: [
-                  { texte: 'Combien de nombres ce script affiche-t-il ?', code: 'for i in range(2, 7):\n    print(i)\n',
-                    choix: ['4', '5', '6', '7'], bonne: 1,
-                    explication: '<code>i</code> prend les valeurs 2, 3, 4, 5 et 6 : 7 est exclu.' +
-                        suiviQuiz([1, 2, 3, 4, 5], [['<code>i</code>', 2, 3, 4, 5, 6], ['Affichage', 2, 3, 4, 5, 6]]) +
-                        '5 tours de boucle, donc 5 nombres affichés.' },
-                  { texte: 'Quelles valeurs prend <code>i</code> dans <code>for i in range(3):</code> ?',
-                    choix: ['0, 1, 2', '1, 2, 3', '0, 1, 2, 3', '3 seulement'], bonne: 0,
-                    explication: '<code>range(3)</code> part de 0 et s’arrête avant 3.' },
-                  { texte: 'Qu’affiche ce script ?', code: 's = 0\nfor i in range(4):\n    s = s + 2\nprint(s)\n',
-                    choix: ['2', '6', '8', '2, 4, 6, 8'], bonne: 2,
-                    explication: 'La boucle fait 4 tours et ajoute 2 à chaque fois : 4 × 2 = 8.' +
-                        suiviQuiz(['avant', 1, 2, 3, 4], [['<code>i</code>', null, 0, 1, 2, 3], ['<code>s</code>', 0, 2, 4, 6, 8]]) +
-                        '<code>print</code> est après la boucle : il n’affiche qu’un seul nombre, la dernière valeur de <code>s</code>.' },
-                  { texte: 'Que vaut <code>23 % 5</code> ?',
-                    choix: ['4', '3', '4.6', '5'], bonne: 1,
-                    explication: '23 = 5 × 4 + 3 : le reste est 3.' },
-                  { texte: 'Qu’affiche ce script ?', code: 'x = 3\nwhile x < 20:\n    x = x + 5\nprint(x)\n',
-                    choix: ['18', '20', '23', '28'], bonne: 2,
-                    explication: '<code>x</code> vaut 3, 8, 13, 18, puis 23 ; 23 &lt; 20 est faux : la boucle s’arrête.' +
-                        suiviQuiz(['avant', 1, 2, 3, 4, 'sortie'], [
-                            ['Test <code>x &lt; 20</code>', null, '3 &lt; 20 vrai', '8 &lt; 20 vrai', '13 &lt; 20 vrai', '18 &lt; 20 vrai', '23 &lt; 20 <b>faux</b>'],
-                            ['<code>x</code>', 3, 8, 13, 18, 23, null]]) +
-                        'Le test est faux au 5<sup>e</sup> passage : on sort de la boucle et <code>print(x)</code> affiche 23.' }
+                  { texte: 'Que renvoie <code>produit(4)</code> ?', code: 'def produit(n):\n    p = 1\n    for i in range(1, n + 1):\n        p = p * i\n    return p\n',
+                    choix: ['4', '10', '24', '6'], bonne: 2,
+                    explication: '<code>i</code> prend les valeurs 1, 2, 3 et 4 : la fonction renvoie 1 × 2 × 3 × 4 = 24.' +
+                        suiviQuiz(['avant', 1, 2, 3, 4], [['<code>i</code>', null, 1, 2, 3, 4], ['<code>p</code>', 1, 1, 2, 6, 24]]) +
+                        'Ici, l’accumulateur <code>p</code> commence à 1 et non à 0 : on multiplie au lieu d’ajouter.' },
+                  { texte: 'Avec cette fonction, <code>somme_entiers(10)</code> renvoie 1 au lieu de 55. Pourquoi ?', code: 'def somme_entiers(n):\n    somme = 0\n    for i in range(1, n + 1):\n        somme = somme + i\n        return somme\n',
+                    choix: ['<code>return</code> est décalé dans la boucle : la fonction s’arrête dès le 1<sup>er</sup> tour.', 'Il faudrait écrire <code>range(1, n)</code>.',
+                            '<code>somme</code> devrait valoir 1 au départ.', 'Il manque un <code>print</code>.'], bonne: 0,
+                    explication: '<code>return</code> arrête la fonction. Placé dans la boucle, il est exécuté au 1<sup>er</sup> tour, quand <code>somme</code> vaut 1. Il doit être <b>après</b> la boucle, avec le même décalage que <code>for</code>.' },
+                  { texte: 'Combien de nombres ce script affiche-t-il ?', code: 'for n in range(1, 31):\n    if n % 5 == 0:\n        print(n)\n',
+                    choix: ['5', '6', '7', '30'], bonne: 1,
+                    explication: 'Le script affiche les multiples de 5 compris entre 1 et 30 : 5, 10, 15, 20, 25 et 30. Cela fait 6 nombres.' },
+                  { texte: 'Quelle condition signifie « <code>n</code> est impair » ?',
+                    choix: ['<code>n % 2 == 1</code>', '<code>n % 2 == 0</code>', '<code>n // 2 == 1</code>', '<code>n / 2 == 1</code>'], bonne: 0,
+                    explication: 'Un nombre impair a pour reste 1 dans la division par 2. <code>n % 2 == 0</code> signifie au contraire « <code>n</code> est pair ».' },
+                  { texte: 'Qu’affiche ce script ?', code: 'e = 1\np = 0\nwhile e <= 1000:\n    e = 2 * e\n    p = p + 1\nprint(p)\n',
+                    choix: ['9', '10', '11', '1024'], bonne: 1,
+                    explication: 'C’est le schéma de la feuille pliée : <code>e</code> double à chaque tour et <code>p</code> compte les tours. ' +
+                        'Après 9 tours, <code>e</code> vaut 512 et 512 ⩽ 1 000 : on fait un tour de plus. Après 10 tours, <code>e</code> vaut 1 024 : la condition est fausse, on sort de la boucle. Le script affiche 10.' }
               ] },
 
             { titre: 'D · Défi 1 : le bug du FizzBuzz', type: 'prevoir',
@@ -1336,7 +1401,56 @@ def _console(ligne, n):
               ] }
         ];
         var NB = ETAPES.length;
-        var N_QUIZ = ETAPES.findIndex(function (e) { return e.type === 'quiz'; }) + 1;   // 0 s'il n'y a pas de quiz
+        // un quiz par partie (A, B, C) : numéros des étapes de type 'quiz'
+        var QUIZ_N = ETAPES.map(function (e, k) { return e.type === 'quiz' ? k + 1 : 0; }).filter(Boolean);
+        // anti-triche : le quiz A garde l'identifiant de l'ancien quiz final unique (état déjà enregistré sur les appareils)
+        // numéros affichés : les quiz ne sont pas numérotés (1 … 5, Quiz A, 6 … 9, Quiz B…)
+        var NB_ETAPES = NB - QUIZ_N.length;
+        function lettreQuiz(n) { return (/^Quiz (\w)/.exec(ETAPES[n - 1].titre) || ['', ''])[1]; }
+        function numAffiche(n) { var k = 0; for (var i = 1; i <= n; i++) if (QUIZ_N.indexOf(i) < 0) k++; return k; }
+        function estQuiz(n) { return QUIZ_N.indexOf(n) >= 0; }
+        function nomEtape(n) { return estQuiz(n) ? 'Quiz ' + lettreQuiz(n) : 'Étape ' + numAffiche(n); }
+        // titre complet (suivi de la professeure) : « Étape 6 · B · La table de 7 », « Quiz A · 5 questions »
+        function titreComplet(n) { return estQuiz(n) ? ETAPES[n - 1].titre : nomEtape(n) + ' · ' + ETAPES[n - 1].titre; }
+        function idQuiz(n) { return n === QUIZ_N[0] ? ID : ID + ':quiz' + n; }
+
+        /* ---------- Ancienne numérotation (avant le 22/11/2026) ----------
+           16 étapes, un seul quiz (étape 13, « Quiz final ») ; maintenant 18 étapes avec un quiz par partie.
+           L'ancien quiz final portait sur la partie A : il devient le Quiz A (étape 6), réponses comprises.
+           Les progressions enregistrées (appareil et base) sont converties au chargement. */
+        var ANCIEN_VERS_NOUVEAU = [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 12, 13, 14, 6, 16, 17, 18];   // indice = ancien numéro
+        function nouvellesCles(o) {
+            var r = {};
+            Object.keys(o || {}).forEach(function (k) { var m = ANCIEN_VERS_NOUVEAU[+k]; if (m) r[m] = o[k]; });
+            return r;
+        }
+        // étapes faites : l'ancien quiz (13) fait suite à l'étape 12 ; les nouveaux quiz non faits sont marqués « passés » ensuite
+        function nouvellesFaites(f) { f = +f || 0; return f <= 5 ? f : f <= 9 ? f + 1 : f <= 12 ? f + 2 : f === 13 ? 14 : Math.min(f + 2, 18); }
+        function titreSansNumero(t) { return String(t || '').replace(/^Étape \d+ · /, '').replace(/^Quiz final · /, 'Quiz A · '); }
+        // détails enregistrés dans la base avec l'ancienne numérotation : l'étape 6 était « B · La table de 7 »,
+        // ou l'ancien « Quiz final » a été fait (en avance). Sinon, les deux numérotations coïncident (étapes 1 à 5).
+        function ancienFormat(details) {
+            details = details || [];
+            return !!(details[5] && /B · La table de 7/.test(details[5].t || '')) ||
+                   details.some(function (d) { return d && /^Étape \d+ · Quiz final/.test(d.t || ''); });
+        }
+        function convertirResultat(r) {
+            if (!r || !ancienFormat(r.details)) return r;
+            var det = [];
+            (r.details || []).forEach(function (d, k) {
+                var m = ANCIEN_VERS_NOUVEAU[k + 1]; if (!m || !d) return;
+                var d2 = JSON.parse(JSON.stringify(d)); if (d2.t) d2.t = titreComplet(m);
+                det[m - 1] = d2;
+            });
+            for (var i = 0; i < det.length; i++) if (det[i] === undefined) det[i] = null;
+            var r2 = {}; Object.keys(r).forEach(function (k) { r2[k] = r[k]; });
+            r2.details = det; r2.score = nouvellesFaites(r.score);
+            return r2;
+        }
+        // quiz ajoutés après coup, situés avant la progression de l'élève et jamais faits : « passés » (l'élève peut y revenir)
+        function marquerQuizManques() {
+            QUIZ_N.forEach(function (q) { if (q <= faites && !quizRepondu(q) && !passees[q]) passees[q] = true; });
+        }
 
         /* ---------- Python (Pyodide dans un worker) ---------- */
         var SOURCE_WORKER = [
@@ -1404,7 +1518,7 @@ def _console(ligne, n):
         try { if (/[?&]vue-eleve=/.test(location.search)) VUE = JSON.parse(localStorage.getItem('tp-vue-eleve')); } catch (e) {}
         function cle() { var s = Interactif.session(); return 'tp-boucles:' + (s ? s.code : 'invite'); }
         function lireLocal() { try { return JSON.parse(localStorage.getItem(cle())) || {}; } catch (e) { return {}; } }
-        function ecrireLocal() { if (VUE) return; try { localStorage.setItem(cle(), JSON.stringify({ faites: faites, codes: codes, reponses: reponses, lus: lus, erreurs: erreurs, passees: passees })); } catch (e) {} }
+        function ecrireLocal() { if (VUE) return; try { localStorage.setItem(cle(), JSON.stringify({ version: 2, faites: faites, codes: codes, reponses: reponses, lus: lus, erreurs: erreurs, passees: passees })); } catch (e) {} }
         // réponse d'une étape, en clair, pour le suivi de la professeure
         function sansBalises(h) { var d = document.createElement('div'); d.innerHTML = h; return d.textContent; }
         function lisible(e, n) {
@@ -1517,32 +1631,38 @@ def _console(ligne, n):
 
         function charger() {
             if (VUE) {
-                faites = Math.min(VUE.score || 0, NB); codes = {}; reponses = {}; lus = {}; erreurs = {}; passees = {};
-                restaurer(VUE.details);
+                var vr = convertirResultat(VUE);
+                faites = Math.min(vr.score || 0, NB); codes = {}; reponses = {}; lus = {}; erreurs = {}; passees = {};
+                restaurer(vr.details); marquerQuizManques();
                 afficher();
                 return;
             }
             var l = lireLocal();
             faites = l.faites || 0; codes = l.codes || {}; reponses = l.reponses || {}; lus = l.lus || {}; erreurs = l.erreurs || {}; passees = l.passees || {};
+            if (!l.version && (faites || Object.keys(reponses).length)) {   // progression enregistrée avec l'ancienne numérotation
+                faites = nouvellesFaites(faites); codes = nouvellesCles(codes); reponses = nouvellesCles(reponses);
+                lus = nouvellesCles(lus); erreurs = nouvellesCles(erreurs); passees = nouvellesCles(passees);
+                marquerQuizManques(); ecrireLocal();
+            }
             afficher();
             var s = Interactif.session();
             if (!s) return;
             Interactif.rpc('mes_resultats', { p_jeton: s.jeton }).then(function (liste) {
                 var reinit = dateReinit();
-                var miens = (liste || []).filter(function (r) { return r.exercice === ID && new Date(r.fait_le || 0).getTime() > reinit; });
+                var miens = (liste || []).filter(function (r) { return r.exercice === ID && new Date(r.fait_le || 0).getTime() > reinit; }).map(convertirResultat);
                 var meilleur = miens.slice().sort(function (a, b) { return b.score - a.score || new Date(b.fait_le || 0) - new Date(a.fait_le || 0); })[0];
                 var change = false;
                 if (meilleur && meilleur.score > faites) { faites = Math.min(meilleur.score, NB); restaurer(meilleur.details); change = true; }
                 // quiz déjà validé sur le serveur (autre appareil, navigation privée…) : on reprend les PREMIÈRES réponses, verrouillées
-                if (N_QUIZ) {
-                    var premier = miens.filter(function (r) { var d = (r.details || [])[N_QUIZ - 1]; return d && d.qmax && d.v && d.v.length && !d.p; })
+                QUIZ_N.forEach(function (nq) {
+                    var premier = miens.filter(function (r) { var d = (r.details || [])[nq - 1]; return d && d.qmax && d.v && d.v.length && !d.p; })
                         .sort(function (a, b) { return new Date(a.fait_le || 0) - new Date(b.fait_le || 0); })[0];
                     if (premier) {
-                        var v = premier.details[N_QUIZ - 1].v;
-                        if (JSON.stringify(reponses[N_QUIZ] || []) !== JSON.stringify(v)) { reponses[N_QUIZ] = v.slice(); delete passees[N_QUIZ]; change = true; }
+                        var v = premier.details[nq - 1].v;
+                        if (JSON.stringify(reponses[nq] || []) !== JSON.stringify(v)) { reponses[nq] = v.slice(); delete passees[nq]; change = true; }
                     }
-                }
-                if (change) { ecrireLocal(); afficher(); }
+                });
+                if (change) { marquerQuizManques(); ecrireLocal(); afficher(); }
             }, function () {});
         }
 
@@ -1564,14 +1684,15 @@ def _console(ligne, n):
             var s = Interactif.session();
             if (VUE) return Promise.resolve('Vue professeure : rien n’est enregistré.');
             if (!s) return Promise.resolve('Tu n’es pas connecté(e) : ta progression est gardée seulement sur cet appareil.');
-            var nbDetails = N_QUIZ > faites && quizRepondu() ? N_QUIZ : faites;   // + le quiz s'il est fait en avance
+            var avance = QUIZ_N.filter(function (q) { return q > faites && quizRepondu(q); });   // quiz faits en avance
+            var nbDetails = Math.max.apply(null, [faites].concat(avance));
             var details = ETAPES.slice(0, nbDetails).map(function (e, k) {
-                if (k >= faites && k + 1 !== N_QUIZ) return null;
-                var n = k + 1, d = { t: 'Étape ' + n + ' · ' + e.titre, r: lisible(e, n).slice(0, 2500), ok: !passees[n] };
+                if (k >= faites && avance.indexOf(k + 1) < 0) return null;
+                var n = k + 1, d = { t: titreComplet(n), r: lisible(e, n).slice(0, 2500), ok: !passees[n] };
                 if (e.type !== 'code') d.v = reponses[n] || [];
                 if (e.code && e.type !== 'code' && codes[n]) d.c = codes[n].slice(0, 2500);
                 if (erreurs[n]) d.e = erreurs[n];
-                if (e.type === 'quiz' && !passees[n]) { d.q = scoreQuiz(e, n); d.qmax = e.questions.length; if (window.AntiTriche && AntiTriche.sorties(ID)) d.s = AntiTriche.sorties(ID); }   // s : sorties du quiz surveillé
+                if (e.type === 'quiz' && !passees[n]) { d.q = scoreQuiz(e, n); d.qmax = e.questions.length; if (window.AntiTriche && AntiTriche.sorties(idQuiz(n))) d.s = AntiTriche.sorties(idQuiz(n)); }   // s : sorties du quiz surveillé
                 if (passees[n]) d.p = 1;
                 return d;
             });
@@ -1589,7 +1710,8 @@ def _console(ligne, n):
 
         function progression() {
             var n = Math.min(faites, NB);
-            document.getElementById('progres-texte').textContent = n >= NB ? 'TP terminé : ' + NB + ' étapes sur ' + NB + ' ✓' : 'Étape ' + (n + 1) + ' sur ' + NB;
+            document.getElementById('progres-texte').textContent = n >= NB ? 'TP terminé : ' + NB_ETAPES + ' étapes et ' + QUIZ_N.length + ' quiz ✓'
+                : estQuiz(n + 1) ? nomEtape(n + 1) + ' (' + numAffiche(n + 1) + ' étapes sur ' + NB_ETAPES + ' faites)' : nomEtape(n + 1) + ' sur ' + NB_ETAPES;
             document.getElementById('progres-barre').style.width = (100 * n / NB) + '%';
             sommaire();
         }
@@ -1600,8 +1722,18 @@ def _console(ligne, n):
             nav.innerHTML = '';
             nav.appendChild(el('span', 'aide', 'Aller à l’étape :'));
             ETAPES.forEach(function (e, k) {
-                var n = k + 1, b = el('button', n <= faites ? 'fait' + (passees[n] ? ' passee' : '') : n === faites + 1 ? 'courante' : null, String(n));
-                b.type = 'button'; b.title = 'Étape ' + n + ' · ' + e.titre + (n <= faites && passees[n] ? ' (passée : tu peux y revenir)' : '');
+                var n = k + 1;
+                if (estQuiz(n)) {   // quiz : à sa place dans la barre, accessible à tout moment (sans faire avancer la progression)
+                    var fait = quizRepondu(n), lettre = lettreQuiz(n);
+                    var bq = el('button', 'acces-quiz' + (fait ? ' fait' : n <= faites && passees[n] ? ' passee' : '') + (n === faites + 1 ? ' courante' : ''), 'QUIZ ' + lettre + (fait ? ' ✓' : ''));
+                    bq.type = 'button';
+                    bq.title = fait ? 'Revoir le quiz ' + lettre + ' (déjà validé)' : 'Aller au quiz ' + lettre;
+                    bq.onclick = function () { ouvrirQuiz(n); };
+                    nav.appendChild(bq);
+                    return;
+                }
+                var b = el('button', n <= faites ? 'fait' + (passees[n] ? ' passee' : '') : n === faites + 1 ? 'courante' : null, String(numAffiche(n)));
+                b.type = 'button'; b.title = titreComplet(n) + (n <= faites && passees[n] ? ' (passée : tu peux y revenir)' : '');
                 b.disabled = n > faites + 1 && !modeTest();
                 b.onclick = function () {
                     var c = zone.querySelector('[data-n="' + n + '"]');
@@ -1616,19 +1748,11 @@ def _console(ligne, n):
                 };
                 nav.appendChild(b);
             });
-            // accès direct au quiz, à tout moment (sans faire avancer la progression)
-            if (N_QUIZ) {
-                var fait = quizRepondu();
-                var bq = el('button', 'acces-quiz' + (fait ? ' fait' : ''), fait ? 'QUIZ ✓' : 'QUIZ'); bq.type = 'button';
-                bq.title = fait ? 'Revoir le quiz final (déjà validé)' : 'Aller directement au quiz final';
-                bq.onclick = ouvrirQuiz;
-                nav.appendChild(bq);
-            }
         }
-        function quizRepondu() { var v = reponses[N_QUIZ]; return !!(v && v.length && v.every(function (x) { return x !== ''; })); }
-        function ouvrirQuiz() {
-            var c = zone.querySelector('[data-n="' + N_QUIZ + '"]');
-            if (!c) { c = carte(N_QUIZ); zone.appendChild(c); }
+        function quizRepondu(nq) { var v = reponses[nq]; return !!(v && v.length && v.every(function (x) { return x !== ''; })); }
+        function ouvrirQuiz(nq) {
+            var c = zone.querySelector('[data-n="' + nq + '"]');
+            if (!c) { c = carte(nq); zone.appendChild(c); }
             c.ouvrir();
             c.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -1645,13 +1769,13 @@ def _console(ligne, n):
             var c = el('section', 'etape' + (faite ? ' faite' + (passees[n] ? ' passee' : '') : ' courante'));
             c.dataset.n = n;
             var tete = el('div', 'etape-tete');
-            tete.appendChild(el('span', 'etape-num', faite ? (passees[n] ? '⏭' : '✓') : String(n)));
+            tete.appendChild(el('span', 'etape-num', faite ? (passees[n] ? '⏭' : '✓') : estQuiz(n) ? 'Q' : String(numAffiche(n))));
             tete.appendChild(el('h2', null, esc(e.titre)));
             if (compteProf() && !modeTest()) {   // compte professeure, mode élève : refaire l'étape
                 var bReinit = el('button', 'lien reinit', '↺ Réinitialiser l’étape'); bReinit.type = 'button';
                 bReinit.title = 'Compte professeure : efface tes réponses à cette étape pour la refaire comme un élève';
                 bReinit.onclick = function () {
-                    if (!confirm('Effacer tes réponses à l’étape ' + n + ' et la refaire ?' + (n <= faites ? '\n\nLes étapes suivantes devront aussi être revalidées.' : ''))) return;
+                    if (!confirm('Effacer tes réponses (' + nomEtape(n) + ') et la refaire ?' + (n <= faites ? '\n\nLes étapes suivantes devront aussi être revalidées.' : ''))) return;
                     reinitialiser(n);
                 };
                 tete.appendChild(bReinit);
@@ -2518,7 +2642,7 @@ def _console(ligne, n):
                         c.quizFait = function () { if (n === faites + 1) { reussi(); retour.textContent = 'Score : ' + scQ + ' / ' + e.questions.length + '. ' + retour.textContent; } };
                         if (n === faites + 1) setTimeout(c.quizFait, 0);
                     } else if (window.AntiTriche && FICHE && FICHE.antiTriche) {
-                        gardeQ = AntiTriche.proteger({ id: ID, carte: c, formulaire: fq, actif: !VUE && !modeTest() });
+                        gardeQ = AntiTriche.proteger({ id: idQuiz(n), carte: c, formulaire: fq, actif: !VUE && !modeTest() });
                     }
                 }
                 if (e.type === 'qcm') {
