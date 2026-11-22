@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="../../manifest.json">
+<meta name="apple-mobile-web-app-title" content="Maths Lebrun">
+<title>Feuilles 6 et 6 bis – Corrigé interactif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<link rel="stylesheet" href="suites-corrige.css">
+<script src="../../barre.js"></script>
+<script src="suites-corrige.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js" defer></script>
+<style>
+  .fig { margin: 8px 0; overflow-x: auto; }
+  .fig svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .fig text { font-family: var(--f-body); }
+  .quiz-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 6px 0; }
+  .tg-explo { background: var(--calc-soft); border-radius: 8px; padding: 10px 14px; margin-top: 8px; }
+  .tg-explo input[type=range] { width: 100%; }
+  .tg-explo .out { font-size: 17px; }
+  .duo { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  @media (min-width: 760px) { .duo { grid-template-columns: 1fr 1fr; align-items: start; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Feuilles d’exercices n°6 et 6 bis — Corrigé interactif</b><span>La fonction inverse : variations, nombre dérivé, dérivée</span>
+      <span class="liens"><a href="https://nuage02.apps.education.fr/index.php/s/iDZfSwFGXcjjbsW" target="_blank" rel="noopener">Énoncé F6</a><a href="https://nuage02.apps.education.fr/index.php/s/7wKMMjQG9b7dTKx" target="_blank" rel="noopener">Corrigé PDF F6</a><a href="https://nuage02.apps.education.fr/index.php/s/Qrepgwxiw4d9RH2" target="_blank" rel="noopener">Énoncé F6 bis</a><a href="https://nuage02.apps.education.fr/index.php/s/zdNRwNCwRBqKiRY" target="_blank" rel="noopener">Corrigé PDF F6 bis</a><a href="../../tst2s/">Page TST2S</a></span></div>
+    <div class="barre-outils"><nav class="exnav" id="exnav" aria-label="Exercices"></nav><button type="button" class="btn ghost sm" id="tout">Tout afficher</button></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<details class="rappel" open style="margin-top:22px">
+  <summary>Rappel : sens de variation de la fonction inverse <small>(cliquer pour replier)</small></summary>
+  <div class="contenu">
+    <p>La fonction inverse \(x\mapsto\dfrac{1}{x}\) est <b>décroissante sur \(]-\infty\,;0[\)</b> et <b>décroissante sur \(]0\,;+\infty[\)</b>.</p>
+    <p>Deux nombres <b>de même signe</b> et leurs inverses sont rangés dans l’<b>ordre contraire</b> : si \(0\lt a\lt b\) ou si \(a\lt b\lt 0\), alors \(\dfrac{1}{a}\gt\dfrac{1}{b}\).</p>
+    <p class="att"><b>Attention :</b> on vérifie toujours d’abord que les deux nombres sont <b>de même signe</b>.</p>
+  </div>
+</details>
+
+<!-- ===================== FEUILLE 6 ===================== -->
+
+<!-- Exercice 6.1 -->
+<section class="exo" id="ex1" data-nav="6.1">
+  <div class="exo-h"><span class="pill">Exercice 6.1</span><span class="titre">Comparer des inverses</span></div>
+  <div class="exo-b">
+    <p class="enonce">Sans calculer, comparer en utilisant le sens de variation de la fonction inverse. <span class="note">Choisis le bon symbole avant d’ouvrir la correction.</span></p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">\(\dfrac{1}{3}\) … \(\dfrac{1}{7}\)</div></div>
+      <div class="quiz" data-rep="&gt;"><span class="t">Symbole :</span><button>&lt;</button><button>&gt;</button></div>
+      <div class="sol"><p>\(3\) et \(7\) sont <b>positifs</b> et \(3\lt 7\).</p><p>La fonction inverse est décroissante sur \(]0\,;+\infty[\), donc <span class="res">\(\dfrac{1}{3}\gt\dfrac{1}{7}\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">\(\dfrac{1}{-2}\) … \(\dfrac{1}{-5}\)</div></div>
+      <div class="quiz" data-rep="&lt;"><span class="t">Symbole :</span><button>&lt;</button><button>&gt;</button></div>
+      <div class="sol"><p>\(-5\) et \(-2\) sont <b>négatifs</b> et \(-5\lt -2\).</p><p>La fonction inverse est décroissante sur \(]-\infty\,;0[\), donc \(\dfrac{1}{-5}\gt\dfrac{1}{-2}\), c’est-à-dire <span class="res">\(\dfrac{1}{-2}\lt\dfrac{1}{-5}\)</span>.</p><p class="note">Vérification : \(-0{,}5\lt -0{,}2\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">\(\dfrac{1}{0{,}01}\) … \(\dfrac{1}{0{,}02}\)</div></div>
+      <div class="quiz" data-rep="&gt;"><span class="t">Symbole :</span><button>&lt;</button><button>&gt;</button></div>
+      <div class="sol"><p>\(0{,}01\) et \(0{,}02\) sont positifs et \(0{,}01\lt 0{,}02\).</p><p>Donc <span class="res">\(\dfrac{1}{0{,}01}\gt\dfrac{1}{0{,}02}\)</span>.</p><p class="note">Vérification : \(100\gt 50\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">\(\dfrac{1}{8}\) … \(\dfrac{1}{2{,}5}\)</div></div>
+      <div class="quiz" data-rep="&lt;"><span class="t">Symbole :</span><button>&lt;</button><button>&gt;</button></div>
+      <div class="sol"><p>\(2{,}5\) et \(8\) sont positifs et \(2{,}5\lt 8\).</p><p>Donc \(\dfrac{1}{2{,}5}\gt\dfrac{1}{8}\), c’est-à-dire <span class="res">\(\dfrac{1}{8}\lt\dfrac{1}{2{,}5}\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">5</span><div class="q-txt">\(\dfrac{1}{-0{,}3}\) … \(\dfrac{1}{-0{,}25}\)</div></div>
+      <div class="quiz" data-rep="&gt;"><span class="t">Symbole :</span><button>&lt;</button><button>&gt;</button></div>
+      <div class="sol"><p>\(-0{,}3\) et \(-0{,}25\) sont négatifs et \(-0{,}3\lt -0{,}25\).</p><p>Donc <span class="res">\(\dfrac{1}{-0{,}3}\gt\dfrac{1}{-0{,}25}\)</span>.</p><p class="note">Vérification : \(-3{,}33\ldots\gt -4\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">6</span><div class="q-txt">\(\dfrac{1}{-10}\) … \(\dfrac{1}{-100}\)</div></div>
+      <div class="quiz" data-rep="&lt;"><span class="t">Symbole :</span><button>&lt;</button><button>&gt;</button></div>
+      <div class="sol"><p>\(-100\) et \(-10\) sont négatifs et \(-100\lt -10\).</p><p>Donc \(\dfrac{1}{-100}\gt\dfrac{1}{-10}\), c’est-à-dire <span class="res">\(\dfrac{1}{-10}\lt\dfrac{1}{-100}\)</span>.</p><p class="note">Vérification : \(-0{,}1\lt -0{,}01\).</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 6.2 -->
+<section class="exo" id="ex2" data-nav="6.2">
+  <div class="exo-h"><span class="pill">Exercice 6.2</span><span class="titre">Ranger et encadrer</span></div>
+  <div class="exo-b">
+    <p class="enonce">Dans tout l’exercice, la calculatrice est interdite.</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Ranger dans l’ordre croissant : \(\dfrac{1}{2{,}5}\) ; \(\dfrac{1}{0{,}4}\) ; \(\dfrac{1}{7}\) ; \(\dfrac{1}{1{,}1}\).</div></div>
+      <div class="sol"><p>Les quatre nombres \(2{,}5\) ; \(0{,}4\) ; \(7\) ; \(1{,}1\) sont positifs. On les range : \(0{,}4\lt 1{,}1\lt 2{,}5\lt 7\).</p><p>La fonction inverse est décroissante sur \(]0\,;+\infty[\) : les inverses sont rangés dans l’ordre contraire.</p><p class="concl"><span class="res">\(\dfrac{1}{7}\lt\dfrac{1}{2{,}5}\lt\dfrac{1}{1{,}1}\lt\dfrac{1}{0{,}4}\)</span></p></div></div>
+    <p class="enonce"><b>2.</b> Dans chaque cas, donner un encadrement de \(\dfrac{1}{x}\). On prend l’inverse de chaque borne et on <b>change le sens</b> des inégalités.</p>
+    <div class="q"><div class="q-h"><span class="num lettre">a</span><div class="q-txt">\(2\leqslant x\leqslant5\)</div></div>
+      <div class="sol"><p>\(x\) est positif, donc \(\dfrac{1}{5}\leqslant\dfrac{1}{x}\leqslant\dfrac{1}{2}\), soit <span class="res">\(0{,}2\leqslant\dfrac{1}{x}\leqslant0{,}5\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num lettre">b</span><div class="q-txt">\(0{,}1\leqslant x\leqslant0{,}5\)</div></div>
+      <div class="sol"><p>\(x\) est positif, donc \(\dfrac{1}{0{,}5}\leqslant\dfrac{1}{x}\leqslant\dfrac{1}{0{,}1}\), soit <span class="res">\(2\leqslant\dfrac{1}{x}\leqslant10\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num lettre">c</span><div class="q-txt">\(-4\leqslant x\leqslant-1\)</div></div>
+      <div class="sol"><p>\(x\) est négatif, donc \(\dfrac{1}{-1}\leqslant\dfrac{1}{x}\leqslant\dfrac{1}{-4}\), soit <span class="res">\(-1\leqslant\dfrac{1}{x}\leqslant-0{,}25\)</span>.</p><p class="piege"><b>Piège :</b> \(\dfrac{1}{-1}=-1\) est plus petit que \(\dfrac{1}{-4}=-0{,}25\) : la plus petite borne est bien \(-1\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num lettre">d</span><div class="q-txt">\(x\geqslant10\)</div></div>
+      <div class="sol"><p>\(x\) est positif et \(x\geqslant10\), donc \(\dfrac{1}{x}\leqslant\dfrac{1}{10}\).</p><p>Comme \(x\gt 0\), on a aussi \(\dfrac{1}{x}\gt 0\) : <span class="res">\(0\lt\dfrac{1}{x}\leqslant0{,}1\)</span>.</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 6.3 -->
+<section class="exo" id="ex3" data-nav="6.3">
+  <div class="exo-h"><span class="pill">Exercice 6.3</span><span class="titre">Vrai ou faux ?</span></div>
+  <div class="exo-b">
+    <p class="enonce">Dire si chaque affirmation est vraie ou fausse, en justifiant.</p>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Pour tous réels non nuls \(a\) et \(b\), si \(a\lt b\) alors \(\dfrac{1}{a}\gt\dfrac{1}{b}\).</div></div>
+      <div class="quiz" data-rep="Faux"><span class="t">Ton avis :</span><button>Vrai</button><button>Faux</button></div>
+      <div class="sol"><p><span class="verdict faux">Faux</span> La propriété n’est vraie que si \(a\) et \(b\) sont <b>de même signe</b>.</p><p>Contre-exemple : \(a=-1\) et \(b=2\). On a bien \(a\lt b\), mais \(\dfrac{1}{a}=-1\) et \(\dfrac{1}{b}=0{,}5\), donc \(\dfrac{1}{a}\lt\dfrac{1}{b}\).</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Si \(x\gt 4\), alors \(\dfrac{1}{x}\lt 0{,}25\).</div></div>
+      <div class="quiz" data-rep="Vrai"><span class="t">Ton avis :</span><button>Vrai</button><button>Faux</button></div>
+      <div class="sol"><p><span class="verdict vrai">Vrai</span> Si \(x\gt 4\), alors \(x\) et \(4\) sont positifs.</p><p>La fonction inverse est décroissante sur \(]0\,;+\infty[\), donc \(\dfrac{1}{x}\lt\dfrac{1}{4}\), c’est-à-dire \(\dfrac{1}{x}\lt 0{,}25\).</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 6.4 -->
+<section class="exo" id="ex4" data-nav="6.4">
+  <div class="exo-h"><span class="pill">Exercice 6.4</span><span class="titre">Conjecturer la dérivée de la fonction inverse</span></div>
+  <div class="exo-b">
+    <p class="enonce">On a tracé la courbe \(\mathcal{H}\) de la fonction inverse \(f\) et ses tangentes aux points \(A\), \(B\) et \(C\).</p>
+    <div class="fig" id="fig64"></div>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Lire graphiquement les nombres dérivés \(f'(1)\), \(f'(2)\) et \(f'(-1)\).</div></div>
+      <div class="sol">
+        <p>En \(A(1\,;1)\) : on avance de \(1\), on descend de \(1\) : \(f'(1)=-1\).</p>
+        <p>En \(B(2\,;0{,}5)\) : la tangente passe par \((0\,;1)\) et \((4\,;0)\) ; on avance de \(4\), on descend de \(1\) : \(f'(2)=-\dfrac{1}{4}=-0{,}25\).</p>
+        <p>En \(C(-1\,;-1)\) : on avance de \(1\), on descend de \(1\) : \(f'(-1)=-1\).</p>
+        <div class="fig" id="fig64sol"></div>
+        <div class="tab-wrap"><table class="tab"><tr><th>\(x\)</th><td>\(1\)</td><td>\(2\)</td><td>\(-1\)</td></tr><tr><th>\(f'(x)\)</th><td>\(-1\)</td><td>\(-0{,}25\)</td><td>\(-1\)</td></tr></table></div>
+      </div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Un élève hésite entre quatre formules pour \(f'(x)\). À l’aide du tableau, choisir la bonne.</div></div>
+      <div class="quiz" data-rep="−1/x²"><span class="t">Formule :</span><button>1/x²</button><button>−1/x²</button><button>2x</button><button>−2x</button></div>
+      <div class="sol">
+        <p>\(\dfrac{1}{x^2}\) donne \(\dfrac{1}{1^2}=1\neq-1\) : non.</p>
+        <p>\(2x\) donne \(2\times1=2\neq-1\) ; \(-2x\) donne \(-2\times1=-2\neq-1\) : non.</p>
+        <p>\(-\dfrac{1}{x^2}\) donne \(-\dfrac{1}{1^2}=-1\), \(-\dfrac{1}{2^2}=-0{,}25\) et \(-\dfrac{1}{(-1)^2}=-1\) : les trois valeurs conviennent.</p>
+        <p class="concl">La bonne formule est <span class="res">\(f'(x)=-\dfrac{1}{x^2}\)</span>. Elle est toujours négative : c’est cohérent avec la décroissance de la fonction inverse.</p>
+        <div class="tg-explo">
+          <b>Pour aller plus loin :</b> déplace le point et compare la pente de la tangente avec \(-\dfrac{1}{a^2}\).
+          <input type="range" id="tg-a" min="-30" max="30" step="1" value="10" aria-label="abscisse a">
+          <div class="fig" id="fig64explo"></div>
+          <div class="out" id="tg-out"></div>
+        </div>
+      </div></div>
+  </div>
+</section>
+
+<!-- ===================== FEUILLE 6 BIS ===================== -->
+
+<details class="rappel" style="margin-top:28px">
+  <summary>Feuille 6 bis — Rappel : lire un nombre dérivé <small>(cliquer pour déplier)</small></summary>
+  <div class="contenu">
+    <p>\(f'(a)\) est le <b>coefficient directeur de la tangente</b> à la courbe au point d’abscisse \(a\) :</p>
+    <p style="text-align:center">\(f'(a)=\dfrac{\text{déplacement vertical}}{\text{déplacement horizontal}}\)</p>
+    <p>entre deux nœuds du quadrillage situés sur la tangente. Une tangente <b>horizontale</b> correspond à \(f'(a)=0\).</p>
+    <p class="att"><b>Attention :</b> \(f(a)\) est l’<b>ordonnée</b> du point ; \(f'(a)\) est la <b>pente</b> de la tangente.</p>
+  </div>
+</details>
+
+<!-- Exercice 6.5 -->
+<section class="exo bis" id="ex5" data-nav="6.5">
+  <div class="exo-h"><span class="pill">Exercice 6.5</span><span class="titre">Lire des nombres dérivés</span></div>
+  <div class="exo-b">
+    <p class="enonce">On a tracé la courbe d’une fonction \(f\) et ses tangentes aux points \(A\), \(B\), \(C\), \(D\) et \(E\).</p>
+    <div class="fig" id="fig65"></div>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Compléter le tableau des valeurs de \(f(x)\) et \(f'(x)\) pour \(x=-2\) ; \(0\) ; \(2\) ; \(4\) ; \(6\). Justifier le résultat pour \(f'(2)\).</div></div>
+      <div class="sol">
+        <p>On lit les <b>ordonnées</b> des points pour \(f(x)\) et les <b>pentes</b> des tangentes pour \(f'(x)\) :</p>
+        <div class="tab-wrap"><table class="tab"><tr><th>\(x\)</th><td>\(-2\)</td><td>\(0\)</td><td>\(2\)</td><td>\(4\)</td><td>\(6\)</td></tr><tr><th>\(f(x)\)</th><td>\(0\)</td><td>\(3\)</td><td>\(1\)</td><td>\(-2\)</td><td>\(-1\)</td></tr><tr><th>\(f'(x)\)</th><td>\(2\)</td><td>\(0\)</td><td>\(-2\)</td><td>\(0\)</td><td>\(1\)</td></tr></table></div>
+        <p><b>Justification pour \(f'(2)\) :</b> la tangente en \(C(2\,;1)\) passe aussi par \((3\,;-1)\). On avance de \(1\) et on descend de \(2\) : <span class="res">\(f'(2)=\dfrac{-2}{1}=-2\)</span>.</p>
+        <div class="fig" id="fig65sol"></div>
+      </div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Sans tracer de tangente, donner le signe de \(f'(-1)\), de \(f'(3)\) et de \(f'(5)\).</div></div>
+      <div class="sol">
+        <p>\(f\) est croissante entre \(A\) et \(B\) : <span class="res">\(f'(-1)\gt 0\)</span>.</p>
+        <p>\(f\) est décroissante entre \(B\) et \(D\) : <span class="res">\(f'(3)\lt 0\)</span>.</p>
+        <p>\(f\) est croissante entre \(D\) et \(E\) : <span class="res">\(f'(5)\gt 0\)</span>.</p>
+        <p class="note">Quand la courbe monte, la tangente monte : sa pente est positive. Quand la courbe descend, elle est négative.</p>
+      </div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">En quels points de la courbe la tangente est-elle horizontale ? Que vaut alors le nombre dérivé ?</div></div>
+      <div class="sol"><p>Aux points \(B(0\,;3)\) et \(D(4\,;-2)\).</p><p class="concl">Une droite horizontale a un coefficient directeur nul : <span class="res">\(f'(0)=0\)</span> et <span class="res">\(f'(4)=0\)</span>.</p></div></div>
+  </div>
+</section>
+
+<!-- Exercice 6.6 -->
+<section class="exo bis" id="ex6" data-nav="6.6">
+  <div class="exo-h"><span class="pill">Exercice 6.6</span><span class="titre">Concentration d’un médicament</span></div>
+  <div class="exo-b">
+    <p class="enonce">La concentration d’un médicament dans le sang (en mg/L), \(t\) heures après sa prise, est notée \(C(t)\). On a tracé la courbe de la fonction \(C\) et ses tangentes aux points \(P\), \(M\) et \(Q\).</p>
+    <div class="fig" id="fig66"></div>
+    <div class="q"><div class="q-h"><span class="num">1</span><div class="q-txt">Lire \(C(1)\) et \(C'(1)\). Recopier et compléter : « une heure après la prise, la concentration … d’environ … mg/L par heure. »</div></div>
+      <div class="sol"><p>\(P(1\,;4)\), donc <span class="res">\(C(1)=4\)</span>.</p><p>La tangente en \(P\) passe par \((0\,;2)\) et \((1\,;4)\) : on avance de \(1\), on monte de \(2\), donc <span class="res">\(C'(1)=2\)</span>.</p><p class="concl">« Une heure après la prise, la concentration <b>augmente</b> d’environ <b>\(2\) mg/L par heure</b>. »</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">2</span><div class="q-txt">Lire \(C'(2)\). Que se passe-t-il pour la concentration à cet instant ?</div></div>
+      <div class="sol"><p>La tangente en \(M\) est horizontale : <span class="res">\(C'(2)=0\)</span>.</p><p class="concl">À cet instant, la concentration atteint son <b>maximum</b> (\(5\) mg/L) : elle cesse d’augmenter, puis diminue.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">3</span><div class="q-txt">Lire \(C'(4)\) et l’interpréter.</div></div>
+      <div class="sol"><p>La tangente en \(Q(4\,;3)\) passe par \((8\,;0)\) : on avance de \(4\), on descend de \(3\).</p><p>Donc <span class="res">\(C'(4)=\dfrac{-3}{4}=-0{,}75\)</span>.</p><p class="concl">« Quatre heures après la prise, la concentration <b>diminue</b> d’environ <b>\(0{,}75\) mg/L par heure</b>. »</p></div></div>
+    <div class="q"><div class="q-h"><span class="num">4</span><div class="q-txt">La concentration augmente-t-elle plus vite à l’instant \(t=0\) ou à l’instant \(t=1\) ? Justifier.</div></div>
+      <div class="quiz" data-rep="À t = 0"><span class="t">Ton avis :</span><button>À t = 0</button><button>À t = 1</button></div>
+      <div class="sol"><p>La courbe est beaucoup plus pentue au départ qu’en \(P\) : la tangente en \(O\) passe par \((0\,;0)\) et environ \((1\,;5)\), donc \(C'(0)\approx5\), alors que \(C'(1)=2\).</p><p class="note">Autre argument : pendant la première heure, la concentration passe de \(0\) à \(4\) mg/L, soit \(4\) mg/L par heure en moyenne, plus que \(C'(1)=2\).</p><p class="concl">La concentration augmente plus vite <b>à l’instant \(t=0\)</b>.</p></div></div>
+    <p class="enonce"><b>5.</b> On admet que, pour \(t\geqslant4\), on a \(C'(t)=-\dfrac{12}{t^2}\).</p>
+    <div class="q"><div class="q-h"><span class="num lettre">a</span><div class="q-txt">Calculer \(C'(6)\).</div></div>
+      <div class="sol"><p>\(C'(6)=-\dfrac{12}{6^2}=-\dfrac{12}{36}=\) <span class="res">\(-\dfrac{1}{3}\approx-0{,}33\)</span>.</p></div></div>
+    <div class="q"><div class="q-h"><span class="num lettre">b</span><div class="q-txt">Tracer la tangente à la courbe au point \(R\) d’abscisse \(6\).</div></div>
+      <div class="sol"><p>\(R(6\,;2)\) et la tangente a pour coefficient directeur \(-\dfrac{1}{3}\) : depuis \(R\), on avance de \(3\) et on descend de \(1\), on arrive au point \((9\,;1)\).</p><p>On trace la droite passant par \((6\,;2)\) et \((9\,;1)\) (droite \(T_R\), en rouge ci-dessous).</p><div class="fig" id="fig66sol"></div></div></div>
+  </div>
+</section>
+
+<div class="foot"><a href="sequence2-suites-feuille5-corrige-interactif.html">← Feuille 5 — corrigé interactif</a><span>Feuilles 6 et 6 bis · TST2S · Lycée Lebrun 2026-2027</span></div>
+</main>
+
+<script>
+/* ---------- Petit traceur de figures (repère quadrillé, courbes, tangentes, lectures) ---------- */
+const COUL = { courbe: '#1C7ED6', tangente: '#E8590C', lecture: '#C92A2A', grille: '#CED4DA', axe: '#1D2733' };
+function figure(cfg) {
+  const { xmin, xmax, ymin, ymax, u = 40 } = cfg;
+  const W = (xmax - xmin) * u + 40, H = (ymax - ymin) * u + 40;
+  const X = x => 20 + (x - xmin) * u, Y = y => 20 + (ymax - y) * u;
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" xmlns="http://www.w3.org/2000/svg">`;
+  s += `<defs><clipPath id="c${cfg.id}"><rect x="${X(xmin)}" y="${Y(ymax)}" width="${(xmax - xmin) * u}" height="${(ymax - ymin) * u}"/></clipPath>`
+     + `<marker id="m${cfg.id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="${COUL.axe}"/></marker></defs>`;
+  for (let x = Math.ceil(xmin); x <= xmax; x++) s += `<line x1="${X(x)}" y1="${Y(ymin)}" x2="${X(x)}" y2="${Y(ymax)}" stroke="${COUL.grille}" stroke-width="1"/>`;
+  for (let y = Math.ceil(ymin); y <= ymax; y++) s += `<line x1="${X(xmin)}" y1="${Y(y)}" x2="${X(xmax)}" y2="${Y(y)}" stroke="${COUL.grille}" stroke-width="1"/>`;
+  const x0 = Math.max(xmin, 0), y0 = Math.max(ymin, 0);
+  s += `<line x1="${X(xmin)}" y1="${Y(y0)}" x2="${X(xmax) + 14}" y2="${Y(y0)}" stroke="${COUL.axe}" stroke-width="2" marker-end="url(#m${cfg.id})"/>`;
+  s += `<line x1="${X(x0)}" y1="${Y(ymin)}" x2="${X(x0)}" y2="${Y(ymax) - 14}" stroke="${COUL.axe}" stroke-width="2" marker-end="url(#m${cfg.id})"/>`;
+  (cfg.gradX || []).forEach(k => { s += `<text x="${X(k)}" y="${Y(y0) + 15}" font-size="12" text-anchor="middle">${String(k).replace('-', '−')}</text>`; });
+  (cfg.gradY || []).forEach(k => { s += `<text x="${X(x0) - 5}" y="${Y(k) + 4}" font-size="12" text-anchor="end">${String(k).replace('-', '−')}</text>`; });
+  if (cfg.nomX) s += `<text x="${X(xmax) + 4}" y="${Y(y0) - 8}" font-size="14" text-anchor="end" font-style="italic">${cfg.nomX}</text>`;
+  if (cfg.nomY) s += `<text x="${X(x0) + 8}" y="${Y(ymax) - 4}" font-size="14" font-style="italic">${cfg.nomY}</text>`;
+  s += `<g clip-path="url(#c${cfg.id})">`;
+  (cfg.droites || []).forEach(d => {
+    const [a, b] = d.pts;
+    s += `<line x1="${X(a[0])}" y1="${Y(a[1])}" x2="${X(b[0])}" y2="${Y(b[1])}" stroke="${d.c || COUL.tangente}" stroke-width="${d.w || 2}" ${d.dash ? 'stroke-dasharray="' + d.dash + '"' : ''}/>`;
+  });
+  (cfg.courbes || []).forEach(c => {
+    let p = '';
+    if (c.f) { for (let i = 0; i <= 300; i++) { const x = c.a + (c.b - c.a) * i / 300; p += (i ? 'L' : 'M') + X(x).toFixed(1) + ',' + Y(c.f(x)).toFixed(1); } }
+    if (c.bez) { p = 'M' + X(c.bez[0][0]) + ',' + Y(c.bez[0][1]); for (let i = 1; i < c.bez.length; i += 3) p += 'C' + [0, 1, 2].map(k => X(c.bez[i + k][0]) + ',' + Y(c.bez[i + k][1])).join(' '); }
+    s += `<path d="${p}" fill="none" stroke="${COUL.courbe}" stroke-width="3.2"/>`;
+  });
+  s += '</g>';
+  (cfg.lectures || []).forEach(l => {
+    const c = l.c || COUL.lecture;
+    s += `<polyline points="${l.pts.map(p => X(p[0]) + ',' + Y(p[1])).join(' ')}" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="6 4"/>`;
+    (l.labels || []).forEach(t => { s += `<text x="${X(t[0])}" y="${Y(t[1])}" font-size="14" font-weight="600" fill="${c}" text-anchor="middle" paint-order="stroke" stroke="#fff" stroke-width="4">${t[2]}</text>`; });
+  });
+  (cfg.points || []).forEach(p => {
+    s += `<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="4.5" fill="${COUL.axe}"/>`;
+    s += `<text x="${X(p[0]) + (p[3] || 8)}" y="${Y(p[1]) + (p[4] || -8)}" font-size="16" font-style="italic" paint-order="stroke" stroke="#fff" stroke-width="4">${p[2]}</text>`;
+  });
+  (cfg.textes || []).forEach(t => { s += `<text x="${X(t[0])}" y="${Y(t[1])}" font-size="16" font-style="italic" fill="${t[3] || COUL.courbe}">${t[2]}</text>`; });
+  s += '</svg>';
+  document.getElementById(cfg.id).innerHTML = s;
+}
+
+/* Exercice 6.4 */
+const inv = x => 1 / x;
+const base64 = {
+  xmin: -3, xmax: 5, ymin: -3, ymax: 5, u: 38, gradX: [-3, -2, -1, 1, 2, 3, 4, 5], gradY: [-3, -2, -1, 1, 2, 3, 4, 5], nomX: 'x', nomY: 'y',
+  courbes: [{ f: inv, a: 0.2, b: 5 }, { f: inv, a: -3, b: -0.33 }],
+  droites: [{ pts: [[-1, 3], [3, -1]] }, { pts: [[-1, 1.25], [5, -0.25]] }, { pts: [[-3, 1], [0.6, -2.6]] }],
+  points: [[1, 1, 'A', 8, -8], [2, 0.5, 'B', 4, -10], [-1, -1, 'C', -18, 18]],
+  textes: [[0.4, 4.2, 'ℋ']]
+};
+figure({ ...base64, id: 'fig64' });
+figure({ ...base64, id: 'fig64sol', points: [[1, 1, 'A', -16, 18], [2, 0.5, 'B', -16, 18], [-1, -1, 'C', -18, 18]],
+  lectures: [
+    { pts: [[1, 1], [2, 1], [2, 0]], labels: [[1.5, 1.15, '1'], [2.3, 0.45, '−1']] },
+    { pts: [[0, 1], [4, 1], [4, 0]], labels: [[3.5, 1.15, '4'], [4.3, 0.45, '−1']] },
+    { pts: [[-3, 1], [-2, 1], [-2, 0]], labels: [[-2.5, 1.15, '1'], [-1.7, 0.45, '−1']] }] });
+
+/* Explorateur de tangente à la fonction inverse */
+(function () {
+  const r = document.getElementById('tg-a'), out = document.getElementById('tg-out');
+  const nb = x => (Math.round(x * 1000) / 1000).toLocaleString('fr-FR');
+  function maj() {
+    let a = +r.value / 10;
+    if (Math.abs(a) < 0.3) { a = a < 0 || (a === 0 && r._prev > 0) ? -0.3 : 0.3; }
+    r._prev = a;
+    const m = -1 / (a * a), b = 1 / a;
+    figure({ id: 'fig64explo', xmin: -3, xmax: 3, ymin: -4, ymax: 4, u: 34, gradX: [-3, -2, -1, 1, 2, 3], gradY: [-4, -3, -2, -1, 1, 2, 3, 4], nomX: 'x', nomY: 'y',
+      courbes: [{ f: inv, a: 0.25, b: 3 }, { f: inv, a: -3, b: -0.25 }],
+      droites: [{ pts: [[a - 4, b - 4 * m], [a + 4, b + 4 * m]] }],
+      lectures: [{ pts: [[a, b], [a + 1, b], [a + 1, b + m]], labels: [[a + 0.5, b + (m < 0 ? 0.25 : -0.4), '1']] }],
+      points: [[a, b, 'M', 8, -8]] });
+    out.innerHTML = `a = ${nb(a)} : pente de la tangente = <b>${nb(m)}</b> ; −1/a² = −1/${nb(a * a)} = <b>${nb(m)}</b>`;
+  }
+  r.addEventListener('input', maj); maj();
+})();
+
+/* Exercice 6.5 */
+const bez65 = [[-3, -2.5], [-2.667, -1.5], [-2.333, -0.667], [-2, 0], [-1.333, 1.333], [-0.667, 3], [0, 3], [0.667, 3], [1.333, 2.333], [2, 1], [2.667, -0.333], [3.333, -2], [4, -2], [4.667, -2], [5.333, -1.667], [6, -1], [6.333, -0.667], [6.667, -0.167], [7, 0.5]];
+const base65 = {
+  xmin: -3, xmax: 7, ymin: -3, ymax: 4, u: 36, gradX: [1], gradY: [1], nomX: 'x', nomY: 'y',
+  courbes: [{ bez: bez65 }],
+  droites: [{ pts: [[-3.2, -2.4], [-0.3, 3.4]] }, { pts: [[-1.6, 3], [1.6, 3]] }, { pts: [[0.7, 3.6], [3.4, -1.8]] }, { pts: [[2.4, -2], [5.6, -2]] }, { pts: [[4.2, -2.8], [7, 0]] }],
+  points: [[-2, 0, 'A', -20, -6], [0, 3, 'B', 8, -8], [2, 1, 'C', 8, -4], [4, -2, 'D', -6, 22], [6, -1, 'E', 8, 18]],
+  textes: [[6.2, 1.6, '𝒞f']]
+};
+figure({ ...base65, id: 'fig65' });
+figure({ ...base65, id: 'fig65sol', points: [[-2, 0, 'A', -20, -6], [0, 3, 'B', 8, -8], [2, 1, 'C', -20, -4], [4, -2, 'D', -6, 22], [6, -1, 'E', -22, 0]],
+  lectures: [
+    { pts: [[-2, 0], [-1, 0], [-1, 2]], labels: [[-1.5, -0.35, '1'], [-0.6, 1.1, '+2']] },
+    { pts: [[2, 1], [3, 1], [3, -1]], labels: [[2.5, 1.15, '1'], [3.4, 0.05, '−2']] },
+    { pts: [[6, -1], [7, -1], [7, 0]], labels: [[6.5, -1.35, '1'], [7.35, -0.45, '+1']] }] });
+
+/* Exercice 6.6 */
+const bez66 = [[0, 0], [0.333, 1.667], [0.667, 3.333], [1, 4], [1.333, 4.667], [1.667, 5], [2, 5], [2.667, 5], [3.333, 3.5], [4, 3]];
+const base66 = {
+  xmin: 0, xmax: 10, ymin: 0, ymax: 7, u: 38, gradX: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], gradY: [1, 2, 3, 4, 5, 6, 7], nomX: 't (h)', nomY: 'C(t) (mg/L)',
+  courbes: [{ bez: bez66 }, { f: t => 12 / t, a: 4, b: 10 }],
+  droites: [{ pts: [[0, 2], [2.5, 7]] }, { pts: [[0.4, 5], [3.6, 5]] }, { pts: [[0.6, 5.55], [8, 0]] }],
+  points: [[1, 4, 'P', 10, 6], [2, 5, 'M', -4, -12], [4, 3, 'Q', 8, -8], [6, 2, 'R', 6, -10]]
+};
+figure({ ...base66, id: 'fig66' });
+figure({ ...base66, id: 'fig66sol',
+  droites: base66.droites.concat([{ pts: [[0, 0], [1.3, 6.5]], dash: '3 4' }, { pts: [[2, 11 / 3], [10, 1]], c: COUL.lecture, w: 3 }]),
+  points: [[1, 4, 'P', 10, 6], [2, 5, 'M', -4, -12], [4, 3, 'Q', 8, -8], [6, 2, 'R', -14, 20]],
+  lectures: [
+    { pts: [[6, 2], [9, 2], [9, 1]], labels: [[7.5, 2.2, '3'], [9.35, 1.4, '−1']] },
+    { pts: [[4, 3], [8, 3], [8, 0]], labels: [[6, 3.2, '4'], [8.4, 0.6, '−3']], c: COUL.tangente }],
+  textes: [[2.5, 3.15, 'T<tspan font-size="11" dy="4">R</tspan>', COUL.lecture]] });
+</script>
+</body>
+</html>
