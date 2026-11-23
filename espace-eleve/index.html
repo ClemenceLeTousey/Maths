@@ -105,6 +105,9 @@
         .mon-trimestre .appreciation { margin: 0 0 12px; padding: 10px 14px; border: 1px solid var(--line); border-left-width: 4px; border-radius: 10px; background: var(--surface); }
         .mon-trimestre .appreciation .t { font-size: 0.9rem; color: var(--muted); }
         .mon-trimestre .appreciation p { margin: 4px 0 0; line-height: 1.45; }
+        .mon-trimestre .reponse-app { margin: 0 0 18px; }
+        .mon-trimestre .reponse-app label { display: block; margin-bottom: 4px; }
+        .mon-trimestre .reponse-app textarea { width: 100%; box-sizing: border-box; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); resize: vertical; }
         .mon-trimestre .tuile .v.n-bon, .mon-trimestre .tuile .v.n-moyen, .mon-trimestre .tuile .v.n-faible { background: none; }
         .mon-trimestre table td:nth-child(n+3), .mon-trimestre table th:nth-child(n+3) { text-align: center; white-space: nowrap; }
         .mon-trimestre table td, .mon-trimestre table th { text-align: left; }
@@ -922,6 +925,23 @@
                         app.appendChild(el('p', null, dd.appreciation));
                         zone.appendChild(app);
                     }
+                    // case « Réponse ou commentaire » : envoyée comme un message à la professeure (onglet Messages)
+                    var rep = el('div', 'reponse-app'), idT = 'reponse-app-' + t;
+                    var lab = el('label', 'aide', 'Réponse ou commentaire'); lab.htmlFor = idT;
+                    var ta = el('textarea'); ta.id = idT; ta.rows = 3; ta.maxLength = 1900;
+                    var act = el('p', 'soutien-actions'), bt = el('button', null, 'Envoyer'), et = el('span', 'aide'); bt.type = 'button'; et.setAttribute('aria-live', 'polite');
+                    act.appendChild(bt); act.appendChild(document.createTextNode(' ')); act.appendChild(et);
+                    rep.appendChild(lab); rep.appendChild(ta); rep.appendChild(act);
+                    zone.appendChild(rep);
+                    bt.onclick = function () {
+                        var txt = ta.value.trim();
+                        if (!txt) { et.textContent = 'Écris d\'abord ta réponse ou ton commentaire.'; return; }
+                        bt.disabled = true; et.textContent = 'Envoi…';
+                        Interactif.rpc('envoyer_message', { p_jeton: s.jeton, p_texte: 'Réponse à mon appréciation du ' + ordinal + ' trimestre : ' + txt, p_image: null }).then(function () {
+                            ta.value = ''; et.textContent = '✓ Envoyé à ta professeure. Sa réponse éventuelle arrivera dans l\'onglet Messages.';
+                            mesMessages(s);
+                        }, function (x) { et.textContent = 'Non envoyé : ' + x.message; }).then(function () { bt.disabled = false; });
+                    };
                     document.getElementById('appreciations-vide').hidden = true;
                 });
                 (liste || []).forEach(function (n) {
