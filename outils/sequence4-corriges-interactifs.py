@@ -148,7 +148,7 @@ def sch_n(vals, labs, glob):
     return svg(w, 96, c)
 def tri_magique(h1, v1, g1, gv, d1, dv, formule):
     c = ('<path d="M10,110 L150,110 L80,8 z" fill="none" stroke="%s" stroke-width="1.6"/>'
-         '<line x1="40" y1="64" x2="120" y2="64" stroke="%s"/><line x1="80" y1="64" x2="80" y2="110" stroke="%s"/>' % ((VIOLET,) * 3))
+         '<line x1="40" y1="64" x2="120" y2="64" stroke="%s"/><text x="80" y="97" text-anchor="middle" font-size="20" fill="#1D2733">×</text>' % ((VIOLET,) * 2))
     def t(x, y, s, col="#1D2733"):
         s = brut(s)
         cc = VIOLET if s == "?" else col
