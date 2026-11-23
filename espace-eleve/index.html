@@ -143,6 +143,7 @@
             <button type="button" role="tab" id="onglet-tp" aria-controls="panneau-tp" data-onglet="tp" data-niveau="seconde premiere" hidden>Python</button>
             <button type="button" role="tab" id="onglet-evaluations" aria-controls="panneau-evaluations" data-onglet="evaluations" data-niveau="seconde" hidden>Évaluations</button>
             <button type="button" role="tab" id="onglet-soutien" aria-controls="panneau-soutien" data-onglet="soutien" data-niveau="seconde" hidden>Soutien</button>
+            <button type="button" role="tab" id="onglet-appreciations" aria-controls="panneau-appreciations" data-onglet="appreciations" data-niveau="terminale" hidden>Appréciations</button>
             <button type="button" role="tab" id="onglet-echange" aria-controls="panneau-echange" data-onglet="echange">Messages</button>
             <button type="button" role="tab" id="onglet-remediation" aria-controls="panneau-remediation" data-onglet="remediation" data-niveau="seconde" hidden>Remédiation</button>
         </div>
@@ -242,6 +243,15 @@
                 <li><div class="eval-titre">Python (affectations, fonctions)</div>
                     <div class="eval-liens"><a class="bouton" href="https://nuage02.apps.education.fr/index.php/s/tTZQetTnmiLwGoK" target="_blank" rel="noopener">Fiche</a><a class="bouton" href="https://nuage02.apps.education.fr/index.php/s/zYrJMyz5L55EAfT" target="_blank" rel="noopener">Corrigé</a></div></li>
             </ul>
+        </section>
+        </div>
+
+        <div class="panneau" role="tabpanel" id="panneau-appreciations" aria-labelledby="onglet-appreciations" hidden>
+        <section class="soutien mon-trimestre">
+            <h2>Mes appréciations</h2>
+            <p class="aide">Ta moyenne et l'appréciation de ta professeure de mathématiques pour chaque trimestre. Elles ne sont visibles que par toi et ta professeure, avec ton identifiant (jamais ton nom).</p>
+            <div id="mes-appreciations"></div>
+            <p class="aide" id="appreciations-vide">Pas encore d'appréciation publiée.</p>
         </section>
         </div>
 
@@ -877,7 +887,8 @@
         }
 
         function mesNotes(s) {
-            document.querySelectorAll('#panneau-evaluations .ma-note, #autres-notes, #mes-etoiles, #groupe-autos li, .mon-trimestre').forEach(function (x) { x.remove(); });
+            document.querySelectorAll('#panneau-evaluations .ma-note, #autres-notes, #mes-etoiles, #groupe-autos li, #panneau-evaluations .mon-trimestre, #mes-appreciations > *').forEach(function (x) { x.remove(); });
+            document.getElementById('appreciations-vide').hidden = false;
             document.querySelectorAll('.aide-notes').forEach(function (x) { x.hidden = true; });
             compterGroupes();
             if (!s) return;
@@ -891,6 +902,27 @@
                 trims.sort(function (a, b) { return b.evaluation.localeCompare(a.evaluation); }).forEach(function (n) {   // le plus récent en haut
                     var panneau = document.getElementById('panneau-evaluations'), premier = panneau.querySelector('section:not(.mon-trimestre)');
                     panneau.insertBefore(blocTrimestre(n), premier);
+                });
+                // onglet Appréciations (Terminales) : l'appréciation de chaque trimestre, la plus récente en haut
+                trims.forEach(function (n) {
+                    var dd = n.detail || {}, t = dd.trimestre || Number((/\d+/.exec(n.evaluation) || [1])[0]);
+                    var moy = dd.moyenne != null ? dd.moyenne : n.total, ordinal = ['premier', 'deuxième', 'troisième'][t - 1] || t + 'e';
+                    if (!dd.appreciation && moy == null) return;
+                    var zone = document.getElementById('mes-appreciations');
+                    zone.appendChild(el('h3', null, 'Trimestre ' + t));
+                    if (moy != null) {
+                        var tuiles = el('div', 'tuiles'), x = el('div', 'tuile'), vv = el('div', 'v ' + classeNote(moy / 20), fmtN(moy));
+                        x.appendChild(el('div', 't', 'Moyenne du ' + ordinal + ' trimestre'));
+                        vv.appendChild(el('small', null, ' / 20')); x.appendChild(vv);
+                        tuiles.appendChild(x); zone.appendChild(tuiles);
+                    }
+                    if (dd.appreciation) {
+                        var app = el('div', 'appreciation');
+                        app.appendChild(el('div', 't', 'Appréciation du ' + ordinal + ' trimestre'));
+                        app.appendChild(el('p', null, dd.appreciation));
+                        zone.appendChild(app);
+                    }
+                    document.getElementById('appreciations-vide').hidden = true;
                 });
                 (liste || []).forEach(function (n) {
                     var li = Array.prototype.filter.call(document.querySelectorAll('#panneau-evaluations li[data-eval]'), function (x) { return x.dataset.eval === n.evaluation; })[0];
