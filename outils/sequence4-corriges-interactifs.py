@@ -329,6 +329,12 @@ def trait(nom, s, i, out):
         return i
     if nom == "Pointilles":
         out.append("……"); return i
+    if nom == "og":
+        out.append("«&nbsp;")
+        while i < len(s) and s[i] in " \n": i += 1
+        return i
+    if nom == "fg":
+        out.append("&nbsp;»"); return i
     if nom in ("quad", "qquad"):
         out.append("&emsp;"); return i
     if nom == "dots":
@@ -541,6 +547,8 @@ def page(num, theme, nom_fiche, sortie):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="../../manifest.json">
+<meta name="apple-mobile-web-app-title" content="Maths Lebrun">
 <title>Exercices Partie {num} – Corrigé</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
