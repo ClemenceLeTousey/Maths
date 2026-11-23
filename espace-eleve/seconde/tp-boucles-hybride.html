@@ -328,6 +328,10 @@
         }
         html.grand .case-ligne { grid-template-columns: minmax(13.5em, max-content) 10em auto 1fr; }
         @media (max-width: 900px) { html.grand .case-ligne { grid-template-columns: 1fr auto; } html.grand .case-ligne .retour.case-retour { grid-column: 1 / -1; } }
+        /* fin d'étape : retour au document papier */
+        .retour-doc { margin: 14px 0 4px; padding: 12px 16px; border: 2px solid #6d28d9; border-radius: 10px; background: var(--bleu-doux); font-size: 1.08em; }
+        .retour-doc b.titre-retour { color: #6d28d9; }
+        .retour-doc p { margin: 4px 0 0; }
         .renvoi-doc { margin: 0 0 6px; padding: 6px 12px; border-left: 4px solid #6d28d9; background: var(--bleu-doux); border-radius: 0 8px 8px 0; }
     </style>
 </head>
@@ -1234,6 +1238,18 @@ def _console(ligne, n):
            ici, seulement ce qui demande une réponse ou la console. Étape A1 en ligne = « Étape A1 » du PDF.
            Mêmes vérifications que seconde/tp-boucles.html : toute modification du TP3 est à reporter ici et dans le PDF. */
         function doc(x) { return '<p class="renvoi-doc">📄 Document : <b>' + x + '</b>.</p>'; }
+        function retourDoc(x) { return '<p class="renvoi-doc">📄 <b>Retourne d’abord à ton document : ' + x + '.</b></p>'; }
+        // fin d'une étape réussie : où reprendre dans le document papier
+        function nomDoc(n) { return estQuiz(n) ? 'le quiz ' + lettreQuiz(n) : numDefi(n) ? 'le défi ' + numDefi(n) : 'l’étape ' + codeEtape(n); }
+        function retourPapier(n) {
+            var h = '<b class="titre-retour">📄 Retourne à ton document papier.</b>';
+            var lire = estQuiz(n) ? '' : 'lis l’encadré « À retenir » ' + (numDefi(n) ? 'du défi ' + numDefi(n) : 'de l’étape ' + codeEtape(n));
+            if (n >= NB) return h + '<p>Pour finir, ' + lire + '. Le TP est terminé !</p>';
+            var suite = nomDoc(n + 1);
+            if (partie(n + 1) !== partie(n)) suite = (partie(n + 1) === 'D' ? 'les défis' : 'la partie ' + partie(n + 1)) + ' (' + suite + ')';
+            return h + '<p>' + (lire ? lire.charAt(0).toUpperCase() + lire.slice(1) + ', puis continue avec ' : 'Continue avec ') + suite + '.</p>' +
+                '<p>Reviens ici quand tu arrives à l’encadré violet « 💻 En ligne : ' + (estQuiz(n + 1) ? 'Quiz ' + lettreQuiz(n + 1) : numDefi(n + 1) ? 'défi ' + numDefi(n + 1) : 'étape ' + codeEtape(n + 1)) + ' ».</p>';
+        }
         var ETAPES = [
             { titre: 'A · La boucle for', type: 'prevoir',
               consigne: doc('étape A1') + '<p>✍️ Pour chaque script, prévois ce qu’il affiche.</p>' + LISTE,
@@ -1379,7 +1395,7 @@ def _console(ligne, n):
                                 { fin: '10 n’est jamais ajouté : le dernier nombre affiché est 1 + 2 + … + 9 = 45.' }] }],
               code: SOMME_BUG, verifCode: true, console: false,
               solutionCode: SOMME,
-              consigneCode: '<h3>Corriger le script G</h3><p>✍️ Corrige les <b>deux erreurs</b> pour que le script affiche seulement 55.</p>' },
+              consigneCode: '<h3>Corriger le script G</h3>' + retourDoc('étape B2 (suite)') + '<p>✍️ Corrige les <b>deux erreurs</b> pour que le script affiche seulement 55.</p>' },
 
             { titre: 'B · Placement bancaire', type: 'code',
               consigne: doc('étape B3') + '<p>✍️ Remplace les pointillés pour que le script calcule le capital au bout de <b>10 ans</b>.</p>',
@@ -1494,12 +1510,12 @@ def _console(ligne, n):
                   { question: 'Que dit-on à la place de 33 ?', attendu: 'Fizz', aide: '33 = 3 × 11 : c’est un multiple de 3, mais pas de 5.' },
                   { question: 'Que dit-on à la place de 35 ?', attendu: 'Buzz', aide: '35 = 5 × 7 : c’est un multiple de 5, mais pas de 3.' },
                   { question: 'Que dit-on à la place de 30 ?', attendu: 'FizzBuzz', aide: '30 est un multiple de 3 et de 5.' },
-                  { nom: 'La fonction de l’élève', presentation: '<p>📄 La fonction de l’élève est dans ton document. ✍️ Prévois ce que renvoie l’appel.</p>', appel: 'fizzbuzz(15)', attendu: 'Fizz', valeur: '15',
+                  { nom: 'La fonction de l’élève', presentation: retourDoc('défi 1 (suite), la fonction de l’élève') + '<p>✍️ Prévois ce que renvoie l’appel.</p>', appel: 'fizzbuzz(15)', attendu: 'Fizz', valeur: '15',
                     car: [{ cond: 'if n % 3 == 0', vraie: true, raison: '15 % 3 vaut 0 : 15 est un multiple de 3' }, { bloc: 'if' }] }
               ],
               code: FIZZ_BUG, verifCode: true, exemple: 'fizzbuzz(15)',
               solutionCode: FIZZ,
-              consigneCode: '<h3>Corriger la fonction</h3><p>✍️ Corrige la fonction, puis teste-la avec <code>fizzbuzz(15)</code>, <code>fizzbuzz(30)</code> et <code>fizzbuzz(33)</code>.</p>' },
+              consigneCode: '<h3>Corriger la fonction</h3>' + retourDoc('défi 1 (suite), l’explication du bug') + '<p>✍️ Corrige la fonction, puis teste-la avec <code>fizzbuzz(15)</code>, <code>fizzbuzz(30)</code> et <code>fizzbuzz(33)</code>.</p>' },
 
             { titre: 'D · Défi 2 : compter les Fizz', type: 'code',
               consigne: doc('défi 2') + '<p>✍️ Complète le script pour qu’il compte combien de fois on dit « Fizz » entre 1 et 100, puis affiche ce nombre.</p>',
@@ -2175,7 +2191,9 @@ def _console(ligne, n):
                 return c.join('|');
             }
             function montrerBilan() {
-                if (!e.bilan || bilanMontre) return;
+                if (bilanMontre) return;
+                // version hybride : l'« À retenir » est dans le document ; on y renvoie l'élève
+                if (!e.bilan) { bilanMontre = true; corps.appendChild(el('div', 'retour-doc', retourPapier(n))); return; }
                 bilanMontre = true;
                 var texteB = Array.isArray(e.bilan) ? '<ol>' + e.bilan.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol>' : e.bilan;
                 corps.appendChild(el('div', 'encadre astuce bilan', '<b>À retenir</b>' + texteB + CASE_LU));
@@ -2857,7 +2875,9 @@ def _console(ligne, n):
                         if (suivante) suivante.remove(); else suivante = carte(n + 1);
                         zone.appendChild(suivante); suivante.rafraichir();
                         if (suivante.quizFait) setTimeout(suivante.quizFait, 0);
-                        setTimeout(function () { suivante.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 600);
+                        // version hybride : on montre d'abord le renvoi au document (l'étape suivante est juste en dessous)
+                        var rd = corps.querySelector('.retour-doc');
+                        setTimeout(function () { (rd || suivante).scrollIntoView({ behavior: 'smooth', block: rd ? 'center' : 'start' }); }, 600);
                     } else zone.appendChild(el('p', 'fin', '🎉 Bravo, tu as terminé le TP !'));
                 };
                 var bilanCase = corps.querySelector('.encadre.bilan .lu input'), attenteBilan = null;
@@ -2887,7 +2907,8 @@ def _console(ligne, n):
             }
 
             // bouton « Passer » sous l'étape en cours : l'étape est marquée passée (0 point) ; on peut y revenir et la réussir plus tard
-            if (n === faites + 1 && !VUE) {
+            // TP3 : réservé au mode professeure (les élèves ne peuvent pas passer d'étape)
+            if (n === faites + 1 && !VUE && modeTest()) {
                 var zPasser = el('div', 'zone-passer', '<span class="aide">Bloqué(e) ? Tu peux passer cette étape et y revenir plus tard.</span>');
                 var bPasser = el('button', null, '⏭ Passer'); bPasser.type = 'button';
                 bPasser.onclick = function () {

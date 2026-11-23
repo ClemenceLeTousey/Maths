@@ -2950,7 +2950,8 @@ def _console(ligne, n):
             }
 
             // bouton « Passer » sous l'étape en cours : l'étape est marquée passée (0 point) ; on peut y revenir et la réussir plus tard
-            if (n === faites + 1 && !VUE) {
+            // TP3 : réservé au mode professeure (les élèves ne peuvent pas passer d'étape)
+            if (n === faites + 1 && !VUE && modeTest()) {
                 var zPasser = el('div', 'zone-passer', '<span class="aide">Bloqué(e) ? Tu peux passer cette étape et y revenir plus tard.</span>');
                 var bPasser = el('button', null, '⏭ Passer'); bPasser.type = 'button';
                 bPasser.onclick = function () {
