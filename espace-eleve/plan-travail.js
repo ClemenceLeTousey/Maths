@@ -1,6 +1,6 @@
 /* ==========================================================================
    Espace professeure · onglet « Plan de travail » (Secondes, période 2)
-   Planning du 02/11 au 18/12 en séances J1 à J4 ; une case par classe pour
+   Planning du 02/11 au 15/01 (Séquence 4 décalée d'une semaine le 23/11) en séances J1 à J4 ; une case par classe pour
    chaque élément de cours et chaque exercice.
    Enregistré dans Supabase (prof_plan / prof_plan_enregistrer, script
    maj-plan-travail.sql), recopié dans ce navigateur en secours.
@@ -43,11 +43,13 @@
               co: L('Introduction : proportion ou évolution ? (« Pour commencer », deux classes d\'externes)|Population et sous-population|Calculer une proportion|Trouver la partie ou le tout|Proportion de proportion : situation des sportifs, propriété, « Attention »'),
               cl: L('41|42|?45|50|?53'), ap: L('46|49|51|54|90'), ma: L('21|35|17|22|23|36|18|24|25') }
         ] },
-        { d: '2026-11-16', t: '16/11 au 20/11', a: 'Série 9', s: [
+        { d: '2026-11-16', t: '16/11 au 20/11', a: 'Série 9', x: 'Séquence 4 décalée d\'une semaine : les taux d\'évolution commencent le 23/11', s: [
+        ] },
+        { d: '2026-11-23', t: '23/11 au 27/11', a: 'Série 10', s: [
             { k: 's4-2', j: 'J1', q: 4, n: 2, t: 'Variation absolue, taux d\'évolution', o: '4, 5',
               co: L('Correction ciblée : 23, 36 (piège partie / tout) et 25 (schéma)|Variation absolue|Taux d\'évolution|Proportion ou évolution ?'),
               cl: L('34|27|55|91|?61|?57'), ap: L('97'), ma: L('26|52'),
-              rq: 'Séance prévue sur 50 min : exercices ramenés de 33 à 23 min, 61 passe en « si le temps ».' },
+              rq: 'Décalée d\'une semaine : faite le J1 23/11. Séance prévue sur 50 min : exercices ramenés de 33 à 23 min, 61 passe en « si le temps ».' },
             { k: 's4-3', j: 'J2', q: 4, n: 3, t: 'Activité « Découverte du coefficient multiplicateur »', o: '6',
               co: L('Correction des exercices 26 et 52|Activité, partie A : une hausse de 15 %|Activité, partie B : une baisse de 30 %|Activité, partie C : d\'une évolution à un coefficient multiplicateur, et inversement|Mise en commun : augmenter de t %, c\'est multiplier par 1 + t/100 ; diminuer, par 1 − t/100|Activité, partie D : retrouver le coefficient à partir de deux valeurs'),
               ma: L('Activité, partie E|28'),
@@ -58,11 +60,12 @@
               cl: L('38|39|29|19|58|?63|?62|?60|?30'), ap: L('68|69|70|99'), ma: L('31|64|66'),
               rq: 'Exercices ramenés de 25 à 20 min : 63 passe en « si le temps ».' },
             { k: 's4-5', j: 'J4', q: 4, n: 5, t: 'Évolutions successives', o: '7',
-              ev: L('Évaluation d\'automatismes, Série 9 (10 min)'),
+              ev: L('Évaluation d\'automatismes, Série 10 (10 min)'),
               co: L('Correction des exercices 31, 64 et 66|Évolutions successives : situation des soldes cherchée par les élèves'),
-              cl: L('20|72|80|73|81|75|?74'), ap: L('76|77|88|93|100|101|103'), ma: L('78|79') }
+              cl: L('20|72|80|73|?81|?75|?74'), ap: L('76|77|88|93|100|101|103'), ma: L('78|79'),
+              rq: 'Exercices ramenés de 33 à 23 min (automatismes) : 81 et 75 passent en « si le temps ».' }
         ] },
-        { d: '2026-11-23', t: '23/11 au 27/11', a: 'Série 10', s: [
+        { d: '2026-11-30', t: '30/11 au 04/12', a: 'Série 11', s: [
             { k: 's4-6', j: 'J1', q: 4, n: 6, t: 'Évolution réciproque et bilan', o: '8',
               co: L('Correction de l\'exercice 79|Évolution réciproque'),
               cl: L('84|33|96|40|85|?87'), ap: L('86|89|102'), ma: L('Bilan « Ce qu\'il faut retenir »|Révisions : 94|95'),
@@ -76,11 +79,11 @@
               cl: L('7|F7 ex 5|8|?12|?13|?4'), ap: L('9|10|11|F7 ex 6|F7 ex 7'), ma: L('F7 ex 4'),
               rq: '12 et 13 passent en « si le temps ».' },
             { k: 's5-3', j: 'J4', q: 5, n: 3, t: 'Démonstration : √2 est irrationnel ; droite numérique et intervalles', o: '2, 3, 4',
-              ev: L('Évaluation d\'automatismes, Série 10 (10 min)'),
+              ev: L('Évaluation d\'automatismes, Série 11 (10 min)'),
               co: L('Correction de F7 ex 4|Démonstration : √2 est irrationnel (raisonnement par l\'absurde)|La droite numérique (exemple 5)|Intervalles bornés et non bornés, symbole ∞|Ensembles particuliers ; [2 ; 5] ou {2 ; 5} (exemples 6 et 7)'),
               cl: L('F7 ex 8|14|F7 ex 12|?15|?F7 ex 13|?F7 ex 9'), ma: L('1|F7 ex 11|F7 ex 10') }
         ] },
-        { d: '2026-11-30', t: '30/11 au 04/12', a: 'Série 11', s: [
+        { d: '2026-12-07', t: '07/12 au 11/12', a: 'Série 12', s: [
             { k: 's5-4', j: 'J1', q: 5, n: 4, t: 'Inéquations et intervalles, intersection et réunion', o: '4, 5',
               co: L('Correction de F7 ex 11 (inégalité ↔ intervalle)|Solutions d\'une inéquation sous forme d\'intervalle (exemple 8)|Intersection et réunion : exemple introductif, définition|Méthode des deux couleurs (exemple 10)'),
               cl: L('F7 ex 16|F7 ex 14|?33'), ap: L('F7 ex 17'), ma: L('F7 ex 15|16|F8 ex 1|Sujet d\'entraînement DS 3') },
@@ -90,12 +93,12 @@
             { k: 'ds3', j: 'J3', ds: 3, t: 'Devoir surveillé 3 : bilan depuis la rentrée, accent sur les Séquences 3 à 5',
               ev: L('DS 3 passé|DS 3 corrigé et rendu'), rq: 'Depuis le décalage, la séance 6 (distance, intervalle de centre a) et l\'objectif 8 de la Séquence 5 sont hors DS.' },
             { k: 's5-6', j: 'J4', q: 5, n: 6, t: 'Distance et intervalle de centre a', o: '6, 7',
-              ev: L('Évaluation d\'automatismes, Série 11 (10 min)'),
+              ev: L('Évaluation d\'automatismes, Série 12 (10 min)'),
               co: L('Correction de F8 ex 6 (une distance n\'est jamais négative)|√(x²) = |x| et distance |a − b| (disjonction de cas)|Intervalle de centre a et de rayon r (propriété 7, exemple 14)'),
               cl: L('F8 ex 7|26|F8 ex 8|29|F8 ex 10|?F8 ex 11'), ap: L('28|F8 ex 12'), ma: L('27|F8 ex 9'),
               rq: 'Interrogation n°7 supprimée (semaine du DS 3) : 29 et F8 ex 10 faits en classe. Séance placée après le DS 3 depuis le décalage.' }
         ] },
-        { d: '2026-12-07', t: '07/12 au 11/12', a: 'Série 12', s: [
+        { d: '2026-12-14', t: '14/12 au 18/12', a: 'Série 13', s: [
             { k: 's5-7', j: 'J1', q: 5, n: 7, t: 'Encadrement et arrondi, bilan', o: '8',
               co: L('Correction de l\'exercice 27 et de F8 ex 9|Encadrement décimal, amplitude|Balayage|Chiffres significatifs (exemples 15 et 16)|Bilan : la carte des ensembles et des intervalles, sans le cours'),
               cl: L('30|F8 ex 13|F8 ex 15|?31|?F8 ex 16|?F8 ex 14|?F8 ex 17'), ap: L('F8 ex 20'), ma: L('F8 ex 18|F8 ex 19'),
@@ -107,11 +110,11 @@
               co: L('Correction de F9 ex 4 (valeurs interdites)|Image|Antécédent|Calculs à partir d\'une formule ou d\'un tableau (exemples 4 à 6)'),
               cl: L('5|6|7|F9 ex 6|30|F9 ex 7|?9|?10|?11|?12|?26'), ap: L('F9 ex 10'), ma: L('15|F9 ex 8|32') },
             { k: 's6-3', j: 'J4', q: 6, n: 3, t: 'Programme de calcul, Python ; courbe représentative', o: '2, 3',
-              ev: L('Évaluation d\'automatismes, Série 12 (10 min)'),
+              ev: L('Évaluation d\'automatismes, Série 13 (10 min)'),
               co: L('Correction de F9 ex 8 (programme de calcul)|Courbe représentative, équation y = f(x)|Appartenance d\'un point à la courbe|Tracé point par point (exemples 7 et 8)'),
               cl: L('60|F9 ex 9|F9 ex 13|?18'), ap: L('F9 ex 14|49'), ma: L('F9 ex 11|F9 ex 12|20') }
         ] },
-        { d: '2026-12-14', t: '14/12 au 18/12', a: 'Série 13', s: [
+        { d: '2027-01-04', t: '04/01 au 08/01 (rentrée)', a: 'à préciser', x: 'séances reportées par le décalage du DS 2 et de la Séquence 4', s: [
             { k: 's6-4', j: 'J1', q: 6, n: 4, t: 'Lecture graphique d\'images et d\'antécédents', o: '3, 4',
               co: L('Correction de F9 ex 12 (vrai / faux sur la courbe)|Lecture graphique sur la courbe de référence (exemple 9)'),
               cl: L('27|28|F9 ex 15|31|?33|?63'), ap: L('F9 ex 17'), ma: L('F9 ex 16|14|34') },
@@ -122,15 +125,15 @@
               co: L('Correction de l\'exercice 50 p. 59|Inéquations f(x) > k (propriété 4, exemple 13)|Inéquations f(x) > g(x) (propriété 5, exemple 14)'),
               cl: L('F10 ex 3|F10 ex 4|24|25|F10 ex 6|F10 ex 9|?22|?53'), ma: L('F10 ex 7|54') },
             { k: 's6-7', j: 'J4', q: 6, n: 7, t: 'Signe d\'une fonction ; modéliser', o: '6, 7',
-              ev: L('Évaluation d\'automatismes, Série 13 (10 min)'),
+              ev: L('Évaluation d\'automatismes, série à préciser (10 min)'),
               co: L('Correction de F10 ex 7 (encadrement 0 ≤ f(x) ≤ 2)|Signe d\'une fonction, tableau de signes (exemple 15)|Modéliser une situation par une fonction (exemple 16)'),
               cl: L('F10 ex 8|F10 ex 10|51|?55|?66'), ap: L('F10 ex 11'), ma: L('F10 ex 12|68') }
         ] },
-        { d: '2027-01-04', t: '04/01 au 08/01 (rentrée)', a: 'à préciser', x: 'séance reportée par le décalage du DS 2', s: [
+        { d: '2027-01-11', t: '11/01 au 15/01', a: 'à préciser', s: [
             { k: 's6-8', j: 'J1', q: 6, n: 8, t: 'Modélisation, bilan', o: '7',
               co: L('Correction de F10 ex 12 (prix de l\'essence)|Bilan flash : exercice 26 p. 54 (six fonctions, six tableaux)'),
               cl: L('F10 ex 13|F10 ex 14|40|35|?39|?59|?F10 ex 15'),
-              ap: L('F10 ex 16|F10 ex 17|57|62|65|67|69|70|8|13|21|42|43|44|45|46'), ma: L('Vacances : 56|64|71') }
+              ap: L('F10 ex 16|F10 ex 17|57|62|65|67|69|70|8|13|21|42|43|44|45|46'), ma: L('56|64|71') }
         ] }
     ];
 
