@@ -112,6 +112,10 @@ window.INTERACTIF_CATALOGUE = [
     // TP3 Boucles : publié le 10/11/2026 (code d'accès)
     { niveau: 'seconde', id: 'seconde/tp-boucles', groupe: 'TP Python · Les boucles', titre: 'for, while, range (15 étapes, 3 quiz)', court: 'TP Boucles', url: 'seconde/tp-boucles.html', tp: true, vueProf: true,
       codeAcces: 'f6e6d5215e50d0a94a9c4b3278f315616612eca19e6ccf2e48e2576f9485f8d8', antiTriche: true },
+    // TP3 hybride (PDF grands caractères à lire + questions en ligne, mêmes noms d'étapes A1…D3) : 2H-TARTAGLIA seulement dans la liste
+    // (PROF-2NDE y accède par la case « Version hybride » du TP3), même code d'accès que le TP3
+    { niveau: 'seconde', id: 'seconde/tp-boucles-hybride', groupe: 'TP Python · Les boucles', titre: 'for, while, range · questions en ligne (15 étapes, 3 quiz)', court: 'TP Boucles hyb.', url: 'seconde/tp-boucles-hybride.html', tp: true, vueProf: true, comptes: ['2H-TARTAGLIA'],
+      codeAcces: 'f6e6d5215e50d0a94a9c4b3278f315616612eca19e6ccf2e48e2576f9485f8d8', antiTriche: true },   // mêmes codes que le TP3 habituel
     // TP4 Pixels et TP5 Filtres : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
     { niveau: 'seconde', id: 'seconde/tp-pixels', groupe: 'TP Python · Créer une image pixel par pixel', titre: 'Pixels, couleurs, double boucle (9 étapes)', court: 'TP Pixels', url: 'seconde/tp-pixels.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
       codeAcces: '0e9a00530e9b3e7bb719421ed987bc824b42e1415efed2b85a4cefabec7162bc', antiTriche: true },
@@ -293,7 +297,8 @@ window.INTERACTIF_TP_ORDRE = [
     // TP2 : version hybride pour les comptes qui la voient (2H-TARTAGLIA), sinon le TP2 habituel
     { niveau: 'seconde', nom: 'TP2 · Les structures conditionnelles', id: 'seconde/tp-conditions-hybride', sinon: 'seconde/tp-conditions-v2', pdf: 'seconde/tp/tp2-sujet.pdf' },
     // id = TP interactif ; tant qu'il est réservé à PROF-2NDE, les élèves voient « sinon » (ancien TP) ou la fiche PDF
-    { niveau: 'seconde', nom: 'TP3 · Les boucles en Python', id: 'seconde/tp-boucles', texte: 'for, range, while', pdf: 'seconde/tp/tp3-sujet.pdf', corrige: 'seconde/tp/corrige-a-venir.html' },
+    // TP3 : version hybride pour les comptes qui la voient (2H-TARTAGLIA), sinon le TP3 habituel
+    { niveau: 'seconde', nom: 'TP3 · Les boucles en Python', id: 'seconde/tp-boucles-hybride', sinon: 'seconde/tp-boucles', texte: 'for, range, while', pdf: 'seconde/tp/tp3-sujet.pdf', corrige: 'seconde/tp/corrige-a-venir.html' },
     { niveau: 'seconde', nom: 'TP4 · Créer une image pixel par pixel', id: 'seconde/tp-pixels', sinon: 'seconde/tp-photo' },
     { niveau: 'seconde', nom: 'TP5 · Retoucher une photo : les filtres', id: 'seconde/tp-filtres' },
     // TP6 à TP11 : préparés (sujets PDF), version interactive à venir ; PROF-2NDE seulement (retirer « comptes » pour publier)
@@ -325,6 +330,7 @@ window.INTERACTIF_BAREMES = {
     },
     'seconde/tp-premiers-pas': { nonNote: true },   // TP1 : rappels (Capytale déjà fait en classe), non noté
     'seconde/tp-boucles': { nonNote: true },   // TP3 : entraînement, non noté
+    'seconde/tp-boucles-hybride': { nonNote: true },   // TP3 hybride : entraînement, non noté (comme le TP3)
     'premiere/activite-probas': { nonNote: true, bonus: [10, 11, 12, 13], quiz: [9], quizSur: 5 },   // 1TC : activité d'introduction, non notée ; quiz (étape 9) suivi à part ; « Pour aller plus loin » (étapes 10 à 13 : arbre, chemins, formule, défi) en bonus
     'seconde/tp-pixels': {
         // TP4 · A : lire et prévoir (6,5) · B : modifier (8) · C : créer (5,5) · quiz à part
