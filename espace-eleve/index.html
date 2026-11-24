@@ -121,7 +121,7 @@
         #liste-tp button.tp-zero:disabled { opacity: .5; cursor: default; }
         #liste-tp .tp-msg { align-self: center; color: var(--muted); font-size: 0.85rem; }
         #liste-tp .tp-note { margin-top: 4px; font-size: 0.95rem; white-space: nowrap; }
-        #liste-tp .tp-revision { display: block; margin-top: 4px; color: var(--muted); font-size: 0.85rem; }
+        #liste-tp .tp-revision { display: inline-block; margin-left: 8px; color: var(--muted); font-size: 0.85rem; white-space: nowrap; vertical-align: middle; }
         .code-tp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
         .code-tp input { width: 9em; font-family: var(--f-mono); font-variant-ligatures: none; }
         .code-tp .erreur { color: var(--ko); font-weight: 600; }
@@ -501,7 +501,7 @@
                 else if (figee) {
                     var ar = document.createElement('a'); ar.href = ex.url; ar.className = 'bouton'; ar.textContent = 'Revoir';
                     c3.appendChild(ar);
-                    var ir = document.createElement('i'); ir.className = 'tp-revision'; ir.textContent = ' 🔒 Note arrêtée'; c3.appendChild(ir);
+                    var ir = document.createElement('i'); ir.className = 'tp-revision'; ir.textContent = '🔒 Note arrêtée'; c3.appendChild(ir);
                 }
                 else if (accesTP(ex)) {
                     var a = document.createElement('a'); a.href = ex.url; a.className = 'bouton'; a.textContent = res ? 'Continuer' : 'Commencer';
