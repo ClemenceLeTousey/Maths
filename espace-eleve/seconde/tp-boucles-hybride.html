@@ -932,7 +932,7 @@ def _console(ligne, n):
             try { ouvert = localStorage.getItem('tp-acces:' + ID) === FICHE.codeAcces; } catch (x) {}
             // compte PROF-2NDE en « mode élève » : le code est demandé, comme à un élève
             var modeEleve = false; try { modeEleve = localStorage.getItem('tp-mode') === 'eleve'; } catch (x) {}
-            if (!ouvert && !(ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE' && !modeEleve) && !(ses && String(ses.code || '').toUpperCase() === 'JIMMY')) {   // JIMMY : jamais de code d'accès
+            if (!ouvert && !(ses && String(ses.code || '').toUpperCase() === 'PROF-2NDE' && !modeEleve) && !(ses && ['JIMMY', 'COLYBES'].indexOf(String(ses.code || '').toUpperCase()) >= 0)) {   // JIMMY, COLYBES : jamais de code d'accès
                 document.getElementById('barre-etapes').hidden = true;
                 document.getElementById('py-etat').hidden = true;
                 var zv = document.getElementById('etapes');
@@ -1747,7 +1747,7 @@ def _console(ligne, n):
             }).catch(function () {});
         })();
         function modeProf() { return !!VUE || modeTest(); }   // solutions et « Développer » visibles
-        function compteProf() { if (VUE) return false; var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'PROF-2NDE'; }
+        function compteProf() { if (VUE) return false; var s = Interactif.session(); return !!s && ['PROF-2NDE', 'COLYBES'].indexOf(String(s.code || '').toUpperCase()) >= 0; }   // COLYBES : compte professeur
         // compte PROF-2NDE : « mode professeure » (solutions, « Développer », toutes les étapes ouvertes, Passer sans confirmation)
         // ou « mode élève » (le TP exactement comme un élève le voit) ; choix gardé sur l'appareil (localStorage « tp-mode »)
         /* Compte PROF-2NDE en mode élève : « Réinitialiser l'étape » efface les réponses de l'étape (et la progression
