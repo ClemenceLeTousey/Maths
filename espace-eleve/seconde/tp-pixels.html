@@ -937,11 +937,13 @@ def _console(ligne, n):
               ] },
 
             { titre: 'A · Prévoir une couleur', type: 'prevoir',
-              consigne: encadre('', 'Créer une image avec PIL', '<p><code>Image.new("RGB", (60, 40), (255, 0, 0))</code> crée une image de 60x40 pixels (largeur, puis hauteur), entièrement de couleur <code>(255, 0, 0)</code>, c’est-à-dire rouge. Sans la couleur, l’image est créée avec la couleur par défaut.</p><p><code>img.show()</code> affiche l’image.</p>') +
-                aideCouleurs(false) + PREVOIR_IMAGE,
+              consigne: encadre('', 'Créer une image avec PIL', '<p><b>PIL</b> (<i>Python Imaging Library</i>) est une <b>bibliothèque</b> Python : un ensemble d’outils déjà programmés pour créer et modifier des images. Dans ce TP, elle est déjà chargée ; dans un autre éditeur, il faudrait écrire <code>from PIL import Image</code> au début du programme.</p><p><code>Image.new("RGB", (60, 40), (255, 0, 0))</code> crée une image de 60x40 pixels (largeur, puis hauteur), entièrement de couleur <code>(255, 0, 0)</code>, c’est-à-dire rouge. Sans la couleur, l’image est créée avec la couleur par défaut.</p><p><code>img.show()</code> affiche l’image.</p>') +
+                aideCouleurs(false) +
+                '<p>Le script A ne précise pas la couleur : la couleur par défaut est un choix de la bibliothèque PIL, impossible à deviner. ✍️ Exécute-le pour la découvrir.</p>' +
+                '<p>Pour les scripts B, C et D, ✍️ <b>prévois d’abord</b>, sans ordinateur.<br>Si ta prévision est fausse, tu exécuteras le script pour voir l’image, puis tu te corrigeras.</p>',
               scripts: [
                   { nom: 'Script A', code: 'img = Image.new("RGB", (60, 40))\nimg.show()\n', attendu: 'noir', aussi: ['noire'],
-                    libelle: 'Je prévois que la couleur par défaut est ', libelleVerif: 'L’image affichée est de couleur', aideVerif: 'Exécute le script et regarde la couleur de l’image.' },
+                    observer: '✍️ Exécute ce script pour découvrir la couleur par défaut.', libelleVerif: 'L’image affichée est de couleur', aideVerif: 'Exécute le script et regarde la couleur de l’image.' },
                   couleur('Script B', '(255, 255, 0)', 'jaune'),
                   couleur('Script C', '(255, 255, 255)', 'blanc', ['blanche']),
                   couleur('Script D', '(80, 80, 80)', 'gris', ['gris fonce', 'gris foncé', 'grise', 'gris moyen'])
@@ -955,7 +957,7 @@ def _console(ligne, n):
             { titre: 'A · La double boucle', type: 'prevoir',
               consigne: '<p>Pour colorier <b>tous</b> les pixels d’une image, on les parcourt avec une <b>double boucle <code>for</code></b>, comme au TP3.</p>' +
                 encadre('', 'Une boucle dans une boucle', 'Pour <b>chaque</b> valeur de <code>x</code>, la variable <code>y</code> prend toutes ses valeurs : le couple <code>(x, y)</code> parcourt toute la grille, colonne par colonne.') +
-                PREVOIR_IMAGE,
+                aideCouleurs(false) + PREVOIR_IMAGE,
               scripts: [
                   { nom: 'Script E', code: BOUCLE_4x3, attendu: 12, libelle: 'Je prévois que l’image contient ', apres: ' pixels rouges.',
                     libelleVerif: 'Nombre de pixels rouges sur l’image affichée (elle est agrandie) :', aideVerif: 'Exécute le script et compte les pixels rouges de l’image.',
@@ -999,7 +1001,7 @@ def _console(ligne, n):
               ] },
 
             { titre: 'B · Corriger un programme', type: 'prevoir',
-              consigne: '<p>Un élève veut colorier en bleu la <b>moitié gauche</b> d’une image de 200x100 pixels. Voici son programme.</p>' + PREVOIR_IMAGE,
+              consigne: '<p>Un élève veut colorier en bleu la <b>moitié gauche</b> d’une image de 200x100 pixels. Voici son programme.</p>' + aideCouleurs(false) + PREVOIR_IMAGE,
               scripts: [{ nom: 'Script G', code: MOITIE_BUG, attendu: '1/4', aussi: ['un quart', '1 quart', '0.25', '0,25', 'quart', 'le quart'],
                           libelle: 'Je prévois que la partie bleue représente ', apres: ' de l’image (écris une fraction).',
                           libelleVerif: 'Sur l’image affichée, la partie bleue représente', aideVerif: 'Exécute le script : quelle fraction de l’image est bleue (1/2, 1/4…) ?',
@@ -1037,7 +1039,7 @@ def _console(ligne, n):
               ] },
 
             { titre: 'Quiz final · 5 questions', type: 'quiz',
-              consigne: '<p>Pour finir, 5 questions rapides sur tout le TP. ✍️ Réponds à chaque question <b>sans ordinateur</b>, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>',
+              consigne: '<p>Pour finir, 5 questions rapides sur tout le TP. ✍️ Réponds à chaque question <b>sans ordinateur</b>, puis valide : tu n’as droit qu’à <b>une seule validation</b>.</p>' + aideCouleurs(false),
               questions: [
                   { texte: 'Dans une image de 100x50 pixels, quelles sont les coordonnées du pixel en bas à droite ?',
                     choix: ['(100 ; 50)', '(99 ; 49)', '(50 ; 100)', '(49 ; 99)'], bonne: 1,
@@ -1151,6 +1153,7 @@ def _console(ligne, n):
             if (e.type === 'prevoir') {
                 var lignes = e.scripts.map(function (sc, k) {
                     var r = v.slice(8 * k, 8 * k + 8), nom = sc.question ? sansBalises(sc.question) : sc.appel || sc.nom;
+                    if (sc.observer) return r[1] ? nom + ' : observé « ' + r[1] + ' »' : null;
                     if (!r[0]) return null;
                     if (sc.question) return nom + ' → ' + r[0];
                     return egalSc(r[0], sc) ? nom + ' : prévu « ' + r[0] + ' » ✓'
@@ -1592,6 +1595,7 @@ def _console(ligne, n):
                         lp.appendChild(ip); if (sc.apres) lp.appendChild(document.createTextNode(sc.apres)); fp.appendChild(lp);
                         var bp = el('button', null, 'Valider ma prévision'); bp.type = 'submit'; fp.appendChild(bp);
                         var rp = el('span', 'retour case-retour'); fp.appendChild(rp);
+                        if (sc.observer) { fp.hidden = true; bloc.appendChild(el('p', null, sc.observer)); }   // rien à prévoir (convention) : on exécute, puis on note ce qu'on voit
                         bloc.appendChild(fp);
                         var suite = el('div', 'verif-script'); suite.hidden = true;
                         bloc.appendChild(suite);
@@ -1603,7 +1607,7 @@ def _console(ligne, n):
                                 if (direct) caseFinie(k); else finis[k] = true;
                                 return;
                             }
-                            rp.className = 'retour case-retour ko'; rp.textContent = sc.appel ? '✗ Ce n’est pas ça : exécute le script, puis tape l’appel dans la console.' : '✗ Ce n’est pas ça : exécute le programme pour voir ce qu’il affiche.';
+                            if (!sc.observer) rp.className = 'retour case-retour ko', rp.textContent = sc.appel ? '✗ Ce n’est pas ça : exécute le script, puis tape l’appel dans la console.' : '✗ Ce n’est pas ça : exécute le programme pour voir ce qu’il affiche.';
                             suite.hidden = false;
                             cms.push(sc.appel ? miniEditeur(suite, e.commun, n + '-' + k, sc.appel, e.exemple) : miniEditeur(suite, (e.commun ? e.commun + '\n' : '') + sc.code, n + '-' + k));
                             var lignes = el('div', 'reponses une-par-une');
@@ -1677,10 +1681,10 @@ def _console(ligne, n):
                         };
                         ajouterBloc(bloc);
                         charge = true;      // reconstruction depuis les réponses gardées : on ne valide rien
-                        if (rep[k][0]) apresPrevision(false);
+                        if (rep[k][0] || sc.observer) apresPrevision(false);
                         charge = false;
                         // mode professeure : « Développer » montre le chemin d'un élève qui s'est trompé (rien n'est enregistré)
-                        if (modeProf() && !rep[k][0]) {
+                        if (modeProf() && !rep[k][0] && !sc.observer) {
                             var bd = el('button', 'secondaire developper', '🔍 Développer (si l’élève se trompe)'); bd.type = 'button';
                             bd.onclick = function () {
                                 bd.remove();
