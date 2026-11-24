@@ -98,6 +98,7 @@ def brut(s):
     s = s.replace("\\Inconnue", "?").replace("\\Inc", "?")
     s = re.sub(r"\\tiny|\\scriptsize|\\small", "", s)
     s = re.sub(r"\\d?frac\{([^{}]*)\}\{([^{}]*)\}", r"\1/\2", s)
+    s = s.replace("\\%", "%")
     s = s.replace("\\times", "×").replace("\\div", "÷").replace("{,}", ",").replace("\\,", " ")
     s = s.replace("\\CM", "CM").replace("\\text{rec}", "rec")
     s = re.sub(r"([A-Za-zM])_\{?([0-9])\}?", lambda m: m.group(1) + m.group(2).translate(SUB), s)
@@ -168,6 +169,35 @@ def schema_taux(col, taux, a, b):
          f'<text x="110" y="52" text-anchor="middle" font-size="13">×…</text>')
     return svg(220, 105, c)
 
+def _lignes(x, y, t, taille=12, col="#1D2733", poids="400", pas=14):
+    """Texte centré sur plusieurs lignes (séparées par \\\\ dans le LaTeX)."""
+    ls = [brut(l) for l in re.split(r"\\\\", t)]
+    y0 = y - pas * (len(ls) - 1) / 2
+    return "".join(f'<text x="{x}" y="{y0 + k * pas + 4}" text-anchor="middle" font-size="{taille}" fill="{col}" font-weight="{poids}">{esc(l)}</text>'
+                   for k, l in enumerate(ls))
+def schema_pdp(a, b, c, p1, p2, p):
+    """Proportion de proportion (comme l'évaluation formative 5) : trois boîtes, ×p1, ×p2, et ×p en bleu."""
+    bx = [8, 168, 328]
+    out = ""
+    for x, t in zip(bx, [a, b, c]):
+        out += f'<rect x="{x}" y="16" width="104" height="50" rx="5" fill="#fff" stroke="#1D2733" stroke-width="1.2"/>' + _lignes(x + 52, 41, t)
+    for k, l in enumerate([p1, p2]):
+        out += droite(bx[k] + 106, bx[k + 1] - 3, 41, "×" + brut(l))
+    out += (f'<path d="M60,68 Q220,124 380,68" fill="none" stroke="#339AF0" stroke-width="2" marker-end="url(#fl)"/>'
+            f'<text x="220" y="112" text-anchor="middle" font-size="12" fill="#1D2733">×{esc(brut(p))}</text>')
+    return svg(440, 122, out)
+def schema_ens(a, b, c, p1, des1, p2, des2):
+    """Schéma en ensembles (propriété du cours) : A contient B, qui contient C."""
+    out = ('<rect x="4" y="4" width="312" height="150" rx="10" fill="#EAF3FC" stroke="#1C7ED6" stroke-opacity=".6" stroke-width="1.5"/>'
+           f'<text x="14" y="22" font-size="12" fill="#1864AB">A : {esc(brut(a))}</text>'
+           '<ellipse cx="182" cy="92" rx="126" ry="56" fill="#EBF7EE" stroke="#2F9E44" stroke-opacity=".7" stroke-width="1.5"/>'
+           f'<text x="140" y="56" text-anchor="middle" font-size="12" fill="#2B8A3E">B : {esc(brut(b))}</text>'
+           '<ellipse cx="208" cy="104" rx="76" ry="32" fill="#FDEEEE" stroke="#E03131" stroke-opacity=".75" stroke-width="1.5"/>'
+           + _lignes(208, 104, "C : " + c, 12, "#C92A2A") +
+           f'<text x="4" y="174" font-size="12" fill="#2B8A3E">p₁ = {esc(brut(p1))} des {esc(brut(des1))}</text>'
+           f'<text x="4" y="192" font-size="12" fill="#C92A2A">p₂ = {esc(brut(p2))} des {esc(brut(des2))}</text>')
+    return svg(320, 198, out)
+
 COULEURS = {"skyblue": "#339AF0", "diffred": "#FA5252", "diffgreen": "#40C057", "diffblue": "#228BE6"}
 SCHEMAS = {  # nom -> (nb d'arguments, fonction)
     "SchUn": (3, sch_un), "SchRetour": (4, sch_retour), "SchRec": (4, sch_rec),
@@ -176,6 +206,7 @@ SCHEMAS = {  # nom -> (nb d'arguments, fonction)
     "TriMagique": (4, lambda n, p, NN, f: tri_magique("$n$", n, "$p$", p, "$N$", NN, f)),
     "TriMagiqueCM": (4, lambda v2, v1, cm, f: tri_magique("$v_2$", v2, "$v_1$", v1, "CM", cm, f)),
     "SchemaTaux": (4, lambda col, t, a, b: schema_taux(COULEURS.get(col, "#339AF0"), t, a, b)),
+    "SchemaPdP": (6, schema_pdp), "SchemaEns": (7, schema_ens),
 }
 
 # ---------------------------------------------------------------- maths
