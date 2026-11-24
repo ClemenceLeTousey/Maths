@@ -120,7 +120,7 @@
         #liste-tp button.tp-zero:hover { background: var(--ko); color: #fff; }
         #liste-tp button.tp-zero:disabled { opacity: .5; cursor: default; }
         #liste-tp .tp-msg { align-self: center; color: var(--muted); font-size: 0.85rem; }
-        #liste-tp .tp-note { margin-top: 4px; font-size: 0.95rem; }
+        #liste-tp .tp-note { margin-top: 4px; font-size: 0.95rem; white-space: nowrap; }
         #liste-tp .tp-revision { display: block; margin-top: 4px; color: var(--muted); font-size: 0.85rem; }
         .code-tp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
         .code-tp input { width: 9em; font-family: var(--f-mono); font-variant-ligatures: none; }
@@ -490,8 +490,8 @@
                 if (figee) {
                     var nt = Interactif.noteTP(lr, ex.id), pn = document.createElement('div'); pn.className = 'tp-note';
                     var v = function (x) { return String(x).replace('.', ','); };
-                    pn.innerHTML = !nt ? 'Pas de note' : 'Note TP : <b>' + v(nt.note) + ' / 20</b>' +
-                        (nt.quizSur ? '<br>Note quiz : <b>' + (nt.quiz === null ? 'pas fait' : v(nt.quiz) + ' / ' + nt.quizSur) + '</b>' : '');
+                    pn.innerHTML = !nt ? 'Pas de note' : 'TP : <b>' + v(nt.note) + ' / 20</b>' +
+                        (nt.quizSur ? '<br>Quiz : <b>' + (nt.quiz === null ? 'pas fait' : v(nt.quiz) + ' / ' + nt.quizSur) + '</b>' : '');
                     pn.title = 'TP terminé : ta note est arrêtée. Tu peux revoir le TP, mais plus rien n’est enregistré.';
                     c2.appendChild(pn);
                 }

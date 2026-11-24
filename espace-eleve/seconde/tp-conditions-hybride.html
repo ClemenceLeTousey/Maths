@@ -592,7 +592,7 @@ def _console(ligne, n):
                 ouvert = true;
                 var bf = document.createElement('p'); bf.className = 'retour';
                 bf.style.cssText = 'margin:0 0 12px;padding:10px 14px;border:2px solid #c9a227;border-radius:10px;background:#fff6df;color:#3a2f00;font-weight:600';
-                bf.textContent = '🔒 Ce TP est terminé : tu peux le revoir et t’entraîner, mais plus rien n’est enregistré. Ta note est arrêtée (onglet TP Python de ton espace).';
+                bf.textContent = '🔒 Ce TP est terminé et ta note est arrêtée. Tu peux continuer pour t’entraîner : ta progression est gardée sur cet appareil, mais elle ne compte plus pour la note.';
                 var be = document.getElementById('barre-etapes'); be.parentNode.insertBefore(bf, be);
             }
             var finTemp = ouvert ? 0 : Interactif.accesTemporaire(FICHE, ses);   // code temporaire (une heure, usage unique)
