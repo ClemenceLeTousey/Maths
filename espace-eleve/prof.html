@@ -25,6 +25,7 @@
     <script src="sondage.js?v=20261118d"></script>
     <script src="reunion-pp.js?v=20261118"></script>
     <script src="strikes.js?v=20261122b"></script>
+    <script src="groupes.js?v=20261124"></script>
     <style>
         .interactif { max-width: 1100px; }
         .outils { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 16px; }
@@ -211,6 +212,7 @@
                 <button type="button" role="tab" id="onglet-notifs" aria-controls="panneau-notifs" data-onglet="notifs">Notifications</button>
                 <button type="button" role="tab" id="onglet-plan" aria-controls="panneau-plan" data-onglet="plan">Plan de travail</button>
                 <button type="button" role="tab" id="onglet-diapos" aria-controls="panneau-diapos" data-onglet="diapos">Diapo des corrections</button>
+                <button type="button" role="tab" id="onglet-groupes" aria-controls="panneau-groupes" data-onglet="groupes">Groupes</button>
                 <button type="button" role="tab" id="onglet-en-ligne" aria-controls="panneau-en-ligne" data-onglet="en-ligne">En ligne</button>
                 <button type="button" role="tab" id="onglet-sondage" aria-controls="panneau-sondage" data-onglet="sondage">Sondage</button>
                 <button type="button" role="tab" id="onglet-reunion-pp" aria-controls="panneau-reunion-pp" data-onglet="reunion-pp">Réunion P-P</button>
@@ -338,6 +340,19 @@
                     <li><span class="diapo-seq">Séq. 4 · Information chiffrée</span><a href="../cours/seconde/sequence4-correction-ex17-25-35-26-diaporama.html" target="_blank" rel="noopener">Exercices 17, 25 p. 259, 35 p. 260 et 26 p. 259</a></li>
                     <li><span class="diapo-seq">Séq. 3 · Inégalités et inéquations</span><a href="../cours/seconde/sequence3-correction-feuille5-ex6-ex85-86-diaporama.html" target="_blank" rel="noopener">Feuille 5 ex 6 (Q2, Q6), ex 85 et 86 p. 25 (Q1, Q2)</a></li>
                 </ul>
+            </div>
+
+            <div class="panneau" role="tabpanel" id="panneau-groupes" aria-labelledby="onglet-groupes" hidden>
+                <h2>Groupes</h2>
+                <p class="aide">Pour déplacer un élève : le glisser sur un autre groupe, ou cliquer sur l'élève puis sur le groupe voulu (pratique sur tablette ; Échap pour annuler). Glisser sur « + Nouveau groupe » crée un groupe ; « Sans groupe » retire l'élève des groupes. Chaque déplacement est enregistré aussitôt. Seuls les codes élèves sont dans la base : les noms s'affichent après chargement des fichiers comptes-*.csv (onglet Comptes). Nécessite le script maj-groupes.sql dans Supabase.</p>
+                <div class="outils">
+                    <span id="gr-classes" role="group" aria-label="Classe affichée"></span>
+                    <button type="button" id="gr-projeter">Projeter</button>
+                    <button type="button" id="gr-retablir" class="secondaire">Revenir aux groupes établis</button>
+                    <button type="button" id="gr-actualiser" class="secondaire">Actualiser</button>
+                </div>
+                <p class="aide" id="gr-etat" aria-live="polite"></p>
+                <div id="gr-groupes"></div>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-en-ligne" aria-labelledby="onglet-en-ligne" hidden>
@@ -501,6 +516,7 @@
                 if (!document.getElementById('panneau-sondage').hidden) SONDAGE.demarrer();
                 if (!document.getElementById('panneau-reunion-pp').hidden) ReunionPP.demarrer();
                 if (!document.getElementById('panneau-strikes').hidden) Strikes.demarrer();
+                if (!document.getElementById('panneau-groupes').hidden) Groupes.demarrer();
                 var sel = document.getElementById('classe'), avant = sel.value;
                 var classes = Array.from(new Set(d.eleves.map(function (e) { return e.classe; }))).sort(ordreClasses);
                 sel.innerHTML = '';
@@ -790,6 +806,7 @@
             if (window.SONDAGE && !document.getElementById('panneau-sondage').hidden) SONDAGE.demarrer();
             if (window.ReunionPP) ReunionPP.peindre();
             if (window.Strikes) Strikes.peindre();
+            if (window.Groupes) Groupes.peindre();
         }
         window.afficherComptes = afficherComptes;   // pour l'ouverture de l'onglet (autre script)
         afficherComptes();
@@ -1221,6 +1238,7 @@
             if (nom === 'sondage' && !document.getElementById('vue').hidden) SONDAGE.demarrer();
             if (nom === 'reunion-pp' && !document.getElementById('vue').hidden) ReunionPP.demarrer();
             if (nom === 'strikes' && !document.getElementById('vue').hidden) Strikes.demarrer();
+            if (nom === 'groupes' && !document.getElementById('vue').hidden) Groupes.demarrer();
             if (nom === 'comptes' && window.afficherComptes) afficherComptes();
         }
         onglets.forEach(function (o) {
