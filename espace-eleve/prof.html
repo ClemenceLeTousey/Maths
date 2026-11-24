@@ -542,7 +542,7 @@
             var $classe = document.getElementById('tp-classe'), $tp = document.getElementById('tp-choix'), $eleve = document.getElementById('tp-eleve');
             var $table = document.getElementById('tp-tableau'), $detail = document.getElementById('tp-detail');
             var TPS = INTERACTIF_CATALOGUE.filter(function (e) { return e.tp && !e.archive; });
-            // « TP2 », « TP3 »… d'après INTERACTIF_TP_ORDRE (ancienne version remplacée : « TP4 (ancien) »)
+            // « TP2 », « TP3 »… d'après INTERACTIF_TP_ORDRE (ancienne version remplacée : « TP5 (ancien) »)
             function numeroTP(id) {
                 var o = (window.INTERACTIF_TP_ORDRE || []).filter(function (x) { return x.id === id || x.sinon === id; })[0];
                 var m = o && /^TP\s*\d+/.exec(o.nom);

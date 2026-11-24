@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Mode anti-triche du quiz final des TP Python (TP3, TP4, TP5…)
+   Mode anti-triche du quiz final des TP Python (TP3, TP5, TP6…)
    Activé par « antiTriche: true » sur la fiche du TP dans config.js.
 
    - Le quiz ne s'affiche qu'après « Commencer le quiz » : la page passe en plein écran

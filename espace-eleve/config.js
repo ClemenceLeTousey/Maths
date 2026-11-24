@@ -117,7 +117,7 @@ window.INTERACTIF_CATALOGUE = [
     // (PROF-2NDE y accède par la case « Version hybride » du TP3), même code d'accès que le TP3
     { niveau: 'seconde', id: 'seconde/tp-boucles-hybride', groupe: 'TP Python · Les boucles', titre: 'for, while, range · questions en ligne (15 étapes, 3 quiz)', court: 'TP Boucles hyb.', url: 'seconde/tp-boucles-hybride.html', tp: true, vueProf: true, comptes: ['2H-TARTAGLIA'],
       codeAcces: 'f6e6d5215e50d0a94a9c4b3278f315616612eca19e6ccf2e48e2576f9485f8d8', antiTriche: true },   // mêmes codes que le TP3 habituel
-    // TP4 Pixels et TP5 Filtres : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
+    // TP5 Pixels et TP6 Filtres : en préparation (PROF-2NDE seulement ; retirer « comptes » pour publier)
     { niveau: 'seconde', id: 'seconde/tp-pixels', groupe: 'TP Python · Créer une image pixel par pixel', titre: 'Pixels, couleurs, double boucle (9 étapes)', court: 'TP Pixels', url: 'seconde/tp-pixels.html', tp: true, vueProf: true, comptes: ['PROF-2NDE'],
       codeAcces: '0e9a00530e9b3e7bb719421ed987bc824b42e1415efed2b85a4cefabec7162bc', antiTriche: true },
     { niveau: 'seconde', id: 'seconde/tp-filtres', groupe: 'TP Python · Retoucher une photo : les filtres', titre: 'getpixel, filtres, contours (9 étapes)', court: 'TP Filtres', url: 'seconde/tp-filtres.html', tp: true, vueProf: true, comptes: ['PROF-2NDE', 'JIMMY'],
@@ -301,16 +301,18 @@ window.INTERACTIF_TP_ORDRE = [
     // id = TP interactif ; tant qu'il est réservé à PROF-2NDE, les élèves voient « sinon » (ancien TP) ou la fiche PDF
     // TP3 : version hybride pour les comptes qui la voient (2H-TARTAGLIA), sinon le TP3 habituel
     { niveau: 'seconde', nom: 'TP3 · Les boucles en Python', id: 'seconde/tp-boucles-hybride', sinon: 'seconde/tp-boucles', texte: 'for, range, while', pdf: 'seconde/tp/tp3-sujet.pdf', corrige: 'seconde/tp/corrige-a-venir.html' },
-    { niveau: 'seconde', nom: 'TP4 · Créer une image pixel par pixel', id: 'seconde/tp-pixels', sinon: 'seconde/tp-photo' },
-    { niveau: 'seconde', nom: 'TP5 · Retoucher une photo : les filtres', id: 'seconde/tp-filtres' },
-    // TP6 à TP11 : préparés (sujets PDF), version interactive à venir ; PROF-2NDE seulement (retirer « comptes » pour publier)
+    // TP4 : séance papier SNT (sans ordinateur), sujet seul en ligne (corrigé hors ligne)
+    { niveau: 'seconde', nom: 'TP4 · La photographie numérique', texte: 'Capteur, définition, résolution, codage RVB', pdf: 'seconde/tp/tp4-sujet.pdf' },
+    { niveau: 'seconde', nom: 'TP5 · Créer une image pixel par pixel', id: 'seconde/tp-pixels', sinon: 'seconde/tp-photo' },
+    { niveau: 'seconde', nom: 'TP6 · Retoucher une photo : les filtres', id: 'seconde/tp-filtres' },
+    // TP7 à TP12 : préparés (sujets PDF), version interactive à venir ; PROF-2NDE seulement (retirer « comptes » pour publier)
     // Les corrigés restent hors ligne (dépôt public) : les ajouter avec « corrige » au moment de les donner.
-    { niveau: 'seconde', nom: 'TP6 · Les listes en Python', texte: 'Indices, ajout, parcours d’une liste', pdf: 'seconde/tp/tp6-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
-    { niveau: 'seconde', nom: 'TP7 · Balayage et dichotomie', texte: 'Valeurs approchées de √2', pdf: 'seconde/tp/tp7-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
-    { niveau: 'seconde', nom: 'TP8 · Simulation et loi des grands nombres', texte: 'Simuler une expérience aléatoire', pdf: 'seconde/tp/tp8-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
-    { niveau: 'seconde', nom: 'TP9 · Géométrie repérée', texte: 'Milieu, distance, alignement', pdf: 'seconde/tp/tp9-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
-    { niveau: 'seconde', nom: 'TP10 · Extremums et longueur de courbe', texte: 'Approcher un extremum, une longueur', pdf: 'seconde/tp/tp10-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
-    { niveau: 'seconde', nom: 'TP11 · Statistiques et tableaux croisés', texte: 'Indicateurs, filtrer et croiser', pdf: 'seconde/tp/tp11-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
+    { niveau: 'seconde', nom: 'TP7 · Les listes en Python', texte: 'Indices, ajout, parcours d’une liste', pdf: 'seconde/tp/tp7-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
+    { niveau: 'seconde', nom: 'TP8 · Balayage et dichotomie', texte: 'Valeurs approchées de √2', pdf: 'seconde/tp/tp8-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
+    { niveau: 'seconde', nom: 'TP9 · Simulation et loi des grands nombres', texte: 'Simuler une expérience aléatoire', pdf: 'seconde/tp/tp9-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
+    { niveau: 'seconde', nom: 'TP10 · Géométrie repérée', texte: 'Milieu, distance, alignement', pdf: 'seconde/tp/tp10-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
+    { niveau: 'seconde', nom: 'TP11 · Extremums et longueur de courbe', texte: 'Approcher un extremum, une longueur', pdf: 'seconde/tp/tp11-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
+    { niveau: 'seconde', nom: 'TP12 · Statistiques et tableaux croisés', texte: 'Indicateurs, filtrer et croiser', pdf: 'seconde/tp/tp12-sujet.pdf', comptes: ['PROF-2NDE', 'JIMMY'] },
     // Première (1TC) : activités interactives en plusieurs étapes (onglet « Activités »)
     { niveau: 'premiere', nom: 'Probabilités conditionnelles · Contrôlé positif… donc dopé ?', id: 'premiere/activite-probas' }
 ];
@@ -335,13 +337,13 @@ window.INTERACTIF_BAREMES = {
     'seconde/tp-boucles-hybride': { nonNote: true },   // TP3 hybride : entraînement, non noté (comme le TP3)
     'premiere/activite-probas': { nonNote: true, bonus: [10, 11, 12, 13], quiz: [9], quizSur: 5 },   // 1TC : activité d'introduction, non notée ; quiz (étape 9) suivi à part ; « Pour aller plus loin » (étapes 10 à 13 : arbre, chemins, formule, défi) en bonus
     'seconde/tp-pixels': {
-        // TP4 · A : lire et prévoir (6,5) · B : modifier (8) · C : créer (5,5) · quiz à part
+        // TP5 · A : lire et prévoir (6,5) · B : modifier (8) · C : créer (5,5) · quiz à part
         //       A               B                C         quiz
         points: [2, 2, 2.5,      2.5, 2.5, 3,     2.5, 3,   0],
         quiz: [9], quizSur: 5
     },
     'seconde/tp-filtres': {
-        // TP5 · A : lire et prévoir (4) · B : modifier (6) · C : créer (6) · quiz à part · D : défi (4) · bonus contours (1) ; « ta photo » = extra hors barème
+        // TP6 · A : lire et prévoir (4) · B : modifier (6) · C : créer (6) · quiz à part · D : défi (4) · bonus contours (1) ; « ta photo » = extra hors barème
         //       A        B        C        quiz  D   bonus
         points: [2, 2,    3, 3,    3, 3,    0,    4,  1],
         bonus: [9],
