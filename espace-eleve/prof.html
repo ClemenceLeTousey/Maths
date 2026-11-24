@@ -137,6 +137,11 @@
         .se-erreurs-t { margin: 12px 0 4px; font-weight: 600; }
         .se-erreurs { margin: 0; padding-left: 1.2em; }
         #se-eleve { margin-top: 16px; }
+        /* Onglet Diapo des corrections */
+        .diapos { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-width: 760px; }
+        .diapos li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+        .diapos .diapo-seq { font-size: 0.85rem; color: var(--muted); min-width: 15em; }
+        .diapos a { font-weight: 600; }
         /* Onglet Notifications */
         #panneau-notifs h3 { margin: 22px 0 8px; }
         .nt-form { display: grid; gap: 12px; max-width: 640px; }
@@ -205,6 +210,7 @@
                 <button type="button" role="tab" id="onglet-remediation" aria-controls="panneau-remediation" data-onglet="remediation">Remédiation</button>
                 <button type="button" role="tab" id="onglet-notifs" aria-controls="panneau-notifs" data-onglet="notifs">Notifications</button>
                 <button type="button" role="tab" id="onglet-plan" aria-controls="panneau-plan" data-onglet="plan">Plan de travail</button>
+                <button type="button" role="tab" id="onglet-diapos" aria-controls="panneau-diapos" data-onglet="diapos">Diapo des corrections</button>
                 <button type="button" role="tab" id="onglet-en-ligne" aria-controls="panneau-en-ligne" data-onglet="en-ligne">En ligne</button>
                 <button type="button" role="tab" id="onglet-sondage" aria-controls="panneau-sondage" data-onglet="sondage">Sondage</button>
                 <button type="button" role="tab" id="onglet-reunion-pp" aria-controls="panneau-reunion-pp" data-onglet="reunion-pp">Réunion P-P</button>
@@ -323,6 +329,15 @@
                 </div>
                 <p class="aide" id="pt-etat" aria-live="polite"></p>
                 <div><div id="pt-plan"></div></div>
+            </div>
+
+            <div class="panneau" role="tabpanel" id="panneau-diapos" aria-labelledby="onglet-diapos" hidden>
+                <h2>Diapo des corrections</h2>
+                <p class="aide">Corrections à projeter, une étape par clic (→, Espace ou clic ; ← pour revenir). Chaque diapo s'ouvre dans un nouvel onglet.</p>
+                <ul class="diapos">
+                    <li><span class="diapo-seq">Séq. 4 · Information chiffrée</span><a href="../cours/seconde/sequence4-correction-ex17-25-35-26-diaporama.html" target="_blank" rel="noopener">Exercices 17, 25 p. 259, 35 p. 260 et 26 p. 259</a></li>
+                    <li><span class="diapo-seq">Séq. 3 · Inégalités et inéquations</span><a href="../cours/seconde/sequence3-correction-feuille5-ex6-ex85-86-diaporama.html" target="_blank" rel="noopener">Feuille 5 ex 6 (Q2, Q6), ex 85 et 86 p. 25 (Q1, Q2)</a></li>
+                </ul>
             </div>
 
             <div class="panneau" role="tabpanel" id="panneau-en-ligne" aria-labelledby="onglet-en-ligne" hidden>

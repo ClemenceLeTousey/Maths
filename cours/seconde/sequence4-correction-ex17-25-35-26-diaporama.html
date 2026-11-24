@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="../../manifest.json">
+<title>Proportions et évolutions – Corrigé ex 17, 25, 35, 26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=Playwrite+FR+Moderne:wght@300&display=swap">
+<style>
+/* Diaporama de correction (vidéoprojection) : contenu repris des pages « Séquence 4 — Exercices Partie 1 / 2 — Corrigé ». Thème clair fixe. */
+:root {
+  color-scheme: light;
+  --bg: #F5F7FA; --paper: #FFFFFF; --ink: #1D2733; --muted: #5B6878; --line: #DCE3EB;
+  --calc: #1C7ED6; --calc-soft: #EAF3FC; --sky: #339AF0; --green: #2F9E44;
+  --star-green: #40C057; --star-blue: #228BE6; --star-red: #FA5252;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-cursive: "Playwrite FR Moderne", "Segoe Script", "Apple Chancery", cursive;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: clamp(17px, 1.6vw, 30px); line-height: 1.4; display: flex; flex-direction: column; }
+b, strong { font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.stage { flex: 1; min-height: 0; width: 100%; max-width: 1400px; margin: 0 auto; padding: 14px 20px 6px; display: flex; flex-direction: column; }
+.slide { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: .6em; cursor: pointer; }
+
+.exo-h { display: flex; align-items: center; gap: .6em; flex-wrap: wrap; }
+.pill { background: var(--sky); color: #fff; border-radius: 6px; padding: .05em .55em; font-weight: 600; font-size: 1.1em; }
+.pill.maison { background: #E8A200; color: #1D2733; }
+.stars { letter-spacing: 1px; }
+.temps { font-size: .75em; color: var(--muted); white-space: nowrap; }
+.comp { margin-left: auto; font-family: var(--f-cursive); color: var(--sky); font-size: .8em; }
+.objn { font-family: var(--f-body); font-size: .95em; font-weight: 600; color: var(--calc); }
+
+.consigne { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: .6em 1em; }
+.consigne ol, .consigne ul { margin: .2em 0; padding-left: 1.4em; }
+.consigne li { margin: .1em 0; }
+
+.corr-b { padding: 0; }
+.avec { display: flex; gap: 1.2em; align-items: flex-start; flex-wrap: wrap; }
+.avec > div:first-child { flex: 1 1 18em; min-width: 0; }
+.figs { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.fig svg { display: block; width: 11em; height: auto; }
+.blk { border-radius: 0 10px 10px 0; padding: .25em .8em; margin: .3em 0; border-left: 4px solid; overflow-x: auto; }
+.blk-t { font-weight: 600; font-size: .62em; text-transform: uppercase; letter-spacing: .04em; margin-bottom: .1em; }
+.blk-c ul, .blk-c ol { margin: .1em 0; padding-left: 1.3em; }
+.blk.rep { background: #FFF4E6; border-color: #F76707; } .blk.rep .blk-t { color: #D9480F; }
+.blk.form { background: #F3F0FF; border-color: #7048E8; } .blk.form .blk-t { color: #6741D9; }
+.blk.calc { background: #fff; border-color: #ADB5BD; } .blk.calc .blk-t { color: #495057; }
+.blk.conc { background: #EBFBEE; border-color: #2F9E44; } .blk.conc .blk-t { color: #2B8A3E; }
+.blk.pg { background: #FFF5F5; border-color: #E03131; } .blk.pg .blk-t { color: #C92A2A; }
+.qq { border: 1px solid var(--line); border-radius: 10px; padding: .3em .8em; margin: .4em 0; background: #fff; }
+.qq-n { font-weight: 600; color: var(--calc); margin-bottom: .1em; }
+
+/* Étapes : place réservée (pas de saut de mise en page), apparition douce. */
+.stp { animation: appear .35s ease; }
+.stp.hid { visibility: hidden; animation: none; }
+.stp:not(.hid) { visibility: visible; }
+@keyframes appear { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.controls { display: flex; align-items: center; gap: 10px; padding: 6px 0 2px; font-size: 16px; }
+.controls button { font: inherit; font-weight: 600; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 8px; padding: .45em 1em; cursor: pointer; white-space: nowrap; }
+.controls button:hover { border-color: var(--sky); }
+.controls button:focus-visible { outline: 2px solid var(--calc); outline-offset: 2px; }
+.controls button:disabled { opacity: .45; cursor: default; }
+.controls button.primary { background: var(--sky); border-color: var(--sky); color: #fff; }
+.dots { display: flex; gap: 6px; margin-inline: auto; flex-wrap: wrap; justify-content: center; }
+.dots button { font-size: 14px; padding: .25em .8em; border-radius: 999px; }
+.dots button[aria-current="true"] { background: #E8A200; border-color: #E8A200; color: #1D2733; }
+.progress { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="stage">
+<section class="slide" id="ex17" hidden>
+<div class="exo-h"><span class="pill maison">Ex 17 p 259</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 4 min</span><span class="comp"><span class="objn">Objectif 2</span> · Calculer</span></div>
+<div class="consigne">Après le passage de la tempête Irma en septembre 2017, \(95\,\%\) des \(21\,050\) bâtiments de l'île de Saint-Martin ont été détruits. Combien de bâtiments cela représente-t-il&nbsp;? Arrondir à la dizaine.</div>
+<div class="corr-b"><div class="avec"><div>
+<div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> Le tout&nbsp;: les bâtiments de l'île, \(N=21\,050\).
+</li><li> La proportion&nbsp;: \(p=95\,\%=0{,}95\).
+</li><li> La partie (inconnue)&nbsp;: \(n\), le nombre de bâtiments détruits.</li></ul></div></div>
+<div class="blk form"><div class="blk-t">Formule utilisée</div><div class="blk-c">On cherche la partie&nbsp;: \(n=p\times N\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(n=0{,}95\times21\,050=19\,997{,}5\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Environ \(20\,000\) bâtiments ont été détruits (arrondi à la dizaine).</div></div></div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl-ex17" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><text x="80" y="97" text-anchor="middle" font-size="20" fill="#1D2733">×</text><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#1D2733">0,95</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#1D2733">21 050</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">on cache n</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">n=p× N</text></svg></span></div></div></div>
+</section>
+<section class="slide" id="ex25" hidden>
+<div class="exo-h"><span class="pill maison">Ex 25 p 259</span><span class="stars" style="color:var(--star-blue)">★★<span style="color:#CED4DA">★</span></span><span class="temps">⏱ 6 min</span><span class="comp"><span class="objn">Objectif 3</span> · Représenter</span></div>
+<div class="consigne">Dans une grande entreprise, \(38{,}3\,\%\) des salariés sont des cadres et, parmi eux, \(86{,}5\,\%\) optent fréquemment pour le télétravail.
+<ol><li> Modéliser la situation à l'aide d'un schéma judicieusement choisi.
+</li><li> Quelle proportion des salariés sont des cadres qui optent pour le télétravail&nbsp;? Donner le résultat en pourcentage, arrondi au dixième.
+</li></ol></div>
+<div class="corr-b"><div class="qq"><div class="qq-n">Question 1</div>Schéma&nbsp;: salariés \(\xrightarrow{\times0{,}383}\) cadres \(\xrightarrow{\times0{,}865}\) cadres en télétravail.</div>
+<div class="qq"><div class="qq-n">Question 2</div><div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> On note \(p_1=0{,}383\) la proportion de cadres parmi les salariés et \(p_2=0{,}865\) la proportion de cadres en télétravail parmi les cadres.</li></ul></div></div>
+<div class="blk form"><div class="blk-t">Formule utilisée</div><div class="blk-c">Alors la proportion \(p\) de cadres en télétravail parmi les salariés est donnée par \(p=p_1\times p_2\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(p=0{,}383\times0{,}865=0{,}331\,295\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Environ \(33{,}1\,\%\) des salariés sont des cadres qui optent pour le télétravail.</div></div></div></div>
+</section>
+<section class="slide" id="ex35" hidden>
+<div class="exo-h"><span class="pill maison">Ex 35 p 260</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 2 min</span><span class="comp"><span class="objn">Objectif 1</span> · Calculer</span></div>
+<div class="consigne"><b>Flash.</b> Sur un budget de vacances de \(600\)&nbsp;€, \(180\)&nbsp;€ sont consacrés aux loisirs. Quelle proportion du budget cela représente-t-il&nbsp;?</div>
+<div class="corr-b"><div class="avec"><div>
+<div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> Le tout&nbsp;: le budget, \(N=600\)&nbsp;€.
+</li><li> La partie&nbsp;: les loisirs, \(n=180\)&nbsp;€.</li></ul></div></div>
+<div class="blk form"><div class="blk-t">Formule utilisée</div><div class="blk-c">\(p=\dfrac{n}{N}\)</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">\(p=\dfrac{180}{600}=\dfrac{3}{10}=0{,}3\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Les loisirs représentent \(30\,\%\) du budget.</div></div></div><div class="figs"><span class="fig"><svg viewBox="0 0 160 158" width="160" height="158" font-family="Source Sans 3, sans-serif" role="img"><defs><marker id="fl-ex35" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D2733"/></marker></defs><path d="M10,110 L150,110 L80,8 z" fill="none" stroke="#6741D9" stroke-width="1.6"/><line x1="40" y1="64" x2="120" y2="64" stroke="#6741D9"/><text x="80" y="97" text-anchor="middle" font-size="20" fill="#1D2733">×</text><text x="80" y="38" text-anchor="middle" font-size="12" fill="#1D2733">n</text><text x="80" y="56" text-anchor="middle" font-size="12" fill="#1D2733">180</text><text x="55" y="82" text-anchor="middle" font-size="12" fill="#1D2733">p</text><text x="55" y="100" text-anchor="middle" font-size="12" fill="#6741D9">?</text><text x="105" y="82" text-anchor="middle" font-size="12" fill="#1D2733">N</text><text x="105" y="100" text-anchor="middle" font-size="12" fill="#1D2733">600</text><text x="80" y="128" text-anchor="middle" font-size="11" fill="#6741D9">on cache p</text><text x="80" y="142" text-anchor="middle" font-size="11" fill="#6741D9">p=n/N</text></svg></span></div></div></div>
+</section>
+<section class="slide" id="ex26" hidden>
+<div class="exo-h"><span class="pill maison">Ex 26 p 259</span><span class="stars" style="color:var(--star-green)">★<span style="color:#CED4DA">★★</span></span><span class="temps">⏱ 5 min</span><span class="comp"><span class="objn">Objectif 4</span> · Calculer</span></div>
+<div class="consigne">Un smartphone initialement affiché à \(385\)&nbsp;€ est proposé à \(254{,}10\)&nbsp;€ lors d'une promotion. Calculer la variation absolue puis la variation relative (en pourcentage) du prix du smartphone.</div>
+<div class="corr-b"><div class="blk rep"><div class="blk-t">On repère</div><div class="blk-c"><ul><li> Valeur initiale&nbsp;: \(v_1=385\)&nbsp;€.
+</li><li> Valeur finale&nbsp;: \(v_2=254{,}10\)&nbsp;€.</li></ul></div></div>
+<div class="blk form"><div class="blk-t">Formule utilisée</div><div class="blk-c">Variation absolue&nbsp;: \(v_2-v_1\). &emsp; Taux d'évolution&nbsp;: \(t=\dfrac{v_2-v_1}{v_1}\).</div></div>
+<div class="blk calc"><div class="blk-t">Calculs</div><div class="blk-c">Variation absolue&nbsp;: \(254{,}10-385=-130{,}90\)&nbsp;€.<br>
+Taux d'évolution&nbsp;: \(t=\dfrac{-130{,}90}{385}=-0{,}34\).</div></div>
+<div class="blk conc"><div class="blk-t">Conclusion</div><div class="blk-c">Le prix a baissé de \(130{,}90\)&nbsp;€, soit une baisse de \(34\,\%\).</div></div></div>
+</section>
+  <div class="controls">
+    <button id="prev" aria-label="Étape précédente">←</button>
+    <span class="progress" id="progress"></span>
+    <div class="dots" id="dots"></div>
+    <button id="fs">Plein écran</button>
+    <button id="next" class="primary">Suivant →</button>
+  </div>
+</div>
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  // Étapes de chaque diapo : chaque bloc (On repère, Formule, Calculs, Conclusion) et chaque question sans blocs.
+  // La figure (triangle) apparaît avec la formule ; l'en-tête « Question n » avec son premier bloc.
+  var data = slides.map(function (sl) {
+    var steps = Array.prototype.slice.call(sl.querySelectorAll('.corr-b .blk, .corr-b .qq')).filter(function (e) {
+      return !(e.classList.contains('qq') && e.querySelector('.blk'));
+    });
+    steps.forEach(function (e) { e.classList.add('stp'); });
+    var figs = sl.querySelector('.corr-b .figs'), form = sl.querySelector('.corr-b .blk.form');
+    if (figs) figs.classList.add('stp');
+    var qqs = Array.prototype.slice.call(sl.querySelectorAll('.corr-b .qq')).filter(function (q) { return q.querySelector('.blk'); });
+    qqs.forEach(function (q) { q.classList.add('stp'); });
+    return { steps: steps, figs: figs, form: form, qqs: qqs };
+  });
+
+  var cur = 0, step = 0;
+  var prevBtn = document.getElementById('prev'), nextBtn = document.getElementById('next'),
+      dotsEl = document.getElementById('dots'), progEl = document.getElementById('progress');
+
+  slides.forEach(function (sl, i) {
+    var b = document.createElement('button');
+    b.textContent = sl.querySelector('.pill').textContent.replace(/^Ex /, 'Ex ').replace(/ p (\d+)/, ' p. $1');
+    b.addEventListener('click', function (e) { e.stopPropagation(); cur = i; step = 0; render(); });
+    dotsEl.appendChild(b);
+  });
+
+  function render() {
+    slides.forEach(function (sl, i) { sl.hidden = (i !== cur); });
+    var d = data[cur];
+    d.steps.forEach(function (e, k) { e.classList.toggle('hid', k >= step); });
+    if (d.figs) d.figs.classList.toggle('hid', !d.form || d.form.classList.contains('hid'));
+    d.qqs.forEach(function (q) { q.classList.toggle('hid', q.querySelector('.blk').classList.contains('hid')); });
+    var last = d.steps[step - 1];
+    if (last && last.scrollIntoView) last.scrollIntoView({ block: 'nearest' });
+    else slides[cur].scrollTop = 0;
+    Array.prototype.forEach.call(dotsEl.children, function (b, i) { b.setAttribute('aria-current', i === cur ? 'true' : 'false'); });
+    progEl.textContent = 'étape ' + step + ' / ' + d.steps.length;
+    prevBtn.disabled = (cur === 0 && step === 0);
+    nextBtn.disabled = (cur === slides.length - 1 && step === d.steps.length);
+    try { history.replaceState(null, '', '#' + (cur + 1)); } catch (err) {}
+  }
+  function next() {
+    if (step < data[cur].steps.length) step++;
+    else if (cur < slides.length - 1) { cur++; step = 0; }
+    render();
+  }
+  function prev() {
+    if (step > 0) step--;
+    else if (cur > 0) { cur--; step = data[cur].steps.length; }
+    render();
+  }
+  nextBtn.addEventListener('click', next);
+  prevBtn.addEventListener('click', prev);
+  slides.forEach(function (sl) { sl.addEventListener('click', next); });
+  document.getElementById('fs').addEventListener('click', function () {
+    try { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); } catch (e) {}
+  });
+  document.addEventListener('keydown', function (e) {
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].indexOf(e.key) >= 0) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].indexOf(e.key) >= 0) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') { e.preventDefault(); cur = 0; step = 0; render(); }
+  });
+  // « …diaporama.html#3 » ouvre directement la 3e diapositive.
+  var start = parseInt(location.hash.slice(1), 10);
+  if (start >= 1 && start <= slides.length) cur = start - 1;
+  render();
+})();
+</script>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], packages: { '[+]': ['color'] } }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+</body>
+</html>
