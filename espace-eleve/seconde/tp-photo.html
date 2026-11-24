@@ -309,7 +309,7 @@ def _executer(src, n):
         if (FICHE && FICHE.codeAcces) {
             var ses = Interactif.session(), ouvert = false;
             try { ouvert = localStorage.getItem('tp-acces:' + ID) === FICHE.codeAcces; } catch (x) {}
-            if (!ouvert && !(ses && String(ses.code || '').toUpperCase() === 'TEST-01')) {
+            if (!ouvert && !(ses && ['TEST-01', 'COLYBES'].indexOf(String(ses.code || '').toUpperCase()) >= 0)) {   // COLYBES : jamais de code d'accès
                 document.querySelector('.progression').hidden = true;
                 document.getElementById('py-etat').hidden = true;
                 var zv = document.getElementById('etapes');

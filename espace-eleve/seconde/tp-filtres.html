@@ -1856,7 +1856,7 @@ def _console(ligne, n):
                 retour.className = force ? 'retour' : 'retour ok';
                 retour.textContent = force ? '⏭ Étape passée. Tu pourras y revenir plus tard avec la barre des étapes, en haut.' : '✓ Bravo, c’est réussi !';
                 if (!force) montrerBilan();
-                c.classList.remove('courante'); c.classList.add('faite', 'ouverte');
+                c.classList.remove('courante'); c.classList.add('faite'); if (!(force && modeTest())) c.classList.add('ouverte');   // mode professeure : l'étape passée se replie
                 if (force) c.classList.add('passee');
                 tete.querySelector('.etape-num').textContent = force ? '⏭' : '✓';
                 ajouterRevoir();
