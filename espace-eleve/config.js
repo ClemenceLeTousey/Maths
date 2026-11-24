@@ -25,6 +25,7 @@ window.NOTIF_CONFIG = {
    « codeAccesTemporaire: { h: empreinte, min: 60, groupe: id } » : code supplémentaire qui ouvre le TP pendant « min » minutes,
      une seule fois par élève (connecté) ; « groupe » : TP qui partagent la même heure (ex. TP2 et sa version hybride) ;
    « fermeClasses: ['2B'] » : TP clos pour ces classes (plus aucun code ne l'ouvre, progression gardée, vue prof inchangée) ;
+   « noteFigeeClasses: ['2B'] » : TP terminé mais rouvert en révision pour ces classes (sans code, rien n'est enregistré, note arrêtée et affichée à l'élève) ;
    « vueProf: true » : la page sait s'ouvrir telle que l'élève l'a laissée (bouton dans Suivi TP) ;
    « tp: true » : TP en plusieurs étapes (score = étapes réussies, une ligne enregistrée par étape : pas de compteur de séries).
    « comptes: ['TEST-01'] » : visible seulement de ces comptes (séries préparées à l'avance, pour les tester) ;
@@ -126,7 +127,7 @@ window.INTERACTIF_CATALOGUE = [
       codeAcces: '7bceb7c3c796d4df2b37ee3dbeaf01030c22455f16ffb3f942d3a83c96b01460',   // mêmes codes d'accès que le TP2 habituel
       codeAccesClasses: { '2F': 'e6a96a2b74d96829918f25d0f14c93c9171cfed689c8abf25745f2e2b0f2b056' },
       codeAccesTemporaire: { h: '35cd4d76c4f2abe3900a27a961fb77e1098e23421e2d9f5f21fc17a8eefe7cc3', min: 60, groupe: 'seconde/tp-conditions-v2' },
-      fermeClasses: ['2B', '2F', '2H'] },   // TP2 clos le 13/11/2026 · code d'une heure, usage unique (voir Codes d'accès des TP)
+      noteFigeeClasses: ['2B', '2F', '2H'] },   // TP2 clos le 13/11/2026, rouvert en révision le 24/11/2026 : sans code, rien n'est enregistré, note arrêtée (affichée dans l'onglet TP Python)
     // TP Conditions V1 (20 étapes) : archivé, la page reste dans seconde/tp-conditions-v1.html
     { niveau: 'seconde', id: 'seconde/tp-conditions', groupe: 'TP Python · Les structures conditionnelles', titre: 'Si… sinon, elif (20 étapes)', court: 'TP Cond.', url: 'seconde/tp-conditions-v1.html', tp: true, vueProf: true, archive: true,
       codeAcces: 'd7c6ed760ed5b07f0c2766b06a63c0d5ddcec26f17c19db9e3d2a541645aca9c' },   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
@@ -134,7 +135,7 @@ window.INTERACTIF_CATALOGUE = [
       codeAcces: '7bceb7c3c796d4df2b37ee3dbeaf01030c22455f16ffb3f942d3a83c96b01460',   // empreinte SHA-256 du code d'accès (le code lui-même n'est pas dans le site)
       codeAccesClasses: { '2F': 'e6a96a2b74d96829918f25d0f14c93c9171cfed689c8abf25745f2e2b0f2b056' },   // 2F : code à part depuis le 08/11/2026
       codeAccesTemporaire: { h: '35cd4d76c4f2abe3900a27a961fb77e1098e23421e2d9f5f21fc17a8eefe7cc3', min: 60, groupe: 'seconde/tp-conditions-v2' },
-      fermeClasses: ['2B', '2F', '2H'] },   // TP2 clos le 13/11/2026 · code d'une heure, usage unique (voir Codes d'accès des TP)
+      noteFigeeClasses: ['2B', '2F', '2H'] },   // TP2 clos le 13/11/2026, rouvert en révision le 24/11/2026 : sans code, rien n'est enregistré, note arrêtée (affichée dans l'onglet TP Python)
     { niveau: 'seconde', id: 'seconde/serie8-j1', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 1', court: 'S8 · J1', url: 'seconde/serie8.html?j=1' },
     { niveau: 'seconde', id: 'seconde/serie8-j2', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 2', court: 'S8 · J2', url: 'seconde/serie8.html?j=2' },
     { niveau: 'seconde', id: 'seconde/serie8-j3', groupe: 'Série 8 · semaine du 9 au 13 novembre', titre: 'Jour 3', court: 'S8 · J3', url: 'seconde/serie8.html?j=3' },
@@ -292,10 +293,11 @@ window.INTERACTIF_GROUPES = {
    Compte PROF-2NDE : chaque ligne montre la version interactive, la version papier (pdf / corrige) et « Revenir à zéro ».
    Un TP interactif absent de cette liste s'affiche à la fin. */
 window.INTERACTIF_TP_ORDRE = [
+    // « resume » : fiche « L'essentiel » du TP (colonne « Résumé » de l'onglet TP Python)
     // TP1 : version interactive réservée à PROF-2NDE et 2H-TARTAGLIA pour l'instant ; les élèves voient la fiche PDF (Capytale) de la même ligne
-    { niveau: 'seconde', nom: 'TP1 · Affectations et fonctions', id: 'seconde/tp-premiers-pas', texte: 'Premiers pas en Python avec Capytale', pdf: 'seconde/tp/tp1-sujet.pdf', corrige: 'seconde/tp/tp1-corrige.pdf' },
+    { niveau: 'seconde', nom: 'TP1 · Affectations et fonctions', id: 'seconde/tp-premiers-pas', texte: 'Premiers pas en Python avec Capytale', pdf: 'seconde/tp/tp1-sujet.pdf', corrige: 'seconde/tp/tp1-corrige.pdf', resume: 'seconde/tp/tp1-essentiel.pdf' },
     // TP2 : version hybride pour les comptes qui la voient (2H-TARTAGLIA), sinon le TP2 habituel
-    { niveau: 'seconde', nom: 'TP2 · Les structures conditionnelles', id: 'seconde/tp-conditions-hybride', sinon: 'seconde/tp-conditions-v2', pdf: 'seconde/tp/tp2-sujet.pdf' },
+    { niveau: 'seconde', nom: 'TP2 · Les structures conditionnelles', id: 'seconde/tp-conditions-hybride', sinon: 'seconde/tp-conditions-v2', pdf: 'seconde/tp/tp2-sujet.pdf', resume: 'seconde/tp/tp2-essentiel.pdf' },
     // id = TP interactif ; tant qu'il est réservé à PROF-2NDE, les élèves voient « sinon » (ancien TP) ou la fiche PDF
     // TP3 : version hybride pour les comptes qui la voient (2H-TARTAGLIA), sinon le TP3 habituel
     { niveau: 'seconde', nom: 'TP3 · Les boucles en Python', id: 'seconde/tp-boucles-hybride', sinon: 'seconde/tp-boucles', texte: 'for, range, while', pdf: 'seconde/tp/tp3-sujet.pdf', corrige: 'seconde/tp/corrige-a-venir.html' },

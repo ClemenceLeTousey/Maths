@@ -120,6 +120,8 @@
         #liste-tp button.tp-zero:hover { background: var(--ko); color: #fff; }
         #liste-tp button.tp-zero:disabled { opacity: .5; cursor: default; }
         #liste-tp .tp-msg { align-self: center; color: var(--muted); font-size: 0.85rem; }
+        #liste-tp .tp-note { margin-top: 4px; font-size: 0.95rem; }
+        #liste-tp .tp-revision { display: block; margin-top: 4px; color: var(--muted); font-size: 0.85rem; }
         .code-tp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
         .code-tp input { width: 9em; font-family: var(--f-mono); font-variant-ligatures: none; }
         .code-tp .erreur { color: var(--ko); font-weight: 600; }
@@ -345,6 +347,7 @@
             var s = Interactif.session();
             if (compteProf2nde()) return true;   // comptes professeure PROF-2NDE et PROF-1TC (TEST-01 supprimé)
             if (s && String(s.code || '').toUpperCase() === 'JIMMY') return true;   // compte JIMMY : TP Python sans code d'accès
+            if (Interactif.tpNoteFigee(ex, s)) return true;   // TP terminé, rouvert en révision : sans code
             if (Interactif.accesTemporaire(ex, s) > 0) return true;   // code temporaire en cours
             try { return localStorage.getItem('tp-acces:' + ex.id) === Interactif.codeAccesTP(ex, s); } catch (e) { return false; }
         }
@@ -415,7 +418,7 @@
             var t = document.getElementById('liste-tp');
             t.innerHTML = '';
             var te = document.createElement('tr');
-            te.innerHTML = '<th class="coin"></th><th>Progression</th><th></th>';
+            te.innerHTML = '<th class="coin"></th><th>Progression</th><th>Résumé</th><th></th>';
             t.appendChild(te);
             // ordre et TP sans page interactive (PDF, à venir) : INTERACTIF_TP_ORDRE dans config.js
             var s = Interactif.session(), niv = s && Interactif.niveauClasse(s.classe), vus = {}, lignes = [];
@@ -437,8 +440,17 @@
             listeTP.forEach(function (ex) { if (!vus[ex.id]) lignes.push({ ex: ex }); });
             if (!lignes.length) {
                 var v = document.createElement('tr'), c0 = document.createElement('td');
-                c0.colSpan = 3; c0.textContent = 'Pas encore de TP pour ta classe.'; v.appendChild(c0); t.appendChild(v);
+                c0.colSpan = 4; c0.textContent = 'Pas encore de TP pour ta classe.'; v.appendChild(c0); t.appendChild(v);
                 return;
+            }
+            // colonne « Résumé » : fiche « L'essentiel » du TP (« resume » dans INTERACTIF_TP_ORDRE)
+            function celluleResume(o) {
+                var td = document.createElement('td');
+                if (o && o.resume) {
+                    var a = document.createElement('a'); a.className = 'bouton'; a.href = o.resume; a.target = '_blank'; a.rel = 'noopener';
+                    a.textContent = 'L’essentiel'; td.appendChild(a);
+                }
+                return td;
             }
             lignes.forEach(function (l) {
                 var tr = document.createElement('tr');
@@ -449,6 +461,7 @@
                     if (o.texte || o.aVenir) { c1.appendChild(document.createElement('br')); var st = document.createElement('i'); st.textContent = o.aVenir ? 'À venir' : o.texte; c1.appendChild(st); }
                     tr.appendChild(c1);
                     var d2 = document.createElement('td'); d2.textContent = o.aVenir ? '' : '—'; tr.appendChild(d2);
+                    tr.appendChild(celluleResume(o));
                     var d3 = document.createElement('td');
                     if (prof) d3.appendChild(actionsProf(o, null, null, listeTP, parExercice));
                     else if (o.pdf || o.corrige) {
@@ -469,10 +482,27 @@
                 c1.appendChild(titre); c1.appendChild(document.createElement('br'));
                 var st2 = document.createElement('i'); st2.textContent = ex.titre.replace(/\s*\(\d+ étapes?\)\s*$/, ''); c1.appendChild(st2);   // nombre d'étapes : déjà dans la colonne Progression
                 tr.appendChild(c1);
-                var res = apresReinit(ex.id, parExercice[ex.id]).slice().sort(function (a, b) { return b.score - a.score; })[0];
+                var lr = apresReinit(ex.id, parExercice[ex.id]);
+                var res = lr.slice().sort(function (a, b) { return b.score - a.score; })[0];
                 var c2 = document.createElement('td'); c2.textContent = res ? res.score + ' / ' + res.total + ' étapes' : '—'; tr.appendChild(c2);
+                // TP terminé, rouvert en révision : la note est arrêtée et affichée ici
+                var figee = !prof && Interactif.tpNoteFigee(ex, Interactif.session());
+                if (figee) {
+                    var nt = Interactif.noteTP(lr, ex.id), pn = document.createElement('div'); pn.className = 'tp-note';
+                    var v = function (x) { return String(x).replace('.', ','); };
+                    pn.innerHTML = !nt ? 'Pas de note' : 'Note TP : <b>' + v(nt.note) + ' / 20</b>' +
+                        (nt.quizSur ? '<br>Note quiz : <b>' + (nt.quiz === null ? 'pas fait' : v(nt.quiz) + ' / ' + nt.quizSur) + '</b>' : '');
+                    pn.title = 'TP terminé : ta note est arrêtée. Tu peux revoir le TP, mais plus rien n’est enregistré.';
+                    c2.appendChild(pn);
+                }
+                tr.appendChild(celluleResume(l.o));
                 var c3 = document.createElement('td');
                 if (prof) c3.appendChild(actionsProf(l.o, ex, res, listeTP, parExercice));
+                else if (figee) {
+                    var ar = document.createElement('a'); ar.href = ex.url; ar.className = 'bouton'; ar.textContent = 'Revoir';
+                    c3.appendChild(ar);
+                    var ir = document.createElement('i'); ir.className = 'tp-revision'; ir.textContent = ' 🔒 Note arrêtée, rien n’est plus enregistré'; c3.appendChild(ir);
+                }
                 else if (accesTP(ex)) {
                     var a = document.createElement('a'); a.href = ex.url; a.className = 'bouton'; a.textContent = res ? 'Continuer' : 'Commencer';
                     c3.appendChild(a);

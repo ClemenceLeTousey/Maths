@@ -528,7 +528,7 @@
             }
             remplirTP();
 
-            // meilleure tentative (plus d'étapes, puis la plus récente) et note
+            // meilleure tentative (plus d'étapes, puis la plus récente) et note — même calcul que Interactif.noteTP (moteur.js, note affichée à l'élève) : modifier les deux
             function resultat(code, id) {
                 var liste = donnees.resultats.filter(function (r) { return r.code === code && r.exercice === id; });
                 if (!liste.length) return null;

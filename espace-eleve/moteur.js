@@ -985,6 +985,40 @@
     function tpFerme(ex, s) {
         return !!(ex && ex.fermeClasses && s && ex.fermeClasses.indexOf(classeSession(s)) >= 0);
     }
+    /* TP terminé, rouvert en révision pour la classe de l'élève (« noteFigeeClasses » dans config.js) :
+       accès sans code, rien n'est plus enregistré, la note reste celle du jour de la clôture */
+    function tpNoteFigee(ex, s) {
+        return !!(ex && ex.noteFigeeClasses && s && ex.noteFigeeClasses.indexOf(classeSession(s)) >= 0);
+    }
+    /* Note d'un TP d'après les résultats de l'élève et INTERACTIF_BAREMES : même calcul que l'onglet « Suivi TP »
+       de prof.html (fonction resultat) — à modifier aux deux endroits.
+       Renvoie { globale, note, quiz, quizSur } ou null (pas de résultat, TP non noté). */
+    function noteTP(liste, id) {
+        var bareme = (window.INTERACTIF_BAREMES || {})[id] || {};
+        if (!liste || !liste.length || bareme.nonNote) return null;
+        var r = liste.slice().sort(function (a, b) { return b.score - a.score || new Date(b.fait_le) - new Date(a.fait_le); })[0];
+        var bonus = bareme.bonus || [], quizE = bareme.quiz || [];
+        var total = r.total, comptees = total - bonus.concat(quizE).filter(function (k) { return k <= total; }).length;
+        var points = 0, quiz = null;
+        function valide(d) { return d && d.qmax && !d.p && d.ok !== false; }
+        if (quizE.length) {   // quiz : la PREMIÈRE tentative où il a été validé
+            var rq = liste.filter(function (x) { return quizE.some(function (n) { return valide((x.details || [])[n - 1]); }); })
+                .sort(function (a, b) { return new Date(a.fait_le) - new Date(b.fait_le); })[0] || r;
+            quizE.forEach(function (n) {
+                var d = (rq.details || [])[n - 1];
+                if (valide(d)) quiz = (quiz || 0) + (bareme.quizSur || 5) * (d.q || 0) / d.qmax / quizE.length;
+                else if (d && quiz === null) quiz = 0;
+            });
+        }
+        (r.details || []).forEach(function (d, k) {
+            if (!d || quizE.indexOf(k + 1) >= 0 || d.p || d.ok === false) return;
+            points += bareme.points ? bareme.points[k] || 0 : comptees > 0 ? 20 / comptees : 0;
+        });
+        var note = Math.min(20, points), quizSur = quizE.length ? bareme.quizSur || 5 : 0;
+        var globale = quizSur ? 0.75 * note + 0.25 * (quiz || 0) * 20 / quizSur : note;
+        function arr(x) { return x === null ? null : Math.round(x * 10) / 10; }
+        return { globale: arr(globale), note: arr(note), quiz: arr(quiz), quizSur: quizSur };
+    }
     /* Empreinte du code d'accès d'un TP pour la session : codeAccesClasses[classe] s'il existe, sinon codeAcces ;
        TP clos pour la classe : « ferme », qu'aucune empreinte ne peut égaler */
     function codeAccesTP(ex, s) {
@@ -1117,6 +1151,6 @@
     window.Interactif = {
         scriptFige: scriptFige,
         rpc: rpc, session: session, connecter: connecter, deconnecter: deconnecter,
-        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, visible: visible, publie: publie, ouvertureSerie: ouvertureSerie, classeSession: classeSession, codeAccesTP: codeAccesTP, tpFerme: tpFerme, accesTemporaire: accesTemporaire, ouvrirTemporaire: ouvrirTemporaire, minuteurAcces: minuteurAcces, couleurs: couleurs, bilanCouleurs: bilanCouleurs, pastilles: pastilles
+        bandeau: bandeau, exercice: exercice, alea: alea, poly: poly, par: par, maths: maths, mixte: mixte, niveauClasse: niveauClasse, visible: visible, publie: publie, ouvertureSerie: ouvertureSerie, classeSession: classeSession, codeAccesTP: codeAccesTP, tpFerme: tpFerme, tpNoteFigee: tpNoteFigee, noteTP: noteTP, accesTemporaire: accesTemporaire, ouvrirTemporaire: ouvrirTemporaire, minuteurAcces: minuteurAcces, couleurs: couleurs, bilanCouleurs: bilanCouleurs, pastilles: pastilles
     };
 })();

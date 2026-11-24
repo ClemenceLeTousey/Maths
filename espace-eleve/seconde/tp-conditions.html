@@ -539,6 +539,14 @@ def _console(ligne, n):
         if (FICHE && FICHE.codeAcces && !/[?&]vue-eleve=/.test(location.search)) {
             var ses = Interactif.session(), ouvert = false, CODE = Interactif.codeAccesTP(FICHE, ses);   // code propre à la classe s'il existe
             try { ouvert = localStorage.getItem('tp-acces:' + ID) === CODE; } catch (x) {}
+            // TP terminé, rouvert en révision (noteFigeeClasses) : sans code, rien n'est enregistré, note arrêtée
+            if (Interactif.tpNoteFigee(FICHE, ses)) {
+                ouvert = true;
+                var bf = document.createElement('p'); bf.className = 'retour';
+                bf.style.cssText = 'margin:0 0 12px;padding:10px 14px;border:2px solid #c9a227;border-radius:10px;background:#fff6df;color:#3a2f00;font-weight:600';
+                bf.textContent = '🔒 Ce TP est terminé : tu peux le revoir et t’entraîner, mais plus rien n’est enregistré. Ta note est arrêtée (onglet TP Python de ton espace).';
+                var be = document.getElementById('barre-etapes'); be.parentNode.insertBefore(bf, be);
+            }
             var finTemp = ouvert ? 0 : Interactif.accesTemporaire(FICHE, ses);   // code temporaire (une heure, usage unique)
             if (finTemp > 0) { ouvert = true; Interactif.minuteurAcces(finTemp, FICHE); }
             // compte PROF-2NDE en « mode élève » : le code est demandé, comme à un élève
@@ -1205,6 +1213,7 @@ def _console(ligne, n):
         function enregistrer() {
             var s = Interactif.session();
             if (VUE) return Promise.resolve('Vue professeure : rien n’est enregistré.');
+            if (FICHE && Interactif.tpNoteFigee(FICHE, s)) return Promise.resolve('🔒 TP terminé : rien n’est enregistré, ta note est arrêtée.');
             if (!s) return Promise.resolve('Tu n’es pas connecté(e) : ta progression est gardée seulement sur cet appareil.');
             var nbDetails = N_QUIZ > faites && quizRepondu() ? N_QUIZ : faites;   // + le quiz s'il est fait en avance
             var details = ETAPES.slice(0, nbDetails).map(function (e, k) {
