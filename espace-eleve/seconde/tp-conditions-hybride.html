@@ -1123,7 +1123,7 @@ def _console(ligne, n):
             }).catch(function () {});
         })();
         function modeProf() { return !!VUE || modeTest(); }   // solutions et « Développer » visibles
-        function compteProf() { if (VUE) return false; var s = Interactif.session(); return !!s && String(s.code || '').toUpperCase() === 'PROF-2NDE'; }
+        function compteProf() { if (VUE) return false; var s = Interactif.session(); return !!s && ['PROF-2NDE', 'COLYBES'].indexOf(String(s.code || '').toUpperCase()) >= 0; }   // COLYBES : modes professeure et élève, sans la version hybride
         // compte PROF-2NDE : « mode professeure » (solutions, « Développer », toutes les étapes ouvertes, Passer sans confirmation)
         // ou « mode élève » (le TP exactement comme un élève le voit) ; choix gardé sur l'appareil (localStorage « tp-mode »)
         /* Compte PROF-2NDE en mode élève : « Réinitialiser l'étape » efface les réponses de l'étape (et la progression
@@ -1899,7 +1899,7 @@ def _console(ligne, n):
             ch.checked = /tp-conditions-hybride\.html/.test(location.pathname);
             ch.onchange = function () { location.href = ch.checked ? 'tp-conditions-hybride.html' : 'tp-conditions.html'; };
             lh.title = 'Version hybride : tout ce qui est à lire dans le PDF, seulement les questions en ligne';
-            lh.appendChild(ch); lh.appendChild(document.createTextNode(' 📄 Version hybride')); choix.appendChild(lh);
+            lh.appendChild(ch); lh.appendChild(document.createTextNode(' 📄 Version hybride')); if (String((Interactif.session() || {}).code || '').toUpperCase() !== 'COLYBES') choix.appendChild(lh);   // COLYBES : pas de version hybride
             var barreE = document.getElementById('barre-etapes');
             barreE.insertBefore(choix, barreE.firstChild);
         }
