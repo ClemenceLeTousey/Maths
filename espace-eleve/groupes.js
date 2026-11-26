@@ -5,10 +5,12 @@
    Chaque déplacement est enregistré dans la base (codes élèves seulement) ; les noms
    viennent des fichiers comptes-*.csv chargés dans l'onglet Comptes.
    « Projeter » ouvre les groupes en grand caractères pour la classe.
+   « Au hasard » tire un élève dans chaque groupe (surligné ici et sur la projection).
    Nécessite le script maj-groupes.sql dans Supabase.
    ========================================================================== */
 var Groupes = (function () {
     var liste = null, erreur = '', classe = '', choisi = null;
+    var tirage = {}, fen = null, roule = null;   // tirage : { numéro de groupe: code tiré }
     var $ = function (id) { return document.getElementById(id); };
 
     function mdpProf() { try { return sessionStorage.getItem('interactif-prof'); } catch (e) { return null; } }
@@ -67,7 +69,7 @@ var Groupes = (function () {
         $('gr-classes').innerHTML = cl.map(function (c) {
             return '<button type="button" data-c="' + esc(c) + '" aria-pressed="' + (c === classe) + '">' + esc(c) + '</button>';
         }).join('');
-        Array.prototype.forEach.call($('gr-classes').children, function (b) { b.onclick = function () { classe = b.dataset.c; choisi = null; peindre(); }; });
+        Array.prototype.forEach.call($('gr-classes').children, function (b) { b.onclick = function () { classe = b.dataset.c; choisi = null; tirage = {}; peindre(); }; });
 
         var r = repartition(classe), nums = Object.keys(r.g).map(Number).sort(function (a, b) { return a - b; });
         var suivant = (nums.length ? nums[nums.length - 1] : 0) + 1;
@@ -75,7 +77,7 @@ var Groupes = (function () {
             return '<section class="gr-carte ' + (cls || '') + '" data-g="' + num + '">' +
                 '<h3>' + titre + (codes.length ? ' <span class="gr-nb">' + codes.length + '</span>' : '') + '</h3>' +
                 codes.map(function (code) {
-                    return '<button type="button" class="gr-eleve' + (code === choisi ? ' gr-choisi' : '') + '" draggable="true" data-code="' + esc(code) + '" title="' + esc(code) + '">' + etiquette(code) + '</button>';
+                    return '<button type="button" class="gr-eleve' + (code === choisi ? ' gr-choisi' : '') + (num !== '' && tirage[num] === code ? ' gr-tire' : '') + '" draggable="true" data-code="' + esc(code) + '" title="' + esc(code) + '">' + etiquette(code) + '</button>';
                 }).join('') + '</section>';
         };
         var html = '<div class="gr-grille">' + nums.map(function (n) { return carte(n, 'Groupe ' + n, r.g[n]); }).join('') +
@@ -127,13 +129,18 @@ var Groupes = (function () {
     function projeter() {
         var r = repartition(classe), nums = Object.keys(r.g).map(Number).sort(function (a, b) { return a - b; });
         if (!nums.length) { etat('Aucun groupe à projeter.'); return; }
-        var w = window.open('', '_blank');
-        if (!w) { etat('Fenêtre bloquée par le navigateur.'); return; }
+        if (!fen || fen.closed) fen = window.open('', '_blank');
+        if (!fen) { etat('Fenêtre bloquée par le navigateur.'); return; }
+        ecrireProjection(fen, r, nums);
+        fen.focus();
+    }
+    function ecrireProjection(w, r, nums) {
         var cols = nums.length > 8 ? 5 : 4, lignes = Math.ceil(nums.length / cols);
         var corps = nums.map(function (n) {
             return '<section class="groupe"><div class="num">Groupe ' + n + '</div>' +
-                r.g[n].map(function (c) { return '<div class="eleve">' + etiquette(c).replace('gr-nom', 'n') + '</div>'; }).join('') + '</section>';
+                r.g[n].map(function (c) { return '<div class="eleve' + (tirage[n] === c ? ' tire' : '') + '">' + etiquette(c).replace('gr-nom', 'n') + '</div>'; }).join('') + '</section>';
         }).join('');
+        w.document.open();
         w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Groupes – ' + esc(classe) + '</title>' +
             '<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet"><style>' +
             '*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}' +
@@ -142,9 +149,40 @@ var Groupes = (function () {
             '.grid{flex:1;display:grid;grid-template-columns:repeat(' + cols + ',1fr);grid-template-rows:repeat(' + lignes + ',1fr);gap:2vh 2vw;min-height:0}' +
             '.groupe{background:#fff;border:1px solid #dcd9d0;border-top:.6vh solid #2f5d8a;border-radius:10px;padding:1.4vh 1.4vw;display:flex;flex-direction:column;justify-content:center;gap:.6vh;min-width:0}' +
             '.num{font-size:clamp(.9rem,2.3vh,1.6rem);color:#2f5d8a;font-weight:500;margin-bottom:.4vh}' +
-            '.eleve{font-size:clamp(1rem,' + (lignes > 2 ? '2.8' : '3.4') + 'vh,2.4rem);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.eleve .n{color:#6a6f76}' +
+            '.eleve{border-radius:8px;padding:0 .5vw;font-size:clamp(1rem,' + (lignes > 2 ? '2.8' : '3.4') + 'vh,2.4rem);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.eleve .n{color:#6a6f76}' +
+            '.eleve.tire{background:#fff3bf;outline:.35vh solid #e8a200;font-weight:600}.eleve.tire::before{content:"★ ";color:#e8a200}' +
             '</style></head><body><h1>Groupes – ' + esc(classe) + '</h1><main class="grid">' + corps + '</main></body></html>');
         w.document.close();
+    }
+
+    // Un élève au hasard dans chaque groupe (courte animation, en évitant si possible le même que la fois d'avant)
+    function auHasard() {
+        var r = repartition(classe), nums = Object.keys(r.g).map(Number);
+        if (!nums.length) { etat('Aucun groupe pour tirer au sort.'); return; }
+        if (roule) clearInterval(roule);
+        var avant = tirage, tours = 0;
+        var tirer = function (final) {
+            var t = {};
+            nums.forEach(function (n) {
+                var codes = r.g[n];
+                if (final && codes.length > 1) codes = codes.filter(function (c) { return c !== avant[n]; });
+                t[n] = codes[Math.floor(Math.random() * codes.length)];
+            });
+            return t;
+        };
+        var montrer = function () {
+            peindre();
+            if (fen && !fen.closed) ecrireProjection(fen, r, nums.slice().sort(function (a, b) { return a - b; }));
+        };
+        roule = setInterval(function () {
+            tours++;
+            if (tours < 10) { tirage = tirer(false); montrer(); return; }
+            clearInterval(roule); roule = null;
+            tirage = tirer(true); montrer();
+            etat('Tirage au sort : ' + nums.sort(function (a, b) { return a - b; }).map(function (n) {
+                var d = decouper(tirage[n]); return 'G' + n + ' ' + (d.prenom || d.nom);
+            }).join(' · '));
+        }, 90);
     }
 
     function charger() {
@@ -178,9 +216,12 @@ var Groupes = (function () {
                 '.gr-nom { color: var(--muted); }' +
                 '.gr-choisi { outline: 2px solid var(--c-seconde); background: var(--bleu-doux, #EAF3FC); }' +
                 '.gr-drag { opacity: .4; }' +
+                '.gr-tire { background: #FFF3BF; border-color: #E8A200; outline: 2px solid #E8A200; font-weight: 600; }' +
+                '.gr-tire::before { content: "★ "; color: #E8A200; }' +
                 '.gr-survol { background: var(--bleu-doux, #EAF3FC); border-color: var(--c-seconde); }';
             document.head.appendChild(st);
             $('gr-projeter').onclick = projeter;
+            $('gr-hasard').onclick = auHasard;
             $('gr-actualiser').onclick = charger;
             $('gr-retablir').onclick = function () {
                 if (!confirm('Remettre la ' + classe + ' dans les groupes établis ? Les déplacements faits depuis seront perdus.')) return;
