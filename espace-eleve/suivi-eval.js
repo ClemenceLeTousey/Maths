@@ -47,6 +47,17 @@
             { n: 4, comp: 'Calculer', qs: [['Factoriser D', 1.5], ['Factoriser E', 1.5]] },
             { n: 'bonus', comp: 'Calculer', qs: [['Développer F', 0.5, true], ['Développer G', 0.5, true], ['Factoriser H', 0.5, true], ['Factoriser I', 0.5, true]] }
         ] },
+        // Interro 5 : version du 25/11/2026 (la version initiale du 29/10 exporte « Interro 5 version initiale - notes … », non reconnu ici).
+        'Interro 5': { evaluation: 'Interro 5', sur: 10,
+            objs: [['Obj. 8', 'Résoudre une inéquation du premier degré.'], ['Inég.', 'Utiliser les règles sur les inégalités pour encadrer une expression.'],
+                   ['Obj. 1', 'Calculer une proportion et l\'exprimer sous différentes formes.'],
+                   ['Obj. 2', 'Calculer une partie connaissant le tout, ou le tout connaissant une partie.'], ['Obj. 3', 'Calculer une proportion de proportion.']], ex: [
+            { n: 1, comp: 'Calculer', qs: [['a) Inéquation, coefficient positif (+ droite)', 1.5], ['b) Inéquation, coefficient négatif (+ droite)', 1.5],
+                ['a) Vrai / faux : ajouter ou soustraire', 0.5], ['b) Vrai / faux : multiplier par un négatif', 0.5]] },
+            { n: 2, comp: 'Calculer', qs: [['Partie, tout et calcul n / N', 1], ['Écriture décimale', 0.5], ['Phrase avec le pourcentage', 0.5]] },
+            { n: 3, comp: 'Calculer', qs: [['Partie : tableau et formule', 0.5], ['Partie : calcul', 0.5], ['Tout : tableau et formule', 0.5], ['Tout : calcul', 0.5],
+                ['Schéma complété', 0.5], ['Définitions de p₁ et p₂', 0.5], ['Formule et calcul p = p₁ × p₂', 0.5], ['Conclusion', 0.5]] }
+        ] },
         // Évaluations d'automatismes (CSV préparés par Claude à partir des copies scannées).
         // Niveau 1 noté sur 9 ; niveaux 2 et 3 hors note : colonnes « Étoiles » (bleue = 2, rouge = 3) et « Étoiles détail ».
         // Question : [intitulé, points, bonus, énoncé (montré à l'élève), figure (chemin depuis espace-eleve/)]
