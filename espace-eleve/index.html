@@ -342,8 +342,8 @@
             });
         }
         function accesTP(ex) {
-            if (!ex.codeAcces) return true;
             var s = Interactif.session();
+            if (!ex.codeAcces && !Interactif.tpFerme(ex, s)) return true;
             if (compteProf2nde()) return true;   // comptes professeure PROF-2NDE et PROF-1TC (TEST-01 supprimé)
             if (s && ['JIMMY', 'COLYBES'].indexOf(String(s.code || '').toUpperCase()) >= 0) return true;   // comptes JIMMY et COLYBES : TP Python sans code d'accès
             if (Interactif.tpNoteFigee(ex, s)) return true;   // TP terminé, rouvert en révision : sans code
@@ -502,14 +502,14 @@
                     c3.appendChild(ar);
                     var ir = document.createElement('i'); ir.className = 'tp-revision'; ir.textContent = '🔒 Note arrêtée'; c3.appendChild(ir);
                 }
-                else if (Interactif.tpFerme(ex, Interactif.session())) {
+                else if (Interactif.tpFerme(ex, Interactif.session()) && !(ex.fermeLe && ex.codeAccesTemporaire && Interactif.accesTemporaire(ex, Interactif.session()) >= 0)) {
                     var fe = document.createElement('i'); fe.textContent = '🔒 TP terminé, accès fermé'; c3.appendChild(fe);
                 } else if (accesTP(ex)) {
                     var a = document.createElement('a'); a.href = ex.url; a.className = 'bouton'; a.textContent = res ? 'Continuer' : 'Commencer';
                     c3.appendChild(a);
                 } else {
                     var f = document.createElement('form'); f.className = 'code-tp';
-                    var i = document.createElement('input'); i.placeholder = 'Code d’accès'; i.autocomplete = 'off'; i.spellcheck = false;
+                    var i = document.createElement('input'); i.placeholder = Interactif.tpFerme(ex, Interactif.session()) ? 'Code de déblocage' : 'Code d’accès'; i.autocomplete = 'off'; i.spellcheck = false;
                     i.setAttribute('autocapitalize', 'off'); i.setAttribute('aria-label', 'Code d’accès du TP');
                     var b = document.createElement('button'); b.type = 'submit'; b.textContent = 'Ouvrir';
                     var m = document.createElement('span'); m.className = 'erreur';

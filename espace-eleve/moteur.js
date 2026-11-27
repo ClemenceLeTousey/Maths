@@ -985,6 +985,11 @@
        ou pour tous à partir de « fermeLe » (date et heure de Paris, ex. '2026-11-27T13:30:00+01:00') */
     function tpFerme(ex, s) {
         if (ex && ex.fermeLe && new Date(ex.fermeLe).getTime() <= Date.now()) return true;
+        return fermeClasse(ex, s);
+    }
+    /* Fermeture définitive pour la classe (fermeClasses) : même le code temporaire ne rouvre pas.
+       Après « fermeLe », le code temporaire (codeAccesTemporaire) sert de code de déblocage à durée limitée. */
+    function fermeClasse(ex, s) {
         return !!(ex && ex.fermeClasses && s && ex.fermeClasses.indexOf(classeSession(s)) >= 0);
     }
     /* TP terminé, rouvert en révision pour la classe de l'élève (« noteFigeeClasses » dans config.js) :
@@ -1024,8 +1029,9 @@
     /* Empreinte du code d'accès d'un TP pour la session : codeAccesClasses[classe] s'il existe, sinon codeAcces ;
        TP clos pour la classe : « ferme », qu'aucune empreinte ne peut égaler */
     function codeAccesTP(ex, s) {
-        if (!ex || !ex.codeAcces) return null;
+        if (!ex) return null;
         if (tpFerme(ex, s)) return 'ferme';
+        if (!ex.codeAcces) return null;
         var m = ex.codeAccesClasses, c = classeSession(s);
         return (m && c && m[c]) || ex.codeAcces;
     }
@@ -1055,7 +1061,7 @@
     // fin de l'accès (ms) s'il est en cours sur cet appareil, -1 s'il est terminé, 0 sinon
     // (contrôle rapide à l'ouverture ; minuteurAcces revérifie aussitôt avec l'heure d'internet)
     function accesTemporaire(ex, s) {
-        if (!ex || !ex.codeAccesTemporaire || !s || tpFerme(ex, s)) return 0;
+        if (!ex || !ex.codeAccesTemporaire || !s || fermeClasse(ex, s)) return 0;
         var t = lireLocal(cleTemp(ex));
         if (!t || t.code !== s.code) return 0;
         return !t.fini && t.fin > Date.now() ? t.fin : -1;
@@ -1063,7 +1069,7 @@
     function ouvrirTemporaire(ex) {
         var T = ex.codeAccesTemporaire, s = session();
         if (!s) return Promise.reject(new Error('Connecte-toi d’abord à ton compte : ce code ne sert qu’une fois par élève.'));
-        if (tpFerme(ex, s)) return Promise.reject(new Error('Ce TP est fermé pour ta classe.'));
+        if (fermeClasse(ex, s)) return Promise.reject(new Error('Ce TP est fermé pour ta classe.'));
         var id = (T.groupe || ex.id) + '#acces-temp', duree = (T.min || 60) * 60000;
         function debut() {
             return rpc('mes_resultats', { p_jeton: s.jeton }).then(function (l) {

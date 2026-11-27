@@ -267,21 +267,23 @@
             if (finTemp > 0) { ouvert = true; Interactif.minuteurAcces(finTemp, FICHE); }
             var modeEleve = false; try { modeEleve = localStorage.getItem('tp-mode') === 'eleve'; } catch (x) {}
             var estProf = !!ses && PROFS.indexOf(String(ses.code || '').toUpperCase()) >= 0;
+            var deblocable = !!(FICHE.fermeLe && FICHE.codeAccesTemporaire && finTemp === 0 && Interactif.tpFerme(FICHE, ses));   // fermée : code de déblocage (une fois)
             if (!ouvert && !(estProf && !modeEleve)) {
                 document.getElementById('barre-etapes').hidden = true;
                 var zv = document.getElementById('etapes');
                 zv.innerHTML = '<section class="etape courante"><div class="etape-tete"><span class="etape-num">🔒</span><h2>Activité verrouillée</h2></div>' +
-                    '<div class="etape-corps">' + (Interactif.tpFerme(FICHE, ses) ? '<p class="retour ko">🔒 Cette activité est terminée : l’accès est fermé pour ta classe. Ta progression est gardée.</p>' : finTemp < 0 ? '<p class="retour ko">⏱ Ton heure d’accès est terminée. Ta progression est gardée.</p>' : '') +
-                    '<p>Cette activité s’ouvre avec le <b>code d’accès</b> donné en classe.</p>' +
-                    '<form class="case-ligne prevision" id="f-code"><label>Code d’accès <input id="code-tp" autocomplete="off" spellcheck="false" autocapitalize="off"></label>' +
-                    '<button type="submit">Ouvrir l’activité</button></form><p class="retour" id="code-retour"></p></div></section>';
+                    '<div class="etape-corps">' + (finTemp < 0 ? '<p class="retour ko">⏱ Ton heure d’accès est terminée. Ta progression est gardée.</p>' : Interactif.tpFerme(FICHE, ses) ? '<p class="retour ko">🔒 Cette activité est terminée : l’accès est fermé. Ta progression est gardée.</p>' : '') +
+                    (deblocable ? '<p>Si ta professeure te donne un <b>code de déblocage</b>, tape-le ci-dessous : il ouvre l’activité pendant <b>' + (FICHE.codeAccesTemporaire.min || 60) + ' minutes</b>, une seule fois.</p>'
+                                : '<p>Cette activité s’ouvre avec le <b>code d’accès</b> donné en classe.</p>') +
+                    '<form class="case-ligne prevision" id="f-code"><label>' + (deblocable ? 'Code de déblocage' : 'Code d’accès') + ' <input id="code-tp" autocomplete="off" spellcheck="false" autocapitalize="off"></label>' +
+                    '<button type="submit">' + (deblocable ? 'Débloquer' : 'Ouvrir l’activité') + '</button></form><p class="retour" id="code-retour"></p></div></section>';
                 if (estProf) {
                     var bp = document.createElement('button'); bp.type = 'button'; bp.className = 'secondaire';
                     bp.textContent = '👩‍🏫 Revenir au mode professeure';
                     bp.onclick = function () { try { localStorage.setItem('tp-mode', 'prof'); } catch (x) {} location.reload(); };
                     zv.querySelector('.etape-corps').appendChild(bp);
                 }
-                if (Interactif.tpFerme(FICHE, ses)) { document.getElementById('f-code').hidden = true; zv.querySelector('.etape-corps > p:not(.retour)').hidden = true; }
+                if (Interactif.tpFerme(FICHE, ses) && !deblocable) { document.getElementById('f-code').hidden = true; zv.querySelector('.etape-corps > p:not(.retour)').hidden = true; }
                 document.getElementById('f-code').onsubmit = function (ev) {
                     ev.preventDefault();
                     var t = document.getElementById('code-tp').value.trim();
@@ -729,7 +731,7 @@
         function enregistrer() {
             var s = Interactif.session();
             if (VUE) return Promise.resolve('Vue professeure : rien n’est enregistré.');
-            if (Interactif.tpFerme(FICHE, s) && !profOuvert()) return Promise.resolve('🔒 Activité fermée : plus rien n’est enregistré.');
+            if (Interactif.tpFerme(FICHE, s) && !profOuvert() && !(Interactif.accesTemporaire(FICHE, s) > 0)) return Promise.resolve('🔒 Activité fermée : plus rien n’est enregistré.');
             if (!s) return Promise.resolve('Tu n’es pas ' + (genre() === 'F' ? 'connectée' : genre() === 'M' ? 'connecté' : 'connecté(e)') + ' : ta progression est gardée seulement sur cet appareil.');
             var nbDetails = N_QUIZ > faites && quizRepondu() ? N_QUIZ : faites;
             var details = ETAPES.slice(0, nbDetails).map(function (e, k) {

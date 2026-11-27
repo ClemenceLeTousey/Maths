@@ -25,7 +25,8 @@ window.NOTIF_CONFIG = {
    « codeAccesTemporaire: { h: empreinte, min: 60, groupe: id } » : code supplémentaire qui ouvre le TP pendant « min » minutes,
      une seule fois par élève (connecté) ; « groupe » : TP qui partagent la même heure (ex. TP2 et sa version hybride) ;
    « fermeClasses: ['2B'] » : TP clos pour ces classes (plus aucun code ne l'ouvre, progression gardée, vue prof inchangée) ;
-   « fermeLe: '2026-11-27T13:30:00+01:00' » : TP clos pour tous à partir de cette heure (comme fermeClasses ; une page restée ouverte se verrouille à l'heure dite) ;
+   « fermeLe: '2026-11-27T13:30:00+01:00' » : TP clos pour tous à partir de cette heure (comme fermeClasses ; une page restée ouverte se verrouille à l'heure dite ;
+     avec « codeAccesTemporaire », ce code sert alors de code de déblocage à durée limitée, une fois par élève) ;
    « noteFigeeClasses: ['2B'] » : TP terminé mais rouvert en révision pour ces classes (sans code, rien n'est enregistré, note arrêtée et affichée à l'élève) ;
    « vueProf: true » : la page sait s'ouvrir telle que l'élève l'a laissée (bouton dans Suivi TP) ;
    « tp: true » : TP en plusieurs étapes (score = étapes réussies, une ligne enregistrée par étape : pas de compteur de séries).
@@ -193,7 +194,8 @@ window.INTERACTIF_CATALOGUE = [
     // Première (1TC) : activité d'introduction aux probabilités conditionnelles (onglet « Activités » de l'espace élève), sans code d'accès
     // (ancien code DOPAGE-517 : pour le remettre, ajouter codeAcces: '4faa0e5775e86206c01c5b9f5bbbdb08889dd89af0911746d84b05024a4033a3')
     { niveau: 'premiere', id: 'premiere/activite-probas', groupe: 'Activité · Probabilités conditionnelles', titre: 'Contrôlé positif… donc dopé ?', court: '1 · Act. Probas', url: 'premiere/activite-probas.html', tp: true, vueProf: true,
-      fermeLe: '2026-11-27T13:30:00+01:00' },   // accès et modification bloqués à partir du vendredi 27/11/2026 13h30 (progression gardée, vue prof inchangée)
+      fermeLe: '2026-11-27T13:30:00+01:00',   // accès et modification bloqués à partir du vendredi 27/11/2026 13h30 (progression gardée, vue prof inchangée)
+      codeAccesTemporaire: { h: '272f5731bc4c07560e43ef5383fb83fbfecc90e972d5b0e8f818db982278e3ea', min: 60, groupe: 'premiere/activite-probas' } },   // code de déblocage après la fermeture : 60 min, une seule fois par élève
 ];
 
 /* Description de chaque groupe (même libellé que « groupe » ci-dessus), affichée sous son titre sur la page élève :
