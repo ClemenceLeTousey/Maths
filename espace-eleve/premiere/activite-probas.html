@@ -251,7 +251,16 @@
 
         /* ---------- Code d'accès (codeAcces dans config.js), comme pour les TP de Seconde ---------- */
         var FICHE = (window.INTERACTIF_CATALOGUE || []).filter(function (x) { return x.id === ID; })[0];
-        if (FICHE && FICHE.codeAcces && !/[?&]vue-eleve=/.test(location.search)) {
+        /* Fermeture à heure fixe (« fermeLe » dans config.js) : une page restée ouverte se verrouille à l'heure dite */
+        function profOuvert() {
+            var s0 = Interactif.session(), me = false; try { me = localStorage.getItem('tp-mode') === 'eleve'; } catch (x) {}
+            return !!s0 && PROFS.indexOf(String(s0.code || '').toUpperCase()) >= 0 && !me;
+        }
+        if (FICHE && FICHE.fermeLe && !profOuvert() && !/[?&]vue-eleve=/.test(location.search)) {
+            var resteF = new Date(FICHE.fermeLe).getTime() - Date.now();
+            if (resteF > 0 && resteF < 864e5) setTimeout(function () { location.reload(); }, resteF + 1000);
+        }
+        if (FICHE && (FICHE.codeAcces || Interactif.tpFerme(FICHE, Interactif.session())) && !/[?&]vue-eleve=/.test(location.search)) {
             var ses = Interactif.session(), ouvert = false, CODE = Interactif.codeAccesTP(FICHE, ses);
             try { ouvert = localStorage.getItem('tp-acces:' + ID) === CODE; } catch (x) {}
             var finTemp = ouvert ? 0 : Interactif.accesTemporaire(FICHE, ses);
@@ -720,6 +729,7 @@
         function enregistrer() {
             var s = Interactif.session();
             if (VUE) return Promise.resolve('Vue professeure : rien n’est enregistré.');
+            if (Interactif.tpFerme(FICHE, s) && !profOuvert()) return Promise.resolve('🔒 Activité fermée : plus rien n’est enregistré.');
             if (!s) return Promise.resolve('Tu n’es pas ' + (genre() === 'F' ? 'connectée' : genre() === 'M' ? 'connecté' : 'connecté(e)') + ' : ta progression est gardée seulement sur cet appareil.');
             var nbDetails = N_QUIZ > faites && quizRepondu() ? N_QUIZ : faites;
             var details = ETAPES.slice(0, nbDetails).map(function (e, k) {

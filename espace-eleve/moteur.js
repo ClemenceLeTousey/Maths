@@ -981,8 +981,10 @@
         if (!s) return '';
         return String(s.classe || '').toUpperCase() || String(s.code || '').toUpperCase().split('-')[0];
     }
-    /* TP clos pour la classe de l'élève (« fermeClasses » dans config.js) */
+    /* TP clos pour la classe de l'élève (« fermeClasses » dans config.js),
+       ou pour tous à partir de « fermeLe » (date et heure de Paris, ex. '2026-11-27T13:30:00+01:00') */
     function tpFerme(ex, s) {
+        if (ex && ex.fermeLe && new Date(ex.fermeLe).getTime() <= Date.now()) return true;
         return !!(ex && ex.fermeClasses && s && ex.fermeClasses.indexOf(classeSession(s)) >= 0);
     }
     /* TP terminé, rouvert en révision pour la classe de l'élève (« noteFigeeClasses » dans config.js) :
