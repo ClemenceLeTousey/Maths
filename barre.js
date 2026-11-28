@@ -12,7 +12,7 @@
     var base = script ? script.src.replace(/barre\.js(\?.*)?$/, '') : '';
     var CLE_THEME = 'site-maths-theme', CLE_MODE = 'site-maths-mode';
     var HALLOWEEN_EN_LIGNE = false;   // comme dans site.js : true pour remettre le mode Halloween (prévu le 31 octobre)
-    // Mode Noël, comme dans site.js : 'auto' = du 1er décembre au 6 janvier ; true = toujours ; false = jamais (aperçu : ?noel dans l'adresse)
+    // Mode Noël, comme dans site.js : 'auto' = du 28 novembre au 6 janvier ; true = toujours ; false = jamais (aperçu : ?noel dans l'adresse)
     var NOEL_EN_LIGNE = 'auto';
     var NOEL = !HALLOWEEN_EN_LIGNE && (function () {
         try {
@@ -22,7 +22,7 @@
         } catch (e) {}
         if (NOEL_EN_LIGNE !== 'auto') return NOEL_EN_LIGNE;
         var d = new Date();
-        return d.getMonth() === 11 || (d.getMonth() === 0 && d.getDate() <= 6);
+        return (d.getMonth() === 10 && d.getDate() >= 28) || d.getMonth() === 11 || (d.getMonth() === 0 && d.getDate() <= 6);
     })();
 
     function lire(cle) { try { return localStorage.getItem(cle) || ''; } catch (e) { return ''; } }

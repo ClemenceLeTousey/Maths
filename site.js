@@ -173,7 +173,7 @@ document.addEventListener('click', function (e) {
     var HALLOWEEN_EN_LIGNE = false;
 
     /* Mode Noël (boule de Noël à la place de la citrouille, quand le mode Halloween est hors ligne).
-       NOEL_EN_LIGNE : 'auto' = en ligne tout seul du 1er décembre au 6 janvier ; true = toujours ; false = jamais.
+       NOEL_EN_LIGNE : 'auto' = en ligne tout seul du 28 novembre au 6 janvier ; true = toujours ; false = jamais.
        Aperçu avant la date : ajouter ?noel à l'adresse d'une page (retenu sur cet appareil, ?noel=0 pour l'oublier).
        Même réglage dans barre.js. */
     var NOEL_EN_LIGNE = 'auto';
@@ -185,7 +185,7 @@ document.addEventListener('click', function (e) {
         } catch (e) {}
         if (NOEL_EN_LIGNE !== 'auto') return NOEL_EN_LIGNE;
         var d = new Date();
-        return d.getMonth() === 11 || (d.getMonth() === 0 && d.getDate() <= 6);
+        return (d.getMonth() === 10 && d.getDate() >= 28) || d.getMonth() === 11 || (d.getMonth() === 0 && d.getDate() <= 6);
     }
     var NOEL = !HALLOWEEN_EN_LIGNE && noelEnLigne();
 
@@ -1145,10 +1145,10 @@ document.addEventListener('click', function (e) {
     } else {
         LIENS.push({ texte: 'Espace professeure', href: 'espace-eleve/prof.html', actif: /\/espace-eleve\/prof\.html$/ });
     }
-    // Calendrier de l'Avent : lien affiché pendant la période du mode Noël (1er décembre - 6 janvier, ou aperçu ?noel)
+    // Calendrier de l'Avent : lien affiché pendant la période du mode Noël (28 novembre - 6 janvier, ou aperçu ?noel)
     var jour = new Date(), apercuNoel = '';
     try { apercuNoel = localStorage.getItem('site-maths-apercu-noel') || ''; } catch (e) {}
-    if (jour.getMonth() === 11 || (jour.getMonth() === 0 && jour.getDate() <= 6) || apercuNoel || /calendrier-avent\.html$/.test(location.pathname)) {
+    if ((jour.getMonth() === 10 && jour.getDate() >= 28) || jour.getMonth() === 11 || (jour.getMonth() === 0 && jour.getDate() <= 6) || apercuNoel || /calendrier-avent\.html$/.test(location.pathname)) {
         LIENS.splice(1, 0, { texte: 'Calendrier de l’Avent', href: 'calendrier-avent.html', actif: /calendrier-avent\.html$/ });
     }
     document.addEventListener('DOMContentLoaded', function () {
