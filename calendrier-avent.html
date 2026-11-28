@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maths Lebrun — Calendrier de l'Avent</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-title" content="Maths Lebrun">
+    <link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="site.js"></script>
+    <style>
+        /* ---------- Les 24 cases ---------- */
+        .avent-intro { color: var(--muted); max-width: 46em; }
+        .apercu { display: inline-block; margin: 0 0 1rem; padding: 4px 12px; border-radius: 999px; background: #ffe9a8; color: #5a3d00; font-size: 0.9rem; font-weight: 600; }
+        .portes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+            gap: 14px;
+            margin: 1.2rem 0 2rem;
+        }
+        .porte {
+            --fond: #c4202b;
+            --ruban: #ffd45a;
+            position: relative;
+            aspect-ratio: 1;
+            border: 0;
+            border-radius: 12px;
+            padding: 0;
+            cursor: pointer;
+            color: #fff;
+            font-family: inherit;
+            background:
+                linear-gradient(90deg, transparent calc(50% - 6px), var(--ruban) calc(50% - 6px), var(--ruban) calc(50% + 6px), transparent calc(50% + 6px)),
+                linear-gradient(0deg, transparent calc(50% - 6px), var(--ruban) calc(50% - 6px), var(--ruban) calc(50% + 6px), transparent calc(50% + 6px)),
+                var(--fond);
+            box-shadow: 0 6px 16px rgba(20, 33, 61, 0.18), inset 0 -4px 0 rgba(0, 0, 0, 0.15);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .porte:nth-child(4n+2) { --fond: #1f8f55; --ruban: #fff4d6; }
+        .porte:nth-child(4n+3) { --fond: #2f6fdf; --ruban: #ffd45a; }
+        .porte:nth-child(4n+4) { --fond: #8e2bb0; --ruban: #fff4d6; }
+        .porte:nth-child(7n+5) { --fond: #e8740c; --ruban: #fff4d6; }
+        .porte.j24 { grid-column: span 2; aspect-ratio: auto; --fond: #b8860b; --ruban: #c4202b; }
+        .porte .num {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font: 700 2.6rem/1 "Mountains of Christmas", "Lexend", cursive;
+            text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35), 0 0 12px rgba(0, 0, 0, 0.25);
+        }
+        .porte .num span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.2em;
+            height: 1.6em;
+            padding: 0 0.2em;
+            border-radius: 999px;
+            background: var(--fond);
+        }
+        .porte:hover, .porte:focus-visible { transform: translateY(-3px) rotate(-1deg); box-shadow: 0 10px 22px rgba(20, 33, 61, 0.25); outline: none; }
+        .porte:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+        .porte.ferme { filter: saturate(0.35) brightness(0.92); cursor: not-allowed; }
+        .porte.ferme::after {
+            content: "🔒";
+            position: absolute;
+            right: 8px;
+            bottom: 6px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        .porte.vue .num span { background: #fffdf6; color: var(--fond); text-shadow: none; }
+        .porte.vue::after {
+            content: "✓ vue";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .porte.secoue { animation: secoue 0.4s; }
+        @keyframes secoue { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+        .attente { min-height: 1.5em; color: var(--muted); font-weight: 600; }
+
+        /* ---------- La fenêtre d'une curiosité ---------- */
+        dialog.curiosite {
+            width: min(720px, calc(100vw - 24px));
+            max-height: calc(100vh - 40px);
+            padding: 0;
+            border: 0;
+            border-radius: 16px;
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        :root.noel dialog.curiosite { background: #0f2038; }
+        dialog.curiosite::backdrop { background: rgba(7, 17, 31, 0.6); backdrop-filter: blur(2px); }
+        .cur-haut {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 20px;
+            background: #c4202b;
+            color: #fff;
+        }
+        .cur-haut .jour { font: 700 1.6rem/1 "Mountains of Christmas", "Lexend", cursive; }
+        .cur-haut button { font: 600 0.9rem "Lexend", sans-serif; color: #fff; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+        .cur-corps { padding: 6px 22px 20px; line-height: 1.6; }
+        .cur-corps h2 { margin: 0.6rem 0 0.4rem; font-size: 1.35rem; }
+        .cur-corps .math { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.95em; white-space: nowrap; }
+        .cur-corps .encadre { margin: 0.8rem 0; padding: 0.7rem 1rem; border-radius: 10px; background: var(--bleu-doux); border-left: 4px solid var(--c-seconde); }
+        .cur-corps .defi { margin: 1rem 0 0; padding: 0.6rem 1rem; border-radius: 10px; border: 1px dashed var(--orange); }
+        .cur-corps .defi strong:first-child { color: var(--orange); }
+        .cur-corps canvas { display: block; max-width: 100%; margin: 0.6rem auto; border-radius: 8px; background: #f7f9fd; }
+        :root[data-theme="dark"] .cur-corps canvas, :root.noel .cur-corps canvas { background: #0b1626; }
+        .cur-corps .outil { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0.6rem 0; }
+        .cur-corps .outil input[type="number"], .cur-corps .outil input[type="text"] { width: 7em; padding: 6px 8px; font: inherit; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--text); }
+        .cur-corps .outil button, .mh-portes button {
+            font: 600 0.92rem "Lexend", sans-serif;
+            padding: 6px 14px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--c-seconde);
+            color: #fff;
+            cursor: pointer;
+        }
+        .cur-corps .resultat { padding: 0.6rem 0.9rem; border-radius: 8px; background: var(--bg); font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.9rem; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 1.4em; }
+        .grille-durer { border-collapse: collapse; margin: 0.6rem auto; font: 700 1.2rem "JetBrains Mono", monospace; }
+        .grille-durer td { width: 2.6em; height: 2.6em; text-align: center; border: 2px solid var(--line); cursor: pointer; transition: background 0.15s; }
+        .grille-durer td.on { background: #ffd45a; color: #14213d; }
+        .mh-portes { display: flex; justify-content: center; gap: 14px; margin: 0.8rem 0; }
+        .mh-portes button { width: 90px; height: 120px; border-radius: 10px; font-size: 1.6rem; background: #2f6fdf; }
+        .mh-portes button.choisie { outline: 4px solid var(--orange); outline-offset: 3px; }
+        .mh-portes button.ouverte { background: var(--bg); color: var(--text); border: 2px solid var(--line); }
+        .cur-bas { display: flex; justify-content: space-between; gap: 10px; padding: 0 22px 18px; }
+        .cur-bas button { font: 600 0.9rem "Lexend", sans-serif; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--text); cursor: pointer; }
+        .cur-bas button:disabled { opacity: 0.35; cursor: default; }
+    </style>
+</head>
+<body>
+
+    <!-- Barre de navigation -->
+    <nav class="navbar">
+        <div class="logo"><span class="logo-ligne"><button type="button" data-effet="ecrire" title="Réécrire le titre"></button><button type="button" data-effet="matrix" title="Mode Matrix"></button><button type="button" data-effet="futur" title="Mode BTTF (Back to the Future)"></button><button type="button" data-effet="halloween" title="Mode Halloween"></button></span><a href="index.html">Année 2026-2027 - Lycée Lebrun</a></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="numworks.html">Numworks</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>Calendrier de l'Avent</h1>
+        <p>Chaque jour de décembre, une curiosité mathématique à découvrir</p>
+    </header>
+
+    <main class="container">
+        <p id="apercu" class="apercu" hidden>Aperçu : toutes les cases sont ouvertes</p>
+        <p class="avent-intro">Une case s'ouvre chaque matin, du 1<sup>er</sup> au 24 décembre. Derrière : une énigme, un paradoxe, un nombre étonnant… et souvent un petit défi ou une expérience à faire toi-même. Les cases des jours passés restent ouvertes : tu peux rattraper ton retard !</p>
+        <p id="attente" class="attente" role="status"></p>
+        <div class="portes" id="portes"></div>
+    </main>
+
+    <dialog class="curiosite" id="curiosite" aria-labelledby="cur-titre">
+        <div class="cur-haut"><span class="jour" id="cur-jour"></span><button type="button" id="cur-fermer">Fermer ✕</button></div>
+        <div class="cur-corps" id="cur-corps"></div>
+        <div class="cur-bas"><button type="button" id="cur-prec">← Jour précédent</button><button type="button" id="cur-suiv">Jour suivant →</button></div>
+    </dialog>
+
+    <script>
+    (function () {
+        'use strict';
+
+        /* ==========================================================
+           Les 24 curiosités. html = contenu ; init(racine) = partie interactive éventuelle.
+           ========================================================== */
+        var C = {};
+
+        C[1] = { titre: 'Le flocon de von Koch', html:
+            '<p>Prends un triangle équilatéral. Sur chaque côté, remplace le tiers du milieu par une petite pointe (deux segments de même longueur). Recommence sur chaque nouveau segment… à l’infini.</p>' +
+            '<canvas width="420" height="300" id="koch"></canvas>' +
+            '<div class="outil"><button type="button" data-k="-1">− étape</button><button type="button" data-k="1">+ étape</button><span id="koch-info"></span></div>' +
+            '<div class="encadre">À chaque étape, chaque segment est remplacé par 4 segments trois fois plus petits : le périmètre est multiplié par <span class="math">4/3</span>. Après n étapes, il vaut <span class="math">3 × (4/3)ⁿ</span> (pour un côté de départ égal à 1) : il devient <strong>infiniment grand</strong>. Pourtant le flocon tient dans un cercle : son aire reste finie (8/5 de l’aire du triangle de départ) !</div>' +
+            '<p class="defi"><strong>Défi :</strong> à partir de quelle étape le périmètre dépasse-t-il 100 ? Utilise la calculatrice (ou un petit programme Python avec une boucle <span class="math">while</span>).</p>',
+            init: function (r) {
+                var cv = r.querySelector('#koch'), ctx = cv.getContext('2d'), n = 0;
+                function dessiner() {
+                    var pts = [[90, 75], [330, 75], [210, 75 + 240 * Math.sqrt(3) / 2]];
+                    pts.push(pts[0]);
+                    for (var e = 0; e < n; e++) {
+                        var s = [pts[0]];
+                        for (var i = 0; i < pts.length - 1; i++) {
+                            var a = pts[i], b = pts[i + 1], dx = (b[0] - a[0]) / 3, dy = (b[1] - a[1]) / 3;
+                            var p = [a[0] + dx, a[1] + dy], q = [a[0] + 2 * dx, a[1] + 2 * dy];
+                            var c = Math.cos(-Math.PI / 3), sn = Math.sin(-Math.PI / 3);
+                            s.push(p, [p[0] + dx * c - dy * sn, p[1] + dx * sn + dy * c], q, b);
+                        }
+                        pts = s;
+                    }
+                    ctx.clearRect(0, 0, cv.width, cv.height);
+                    ctx.beginPath();
+                    pts.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
+                    ctx.fillStyle = 'rgba(47, 111, 223, 0.15)'; ctx.fill();
+                    ctx.strokeStyle = '#2f6fdf'; ctx.lineWidth = 1.4; ctx.stroke();
+                    r.querySelector('#koch-info').textContent = 'Étape ' + n + ' : ' + (3 * Math.pow(4, n)) + ' côtés, périmètre ≈ ' +
+                        (3 * Math.pow(4 / 3, n)).toFixed(2).replace('.', ',');
+                }
+                r.querySelectorAll('[data-k]').forEach(function (b) {
+                    b.onclick = function () { n = Math.max(0, Math.min(6, n + Number(b.dataset.k))); dessiner(); };
+                });
+                dessiner();
+            } };
+
+        C[2] = { titre: 'Le tour de magie du 1089', html:
+            '<p>Choisis un nombre de trois chiffres dont le premier et le dernier chiffre sont différents (par exemple 742). Écris-le à l’envers (247) et fais la différence du plus grand moins le plus petit : <span class="math">742 − 247 = 495</span>. Écris ce résultat à l’envers (594) et ajoute-le : <span class="math">495 + 594 = 1089</span>.</p>' +
+            '<p>Recommence avec un autre nombre… tu trouves encore <strong>1089</strong> ! (Si la différence n’a que deux chiffres, comme 99, écris-la 099.)</p>' +
+            '<div class="outil"><label>Ton nombre : <input type="number" id="t1089" min="100" max="999" value="831"></label><button type="button" id="b1089">Calculer</button></div>' +
+            '<div class="resultat" id="r1089"></div>' +
+            '<p class="defi"><strong>Défi :</strong> écris le nombre <span class="math">100a + 10b + c</span> avec <span class="math">a > c</span>, et montre que la différence vaut toujours <span class="math">99 × (a − c)</span>. Il n’y a donc que 9 différences possibles : vérifie que pour chacune, on retombe sur 1089.</p>',
+            init: function (r) {
+                var e = r.querySelector('#t1089'), s = r.querySelector('#r1089');
+                function inv(n) { return Number(String(n).padStart(3, '0').split('').reverse().join('')); }
+                function calc() {
+                    var n = Math.floor(Number(e.value));
+                    if (!(n >= 100 && n <= 999)) { s.textContent = 'Choisis un nombre entre 100 et 999.'; return; }
+                    var t = String(n);
+                    if (t[0] === t[2]) { s.textContent = 'Le premier et le dernier chiffre doivent être différents !'; return; }
+                    var a = Math.max(n, inv(n)), b = Math.min(n, inv(n)), d = a - b, dd = String(d).padStart(3, '0');
+                    s.textContent = a + ' − ' + b + ' = ' + dd + '\n' + dd + ' + ' + String(inv(d)).padStart(3, '0') + ' = ' + (d + inv(d));
+                }
+                r.querySelector('#b1089').onclick = calc;
+                calc();
+            } };
+
+        C[3] = { titre: 'Le paradoxe des anniversaires', html:
+            '<p>Dans ta classe, y a-t-il deux élèves nés le même jour de l’année ? Il y a 365 jours possibles et seulement une trentaine d’élèves : on aurait tendance à penser que c’est rare…</p>' +
+            '<p>Et pourtant : dès <strong>23 personnes</strong>, il y a plus d’une chance sur deux que deux d’entre elles aient le même anniversaire. Avec 35 élèves, c’est plus de 80 % !</p>' +
+            '<div class="outil"><label>Nombre de personnes : <input type="range" id="nanniv" min="2" max="70" value="23"></label><strong id="vanniv"></strong></div>' +
+            '<div class="resultat" id="ranniv"></div>' +
+            '<div class="encadre">L’astuce : calculer la probabilité que tous les anniversaires soient <em>différents</em>. Le 2<sup>e</sup> élève doit éviter 1 jour, le 3<sup>e</sup> en éviter 2, etc. : <span class="math">365/365 × 364/365 × 363/365 × …</span> Ce produit diminue très vite. Le nombre de <em>paires</em> d’élèves, lui, augmente très vite : 253 paires pour 23 personnes !</div>' +
+            '<p class="defi"><strong>Défi :</strong> vérifiez dans votre classe (sans compter les années de naissance) !</p>',
+            init: function (r) {
+                var e = r.querySelector('#nanniv');
+                function calc() {
+                    var n = Number(e.value), p = 1;
+                    for (var k = 0; k < n; k++) p *= (365 - k) / 365;
+                    r.querySelector('#vanniv').textContent = n;
+                    r.querySelector('#ranniv').textContent = 'Probabilité qu’au moins deux personnes aient le même anniversaire : ' +
+                        (100 * (1 - p)).toFixed(1).replace('.', ',') + ' %';
+                }
+                e.oninput = calc;
+                calc();
+            } };
+
+        C[4] = { titre: '0,999… = 1', html:
+            '<p>Le nombre <span class="math">0,999…</span> (avec une infinité de 9) est-il plus petit que 1 ? Non : il est <strong>égal</strong> à 1 !</p>' +
+            '<div class="encadre"><strong>Première preuve.</strong> Appelons <span class="math">x = 0,999…</span>. Alors <span class="math">10x = 9,999…</span><br>En soustrayant : <span class="math">10x − x = 9,999… − 0,999… = 9</span>, donc <span class="math">9x = 9</span> et <span class="math">x = 1</span>.</div>' +
+            '<div class="encadre"><strong>Deuxième preuve.</strong> <span class="math">1/3 = 0,333…</span> Multiplie par 3 : <span class="math">3 × 1/3 = 1</span> et <span class="math">3 × 0,333… = 0,999…</span></div>' +
+            '<p>Un même nombre peut donc avoir deux écritures décimales différentes. Si tu n’es pas convaincu(e) : quel nombre se trouverait <em>entre</em> 0,999… et 1 ?</p>' +
+            '<p class="defi"><strong>Défi :</strong> avec la même méthode, trouve une fraction égale à <span class="math">0,454545…</span> (indice : multiplie par 100).</p>' };
+
+        C[5] = { titre: 'Le nombre d’or', html:
+            '<p>Le nombre d’or, noté φ (« phi »), vaut <span class="math">φ = (1 + √5)/2 ≈ 1,618</span>. Il a des propriétés étonnantes :</p>' +
+            '<ul><li>son carré s’obtient en ajoutant 1 : <span class="math">φ² = φ + 1 ≈ 2,618</span> ;</li><li>son inverse s’obtient en enlevant 1 : <span class="math">1/φ = φ − 1 ≈ 0,618</span>.</li></ul>' +
+            '<p>Un rectangle « d’or » (longueur = φ × largeur) a une particularité : si on lui retire un carré, le petit rectangle qui reste est encore un rectangle d’or. On peut recommencer à l’infini et tracer une spirale.</p>' +
+            '<canvas width="420" height="260" id="or"></canvas>' +
+            '<p class="defi"><strong>Défi :</strong> développe <span class="math">((1 + √5)/2)²</span> et vérifie que tu retrouves bien <span class="math">φ + 1</span>.</p>',
+            init: function (r) {
+                var cv = r.querySelector('#or'), ctx = cv.getContext('2d'), phi = (1 + Math.sqrt(5)) / 2;
+                var x = 20, y = 20, w = 380, h = w / phi, sens = 0;
+                ctx.lineWidth = 1.5;
+                for (var i = 0; i < 9; i++) {
+                    var c = Math.min(w, h);
+                    ctx.strokeStyle = '#2f6fdf';
+                    var sx, sy, cx, cy, a0;
+                    if (sens === 0) { sx = x; sy = y; cx = x + c; cy = y + c; a0 = Math.PI; x += c; w -= c; }
+                    else if (sens === 1) { sx = x; sy = y; cx = x; cy = y + c; a0 = -Math.PI / 2; y += c; h -= c; }
+                    else if (sens === 2) { sx = x + w - c; sy = y; cx = x + w - c; cy = y; a0 = 0; w -= c; }
+                    else { sx = x; sy = y + h - c; cx = x + c; cy = y + h - c; a0 = Math.PI / 2; h -= c; }
+                    ctx.strokeRect(sx, sy, c, c);
+                    ctx.strokeStyle = '#e8740c';
+                    ctx.beginPath(); ctx.arc(cx, cy, c, a0, a0 + Math.PI / 2); ctx.stroke();
+                    sens = (sens + 1) % 4;
+                }
+            } };
+
+        C[6] = { titre: 'Fibonacci dans les pommes de pin', html:
+            '<p>La suite de Fibonacci commence par 1 et 1, puis chaque nombre est la somme des deux précédents :</p>' +
+            '<p class="math" style="text-align:center">1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144…</p>' +
+            '<p>Regarde une pomme de pin par-dessous : ses écailles forment des spirales dans les deux sens. Compte-les : tu trouveras très souvent <strong>8 spirales dans un sens et 13 dans l’autre</strong>. Sur un cœur de tournesol : souvent 34 et 55, ou 55 et 89. Toujours deux nombres consécutifs de la suite de Fibonacci !</p>' +
+            '<div class="encadre">Le quotient de deux nombres consécutifs de la suite se rapproche du nombre d’or (case du 5) : <span class="math">13/8 = 1,625</span> ; <span class="math">89/55 ≈ 1,6182</span> ; <span class="math">144/89 ≈ 1,6180</span>…</div>' +
+            '<p class="defi"><strong>Défi :</strong> écris un programme Python qui affiche les 30 premiers termes de la suite. Pendant les vacances, ramasse une pomme de pin et compte ses spirales !</p>' };
+
+        C[7] = { titre: 'Le carré magique de Dürer', html:
+            '<p>En 1514, le peintre allemand Albrecht Dürer a caché ce carré magique dans sa gravure <em>Melencolia I</em>. Clique sur les cases pour faire des sommes :</p>' +
+            '<table class="grille-durer" id="durer"></table>' +
+            '<p style="text-align:center"><strong>Somme des cases sélectionnées : <span id="sdurer">0</span></strong></p>' +
+            '<p>Chaque ligne, chaque colonne et chaque diagonale a pour somme <strong>34</strong>. Mais aussi : les 4 coins, les 4 cases du centre, chacun des 4 petits carrés 2 × 2 des coins… Et la date de la gravure, 1514, apparaît au milieu de la dernière ligne !</p>' +
+            '<p class="defi"><strong>Défi :</strong> trouve au moins trois autres groupes de 4 cases dont la somme vaut 34.</p>',
+            init: function (r) {
+                var M = [[16, 3, 2, 13], [5, 10, 11, 8], [9, 6, 7, 12], [4, 15, 14, 1]], t = r.querySelector('#durer');
+                t.innerHTML = M.map(function (l) { return '<tr>' + l.map(function (v) { return '<td>' + v + '</td>'; }).join('') + '</tr>'; }).join('');
+                t.addEventListener('click', function (e) {
+                    var td = e.target.closest('td'); if (!td) return;
+                    td.classList.toggle('on');
+                    var s = 0; t.querySelectorAll('td.on').forEach(function (c) { s += Number(c.textContent); });
+                    r.querySelector('#sdurer').textContent = s;
+                });
+            } };
+
+        C[8] = { titre: 'Une feuille de papier jusqu’à la Lune', html:
+            '<p>Une feuille de papier ordinaire a une épaisseur d’environ 0,1 mm. Plie-la en deux : son épaisseur double. Encore : elle double encore…</p>' +
+            '<p>Après 42 pliages, l’épaisseur serait <span class="math">0,1 × 2⁴² mm ≈ 440 000 km</span> : plus que la distance de la Terre à la Lune (environ 384 400 km) !</p>' +
+            '<div class="encadre">C’est la force des <strong>puissances</strong> : doubler, c’est très peu au début, puis énorme très vite. On parle de croissance exponentielle.</div>' +
+            '<p>En vrai, impossible de plier une feuille plus de 7 ou 8 fois. Le record, 12 pliages, a été établi en 2002 par une lycéenne américaine, Britney Gallivan, avec un très long rouleau de papier… après avoir trouvé la formule de la longueur nécessaire !</p>' +
+            '<p class="defi"><strong>Défi :</strong> combien de pliages faudrait-il pour dépasser la hauteur de la tour Eiffel (330 m) ?</p>' };
+
+        C[9] = { titre: 'Les grains de riz sur l’échiquier', html:
+            '<p>Une légende raconte que l’inventeur du jeu d’échecs demanda comme récompense : 1 grain de riz sur la 1<sup>re</sup> case, 2 sur la 2<sup>e</sup>, 4 sur la 3<sup>e</sup>, et ainsi de suite en doublant jusqu’à la 64<sup>e</sup> case. Le roi trouva la demande bien modeste…</p>' +
+            '<p>Au total, il faut <span class="math">1 + 2 + 4 + … + 2⁶³ = 2⁶⁴ − 1</span> grains, soit</p>' +
+            '<p class="math" style="text-align:center;font-size:1.1rem">18 446 744 073 709 551 615 grains</p>' +
+            '<p>À environ 25 mg le grain, cela fait plus de 400 milliards de tonnes : des centaines d’années de la production mondiale de riz actuelle !</p>' +
+            '<p class="defi"><strong>Défi :</strong> pourquoi <span class="math">1 + 2 + 4 + … + 2⁶³ = 2⁶⁴ − 1</span> ? Commence par vérifier <span class="math">1 + 2 + 4 = 8 − 1</span> et <span class="math">1 + 2 + 4 + 8 = 16 − 1</span>.</p>' };
+
+        C[10] = { titre: 'Une corde autour de la Terre', html:
+            '<p>Imagine une corde tendue tout autour de la Terre, le long de l’équateur (environ 40 000 km). On rallonge cette corde de <strong>1 mètre</strong> seulement et on la soulève pour qu’elle flotte partout à la même hauteur au-dessus du sol.</p>' +
+            '<p>À quelle hauteur sera-t-elle ? Un millimètre ? Moins ? Réponse : environ <strong>16 cm</strong>. Un chat peut passer dessous !</p>' +
+            '<div class="encadre">Le périmètre d’un cercle de rayon R est <span class="math">2πR</span>. Si le périmètre augmente de 1 m, le rayon augmente de h avec <span class="math">2π(R + h) = 2πR + 1</span>, donc <span class="math">h = 1/(2π) ≈ 0,16 m</span>. Le rayon R a disparu du calcul : c’est pareil autour d’un ballon de foot ou autour du Soleil !</div>' +
+            '<p class="defi"><strong>Défi :</strong> de combien faut-il rallonger la corde pour qu’un élève de 1,70 m puisse passer dessous debout ?</p>' };
+
+        C[11] = { titre: 'Trouver π en lançant des aiguilles', html:
+            '<p>Au XVIII<sup>e</sup> siècle, le naturaliste Buffon a eu une drôle d’idée : sur un parquet dont les lattes ont une largeur égale à la longueur d’une aiguille, on lance l’aiguille au hasard. La probabilité qu’elle tombe à cheval sur une ligne vaut <span class="math">2/π</span>. On peut donc <strong>estimer π avec le hasard</strong> : <span class="math">π ≈ 2 × lancers / croisements</span>.</p>' +
+            '<canvas width="460" height="260" id="buffon"></canvas>' +
+            '<div class="outil"><button type="button" data-n="10">Lancer 10 aiguilles</button><button type="button" data-n="500">Lancer 500 aiguilles</button><button type="button" id="buffon-zero">Effacer</button></div>' +
+            '<div class="resultat" id="rbuffon"></div>' +
+            '<p class="defi"><strong>Défi :</strong> combien de lancers faut-il pour obtenir 3,14 ? Que remarques-tu quand on lance beaucoup d’aiguilles ?</p>',
+            init: function (r) {
+                var cv = r.querySelector('#buffon'), ctx = cv.getContext('2d'), L = 40, total = 0, croise = 0;
+                function fondLignes() {
+                    ctx.clearRect(0, 0, cv.width, cv.height);
+                    ctx.strokeStyle = '#a7afc0'; ctx.lineWidth = 1;
+                    for (var y = 10; y < cv.height; y += L) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(cv.width, y); ctx.stroke(); }
+                }
+                function lancer(n) {
+                    for (var i = 0; i < n; i++) {
+                        var x = Math.random() * cv.width, y = 10 + Math.random() * (cv.height - 20), a = Math.random() * Math.PI;
+                        var y1 = y - Math.sin(a) * L / 2, y2 = y + Math.sin(a) * L / 2;
+                        var c = Math.floor((y1 - 10) / L) !== Math.floor((y2 - 10) / L);
+                        total++; if (c) croise++;
+                        ctx.strokeStyle = c ? '#e0303b' : '#2f6fdf'; ctx.lineWidth = 1.6;
+                        ctx.beginPath(); ctx.moveTo(x - Math.cos(a) * L / 2, y1); ctx.lineTo(x + Math.cos(a) * L / 2, y2); ctx.stroke();
+                    }
+                    r.querySelector('#rbuffon').textContent = total + ' lancers, ' + croise + ' croisements (en rouge)' +
+                        (croise ? '\nEstimation : π ≈ 2 × ' + total + ' / ' + croise + ' ≈ ' + (2 * total / croise).toFixed(4).replace('.', ',') : '');
+                }
+                r.querySelectorAll('[data-n]').forEach(function (b) { b.onclick = function () { lancer(Number(b.dataset.n)); }; });
+                r.querySelector('#buffon-zero').onclick = function () { total = croise = 0; fondLignes(); r.querySelector('#rbuffon').textContent = ''; };
+                fondLignes();
+                r.querySelector('#rbuffon').textContent = 'Lance des aiguilles !';
+            } };
+
+        C[12] = { titre: 'Le paradoxe de Monty Hall', html:
+            '<p>Un jeu télévisé : derrière l’une des trois portes se cache un cadeau, derrière les deux autres, rien. Tu choisis une porte. Le présentateur, qui sait où est le cadeau, ouvre alors une <em>autre</em> porte, toujours vide, et te demande : « Gardes-tu ta porte, ou changes-tu ? »</p>' +
+            '<div class="mh-portes" id="mh"></div>' +
+            '<p id="mh-msg" style="text-align:center;font-weight:600;min-height:1.6em"></p>' +
+            '<div class="resultat" id="mh-stats"></div>' +
+            '<div class="outil"><button type="button" id="mh-sim">Simuler 1000 parties de chaque stratégie</button></div>' +
+            '<div class="encadre">Contre-intuitif mais vrai : <strong>il faut changer</strong> ! En changeant, on gagne 2 fois sur 3. Au départ, ta porte a 1 chance sur 3 d’être la bonne… et le cadeau a 2 chances sur 3 d’être derrière l’une des deux autres. Le présentateur t’a juste montré laquelle des deux il ne fallait pas prendre.</div>',
+            init: function (r) {
+                var zone = r.querySelector('#mh'), msg = r.querySelector('#mh-msg'), stats = { garde: [0, 0], change: [0, 0] };
+                var cadeau, choix1, ouverte, etape;
+                function afficherStats() {
+                    function p(s) { return s[1] ? s[0] + '/' + s[1] + ' gagnées (' + Math.round(100 * s[0] / s[1]) + ' %)' : '—'; }
+                    r.querySelector('#mh-stats').textContent = 'En gardant : ' + p(stats.garde) + '\nEn changeant : ' + p(stats.change);
+                }
+                function partie() {
+                    cadeau = Math.floor(Math.random() * 3); etape = 1;
+                    zone.innerHTML = [0, 1, 2].map(function (i) { return '<button type="button" data-p="' + i + '">' + (i + 1) + '</button>'; }).join('');
+                    msg.textContent = 'Choisis une porte.';
+                }
+                zone.addEventListener('click', function (e) {
+                    var b = e.target.closest('button'); if (!b) return;
+                    var i = Number(b.dataset.p), bs = zone.querySelectorAll('button');
+                    if (etape === 1) {
+                        choix1 = i;
+                        var vides = [0, 1, 2].filter(function (k) { return k !== choix1 && k !== cadeau; });
+                        ouverte = vides[Math.floor(Math.random() * vides.length)];
+                        bs[choix1].classList.add('choisie');
+                        bs[ouverte].classList.add('ouverte'); bs[ouverte].textContent = '✗'; bs[ouverte].disabled = true;
+                        msg.textContent = 'Le présentateur ouvre la porte ' + (ouverte + 1) + ' : vide ! Clique sur la porte que tu gardes au final.';
+                        etape = 2;
+                    } else if (etape === 2) {
+                        var change = i !== choix1, gagne = i === cadeau, s = change ? stats.change : stats.garde;
+                        s[1]++; if (gagne) s[0]++;
+                        bs.forEach(function (x, k) { x.disabled = true; x.textContent = k === cadeau ? '🎁' : '✗'; x.classList.add('ouverte'); });
+                        msg.textContent = (change ? 'Tu as changé' : 'Tu as gardé ta porte') + (gagne ? ' : gagné !' : ' : perdu…') + ' ';
+                        var re = document.createElement('button'); re.type = 'button'; re.textContent = 'Rejouer';
+                        re.style.cssText = 'font:600 .85rem Lexend,sans-serif;padding:4px 12px;border:0;border-radius:999px;background:var(--c-seconde);color:#fff;cursor:pointer';
+                        re.onclick = partie; msg.appendChild(re);
+                        etape = 3; afficherStats();
+                    }
+                });
+                r.querySelector('#mh-sim').onclick = function () {
+                    for (var n = 0; n < 1000; n++) {
+                        var c = Math.floor(Math.random() * 3), ch = Math.floor(Math.random() * 3);
+                        stats.garde[1]++; if (ch === c) stats.garde[0]++;
+                        stats.change[1]++; if (ch !== c) stats.change[0]++;     // en changeant, on gagne exactement quand le 1er choix était faux
+                    }
+                    afficherStats();
+                };
+                partie(); afficherStats();
+            } };
+
+        C[13] = { titre: 'Une infinité de nombres premiers', html:
+            '<p>Les nombres premiers (2, 3, 5, 7, 11, 13…) n’ont que deux diviseurs : 1 et eux-mêmes. Ils se font de plus en plus rares… mais il y en a une <strong>infinité</strong>. Euclide l’a démontré il y a plus de 2 300 ans, en quelques lignes :</p>' +
+            '<div class="encadre">Supposons qu’il n’y ait qu’un nombre fini de nombres premiers : <span class="math">p₁, p₂, …, pₙ</span>. Calculons <span class="math">N = p₁ × p₂ × … × pₙ + 1</span>.<br>N est divisible par au moins un nombre premier. Mais en divisant N par n’importe lequel des <span class="math">pᵢ</span>, il reste 1. Ce nombre premier ne fait donc pas partie de la liste : contradiction !</div>' +
+            '<p>C’est un <strong>raisonnement par l’absurde</strong> : on suppose le contraire de ce qu’on veut montrer et on aboutit à une impossibilité.</p>' +
+            '<p class="defi"><strong>Défi :</strong> <span class="math">2 × 3 × 5 × 7 × 11 × 13 + 1 = 30 031</span>. Ce nombre est-il premier ? (Essaie de le diviser par 59.) Pourquoi cela ne contredit-il pas la démonstration ?</p>' };
+
+        C[14] = { titre: 'La conjecture de Syracuse', html:
+            '<p>Choisis un entier. S’il est pair, divise-le par 2 ; s’il est impair, multiplie-le par 3 et ajoute 1. Recommence avec le résultat…</p>' +
+            '<p>Avec 6 : 6 → 3 → 10 → 5 → 16 → 8 → 4 → 2 → <strong>1</strong>. On finit toujours par tomber sur 1… du moins, c’est ce que tout le monde pense ! Des ordinateurs l’ont vérifié pour tous les nombres jusqu’à plus de 10<sup>20</sup>, mais <strong>personne n’a jamais réussi à le démontrer</strong>.</p>' +
+            '<div class="outil"><label>Nombre de départ : <input type="number" id="nsyr" min="1" value="27"></label><button type="button" id="bsyr">Lancer</button></div>' +
+            '<div class="resultat" id="rsyr"></div>' +
+            '<p class="defi"><strong>Défi :</strong> parmi les nombres de 1 à 100, lequel a le plus long « temps de vol » (nombre d’étapes pour atteindre 1) ? Un programme Python avec une boucle <span class="math">while</span> t’aidera.</p>',
+            init: function (r) {
+                function calc() {
+                    var n = Math.floor(Number(r.querySelector('#nsyr').value));
+                    if (!(n >= 1 && n < 1e12)) { r.querySelector('#rsyr').textContent = 'Choisis un entier positif.'; return; }
+                    var suite = [n], max = n;
+                    while (n !== 1 && suite.length < 2000) { n = n % 2 ? 3 * n + 1 : n / 2; suite.push(n); if (n > max) max = n; }
+                    r.querySelector('#rsyr').textContent = suite.join(' → ') + '\n\nTemps de vol : ' + (suite.length - 1) + ' étapes. Altitude maximale : ' + max + '.';
+                }
+                r.querySelector('#bsyr').onclick = calc;
+                calc();
+            } };
+
+        C[15] = { titre: 'Le ruban de Möbius', html:
+            '<p>Prends une bande de papier, fais faire un demi-tour à l’une des extrémités, puis colle les deux bouts ensemble. Tu obtiens un <strong>ruban de Möbius</strong>.</p>' +
+            '<p>Fais glisser ton doigt (ou un crayon) le long du ruban sans jamais le soulever : tu reviens au point de départ après être passé partout, « des deux côtés ». Ce ruban n’a <strong>qu’une seule face</strong> et un seul bord !</p>' +
+            '<div class="encadre"><strong>Expérience surprenante :</strong> coupe le ruban aux ciseaux, en suivant le milieu de la bande. Tu t’attends à obtenir deux anneaux ? Tu obtiens… un seul grand anneau, deux fois plus long ! Et si tu coupes au tiers de la largeur, au lieu du milieu : deux anneaux enlacés.</div>' +
+            '<p class="defi"><strong>Défi :</strong> fais l’expérience pour de vrai (une feuille, des ciseaux, du scotch) ! Que se passe-t-il avec deux demi-tours au lieu d’un ?</p>' };
+
+        C[16] = { titre: 'L’hôtel infini de Hilbert', html:
+            '<p>Le mathématicien David Hilbert imaginait un hôtel avec une infinité de chambres numérotées 1, 2, 3, 4… Ce soir, l’hôtel est <strong>complet</strong>. Un nouveau client arrive. Pas de souci !</p>' +
+            '<div class="encadre">Le gérant demande à chaque client de passer de la chambre n à la chambre n + 1. Tout le monde a toujours une chambre… et la chambre 1 est libérée !</div>' +
+            '<p>Encore plus fort : un car arrive avec une infinité de nouveaux clients. Le gérant demande à chaque client de passer de la chambre n à la chambre <span class="math">2n</span>. Les chambres impaires (1, 3, 5…) sont toutes libérées : une infinité de places !</p>' +
+            '<p>Avec l’infini, « complet » ne veut pas dire « plus de place ». Il y a d’ailleurs « autant » de nombres pairs que de nombres entiers…</p>' +
+            '<p class="defi"><strong>Défi :</strong> une infinité de cars arrivent, chacun avec une infinité de clients. Comment le gérant peut-il loger tout le monde ? (Indice : les nombres premiers…)</p>' };
+
+        C[17] = { titre: 'Quatre couleurs suffisent', html:
+            '<p>Prends une carte de géographie (les régions de France, les pays d’Europe…). Tu veux colorier chaque région pour que deux régions voisines (qui ont une frontière commune) aient des couleurs différentes. Combien de couleurs faut-il au minimum ?</p>' +
+            '<p>Réponse : <strong>quatre couleurs suffisent toujours</strong>, quelle que soit la carte !</p>' +
+            '<div class="encadre">Cette question a été posée en 1852. Il a fallu attendre 1976 pour que deux mathématiciens, Kenneth Appel et Wolfgang Haken, la démontrent… avec l’aide d’un ordinateur, qui a vérifié près de 2 000 configurations. C’était la première grande démonstration faite en partie par une machine, et elle a fait débat !</div>' +
+            '<p class="defi"><strong>Défi :</strong> dessine une carte où 3 couleurs ne suffisent pas. Puis essaie de dessiner une carte qui aurait besoin de 5 couleurs (spoiler : tu n’y arriveras pas).</p>' };
+
+        C[18] = { titre: 'Le nombre mystérieux 6174', html:
+            '<p>Choisis un nombre de quatre chiffres, avec au moins deux chiffres différents (par exemple 2026). Range ses chiffres dans l’ordre décroissant (6220) puis dans l’ordre croissant (0226) et fais la différence : <span class="math">6220 − 0226 = 5994</span>. Recommence avec le résultat…</p>' +
+            '<p>Tu finiras toujours, en 7 étapes au plus, sur <strong>6174</strong>. Et 6174 donne… 6174 : <span class="math">7641 − 1467 = 6174</span> ! C’est la constante de Kaprekar, du nom du mathématicien indien qui l’a découverte en 1949.</p>' +
+            '<div class="outil"><label>Ton nombre : <input type="number" id="nkap" min="1" max="9999" value="2026"></label><button type="button" id="bkap">Calculer</button></div>' +
+            '<div class="resultat" id="rkap"></div>' +
+            '<p class="defi"><strong>Défi :</strong> trouve un nombre qui met exactement 7 étapes pour arriver à 6174. Et avec des nombres de trois chiffres, que se passe-t-il ?</p>',
+            init: function (r) {
+                function calc() {
+                    var n = Math.floor(Number(r.querySelector('#nkap').value)), s = String(n).padStart(4, '0');
+                    if (!(n >= 0 && n <= 9999) || /^(\d)\1{3}$/.test(s)) { r.querySelector('#rkap').textContent = 'Il faut un nombre de quatre chiffres (au plus) avec au moins deux chiffres différents.'; return; }
+                    var lignes = [], k = 0;
+                    while (s !== '6174' && k < 10) {
+                        var d = s.split('').sort().reverse().join(''), c = s.split('').sort().join('');
+                        var res = String(Number(d) - Number(c)).padStart(4, '0');
+                        lignes.push(d + ' − ' + c + ' = ' + res);
+                        s = res; k++;
+                    }
+                    r.querySelector('#rkap').textContent = (lignes.join('\n') || 'C’est déjà 6174 !') + '\n\n' + k + ' étape' + (k > 1 ? 's' : '') + '.';
+                }
+                r.querySelector('#bkap').onclick = calc;
+                calc();
+            } };
+
+        C[19] = { titre: 'Les abeilles, championnes de géométrie', html:
+            '<p>Pourquoi les alvéoles des ruches sont-elles des <strong>hexagones</strong> ? Pour paver un plan avec une seule forme régulière, il n’y a que trois possibilités : des triangles équilatéraux, des carrés ou des hexagones réguliers.</p>' +
+            '<p>Parmi les trois, à aire égale, c’est l’hexagone qui a le <strong>plus petit périmètre</strong>. Pour les abeilles, c’est moins de cire pour construire des cases de même contenance !</p>' +
+            '<div class="encadre">Pour une aire de 1 cm², le périmètre vaut environ 4,56 cm pour le triangle équilatéral, 4 cm pour le carré et seulement 3,72 cm pour l’hexagone. Le fait que l’hexagone soit la meilleure façon de découper un plan en morceaux de même aire (même avec des formes courbes !) n’a été démontré qu’en 1999, par Thomas Hales.</div>' +
+            '<p class="defi"><strong>Défi :</strong> retrouve le 4 cm du carré, puis essaie de retrouver le périmètre de l’hexagone (il est formé de 6 triangles équilatéraux).</p>' };
+
+        C[20] = { titre: 'Un mélange de cartes unique au monde', html:
+            '<p>De combien de façons peut-on ranger un jeu de 52 cartes ? Pour la 1<sup>re</sup> carte, 52 choix ; pour la 2<sup>e</sup>, 51 ; puis 50… Au total : <span class="math">52 × 51 × 50 × … × 2 × 1</span>, un nombre qu’on note <span class="math">52!</span> (« factorielle 52 »).</p>' +
+            '<p class="math" style="text-align:center">52! ≈ 8 × 10⁶⁷</p>' +
+            '<p>C’est un 8 suivi de 67 chiffres : bien plus que le nombre d’atomes qui composent la Terre ! Si tout le monde sur Terre mélangeait un jeu chaque seconde depuis le big bang, on n’aurait pas obtenu une infime fraction de tous les ordres possibles.</p>' +
+            '<div class="encadre">Conclusion : quand tu mélanges bien un jeu de cartes, l’ordre obtenu n’est très probablement <strong>jamais apparu</strong> dans toute l’histoire de l’humanité.</div>' +
+            '<p class="defi"><strong>Défi :</strong> de combien de façons peut-on placer les 30 élèves d’une classe sur 30 chaises ? Utilise la touche ! de ta calculatrice.</p>' };
+
+        C[21] = { titre: 'Ératosthène mesure la Terre', html:
+            '<p>Aujourd’hui, c’est le solstice d’hiver : la journée la plus courte de l’année. Il y a 2 200 ans, c’est le jour du solstice d’<em>été</em> que le savant grec Ératosthène a mesuré la Terre… avec des ombres !</p>' +
+            '<div class="encadre">À Syène (en Égypte), ce jour-là à midi, le Soleil éclairait le fond des puits : il était exactement à la verticale. Au même moment à Alexandrie, plus au nord, un bâton vertical faisait une ombre : les rayons arrivaient avec un angle de 7,2°, soit 1/50 de tour complet. Les rayons du Soleil étant parallèles, la distance Syène-Alexandrie (environ 5 000 stades) représente donc 1/50 du tour de la Terre.</div>' +
+            '<p>Résultat : <span class="math">50 × 5 000 = 250 000</span> stades, soit à peu près 40 000 km selon la valeur du stade. La vraie valeur est d’environ 40 075 km. Pas mal, avec un bâton et des angles !</p>' +
+            '<p class="defi"><strong>Défi :</strong> pourquoi 7,2° correspond-il à 1/50 de tour ? Dessine la situation (le centre de la Terre, Syène, Alexandrie, les rayons du Soleil).</p>' };
+
+        C[22] = { titre: 'Le nombre magique 142857', html:
+            '<p>Multiplie 142857 par 2, 3, 4, 5 et 6 :</p>' +
+            '<div class="resultat">142857 × 2 = 285714\n142857 × 3 = 428571\n142857 × 4 = 571428\n142857 × 5 = 714285\n142857 × 6 = 857142</div>' +
+            '<p>Ce sont toujours <strong>les mêmes chiffres, dans le même ordre</strong>, qui tournent en rond ! Et maintenant multiplie par 7 : <span class="math">142857 × 7 = 999 999</span>.</p>' +
+            '<div class="encadre">Le secret : <span class="math">1/7 = 0,142857 142857 142857…</span> Ce nombre est la période de l’écriture décimale de 1/7. Et <span class="math">2/7 = 0,285714…</span>, <span class="math">3/7 = 0,428571…</span> : chaque fraction en septièmes « tourne » sur la même roue de chiffres.</div>' +
+            '<p class="defi"><strong>Défi :</strong> calcule <span class="math">142 + 857</span>, puis <span class="math">14 + 28 + 57</span>. Surprenant, non ?</p>' };
+
+        C[23] = { titre: '√2 n’est pas une fraction', html:
+            '<p>Pour les mathématiciens grecs de l’école de Pythagore, tout nombre pouvait s’écrire comme une fraction d’entiers. Jusqu’au jour où l’on s’est aperçu que la diagonale d’un carré de côté 1, qui mesure <span class="math">√2</span>, ne le pouvait pas ! La légende dit qu’Hippase de Métaponte, qui aurait révélé ce secret, fut jeté à la mer…</p>' +
+            '<div class="encadre"><strong>La démonstration</strong> (au programme de seconde !). Supposons <span class="math">√2 = p/q</span> avec une fraction irréductible. Alors <span class="math">p² = 2q²</span>, donc p² est pair, donc p est pair : <span class="math">p = 2k</span>.<br>Alors <span class="math">4k² = 2q²</span>, donc <span class="math">q² = 2k²</span> : q² est pair, donc q est pair.<br>p et q sont tous les deux pairs : la fraction n’était pas irréductible. Contradiction !</div>' +
+            '<p>On dit que <span class="math">√2</span> est <strong>irrationnel</strong>. Son écriture décimale <span class="math">1,41421356…</span> ne s’arrête jamais et ne se répète jamais.</p>' +
+            '<p class="defi"><strong>Défi :</strong> pourquoi « p² pair » entraîne-t-il « p pair » ? (Indice : que vaut le carré d’un nombre impair <span class="math">2m + 1</span> ?)</p>' };
+
+        C[24] = { titre: 'Les douze jours de Noël', html:
+            '<p>Dans la chanson anglaise <em>Les Douze Jours de Noël</em>, on reçoit chaque jour de nouveaux cadeaux, <strong>en plus de tous ceux des jours précédents</strong> : le 1<sup>er</sup> jour, 1 cadeau ; le 2<sup>e</sup> jour, 2 + 1 cadeaux ; le 3<sup>e</sup> jour, 3 + 2 + 1 ; et ainsi de suite jusqu’au 12<sup>e</sup> jour.</p>' +
+            '<p>Combien de cadeaux en tout ?</p>' +
+            '<div class="encadre">Le n-ième jour, on reçoit <span class="math">1 + 2 + … + n = n(n + 1)/2</span> cadeaux (les nombres triangulaires : 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78). En les additionnant : <span class="math">1 + 3 + 6 + … + 78 = 364</span> cadeaux. Un pour chaque jour de l’année… sauf un !</div>' +
+            '<p style="text-align:center;font:700 1.8rem/1.3 \'Mountains of Christmas\', Lexend, cursive;color:#c4202b">Joyeux Noël et bonnes vacances !</p>' +
+            '<p class="defi"><strong>Défi pour les vacances :</strong> pourquoi <span class="math">1 + 2 + … + n = n(n + 1)/2</span> ? Écris la somme une fois à l’endroit, une fois à l’envers, et additionne.</p>' };
+
+        /* ==========================================================
+           Ouverture des cases selon la date
+           ========================================================== */
+        var ORDRE = [13, 7, 21, 2, 18, 10, 4, 15, 23, 1, 9, 16, 6, 20, 12, 3, 24, 11, 17, 5, 22, 8, 14, 19];
+        var CLE_VUES = 'site-maths-avent-vues';
+        var apercu = /[?&]tout\b/.test(location.search);       // aperçu : ?tout ouvre toutes les cases
+        var auj = new Date();
+
+        function ouverte(j) {
+            if (apercu) return true;
+            var m = auj.getMonth();
+            if (m === 11) return auj.getDate() >= j;
+            return m === 0;                                         // en janvier, tout le calendrier reste ouvert
+        }
+        function vues() { try { return JSON.parse(localStorage.getItem(CLE_VUES)) || []; } catch (e) { return []; } }
+        function marquerVue(j) {
+            var v = vues();
+            if (v.indexOf(j) < 0) { v.push(j); try { localStorage.setItem(CLE_VUES, JSON.stringify(v)); } catch (e) {} }
+        }
+
+        var portes = document.getElementById('portes'), attente = document.getElementById('attente');
+        if (apercu) document.getElementById('apercu').hidden = false;
+
+        function dessinerPortes() {
+            var v = vues();
+            portes.innerHTML = '';
+            ORDRE.forEach(function (j) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'porte' + (j === 24 ? ' j24' : '') + (ouverte(j) ? '' : ' ferme') + (v.indexOf(j) >= 0 ? ' vue' : '');
+                b.dataset.j = j;
+                b.setAttribute('aria-label', j + ' décembre' + (ouverte(j) ? '' : ' (pas encore ouverte)'));
+                b.innerHTML = '<span class="num"><span>' + j + '</span></span>';
+                portes.appendChild(b);
+            });
+        }
+
+        portes.addEventListener('click', function (e) {
+            var b = e.target.closest('.porte'); if (!b) return;
+            var j = Number(b.dataset.j);
+            if (!ouverte(j)) {
+                b.classList.remove('secoue'); void b.offsetWidth; b.classList.add('secoue');
+                attente.textContent = auj.getMonth() === 11 ? 'Patience ! Cette case s’ouvrira le ' + (j === 1 ? '1er' : j) + ' décembre.'
+                    : 'Patience ! Le calendrier ouvre le 1er décembre.';
+                return;
+            }
+            montrer(j);
+        });
+
+        /* ==========================================================
+           Fenêtre d'une curiosité
+           ========================================================== */
+        var dlg = document.getElementById('curiosite'), corps = document.getElementById('cur-corps'), jourActuel = 0;
+
+        function montrer(j) {
+            jourActuel = j;
+            var c = C[j];
+            document.getElementById('cur-jour').textContent = (j === 1 ? '1er' : j) + ' décembre';
+            corps.innerHTML = '<h2 id="cur-titre">' + c.titre + '</h2>' + c.html;
+            if (c.init) c.init(corps);
+            document.getElementById('cur-prec').disabled = j <= 1;
+            document.getElementById('cur-suiv').disabled = j >= 24 || !ouverte(j + 1);
+            if (!dlg.open) dlg.showModal();
+            dlg.scrollTop = 0; corps.scrollTop = 0;
+            marquerVue(j);
+            var b = portes.querySelector('[data-j="' + j + '"]'); if (b) b.classList.add('vue');
+        }
+
+        document.getElementById('cur-fermer').onclick = function () { dlg.close(); };
+        document.getElementById('cur-prec').onclick = function () { if (jourActuel > 1) montrer(jourActuel - 1); };
+        document.getElementById('cur-suiv').onclick = function () { if (jourActuel < 24 && ouverte(jourActuel + 1)) montrer(jourActuel + 1); };
+        dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });   // clic à côté : fermer
+        dlg.addEventListener('close', function () { var b = portes.querySelector('[data-j="' + jourActuel + '"]'); if (b) b.focus(); });
+
+        dessinerPortes();
+        // lien direct vers un jour : calendrier-avent.html#j7
+        var m = location.hash.match(/^#j(\d+)$/);
+        if (m && C[m[1]] && ouverte(Number(m[1]))) montrer(Number(m[1]));
+    })();
+    </script>
+
+</body>
+</html>

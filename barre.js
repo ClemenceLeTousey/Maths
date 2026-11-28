@@ -1,7 +1,8 @@
 /* Barre du haut pour les pages qui n'utilisent pas style.css (séries d'automatismes, corrigés, activités).
    À inclure dans le <head> :  <script src="../../barre.js"></script>
    - liens Accueil et Automatismes ;
-   - les quatre ronds du logo : bleu = site normal, vert = mode Matrix, violet = mode Retour vers le futur, orange = mode Halloween ;
+   - les quatre ronds du logo : bleu = site normal, vert = mode Matrix, violet = mode Retour vers le futur, orange = mode Halloween
+     (ou, en décembre, boule = mode Noël) ;
    - bouton Sombre / Clair.
    Les choix sont partagés avec le reste du site (mêmes clés que site.js) et restent d'une page à l'autre. */
 (function () {
@@ -11,6 +12,18 @@
     var base = script ? script.src.replace(/barre\.js(\?.*)?$/, '') : '';
     var CLE_THEME = 'site-maths-theme', CLE_MODE = 'site-maths-mode';
     var HALLOWEEN_EN_LIGNE = false;   // comme dans site.js : true pour remettre le mode Halloween (prévu le 31 octobre)
+    // Mode Noël, comme dans site.js : 'auto' = du 1er décembre au 6 janvier ; true = toujours ; false = jamais (aperçu : ?noel dans l'adresse)
+    var NOEL_EN_LIGNE = 'auto';
+    var NOEL = !HALLOWEEN_EN_LIGNE && (function () {
+        try {
+            var q = location.search.match(/[?&]noel(=([^&]*))?/);
+            if (q) localStorage.setItem('site-maths-apercu-noel', q[2] === '0' ? '' : '1');
+            if (localStorage.getItem('site-maths-apercu-noel')) return true;
+        } catch (e) {}
+        if (NOEL_EN_LIGNE !== 'auto') return NOEL_EN_LIGNE;
+        var d = new Date();
+        return d.getMonth() === 11 || (d.getMonth() === 0 && d.getDate() <= 6);
+    })();
 
     function lire(cle) { try { return localStorage.getItem(cle) || ''; } catch (e) { return ''; } }
     function ecrire(cle, v) { try { localStorage.setItem(cle, v); } catch (e) {} }
@@ -22,6 +35,10 @@
     var CITROUILLE = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 28 26\'%3E%3Cpath d=\'M14 7Q13 3 16.5 1\' stroke=\'%233f8f2a\' stroke-width=\'2.6\' fill=\'none\' stroke-linecap=\'round\'/%3E%3Cellipse cx=\'9\' cy=\'16\' rx=\'8\' ry=\'9\' fill=\'%23d9560a\'/%3E%3Cellipse cx=\'19\' cy=\'16\' rx=\'8\' ry=\'9\' fill=\'%23d9560a\'/%3E%3Cellipse cx=\'14\' cy=\'16\' rx=\'7\' ry=\'9.6\' fill=\'%23ff7518\'/%3E%3Cpath d=\'M7.5 14.5L10 10.5L12.5 14.5ZM15.5 14.5L18 10.5L20.5 14.5ZM6.5 18Q14 26 21.5 18Q14 21.5 6.5 18Z\' fill=\'%236b2200\'/%3E%3C/svg%3E")';
     var CITROUILLE_ALLUMEE = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 28 26\'%3E%3Cdefs%3E%3CradialGradient id=\'f\' cx=\'.5\' cy=\'.55\' r=\'.6\'%3E%3Cstop offset=\'0\' stop-color=\'%23fff8c4\'/%3E%3Cstop offset=\'.5\' stop-color=\'%23ffd23a\'/%3E%3Cstop offset=\'1\' stop-color=\'%23ff8a00\'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d=\'M14 7Q13 3 16.5 1\' stroke=\'%233f8f2a\' stroke-width=\'2.6\' fill=\'none\' stroke-linecap=\'round\'/%3E%3Cellipse cx=\'9\' cy=\'16\' rx=\'8\' ry=\'9\' fill=\'%23d9560a\'/%3E%3Cellipse cx=\'19\' cy=\'16\' rx=\'8\' ry=\'9\' fill=\'%23d9560a\'/%3E%3Cellipse cx=\'14\' cy=\'16\' rx=\'7\' ry=\'9.6\' fill=\'%23ff7518\'/%3E%3Cpath d=\'M7.5 14.5L10 10.5L12.5 14.5ZM15.5 14.5L18 10.5L20.5 14.5ZM6.5 18Q14 26 21.5 18Q14 21.5 6.5 18Z\' fill=\'url(%23f)\'/%3E%3C/svg%3E")';
 
+    // ou une boule de Noël, qui s'allume en mode Noël (mêmes dessins que style.css)
+    var BOULE = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 27\'%3E%3Cpath d=\'M12 4Q11.6 .9 14.6 1.5\' stroke=\'%23c9961c\' stroke-width=\'1.4\' fill=\'none\' stroke-linecap=\'round\'/%3E%3Crect x=\'8.8\' y=\'3.4\' width=\'6.4\' height=\'3.8\' rx=\'1\' fill=\'%23d9a520\'/%3E%3Ccircle cx=\'12\' cy=\'16.6\' r=\'10\' fill=\'%23c4202b\'/%3E%3Cpath d=\'M2.4 17.4Q7.2 14.2 12 17.4T21.6 17.4\' stroke=\'%23ffd45a\' stroke-width=\'1.5\' fill=\'none\'/%3E%3Cellipse cx=\'8\' cy=\'12.4\' rx=\'2.6\' ry=\'1.6\' transform=\'rotate(-35 8 12.4)\' fill=\'%23fff\' opacity=\'.75\'/%3E%3C/svg%3E")';
+    var BOULE_ALLUMEE = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 27\'%3E%3Cdefs%3E%3CradialGradient id=\'r\' cx=\'.38\' cy=\'.35\' r=\'.75\'%3E%3Cstop offset=\'0\' stop-color=\'%23ff8a7a\'/%3E%3Cstop offset=\'.45\' stop-color=\'%23ff2d3a\'/%3E%3Cstop offset=\'1\' stop-color=\'%239e0f1c\'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d=\'M12 4Q11.6 .9 14.6 1.5\' stroke=\'%23c9961c\' stroke-width=\'1.4\' fill=\'none\' stroke-linecap=\'round\'/%3E%3Crect x=\'8.8\' y=\'3.4\' width=\'6.4\' height=\'3.8\' rx=\'1\' fill=\'%23d9a520\'/%3E%3Ccircle cx=\'12\' cy=\'16.6\' r=\'10\' fill=\'url(%23r)\'/%3E%3Cpath d=\'M2.4 17.4Q7.2 14.2 12 17.4T21.6 17.4\' stroke=\'%23ffd45a\' stroke-width=\'1.5\' fill=\'none\'/%3E%3Cellipse cx=\'8\' cy=\'12.4\' rx=\'2.6\' ry=\'1.6\' transform=\'rotate(-35 8 12.4)\' fill=\'%23fff\' opacity=\'.75\'/%3E%3Cpath d=\'M19.5 5.5l.9 2.2 2.2.9-2.2.9-.9 2.2-.9-2.2-2.2-.9 2.2-.9z\' fill=\'%23fff6c8\'/%3E%3C/svg%3E")';
+
     /* ---------- Styles (tous préfixés .barre-site / html.barre-…) ---------- */
     var css = [
         '.barre-site{all:initial;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 16px;',
@@ -30,7 +47,7 @@
         '.barre-site *{box-sizing:border-box;font:inherit}',
         '.barre-site a{color:inherit;text-decoration:none}',
         '.barre-site .b-logo{display:flex;align-items:center;gap:10px}',
-        '.barre-site .b-ligne{position:relative;display:inline-block;width:' + (HALLOWEEN_EN_LIGNE ? 61 : 42) + 'px;height:12px;flex-shrink:0}',
+        '.barre-site .b-ligne{position:relative;display:inline-block;width:' + (HALLOWEEN_EN_LIGNE ? 61 : NOEL ? 59 : 42) + 'px;height:12px;flex-shrink:0}',
         '.barre-site .b-ligne:before{content:"";position:absolute;left:4px;right:4px;top:5px;height:2px;background:currentColor}',
         '.barre-site .b-ligne button{all:unset;position:absolute;top:0;width:12px;height:12px;border-radius:50%;cursor:pointer;box-sizing:border-box}',
         '.barre-site .b-ligne button:nth-child(1){left:0;background:#2f6fdf}',
@@ -38,6 +55,8 @@
         '.barre-site .b-ligne button:nth-child(3){left:30px;background:#fff;border:2.5px solid #e8740c}',
         '.barre-site .b-ligne button:nth-child(4){left:45px;top:-3px;width:16px;height:15px;border-radius:0;background:center/contain no-repeat ' + CITROUILLE + '}',
         'html.halloween .barre-site .b-ligne button:nth-child(4){background-image:' + CITROUILLE_ALLUMEE + ';filter:drop-shadow(0 0 3px #ffb020)}',
+        '.barre-site .b-ligne button[data-m="noel"]{left:45px;top:-4px;width:14px;height:16px;background-image:' + BOULE + '}',
+        'html.noel .barre-site .b-ligne button[data-m="noel"]{background-image:' + BOULE_ALLUMEE + ';filter:drop-shadow(0 0 3px #ff6a6a)}',
         '.barre-site ul{all:unset;display:flex;align-items:center;gap:4px 18px;flex-wrap:wrap}',
         '.barre-site li{all:unset}',
         '.barre-site ul a{color:#66708a;font-weight:500}',
@@ -57,6 +76,10 @@
         'html.halloween:not([data-theme="dark"]){filter:invert(1) hue-rotate(180deg) sepia(.6) saturate(2.2) hue-rotate(-25deg);background:#fff}',
         'html.halloween:not([data-theme="dark"]) img,html.halloween:not([data-theme="dark"]) video,html.halloween:not([data-theme="dark"]) iframe{filter:invert(1) hue-rotate(180deg)}',
         'html[data-theme="dark"].halloween{filter:sepia(.6) saturate(2.2) hue-rotate(-25deg)}',
+        // Noël : page assombrie en bleu nuit, neige qui tombe
+        'html.noel:not([data-theme="dark"]){filter:invert(1) hue-rotate(180deg) sepia(.25) hue-rotate(185deg) saturate(1.6);background:#fff}',
+        'html.noel:not([data-theme="dark"]) img,html.noel:not([data-theme="dark"]) video,html.noel:not([data-theme="dark"]) iframe{filter:invert(1) hue-rotate(180deg)}',
+        'html[data-theme="dark"].noel{filter:sepia(.25) hue-rotate(185deg) saturate(1.6)}',
         'html[data-theme="dark"].matrix{filter:grayscale(1) sepia(1) hue-rotate(75deg) saturate(6) brightness(1.1);background:#000}',
         '.barre-effet{position:fixed;inset:0;pointer-events:none;z-index:9999}',
         '.barre-effet.feu{top:auto;height:4px;background:linear-gradient(90deg,transparent,#c41a00 20%,#ff6a00 60%,#fff1a0);box-shadow:0 0 12px #ff6a00}',
@@ -64,7 +87,7 @@
         '.barre-licence a{color:inherit;text-decoration:underline}',
         'html[data-theme="dark"] .barre-licence{color:#98a2b6}',
         '.barre-licence .lic-court{display:none}@media (max-width:600px){.barre-licence .lic-long{display:none}.barre-licence .lic-court{display:inline}}',
-        '@media print{.barre-site,.barre-effet{display:none!important}html.barre-inverse,html.matrix,html.futur,html.halloween{filter:none}}'
+        '@media print{.barre-site,.barre-effet{display:none!important}html.barre-inverse,html.matrix,html.futur,html.halloween,html.noel{filter:none}}'
     ].join('');
     var style = document.createElement('style');
     style.textContent = css;
@@ -78,13 +101,14 @@
     }
 
     /* ---------- Modes Matrix / Retour vers le futur / Halloween ---------- */
-    function mode() { var m = lire(CLE_MODE); return m === 'matrix' || m === 'futur' || (m === 'halloween' && HALLOWEEN_EN_LIGNE) ? m : ''; }
+    function mode() { var m = lire(CLE_MODE); return m === 'matrix' || m === 'futur' || (m === 'halloween' && HALLOWEEN_EN_LIGNE) || (m === 'noel' && NOEL) ? m : ''; }
     var pluie = null;
     function effets() {
         var m = mode();
         racine.classList.toggle('matrix', m === 'matrix');
         racine.classList.toggle('futur', m === 'futur');
         racine.classList.toggle('halloween', m === 'halloween');
+        racine.classList.toggle('noel', m === 'noel');
         appliquerTheme();
         if (!document.body) return;
         document.querySelectorAll('.barre-effet').forEach(function (e) { e.remove(); });
@@ -119,6 +143,25 @@
                     cx.fill();
                 });
             })();
+        }
+        if (m === 'noel' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            // flocons (noirs avant l'inversion du thème clair, blancs en sombre natif)
+            var cn = document.createElement('canvas'); cn.className = 'barre-effet'; cn.style.opacity = '.75';
+            document.body.appendChild(cn);
+            var cxn = cn.getContext('2d'), neige, blanc = themeNatif() && racine.getAttribute('data-theme') === 'dark' ? '#fff' : '#000';
+            var flocon = function (partout) { return { x: Math.random() * innerWidth, y: partout ? Math.random() * innerHeight : -10, r: .8 + Math.random() * 2.2, v: .4 + Math.random(), o: Math.random() * 6 }; };
+            var dimN = function () { cn.width = innerWidth; cn.height = innerHeight; neige = Array.from({ length: Math.min(160, Math.round(innerWidth * innerHeight / 9000)) }, function () { return flocon(true); }); };
+            dimN(); window.addEventListener('resize', dimN);
+            (function image(now) {
+                if (mode() !== 'noel') return;
+                pluie = requestAnimationFrame(image);
+                cxn.clearRect(0, 0, cn.width, cn.height); cxn.fillStyle = blanc;
+                neige.forEach(function (f, i) {
+                    f.y += f.v; f.x += Math.sin((now || 0) / 1100 + f.o) * .3;
+                    if (f.y > innerHeight + 5) neige[i] = f = flocon(false);
+                    cxn.beginPath(); cxn.arc(f.x, f.y, f.r, 0, 6.283); cxn.fill();
+                });
+            })(0);
         }
         if (m === 'matrix' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             var c = document.createElement('canvas'); c.className = 'barre-effet'; c.style.opacity = '.35';
@@ -156,7 +199,8 @@
             '<button type="button" data-m="" title="Site normal"></button>' +
             '<button type="button" data-m="matrix" title="Mode Matrix"></button>' +
             '<button type="button" data-m="futur" title="Mode BTTF (Back to the Future)"></button>' +
-            (HALLOWEEN_EN_LIGNE ? '<button type="button" data-m="halloween" title="Mode Halloween"></button>' : '') + '</span>' +
+            (HALLOWEEN_EN_LIGNE ? '<button type="button" data-m="halloween" title="Mode Halloween"></button>' : '') +
+            (NOEL ? '<button type="button" data-m="noel" title="Mode Noël"></button>' : '') + '</span>' +
             '<a href="' + base + 'index.html">Année 2026-2027 - Lycée Lebrun</a></div>' +
             '<ul><li><a href="' + base + 'index.html">Accueil</a></li>' +
             '<li><a href="' + base + 'espace-eleve/">Espace élève</a></li>' +

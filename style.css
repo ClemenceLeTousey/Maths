@@ -1,7 +1,7 @@
 /* ==========================================================================
    DA « Plan de lignes » : chaque classe est une ligne, chaque séquence une station.
    ========================================================================== */
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Architects+Daughter&family=Orbitron:wght@700;900&family=Mystery+Quest&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Architects+Daughter&family=Orbitron:wght@700;900&family=Mystery+Quest&family=Mountains+of+Christmas:wght@700&display=swap");
 
 /* ==========================================================================
    1. VARIABLES (thème clair, puis thème sombre automatique)
@@ -784,7 +784,7 @@ li.res.pending-link { border-left-color: var(--line); }
 .archives li { margin-bottom: 0; }
 
 /* ==========================================================================
-   10. EFFETS DU LOGO (site.js) : mode Matrix, mode Retour vers le futur, mode Halloween
+   10. EFFETS DU LOGO (site.js) : mode Matrix, mode Retour vers le futur, mode Halloween, mode Noël
    ========================================================================== */
 .effet-canvas {
     position: fixed;
@@ -1254,4 +1254,185 @@ header p + .flammes { margin: -16px 0 -4px; }
 
 @media print {
     .circuits, .effet-futur, .flammes, .araignee, .effet-nuee, .effet-halloween { display: none !important; }
+}
+
+/* --------------------------------------------------------------------------
+   Mode Noël (4e rond du logo : une boule de Noël, site.js) : nuit d'hiver bleue,
+   guirlande lumineuse sous la barre, neige sur les cartes, bonnet sur le titre ;
+   neige qui tombe et s'entasse, étoiles et étoiles filantes, collines et sapins dessinés par site.js
+   -------------------------------------------------------------------------- */
+
+/* la boule remplace la citrouille dans la ligne du logo */
+.avec-noel .logo-ligne { width: 60px; }
+.avec-noel .logo-ligne button:nth-child(4) {
+    left: 47px;
+    top: -4px;
+    width: 14px;
+    height: 16px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 27'%3E%3Cpath d='M12 4Q11.6 .9 14.6 1.5' stroke='%23c9961c' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3Crect x='8.8' y='3.4' width='6.4' height='3.8' rx='1' fill='%23d9a520'/%3E%3Ccircle cx='12' cy='16.6' r='10' fill='%23c4202b'/%3E%3Cpath d='M2.4 17.4Q7.2 14.2 12 17.4T21.6 17.4' stroke='%23ffd45a' stroke-width='1.5' fill='none'/%3E%3Cellipse cx='8' cy='12.4' rx='2.6' ry='1.6' transform='rotate(-35 8 12.4)' fill='%23fff' opacity='.75'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+:root.noel {
+    --nuit: #07111f;
+    --orange: #ffcf5a;
+    --bg: #0b1626;
+    --surface: rgba(14, 30, 52, 0.88);
+    --text: #eef4ff;
+    --muted: #a9bdd8;
+    --line: #26425f;
+    --pending: #5d7290;
+    --c-seconde: #ff5a62;     /* boule rouge */
+    --c-premiere: #3fd17f;    /* sapin */
+    --c-tst2s: #ffc94a;       /* étoile dorée */
+    --c-python: #8fd3ff;
+    --badge-text: #07111f;
+    --bic: #ffd98a;
+    --bleu-doux: #16304f;
+    --f-titre: "Mountains of Christmas", "Lexend", cursive;
+    color-scheme: dark;
+    background:
+        radial-gradient(ellipse at 50% -10%, rgba(120, 170, 255, 0.22), transparent 60%) fixed,
+        linear-gradient(180deg, #0a1a33 0%, #0c1f3b 55%, #142c4c 100%) fixed;
+}
+
+:root.noel body { background: transparent; }
+
+.effet-noel { z-index: -1; }
+
+:root.noel .navbar {
+    background: rgba(7, 17, 31, 0.93);
+    border-bottom: 2px solid #c4202b;
+    box-shadow: 0 0 18px rgba(255, 90, 98, 0.25);
+}
+
+/* guirlande lumineuse accrochée sous la barre (dessinée par site.js) */
+.guirlande {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 26px;
+    pointer-events: none;
+    overflow: visible;
+}
+.guirlande svg { display: block; width: 100%; height: 26px; overflow: visible; }
+.guirlande .ampoule { filter: drop-shadow(0 0 4px var(--a)); }
+@media (prefers-reduced-motion: no-preference) {
+    .guirlande .ampoule { animation: clignote 2.4s ease-in-out infinite; animation-delay: var(--d); }
+}
+@keyframes clignote {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; filter: none; }
+}
+
+:root.noel header {
+    background: linear-gradient(180deg, rgba(16, 36, 64, 0.85), rgba(11, 22, 38, 0.55));
+    border-bottom: 1px solid var(--line);
+    padding-top: 44px;          /* place pour la guirlande */
+}
+
+:root.noel header h1.titre-stylo {
+    font-family: var(--f-titre);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    filter: drop-shadow(0 0 10px rgba(255, 207, 90, 0.4));
+}
+
+/* lettres dorées, enneigées sur le dessus */
+:root.noel .titre-stylo .l {
+    color: transparent;
+    background: linear-gradient(180deg, #ffffff 0%, #ffffff 20%, #fff1c2 32%, #ffd35a 55%, #e8a21a 80%, #a8650c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+:root.noel .titre-stylo svg { stroke: #ff5a62; }
+
+/* un bonnet de Père Noël sur la première lettre du titre */
+:root.noel header h1.titre-stylo > span:first-of-type > .l:first-child::after {
+    content: "";
+    position: absolute;
+    left: -0.22em;
+    top: -0.42em;
+    width: 0.95em;
+    height: 0.77em;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 34'%3E%3Cpath d='M4 27C8 14 18 4 31 6C35.5 7 37 12 36 18L32 17C29 13 26 15 25 27Z' fill='%23d6262f'/%3E%3Cpath d='M31 6C35.5 7 37 12 36 18L34 17.5C34.5 13 33 9 29 7.5Z' fill='%23a8121d'/%3E%3Crect x='1.5' y='23.5' width='27' height='8' rx='4' fill='%23fdfdff'/%3E%3Ccircle cx='35.5' cy='19' r='4.5' fill='%23fdfdff'/%3E%3C/svg%3E") center / contain no-repeat;
+    transform: rotate(-14deg);
+    pointer-events: none;
+}
+
+:root.noel .class-title,
+:root.noel .sequence-subtitle { font-family: var(--f-titre); font-weight: 700; letter-spacing: 0.02em; }
+
+/* Cartes : un bourrelet de neige sur le bord du haut */
+:root.noel .class-card {
+    position: relative;
+    border-color: #2c4b6e;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+:root.noel .class-card::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: -6px;
+    height: 13px;
+    pointer-events: none;
+    border-radius: 7px 7px 3px 3px;
+    background:
+        radial-gradient(circle at 50% 100%, #f3f8ff 5.5px, transparent 6px) 0 6px / 19px 9px repeat-x,
+        linear-gradient(180deg, #ffffff, #dde9f7) top / 100% 8px no-repeat;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25));
+}
+
+:root.noel .class-title .badge { box-shadow: 0 0 10px var(--c, var(--orange)); }
+
+:root.noel a:hover { text-shadow: 0 0 8px rgba(255, 207, 90, 0.8); }
+
+/* la boule du logo s'allume et scintille */
+:root.noel .logo-ligne button:nth-child(4) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 27'%3E%3Cdefs%3E%3CradialGradient id='r' cx='.38' cy='.35' r='.75'%3E%3Cstop offset='0' stop-color='%23ff8a7a'/%3E%3Cstop offset='.45' stop-color='%23ff2d3a'/%3E%3Cstop offset='1' stop-color='%239e0f1c'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d='M12 4Q11.6 .9 14.6 1.5' stroke='%23c9961c' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3Crect x='8.8' y='3.4' width='6.4' height='3.8' rx='1' fill='%23d9a520'/%3E%3Ccircle cx='12' cy='16.6' r='10' fill='url(%23r)'/%3E%3Cpath d='M2.4 17.4Q7.2 14.2 12 17.4T21.6 17.4' stroke='%23ffd45a' stroke-width='1.5' fill='none'/%3E%3Cellipse cx='8' cy='12.4' rx='2.6' ry='1.6' transform='rotate(-35 8 12.4)' fill='%23fff' opacity='.75'/%3E%3Cpath d='M19.5 5.5l.9 2.2 2.2.9-2.2.9-.9 2.2-.9-2.2-2.2-.9 2.2-.9z' fill='%23fff6c8'/%3E%3C/svg%3E");
+    filter: drop-shadow(0 0 3px #ff6a6a);
+}
+@media (prefers-reduced-motion: no-preference) {
+    :root.noel .logo-ligne button:nth-child(4) { animation: scintille 2.2s ease-in-out infinite; transform-origin: 50% 0; }
+}
+@keyframes scintille {
+    0%, 100% { filter: drop-shadow(0 0 2px #ff6a6a) brightness(1); transform: rotate(0); }
+    25% { transform: rotate(7deg); }
+    50% { filter: drop-shadow(0 0 6px #ffd45a) brightness(1.2); }
+    75% { transform: rotate(-7deg); }
+}
+
+/* survol d'un grand flocon : il devient cliquable (bulle sur le flocon de von Koch) */
+:root.sur-flocon, :root.sur-flocon * { cursor: pointer !important; }
+
+.bulle-koch {
+    position: fixed;
+    z-index: 3000;
+    max-width: 280px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(10, 24, 44, 0.96);
+    border: 1px solid #ffd45a;
+    color: #eef4ff;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 14px rgba(255, 212, 90, 0.25);
+    transition: opacity 0.6s;
+}
+.bulle-koch strong { display: block; margin-bottom: 4px; font-family: var(--f-titre); font-size: 1.15rem; color: #ffd45a; }
+.bulle-koch.fin { opacity: 0; }
+
+/* Démarrage : la boule à neige se secoue et lâche un tourbillon de flocons */
+.effet-tourbillon {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    pointer-events: none;
+}
+.effet-tourbillon canvas { width: 100%; height: 100%; }
+
+@media print {
+    .effet-noel, .guirlande, .effet-tourbillon, .bulle-koch { display: none !important; }
+    :root.noel .class-card::before, :root.noel header h1.titre-stylo .l::after { display: none; }
 }

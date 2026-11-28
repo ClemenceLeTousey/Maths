@@ -162,17 +162,41 @@ document.addEventListener('click', function (e) {
 
 /* Effets cachés dans le logo (les quatre ronds de la ligne) :
    bleu = le titre se réécrit, vert = mode Matrix, violet = mode Retour vers le futur, orange = mode Halloween
-   (en mode Halloween, cliquer sur un fantôme ouvre un Pac-Man : pacman.js). */
+   (en mode Halloween, cliquer sur un fantôme ouvre un Pac-Man : pacman.js) ou, en décembre, boule = mode Noël
+   (cliquer sur un grand flocon de von Koch affiche une bulle ; cliquer sur le traîneau qui traverse le ciel
+   ouvre le jeu « La tournée des nombres » : traineau.js). */
 (function () {
     var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     /* Mode Halloween (citrouille, Pac-Man…) : mettre true pour le remettre en ligne (prévu le 31 octobre).
        À false, la citrouille du logo disparaît et le mode ne peut pas s'activer ; tout le code reste en place. */
     var HALLOWEEN_EN_LIGNE = false;
+
+    /* Mode Noël (boule de Noël à la place de la citrouille, quand le mode Halloween est hors ligne).
+       NOEL_EN_LIGNE : 'auto' = en ligne tout seul du 1er décembre au 6 janvier ; true = toujours ; false = jamais.
+       Aperçu avant la date : ajouter ?noel à l'adresse d'une page (retenu sur cet appareil, ?noel=0 pour l'oublier).
+       Même réglage dans barre.js. */
+    var NOEL_EN_LIGNE = 'auto';
+    function noelEnLigne() {
+        try {
+            var q = location.search.match(/[?&]noel(=([^&]*))?/);
+            if (q) localStorage.setItem('site-maths-apercu-noel', q[2] === '0' ? '' : '1');
+            if (localStorage.getItem('site-maths-apercu-noel')) return true;
+        } catch (e) {}
+        if (NOEL_EN_LIGNE !== 'auto') return NOEL_EN_LIGNE;
+        var d = new Date();
+        return d.getMonth() === 11 || (d.getMonth() === 0 && d.getDate() <= 6);
+    }
+    var NOEL = !HALLOWEEN_EN_LIGNE && noelEnLigne();
+
     if (!HALLOWEEN_EN_LIGNE) {
-        document.documentElement.classList.add('sans-halloween');
+        document.documentElement.classList.add(NOEL ? 'avec-noel' : 'sans-halloween');
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.logo-ligne button[data-effet="halloween"]').forEach(function (b) { b.remove(); });
+            document.querySelectorAll('.logo-ligne button[data-effet="halloween"]').forEach(function (b) {
+                if (!NOEL) { b.remove(); return; }
+                b.dataset.effet = 'noel';
+                b.title = 'Mode Noël';
+            });
         });
     }
 
@@ -729,8 +753,329 @@ document.addEventListener('click', function (e) {
         chargerPacman(function () { window.pacmanHalloween.ouvrir(); });
     });
 
-    var MODES = { matrix: matrix, futur: futur, halloween: halloween };
+
+    /* Boule : mode Noël — nuit d'hiver, étoiles et étoiles filantes, collines enneigées et sapins,
+       neige qui tombe (les grands flocons sont des flocons de von Koch), guirlande sous la barre.
+       Au démarrage : la boule lâche un tourbillon de flocons. */
+    var hiver = null, lireFlocons = null, lireAttelage = null;
+
+    // traineau.js : le jeu caché derrière le traîneau, et le dessin de l'attelage qui passe dans le ciel
+    function chargerTraineau(suite) {
+        if (window.jeuTraineau) { suite(); return; }
+        var s = document.querySelector('script[data-traineau]');
+        if (!s) {
+            s = document.createElement('script');
+            s.src = BASE + 'traineau.js';
+            s.dataset.traineau = '';
+            document.head.appendChild(s);
+        }
+        s.addEventListener('load', suite);
+    }
+
+    // flocon de von Koch (ordre 3), points pour un rayon 1
+    var KOCH = (function () {
+        var pts = [0, 1, 2].map(function (k) { var a = -Math.PI / 2 + k * 2 * Math.PI / 3; return [Math.cos(a), Math.sin(a)]; });
+        pts.push(pts[0]);
+        for (var n = 0; n < 3; n++) {
+            var suite = [pts[0]];
+            for (var i = 0; i < pts.length - 1; i++) {
+                var a = pts[i], b = pts[i + 1], dx = (b[0] - a[0]) / 3, dy = (b[1] - a[1]) / 3;
+                var p = [a[0] + dx, a[1] + dy], q = [a[0] + 2 * dx, a[1] + 2 * dy];
+                var c = Math.cos(-Math.PI / 3), sn = Math.sin(-Math.PI / 3);
+                var pic = [p[0] + dx * c - dy * sn, p[1] + dx * sn + dy * c];
+                suite.push(p, pic, q, b);
+            }
+            pts = suite;
+        }
+        return pts;
+    })();
+
+    function koch(ctx, x, y, r, angle) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.scale(r, r);
+        ctx.beginPath();
+        KOCH.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
+        ctx.closePath();
+        ctx.restore();
+    }
+
+    function noel() {
+        if (document.documentElement.classList.toggle('noel')) {
+            demarrerHiver();
+            if (!calme) tourbillon();
+        } else arreterHiver();
+    }
+
+    // guirlande : des festons accrochés sous la barre, une ampoule colorée tous les 40 px environ
+    function guirlande() {
+        var barre = document.querySelector('.navbar');
+        if (!barre) return;
+        var g = barre.querySelector('.guirlande');
+        if (!g) {
+            g = document.createElement('div');
+            g.className = 'guirlande';
+            g.setAttribute('aria-hidden', 'true');
+            barre.appendChild(g);
+        }
+        var L = barre.clientWidth, n = Math.max(3, Math.round(L / 130)), pas = L / n;
+        var couleurs = ['#ff4b55', '#ffd24a', '#3fd17f', '#5ab8ff'], fil = '', ampoules = '', k = 0;
+        for (var i = 0; i < n; i++) {
+            var x0 = i * pas, x1 = x0 + pas, cx = x0 + pas / 2, fy = 14;
+            fil += 'M' + x0.toFixed(1) + ' 1Q' + cx.toFixed(1) + ' ' + (2 * fy) + ' ' + x1.toFixed(1) + ' 1';
+            [0.2, 0.4, 0.6, 0.8].forEach(function (t) {
+                var x = (1 - t) * (1 - t) * x0 + 2 * t * (1 - t) * cx + t * t * x1;
+                var y = (1 - t) * (1 - t) + 2 * t * (1 - t) * 2 * fy + t * t;
+                var pente = Math.atan2(2 * (1 - t) * (2 * fy - 1) + 2 * t * (1 - 2 * fy), 2 * (1 - t) * (cx - x0) + 2 * t * (x1 - cx));
+                var col = couleurs[k % 4];
+                ampoules += '<g transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') rotate(' + (pente * 180 / Math.PI).toFixed(0) + ')">' +
+                    '<rect x="-1.8" y="0" width="3.6" height="3" rx=".6" fill="#3a4a5e"/>' +
+                    '<ellipse class="ampoule" style="--a:' + col + ';--d:' + (-(k % 4) * 0.6 - (k % 3) * 0.2).toFixed(1) + 's" cx="0" cy="7.2" rx="3" ry="4.6" fill="' + col + '"/></g>';
+                k++;
+            });
+        }
+        g.innerHTML = '<svg viewBox="0 0 ' + L + ' 26" preserveAspectRatio="none"><path d="' + fil + '" stroke="#24313f" stroke-width="1.4" fill="none"/>' + ampoules + '</svg>';
+    }
+
+    function demarrerHiver() {
+        var racine = document.documentElement;
+        var c = document.createElement('canvas');
+        c.className = 'effet-canvas effet-noel';
+        document.body.appendChild(c);
+        var ctx = c.getContext('2d'), w, h, flocons, etoiles, paysage, filante = null;
+        // le traîneau passe dans le ciel : la première fois peu après le démarrage, puis toutes les 20 à 40 s
+        var attelage = null, prochainPassage = performance.now() + 3500;
+        function nouvelAttelage() {
+            var s = Math.max(18, Math.min(30, w / 50));
+            return { x: -s * 4.5, y: hasard(h * 0.14, h * 0.32), s: s, v: hasard(1.3, 2) };
+        }
+        function hasard(a, b) { return a + Math.random() * (b - a); }
+        // hauteur de la colline de devant (là où les flocons disparaissent)
+        function sol(x) { var H = Math.min(110, h * 0.13); return h - H * (0.55 + 0.25 * Math.sin(x / w * 8.2 + 0.5) + 0.08 * Math.sin(x / 90)); }
+        function nouveauFlocon(partout) {
+            var grand = Math.random() < 0.09;
+            return { x: hasard(0, w), y: partout ? hasard(0, h) : hasard(-60, -10), r: grand ? hasard(7, 13) : hasard(0.8, 2.6), grand: grand,
+                     v: grand ? hasard(0.35, 0.6) : hasard(0.4, 1.3), o: hasard(0, 6), a: hasard(0, 6), va: hasard(-0.008, 0.008) };
+        }
+        function dimension() {
+            var dpr = window.devicePixelRatio || 1;
+            w = innerWidth; h = innerHeight;
+            c.width = w * dpr; c.height = h * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            flocons = Array.from({ length: Math.min(220, Math.round(w * h / 8000)) }, function () { return nouveauFlocon(true); });
+            etoiles = Array.from({ length: Math.round(w * h / 9000) }, function () {
+                return { x: hasard(0, w), y: hasard(0, h * 0.7), r: hasard(0.4, 1.3), o: hasard(0, 6), v: hasard(1, 3) };
+            });
+            dessinerPaysage();
+            if (calme) image(0);
+            guirlande();
+        }
+        // collines enneigées et sapins, dessinés une fois pour toutes
+        function dessinerPaysage() {
+            var dpr = window.devicePixelRatio || 1, H = Math.min(110, h * 0.13);
+            paysage = document.createElement('canvas');
+            paysage.width = w * dpr; paysage.height = h * dpr;
+            var m = paysage.getContext('2d');
+            m.setTransform(dpr, 0, 0, dpr, 0, 0);
+            function colline(f, couleur) {
+                m.fillStyle = couleur;
+                m.beginPath();
+                m.moveTo(0, h);
+                for (var x = 0; x <= w + 8; x += 8) m.lineTo(x, f(x));
+                m.lineTo(w, h);
+                m.fill();
+            }
+            function arriere(x) { return h - H * (1.05 + 0.3 * Math.sin(x / w * 5.1 + 2) + 0.1 * Math.sin(x / 130 + 1)); }
+            colline(arriere, '#7f97b8');
+            // sapins sur la colline de derrière
+            var x = hasard(10, 60);
+            while (x < w) {
+                var t = hasard(H * 0.28, H * 0.55), base = arriere(x) + 4;
+                m.fillStyle = '#123a2e';
+                m.beginPath();
+                for (var e = 0; e < 3; e++) {
+                    var haut = base - t * (0.38 + e * 0.31), large = t * (0.36 - e * 0.08);
+                    m.moveTo(x - large, base - t * e * 0.3);
+                    m.lineTo(x, haut - t * 0.05);
+                    m.lineTo(x + large, base - t * e * 0.3);
+                }
+                m.fill();
+                m.fillStyle = 'rgba(230, 240, 255, 0.55)';      // neige sur les branches
+                m.beginPath();
+                m.moveTo(x, base - t * 0.98); m.lineTo(x - t * 0.07, base - t * 0.85); m.lineTo(x + t * 0.07, base - t * 0.85);
+                m.fill();
+                x += hasard(30, 140);
+            }
+            colline(sol, '#d4e1f1');
+            var lueur = m.createLinearGradient(0, h - H, 0, h);
+            lueur.addColorStop(0, 'rgba(255, 255, 255, 0)');
+            lueur.addColorStop(1, 'rgba(160, 190, 230, 0.35)');
+            m.fillStyle = lueur;
+            m.fillRect(0, h - H, w, H);
+        }
+        function image(now) {
+            var t = now / 1000, vent = Math.sin(t * 0.15) * 0.5;
+            ctx.clearRect(0, 0, w, h);
+            etoiles.forEach(function (s) {
+                ctx.globalAlpha = calme ? 0.7 : 0.45 + 0.4 * Math.sin(t * s.v + s.o);
+                ctx.fillStyle = '#fff8e0';
+                ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+            // de temps en temps, une étoile filante
+            if (!calme && !filante && Math.random() < 0.002) {
+                filante = { x: hasard(w * 0.1, w * 0.8), y: hasard(h * 0.03, h * 0.3), vx: hasard(7, 11), vy: hasard(2, 4), vie: 1 };
+            }
+            if (filante) {
+                var f = filante, trait = ctx.createLinearGradient(f.x, f.y, f.x - f.vx * 12, f.y - f.vy * 12);
+                trait.addColorStop(0, 'rgba(255, 248, 220, ' + f.vie + ')');
+                trait.addColorStop(1, 'rgba(255, 248, 220, 0)');
+                ctx.strokeStyle = trait; ctx.lineWidth = 2; ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.moveTo(f.x, f.y); ctx.lineTo(f.x - f.vx * 12, f.y - f.vy * 12); ctx.stroke();
+                f.x += f.vx; f.y += f.vy; f.vie -= 0.018;
+                if (f.vie <= 0 || f.x > w + 50) filante = null;
+            }
+            if (window.jeuTraineau) {
+                if (calme) attelage = attelage || { x: w * 0.62, y: h * 0.2, s: Math.max(18, Math.min(30, w / 50)), v: 0 };
+                else if (!attelage && now > prochainPassage) attelage = nouvelAttelage();
+                if (attelage) {
+                    var A = attelage;
+                    A.x += A.v * (A.survol ? 0.25 : 1);
+                    A.px = A.x; A.py = A.y + Math.sin(A.x / 90) * A.s * 0.5;
+                    ctx.save();
+                    ctx.shadowColor = A.survol ? '#fff2b0' : 'rgba(255, 214, 120, 0.7)';
+                    ctx.shadowBlur = A.survol ? 16 : 8;
+                    window.jeuTraineau.attelage(ctx, A.px, A.py, A.s, t * 9, A.survol ? '#fff4c8' : 'rgba(255, 228, 160, 0.82)');
+                    ctx.restore();
+                    if (A.x > w + A.s * 2) { attelage = null; prochainPassage = now + hasard(20000, 40000); }
+                }
+            }
+            ctx.drawImage(paysage, 0, 0, w, h);
+            flocons.forEach(function (fl, i) {
+                if (!calme) {
+                    fl.y += fl.v; fl.x += Math.sin(t * 0.9 + fl.o) * 0.35 + vent * (fl.grand ? 0.4 : 1); fl.a += fl.va;
+                    if (fl.x < -20) fl.x = w + 20; else if (fl.x > w + 20) fl.x = -20;
+                    if (fl.y > sol(fl.x) + fl.r) flocons[i] = fl = nouveauFlocon(false);
+                }
+                if (fl.grand) {
+                    koch(ctx, fl.x, fl.y, fl.r, fl.a);
+                    ctx.fillStyle = fl.survol ? 'rgba(255, 255, 255, 0.55)' : 'rgba(235, 245, 255, 0.18)';
+                    ctx.strokeStyle = fl.survol ? '#fff' : 'rgba(240, 248, 255, 0.75)';
+                    ctx.lineWidth = 0.9;
+                    ctx.fill(); ctx.stroke();
+                } else {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                    ctx.beginPath(); ctx.arc(fl.x, fl.y, fl.r, 0, Math.PI * 2); ctx.fill();
+                }
+            });
+        }
+        dimension();
+        window.addEventListener('resize', dimension);
+        lireFlocons = function () { return flocons; };
+        lireAttelage = function () { return attelage; };
+        chargerTraineau(function () { if (calme && c.isConnected) image(0); });
+        if (!calme) hiver = requestAnimationFrame(function boucle(now) {
+            if (!racine.classList.contains('noel')) return;
+            image(now);
+            hiver = requestAnimationFrame(boucle);
+        });
+        c._quitter = function () { window.removeEventListener('resize', dimension); };
+    }
+
+    function arreterHiver() {
+        cancelAnimationFrame(hiver);
+        lireFlocons = null;
+        lireAttelage = null;
+        if (window.jeuTraineau) window.jeuTraineau.fermer();
+        document.documentElement.classList.remove('sur-flocon');
+        document.querySelectorAll('.effet-noel').forEach(function (c) { if (c._quitter) c._quitter(); c.remove(); });
+        document.querySelectorAll('.guirlande, .effet-tourbillon, .bulle-koch').forEach(function (e) { e.remove(); });
+    }
+
+    // démarrage : un tourbillon de flocons et d'étoiles dorées s'échappe de la boule du logo
+    function tourbillon() {
+        var e = document.createElement('div');
+        e.className = 'effet-tourbillon';
+        e.innerHTML = '<canvas></canvas>';
+        document.body.appendChild(e);
+        var c = e.querySelector('canvas'), ctx = c.getContext('2d'), dpr = window.devicePixelRatio || 1;
+        c.width = innerWidth * dpr; c.height = innerHeight * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        var boule = document.querySelector('.logo-ligne button:nth-child(4)');
+        var r = boule ? boule.getBoundingClientRect() : { left: 40, top: 20, width: 0, height: 0 };
+        var x0 = r.left + r.width / 2, y0 = r.top + r.height / 2;
+        var vol = Array.from({ length: 70 }, function (_, i) {
+            var angle = Math.random() * Math.PI * 0.9 - 0.2, vitesse = 3 + Math.random() * 9;
+            return { x: x0, y: y0, vx: Math.cos(angle) * vitesse, vy: Math.sin(angle) * vitesse * 0.7, r: 1.5 + Math.random() * (i % 6 ? 3 : 8),
+                     or: i % 5 === 0, koch: i % 6 === 0, a: Math.random() * 6 };
+        });
+        var debut = performance.now();
+        (function image(now) {
+            if (!e.isConnected) return;
+            var age = (now - debut) / 2600;
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            ctx.globalAlpha = Math.max(0, 1 - age * age);
+            vol.forEach(function (p) {
+                p.x += p.vx; p.y += p.vy; p.vx *= 0.975; p.vy = p.vy * 0.975 + 0.06; p.a += 0.05;
+                ctx.fillStyle = p.or ? '#ffd45a' : '#ffffff';
+                ctx.shadowColor = p.or ? '#ffb020' : '#bcd6ff';
+                ctx.shadowBlur = 6;
+                if (p.koch) { koch(ctx, p.x, p.y, p.r, p.a); ctx.fill(); }
+                else { ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 0.6, 0, Math.PI * 2); ctx.fill(); }
+            });
+            if (age < 1) requestAnimationFrame(image);
+            else e.remove();
+        })(debut);
+    }
+
+    /* Un clic sur un grand flocon (là où rien d'autre n'est cliquable) : bulle sur le flocon de von Koch */
+    function floconSous(e) {
+        if (!lireFlocons || !document.documentElement.classList.contains('noel')) return null;
+        if (e.target.closest && e.target.closest('a, button, input, textarea, select, label, summary, .class-card, .navbar, .bulle-koch')) return null;
+        var liste = lireFlocons();
+        for (var i = 0; i < liste.length; i++) {
+            var f = liste[i], dx = e.clientX - f.x, dy = e.clientY - f.y;
+            if (f.grand && dx * dx + dy * dy < (f.r + 6) * (f.r + 6)) return f;
+        }
+        return null;
+    }
+    // l'attelage occupe un rectangle : du bout des patins à la tête du 2e renne
+    function attelageSous(e) {
+        if (!lireAttelage || !document.documentElement.classList.contains('noel')) return null;
+        if (e.target.closest && e.target.closest('a, button, input, textarea, select, label, summary, .class-card, .navbar, .bulle-koch')) return null;
+        var A = lireAttelage();
+        if (!A || A.px === undefined) return null;
+        var dx = e.clientX - A.px, dy = e.clientY - A.py;
+        return dx > -A.s * 1.3 && dx < A.s * 4.2 && dy > -A.s * 1.6 && dy < A.s * 0.4 ? A : null;
+    }
+    document.addEventListener('mousemove', function (e) {
+        if (!lireFlocons) return;
+        var A = attelageSous(e), f = A ? null : floconSous(e);
+        lireFlocons().forEach(function (g) { g.survol = g === f; });
+        var a = lireAttelage && lireAttelage();
+        if (a) a.survol = !!A;
+        document.documentElement.classList.toggle('sur-flocon', !!(f || A));
+    });
+    document.addEventListener('click', function (e) {
+        if (attelageSous(e)) { chargerTraineau(function () { window.jeuTraineau.ouvrir(); }); return; }
+        if (!floconSous(e)) return;
+        document.querySelectorAll('.bulle-koch').forEach(function (b) { b.remove(); });
+        var b = document.createElement('div');
+        b.className = 'bulle-koch';
+        b.setAttribute('role', 'status');
+        b.innerHTML = '<strong>Flocon de von Koch</strong>On part d’un triangle ; sur chaque côté, on remplace le tiers du milieu par une petite pointe, ' +
+            'et on recommence à l’infini. À chaque étape, le périmètre est multiplié par 4/3 : il devient infini… alors que l’aire reste finie !';
+        b.style.left = Math.min(e.clientX + 14, innerWidth - 300) + 'px';
+        b.style.top = Math.min(e.clientY + 14, innerHeight - 170) + 'px';
+        document.body.appendChild(b);
+        setTimeout(function () { b.classList.add('fin'); }, 9000);
+        setTimeout(function () { b.remove(); }, 9600);
+    });
+
+    var MODES = { matrix: matrix, futur: futur, halloween: halloween, noel: noel };
     if (!HALLOWEEN_EN_LIGNE) delete MODES.halloween;
+    if (!NOEL) delete MODES.noel;
     function modeActif() {
         return Object.keys(MODES).filter(function (m) { return document.documentElement.classList.contains(m); })[0];
     }
@@ -754,6 +1099,14 @@ document.addEventListener('click', function (e) {
             document.addEventListener('DOMContentLoaded', function () { allumerFlammes(false); });
         }
         if (memorise === 'halloween') document.addEventListener('DOMContentLoaded', demarrerNuit);
+        if (memorise === 'noel') document.addEventListener('DOMContentLoaded', demarrerHiver);
+    }
+    // pour tester : #traineau dans l'adresse ouvre directement le jeu du mode Noël
+    if (MODES.noel && location.hash === '#traineau') {
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!document.documentElement.classList.contains('noel')) basculer('noel');
+            chargerTraineau(function () { window.jeuTraineau.ouvrir(); });
+        });
     }
     window.modesSite = { basculer: basculer, actif: modeActif };
 
@@ -791,6 +1144,12 @@ document.addEventListener('click', function (e) {
         (document.head || document.documentElement).appendChild(css);
     } else {
         LIENS.push({ texte: 'Espace professeure', href: 'espace-eleve/prof.html', actif: /\/espace-eleve\/prof\.html$/ });
+    }
+    // Calendrier de l'Avent : lien affiché pendant la période du mode Noël (1er décembre - 6 janvier, ou aperçu ?noel)
+    var jour = new Date(), apercuNoel = '';
+    try { apercuNoel = localStorage.getItem('site-maths-apercu-noel') || ''; } catch (e) {}
+    if (jour.getMonth() === 11 || (jour.getMonth() === 0 && jour.getDate() <= 6) || apercuNoel || /calendrier-avent\.html$/.test(location.pathname)) {
+        LIENS.splice(1, 0, { texte: 'Calendrier de l’Avent', href: 'calendrier-avent.html', actif: /calendrier-avent\.html$/ });
     }
     document.addEventListener('DOMContentLoaded', function () {
         if (appli) {   // liens masqués dans l'appli : Espace professeure, NumWorks, Installer l'appli
